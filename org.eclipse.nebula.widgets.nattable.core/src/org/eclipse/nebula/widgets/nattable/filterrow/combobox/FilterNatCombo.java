@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Dirk Fauth and others.
+ * Copyright (c) 2013, 2016 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
+ *    Ryan McHale <rpmc22@gmail.com> - Bug 484716
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
@@ -37,7 +38,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -59,8 +59,10 @@ public class FilterNatCombo extends NatCombo {
 
     /**
      * The viewer that contains the select all item in the dropdown control.
+     *
+     * @since 1.4
      */
-    private CheckboxTableViewer selectAllItemViewer;
+    protected CheckboxTableViewer selectAllItemViewer;
     /**
      * The local selection String storage.
      */
@@ -124,6 +126,32 @@ public class FilterNatCombo extends NatCombo {
      *            the max number of items the drop down will show before
      *            introducing a scroll bar.
      * @param style
+     *            The style for the Text Control to construct. Uses this style
+     *            adding internal styles via ConfigRegistry.
+     *
+     * @param showDropdownFilter
+     *            Flag indicating whether the filter of the dropdown control
+     *            should be displayed
+     *
+     * @since 1.4
+     */
+    public FilterNatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style, boolean showDropdownFilter) {
+        this(parent, cellStyle, maxVisibleItems, style, GUIHelper.getImage("down_2"), showDropdownFilter); //$NON-NLS-1$
+    }
+
+    /**
+     * Creates a new FilterNatCombo using the given IStyle for rendering,
+     * showing the given amount of items at once in the dropdown.
+     *
+     * @param parent
+     *            A widget that will be the parent of this NatCombo
+     * @param cellStyle
+     *            Style configuration containing horizontal alignment, font,
+     *            foreground and background color information.
+     * @param maxVisibleItems
+     *            the max number of items the drop down will show before
+     *            introducing a scroll bar.
+     * @param style
      *            The style for the {@link Text} Control to construct. Uses this
      *            style adding internal styles via ConfigRegistry.
      * @param iconImage
@@ -132,7 +160,37 @@ public class FilterNatCombo extends NatCombo {
      *            control is an open combo to the user.
      */
     public FilterNatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style, Image iconImage) {
-        super(parent, cellStyle, maxVisibleItems, style, iconImage);
+        this(parent, cellStyle, maxVisibleItems, style, iconImage, false);
+    }
+
+    /**
+     * Creates a new FilterNatCombo using the given IStyle for rendering,
+     * showing the given amount of items at once in the dropdown.
+     *
+     * @param parent
+     *            A widget that will be the parent of this NatCombo
+     * @param cellStyle
+     *            Style configuration containing horizontal alignment, font,
+     *            foreground and background color information.
+     * @param maxVisibleItems
+     *            the max number of items the drop down will show before
+     *            introducing a scroll bar.
+     * @param style
+     *            The style for the {@link Text} Control to construct. Uses this
+     *            style adding internal styles via ConfigRegistry.
+     * @param iconImage
+     *            The image to use as overlay to the {@link Text} Control if the
+     *            dropdown is visible. Using this image will indicate that the
+     *            control is an open combo to the user.
+     *
+     * @param showDropdownFilter
+     *            Flag indicating whether the filter of the dropdown control
+     *            should be displayed
+     *
+     * @since 1.4
+     */
+    public FilterNatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style, Image iconImage, boolean showDropdownFilter) {
+        super(parent, cellStyle, maxVisibleItems, style, iconImage, showDropdownFilter);
     }
 
     @Override
@@ -179,9 +237,10 @@ public class FilterNatCombo extends NatCombo {
                 listWidth += gridLineAdjustment;
             }
 
+            int filterTextBoxHeight = this.showDropdownFilter ? this.filterBox.computeSize(SWT.DEFAULT, SWT.DEFAULT).y : 0;
             this.dropdownShell.setBounds(textPosition.x,
                     textPosition.y + this.text.getBounds().height, listWidth,
-                    listHeight + viewerHeight);
+                    listHeight + viewerHeight + filterTextBoxHeight);
         }
     }
 
@@ -205,12 +264,6 @@ public class FilterNatCombo extends NatCombo {
     protected void createDropdownControl(int style) {
         super.createDropdownControl(style);
 
-        FormLayout layout = new FormLayout();
-        layout.spacing = 0;
-        layout.marginHeight = 0;
-        layout.marginWidth = 0;
-        this.dropdownShell.setLayout(layout);
-
         int dropdownListStyle = style | SWT.V_SCROLL
                 | HorizontalAlignmentEnum.getSWTStyle(this.cellStyle)
                 | SWT.FULL_SELECTION;
@@ -228,26 +281,24 @@ public class FilterNatCombo extends NatCombo {
                 });
 
         FormData data = new FormData();
-        data.top = new FormAttachment(this.dropdownShell, 0, SWT.TOP);
-        data.left = new FormAttachment(this.dropdownShell, 0, SWT.LEFT);
-        data.right = new FormAttachment(this.dropdownShell, 0, SWT.RIGHT);
+        if (this.showDropdownFilter) {
+            data.top = new FormAttachment(this.filterBox, 0, SWT.BOTTOM);
+        } else {
+            data.top = new FormAttachment(this.dropdownShell, 0, SWT.TOP);
+        }
+        data.left = new FormAttachment(0);
+        data.right = new FormAttachment(100);
         this.selectAllItemViewer.getTable().setLayoutData(data);
+
+        int filterTextBoxHeight = this.showDropdownFilter ? this.filterBox.computeSize(SWT.DEFAULT, SWT.DEFAULT).y : 0;
 
         data = new FormData();
         // need to set the top attachment like this because attaching it to the
         // viewer does some wrong calculations
-        data.top = new FormAttachment(
-                this.dropdownShell,
-                this.selectAllItemViewer.getTable().getItemHeight(),
-                SWT.TOP);
-        data.left = new FormAttachment(
-                this.dropdownShell,
-                0,
-                SWT.LEFT);
-        data.right = new FormAttachment(
-                this.dropdownShell,
-                0,
-                SWT.RIGHT);
+        data.top = new FormAttachment(this.dropdownShell,
+                this.selectAllItemViewer.getTable().getItemHeight() + filterTextBoxHeight, SWT.TOP);
+        data.left = new FormAttachment(0);
+        data.right = new FormAttachment(100);
         this.dropdownTable.setLayoutData(data);
 
         this.selectAllItemViewer.setContentProvider(new IStructuredContentProvider() {
@@ -334,6 +385,12 @@ public class FilterNatCombo extends NatCombo {
                     tableItem.setChecked(
                             FilterNatCombo.this.dropdownTable.isSelected(
                                     FilterNatCombo.this.itemList.indexOf(tableItem.getText())));
+                }
+
+                // sync the selectionStateMap based on the state of the select
+                // all checkbox
+                for (String item : FilterNatCombo.this.itemList) {
+                    FilterNatCombo.this.selectionStateMap.put(item, event.getChecked());
                 }
 
                 updateTextControl(!FilterNatCombo.this.multiselect);

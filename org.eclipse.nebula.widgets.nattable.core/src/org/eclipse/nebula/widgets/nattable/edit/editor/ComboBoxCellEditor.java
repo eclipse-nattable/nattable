@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 453898
+ *     Ryan McHale <rpmc22@gmail.com> - Bug 484716
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.editor;
 
@@ -88,6 +89,14 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
      * canonical values will be ignored.
      */
     private IComboBoxDataProvider dataProvider;
+
+    /**
+     * Flag that indicates whether a text box is displayed to filter the drop
+     * down options
+     *
+     * @since 1.4
+     */
+    protected boolean showDropdownFilter = false;
 
     /**
      * Flag that indicates whether this ComboBoxCellEditor supports free editing
@@ -395,8 +404,8 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
             style |= SWT.CHECK;
         }
         final NatCombo combo = (this.iconImage == null)
-                ? new NatCombo(parent, this.cellStyle, this.maxVisibleItems, style)
-                : new NatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.iconImage);
+                ? new NatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.showDropdownFilter)
+                : new NatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.iconImage, this.showDropdownFilter);
 
         combo.setCursor(new Cursor(Display.getDefault(), SWT.CURSOR_IBEAM));
 
@@ -606,5 +615,28 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
      */
     public void setUseCheckbox(boolean useCheckbox) {
         this.useCheckbox = useCheckbox;
+    }
+
+    /**
+     * @return <code>true</code> if this ComboBoxCellEditor should show the text
+     *         control for filtering items in the dropdown. By default the
+     *         filter is not shown.
+     *
+     * @since 1.4
+     */
+    public boolean isShowDropdownFilter() {
+        return this.showDropdownFilter;
+    }
+
+    /**
+     * @param showDropdownFilter
+     *            <code>true</code> if this ComboBoxCellEditor should show the
+     *            text control for filtering items in the dropdown,
+     *            <code>false</code> if not.
+     *
+     * @since 1.4
+     */
+    public void setShowDropdownFilter(boolean showDropdownFilter) {
+        this.showDropdownFilter = showDropdownFilter;
     }
 }

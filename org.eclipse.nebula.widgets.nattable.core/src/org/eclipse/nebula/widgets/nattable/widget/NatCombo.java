@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,13 +8,22 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 454111
+ *     Ryan McHale <rpmc22@gmail.com> - Bug 484716
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.widget;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
@@ -22,6 +31,7 @@ import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.LetterOrDigitKeyEventMatcher;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
@@ -48,7 +58,9 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
@@ -122,6 +134,21 @@ public class NatCombo extends Composite {
     protected java.util.List<String> itemList;
 
     /**
+     * Map used to hold the selection state of items in the drop. Needed to
+     * maintain state when filtering
+     *
+     * @since 1.4
+     */
+    protected Map<String, Boolean> selectionStateMap;
+
+    /**
+     * The text control allowing filtering of options
+     *
+     * @since 1.4
+     */
+    protected Text filterBox;
+
+    /**
      * The text control of this NatCombo, allowing to enter values directly.
      */
     protected Text text;
@@ -137,6 +164,13 @@ public class NatCombo extends Composite {
     protected Table dropdownTable;
 
     /**
+     * The Table control used for the combo component of this NatCombo
+     *
+     * @since 1.4
+     */
+    protected TableViewer dropdownTableViewer;
+
+    /**
      * The image that is shown at the right edge of the text control if the
      * NatCombo is opened.
      */
@@ -147,6 +181,14 @@ public class NatCombo extends Composite {
      * dropdown shell was disposed and needs to be created again.
      */
     protected final int style;
+
+    /**
+     * Flag that indicated whether this NatCombo supports filtering of the
+     * values in the dropdown control
+     *
+     * @since 1.4
+     */
+    protected boolean showDropdownFilter;
 
     /**
      * Flag that indicates whether this ComboBoxCellEditor supports free editing
@@ -252,6 +294,33 @@ public class NatCombo extends Composite {
 
     /**
      * Creates a new NatCombo using the given IStyle for rendering, showing the
+     * given amount of items at once in the dropdown. Creating the NatCombo with
+     * this constructor, there is no free edit and no multiple selection
+     * enabled.
+     *
+     * @param parent
+     *            A widget that will be the parent of this NatCombo
+     * @param cellStyle
+     *            Style configuration containing horizontal alignment, font,
+     *            foreground and background color information.
+     * @param maxVisibleItems
+     *            the max number of items the drop down will show before
+     *            introducing a scroll bar.
+     * @param style
+     *            The style for the Text Control to construct. Uses this style
+     *            adding internal styles via ConfigRegistry.
+     *
+     * @param filterDowndown
+     *            Flag indicating whether the dropdown filter is displayed
+     *
+     * @since 1.4
+     */
+    public NatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style, boolean showDropdownFilter) {
+        this(parent, cellStyle, maxVisibleItems, style, GUIHelper.getImage("down_2"), showDropdownFilter); //$NON-NLS-1$
+    }
+
+    /**
+     * Creates a new NatCombo using the given IStyle for rendering, showing the
      * given amount of items at once in the dropdown.
      *
      * @param parent
@@ -271,6 +340,35 @@ public class NatCombo extends Composite {
      *            control is an open combo to the user.
      */
     public NatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style, Image iconImage) {
+        this(parent, cellStyle, maxVisibleItems, style, GUIHelper.getImage("down_2"), false); //$NON-NLS-1$
+    }
+
+    /**
+     * Creates a new NatCombo using the given IStyle for rendering, showing the
+     * given amount of items at once in the dropdown.
+     *
+     * @param parent
+     *            A widget that will be the parent of this NatCombo
+     * @param cellStyle
+     *            Style configuration containing horizontal alignment, font,
+     *            foreground and background color information.
+     * @param maxVisibleItems
+     *            the max number of items the drop down will show before
+     *            introducing a scroll bar.
+     * @param style
+     *            The style for the {@link Text} Control to construct. Uses this
+     *            style adding internal styles via ConfigRegistry.
+     * @param iconImage
+     *            The image to use as overlay to the {@link Text} Control if the
+     *            dropdown is visible. Using this image will indicate that the
+     *            control is an open combo to the user.
+     *
+     * @param showDropdownFilter
+     *            Flag indicating whether the dropdown filter is displayed
+     *
+     * @since 1.4
+     */
+    public NatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style, Image iconImage, boolean showDropdownFilter) {
         super(parent, SWT.NONE);
 
         this.cellStyle = cellStyle;
@@ -279,6 +377,7 @@ public class NatCombo extends Composite {
 
         this.style = style;
 
+        this.showDropdownFilter = showDropdownFilter;
         this.freeEdit = (style & SWT.READ_ONLY) == 0;
         this.multiselect = (style & SWT.MULTI) != 0;
         this.useCheckbox = (style & SWT.CHECK) != 0;
@@ -326,11 +425,12 @@ public class NatCombo extends Composite {
     public void setItems(String[] items) {
         if (items != null) {
             this.itemList = Arrays.asList(items);
+            this.selectionStateMap = new HashMap<String, Boolean>();
+            for (String item : items) {
+                this.selectionStateMap.put(item, null);
+            }
             if (!this.dropdownTable.isDisposed()) {
-                for (String item : items) {
-                    TableItem tableItem = new TableItem(this.dropdownTable, SWT.NONE);
-                    tableItem.setText(item);
-                }
+                this.dropdownTableViewer.setInput(items);
             }
         }
     }
@@ -479,7 +579,6 @@ public class NatCombo extends Composite {
      */
     protected void createDropdownControl(int style) {
         this.dropdownShell = new Shell(getShell(), SWT.MODELESS);
-        this.dropdownShell.setLayout(new FillLayout());
 
         int dropdownListStyle = style
                 | SWT.V_SCROLL
@@ -487,6 +586,7 @@ public class NatCombo extends Composite {
                 | SWT.FULL_SELECTION;
 
         this.dropdownTable = new Table(this.dropdownShell, dropdownListStyle);
+        this.dropdownTableViewer = new TableViewer(this.dropdownTable);
         this.dropdownTable.setBackground(
                 this.cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
         this.dropdownTable.setForeground(
@@ -496,10 +596,45 @@ public class NatCombo extends Composite {
 
         // add a column to be able to resize the item width in the dropdown
         new TableColumn(this.dropdownTable, SWT.NONE);
-        this.dropdownTable.addListener(SWT.Resize, new Listener() {
+
+        this.dropdownTableViewer.setContentProvider(new IStructuredContentProvider() {
+
             @Override
-            public void handleEvent(Event event) {
-                calculateColumnWidth();
+            public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
+
+            @Override
+            public void dispose() {}
+
+            @Override
+            public Object[] getElements(Object inputElement) {
+                return (Object[]) inputElement;
+            }
+        });
+
+        this.dropdownTableViewer.setLabelProvider(new ILabelProvider() {
+
+            @Override
+            public void removeListener(ILabelProviderListener listener) {}
+
+            @Override
+            public boolean isLabelProperty(Object element, String property) {
+                return false;
+            }
+
+            @Override
+            public void dispose() {}
+
+            @Override
+            public void addListener(ILabelProviderListener listener) {}
+
+            @Override
+            public String getText(Object element) {
+                return element.toString();
+            }
+
+            @Override
+            public Image getImage(Object element) {
+                return null;
             }
         });
 
@@ -507,23 +642,45 @@ public class NatCombo extends Composite {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 boolean selected = e.detail != SWT.CHECK;
-                TableItem item = (TableItem) e.item;
+                boolean isCtrlPressed = (e.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL;
+                TableItem chosenItem = (TableItem) e.item;
 
-                // checkbox clicked, now sync the selection
+                // Given the ability to filter we need to find the item's
+                // table index which may not match the index in the itemList
+                int itemTableIndex = NatCombo.this.dropdownTable.indexOf(chosenItem);
+
+                // This case handles check actions
                 if (!selected) {
-                    if (!item.getChecked()) {
-                        NatCombo.this.dropdownTable.deselect(NatCombo.this.itemList.indexOf(item.getText()));
+                    if (!chosenItem.getChecked()) {
+                        NatCombo.this.dropdownTable.deselect(itemTableIndex);
+                        NatCombo.this.selectionStateMap.put(chosenItem.getText(), Boolean.FALSE);
                     } else {
-                        NatCombo.this.dropdownTable.select(NatCombo.this.itemList.indexOf(item.getText()));
+                        NatCombo.this.dropdownTable.select(itemTableIndex);
+                        NatCombo.this.selectionStateMap.put(chosenItem.getText(), Boolean.TRUE);
                     }
-                }
-                // item selected, now sync checkbox
-                else if (NatCombo.this.useCheckbox) {
-                    // after selection is performed we need to ensure that
-                    // selection and checkboxes are in sync
-                    for (TableItem tableItem : NatCombo.this.dropdownTable.getItems()) {
-                        tableItem.setChecked(
-                                NatCombo.this.dropdownTable.isSelected(NatCombo.this.itemList.indexOf(tableItem.getText())));
+                } else {
+                    if (NatCombo.this.multiselect && isCtrlPressed) {
+                        boolean isSelected = NatCombo.this.dropdownTable.isSelected(itemTableIndex);
+                        NatCombo.this.selectionStateMap.put(chosenItem.getText(), isSelected);
+                        if (NatCombo.this.useCheckbox) {
+                            chosenItem.setChecked(isSelected);
+                        }
+                    } else {
+                        // A single item was selected. Clear all previous state
+                        for (String item : NatCombo.this.itemList) {
+                            NatCombo.this.selectionStateMap.put(item, Boolean.FALSE);
+                        }
+                        if (NatCombo.this.useCheckbox) {
+                            for (TableItem tableItem : NatCombo.this.dropdownTable.getItems()) {
+                                tableItem.setChecked(Boolean.FALSE);
+                            }
+                        }
+
+                        // Set the state for the selected item
+                        NatCombo.this.selectionStateMap.put(chosenItem.getText(), Boolean.TRUE);
+                        if (NatCombo.this.useCheckbox) {
+                            chosenItem.setChecked(Boolean.TRUE);
+                        }
                     }
                 }
 
@@ -545,6 +702,66 @@ public class NatCombo extends Composite {
         });
 
         this.dropdownTable.addFocusListener(new FocusListenerWrapper());
+
+        FormLayout layout = new FormLayout();
+        layout.spacing = 0;
+        layout.marginHeight = 0;
+        layout.marginWidth = 0;
+        this.dropdownShell.setLayout(layout);
+
+        if (this.showDropdownFilter) {
+            this.filterBox = new Text(this.dropdownShell, SWT.BORDER);
+            this.filterBox.setFont(this.cellStyle.getAttributeValue(CellStyleAttributes.FONT));
+            this.filterBox.setEnabled(true);
+            this.filterBox.setEditable(true);
+            this.filterBox.addFocusListener(new FocusListenerWrapper());
+            this.filterBox.addKeyListener(new KeyAdapter() {
+
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    if (null != NatCombo.this.dropdownTableViewer && !NatCombo.this.dropdownTable.isDisposed()) {
+                        NatCombo.this.dropdownTableViewer.refresh();
+                        calculateBounds();
+                        calculateBounds();
+                        setDropdownSelection(getTextAsArray());
+                    }
+                }
+            });
+
+            FormData data = new FormData();
+            data.top = new FormAttachment(0);
+            data.left = new FormAttachment(0);
+            data.right = new FormAttachment(100);
+            this.filterBox.setLayoutData(data);
+
+            data = new FormData();
+            if (this.showDropdownFilter) {
+                data.top = new FormAttachment(this.filterBox, 0, SWT.BOTTOM);
+            } else {
+                data.top = new FormAttachment(this.dropdownShell, 0, SWT.TOP);
+            }
+            data.left = new FormAttachment(0);
+            data.right = new FormAttachment(100);
+            this.dropdownTable.setLayoutData(data);
+
+            ViewerFilter viewerFilter = new ViewerFilter() {
+
+                @Override
+                public boolean select(Viewer viewer, Object parentElement, Object element) {
+                    if (null != element && element instanceof String) {
+                        return ((String) element).toLowerCase().contains(NatCombo.this.filterBox.getText().toLowerCase());
+                    }
+                    return false;
+                }
+            };
+            this.dropdownTableViewer.addFilter(viewerFilter);
+        } else {
+            FormData data = new FormData();
+            data.top = new FormAttachment(0);
+            data.left = new FormAttachment(0);
+            data.right = new FormAttachment(100);
+            this.dropdownTable.setLayoutData(data);
+        }
 
         if (this.itemList != null) {
             setItems(this.itemList.toArray(new String[] {}));
@@ -681,11 +898,12 @@ public class NatCombo extends Composite {
                 dropdownShellStartingY = textPosition.y - listHeight;
             }
 
+            int filterTextBoxHeight = this.showDropdownFilter ? this.filterBox.computeSize(SWT.DEFAULT, SWT.DEFAULT).y : 0;
             Rectangle shellBounds = new Rectangle(
                     textPosition.x,
                     dropdownShellStartingY,
                     listWidth,
-                    listHeight);
+                    listHeight + filterTextBoxHeight);
 
             this.dropdownShell.setBounds(shellBounds);
         }
@@ -719,8 +937,12 @@ public class NatCombo extends Composite {
      * @return the index of the selected item or -1
      */
     public int getSelectionIndex() {
-        if (!this.dropdownTable.isDisposed()) {
-            return this.dropdownTable.getSelectionIndex();
+        if (this.selectionStateMap != null) {
+            for (String item : this.selectionStateMap.keySet()) {
+                if (this.selectionStateMap.get(item)) {
+                    return this.itemList.indexOf(item);
+                }
+            }
         } else if (!this.text.isDisposed()) {
             return this.itemList.indexOf(this.text.getText());
         }
@@ -739,8 +961,18 @@ public class NatCombo extends Composite {
      * @return the array of indices of the selected items
      */
     public int[] getSelectionIndices() {
-        if (!this.dropdownTable.isDisposed()) {
-            return this.dropdownTable.getSelectionIndices();
+        if (this.selectionStateMap != null) {
+            List<Integer> selectedIndices = new ArrayList<Integer>();
+            for (String item : this.selectionStateMap.keySet()) {
+                if (this.selectionStateMap.get(item)) {
+                    selectedIndices.add(this.itemList.indexOf(item));
+                }
+            }
+            int[] indices = new int[selectedIndices.size()];
+            for (int i = 0; i < selectedIndices.size(); i++) {
+                indices[i] = selectedIndices.get(i);
+            }
+            return indices;
         } else {
             String[] selectedItems = getTextAsArray();
             int[] result = new int[selectedItems.length];
@@ -757,8 +989,14 @@ public class NatCombo extends Composite {
      * @return the number of selected items
      */
     public int getSelectionCount() {
-        if (!this.dropdownTable.isDisposed()) {
-            return this.dropdownTable.getSelectionCount();
+        if (this.selectionStateMap != null) {
+            List<Integer> selectedIndices = new ArrayList<Integer>();
+            for (String item : this.selectionStateMap.keySet()) {
+                if (this.selectionStateMap.get(item)) {
+                    selectedIndices.add(this.itemList.indexOf(item));
+                }
+            }
+            return selectedIndices.size();
         } else {
             return getTextAsArray().length;
         }
@@ -827,6 +1065,9 @@ public class NatCombo extends Composite {
     public void select(int index) {
         if (!this.dropdownTable.isDisposed()) {
             this.dropdownTable.select(index);
+            for (int i = 0; i < this.itemList.size(); i++) {
+                this.selectionStateMap.put(this.itemList.get(i), i == index);
+            }
             this.text.setText(getTransformedTextForSelection());
         } else if (index >= 0) {
             this.text.setText(this.itemList.get(index));
@@ -843,18 +1084,22 @@ public class NatCombo extends Composite {
      * single-select and multiple indices are specified, then all indices are
      * ignored.
      *
-     * @param indeces
+     * @param indices
      *            the array of indices for the items to select
      */
-    public void select(int[] indeces) {
+    public void select(int[] indices) {
         if (!this.dropdownTable.isDisposed()) {
-            this.dropdownTable.select(indeces);
+            this.dropdownTable.select(indices);
+            List<Integer> indicesList = ArrayUtil.asIntegerList(indices);
+            for (int i = 0; i < this.itemList.size(); i++) {
+                this.selectionStateMap.put(this.itemList.get(i), indicesList.contains(i));
+            }
             this.text.setText(getTransformedTextForSelection());
         } else {
-            String[] selectedItems = new String[indeces.length];
-            for (int i = 0; i < indeces.length; i++) {
-                if (indeces[i] >= 0) {
-                    selectedItems[i] = this.itemList.get(indeces[i]);
+            String[] selectedItems = new String[indices.length];
+            for (int i = 0; i < indices.length; i++) {
+                if (indices[i] >= 0) {
+                    selectedItems[i] = this.itemList.get(indices[i]);
                 }
             }
             this.text.setText(getTransformedText(selectedItems));
@@ -993,15 +1238,14 @@ public class NatCombo extends Composite {
      * @return Array containing all selected TableItem text attributes
      */
     protected String[] getTransformedSelection() {
-        String[] selection = null;
-        if (!this.dropdownTable.isDisposed()) {
-            TableItem[] selectedItems = this.dropdownTable.getSelection();
-            selection = new String[selectedItems.length];
-            for (int i = 0; i < selectedItems.length; i++) {
-                selection[i] = selectedItems[i].getText();
+        List<String> selectedItems = new ArrayList<String>();
+        for (String item : this.selectionStateMap.keySet()) {
+            Boolean isSelected = this.selectionStateMap.get(item);
+            if (isSelected != null && isSelected) {
+                selectedItems.add(item);
             }
         }
-        return selection;
+        return selectedItems.toArray(new String[selectedItems.size()]);
     }
 
     /**
@@ -1013,20 +1257,21 @@ public class NatCombo extends Composite {
      *            The Strings that represent the selected items
      */
     protected void setDropdownSelection(String[] selection) {
-        if (selection.length > 0) {
-            java.util.List<String> selectionList = Arrays.asList(selection);
-            java.util.List<TableItem> selectedItems = new ArrayList<TableItem>();
-            for (TableItem item : this.dropdownTable.getItems()) {
-                if (selectionList.contains(EditConstants.SELECT_ALL_ITEMS_VALUE)
-                        || selectionList.contains(item.getText())) {
-                    selectedItems.add(item);
-                    if (this.useCheckbox) {
-                        item.setChecked(true);
-                    }
+        java.util.List<String> selectionList = Arrays.asList(selection);
+        java.util.List<TableItem> selectedItems = new ArrayList<TableItem>();
+        for (TableItem item : this.dropdownTable.getItems()) {
+            if (selectionList.contains(EditConstants.SELECT_ALL_ITEMS_VALUE)
+                    || selectionList.contains(item.getText())) {
+                selectedItems.add(item);
+                this.selectionStateMap.put(item.getText(), Boolean.TRUE);
+                if (this.useCheckbox) {
+                    item.setChecked(true);
                 }
+            } else {
+                this.selectionStateMap.put(item.getText(), Boolean.FALSE);
             }
-            this.dropdownTable.setSelection(selectedItems.toArray(new TableItem[] {}));
         }
+        this.dropdownTable.setSelection(selectedItems.toArray(new TableItem[] {}));
     }
 
     /**
@@ -1177,8 +1422,10 @@ public class NatCombo extends Composite {
      * background thread for focus lost is started. If the other control gains
      * focus, the local focus flag is set to true which skips the execution of
      * the delayed background thread. This means the NatCombo hasn't lost focus.
+     *
+     * @since 1.4
      */
-    class FocusListenerWrapper implements FocusListener {
+    public class FocusListenerWrapper implements FocusListener {
 
         @Override
         public void focusLost(final FocusEvent e) {
