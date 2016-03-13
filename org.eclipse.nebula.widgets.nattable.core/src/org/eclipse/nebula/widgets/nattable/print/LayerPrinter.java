@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ import java.util.Date;
 
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.config.Direction;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.formula.command.DisableFormulaCachingCommand;
 import org.eclipse.nebula.widgets.nattable.formula.command.EnableFormulaCachingCommand;
@@ -22,11 +23,16 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
+import org.eclipse.nebula.widgets.nattable.print.config.PrintConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.resize.AutoResizeHelper;
+import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRowValuesCommand;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -49,13 +55,17 @@ public class LayerPrinter {
     private final IClientAreaProvider originalClientAreaProvider;
     public static final int FOOTER_HEIGHT_IN_PRINTER_DPI = 300;
 
-    final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm a"); //$NON-NLS-1$
+    final SimpleDateFormat dateFormat;
     private final String footerDate;
+
+    private final int footerHeight;
 
     /**
      * @since 1.4
      */
     protected boolean preRender = true;
+
+    private final Direction fittingMode;
 
     /**
      *
@@ -71,7 +81,30 @@ public class LayerPrinter {
         this.layer = layer;
         this.configRegistry = configRegistry;
         this.originalClientAreaProvider = layer.getClientAreaProvider();
+
+        // configure the footer height
+        Integer fh = configRegistry.getConfigAttribute(
+                PrintConfigAttributes.FOOTER_HEIGHT,
+                DisplayMode.NORMAL);
+        this.footerHeight = (fh != null) ? fh : FOOTER_HEIGHT_IN_PRINTER_DPI;
+
+        // configure the footer date
+        String configuredFormat = configRegistry.getConfigAttribute(
+                PrintConfigAttributes.DATE_FORMAT,
+                DisplayMode.NORMAL);
+        if (configuredFormat != null) {
+            this.dateFormat = new SimpleDateFormat(configuredFormat);
+        } else {
+            this.dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm a"); //$NON-NLS-1$
+        }
+
         this.footerDate = this.dateFormat.format(new Date());
+
+        // configure the fitting mode
+        Direction configuredFittingMode = configRegistry.getConfigAttribute(
+                PrintConfigAttributes.FITTING_MODE,
+                DisplayMode.NORMAL);
+        this.fittingMode = (configuredFittingMode != null) ? configuredFittingMode : Direction.NONE;
     }
 
     /**
@@ -79,15 +112,38 @@ public class LayerPrinter {
      *
      * @param printer
      *            The printer that will be used.
+     * @param dpi
+     *            <code>true</code> if in any case the dpi scaling factor should
+     *            be returned, <code>false</code> if the calculation properties
+     *            need to be checked whether the scaling factor to match a page
+     *            should be returned
      * @return The amount to scale the screen resolution by, to match the
      *         printer the resolution.
      */
-    private float[] computeScaleFactor(Printer printer) {
+    private float[] computeScaleFactor(Printer printer, boolean dpi) {
         Point screenDPI = Display.getDefault().getDPI();
         Point printerDPI = printer.getDPI();
 
         float sfX = Float.valueOf(printerDPI.x) / Float.valueOf(screenDPI.x);
         float sfY = Float.valueOf(printerDPI.y) / Float.valueOf(screenDPI.y);
+
+        if (!dpi && (this.fittingMode != Direction.NONE)) {
+            Rectangle total = getTotalArea();
+            Rectangle print = computePrintArea(printer);
+
+            float pixelX = Float.valueOf(print.width) / Float.valueOf(total.width);
+            float pixelY = (Float.valueOf(print.height) - getFooterHeightInPrinterDPI()) / Float.valueOf(total.height);
+
+            switch (this.fittingMode) {
+                case HORIZONTAL:
+                    return new float[] { pixelX, pixelX };
+                case VERTICAL:
+                    return new float[] { pixelY, pixelY };
+                case BOTH:
+                    return new float[] { pixelX, pixelY };
+            }
+        }
+
         return new float[] { sfX, sfY };
     }
 
@@ -110,13 +166,33 @@ public class LayerPrinter {
     private Point getPageCount(Printer printer) {
         Rectangle layerArea = getTotalArea();
         Rectangle printArea = computePrintArea(printer);
-        float[] scaleFactor = computeScaleFactor(printer);
+        float[] scaleFactor = computeScaleFactor(printer, false);
 
-        int numOfHorizontalPages = Float.valueOf(layerArea.width / (printArea.width / scaleFactor[0])).intValue();
-        int numOfVerticalPages = Float.valueOf(layerArea.height / ((printArea.height - FOOTER_HEIGHT_IN_PRINTER_DPI) / scaleFactor[1])).intValue();
+        Float horizontal = Float.valueOf(layerArea.width / (printArea.width / scaleFactor[0]));
+        int numOfHorizontalPages = horizontal.intValue();
+        if ((horizontal % 1) != 0) {
+            // the int conversion simply cuts of the decimals
+            // so in case there are decimals we need to round up
+            numOfHorizontalPages++;
+        }
+        Float vertical = Float.valueOf(layerArea.height / ((printArea.height - getFooterHeightInPrinterDPI()) / scaleFactor[1]));
+        int numOfVerticalPages = vertical.intValue();
+        if ((vertical % 1) != 0) {
+            // the int conversion simply cuts of the decimals
+            // so in case there are decimals we need to round up
+            numOfVerticalPages++;
+        }
 
-        // Adjusting for 0 index
-        return new Point(numOfHorizontalPages + 1, numOfVerticalPages + 1);
+        return new Point(numOfHorizontalPages, numOfVerticalPages);
+    }
+
+    /**
+     * @return The footer height in printer DPI that should be used to render
+     *         the footer.
+     * @since 1.4
+     */
+    protected int getFooterHeightInPrinterDPI() {
+        return this.footerHeight;
     }
 
     /**
@@ -277,7 +353,15 @@ public class LayerPrinter {
 
         @Override
         public void run() {
-            final float[] scaleFactor = computeScaleFactor(this.printer);
+            LayerPrinter.this.layer.doCommand(new TurnViewportOffCommand());
+            float[] scaleFactor = null;
+            float[] dpiFactor = null;
+            try {
+                scaleFactor = computeScaleFactor(this.printer, false);
+                dpiFactor = computeScaleFactor(this.printer, true);
+            } finally {
+                LayerPrinter.this.layer.doCommand(new TurnViewportOnCommand());
+            }
 
             // check if a grid line width is configured
             Integer width = LayerPrinter.this.configRegistry.getConfigAttribute(
@@ -329,39 +413,34 @@ public class LayerPrinter {
                             // Calculate bounds for the next page
                             Rectangle printBounds = new Rectangle(
                                     Float.valueOf((printerClientArea.width / scaleFactor[0]) * horizontalPageNumber).intValue(),
-                                    Float.valueOf(((printerClientArea.height - FOOTER_HEIGHT_IN_PRINTER_DPI) / scaleFactor[1]) * verticalPageNumber).intValue(),
+                                    Float.valueOf(((printerClientArea.height - getFooterHeightInPrinterDPI()) / scaleFactor[1]) * verticalPageNumber).intValue(),
                                     Float.valueOf(printerClientArea.width / scaleFactor[0]).intValue(),
-                                    Float.valueOf((printerClientArea.height - FOOTER_HEIGHT_IN_PRINTER_DPI) / scaleFactor[1]).intValue());
+                                    Float.valueOf((printerClientArea.height - getFooterHeightInPrinterDPI()) / scaleFactor[1]).intValue());
+
+                            Rectangle footerBounds = new Rectangle(
+                                    Float.valueOf((printerClientArea.width / dpiFactor[0]) * horizontalPageNumber).intValue(),
+                                    Float.valueOf(((printerClientArea.height - getFooterHeightInPrinterDPI()) / dpiFactor[1]) * verticalPageNumber).intValue(),
+                                    Float.valueOf(printerClientArea.width / dpiFactor[0]).intValue(),
+                                    Float.valueOf((printerClientArea.height - getFooterHeightInPrinterDPI()) / dpiFactor[1]).intValue());
 
                             if (shouldPrint(this.printer.getPrinterData(), currentPage)) {
                                 this.printer.startPage();
 
                                 Transform printerTransform = new Transform(this.printer);
+                                Transform footerTransform = new Transform(this.printer);
 
-                                // Adjust for DPI difference between display and
-                                // printer
-                                printerTransform.scale(scaleFactor[0], scaleFactor[1]);
+                                configureScalingTransform(printerTransform, scaleFactor, printerClientArea, printBounds);
+                                configureScalingTransform(footerTransform, dpiFactor, printerClientArea, footerBounds);
 
-                                // Adjust for margins
-                                printerTransform.translate(
-                                        printerClientArea.x / scaleFactor[0],
-                                        printerClientArea.y / scaleFactor[1]);
-
-                                // Grid will not automatically print the pages
-                                // at the left margin.
-                                // Example: page 1 will print at x = 0, page 2
-                                // at x = 100, page 3 at x = 300
-                                // Adjust to print from the left page margin.
-                                // i.e x = 0
-                                printerTransform.translate(-1 * printBounds.x, -1 * printBounds.y);
                                 gc.setTransform(printerTransform);
-
                                 printLayer(gc, printBounds);
 
-                                printFooter(gc, currentPage, printBounds);
+                                gc.setTransform(footerTransform);
+                                printFooter(gc, currentPage, footerBounds);
 
                                 this.printer.endPage();
                                 printerTransform.dispose();
+                                footerTransform.dispose();
                             }
                             currentPage++;
                         }
@@ -383,6 +462,39 @@ public class LayerPrinter {
                 LayerPrinter.this.configRegistry.unregisterConfigAttribute(CellConfigAttributes.GRID_LINE_WIDTH);
             }
 
+        }
+
+        /**
+         * Configure the given {@link Transform} in order to support scaling
+         * correctly on printing.
+         *
+         * @param transform
+         *            The {@link Transform} to configure
+         * @param scaleFactor
+         *            The scale factor to set and to be used for translation
+         * @param printerClientArea
+         *            The client area of the printer
+         * @param printBounds
+         *            The print bounds
+         */
+        private void configureScalingTransform(
+                Transform transform, float[] scaleFactor,
+                Rectangle printerClientArea, Rectangle printBounds) {
+            // Adjust for DPI difference between display and printer
+            transform.scale(scaleFactor[0], scaleFactor[1]);
+
+            // Adjust for margins
+            transform.translate(
+                    printerClientArea.x / scaleFactor[0],
+                    printerClientArea.y / scaleFactor[1]);
+
+            // Grid will not automatically print the pages
+            // at the left margin.
+            // Example: page 1 will print at x = 0, page 2
+            // at x = 100, page 3 at x = 300
+            // Adjust to print from the left page margin.
+            // i.e x = 0
+            transform.translate(-1 * printBounds.x, -1 * printBounds.y);
         }
 
         /**
@@ -439,8 +551,25 @@ public class LayerPrinter {
          *            The bounds of the print page.
          */
         private void printFooter(GC gc, int totalPageCount, Rectangle printBounds) {
-            gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
-            gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+            Color oldForeground = gc.getForeground();
+            Color oldBackground = gc.getBackground();
+            Font oldFont = gc.getFont();
+
+            Color footerForeground = null;
+            Color footerBackground = null;
+            Font footerFont = null;
+
+            IStyle style = LayerPrinter.this.configRegistry.getConfigAttribute(
+                    PrintConfigAttributes.FOOTER_STYLE,
+                    DisplayMode.NORMAL);
+            if (style != null) {
+                footerForeground = style.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR);
+                footerBackground = style.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
+                footerFont = style.getAttributeValue(CellStyleAttributes.FONT);
+            }
+            gc.setForeground(footerForeground != null ? footerForeground : GUIHelper.COLOR_BLACK);
+            gc.setBackground(footerBackground != null ? footerBackground : GUIHelper.COLOR_WHITE);
+            gc.setFont(footerFont != null ? footerFont : GUIHelper.DEFAULT_FONT);
 
             gc.drawLine(
                     printBounds.x,
@@ -450,11 +579,17 @@ public class LayerPrinter {
 
             gc.drawText(
                     Messages.getString("Printer.page") + " " + totalPageCount, //$NON-NLS-1$ //$NON-NLS-2$
-                    printBounds.x, printBounds.y + printBounds.height + 15);
-
-            // Approximate width of the date string: 140
-            gc.drawText(LayerPrinter.this.footerDate, printBounds.x + printBounds.width - 140,
+                    printBounds.x,
                     printBounds.y + printBounds.height + 15);
+
+            gc.drawText(
+                    LayerPrinter.this.footerDate,
+                    printBounds.x + printBounds.width - gc.textExtent(LayerPrinter.this.footerDate).x,
+                    printBounds.y + printBounds.height + 15);
+
+            gc.setForeground(oldForeground);
+            gc.setBackground(oldBackground);
+            gc.setFont(oldFont);
         }
 
         /**

@@ -18,6 +18,7 @@ package org.eclipse.nebula.widgets.nattable.config;
  * <ul>
  * <li>to configure which directions are allowed for using the fill drag handle
  * </li>
+ * <li>to configure whether a table should be scaled to fit on a page</li>
  * </ul>
  *
  * @since 1.4
