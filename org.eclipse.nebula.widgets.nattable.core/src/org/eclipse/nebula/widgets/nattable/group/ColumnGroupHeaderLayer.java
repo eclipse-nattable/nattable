@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,6 +25,7 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.SizeConfig;
+import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.TransformedLayerCell;
@@ -350,7 +351,11 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
     public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
         int columnIndex = getColumnIndexByPosition(columnPosition);
         if (rowPosition == 0 && this.model.isPartOfAGroup(columnIndex)) {
-            LabelStack stack = new LabelStack(GridRegion.COLUMN_GROUP_HEADER);
+            LabelStack stack = new LabelStack();
+            if (getConfigLabelAccumulator() != null) {
+                getConfigLabelAccumulator().accumulateConfigLabels(stack, columnPosition, rowPosition);
+            }
+            stack.addLabel(GridRegion.COLUMN_GROUP_HEADER);
 
             if (this.model.isPartOfACollapseableGroup(columnIndex)) {
                 ColumnGroup group = this.model.getColumnGroupByIndex(columnIndex);
@@ -442,6 +447,12 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         labels.add(GridRegion.COLUMN_GROUP_HEADER);
         labels.add(DefaultColumnGroupHeaderLayerConfiguration.GROUP_COLLAPSED_CONFIG_TYPE);
         labels.add(DefaultColumnGroupHeaderLayerConfiguration.GROUP_EXPANDED_CONFIG_TYPE);
+
+        // add the labels configured via IConfigLabelAccumulator
+        if (getConfigLabelAccumulator() != null
+                && getConfigLabelAccumulator() instanceof IConfigLabelProvider) {
+            labels.addAll(((IConfigLabelProvider) getConfigLabelAccumulator()).getProvidedLabels());
+        }
 
         return labels;
     }
