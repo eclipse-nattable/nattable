@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,14 +10,23 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.InitializeClientAreaCommandFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.GridLayerFixture;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectColumnCommand;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,40 +44,86 @@ public class ColumnHeaderLayerSelectionTest {
     public void willSelectBodyCellAndShouldHaveColumnHeaderSelected() {
         // Select body cell
         // The column position is a grid layer position
-        this.gridLayer
-                .doCommand(new SelectCellCommand(this.gridLayer, 2, 2, false, false));
+        this.gridLayer.doCommand(new SelectCellCommand(this.gridLayer, 2, 2, false, false));
 
         // Get column header cell corresponding to the selected body cell
-        ColumnHeaderLayer columnHeaderLayer = (ColumnHeaderLayer) this.gridLayer
-                .getChildLayerByLayoutCoordinate(1, 0);
+        ColumnHeaderLayer columnHeaderLayer = (ColumnHeaderLayer) this.gridLayer.getChildLayerByLayoutCoordinate(1, 0);
         // The column position is 1 because it takes into account the offset of
         // the row header
         ILayerCell cell = columnHeaderLayer.getCellByPosition(1, 0);
 
         // Assert the cell is in selected state
-        Assert.assertEquals(DisplayMode.SELECT, cell.getDisplayMode());
+        assertEquals(DisplayMode.SELECT, cell.getDisplayMode());
     }
 
     @Test
     public void shouldReturnFullySelectedStyle() {
         // Select full column
-        this.gridLayer.doCommand(new ViewportSelectColumnCommand(this.gridLayer, 2,
-                false, false));
+        this.gridLayer.doCommand(new ViewportSelectColumnCommand(this.gridLayer, 2, false, false));
 
-        ColumnHeaderLayer columnHeaderLayer = (ColumnHeaderLayer) this.gridLayer
-                .getChildLayerByLayoutCoordinate(1, 0);
+        ColumnHeaderLayer columnHeaderLayer = (ColumnHeaderLayer) this.gridLayer.getChildLayerByLayoutCoordinate(1, 0);
 
         // Since I selected using grid coordinates, the column position should
         // be 1 rather than 2
         int columnPosition = this.gridLayer.localToUnderlyingColumnPosition(2);
-        final LabelStack labelStack = columnHeaderLayer
-                .getConfigLabelsByPosition(columnPosition, 0);
+        final LabelStack labelStack = columnHeaderLayer.getConfigLabelsByPosition(columnPosition, 0);
 
-        Assert.assertTrue(labelStack
-                .hasLabel(SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE));
+        assertTrue(labelStack.hasLabel(SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE));
 
         columnPosition = this.gridLayer.localToUnderlyingColumnPosition(3);
-        Assert.assertFalse(SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE
-                .equals(labelStack));
+        assertFalse(SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE.equals(labelStack));
+    }
+
+    @Test
+    public void shouldReturnAdditionalLabels() {
+        ColumnHeaderLayer columnHeaderLayer = (ColumnHeaderLayer) this.gridLayer.getChildLayerByLayoutCoordinate(1, 0);
+
+        columnHeaderLayer.setConfigLabelAccumulator(new IConfigLabelProvider() {
+
+            @Override
+            public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+                if (columnPosition == 2) {
+                    configLabels.addLabel("test");
+                }
+            }
+
+            @Override
+            public Collection<String> getProvidedLabels() {
+                Set<String> result = new HashSet<>();
+                result.add("test");
+                return result;
+            }
+        });
+
+        LabelStack labelStack = this.gridLayer.getConfigLabelsByPosition(3, 0);
+        assertEquals(2, labelStack.getLabels().size());
+        assertTrue(labelStack.hasLabel("test"));
+        assertTrue(labelStack.hasLabel(GridRegion.COLUMN_HEADER));
+    }
+
+    @Test
+    public void shouldReturnProvidedLabels() {
+        ColumnHeaderLayer columnHeaderLayer = (ColumnHeaderLayer) this.gridLayer.getChildLayerByLayoutCoordinate(1, 0);
+
+        columnHeaderLayer.setConfigLabelAccumulator(new IConfigLabelProvider() {
+
+            @Override
+            public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+                if (columnPosition == 2) {
+                    configLabels.addLabel("test");
+                }
+            }
+
+            @Override
+            public Collection<String> getProvidedLabels() {
+                Set<String> result = new HashSet<>();
+                result.add("test");
+                return result;
+            }
+        });
+
+        Collection<String> labels = columnHeaderLayer.getProvidedLabels();
+        assertEquals(1, labels.size());
+        assertEquals("test", labels.iterator().next());
     }
 }
