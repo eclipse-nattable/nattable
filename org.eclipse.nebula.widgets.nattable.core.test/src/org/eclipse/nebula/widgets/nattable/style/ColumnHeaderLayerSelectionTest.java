@@ -89,7 +89,7 @@ public class ColumnHeaderLayerSelectionTest {
 
             @Override
             public Collection<String> getProvidedLabels() {
-                Set<String> result = new HashSet<>();
+                Set<String> result = new HashSet<String>();
                 result.add("test");
                 return result;
             }
@@ -116,7 +116,7 @@ public class ColumnHeaderLayerSelectionTest {
 
             @Override
             public Collection<String> getProvidedLabels() {
-                Set<String> result = new HashSet<>();
+                Set<String> result = new HashSet<String>();
                 result.add("test");
                 return result;
             }
