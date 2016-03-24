@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,8 +38,7 @@ import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
  * @param <T>
  *            The type of objects provided by the IRowDataProvider
  */
-public class RowSelectionProvider<T> implements ISelectionProvider,
-        ILayerListener {
+public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListener {
 
     /**
      * The SelectionLayer this ISelectionProvider is connected to.
@@ -120,8 +119,10 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
      *            The IRowDataProvider that should be used to access the
      *            selected row data.
      */
-    public RowSelectionProvider(SelectionLayer selectionLayer,
+    public RowSelectionProvider(
+            SelectionLayer selectionLayer,
             IRowDataProvider<T> rowDataProvider) {
+
         this(selectionLayer, rowDataProvider, true);
     }
 
@@ -140,8 +141,10 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
      *            to populate the selection or if any selection should be
      *            populated.
      */
-    public RowSelectionProvider(SelectionLayer selectionLayer,
-            IRowDataProvider<T> rowDataProvider, boolean fullySelectedRowsOnly) {
+    public RowSelectionProvider(
+            SelectionLayer selectionLayer,
+            IRowDataProvider<T> rowDataProvider,
+            boolean fullySelectedRowsOnly) {
 
         this(selectionLayer, rowDataProvider, fullySelectedRowsOnly, false);
     }
@@ -164,8 +167,10 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
      *            be fired if the row selection changes or even if you just
      *            select another column.
      */
-    public RowSelectionProvider(SelectionLayer selectionLayer,
-            IRowDataProvider<T> rowDataProvider, boolean fullySelectedRowsOnly,
+    public RowSelectionProvider(
+            SelectionLayer selectionLayer,
+            IRowDataProvider<T> rowDataProvider,
+            boolean fullySelectedRowsOnly,
             boolean handleSameRowSelection) {
 
         this.selectionLayer = selectionLayer;
@@ -194,8 +199,7 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
      *            The IRowDataProvider that should be used to access the
      *            selected row data.
      */
-    public void updateSelectionProvider(SelectionLayer selectionLayer,
-            IRowDataProvider<T> rowDataProvider) {
+    public void updateSelectionProvider(SelectionLayer selectionLayer, IRowDataProvider<T> rowDataProvider) {
         // unregister as listener from the current set SelectionLayer
         this.selectionLayer.removeLayerListener(this);
 
@@ -215,13 +219,11 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
 
     @Override
     public ISelection getSelection() {
-        return populateRowSelection(this.selectionLayer, this.rowDataProvider,
-                this.fullySelectedRowsOnly);
+        return populateRowSelection(this.selectionLayer, this.rowDataProvider, this.fullySelectedRowsOnly);
     }
 
     @Override
-    public void removeSelectionChangedListener(
-            ISelectionChangedListener listener) {
+    public void removeSelectionChangedListener(ISelectionChangedListener listener) {
         this.listeners.remove(listener);
     }
 
@@ -229,17 +231,15 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
     @Override
     public void setSelection(ISelection selection) {
         if (this.selectionLayer != null && selection instanceof IStructuredSelection) {
-            if (!this.addSelectionOnSet) {
+            if (!this.addSelectionOnSet || selection.isEmpty()) {
                 this.selectionLayer.clear(false);
             }
             if (!selection.isEmpty()) {
-                List<T> rowObjects = ((IStructuredSelection) selection)
-                        .toList();
+                List<T> rowObjects = ((IStructuredSelection) selection).toList();
                 Set<Integer> rowPositions = new HashSet<Integer>();
                 for (T rowObject : rowObjects) {
                     int rowIndex = this.rowDataProvider.indexOfRowObject(rowObject);
-                    int rowPosition = this.selectionLayer
-                            .getRowPositionByIndex(rowIndex);
+                    int rowPosition = this.selectionLayer.getRowPositionByIndex(rowIndex);
                     rowPositions.add(Integer.valueOf(rowPosition));
                 }
                 int intValue = -1;
@@ -248,11 +248,20 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
                     intValue = max.intValue();
                 }
                 if (intValue >= 0) {
-                    this.selectionLayer.doCommand(new SelectRowsCommand(
-                            this.selectionLayer, 0, ObjectUtils
-                                    .asIntArray(rowPositions), false, true,
-                            intValue));
+                    this.selectionLayer.doCommand(
+                            new SelectRowsCommand(
+                                    this.selectionLayer,
+                                    0,
+                                    ObjectUtils.asIntArray(rowPositions),
+                                    false,
+                                    true,
+                                    intValue));
                 }
+            } else {
+                this.selectionLayer.fireCellSelectionEvent(
+                        this.selectionLayer.getLastSelectedCell().columnPosition,
+                        this.selectionLayer.getLastSelectedCell().rowPosition,
+                        false, false, false);
             }
         }
     }
@@ -265,8 +274,7 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
                     && !(!this.processColumnSelection && event instanceof ColumnSelectionEvent)) {
                 try {
                     for (ISelectionChangedListener listener : this.listeners) {
-                        listener.selectionChanged(new SelectionChangedEvent(
-                                this, selection));
+                        listener.selectionChanged(new SelectionChangedEvent(this, selection));
                     }
                 } finally {
                     this.previousSelection = selection;
@@ -277,23 +285,21 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
 
     @SuppressWarnings("rawtypes")
     static StructuredSelection populateRowSelection(
-            SelectionLayer selectionLayer, IRowDataProvider rowDataProvider,
+            SelectionLayer selectionLayer,
+            IRowDataProvider rowDataProvider,
             boolean fullySelectedRowsOnly) {
         List<RowObjectIndexHolder<Object>> rows = new ArrayList<RowObjectIndexHolder<Object>>();
 
         if (selectionLayer != null) {
             if (fullySelectedRowsOnly) {
-                for (int rowPosition : selectionLayer
-                        .getFullySelectedRowPositions()) {
-                    addToSelection(rows, rowPosition, selectionLayer,
-                            rowDataProvider);
+                for (int rowPosition : selectionLayer.getFullySelectedRowPositions()) {
+                    addToSelection(rows, rowPosition, selectionLayer, rowDataProvider);
                 }
             } else {
                 Set<Range> rowRanges = selectionLayer.getSelectedRowPositions();
                 for (Range rowRange : rowRanges) {
                     for (int rowPosition = rowRange.start; rowPosition < rowRange.end; rowPosition++) {
-                        addToSelection(rows, rowPosition, selectionLayer,
-                                rowDataProvider);
+                        addToSelection(rows, rowPosition, selectionLayer, rowDataProvider);
                     }
                 }
             }
@@ -303,14 +309,16 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
         for (RowObjectIndexHolder<Object> holder : rows) {
             rowObjects.add(holder.getRow());
         }
-        return rows.isEmpty() ? StructuredSelection.EMPTY
-                : new StructuredSelection(rowObjects);
+        return rows.isEmpty() ? StructuredSelection.EMPTY : new StructuredSelection(rowObjects);
     }
 
     @SuppressWarnings("rawtypes")
-    private static void addToSelection(List<RowObjectIndexHolder<Object>> rows,
-            int rowPosition, SelectionLayer selectionLayer,
+    private static void addToSelection(
+            List<RowObjectIndexHolder<Object>> rows,
+            int rowPosition,
+            SelectionLayer selectionLayer,
             IRowDataProvider rowDataProvider) {
+
         int rowIndex = selectionLayer.getRowIndexByPosition(rowPosition);
         if (rowIndex >= 0 && rowIndex < rowDataProvider.getRowCount()) {
             Object rowObject = rowDataProvider.getRowObject(rowIndex);

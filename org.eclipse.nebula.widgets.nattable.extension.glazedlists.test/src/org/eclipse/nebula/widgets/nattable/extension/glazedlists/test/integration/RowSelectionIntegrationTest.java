@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,6 +30,7 @@ import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.LayerListenerFixture;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
@@ -63,33 +64,36 @@ public class RowSelectionIntegrationTest {
         IConfigRegistry configRegistry = new ConfigRegistry();
 
         // 10 rows in fixture
-        this.eventListFixture = GlazedLists
-                .eventList(RowDataListFixture.getList(10));
+        this.eventListFixture = GlazedLists.eventList(RowDataListFixture.getList(10));
 
-        GlazedListsGridLayer<RowDataFixture> gridLayer = new GlazedListsGridLayer<RowDataFixture>(
-                this.eventListFixture, RowDataListFixture.getPropertyNames(),
-                RowDataListFixture.getPropertyToLabelMap(), configRegistry);
+        GlazedListsGridLayer<RowDataFixture> gridLayer =
+                new GlazedListsGridLayer<RowDataFixture>(
+                        this.eventListFixture,
+                        RowDataListFixture.getPropertyNames(),
+                        RowDataListFixture.getPropertyToLabelMap(),
+                        configRegistry);
         this.nattable = new NatTableFixture(gridLayer, false);
         this.nattable.setConfigRegistry(configRegistry);
 
         this.selectionLayer = gridLayer.getBodyLayerStack().getSelectionLayer();
         this.bodyDataProvider = gridLayer.getBodyDataProvider();
-        this.selectionProvider = new RowSelectionProvider<RowDataFixture>(
-                this.selectionLayer, this.bodyDataProvider);
+        this.selectionProvider = new RowSelectionProvider<RowDataFixture>(this.selectionLayer, this.bodyDataProvider);
 
         this.nattable.addConfiguration(new DefaultSortConfiguration());
 
         // Enable preserve selection on data update
-        this.selectionLayer.setSelectionModel(new RowSelectionModel<RowDataFixture>(
-                this.selectionLayer, this.bodyDataProvider,
-                new IRowIdAccessor<RowDataFixture>() {
+        this.selectionLayer.setSelectionModel(
+                new RowSelectionModel<RowDataFixture>(
+                        this.selectionLayer,
+                        this.bodyDataProvider,
+                        new IRowIdAccessor<RowDataFixture>() {
 
-                    @Override
-                    public Serializable getRowId(RowDataFixture rowObject) {
-                        return rowObject.getSecurity_id();
-                    }
+                            @Override
+                            public Serializable getRowId(RowDataFixture rowObject) {
+                                return rowObject.getSecurity_id();
+                            }
 
-                }));
+                        }));
 
         // Enable test mode - events can be fired outside the Display thread
         gridLayer.getGlazedListsEventLayer().setTestMode(true);
@@ -105,8 +109,7 @@ public class RowSelectionIntegrationTest {
         assertEquals(1, this.selectionLayer.getFullySelectedRowPositions().length);
 
         // Ford motor at top and selected
-        assertEquals("B Ford Motor", this.nattable.getDataValueByPosition(2, 1)
-                .toString());
+        assertEquals("B Ford Motor", this.nattable.getDataValueByPosition(2, 1).toString());
         assertEquals("B Ford Motor", getSelected().getSecurity_description());
 
         this.eventListFixture.add(0, RowDataFixture.getInstance("Tata motors", "A"));
@@ -115,8 +118,7 @@ public class RowSelectionIntegrationTest {
         Thread.sleep(100);
 
         // Tata motors at top but Ford motors still selected
-        assertEquals("Tata motors", this.nattable.getDataValueByPosition(2, 1)
-                .toString());
+        assertEquals("Tata motors", this.nattable.getDataValueByPosition(2, 1).toString());
         assertEquals("B Ford Motor", getSelected().getSecurity_description());
     }
 
@@ -125,12 +127,9 @@ public class RowSelectionIntegrationTest {
         assertEquals(0, this.selectionLayer.getFullySelectedRowPositions().length);
 
         // Unsorted order - Ford motor at top
-        assertEquals("B Ford Motor", this.nattable.getDataValueByPosition(2, 1)
-                .toString());
-        assertEquals("A Alphabet Co.", this.nattable.getDataValueByPosition(2, 2)
-                .toString());
-        assertEquals("C General Electric Co",
-                this.nattable.getDataValueByPosition(2, 3).toString());
+        assertEquals("B Ford Motor", this.nattable.getDataValueByPosition(2, 1).toString());
+        assertEquals("A Alphabet Co.", this.nattable.getDataValueByPosition(2, 2).toString());
+        assertEquals("C General Electric Co", this.nattable.getDataValueByPosition(2, 3).toString());
 
         // Select 'Ford Motor'
         this.nattable.doCommand(new SelectRowsCommand(this.nattable, 1, 1, false, false));
@@ -140,12 +139,9 @@ public class RowSelectionIntegrationTest {
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 2, false));
 
         // Sorted order - Alphabet co. at top
-        assertEquals("A Alphabet Co.", this.nattable.getDataValueByPosition(2, 1)
-                .toString());
-        assertEquals("B Ford Motor", this.nattable.getDataValueByPosition(2, 2)
-                .toString());
-        assertEquals("C General Electric Co",
-                this.nattable.getDataValueByPosition(2, 3).toString());
+        assertEquals("A Alphabet Co.", this.nattable.getDataValueByPosition(2, 1).toString());
+        assertEquals("B Ford Motor", this.nattable.getDataValueByPosition(2, 2).toString());
+        assertEquals("C General Electric Co", this.nattable.getDataValueByPosition(2, 3).toString());
 
         // Ford motor still selected
         assertEquals("B Ford Motor", getSelected().getSecurity_description());
@@ -156,38 +152,30 @@ public class RowSelectionIntegrationTest {
         this.selectionLayer.getSelectionModel().setMultipleSelectionAllowed(false);
 
         this.selectionLayer.clear();
-        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 1, 0,
-                false, true));
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 1, 0, false, true));
 
-        Collection<PositionCoordinate> cells = ArrayUtil
-                .asCollection(this.selectionLayer.getSelectedCellPositions());
+        Collection<PositionCoordinate> cells = ArrayUtil.asCollection(this.selectionLayer.getSelectedCellPositions());
         Assert.assertEquals(this.selectionLayer.getColumnCount(), cells.size());
         Assert.assertEquals(1, this.selectionLayer.getSelectedRowCount());
 
         // select another cell with control mask
-        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 2, 1,
-                false, true));
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 2, 1, false, true));
 
-        cells = ArrayUtil.asCollection(this.selectionLayer
-                .getSelectedCellPositions());
+        cells = ArrayUtil.asCollection(this.selectionLayer.getSelectedCellPositions());
         Assert.assertEquals(this.selectionLayer.getColumnCount(), cells.size());
         Assert.assertEquals(1, this.selectionLayer.getSelectedRowCount());
 
         // select additional cells with shift mask
-        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 2, 10,
-                true, false));
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 2, 10, true, false));
 
-        cells = ArrayUtil.asCollection(this.selectionLayer
-                .getSelectedCellPositions());
+        cells = ArrayUtil.asCollection(this.selectionLayer.getSelectedCellPositions());
         Assert.assertEquals(this.selectionLayer.getColumnCount(), cells.size());
         Assert.assertEquals(1, this.selectionLayer.getSelectedRowCount());
 
         // select additional cells with shift mask
-        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 10, 0,
-                true, false));
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 10, 0, true, false));
 
-        cells = ArrayUtil.asCollection(this.selectionLayer
-                .getSelectedCellPositions());
+        cells = ArrayUtil.asCollection(this.selectionLayer.getSelectedCellPositions());
         Assert.assertEquals(this.selectionLayer.getColumnCount(), cells.size());
         Assert.assertEquals(1, this.selectionLayer.getSelectedRowCount());
     }
@@ -203,35 +191,34 @@ public class RowSelectionIntegrationTest {
             }
         });
 
-        this.nattable.doCommand(new SelectRowsCommand(this.selectionLayer, 0, 0, false,
-                false));
+        this.nattable.doCommand(new SelectRowsCommand(this.selectionLayer, 0, 0, false, false));
         // the second call first clears the selection and then applies the new
         // one
         // clearing by default also fires a CellSelectionEvent with negative
         // values
-        this.nattable.doCommand(new SelectRowsCommand(this.selectionLayer, 0, 3, false,
-                false));
+        this.nattable.doCommand(new SelectRowsCommand(this.selectionLayer, 0, 3, false, false));
     }
 
     @Test
     public void setSingleSelectionViaProvider() {
-        this.selectionProvider.setSelection(new StructuredSelection(
-                new RowDataFixture[] { this.eventListFixture.get(1) }));
+        this.selectionProvider.setSelection(
+                new StructuredSelection(
+                        new RowDataFixture[] { this.eventListFixture.get(1) }));
 
         assertEquals(1, this.selectionLayer.getFullySelectedRowPositions().length);
     }
 
     @Test
     public void setMultipleSelectionViaProvider() {
-        this.selectionProvider.setSelection(new StructuredSelection(
-                new RowDataFixture[] { this.eventListFixture.get(1),
-                        this.eventListFixture.get(3) }));
+        this.selectionProvider.setSelection(
+                new StructuredSelection(
+                        new RowDataFixture[] { this.eventListFixture.get(1), this.eventListFixture.get(3) }));
 
         assertEquals(2, this.selectionLayer.getFullySelectedRowPositions().length);
 
-        this.selectionProvider.setSelection(new StructuredSelection(
-                new RowDataFixture[] { this.eventListFixture.get(5),
-                        this.eventListFixture.get(7) }));
+        this.selectionProvider.setSelection(
+                new StructuredSelection(
+                        new RowDataFixture[] { this.eventListFixture.get(5), this.eventListFixture.get(7) }));
 
         assertEquals(2, this.selectionLayer.getFullySelectedRowPositions().length);
     }
@@ -240,15 +227,15 @@ public class RowSelectionIntegrationTest {
     public void setMultipleSelectionViaProviderWithAdd() {
         this.selectionProvider.setAddSelectionOnSet(true);
 
-        this.selectionProvider.setSelection(new StructuredSelection(
-                new RowDataFixture[] { this.eventListFixture.get(1),
-                        this.eventListFixture.get(3) }));
+        this.selectionProvider.setSelection(
+                new StructuredSelection(
+                        new RowDataFixture[] { this.eventListFixture.get(1), this.eventListFixture.get(3) }));
 
         assertEquals(2, this.selectionLayer.getFullySelectedRowPositions().length);
 
-        this.selectionProvider.setSelection(new StructuredSelection(
-                new RowDataFixture[] { this.eventListFixture.get(5),
-                        this.eventListFixture.get(7) }));
+        this.selectionProvider.setSelection(
+                new StructuredSelection(
+                        new RowDataFixture[] { this.eventListFixture.get(5), this.eventListFixture.get(7) }));
 
         assertEquals(4, this.selectionLayer.getFullySelectedRowPositions().length);
     }
@@ -259,22 +246,19 @@ public class RowSelectionIntegrationTest {
         final List selectedObjects = new ArrayList();
 
         // add a listener to see how many rows are selected
-        this.selectionProvider
-                .addSelectionChangedListener(new ISelectionChangedListener() {
+        this.selectionProvider.addSelectionChangedListener(new ISelectionChangedListener() {
 
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public void selectionChanged(SelectionChangedEvent event) {
-                        IStructuredSelection selection = (IStructuredSelection) event
-                                .getSelection();
-                        selectedObjects.addAll(selection.toList());
-                    }
-                });
+            @SuppressWarnings("unchecked")
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+                selectedObjects.addAll(selection.toList());
+            }
+        });
 
         // first execute column selection with default configuration to see that
         // all rows get selected
-        this.selectionLayer.doCommand(new SelectColumnCommand(this.selectionLayer, 1, 0,
-                false, false));
+        this.selectionLayer.doCommand(new SelectColumnCommand(this.selectionLayer, 1, 0, false, false));
 
         assertEquals(10, selectedObjects.size());
 
@@ -282,18 +266,53 @@ public class RowSelectionIntegrationTest {
         // fire the event again
         selectedObjects.clear();
         this.selectionProvider.setProcessColumnSelection(false);
-        this.selectionLayer.doCommand(new SelectColumnCommand(this.selectionLayer, 1, 0,
-                false, false));
+        this.selectionLayer.doCommand(new SelectColumnCommand(this.selectionLayer, 1, 0, false, false));
         assertEquals(0, selectedObjects.size());
 
         // now select a cell to verify that other selections are still processed
-        this.selectionLayer.doCommand(new SelectRowsCommand(this.selectionLayer, 1, 1,
-                false, false));
+        this.selectionLayer.doCommand(new SelectRowsCommand(this.selectionLayer, 1, 1, false, false));
         assertEquals(1, selectedObjects.size());
     }
 
+    @Test
+    public void shouldClearSelectionOnSetEmpty() {
+        LayerListenerFixture listener = new LayerListenerFixture();
+        this.nattable.addLayerListener(listener);
+
+        this.selectionProvider.setSelection(
+                new StructuredSelection(
+                        new RowDataFixture[] { this.eventListFixture.get(1), this.eventListFixture.get(3) }));
+
+        assertEquals(2, this.selectionLayer.getFullySelectedRowPositions().length);
+        assertEquals(1, listener.getEventsCount());
+
+        this.selectionProvider.setSelection(StructuredSelection.EMPTY);
+
+        assertEquals(0, this.selectionLayer.getFullySelectedRowPositions().length);
+        assertEquals(2, listener.getEventsCount());
+    }
+
+    @Test
+    public void shouldClearSelectionOnSetEmptyOnAdd() {
+        this.selectionProvider.setAddSelectionOnSet(true);
+
+        LayerListenerFixture listener = new LayerListenerFixture();
+        this.nattable.addLayerListener(listener);
+
+        this.selectionProvider.setSelection(
+                new StructuredSelection(
+                        new RowDataFixture[] { this.eventListFixture.get(1), this.eventListFixture.get(3) }));
+
+        assertEquals(2, this.selectionLayer.getFullySelectedRowPositions().length);
+        assertEquals(1, listener.getEventsCount());
+
+        this.selectionProvider.setSelection(StructuredSelection.EMPTY);
+
+        assertEquals(0, this.selectionLayer.getFullySelectedRowPositions().length);
+        assertEquals(2, listener.getEventsCount());
+    }
+
     private RowDataFixture getSelected() {
-        return (RowDataFixture) ((StructuredSelection) this.selectionProvider
-                .getSelection()).iterator().next();
+        return (RowDataFixture) ((StructuredSelection) this.selectionProvider.getSelection()).iterator().next();
     }
 }
