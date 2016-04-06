@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Jonas Hugo, Markus Wahl.
+ * Copyright (c) 2014, 2016 Jonas Hugo, Markus Wahl.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -181,12 +181,12 @@ public class PreserveSelectionModelTest {
 
     @Test
     public void Adding_Infinite_Row_Selection_Is_Truncated_Before_Stored() {
-        this.columnCount = 2;
+        this.columnCount = 3;
         this.testee.addSelection(new Rectangle(0, 0, Integer.MAX_VALUE, 1));
 
         assertTrue(isCellSelected(0, 0));
         assertTrue(isCellSelected(1, 0));
-        assertFalse(isCellSelected(2, 0));
+        assertTrue(isCellSelected(2, 0));
     }
 
     @Test
@@ -196,7 +196,7 @@ public class PreserveSelectionModelTest {
 
         assertTrue(isCellSelected(2, 0));
         assertTrue(isCellSelected(2, 1));
-        assertFalse(isCellSelected(2, 2));
+        assertTrue(isCellSelected(2, 2));
     }
 
     @Test

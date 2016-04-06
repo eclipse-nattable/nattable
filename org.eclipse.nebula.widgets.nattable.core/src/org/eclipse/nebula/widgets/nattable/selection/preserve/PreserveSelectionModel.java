@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Jonas Hugo, Markus Wahl, Dirk Fauth.
+ * Copyright (c) 2014, 2016 Jonas Hugo, Markus Wahl, Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -248,13 +248,8 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
         int startColumnPosition = selection.x;
         int startRowPosition = selection.y;
         if (startColumnPosition < columnCount && startRowPosition < rowCount) {
-
-            int columnStartIndex = this.selectionLayer.getColumnIndexByPosition(selection.x);
-            int numberOfVisibleColumnsToBeSelected = (selection.x + selection.width <= columnCount)
-                    ? selection.width : columnCount - columnStartIndex;
-            int rowStartIndex = this.selectionLayer.getRowIndexByPosition(selection.y);
-            int numberOfVisibleRowsToBeSelected = (selection.y + selection.height <= rowCount)
-                    ? selection.height : rowCount - rowStartIndex;
+            int numberOfVisibleColumnsToBeSelected = (selection.x + selection.width <= columnCount) ? selection.width : columnCount;
+            int numberOfVisibleRowsToBeSelected = (selection.y + selection.height <= rowCount) ? selection.height : rowCount;
 
             for (int columnPosition = startColumnPosition; columnPosition < startColumnPosition + numberOfVisibleColumnsToBeSelected; columnPosition++) {
                 for (int rowPosition = startRowPosition; rowPosition < startRowPosition + numberOfVisibleRowsToBeSelected; rowPosition++) {
@@ -750,8 +745,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
             // the change is already done and we don't know about indexes, so we
             // need to check if the selected objects still exist
             Collection<Serializable> keysToRemove = new ArrayList<Serializable>();
-            for (Selections.Row<T> row : this.selections.getRows())
-            {
+            for (Selections.Row<T> row : this.selections.getRows()) {
                 int rowIndex = this.rowDataProvider.indexOfRowObject(row.getRowObject());
                 if (rowIndex == -1) {
                     keysToRemove.add(row.getId());
