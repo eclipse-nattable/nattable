@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,12 +10,17 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 /**
@@ -173,6 +178,68 @@ public class SelectionUtils {
             return selectionLayer.getCellByPosition(column, row);
         }
         return null;
+    }
+
+    /**
+     * Inspects the current selection on the given {@link SelectionLayer} and
+     * returns a list of the corresponding list item objects. Uses the
+     * {@link IRowDataProvider} to be able to determine the row objects per
+     * selected row position.
+     *
+     * @param selectionLayer
+     *            The {@link SelectionLayer} to retrieve the selected row
+     *            indexes from.
+     * @param rowDataProvider
+     *            The {@link IRowDataProvider} to retrieve the object for the
+     *            row index.
+     * @param fullySelectedRowsOnly
+     *            Flag to determine if only fully selected rows should be taken
+     *            into account.
+     * @return The list of all objects that are currently marked as selected.
+     *         Never <code>null</code>.
+     *
+     * @since 1.4
+     */
+    public static <T> List<T> getSelectedRowObjects(
+            SelectionLayer selectionLayer,
+            IRowDataProvider<T> rowDataProvider,
+            boolean fullySelectedRowsOnly) {
+
+        List<RowObjectIndexHolder<T>> rows = new ArrayList<RowObjectIndexHolder<T>>();
+
+        if (selectionLayer != null) {
+            if (fullySelectedRowsOnly) {
+                for (int rowPosition : selectionLayer.getFullySelectedRowPositions()) {
+                    addToSelection(rows, rowPosition, selectionLayer, rowDataProvider);
+                }
+            } else {
+                Set<Range> rowRanges = selectionLayer.getSelectedRowPositions();
+                for (Range rowRange : rowRanges) {
+                    for (int rowPosition = rowRange.start; rowPosition < rowRange.end; rowPosition++) {
+                        addToSelection(rows, rowPosition, selectionLayer, rowDataProvider);
+                    }
+                }
+            }
+        }
+        Collections.sort(rows);
+        List<T> rowObjects = new ArrayList<T>();
+        for (RowObjectIndexHolder<T> holder : rows) {
+            rowObjects.add(holder.getRow());
+        }
+        return rowObjects;
+    }
+
+    private static <T> void addToSelection(
+            List<RowObjectIndexHolder<T>> rows,
+            int rowPosition,
+            SelectionLayer selectionLayer,
+            IRowDataProvider<T> rowDataProvider) {
+
+        int rowIndex = selectionLayer.getRowIndexByPosition(rowPosition);
+        if (rowIndex >= 0 && rowIndex < rowDataProvider.getRowCount()) {
+            T rowObject = rowDataProvider.getRowObject(rowIndex);
+            rows.add(new RowObjectIndexHolder<T>(rowIndex, rowObject));
+        }
     }
 
 }

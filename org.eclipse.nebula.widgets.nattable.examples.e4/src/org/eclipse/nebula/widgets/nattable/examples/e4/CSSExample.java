@@ -12,8 +12,6 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.e4;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,7 +58,6 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
@@ -74,17 +71,6 @@ public class CSSExample {
 
     @PostConstruct
     public void postConstruct(Composite parent, Shell shell) {
-
-        try {
-            // load the images for the shell
-            Image img16 = GUIHelper.getImageByURL(new URL("platform:/plugin/org.eclipse.nebula.widgets.nattable.examples.e4/icons/nebula_logo_16.png"));
-            Image img32 = GUIHelper.getImageByURL(new URL("platform:/plugin/org.eclipse.nebula.widgets.nattable.examples.e4/icons/nebula_logo_32.png"));
-            Image img64 = GUIHelper.getImageByURL(new URL("platform:/plugin/org.eclipse.nebula.widgets.nattable.examples.e4/icons/nebula_logo_64.png"));
-            shell.setImages(new Image[] { img16, img32, img64 });
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
         parent.setLayout(new GridLayout());
 
         // property names of the Person class
@@ -104,7 +90,7 @@ public class CSSExample {
                 "favouriteDrinks" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("password", "Password");
@@ -119,7 +105,7 @@ public class CSSExample {
         propertyToLabelMap.put("favouriteDrinks", "Drinks");
 
         IDataProvider bodyDataProvider =
-                new ListDataProvider<ExtendedPersonWithAddress>(
+                new ListDataProvider<>(
                         PersonService.getExtendedPersonsWithAddress(10),
                         new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(propertyNames));
 

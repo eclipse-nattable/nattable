@@ -147,9 +147,9 @@
 	text-align: center;
 }
 
-/* TREE CONFIGURATION */
+/* MODERN CONFIGURATION */
 
-.tree {
+.modern {
 	tree-structure-painter: background padding tree;
 	table-border-color: auto;
 	cell-background-color: white;
@@ -157,7 +157,7 @@
 	padding: 0 5;
 }
 
-.tree:select {
+.modern:select {
 	/* avoid additional registration of a cell painter which would lead to breaking the NatTable inheritance */
 	painter-resolution: false;
 	color: white;
@@ -168,17 +168,17 @@
 	invert-icons: true;
 }
 
-.tree > .selectionAnchor:select {
+.modern > .selectionAnchor:select {
 	color: white;
 	cell-background-color: #87CEFA;
 }
 
-.tree > .CORNER {
+.modern > .CORNER {
 	render-grid-lines: true;
 	cell-background-color: #F5F5F5;
 }
 
-.tree > .COLUMN_HEADER {
+.modern > .COLUMN_HEADER {
 	render-grid-lines: true;
 	cell-background-color: #F5F5F5;
 	color: black;
@@ -187,41 +187,41 @@
 	padding: 0 5;
 }
 
-.tree > .COLUMN_HEADER:select {
+.modern > .COLUMN_HEADER:select {
 	cell-background-color: #c0c0c0;
-	color: white; 
+	color: white;
 }
 
-.tree > .ROW_HEADER {
+.modern > .ROW_HEADER {
 	render-grid-lines: true;
 	cell-background-color: #F5F5F5;
 	color: black;
 	font: "Segoe UI" 9 normal;
 	text-align: center;}
 
-.tree > .ROW_HEADER:select {
+.modern > .ROW_HEADER:select {
 	cell-background-color: #c0c0c0;
-	color: white; 
+	color: white;
 }
 
-.tree > .genderLabel {
+.modern > .genderLabel {
 	painter: background padding combobox;
 }
 
-.tree > .genderLabel:select {
+.modern > .genderLabel:select {
 	invert-icons: true;
 }
 
-.tree > .marriedLabel {
+.modern > .marriedLabel {
 	painter: background padding checkbox;
 	text-align: center;
 }
 
-.tree > .marriedLabel:select {
+.modern > .marriedLabel:select {
 	text-align: center;
 }
 
-.tree > .dateLabel {
+.modern > .dateLabel {
 	converter: date "yyyy-MM-dd";
 }
 

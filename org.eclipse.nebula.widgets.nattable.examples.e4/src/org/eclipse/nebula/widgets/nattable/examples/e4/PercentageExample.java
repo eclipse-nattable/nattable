@@ -27,7 +27,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.swt.widgets.Composite;
 
 @SuppressWarnings("restriction")
-public class PercentagePart {
+public class PercentageExample {
 
     @PostConstruct
     public void postConstruct(Composite parent) {

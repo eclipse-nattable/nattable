@@ -312,6 +312,12 @@ public class RowSelectionIntegrationTest {
         assertEquals(2, listener.getEventsCount());
     }
 
+    @Test
+    public void shouldReturnEmptySelectionOnNoSelection() {
+        this.selectionLayer.clear();
+        assertEquals(StructuredSelection.EMPTY, this.selectionProvider.getSelection());
+    }
+
     private RowDataFixture getSelected() {
         return (RowDataFixture) ((StructuredSelection) this.selectionProvider.getSelection()).iterator().next();
     }

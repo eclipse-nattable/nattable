@@ -68,7 +68,7 @@ import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TransformedList;
 import ca.odell.glazedlists.TreeList;
 
-public class TreePart {
+public class TreeExample {
 
     public static final String GENDER_LABEL = "genderLabel";
     public static final String MARRIED_LABEL = "marriedLabel";
@@ -83,7 +83,7 @@ public class TreePart {
         String[] propertyNames = { "lastName", "firstName", "gender", "married", "birthday" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("gender", "Gender");
@@ -91,14 +91,14 @@ public class TreePart {
         propertyToLabelMap.put("birthday", "Birthday");
 
         IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
-                new ReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
 
         final BodyLayerStack bodyLayerStack =
                 new BodyLayerStack(
                         PersonService.getPersonsWithAddress(5),
                         columnPropertyAccessor,
                         new PersonWithAddressTwoLevelTreeFormat());
-                        // new PersonWithAddressTreeFormat());
+        // new PersonWithAddressTreeFormat());
 
         // build the column header layer
         IDataProvider columnHeaderDataProvider =
@@ -132,7 +132,7 @@ public class TreePart {
         // configuration
         final NatTable natTable = new NatTable(container, gridLayer);
 
-        natTable.setData("org.eclipse.e4.ui.css.CssClassName", "tree");
+        natTable.setData("org.eclipse.e4.ui.css.CssClassName", "modern");
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 
@@ -197,7 +197,7 @@ public class TreePart {
             // because the Comparator
             // will be set by configuration
             SortedList<PersonWithAddress> sortedList =
-                    new SortedList<PersonWithAddress>(rowObjectsGlazedList, null);
+                    new SortedList<>(rowObjectsGlazedList, null);
             // wrap the SortedList with the TreeList
             treeList =
                     new TreeList(sortedList, treeFormat, TreeList.nodesStartExpanded());
@@ -241,7 +241,7 @@ public class TreePart {
                     new GlazedListsEventLayer<PersonWithAddress>(bodyDataLayer, treeList);
 
             GlazedListTreeData<Object> treeData = new GlazedListTreeData<Object>(treeList);
-            ITreeRowModel<Object> treeRowModel = new GlazedListTreeRowModel<Object>(treeData);
+            ITreeRowModel<Object> treeRowModel = new GlazedListTreeRowModel<>(treeData);
 
             // ITreeRowModel<Object> treeRowModel = new
             // TreeRowModel<Object>(treeData);
@@ -345,8 +345,8 @@ public class TreePart {
     private class PersonWithAddressTwoLevelTreeFormat implements TreeList.Format<Object> {
 
         AtomicInteger counter = new AtomicInteger();
-        Map<String, LastNameGroup> lastNames = new HashMap<String, LastNameGroup>();
-        Map<String, FirstNameGroup> firstNames = new HashMap<String, FirstNameGroup>();
+        Map<String, LastNameGroup> lastNames = new HashMap<>();
+        Map<String, FirstNameGroup> firstNames = new HashMap<>();
 
         @Override
         public void getPath(List<Object> path, Object element) {

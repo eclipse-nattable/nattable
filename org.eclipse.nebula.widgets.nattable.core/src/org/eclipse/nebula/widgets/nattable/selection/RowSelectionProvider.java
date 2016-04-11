@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -22,7 +21,6 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
@@ -283,47 +281,12 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
         }
     }
 
-    @SuppressWarnings("rawtypes")
-    static StructuredSelection populateRowSelection(
+    static <T> StructuredSelection populateRowSelection(
             SelectionLayer selectionLayer,
-            IRowDataProvider rowDataProvider,
+            IRowDataProvider<T> rowDataProvider,
             boolean fullySelectedRowsOnly) {
-        List<RowObjectIndexHolder<Object>> rows = new ArrayList<RowObjectIndexHolder<Object>>();
-
-        if (selectionLayer != null) {
-            if (fullySelectedRowsOnly) {
-                for (int rowPosition : selectionLayer.getFullySelectedRowPositions()) {
-                    addToSelection(rows, rowPosition, selectionLayer, rowDataProvider);
-                }
-            } else {
-                Set<Range> rowRanges = selectionLayer.getSelectedRowPositions();
-                for (Range rowRange : rowRanges) {
-                    for (int rowPosition = rowRange.start; rowPosition < rowRange.end; rowPosition++) {
-                        addToSelection(rows, rowPosition, selectionLayer, rowDataProvider);
-                    }
-                }
-            }
-        }
-        Collections.sort(rows);
-        List<Object> rowObjects = new ArrayList<Object>();
-        for (RowObjectIndexHolder<Object> holder : rows) {
-            rowObjects.add(holder.getRow());
-        }
-        return rows.isEmpty() ? StructuredSelection.EMPTY : new StructuredSelection(rowObjects);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private static void addToSelection(
-            List<RowObjectIndexHolder<Object>> rows,
-            int rowPosition,
-            SelectionLayer selectionLayer,
-            IRowDataProvider rowDataProvider) {
-
-        int rowIndex = selectionLayer.getRowIndexByPosition(rowPosition);
-        if (rowIndex >= 0 && rowIndex < rowDataProvider.getRowCount()) {
-            Object rowObject = rowDataProvider.getRowObject(rowIndex);
-            rows.add(new RowObjectIndexHolder<Object>(rowIndex, rowObject));
-        }
+        List<T> rowObjects = SelectionUtils.getSelectedRowObjects(selectionLayer, rowDataProvider, fullySelectedRowsOnly);
+        return rowObjects.isEmpty() ? StructuredSelection.EMPTY : new StructuredSelection(rowObjects);
     }
 
     /**

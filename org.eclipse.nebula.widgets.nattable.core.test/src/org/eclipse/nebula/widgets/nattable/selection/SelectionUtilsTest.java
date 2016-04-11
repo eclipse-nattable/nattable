@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2016 CEA LIST, Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,9 +14,17 @@ package org.eclipse.nebula.widgets.nattable.selection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
+import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.DataProviderFixture;
@@ -177,4 +185,147 @@ public class SelectionUtilsTest {
         assertNull(bottomRight);
     }
 
+    @Test
+    public void testGetEmptyListOnNoSelection() {
+        List<RowDataFixture> listFixture = RowDataListFixture.getList(10);
+        IRowDataProvider<RowDataFixture> bodyDataProvider =
+                new ListDataProvider<RowDataFixture>(
+                        listFixture,
+                        new ReflectiveColumnPropertyAccessor<RowDataFixture>(
+                                RowDataListFixture.getPropertyNames()));
+
+        DataLayer dataLayer = new DataLayer(bodyDataProvider);
+        SelectionLayer selectionLayer = new SelectionLayer(dataLayer);
+
+        List<RowDataFixture> selected = SelectionUtils.getSelectedRowObjects(
+                selectionLayer,
+                bodyDataProvider,
+                false);
+
+        assertNotNull(selected);
+        assertEquals(0, selected.size());
+    }
+
+    @Test
+    public void testGetSingleItemOnCellSelection() {
+        List<RowDataFixture> listFixture = RowDataListFixture.getList(10);
+        IRowDataProvider<RowDataFixture> bodyDataProvider =
+                new ListDataProvider<RowDataFixture>(
+                        listFixture,
+                        new ReflectiveColumnPropertyAccessor<RowDataFixture>(
+                                RowDataListFixture.getPropertyNames()));
+
+        DataLayer dataLayer = new DataLayer(bodyDataProvider);
+        SelectionLayer selectionLayer = new SelectionLayer(dataLayer);
+
+        selectionLayer.selectCell(1, 3, false, false);
+
+        List<RowDataFixture> selected = SelectionUtils.getSelectedRowObjects(
+                selectionLayer,
+                bodyDataProvider,
+                false);
+
+        assertNotNull(selected);
+        assertEquals(1, selected.size());
+        assertEquals(listFixture.get(3), selected.get(0));
+    }
+
+    @Test
+    public void testGetMultipleItemsOnCellSelection() {
+        List<RowDataFixture> listFixture = RowDataListFixture.getList(10);
+        IRowDataProvider<RowDataFixture> bodyDataProvider =
+                new ListDataProvider<RowDataFixture>(
+                        listFixture,
+                        new ReflectiveColumnPropertyAccessor<RowDataFixture>(
+                                RowDataListFixture.getPropertyNames()));
+
+        DataLayer dataLayer = new DataLayer(bodyDataProvider);
+        SelectionLayer selectionLayer = new SelectionLayer(dataLayer);
+
+        selectionLayer.selectCell(1, 3, false, true);
+        selectionLayer.selectCell(1, 5, false, true);
+
+        List<RowDataFixture> selected = SelectionUtils.getSelectedRowObjects(
+                selectionLayer,
+                bodyDataProvider,
+                false);
+
+        assertNotNull(selected);
+        assertEquals(2, selected.size());
+        assertEquals(listFixture.get(3), selected.get(0));
+        assertEquals(listFixture.get(5), selected.get(1));
+    }
+
+    @Test
+    public void testGetSingleItemsOnFullRowSelection() {
+        List<RowDataFixture> listFixture = RowDataListFixture.getList(10);
+        IRowDataProvider<RowDataFixture> bodyDataProvider =
+                new ListDataProvider<RowDataFixture>(
+                        listFixture,
+                        new ReflectiveColumnPropertyAccessor<RowDataFixture>(
+                                RowDataListFixture.getPropertyNames()));
+
+        DataLayer dataLayer = new DataLayer(bodyDataProvider);
+        SelectionLayer selectionLayer = new SelectionLayer(dataLayer);
+
+        selectionLayer.selectRow(0, 3, false, false);
+
+        List<RowDataFixture> selected = SelectionUtils.getSelectedRowObjects(
+                selectionLayer,
+                bodyDataProvider,
+                true);
+
+        assertNotNull(selected);
+        assertEquals(1, selected.size());
+        assertEquals(listFixture.get(3), selected.get(0));
+    }
+
+    @Test
+    public void testGetMultipleItemsOnFullRowSelection() {
+        List<RowDataFixture> listFixture = RowDataListFixture.getList(10);
+        IRowDataProvider<RowDataFixture> bodyDataProvider =
+                new ListDataProvider<RowDataFixture>(
+                        listFixture,
+                        new ReflectiveColumnPropertyAccessor<RowDataFixture>(
+                                RowDataListFixture.getPropertyNames()));
+
+        DataLayer dataLayer = new DataLayer(bodyDataProvider);
+        SelectionLayer selectionLayer = new SelectionLayer(dataLayer);
+
+        selectionLayer.selectRow(0, 3, false, true);
+        selectionLayer.selectRow(0, 5, false, true);
+
+        List<RowDataFixture> selected = SelectionUtils.getSelectedRowObjects(
+                selectionLayer,
+                bodyDataProvider,
+                true);
+
+        assertNotNull(selected);
+        assertEquals(2, selected.size());
+        assertEquals(listFixture.get(3), selected.get(0));
+        assertEquals(listFixture.get(5), selected.get(1));
+    }
+
+    @Test
+    public void testGetEmptyListOnCellSelectionForFullRowSelection() {
+        List<RowDataFixture> listFixture = RowDataListFixture.getList(10);
+        IRowDataProvider<RowDataFixture> bodyDataProvider =
+                new ListDataProvider<RowDataFixture>(
+                        listFixture,
+                        new ReflectiveColumnPropertyAccessor<RowDataFixture>(
+                                RowDataListFixture.getPropertyNames()));
+
+        DataLayer dataLayer = new DataLayer(bodyDataProvider);
+        SelectionLayer selectionLayer = new SelectionLayer(dataLayer);
+
+        selectionLayer.selectCell(1, 3, false, false);
+
+        List<RowDataFixture> selected = SelectionUtils.getSelectedRowObjects(
+                selectionLayer,
+                bodyDataProvider,
+                true);
+
+        assertNotNull(selected);
+        assertEquals(0, selected.size());
+    }
 }
