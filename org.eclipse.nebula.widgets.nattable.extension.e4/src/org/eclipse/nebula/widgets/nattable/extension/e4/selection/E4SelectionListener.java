@@ -27,9 +27,9 @@ import org.eclipse.nebula.widgets.nattable.selection.event.ISelectionEvent;
 /**
  * Implementation of {@link ILayerListener} to support E4 selection handling.
  * Needs to be set to the {@link SelectionLayer}
- * 
+ *
  * <pre>
- * E4SelectionListener<Person> esl = new E4SelectionListener<>(service, selectionLayer, bodyDataProvider);
+ * E4SelectionListener&lt;Person&gt; esl = new E4SelectionListener&lt;&gt;(service, selectionLayer, bodyDataProvider);
  * selectionLayer.addLayerListener(esl);
  * </pre>
  *
