@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -488,20 +488,25 @@ public abstract class AbstractCellEditor implements ICellEditor {
 
     /**
      * {@link FocusListener} that tries to commit if the focus is lost.
-     * Otherwise it tries to keep the foucs in the editor.
-     * 
+     * Otherwise it tries to keep the focus in the editor.
+     *
      * @since 1.4
      */
     protected class InlineFocusListener extends FocusAdapter {
+
+        public boolean handleFocusChanges = true;
+
         @Override
         public void focusLost(FocusEvent e) {
-            if (!commit(MoveDirectionEnum.NONE, true)) {
-                if (e.widget instanceof Control && !e.widget.isDisposed()) {
-                    ((Control) e.widget).forceFocus();
+            if (this.handleFocusChanges) {
+                if (!commit(MoveDirectionEnum.NONE, true)) {
+                    if (e.widget instanceof Control && !e.widget.isDisposed()) {
+                        ((Control) e.widget).forceFocus();
+                    }
+                } else {
+                    if (!AbstractCellEditor.this.parent.isDisposed())
+                        AbstractCellEditor.this.parent.forceFocus();
                 }
-            } else {
-                if (!AbstractCellEditor.this.parent.isDisposed())
-                    AbstractCellEditor.this.parent.forceFocus();
             }
         }
     }

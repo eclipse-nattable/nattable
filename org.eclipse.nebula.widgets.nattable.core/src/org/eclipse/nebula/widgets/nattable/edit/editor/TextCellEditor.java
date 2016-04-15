@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,7 +30,6 @@ import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Cursor;
@@ -127,13 +126,6 @@ public class TextCellEditor extends AbstractCellEditor {
     protected boolean commitOnEnter = true;
 
     /**
-     * Flag that indicates whether a content proposal popup is currently opened.
-     *
-     * @since 1.4
-     */
-    protected boolean contentProposalOpen = false;
-
-    /**
      * @see ContentProposalAdapter#ContentProposalAdapter(Control,
      *      IControlContentAdapter, IContentProposalProvider, KeyStroke, char[])
      * @since 1.4
@@ -216,18 +208,6 @@ public class TextCellEditor extends AbstractCellEditor {
         this.commitOnUpDown = commitOnUpDown;
         this.moveSelectionOnEnter = moveSelectionOnEnter;
         this.commitOnLeftRight = commitOnLeftRight;
-
-        // use an extended InlineFocusListener that is not triggered in case a
-        // content proposal popup is currently showed.
-        this.focusListener = new InlineFocusListener() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (!TextCellEditor.this.contentProposalOpen) {
-                    super.focusLost(e);
-                }
-            }
-        };
-
     }
 
     @Override
@@ -690,12 +670,16 @@ public class TextCellEditor extends AbstractCellEditor {
 
             @Override
             public void proposalPopupClosed(ContentProposalAdapter adapter) {
-                TextCellEditor.this.contentProposalOpen = false;
+                if (TextCellEditor.this.focusListener instanceof InlineFocusListener) {
+                    ((InlineFocusListener) TextCellEditor.this.focusListener).handleFocusChanges = true;
+                }
             }
 
             @Override
             public void proposalPopupOpened(ContentProposalAdapter adapter) {
-                TextCellEditor.this.contentProposalOpen = true;
+                if (TextCellEditor.this.focusListener instanceof InlineFocusListener) {
+                    ((InlineFocusListener) TextCellEditor.this.focusListener).handleFocusChanges = false;
+                }
                 // set the focus to the popup so on enabling via keystroke the
                 // selection via keyboard is immediately possible
                 contentProposalAdapter.setProposalPopupFocus();
