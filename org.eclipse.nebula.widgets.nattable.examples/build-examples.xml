@@ -20,7 +20,16 @@
             <fileset dir="../org.eclipse.nebula.widgets.nattable.examples/target/classes"/>
         	<zipfileset 
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
-            	src="lib/org.eclipse.nebula.widgets.richtext_1.0.0.201604151927.zip"/>
+            	src="lib/org.eclipse.nebula.cwt_1.0.0.201605312033.jar"/>
+        	<zipfileset 
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
+            	src="lib/org.eclipse.nebula.jface.cdatetime_1.0.0.201605312033.jar"/>
+        	<zipfileset 
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
+            	src="lib/org.eclipse.nebula.widgets.cdatetime_1.0.0.201605312033.jar"/>
+        	<zipfileset 
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
+            	src="lib/org.eclipse.nebula.widgets.richtext_1.0.0.201605312033.zip"/>
             <zipfileset 
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
             	src="lib/ca.odell.glazedlists_1.9.0.v201303080712.jar"/>
