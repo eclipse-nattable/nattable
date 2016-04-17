@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.DateTime;
  * on setting the focus programmatically and it is not possible to open the
  * dropdown programmatically, we suggest to rather use some Nebula widget or a
  * custom widget for date editing.
+ * </p>
  */
 public class DateCellEditor extends AbstractCellEditor {
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,10 +19,17 @@ public interface IMouseEventMatcher {
     /**
      * Figures out if the mouse event occurred in the supplied region.
      *
+     * @param natTable
+     *            The NatTable on which the {@link MouseEvent} occured.
      * @param event
-     *            SWT mouse event
+     *            The SWT {@link MouseEvent}.
+     * @param regionLabels
+     *            The {@link LabelStack} with the region labels of the
+     *            {@link MouseEvent} coordinates.
+     * @return <code>true</code> if the {@link MouseEvent} matches this
+     *         {@link IMouseEventMatcher} and should therefore be handled,
+     *         <code>false</code> if not
      */
-    public boolean matches(NatTable natTable, MouseEvent event,
-            LabelStack regionLabels);
+    public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels);
 
 }
