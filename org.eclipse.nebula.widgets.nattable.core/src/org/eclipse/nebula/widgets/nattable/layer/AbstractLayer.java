@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
@@ -66,6 +68,14 @@ public abstract class AbstractLayer implements ILayer {
     private final Collection<IConfiguration> configurations = new LinkedList<IConfiguration>();
 
     private boolean configurationApplied = false;
+
+    /**
+     * {@link ReadWriteLock} that is used to ensure that no concurrent
+     * modifications happen on event handling
+     * 
+     * @since 1.4
+     */
+    protected ReadWriteLock eventHelperLock = new ReentrantReadWriteLock();
 
     // Dispose
 
@@ -237,25 +247,40 @@ public abstract class AbstractLayer implements ILayer {
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void handleLayerEvent(ILayerEvent event) {
-        for (Class<? extends ILayerEvent> eventClass : this.eventHandlers.keySet()) {
-            if (eventClass.isInstance(event)) {
-                ILayerEventHandler eventHandler = this.eventHandlers.get(eventClass);
-                eventHandler.handleLayerEvent(event);
+        this.eventHelperLock.readLock().lock();
+        try {
+            for (Class<? extends ILayerEvent> eventClass : this.eventHandlers.keySet()) {
+                if (eventClass.isInstance(event)) {
+                    ILayerEventHandler eventHandler = this.eventHandlers.get(eventClass);
+                    eventHandler.handleLayerEvent(event);
+                }
             }
-        }
 
-        // Pass on the event to our parent
-        if (event.convertToLocal(this)) {
-            fireLayerEvent(event);
+            // Pass on the event to our parent
+            if (event.convertToLocal(this)) {
+                fireLayerEvent(event);
+            }
+        } finally {
+            this.eventHelperLock.readLock().unlock();
         }
     }
 
     public void registerEventHandler(ILayerEventHandler<?> eventHandler) {
-        this.eventHandlers.put(eventHandler.getLayerEventClass(), eventHandler);
+        this.eventHelperLock.writeLock().lock();
+        try {
+            this.eventHandlers.put(eventHandler.getLayerEventClass(), eventHandler);
+        } finally {
+            this.eventHelperLock.writeLock().unlock();
+        }
     }
 
     public void unregisterEventHandler(ILayerEventHandler<?> eventHandler) {
-        this.eventHandlers.remove(eventHandler.getLayerEventClass());
+        this.eventHelperLock.writeLock().lock();
+        try {
+            this.eventHandlers.remove(eventHandler.getLayerEventClass());
+        } finally {
+            this.eventHelperLock.writeLock().unlock();
+        }
     }
 
     /**
