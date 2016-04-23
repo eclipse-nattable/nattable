@@ -67,8 +67,7 @@ public abstract class AbstractLayerPerformanceTest {
                 long stopTimeInMillis = System.currentTimeMillis();
                 long actualTimeInMillis = stopTimeInMillis - startTimeInMillis;
 
-                System.out
-                        .println("duration = " + actualTimeInMillis + " milliseconds");
+                System.out.println("duration = " + actualTimeInMillis + " milliseconds");
                 Assert.assertTrue("Expected to take less than " + AbstractLayerPerformanceTest.this.expectedTimeInMillis
                         + " milliseconds but took " + actualTimeInMillis
                         + " milliseconds", actualTimeInMillis < AbstractLayerPerformanceTest.this.expectedTimeInMillis);
