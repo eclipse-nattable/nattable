@@ -7,8 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *		Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
- *
+ *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
+ *      Vincent Lorenzo <vincent.lorenzo@cea.fr> - bug 492571
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.nebula.richtext;
 
@@ -93,17 +93,7 @@ public class RichTextCellEditor extends AbstractCellEditor {
 
     @Override
     public RichTextEditor createEditorControl(Composite parent) {
-        this.editor = new RichTextEditor(parent, this.toolbarConfiguration, this.style) {
-            @Override
-            protected int getMinimumHeight() {
-                return getMinimumDimension().y;
-            }
-
-            @Override
-            protected int getMinimumWidth() {
-                return getMinimumDimension().x;
-            }
-        };
+        this.editor = createRichTextEditor(parent);
 
         this.editor.addKeyListener(new KeyAdapter() {
             @Override
@@ -138,6 +128,27 @@ public class RichTextCellEditor extends AbstractCellEditor {
         });
 
         return this.editor;
+    }
+
+    /**
+     *
+     * @param parent
+     *            the parent used to create the RichTextEditor wrapped by this
+     *            RichtextCellEditor.
+     * @return the created RichTextEditor
+     */
+    protected RichTextEditor createRichTextEditor(Composite parent) {
+        return new RichTextEditor(parent, this.toolbarConfiguration, this.style) {
+            @Override
+            protected int getMinimumHeight() {
+                return getMinimumDimension().y;
+            }
+
+            @Override
+            protected int getMinimumWidth() {
+                return getMinimumDimension().x;
+            }
+        };
     }
 
     /**
