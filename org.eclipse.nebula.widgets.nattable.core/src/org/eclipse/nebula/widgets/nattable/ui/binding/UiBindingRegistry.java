@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -270,8 +270,7 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 
     // /////////////////////////////////////////////////////////////////////////
 
-    private void registerMouseBinding(boolean first,
-            MouseEventTypeEnum mouseEventType, IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+    private void registerMouseBinding(boolean first, MouseEventTypeEnum mouseEventType, IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
         LinkedList<MouseBinding> mouseEventBindings = this.mouseBindingsMap.get(mouseEventType);
         if (mouseEventBindings == null) {
             mouseEventBindings = new LinkedList<MouseBinding>();
@@ -286,16 +285,17 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 
     private void unregisterMouseBinding(MouseEventTypeEnum mouseEventType, IMouseEventMatcher mouseEventMatcher) {
         LinkedList<MouseBinding> mouseBindings = this.mouseBindingsMap.get(mouseEventType);
-        for (MouseBinding mouseBinding : mouseBindings) {
-            if (mouseBinding.getMouseEventMatcher().equals(mouseEventMatcher)) {
-                mouseBindings.remove(mouseBinding);
-                return;
+        if (mouseBindings != null) {
+            for (MouseBinding mouseBinding : mouseBindings) {
+                if (mouseBinding.getMouseEventMatcher().equals(mouseEventMatcher)) {
+                    mouseBindings.remove(mouseBinding);
+                    return;
+                }
             }
         }
     }
 
     private enum MouseEventTypeEnum {
-
         MOUSE_DOWN, MOUSE_MOVE, MOUSE_SINGLE_CLICK, MOUSE_DOUBLE_CLICK, MOUSE_HOVER, MOUSE_ENTER, MOUSE_EXIT
     }
 
