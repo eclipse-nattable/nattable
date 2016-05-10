@@ -363,8 +363,6 @@ public class GUIHelper {
 
     // DPI scaling
 
-    private static float[] dpiFactor = new float[] { 1.0f, 1.25f, 1.33f, 1.5f, 2.0f, 3.0f };
-
     /**
      * Returns the factor for scaling calculations of pixels regarding the DPI.
      *
@@ -373,28 +371,7 @@ public class GUIHelper {
      * @return The factor for dpi scaling calculations.
      */
     public static float getDpiFactor(int dpi) {
-        float factor = 1.0f;
-        switch (dpi) {
-            case 96:
-                factor = dpiFactor[0];
-                break;
-            case 120:
-                factor = dpiFactor[1];
-                break;
-            case 128:
-                factor = dpiFactor[2];
-                break;
-            case 144:
-                factor = dpiFactor[3];
-                break;
-            case 192:
-                factor = dpiFactor[4];
-                break;
-            case 288:
-                factor = dpiFactor[5];
-                break;
-        }
-        return factor;
+        return Math.round((dpi / 96f) * 100) / 100f;
     }
 
     /**

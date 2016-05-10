@@ -10,7 +10,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,14 +39,14 @@ public class SizeConfigScalingTest {
 
     @Test
     public void getAggregateSize() throws Exception {
-        Assert.assertEquals(1500, this.sizeConfig.getAggregateSize(10));
+        assertEquals(1500, this.sizeConfig.getAggregateSize(10));
     }
 
     @Test
     public void sizeOverride() throws Exception {
         this.sizeConfig.setSize(5, 120);
 
-        Assert.assertEquals(120, this.sizeConfig.getSize(5));
+        assertEquals(120, this.sizeConfig.getSize(5));
     }
 
     @Test
@@ -51,9 +55,9 @@ public class SizeConfigScalingTest {
         this.sizeConfig.setSize(0, 10);
 
         // rounding issue with downscaling and upscaling
-        Assert.assertEquals(11, this.sizeConfig.getAggregateSize(1));
-        Assert.assertEquals(611, this.sizeConfig.getAggregateSize(5));
-        Assert.assertEquals(1331, this.sizeConfig.getAggregateSize(10));
+        assertEquals(11, this.sizeConfig.getAggregateSize(1));
+        assertEquals(611, this.sizeConfig.getAggregateSize(5));
+        assertEquals(1331, this.sizeConfig.getAggregateSize(10));
     }
 
     @Test
@@ -62,7 +66,7 @@ public class SizeConfigScalingTest {
         this.sizeConfig.setPositionResizable(2, true);
         this.sizeConfig.setSize(2, 120);
 
-        Assert.assertEquals(420, this.sizeConfig.getAggregateSize(3));
+        assertEquals(420, this.sizeConfig.getAggregateSize(3));
     }
 
     @Test
@@ -70,15 +74,15 @@ public class SizeConfigScalingTest {
         this.sizeConfig.setResizableByDefault(false);
         this.sizeConfig.setSize(2, 120);
 
-        Assert.assertEquals(450, this.sizeConfig.getAggregateSize(3));
+        assertEquals(450, this.sizeConfig.getAggregateSize(3));
     }
 
     @Test
     public void allIndexesSameSize() throws Exception {
-        Assert.assertTrue(this.sizeConfig.isAllPositionsSameSize());
+        assertTrue(this.sizeConfig.isAllPositionsSameSize());
 
         this.sizeConfig.setSize(2, 120);
-        Assert.assertFalse(this.sizeConfig.isAllPositionsSameSize());
+        assertFalse(this.sizeConfig.isAllPositionsSameSize());
     }
 
     @Test
@@ -98,7 +102,7 @@ public class SizeConfigScalingTest {
         sc.setSize(1, 30);
         // use global default for 3rd and 4th position
 
-        Assert.assertEquals(210, sc.getAggregateSize(4));
+        assertEquals(210, sc.getAggregateSize(4));
     }
 
     @Test
@@ -122,7 +126,7 @@ public class SizeConfigScalingTest {
         // setting on 3rd position
         // use global default for 4th position
 
-        Assert.assertEquals(150, sc.getAggregateSize(4));
+        assertEquals(150, sc.getAggregateSize(4));
     }
 
     @Test
@@ -139,15 +143,15 @@ public class SizeConfigScalingTest {
         });
 
         sc.setSize(0, 75);
-        Assert.assertEquals(675, sc.getAggregateSize(5));
+        assertEquals(675, sc.getAggregateSize(5));
         sc.setSize(1, 75);
-        Assert.assertEquals(600, sc.getAggregateSize(5));
+        assertEquals(600, sc.getAggregateSize(5));
         sc.setSize(2, 75);
-        Assert.assertEquals(525, sc.getAggregateSize(5));
+        assertEquals(525, sc.getAggregateSize(5));
         sc.setDefaultSize(75);
-        Assert.assertEquals(450, sc.getAggregateSize(5));
+        assertEquals(450, sc.getAggregateSize(5));
         sc.setSize(2, 100);
-        Assert.assertEquals(476, sc.getAggregateSize(5));
+        assertEquals(476, sc.getAggregateSize(5));
     }
 
     @Test
@@ -163,8 +167,20 @@ public class SizeConfigScalingTest {
 
         });
 
-        Assert.assertEquals(178, sc.downScale(222));
-        Assert.assertEquals(223, sc.upScale(178));
+        assertEquals(178, sc.downScale(222));
+        assertEquals(223, sc.upScale(178));
+    }
+
+    @Test
+    public void testScalingFactor() {
+        assertEquals(1.0f, GUIHelper.getDpiFactor(96), 0);
+        assertEquals(1.25f, GUIHelper.getDpiFactor(120), 0);
+        assertEquals(1.33f, GUIHelper.getDpiFactor(128), 0);
+        assertEquals(1.5f, GUIHelper.getDpiFactor(144), 0);
+        assertEquals(1.75f, GUIHelper.getDpiFactor(168), 0);
+        assertEquals(2.0f, GUIHelper.getDpiFactor(192), 0);
+        assertEquals(2.5f, GUIHelper.getDpiFactor(240), 0);
+        assertEquals(3.0f, GUIHelper.getDpiFactor(288), 0);
     }
 
 }
