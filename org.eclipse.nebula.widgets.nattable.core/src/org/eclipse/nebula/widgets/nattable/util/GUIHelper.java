@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -435,7 +435,7 @@ public class GUIHelper {
      * @return The converted pixels.
      */
     public static int convertHorizontalPixelToDpi(int pixel) {
-        return Double.valueOf(pixel * (double) getDpiFactor(getDpiX())).intValue();
+        return (int) Math.round(Double.valueOf(pixel * (double) getDpiFactor(getDpiX())));
     }
 
     /**
@@ -447,7 +447,7 @@ public class GUIHelper {
      * @return The pixel value related to the given DPI
      */
     public static int convertHorizontalDpiToPixel(int dpi) {
-        return Double.valueOf(dpi / (double) getDpiFactor(getDpiY())).intValue();
+        return (int) Math.round(Double.valueOf(dpi / (double) getDpiFactor(getDpiY())));
     }
 
     /**
@@ -459,7 +459,7 @@ public class GUIHelper {
      * @return The converted pixels.
      */
     public static int convertVerticalPixelToDpi(int pixel) {
-        return Double.valueOf(pixel * (double) getDpiFactor(getDpiX())).intValue();
+        return (int) Math.round(Double.valueOf(pixel * (double) getDpiFactor(getDpiX())));
     }
 
     /**
@@ -471,7 +471,7 @@ public class GUIHelper {
      * @return The pixel value related to the given DPI
      */
     public static int convertVerticalDpiToPixel(int dpi) {
-        return Double.valueOf(dpi / (double) getDpiFactor(getDpiY())).intValue();
+        return (int) Math.round(Double.valueOf(dpi / (double) getDpiFactor(getDpiY())));
     }
 
 }

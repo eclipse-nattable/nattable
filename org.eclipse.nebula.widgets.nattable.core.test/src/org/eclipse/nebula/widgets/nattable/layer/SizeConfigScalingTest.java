@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Original authors and others.
+ * Copyright (c) 2014, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -51,9 +51,9 @@ public class SizeConfigScalingTest {
         this.sizeConfig.setSize(0, 10);
 
         // rounding issue with downscaling and upscaling
-        Assert.assertEquals(9, this.sizeConfig.getAggregateSize(1));
-        Assert.assertEquals(609, this.sizeConfig.getAggregateSize(5));
-        Assert.assertEquals(1329, this.sizeConfig.getAggregateSize(10));
+        Assert.assertEquals(11, this.sizeConfig.getAggregateSize(1));
+        Assert.assertEquals(611, this.sizeConfig.getAggregateSize(5));
+        Assert.assertEquals(1331, this.sizeConfig.getAggregateSize(10));
     }
 
     @Test
@@ -147,7 +147,24 @@ public class SizeConfigScalingTest {
         sc.setDefaultSize(75);
         Assert.assertEquals(450, sc.getAggregateSize(5));
         sc.setSize(2, 100);
-        Assert.assertEquals(474, sc.getAggregateSize(5));
+        Assert.assertEquals(476, sc.getAggregateSize(5));
+    }
+
+    @Test
+    public void testRounding() {
+        final SizeConfig sc = new SizeConfig(100);
+        sc.setDpiConverter(new AbstractDpiConverter() {
+
+            @Override
+            protected void readDpiFromDisplay() {
+                // use dpi of 120 which will result in a dpi factor of 1.25
+                this.dpi = 120;
+            }
+
+        });
+
+        Assert.assertEquals(178, sc.downScale(222));
+        Assert.assertEquals(223, sc.upScale(178));
     }
 
 }

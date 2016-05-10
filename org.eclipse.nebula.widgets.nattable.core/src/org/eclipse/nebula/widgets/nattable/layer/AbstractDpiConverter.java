@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015 Dirk Fauth.
+ * Copyright (c) 2014, 2016 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -44,11 +44,11 @@ public abstract class AbstractDpiConverter implements IDpiConverter {
 
     @Override
     public int convertPixelToDpi(int pixel) {
-        return Double.valueOf(pixel * (double) getCurrentDpiFactor()).intValue();
+        return (int) Math.round(Double.valueOf(pixel * (double) getCurrentDpiFactor()));
     }
 
     @Override
     public int convertDpiToPixel(int dpi) {
-        return Double.valueOf(dpi / (double) getCurrentDpiFactor()).intValue();
+        return (int) Math.round(Double.valueOf(dpi / (double) getCurrentDpiFactor()));
     }
 }
