@@ -181,6 +181,7 @@ public class SizeConfigScalingTest {
         assertEquals(2.0f, GUIHelper.getDpiFactor(192), 0);
         assertEquals(2.5f, GUIHelper.getDpiFactor(240), 0);
         assertEquals(3.0f, GUIHelper.getDpiFactor(288), 0);
+        assertEquals(1.0f, GUIHelper.getDpiFactor(78), 0);
     }
 
 }

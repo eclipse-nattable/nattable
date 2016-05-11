@@ -371,7 +371,8 @@ public class GUIHelper {
      * @return The factor for dpi scaling calculations.
      */
     public static float getDpiFactor(int dpi) {
-        return Math.round((dpi / 96f) * 100) / 100f;
+        // never scale below 96 dpi
+        return Math.max(1.0f, Math.round((dpi / 96f) * 100) / 100f);
     }
 
     /**
