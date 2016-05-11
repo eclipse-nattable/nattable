@@ -14,6 +14,7 @@ package org.eclipse.nebula.widgets.nattable.fillhandle.config;
 
 import java.util.Calendar;
 
+import org.eclipse.nebula.widgets.nattable.config.Direction;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 import org.eclipse.swt.graphics.Color;
@@ -54,8 +55,8 @@ public interface FillHandleConfigAttributes {
 
     /**
      * ConfigAttribute to configure the directions that are allowed for the fill
-     * handle. If nothing is specified {@link FillDirection#BOTH} will be used
+     * handle. If nothing is specified {@link Direction#BOTH} will be used
      * implicitly.
      */
-    ConfigAttribute<FillDirection> ALLOWED_FILL_DIRECTION = new ConfigAttribute<FillDirection>();
+    ConfigAttribute<Direction> ALLOWED_FILL_DIRECTION = new ConfigAttribute<Direction>();
 }

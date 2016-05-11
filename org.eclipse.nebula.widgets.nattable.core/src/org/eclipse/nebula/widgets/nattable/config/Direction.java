@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2016 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,14 +10,18 @@
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
  *
  *****************************************************************************/
-package org.eclipse.nebula.widgets.nattable.fillhandle.config;
+package org.eclipse.nebula.widgets.nattable.config;
 
 /**
- * Enumeration that is used to configure which directions are allowed for using
- * the fill drag handle.
+ * Enumeration that is used to configure direction attributes. It is used for
+ * example
+ * <ul>
+ * <li>to configure which directions are allowed for using the fill drag handle
+ * </li>
+ * </ul>
  *
  * @since 1.4
  */
-public enum FillDirection {
-    HORIZONTAL, VERTICAL, BOTH
+public enum Direction {
+    NONE, HORIZONTAL, VERTICAL, BOTH
 }

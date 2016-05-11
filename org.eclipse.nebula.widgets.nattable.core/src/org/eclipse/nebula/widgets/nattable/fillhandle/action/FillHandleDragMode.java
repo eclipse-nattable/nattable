@@ -16,12 +16,12 @@ import java.util.Date;
 
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.config.Direction;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
 import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataToClipboardCommand;
 import org.eclipse.nebula.widgets.nattable.fillhandle.command.FillHandlePasteCommand;
 import org.eclipse.nebula.widgets.nattable.fillhandle.command.FillHandlePasteCommand.FillHandleOperation;
-import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillDirection;
 import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillHandleConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -155,17 +155,17 @@ public class FillHandleDragMode implements IDragMode {
                 int height = -1;
 
                 // check if only drag operations in one direction are supported
-                FillDirection direction = natTable.getConfigRegistry().getConfigAttribute(
+                Direction direction = natTable.getConfigRegistry().getConfigAttribute(
                         FillHandleConfigAttributes.ALLOWED_FILL_DIRECTION,
                         DisplayMode.NORMAL,
                         this.selectionCell.getConfigLabels().getLabels());
 
                 if (direction == null) {
-                    direction = FillDirection.BOTH;
+                    direction = Direction.BOTH;
                 }
 
-                if (direction == FillDirection.VERTICAL
-                        || (direction == FillDirection.BOTH && yDiff >= xDiff)) {
+                if (direction == Direction.VERTICAL
+                        || (direction == Direction.BOTH && yDiff >= xDiff)) {
                     int diff = calculateIncreasedPositiveDiff(selectedRowIndex, this.startIndex.y);
                     height = Math.max(diff, this.selectionLayer.getSelectedRowCount());
                     width = this.selectionLayer.getSelectedColumnPositions().length;
