@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2016 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -164,37 +164,39 @@ public class FillHandleDragMode implements IDragMode {
                     direction = Direction.BOTH;
                 }
 
-                if (direction == Direction.VERTICAL
-                        || (direction == Direction.BOTH && yDiff >= xDiff)) {
-                    int diff = calculateIncreasedPositiveDiff(selectedRowIndex, this.startIndex.y);
-                    height = Math.max(diff, this.selectionLayer.getSelectedRowCount());
-                    width = this.selectionLayer.getSelectedColumnPositions().length;
-                    this.direction = MoveDirectionEnum.DOWN;
-                    if ((selectedRowIndex - this.startIndex.y) < 0) {
-                        yStart = selectedRowIndex;
-                        height = diff + this.selectionLayer.getSelectedRowCount() - 1;
-                        this.direction = MoveDirectionEnum.UP;
+                if (direction != Direction.NONE) {
+                    if (direction == Direction.VERTICAL
+                            || (direction == Direction.BOTH && yDiff >= xDiff)) {
+                        int diff = calculateIncreasedPositiveDiff(selectedRowIndex, this.startIndex.y);
+                        height = Math.max(diff, this.selectionLayer.getSelectedRowCount());
+                        width = this.selectionLayer.getSelectedColumnPositions().length;
+                        this.direction = MoveDirectionEnum.DOWN;
+                        if ((selectedRowIndex - this.startIndex.y) < 0) {
+                            yStart = selectedRowIndex;
+                            height = diff + this.selectionLayer.getSelectedRowCount() - 1;
+                            this.direction = MoveDirectionEnum.UP;
+                        }
+                    } else {
+                        int diff = calculateIncreasedPositiveDiff(selectedColumnIndex, this.startIndex.x);
+                        height = this.selectionLayer.getSelectedRowCount();
+                        width = Math.max(diff, this.selectionLayer.getSelectedColumnPositions().length);
+                        this.direction = MoveDirectionEnum.RIGHT;
+                        if ((selectedColumnIndex - this.startIndex.x) < 0) {
+                            xStart = selectedColumnIndex;
+                            width = diff + this.selectionLayer.getSelectedColumnPositions().length - 1;
+                            this.direction = MoveDirectionEnum.LEFT;
+                        }
                     }
-                } else {
-                    int diff = calculateIncreasedPositiveDiff(selectedColumnIndex, this.startIndex.x);
-                    height = this.selectionLayer.getSelectedRowCount();
-                    width = Math.max(diff, this.selectionLayer.getSelectedColumnPositions().length);
-                    this.direction = MoveDirectionEnum.RIGHT;
-                    if ((selectedColumnIndex - this.startIndex.x) < 0) {
-                        xStart = selectedColumnIndex;
-                        width = diff + this.selectionLayer.getSelectedColumnPositions().length - 1;
-                        this.direction = MoveDirectionEnum.LEFT;
-                    }
+
+                    actionBounds = new Rectangle(
+                            xStart,
+                            yStart,
+                            width,
+                            height);
+
+                    this.selectionLayer.setFillHandleRegion(actionBounds);
+                    natTable.redraw();
                 }
-
-                actionBounds = new Rectangle(
-                        xStart,
-                        yStart,
-                        width,
-                        height);
-
-                this.selectionLayer.setFillHandleRegion(actionBounds);
-                natTable.redraw();
             }
         }
     }
