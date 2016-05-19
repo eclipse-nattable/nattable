@@ -20,7 +20,7 @@
             <fileset dir="../org.eclipse.nebula.widgets.nattable.examples/target/classes"/>
         	<zipfileset 
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
-            	src="lib/org.eclipse.nebula.widgets.richtext_0.1.0.201509211912.jar"/>
+            	src="lib/org.eclipse.nebula.widgets.richtext_1.0.0.201604151927.zip"/>
             <zipfileset 
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
             	src="lib/ca.odell.glazedlists_1.9.0.v201303080712.jar"/>
