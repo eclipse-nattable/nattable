@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -202,7 +202,12 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
         // as this method will return the whole range based on the selection
         // anchor and the clicked position, we clear the selection prior adding
         // the newly calculated selection.
-        this.selectionLayer.getSelectionModel().clearSelection();
+        Rectangle lastSelectedRegion = this.selectionLayer.getLastSelectedRegion();
+        if (lastSelectedRegion != null) {
+            this.selectionLayer.getSelectionModel().clearSelection(lastSelectedRegion);
+        } else {
+            this.selectionLayer.getSelectionModel().clearSelection();
+        }
 
         // if multiple selection is disabled, we need to ensure to only moving
         // the selection anchor
