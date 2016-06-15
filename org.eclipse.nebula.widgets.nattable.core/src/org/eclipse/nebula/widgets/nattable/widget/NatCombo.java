@@ -427,7 +427,7 @@ public class NatCombo extends Composite {
             this.itemList = Arrays.asList(items);
             this.selectionStateMap = new HashMap<String, Boolean>();
             for (String item : items) {
-                this.selectionStateMap.put(item, null);
+                this.selectionStateMap.put(item, Boolean.FALSE);
             }
             if (!this.dropdownTable.isDisposed()) {
                 this.dropdownTableViewer.setInput(items);
