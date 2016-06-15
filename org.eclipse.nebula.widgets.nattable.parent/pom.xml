@@ -43,6 +43,9 @@
 
 		<module>../org.eclipse.nebula.widgets.nattable.dataset</module>
 		<module>../org.eclipse.nebula.widgets.nattable.examples</module>
+		<module>../org.eclipse.nebula.widgets.nattable.examples.e4</module>
+		<module>../org.eclipse.nebula.widgets.nattable.examples.e4.feature</module>
+		<module>../org.eclipse.nebula.widgets.nattable.examples.e4.product</module>
 	</modules>
 
 	<properties>

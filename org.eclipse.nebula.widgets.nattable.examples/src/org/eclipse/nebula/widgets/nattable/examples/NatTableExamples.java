@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,17 +27,15 @@ import org.eclipse.nebula.widgets.nattable.examples.runner.TabbedNatExampleRunne
 
 public class NatTableExamples {
 
-    public static void main(String[] args) throws InstantiationException,
-            IllegalAccessException, ClassNotFoundException, IOException {
+    public static void main(String[] args)
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
         if (args.length == 0) {
             List<String> examples;
 
-            InputStream inputStream = NatTableExamples.class
-                    .getResourceAsStream("/examples.index");
+            InputStream inputStream = NatTableExamples.class.getResourceAsStream("/examples.index");
             if (inputStream != null) {
                 examples = new ArrayList<String>();
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(inputStream));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                 String line = reader.readLine();
                 while (line != null) {
                     examples.add(line);
@@ -49,18 +47,17 @@ public class NatTableExamples {
                 examples = createExamplesIndex(null);
             }
 
-            TabbedNatExampleRunner.run(examples.toArray(new String[] {}));
+            TabbedNatExampleRunner.run(examples.toArray(new String[0]));
         } else if (args.length == 2 && "--createIndex".equals(args[0])) {
             System.out.println("Creating examples.index");
             System.out.println("basedir: " + args[1]);
             createExamplesIndex(args[1]);
         } else {
-            System.out
-                    .println("Usage: NatTableExamples [--createIndex <basedir>]");
+            System.out.println("Usage: NatTableExamples [--createIndex <basedir>]");
         }
     }
 
-    private static List<String> createExamplesIndex(String basedir)
+    public static List<String> createExamplesIndex(String basedir)
             throws IOException {
         List<String> examples = new ArrayList<String>();
 
@@ -70,10 +67,8 @@ public class NatTableExamples {
         examplesDir = new File(basedir, "src" + INatExample.CLASSIC_BASE_PATH);
         findExamples(examplesDir, examples, INatExample.CLASSIC_EXAMPLES_PREFIX);
 
-        File examplesIndexFile = new File(new File(basedir, "src"),
-                "examples.index");
-        BufferedWriter writer = new BufferedWriter(new FileWriter(
-                examplesIndexFile));
+        File examplesIndexFile = new File(new File(basedir, "src"), "examples.index");
+        BufferedWriter writer = new BufferedWriter(new FileWriter(examplesIndexFile));
         for (String example : examples) {
             writer.write(example + "\n");
         }
@@ -103,8 +98,8 @@ public class NatTableExamples {
         }
     }
 
-    private static void findExamples(File dir, List<String> examples,
-            String prefix) throws IOException {
+    public static void findExamples(File dir, List<String> examples, String prefix)
+            throws IOException {
         List<String> sortedList = Arrays.asList(dir.list());
         Collections.sort(sortedList);
         for (String s : sortedList) {
@@ -112,15 +107,13 @@ public class NatTableExamples {
             if (f.isDirectory()) {
                 findExamples(f, examples, prefix);
             } else {
-                String examplePath = dir.getCanonicalPath() + File.separator
-                        + s;
+                String examplePath = dir.getCanonicalPath() + File.separator + s;
                 examplePath = examplePath.replace(File.separator, "/"); // Convert
                                                                         // to
                                                                         // /-delimited
                                                                         // path
                 if (examplePath.endsWith(".java")) {
-                    examplePath = examplePath.replaceAll("^.*/src/", "")
-                            .replaceAll("\\.java$", "");
+                    examplePath = examplePath.replaceAll("^.*/src/", "").replaceAll("\\.java$", "");
                     examples.add(prefix + examplePath);
                 }
             }

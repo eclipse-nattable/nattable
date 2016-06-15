@@ -10,7 +10,7 @@
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
  *
  *****************************************************************************/
-package org.eclipse.nebula.widgets.nattable.examples.e4;
+package org.eclipse.nebula.widgets.nattable.examples.e4.part;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +32,7 @@ import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
+import org.eclipse.nebula.widgets.nattable.examples.e4.AbstractE4NatExamplePart;
 import org.eclipse.nebula.widgets.nattable.extension.e4.selection.E4SelectionListener;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
@@ -46,10 +47,11 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
-public class SelectionListenerExample {
+public class SelectionListenerExample extends AbstractE4NatExamplePart {
 
     @Inject
     ESelectionService service;
@@ -133,9 +135,14 @@ public class SelectionListenerExample {
         final NatTable natTable = new NatTable(parent, gridLayer);
         natTable.setData("org.eclipse.e4.ui.css.CssClassName", "modern");
 
+        parent.setLayout(new GridLayout());
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+
         outputArea = new Text(parent, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
         outputArea.setEditable(false);
         GridDataFactory.fillDefaults().grab(true, false).hint(0, 100).align(SWT.FILL, SWT.BEGINNING).applyTo(outputArea);
+
+        showSourceLinks(parent, getClass().getName());
     }
 
     @Inject

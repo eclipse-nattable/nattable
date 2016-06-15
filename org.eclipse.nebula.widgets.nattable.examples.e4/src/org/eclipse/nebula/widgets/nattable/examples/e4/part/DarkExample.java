@@ -10,7 +10,7 @@
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
  *
  *****************************************************************************/
-package org.eclipse.nebula.widgets.nattable.examples.e4;
+package org.eclipse.nebula.widgets.nattable.examples.e4.part;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +39,7 @@ import org.eclipse.nebula.widgets.nattable.dataset.person.ExtendedPersonWithAddr
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
+import org.eclipse.nebula.widgets.nattable.examples.e4.AbstractE4NatExamplePart;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
@@ -113,7 +114,7 @@ import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TransformedList;
 
-public class DarkExample {
+public class DarkExample extends AbstractE4NatExamplePart {
 
     private static final String ROW_HEADER_SUMMARY_ROW = "rowHeaderSummaryRowLabel";
 
@@ -138,7 +139,7 @@ public class DarkExample {
                 "married", "gender", "birthday" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("age", "Age");
@@ -148,12 +149,12 @@ public class DarkExample {
         propertyToLabelMap.put("birthday", "Birthday");
 
         final IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor =
-                new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(propertyNames);
+                new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
 
         // to enable the group by summary feature, the GroupByDataLayer needs to
         // know the ConfigRegistry
         final BodyLayerStack<ExtendedPersonWithAddress> bodyLayerStack =
-                new BodyLayerStack<ExtendedPersonWithAddress>(
+                new BodyLayerStack<>(
                         PersonService.getExtendedPersonsWithAddress(10),
                         columnPropertyAccessor,
                         configRegistry);
@@ -170,9 +171,9 @@ public class DarkExample {
                 new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // add sorting
-        SortHeaderLayer<ExtendedPersonWithAddress> sortHeaderLayer = new SortHeaderLayer<ExtendedPersonWithAddress>(
+        SortHeaderLayer<ExtendedPersonWithAddress> sortHeaderLayer = new SortHeaderLayer<>(
                 columnHeaderLayer,
-                new GlazedListsSortModel<ExtendedPersonWithAddress>(
+                new GlazedListsSortModel<>(
                         bodyLayerStack.getSortedList(),
                         columnPropertyAccessor,
                         configRegistry,
@@ -194,8 +195,8 @@ public class DarkExample {
 
         // add the filter row functionality
         final FilterRowHeaderComposite<ExtendedPersonWithAddress> filterRowHeaderLayer =
-                new FilterRowHeaderComposite<ExtendedPersonWithAddress>(
-                        new DefaultGlazedListsFilterStrategy<ExtendedPersonWithAddress>(
+                new FilterRowHeaderComposite<>(
+                        new DefaultGlazedListsFilterStrategy<>(
                                 bodyLayerStack.getFilterList(),
                                 columnPropertyAccessor,
                                 configRegistry),
@@ -270,7 +271,7 @@ public class DarkExample {
         natTable.addConfiguration(new SingleClickSortConfiguration());
 
         sumMoneySummaryProvider =
-                new SummationGroupBySummaryProvider<ExtendedPersonWithAddress>(columnPropertyAccessor);
+                new SummationGroupBySummaryProvider<>(columnPropertyAccessor);
         avgMoneySummaryProvider =
                 new AverageMoneyGroupBySummaryProvider();
 
@@ -494,6 +495,8 @@ public class DarkExample {
         });
 
         natTable.setData("org.eclipse.e4.ui.css.CssClassName", "dark");
+
+        showSourceLinks(container, getClass().getName());
     }
 
     /**
@@ -530,12 +533,12 @@ public class DarkExample {
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator
             // will be set by configuration
-            this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+            this.sortedList = new SortedList<>(rowObjectsGlazedList, null);
             // wrap the SortedList with the FilterList
-            this.filterList = new FilterList<T>(this.sortedList);
+            this.filterList = new FilterList<>(this.sortedList);
 
             // Use the GroupByDataLayer instead of the default DataLayer
-            this.bodyDataLayer = new GroupByDataLayer<T>(
+            this.bodyDataLayer = new GroupByDataLayer<>(
                     getGroupByModel(),
                     this.filterList,
                     columnPropertyAccessor,
@@ -545,7 +548,7 @@ public class DarkExample {
 
             // layer for event handling of GlazedLists and PropertyChanges
             GlazedListsEventLayer<T> glazedListsEventLayer =
-                    new GlazedListsEventLayer<T>(this.bodyDataLayer, this.filterList);
+                    new GlazedListsEventLayer<>(this.bodyDataLayer, this.filterList);
 
             // NOTE:
             // we need to tell the GroupByDataLayer to clear its cache if
@@ -700,7 +703,6 @@ public class DarkExample {
             }
             return "Avg: " + String.format("%.2f", total / valueRows);
         }
-
     }
 
     /**
@@ -731,6 +733,5 @@ public class DarkExample {
             }
             return "Avg: " + String.format("%.2f", total / valueRows);
         }
-
     }
 }

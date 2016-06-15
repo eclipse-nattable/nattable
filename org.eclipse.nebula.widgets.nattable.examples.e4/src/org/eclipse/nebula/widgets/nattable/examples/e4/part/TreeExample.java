@@ -10,7 +10,7 @@
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
  *
  *****************************************************************************/
-package org.eclipse.nebula.widgets.nattable.examples.e4;
+package org.eclipse.nebula.widgets.nattable.examples.e4.part;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -30,6 +30,7 @@ import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonWithAddress;
+import org.eclipse.nebula.widgets.nattable.examples.e4.AbstractE4NatExamplePart;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeData;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
@@ -68,7 +69,7 @@ import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TransformedList;
 import ca.odell.glazedlists.TreeList;
 
-public class TreeExample {
+public class TreeExample extends AbstractE4NatExamplePart {
 
     public static final String GENDER_LABEL = "genderLabel";
     public static final String MARRIED_LABEL = "marriedLabel";
@@ -166,6 +167,8 @@ public class TreeExample {
                 natTable.doCommand(new TreeExpandToLevelCommand(1));
             }
         });
+
+        showSourceLinks(container, getClass().getName());
     }
 
     /**

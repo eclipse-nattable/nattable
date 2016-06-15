@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="org.eclipse.nebula.widgets.nattable.examples.e4" id="org.eclipse.nebula.widgets.nattable.examples.e4.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="org.eclipse.nebula.widgets.nattable.examples.e4" uid="org.eclipse.nebula.widgets.nattable.examples.e4.product" id="org.eclipse.nebula.widgets.nattable.examples.e4.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <programArgs>-clearPersistedState
-      </programArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
    </launcherArgs>
 
    <windowImages i16="/org.eclipse.nebula.widgets.nattable.examples.e4/icons/nebula_logo_16.png" i32="/org.eclipse.nebula.widgets.nattable.examples.e4/icons/nebula_logo_32.png" i64="/org.eclipse.nebula.widgets.nattable.examples.e4/icons/nebula_logo_64.png"/>
 
-   <launcher>
+
+   <launcher name="nattable_examples">
       <solaris/>
       <win useIco="false">
          <bmp/>
@@ -36,7 +35,16 @@
       <feature id="org.eclipse.nebula.widgets.nattable.extension.e4.feature" version="1.0.0.qualifier"/>
       <feature id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature" version="1.4.0.qualifier"/>
       <feature id="org.eclipse.nebula.widgets.nattable.examples.e4.feature" version="1.0.0.qualifier"/>
+      <feature id="org.eclipse.nebula.widgets.nattable.extension.nebula.feature" version="1.0.0.qualifier"/>
+      <feature id="org.eclipse.nebula.widgets.nattable.extension.poi.feature" version="1.4.0.qualifier"/>
    </features>
 
+   <configurations>
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+   </configurations>
 
 </product>

@@ -25,7 +25,7 @@ public class NavContentProvider implements ITreeContentProvider {
 
     private Map<String, Collection<String>> pathToChildrenMap;
 
-    private Collection<String> getChildren(final String parentPath) {
+    protected Collection<String> getChildren(final String parentPath) {
         Collection<String> children = this.pathToChildrenMap.get(parentPath);
         if (children == null) {
             children = new LinkedHashSet<String>();

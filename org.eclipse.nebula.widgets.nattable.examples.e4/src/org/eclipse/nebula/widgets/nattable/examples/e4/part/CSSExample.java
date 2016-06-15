@@ -10,7 +10,7 @@
  *		Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
  *
  *****************************************************************************/
-package org.eclipse.nebula.widgets.nattable.examples.e4;
+package org.eclipse.nebula.widgets.nattable.examples.e4.part;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +37,7 @@ import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditBindings;
 import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditConfiguration;
+import org.eclipse.nebula.widgets.nattable.examples.e4.AbstractE4NatExamplePart;
 import org.eclipse.nebula.widgets.nattable.extension.e4.painterfactory.CellPainterFactory;
 import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillHandleConfiguration;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
@@ -64,7 +65,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
 @SuppressWarnings("restriction")
-public class CSSExample {
+public class CSSExample extends AbstractE4NatExamplePart {
 
     @Inject
     EMenuService menuService;
@@ -223,6 +224,8 @@ public class CSSExample {
                 }
             };
         });
+
+        showSourceLinks(parent, getClass().getName());
     }
 
 }

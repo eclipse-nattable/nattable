@@ -15,7 +15,7 @@ import org.eclipse.nebula.widgets.nattable.examples.INatExample;
 
 public class NavLabelProvider extends LabelProvider {
 
-    private final NavContentProvider contentProvider;
+    protected final NavContentProvider contentProvider;
 
     public NavLabelProvider(NavContentProvider contentProvider) {
         this.contentProvider = contentProvider;
@@ -37,7 +37,7 @@ public class NavLabelProvider extends LabelProvider {
         }
     }
 
-    private String format(String str) {
+    protected String format(String str) {
         return str.replaceAll("^_[0-9]*_", "").replace('_', ' ');
     }
 

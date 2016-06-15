@@ -1,3 +1,15 @@
+.MTrimmedWindow {
+	margin-top: 5px;
+	margin-left: 5px;
+	margin-right: 5px;
+	margin-bottom: 5px;
+}
+
+.MPartStack {
+	swt-maximize-visible: false;
+	swt-minimize-visible: false;
+}
+
 .basic {
 	cell-background-color: white;
 	text-align: left;

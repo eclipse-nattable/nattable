@@ -10,13 +10,15 @@
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
  *
  *****************************************************************************/
-package org.eclipse.nebula.widgets.nattable.examples.e4;
+package org.eclipse.nebula.widgets.nattable.examples.e4.part;
 
 import javax.annotation.PostConstruct;
 
 import org.eclipse.e4.ui.css.swt.CSSSWTConstants;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.examples.e4.AbstractE4NatExamplePart;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DummyColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
@@ -24,10 +26,11 @@ import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
 @SuppressWarnings("restriction")
-public class PercentageExample {
+public class PercentageExample extends AbstractE4NatExamplePart {
 
     @PostConstruct
     public void postConstruct(Composite parent) {
@@ -47,6 +50,11 @@ public class PercentageExample {
         NatTable natTable = new NatTable(parent, compositeLayer);
 
         natTable.setData(CSSSWTConstants.CSS_CLASS_NAME_KEY, "percentage");
+
+        parent.setLayout(new GridLayout());
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+
+        showSourceLinks(parent, getClass().getName());
     }
 
     /**
