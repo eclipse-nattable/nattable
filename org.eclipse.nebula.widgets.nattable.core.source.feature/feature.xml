@@ -2,14 +2,14 @@
 <feature
       id="org.eclipse.nebula.widgets.nattable.core.source.feature"
       label="NatTable Core Source Feature"
-      version="1.4.0.qualifier">
+      version="1.5.0.qualifier">
 
    <description url="http://nattable.org">
       NatTable Core Source
    </description>
 
    <copyright>
-      Copyright Edwin Park and others, 2013
+      Copyright Edwin Park and others, 2016
    </copyright>
 
    <license url="http://www.eclipse.org/legal/epl-v10.html">

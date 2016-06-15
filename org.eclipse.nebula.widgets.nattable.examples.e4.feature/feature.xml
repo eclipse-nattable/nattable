@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.nebula.widgets.nattable.examples.e4.feature"
       label="NatTable E4 Examples Feature"
-      version="1.0.0.qualifier">
+      version="1.5.0.qualifier">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]

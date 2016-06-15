@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: NatTable GlazedLists Extensions Test
-Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.extension.glazedlists.test
+Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.extension.glazedlists.tests
 Bundle-Version: 1.4.0.qualifier
 Fragment-Host: org.eclipse.nebula.widgets.nattable.extension.glazedlists
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.eclipse.jface.viewers,
  org.eclipse.nebula.widgets.nattable.dataset.fixture.data;version="1.4.0",
  org.eclipse.nebula.widgets.nattable.dataset.person;version="1.4.0",

@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="NatTable Target" sequenceNumber="34">
+<?pde version="3.8"?><target name="NatTable Target" sequenceNumber="36">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="4.6.0.I20160519-1730"/>
-<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.300.v20160519-1731"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.6milestones"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.300.v20160525-1303"/>
+<unit id="org.eclipse.sdk.ide" version="4.6.0.I20160525-2000"/>
+<repository location="http://download.eclipse.org/releases/neon/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
+<unit id="org.eclipse.nebula.widgets.richtext.feature.feature.group" version="1.0.0.201605312033"/>
+<repository location="http://download.eclipse.org/nebula/releases/1.0.0"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
 <unit id="org.apache.poi" version="3.9.0.v201405241750"/>
@@ -12,10 +16,6 @@
 <unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
 <unit id="org.apache.poi.source" version="3.9.0.v201405241750"/>
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.richtext.feature.feature.group" version="1.0.0.201605312033"/>
-<repository location="http://download.eclipse.org/nebula/releases/1.0.0"/>
 </location>
 </locations>
 </target>
