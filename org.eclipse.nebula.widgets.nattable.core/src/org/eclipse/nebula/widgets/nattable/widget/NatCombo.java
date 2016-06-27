@@ -235,15 +235,6 @@ public class NatCombo extends Composite {
      */
     private boolean hasFocus = false;
     /**
-     * Flag to determine whether the focus lost runnable is currently active or
-     * not. Necessary in case the FocusListener is removing itself on
-     * focusLost(). Quite unusual in normal cases, but for NatTable editing this
-     * appears because if the control looses focus it gets destroyed in
-     * AbstractCellEditor.close() Introducing and handling this flag ensures
-     * concurrency safety.
-     */
-    private boolean focusLostRunnableActive = false;
-    /**
      * The list of FocusListener that contains the listeners that will be
      * informed if the NatCombo control gains or looses focus. We keep our own
      * list of listeners because the two controls that are combined in this
@@ -1214,23 +1205,7 @@ public class NatCombo extends Composite {
         // lost focus. This is necessary because the NatCombo is a combination
         // of a text field and a table as dropdown which do not share the
         // same focus by default.
-        // To avoid concurrent modifications, in case the focus lost runnable
-        // is active, the removal of the focus listener is processed in a
-        // new thread after the focus lost runnable is done.
-        if (this.focusLostRunnableActive) {
-            try {
-                new Thread() {
-                    @Override
-                    public void run() {
-                        NatCombo.this.focusListener.remove(listener);
-                    };
-                }.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        } else {
-            this.focusListener.remove(listener);
-        }
+        this.focusListener.remove(listener);
     }
 
     /**
@@ -1437,11 +1412,10 @@ public class NatCombo extends Composite {
                 @Override
                 public void run() {
                     if (!NatCombo.this.hasFocus) {
-                        NatCombo.this.focusLostRunnableActive = true;
-                        for (FocusListener f : NatCombo.this.focusListener) {
+                        List<FocusListener> copy = new ArrayList<FocusListener>(NatCombo.this.focusListener);
+                        for (FocusListener f : copy) {
                             f.focusLost(e);
                         }
-                        NatCombo.this.focusLostRunnableActive = false;
                     }
                 }
             });
