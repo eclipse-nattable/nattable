@@ -475,6 +475,9 @@ public class NatCombo extends Composite {
                         // free value in text control will be used
                         if (!NatCombo.this.dropdownTable.isDisposed()) {
                             NatCombo.this.dropdownTable.deselectAll();
+                            for (Map.Entry<String, Boolean> entry : NatCombo.this.selectionStateMap.entrySet()) {
+                                entry.setValue(Boolean.FALSE);
+                            }
                         }
                     } else {
                         showDropdownControl();
