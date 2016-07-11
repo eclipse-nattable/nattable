@@ -17,7 +17,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.nebula.widgets.nattable.columnCategories.ChooseColumnsFromCategoriesCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
@@ -52,7 +51,6 @@ public class ChooseColumnsFromCategoriesCommandHandlerTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void calculateDestinationPositionsForMovingUp() throws Exception {
         List<Integer> destinationPositions = this.commandHandler
                 .getDestinationPositions(MoveDirectionEnum.UP, Arrays.asList(
@@ -66,7 +64,6 @@ public class ChooseColumnsFromCategoriesCommandHandlerTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void calculateDestinationPositionsForMovingDown() throws Exception {
         List<Integer> destinationPositions = this.commandHandler
                 .getDestinationPositions(MoveDirectionEnum.DOWN, Arrays.asList(
