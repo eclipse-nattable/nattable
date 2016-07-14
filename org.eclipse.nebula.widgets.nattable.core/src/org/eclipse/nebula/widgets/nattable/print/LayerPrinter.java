@@ -247,7 +247,7 @@ public class LayerPrinter {
     /**
      * @return The footer height in printer DPI that should be used to render
      *         the footer.
-     * @since 1.4
+     * @since 1.5
      */
     protected int getFooterHeightInPrinterDPI() {
         return this.footerHeight;
@@ -256,7 +256,7 @@ public class LayerPrinter {
     /**
      * @return Integer array that contains the original configured width at
      *         index 0 and the grid line width to use at index 1.
-     * @since 1.4
+     * @since 1.5
      */
     protected Integer[] getGridLineWidth() {
         // check if a grid line width is configured

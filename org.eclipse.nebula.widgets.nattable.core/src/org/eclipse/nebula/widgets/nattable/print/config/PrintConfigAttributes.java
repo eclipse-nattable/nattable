@@ -20,7 +20,7 @@ import org.eclipse.nebula.widgets.nattable.style.IStyle;
  * @noimplement This interface is not intended to be implemented by clients.
  * @noextend This interface is not intended to be extended by clients.
  *
- * @since 1.4
+ * @since 1.5
  */
 public interface PrintConfigAttributes {
 
