@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,6 +32,7 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CellPainterDecorator;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommandHandler;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommandHandler;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandCollapseCommandHandler;
@@ -271,22 +272,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
                     cell.getConfigLabels().getLabels());
 
             if (treeCellPainter != null) {
-                ICellPainter innerWrapper = treeCellPainter;
-                IndentedTreeImagePainter treePainter = null;
-                if (innerWrapper instanceof IndentedTreeImagePainter) {
-                    treePainter = (IndentedTreeImagePainter) innerWrapper;
-                } else {
-                    while (treePainter == null
-                            && innerWrapper != null
-                            && innerWrapper instanceof CellPainterWrapper
-                            && ((CellPainterWrapper) innerWrapper).getWrappedPainter() != null) {
-
-                        innerWrapper = ((CellPainterWrapper) innerWrapper).getWrappedPainter();
-                        if (innerWrapper instanceof IndentedTreeImagePainter) {
-                            treePainter = (IndentedTreeImagePainter) innerWrapper;
-                        }
-                    }
-                }
+                IndentedTreeImagePainter treePainter = findIndentedTreeImagePainter(treeCellPainter);
 
                 if (treePainter != null) {
                     treePainter.setBaseCellPainter(cellPainter);
@@ -307,6 +293,24 @@ public class TreeLayer extends AbstractRowHideShowLayer {
         }
 
         return cellPainter;
+    }
+
+    private IndentedTreeImagePainter findIndentedTreeImagePainter(ICellPainter painter) {
+        IndentedTreeImagePainter result = null;
+        if (painter instanceof IndentedTreeImagePainter) {
+            result = (IndentedTreeImagePainter) painter;
+        } else if (painter != null
+                && painter instanceof CellPainterWrapper
+                && ((CellPainterWrapper) painter).getWrappedPainter() != null) {
+            result = findIndentedTreeImagePainter(((CellPainterWrapper) painter).getWrappedPainter());
+        } else if (painter != null
+                && painter instanceof CellPainterDecorator) {
+            result = findIndentedTreeImagePainter(((CellPainterDecorator) painter).getBaseCellPainter());
+            if (result == null) {
+                result = findIndentedTreeImagePainter(((CellPainterDecorator) painter).getDecoratorCellPainter());
+            }
+        }
+        return result;
     }
 
     @Override
