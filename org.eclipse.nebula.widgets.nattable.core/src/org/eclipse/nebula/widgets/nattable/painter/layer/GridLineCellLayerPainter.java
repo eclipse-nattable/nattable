@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Loris Securo <lorissek@gmail.com> - Bug 499513
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.layer;
 
@@ -27,7 +28,10 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 
     private final Color gridColor;
 
-    private boolean renderGridLines = true;
+    /**
+     * @since 1.5
+     */
+    protected boolean renderGridLines = true;
 
     /**
      * @since 1.4

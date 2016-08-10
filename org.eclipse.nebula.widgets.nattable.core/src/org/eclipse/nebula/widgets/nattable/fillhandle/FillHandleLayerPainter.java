@@ -8,6 +8,7 @@
  *
  * Contributors:
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
+ *      Loris Securo <lorissek@gmail.com> - Bug 499513
  *
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.fillhandle;
@@ -228,172 +229,137 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
         applyHandleBorderStyle(gc, configRegistry);
 
         int handleBorderWidth = gc.getLineWidth();
-        int startAdjustment = (handleBorderWidth == 1) ? 1 : 0;
-        int endAdjustment = (handleBorderWidth == 1) ? 1 : handleBorderWidth - 1;
+
+        // if the line width is 1, gc.drawline will draw a longer line than
+        // when the line width is > 1, so we reduce it
+        int lengthFix = (handleBorderWidth == 1) ? -1 : 0;
 
         ILayerCell fillHandleCell = null;
 
         // Draw horizontal borders
         for (int columnPosition = columnPositionOffset; columnPosition < columnPositionOffset + positionRectangle.width; columnPosition++) {
 
-            ILayerCell previousCell = null;
-            ILayerCell currentCell = null;
-            ILayerCell afterCell = null;
+            ILayerCell previousCell = natLayer.getCellByPosition(columnPosition, rowPositionOffset - 1);
+            ILayerCell currentCell = natLayer.getCellByPosition(columnPosition, rowPositionOffset);
+
             for (int rowPosition = rowPositionOffset; rowPosition < rowPositionOffset + positionRectangle.height; rowPosition++) {
 
-                currentCell = natLayer.getCellByPosition(columnPosition, rowPosition);
-                afterCell = natLayer.getCellByPosition(columnPosition, rowPosition + 1);
+                ILayerCell afterCell = natLayer.getCellByPosition(columnPosition, rowPosition + 1);
 
                 if (currentCell != null) {
-                    Rectangle currentCellBounds = currentCell.getBounds();
 
                     if (isFillHandleRegion(currentCell)) {
-                        int x0 = currentCellBounds.x;
-                        int x1 = currentCellBounds.x + currentCellBounds.width;
 
-                        int y = currentCellBounds.y - startAdjustment;
-
-                        if (previousCell != null) {
-                            Rectangle previousCellBounds = previousCell.getBounds();
-                            x0 = Math.max(x0, previousCellBounds.x);
-                            x1 = Math.min(x1, previousCellBounds.x + previousCellBounds.width);
-                        }
-
+                        // if previous cell is not inside the fill region, draw
+                        // the top border
                         if (previousCell == null || !isFillHandleRegion(previousCell)) {
-                            gc.drawLine(
-                                    x0 - startAdjustment - (handleBorderWidth == 1 ? 0 : 1),
-                                    y,
-                                    x1 - startAdjustment,
-                                    y);
-                        }
 
-                        // check after
-                        if (afterCell == null || (!isFillHandleRegion(afterCell))) {
-                            Rectangle cellBounds = afterCell != null ? afterCell.getBounds() : currentCell.getBounds();
+                            Rectangle currentCellBounds = currentCell.getBounds();
 
-                            y = currentCellBounds.y + currentCellBounds.height - endAdjustment;
+                            int x0 = currentCellBounds.x;
+                            int x1 = currentCellBounds.x + currentCellBounds.width + lengthFix;
 
-                            x0 = Math.max(x0, cellBounds.x);
-                            x1 = Math.min(x1, cellBounds.x + cellBounds.width);
+                            int y = currentCellBounds.y + (handleBorderWidth / 2);
 
-                            gc.drawLine(
-                                    x0 - startAdjustment,
-                                    y,
-                                    x1 - startAdjustment,
-                                    y);
-                        }
-                    } else {
-                        // check if previous was selected to not override the
-                        // border again
-                        // this is necessary because of single cell updates
-                        if (positionRectangle.width == 2 || positionRectangle.height == 2) {
-                            if (afterCell != null && (isFillHandleRegion(afterCell))) {
-                                Rectangle afterCellBounds = afterCell.getBounds();
-
-                                int x0 = Math.max(
-                                        afterCellBounds.x,
-                                        currentCellBounds.x);
-                                int x1 = Math.min(
-                                        afterCellBounds.x + afterCellBounds.width,
-                                        currentCellBounds.x + currentCellBounds.width);
-
-                                int y = currentCellBounds.y + currentCellBounds.height - startAdjustment;
-
-                                if (isFillHandleRegion(afterCell)) {
-                                    gc.drawLine(
-                                            x0 - startAdjustment,
-                                            y,
-                                            x1 - startAdjustment,
-                                            y);
-                                }
-
+                            // when grid lines are rendered we want the border
+                            // to cover them, otherwise we remain inside the
+                            // cell
+                            if (this.renderGridLines && currentCellBounds.x != 0 && currentCellBounds.x != pixelRectangle.x) {
+                                x0--;
                             }
+
+                            if (this.renderGridLines && currentCellBounds.y != 0 && currentCellBounds.y != pixelRectangle.y) {
+                                y--;
+                            }
+
+                            gc.drawLine(x0, y, x1, y);
+
+                        }
+
+                        // if after cell is not inside the fill region, draw the
+                        // bottom border
+                        if (afterCell == null || (!isFillHandleRegion(afterCell))) {
+
+                            Rectangle currentCellBounds = currentCell.getBounds();
+
+                            int x0 = currentCellBounds.x;
+                            int x1 = currentCellBounds.x + currentCellBounds.width + lengthFix;
+
+                            int y = currentCellBounds.y + (handleBorderWidth / 2) + currentCellBounds.height - handleBorderWidth;
+
+                            if (this.renderGridLines && currentCellBounds.x != 0 && currentCellBounds.x != pixelRectangle.x) {
+                                x0--;
+                            }
+
+                            gc.drawLine(x0, y, x1, y);
+
                         }
                     }
                 }
-                previousCell = currentCell;
 
                 if (fillHandleCell == null && isFillHandleCell(currentCell)) {
                     fillHandleCell = currentCell;
                 }
+
+                previousCell = currentCell;
+                currentCell = afterCell;
             }
         }
 
         // Draw vertical borders
         for (int rowPosition = rowPositionOffset; rowPosition < rowPositionOffset + positionRectangle.height; rowPosition++) {
 
-            ILayerCell previousCell = null;
-            ILayerCell currentCell = null;
-            ILayerCell afterCell = null;
+            ILayerCell previousCell = natLayer.getCellByPosition(columnPositionOffset - 1, rowPosition);
+            ILayerCell currentCell = natLayer.getCellByPosition(columnPositionOffset, rowPosition);
+
             for (int columnPosition = columnPositionOffset; columnPosition < columnPositionOffset + positionRectangle.width; columnPosition++) {
 
-                currentCell = natLayer.getCellByPosition(columnPosition, rowPosition);
-                afterCell = natLayer.getCellByPosition(columnPosition + 1, rowPosition);
+                ILayerCell afterCell = natLayer.getCellByPosition(columnPosition + 1, rowPosition);
 
                 if (currentCell != null) {
-                    Rectangle currentCellBounds = currentCell.getBounds();
-
                     if (isFillHandleRegion(currentCell)) {
-                        int y0 = currentCellBounds.y;
-                        int y1 = currentCellBounds.y + currentCellBounds.height;
 
-                        int x = currentCellBounds.x - startAdjustment;
-
-                        if (previousCell != null) {
-                            Rectangle previousCellBounds = previousCell.getBounds();
-                            y0 = Math.max(y0, previousCellBounds.y);
-                            y1 = Math.min(y1, previousCellBounds.y + previousCellBounds.height);
-                        }
-
+                        // if previous cell is not inside the fill region, draw
+                        // the left border
                         if (previousCell == null || !isFillHandleRegion(previousCell)) {
-                            gc.drawLine(
-                                    x,
-                                    y0 - startAdjustment,
-                                    x,
-                                    y1 - startAdjustment);
-                        }
 
-                        // check after
-                        if (afterCell == null || !isFillHandleRegion(afterCell)) {
-                            Rectangle cellBounds = afterCell != null ? afterCell.getBounds() : currentCell.getBounds();
+                            Rectangle currentCellBounds = currentCell.getBounds();
 
-                            x = currentCellBounds.x + currentCellBounds.width - endAdjustment;
+                            int x = currentCellBounds.x + (handleBorderWidth / 2);
 
-                            y0 = Math.max(y0, cellBounds.y);
-                            y1 = Math.min(y1, cellBounds.y + cellBounds.height);
+                            int y0 = currentCellBounds.y;
+                            int y1 = currentCellBounds.y + currentCellBounds.height + lengthFix;
 
-                            gc.drawLine(
-                                    x,
-                                    y0 - startAdjustment,
-                                    x,
-                                    y1 - startAdjustment);
-                        }
-                    } else {
-                        // check if previous was selected to not override the
-                        // border again
-                        // this is necessary because of single cell updates
-                        if (positionRectangle.width == 2
-                                || positionRectangle.height == 2) {
-                            if (afterCell != null && isFillHandleRegion(afterCell)) {
-                                Rectangle afterCellBounds = afterCell.getBounds();
-
-                                int y0 = Math.max(afterCellBounds.y, currentCellBounds.y);
-                                int y1 = Math.min(
-                                        afterCellBounds.y + afterCellBounds.height,
-                                        currentCellBounds.y + currentCellBounds.height);
-
-                                int x = currentCellBounds.x + currentCellBounds.width - startAdjustment;
-
-                                gc.drawLine(
-                                        x,
-                                        y0 - startAdjustment,
-                                        x,
-                                        y1 - startAdjustment);
+                            if (this.renderGridLines && currentCellBounds.x != 0 && currentCellBounds.x != pixelRectangle.x) {
+                                x--;
                             }
+
+                            if (this.renderGridLines && currentCellBounds.y != 0 && currentCellBounds.y != pixelRectangle.y) {
+                                y0--;
+                            }
+
+                            gc.drawLine(x, y0, x, y1);
+
+                        }
+
+                        // if after cell is not inside the fill region, draw the
+                        // right border
+                        if (afterCell == null || (!isFillHandleRegion(afterCell))) {
+
+                            Rectangle currentCellBounds = currentCell.getBounds();
+
+                            int x = currentCellBounds.x + (handleBorderWidth / 2) + currentCellBounds.width - handleBorderWidth;
+
+                            int y0 = currentCellBounds.y;
+                            int y1 = currentCellBounds.y + currentCellBounds.height + lengthFix;
+
+                            gc.drawLine(x, y0, x, y1);
+
                         }
                     }
                 }
                 previousCell = currentCell;
+                currentCell = afterCell;
             }
         }
 
