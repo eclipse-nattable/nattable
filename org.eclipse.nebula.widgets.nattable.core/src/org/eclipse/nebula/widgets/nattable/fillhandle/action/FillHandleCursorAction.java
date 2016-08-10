@@ -8,6 +8,7 @@
  *
  * Contributors:
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
+ *      Loris Securo <lorissek@gmail.com> - Bug 499508
  *
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.fillhandle.action;
@@ -83,8 +84,8 @@ public class FillHandleCursorAction implements IMouseAction {
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
             };
 
-            sourceData.setPixels(0, 0, 255, cursorSource, 0);
-            maskData.setPixels(0, 0, 255, cursorMask, 0);
+            sourceData.setPixels(0, 0, 256, cursorSource, 0);
+            maskData.setPixels(0, 0, 256, cursorMask, 0);
 
             this.fillHandleCursor = new Cursor(Display.getDefault(), sourceData, maskData, 7, 7);
 
