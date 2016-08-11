@@ -9,6 +9,7 @@
  * Contributors:
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
  *      Loris Securo <lorissek@gmail.com> - Bug 499513
+ *      Loris Securo <lorissek@gmail.com> - Bug 499551
  *
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.fillhandle;
@@ -383,7 +384,7 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
     }
 
     protected void paintFillHandle(
-            ILayerCell bottomRight, GC gc,
+            ILayerCell fillHandleCell, GC gc,
             int xOffset, int yOffset,
             IConfigRegistry configRegistry) {
 
@@ -392,25 +393,63 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
         int originalLineWidth = gc.getLineWidth();
         Color originalForeground = gc.getForeground();
         Color originalBackground = gc.getBackground();
+        Rectangle originalClipping = gc.getClipping();
 
-        Rectangle bounds = bottomRight.getBounds();
+        Rectangle bounds = fillHandleCell.getBounds();
 
         applyHandleStyle(gc, configRegistry);
 
-        this.handleBounds = new Rectangle(
-                bounds.x + bounds.width - GUIHelper.convertHorizontalPixelToDpi(4),
-                bounds.y + bounds.height - GUIHelper.convertHorizontalPixelToDpi(4),
-                GUIHelper.convertHorizontalPixelToDpi(6),
-                GUIHelper.convertVerticalPixelToDpi(6));
+        int borderWidth = gc.getLineWidth();
 
-        gc.fillRectangle(this.handleBounds);
-        gc.drawRectangle(this.handleBounds);
+        int fillHandleSize = GUIHelper.convertHorizontalPixelToDpi(6);
+
+        // positions offset starting from the lower right corner of the fill
+        // handle cell
+        int fillHandleOffsetX = -GUIHelper.convertHorizontalPixelToDpi(4);
+        int fillHandleOffsetY = -GUIHelper.convertHorizontalPixelToDpi(4);
+
+        // only the last row/column might need to increase the clipping
+        ILayer layer = fillHandleCell.getLayer();
+        if (fillHandleCell.getColumnPosition() == layer.getColumnCount() - 1
+                || fillHandleCell.getRowPosition() == layer.getRowCount() - 1) {
+
+            // how many pixels of the fill handle are outside the cell
+            int fillHandlePixelsOutsideX = Math.max(0, fillHandleSize + fillHandleOffsetX + (borderWidth / 2) + (borderWidth % 2));
+            int fillHandlePixelsOutsideY = Math.max(0, fillHandleSize + fillHandleOffsetY + (borderWidth / 2) + (borderWidth % 2));
+
+            // how much we need to increment the gc clipping to paint the whole
+            // fill handle
+            int clippingWidthIncrement = Math.max(0, (bounds.x + bounds.width + fillHandlePixelsOutsideX) - (originalClipping.x + originalClipping.width));
+            int clippingHeightIncrement = Math.max(0, (bounds.y + bounds.height + fillHandlePixelsOutsideY) - (originalClipping.y + originalClipping.height));
+
+            if (clippingWidthIncrement > 0 || clippingHeightIncrement > 0) {
+                gc.setClipping(originalClipping.x, originalClipping.y,
+                        originalClipping.width + clippingWidthIncrement,
+                        originalClipping.height + clippingHeightIncrement);
+            }
+        }
+
+        Rectangle handleInterior = new Rectangle(
+                bounds.x + bounds.width + fillHandleOffsetX,
+                bounds.y + bounds.height + fillHandleOffsetY,
+                fillHandleSize,
+                fillHandleSize);
+
+        gc.fillRectangle(handleInterior);
+        gc.drawRectangle(handleInterior);
+
+        this.handleBounds = new Rectangle(
+                handleInterior.x - (borderWidth / 2),
+                handleInterior.y - (borderWidth / 2),
+                handleInterior.width + borderWidth,
+                handleInterior.height + borderWidth);
 
         // Restore original gc settings
         gc.setLineStyle(originalLineStyle);
         gc.setLineWidth(originalLineWidth);
         gc.setForeground(originalForeground);
         gc.setBackground(originalBackground);
+        gc.setClipping(originalClipping);
     }
 
     protected void paintCopyBorder(
