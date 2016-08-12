@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Loris Securo <lorissek@gmail.com> - Bug 499622
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style.theme;
 
@@ -19,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillHandleConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.freeze.IFreezeConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
@@ -28,6 +30,7 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayerPainter;
 import org.eclipse.nebula.widgets.nattable.sort.config.DefaultSortConfiguration;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
@@ -112,6 +115,10 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         configureSummaryRowStyle(configRegistry);
 
         configureEditErrorStyle(configRegistry);
+
+        configureFillHandleStyle(configRegistry);
+
+        configureCopyBorderStyle(configRegistry);
 
         for (IThemeExtension extension : this.extensions) {
             extension.registerStyles(configRegistry);
@@ -1440,8 +1447,8 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
     protected abstract ICellPainter getSelectionAnchorSelectionCellPainter();
 
     /**
-     * Return the {@link IStyle} that should be used to render the grid lines
-     * aroung the selection anchor. That means this style will be registered
+     * Returns the {@link IStyle} that should be used to render the grid lines
+     * around the selection anchor. That means this style will be registered
      * against the label
      * {@link SelectionStyleLabels#SELECTION_ANCHOR_GRID_LINE_STYLE}. It will be
      * interpreted by the {@link SelectionLayerPainter} which only checks the
@@ -2487,6 +2494,104 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
     protected abstract IStyle getValidationErrorStyle();
 
     /**
+     * Register the style configurations to render the fill handle.
+     *
+     * @param configRegistry
+     *            The IConfigRegistry that is used by the NatTable instance to
+     *            which the style configuration should be applied to.
+     * @since 1.5
+     */
+    protected void configureFillHandleStyle(IConfigRegistry configRegistry) {
+        Color fillHandleColor = getFillHandleColor();
+        if (fillHandleColor != null) {
+            configRegistry.registerConfigAttribute(
+                    FillHandleConfigAttributes.FILL_HANDLE_COLOR, fillHandleColor,
+                    DisplayMode.NORMAL);
+        }
+        BorderStyle fillHandleBorderStyle = getFillHandleBorderStyle();
+        if (fillHandleBorderStyle != null) {
+            configRegistry.registerConfigAttribute(
+                    FillHandleConfigAttributes.FILL_HANDLE_BORDER_STYLE, fillHandleBorderStyle,
+                    DisplayMode.NORMAL);
+        }
+        BorderStyle fillHandleRegionBorderStyle = getFillHandleRegionBorderStyle();
+        if (fillHandleRegionBorderStyle != null) {
+            configRegistry.registerConfigAttribute(
+                    FillHandleConfigAttributes.FILL_HANDLE_REGION_BORDER_STYLE, fillHandleRegionBorderStyle,
+                    DisplayMode.NORMAL);
+        }
+    }
+
+    /**
+     * Returns the {@link Color} that should be used to render the fill handle.
+     *
+     * @return The {@link Color} that should be used to render the fill handle.
+     * @since 1.5
+     */
+    // TODO Change it to abstract in next major version
+    protected Color getFillHandleColor() {
+        return null;
+    }
+
+    /**
+     * Returns the {@link BorderStyle} that should be used to render the border
+     * of the fill handle.
+     *
+     * @return The {@link BorderStyle} that should be used to render the border
+     *         of the fill handle.
+     * @since 1.5
+     */
+    // TODO Change it to abstract in next major version
+    protected BorderStyle getFillHandleBorderStyle() {
+        return null;
+    }
+
+    /**
+     * Returns the {@link BorderStyle} that should be used to render the border
+     * around the fill handle region.
+     *
+     * @return The {@link BorderStyle} that should be used to render the border
+     *         around the fill handle region.
+     * @since 1.5
+     */
+    // TODO Change it to abstract in next major version
+    protected BorderStyle getFillHandleRegionBorderStyle() {
+        return null;
+    }
+
+    /**
+     * Register the style configurations to render the copy border.
+     *
+     * @param configRegistry
+     *            The IConfigRegistry that is used by the NatTable instance to
+     *            which the style configuration should be applied to.
+     * @since 1.5
+     */
+    protected void configureCopyBorderStyle(IConfigRegistry configRegistry) {
+        IStyle copyBorderStyle = getCopyBorderStyle();
+        if (!isStyleEmpty(copyBorderStyle)) {
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_STYLE, copyBorderStyle,
+                    DisplayMode.NORMAL,
+                    SelectionStyleLabels.COPY_BORDER_STYLE);
+        }
+    }
+
+    /**
+     * Returns the {@link IStyle} that should be used to render the copy border.
+     * That means this style will be registered against the label
+     * {@link SelectionStyleLabels#COPY_BORDER_STYLE}. Only the
+     * {@link CellStyleAttributes#BORDER_STYLE} attribute will be interpreted.
+     *
+     * @return The {@link IStyle} that should be used to render the copy border.
+     * @since 1.5
+     */
+    // TODO Change it to abstract in next major version
+    protected IStyle getCopyBorderStyle() {
+        return null;
+    }
+
+    /**
      * Null-safe check if a {@link IStyle} is empty or not.
      *
      * @param style
@@ -2887,6 +2992,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
                     GridRegion.FILTER_ROW);
         }
 
+        // unregister conversion/validation style configuration
         if (getConversionErrorStyle() != null) {
             configRegistry.unregisterConfigAttribute(
                     EditConfigAttributes.CONVERSION_ERROR_STYLE,
@@ -2897,6 +3003,29 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
                     EditConfigAttributes.VALIDATION_ERROR_STYLE,
                     DisplayMode.EDIT);
         }
+
+        // unregister fill handle style configuration
+        if (getFillHandleColor() != null) {
+            configRegistry.unregisterConfigAttribute(
+                    FillHandleConfigAttributes.FILL_HANDLE_COLOR,
+                    DisplayMode.NORMAL, SelectionStyleLabels.FILL_HANDLE_CELL);
+        }
+        if (getFillHandleBorderStyle() != null) {
+            configRegistry.unregisterConfigAttribute(
+                    FillHandleConfigAttributes.FILL_HANDLE_BORDER_STYLE,
+                    DisplayMode.NORMAL, SelectionStyleLabels.FILL_HANDLE_CELL);
+        }
+        if (getFillHandleRegionBorderStyle() != null) {
+            configRegistry.unregisterConfigAttribute(
+                    FillHandleConfigAttributes.FILL_HANDLE_REGION_BORDER_STYLE,
+                    DisplayMode.NORMAL, SelectionStyleLabels.FILL_HANDLE_REGION);
+        }
+
+        // unregister copy border style configuration
+        if (!isStyleEmpty(getCopyBorderStyle()))
+            configRegistry.unregisterConfigAttribute(
+                    CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                    SelectionStyleLabels.COPY_BORDER_STYLE);
 
         // unregister possible extension styles
         for (IThemeExtension extension : this.extensions) {

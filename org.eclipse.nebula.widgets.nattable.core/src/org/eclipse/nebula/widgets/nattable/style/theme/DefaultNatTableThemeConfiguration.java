@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Loris Securo <lorissek@gmail.com> - Bug 499622
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style.theme;
 
@@ -593,6 +594,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Color validationErrorBgColor = null;
     public Color validationErrorFgColor = null;
     public Font validationErrorFont = null;
+
+    // fill handle style
+    /**
+     * @since 1.5
+     */
+    public Color fillHandleColor = GUIHelper.getColor(0, 125, 10);
+    /**
+     * @since 1.5
+     */
+    public BorderStyle fillHandleBorderStyle = new BorderStyle(1, GUIHelper.COLOR_WHITE, LineStyleEnum.SOLID);
+    /**
+     * @since 1.5
+     */
+    public BorderStyle fillHandleRegionBorderStyle = new BorderStyle(2, GUIHelper.getColor(0, 125, 10), LineStyleEnum.SOLID);
+
+    // copy border style
+    /**
+     * @since 1.5
+     */
+    public BorderStyle copyBorderStyle = new BorderStyle(1, GUIHelper.COLOR_BLACK, LineStyleEnum.DASHED);
 
     @Override
     protected IStyle getDefaultCellStyle() {
@@ -2049,4 +2070,27 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         return cellStyle;
     }
 
+    @Override
+    protected Color getFillHandleColor() {
+        return this.fillHandleColor;
+    }
+
+    @Override
+    protected BorderStyle getFillHandleBorderStyle() {
+        return this.fillHandleBorderStyle;
+    }
+
+    @Override
+    protected BorderStyle getFillHandleRegionBorderStyle() {
+        return this.fillHandleRegionBorderStyle;
+    }
+
+    @Override
+    protected IStyle getCopyBorderStyle() {
+        Style cellStyle = new Style();
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
+                this.copyBorderStyle);
+        return cellStyle;
+    }
 }
