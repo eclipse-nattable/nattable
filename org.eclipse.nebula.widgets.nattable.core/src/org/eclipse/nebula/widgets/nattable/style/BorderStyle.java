@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Loris Securo <lorissek@gmail.com> - Bug 499701
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style;
 
@@ -23,6 +24,7 @@ public class BorderStyle {
     private int thickness = 1;
     private Color color = GUIHelper.COLOR_BLACK;
     private LineStyleEnum lineStyle = LineStyleEnum.SOLID;
+    private BorderModeEnum lineDrawMode = BorderModeEnum.CENTERED;
 
     public enum LineStyleEnum {
         SOLID, DASHED, DOTTED, DASHDOT, DASHDOTDOT;
@@ -45,12 +47,29 @@ public class BorderStyle {
         }
     }
 
+    /**
+     * @since 1.5
+     */
+    public enum BorderModeEnum {
+        CENTERED, INTERNAL, EXTERNAL;
+    }
+
     public BorderStyle() {}
 
     public BorderStyle(int thickness, Color color, LineStyleEnum lineStyle) {
         this.thickness = thickness;
         this.color = color;
         this.lineStyle = lineStyle;
+    }
+
+    /**
+     * @since 1.5
+     */
+    public BorderStyle(int thickness, Color color, LineStyleEnum lineStyle, BorderModeEnum lineDrawMode) {
+        this.thickness = thickness;
+        this.color = color;
+        this.lineStyle = lineStyle;
+        this.lineDrawMode = lineDrawMode;
     }
 
     /**
@@ -78,6 +97,13 @@ public class BorderStyle {
         return this.lineStyle;
     }
 
+    /**
+     * @since 1.5
+     */
+    public BorderModeEnum getLineDrawMode() {
+        return this.lineDrawMode;
+    }
+
     public void setThickness(int thickness) {
         this.thickness = thickness;
     }
@@ -88,6 +114,13 @@ public class BorderStyle {
 
     public void setLineStyle(LineStyleEnum lineStyle) {
         this.lineStyle = lineStyle;
+    }
+
+    /**
+     * @since 1.5
+     */
+    public void setLineDrawMode(BorderModeEnum lineDrawMode) {
+        this.lineDrawMode = lineDrawMode;
     }
 
     @Override
