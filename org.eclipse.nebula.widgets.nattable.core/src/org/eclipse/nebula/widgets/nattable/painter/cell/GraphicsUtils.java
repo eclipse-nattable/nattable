@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.painter.cell;
 
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
-import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -387,8 +386,8 @@ public class GraphicsUtils {
      * @param width
      *            the width of the line to draw
      *
-     * @see GUIHelper#drawLineHorizontalBorderTop
-     * @see GUIHelper#drawLineHorizontalBorderBottom
+     * @see GraphicsUtils#drawLineHorizontalBorderTop
+     * @see GraphicsUtils#drawLineHorizontalBorderBottom
      * @since 1.5
      */
     public static void drawLineHorizontal(GC gc, int x, int y, int width) {
@@ -435,8 +434,8 @@ public class GraphicsUtils {
      * @param height
      *            the height of the line to draw
      *
-     * @see GUIHelper#drawLineVerticalBorderLeft
-     * @see GUIHelper#drawLineVerticalBorderRight
+     * @see GraphicsUtils#drawLineVerticalBorderLeft
+     * @see GraphicsUtils#drawLineVerticalBorderRight
      * @since 1.5
      */
     public static void drawLineVertical(GC gc, int x, int y, int height) {
@@ -485,8 +484,8 @@ public class GraphicsUtils {
      * @param width
      *            the width of the line to draw
      *
-     * @see GUIHelper#drawLineHorizontal
-     * @see GUIHelper#drawLineHorizontalBorderTop
+     * @see GraphicsUtils#drawLineHorizontal
+     * @see GraphicsUtils#drawLineHorizontalBorderTop
      * @since 1.5
      */
     public static void drawLineHorizontalBorderBottom(GC gc, int x, int y, int width) {
@@ -520,8 +519,8 @@ public class GraphicsUtils {
      * @param width
      *            the width of the line to draw
      *
-     * @see GUIHelper#drawLineHorizontal
-     * @see GUIHelper#drawLineHorizontalBorderBottom
+     * @see GraphicsUtils#drawLineHorizontal
+     * @see GraphicsUtils#drawLineHorizontalBorderBottom
      * @since 1.5
      */
     public static void drawLineHorizontalBorderTop(GC gc, int x, int y, int width) {
@@ -555,8 +554,8 @@ public class GraphicsUtils {
      * @param height
      *            the height of the line to draw
      *
-     * @see GUIHelper#drawLineVertical
-     * @see GUIHelper#drawLineVerticalBorderLeft
+     * @see GraphicsUtils#drawLineVertical
+     * @see GraphicsUtils#drawLineVerticalBorderLeft
      * @since 1.5
      */
     public static void drawLineVerticalBorderRight(GC gc, int x, int y, int height) {
@@ -590,8 +589,8 @@ public class GraphicsUtils {
      * @param height
      *            the height of the line to draw
      *
-     * @see GUIHelper#drawLineVertical
-     * @see GUIHelper#drawLineVerticalBorderRight
+     * @see GraphicsUtils#drawLineVertical
+     * @see GraphicsUtils#drawLineVerticalBorderRight
      * @since 1.5
      */
     public static void drawLineVerticalBorderLeft(GC gc, int x, int y, int height) {
@@ -697,8 +696,8 @@ public class GraphicsUtils {
      * @param rect
      *            the rectangle to draw
      *
-     * @see GUIHelper#drawRectangleBorderInternal
-     * @see GUIHelper#drawRectangleExternal
+     * @see GraphicsUtils#drawRectangleBorderInternal
+     * @see GraphicsUtils#drawRectangleExternal
      * @since 1.5
      */
     public static void drawRectangle(GC gc, Rectangle rect) {
@@ -771,8 +770,8 @@ public class GraphicsUtils {
      *            the GC to use to draw
      * @param rect
      *            the rectangle to draw
-     * @see GUIHelper#drawRectangle(GC, Rectangle)
-     * @see GUIHelper#drawRectangleExternal
+     * @see GraphicsUtils#drawRectangle(GC, Rectangle)
+     * @see GraphicsUtils#drawRectangleExternal
      * @since 1.5
      */
     public static void drawRectangleBorderInternal(GC gc, Rectangle rect) {
@@ -855,8 +854,8 @@ public class GraphicsUtils {
      * @param rect
      *            the rectangle to consider to draw the external rectangle
      *
-     * @see GUIHelper#drawRectangle(GC, Rectangle)
-     * @see GUIHelper#drawRectangleBorderInternal
+     * @see GraphicsUtils#drawRectangle(GC, Rectangle)
+     * @see GraphicsUtils#drawRectangleBorderInternal
      * @since 1.5
      */
     public static void drawRectangleExternal(GC gc, Rectangle rect) {
