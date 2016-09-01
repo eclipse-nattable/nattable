@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -386,8 +386,9 @@ public class GraphicsUtils {
      * @param width
      *            the width of the line to draw
      *
-     * @see GraphicsUtils#drawLineHorizontalBorderTop
-     * @see GraphicsUtils#drawLineHorizontalBorderBottom
+     * @see #drawLineHorizontalBorderTop(GC, int, int, int)
+     * @see #drawLineHorizontalBorderBottom(GC, int, int, int)
+     * @see #drawLineHorizontal(GC, int, int, int, boolean, boolean)
      * @since 1.5
      */
     public static void drawLineHorizontal(GC gc, int x, int y, int width) {
@@ -419,6 +420,57 @@ public class GraphicsUtils {
     }
 
     /**
+     * The difference between this method and
+     * {@link #drawLineHorizontal(GC, int, int, int)} is that the line could be
+     * extended to draw left and/or right corners (e.g. the corners of a
+     * rectangle).
+     *
+     * @param gc
+     *            the GC to use to draw
+     * @param x
+     *            the starting point's x coordinate
+     * @param y
+     *            the starting point's y coordinate
+     * @param width
+     *            the width of the line to draw
+     * @param drawLeftCorner
+     *            to draw the left corner
+     * @param drawRightCorner
+     *            to draw the right corner
+     *
+     * @see #drawLineHorizontal(GC, int, int, int)
+     * @since 1.5
+     */
+    public static void drawLineHorizontal(GC gc, int x, int y, int width, boolean drawLeftCorner, boolean drawRightCorner) {
+
+        if (width == 0) {
+            return;
+        }
+
+        // adjust the position and length in order to create the corners
+        int lineWidth = gc.getLineWidth();
+        if (width > 0) {
+            if (drawLeftCorner) {
+                x = x - (lineWidth / 2);
+                width = width + (lineWidth / 2);
+            }
+            if (drawRightCorner) {
+                width = width + ((lineWidth - 1) / 2);
+            }
+        } else {
+            if (drawRightCorner) {
+                x = x + ((lineWidth - 1) / 2);
+                width = width - ((lineWidth - 1) / 2);
+            }
+            if (drawLeftCorner) {
+                width = width - (lineWidth / 2);
+            }
+        }
+
+        drawLineHorizontal(gc, x, y, width);
+    }
+
+    /**
      * Draws a vertical line starting at (x, y) and having the given height.
      * <p>
      * Unlike {@link GC#drawLine}, this method guarantees that the line will
@@ -434,8 +486,9 @@ public class GraphicsUtils {
      * @param height
      *            the height of the line to draw
      *
-     * @see GraphicsUtils#drawLineVerticalBorderLeft
-     * @see GraphicsUtils#drawLineVerticalBorderRight
+     * @see #drawLineVerticalBorderLeft(GC, int, int, int)
+     * @see #drawLineVerticalBorderRight(GC, int, int, int)
+     * @see #drawLineVertical(GC, int, int, int, boolean, boolean)
      * @since 1.5
      */
     public static void drawLineVertical(GC gc, int x, int y, int height) {
@@ -467,6 +520,57 @@ public class GraphicsUtils {
     }
 
     /**
+     * The difference between this method and
+     * {@link #drawLineVertical(GC, int, int, int)} is that the line could be
+     * extended to draw top and/or bottom corners (e.g. the corners of a
+     * rectangle).
+     *
+     * @param gc
+     *            the GC to use to draw
+     * @param x
+     *            the starting point's x coordinate
+     * @param y
+     *            the starting point's y coordinate
+     * @param height
+     *            the height of the line to draw
+     * @param drawTopCorner
+     *            to draw the top corner
+     * @param drawBottomCorner
+     *            to draw the bottom corner
+     *
+     * @see #drawLineVertical(GC, int, int, int)
+     * @since 1.5
+     */
+    public static void drawLineVertical(GC gc, int x, int y, int height, boolean drawTopCorner, boolean drawBottomCorner) {
+
+        if (height == 0) {
+            return;
+        }
+
+        // adjust the position and length in order to create the corners
+        int lineWidth = gc.getLineWidth();
+        if (height > 0) {
+            if (drawTopCorner) {
+                y = y - (lineWidth / 2);
+                height = height + (lineWidth / 2);
+            }
+            if (drawBottomCorner) {
+                height = height + ((lineWidth - 1) / 2);
+            }
+        } else {
+            if (drawBottomCorner) {
+                y = y + ((lineWidth - 1) / 2);
+                height = height - ((lineWidth - 1) / 2);
+            }
+            if (drawTopCorner) {
+                height = height - (lineWidth / 2);
+            }
+        }
+
+        drawLineVertical(gc, x, y, height);
+    }
+
+    /**
      * Draws a horizontal line starting at (x, y) and having the given width.
      * The increased thickness resulting from {@link GC#getLineWidth} will be
      * strictly drawn below the line.
@@ -484,8 +588,9 @@ public class GraphicsUtils {
      * @param width
      *            the width of the line to draw
      *
-     * @see GraphicsUtils#drawLineHorizontal
-     * @see GraphicsUtils#drawLineHorizontalBorderTop
+     * @see #drawLineHorizontal(GC, int, int, int)
+     * @see #drawLineHorizontalBorderTop(GC, int, int, int)
+     * @see #drawLineHorizontalBorderBottom(GC, int, int, int, boolean, boolean)
      * @since 1.5
      */
     public static void drawLineHorizontalBorderBottom(GC gc, int x, int y, int width) {
@@ -499,6 +604,57 @@ public class GraphicsUtils {
         y = y + (lineWidth / 2);
 
         drawLineHorizontal(gc, x, y, width);
+    }
+
+    /**
+     * The difference between this method and
+     * {@link #drawLineHorizontalBorderBottom(GC, int, int, int)} is that the
+     * line could be extended to draw left and/or right corners (e.g. the
+     * corners of a rectangle).
+     *
+     * @param gc
+     *            the GC to use to draw
+     * @param x
+     *            the starting point's x coordinate
+     * @param y
+     *            the starting point's y coordinate
+     * @param width
+     *            the width of the line to draw
+     * @param drawLeftCorner
+     *            to draw the left corner
+     * @param drawRightCorner
+     *            to draw the right corner
+     *
+     * @see #drawLineHorizontalBorderBottom(GC, int, int, int)
+     * @since 1.5
+     */
+    public static void drawLineHorizontalBorderBottom(GC gc, int x, int y, int width, boolean drawLeftCorner, boolean drawRightCorner) {
+
+        if (width == 0) {
+            return;
+        }
+
+        // adjust the position and length in order to create the corners
+        int lineWidth = gc.getLineWidth();
+        if (width > 0) {
+            if (drawLeftCorner) {
+                x = x - (lineWidth - 1);
+                width = width + (lineWidth - 1);
+            }
+            if (drawRightCorner) {
+                width = width + (lineWidth - 1);
+            }
+        } else {
+            if (drawRightCorner) {
+                x = x + (lineWidth - 1);
+                width = width - (lineWidth - 1);
+            }
+            if (drawLeftCorner) {
+                width = width - (lineWidth - 1);
+            }
+        }
+
+        drawLineHorizontalBorderBottom(gc, x, y, width);
     }
 
     /**
@@ -519,8 +675,9 @@ public class GraphicsUtils {
      * @param width
      *            the width of the line to draw
      *
-     * @see GraphicsUtils#drawLineHorizontal
-     * @see GraphicsUtils#drawLineHorizontalBorderBottom
+     * @see #drawLineHorizontal(GC, int, int, int)
+     * @see #drawLineHorizontalBorderBottom(GC, int, int, int)
+     * @see #drawLineHorizontalBorderTop(GC, int, int, int, boolean, boolean)
      * @since 1.5
      */
     public static void drawLineHorizontalBorderTop(GC gc, int x, int y, int width) {
@@ -534,6 +691,57 @@ public class GraphicsUtils {
         y = y - ((lineWidth - 1) / 2);
 
         drawLineHorizontal(gc, x, y, width);
+    }
+
+    /**
+     * The difference between this method and
+     * {@link #drawLineHorizontalBorderTop(GC, int, int, int)} is that the line
+     * could be extended to draw left and/or right corners (e.g. the corners of
+     * a rectangle).
+     *
+     * @param gc
+     *            the GC to use to draw
+     * @param x
+     *            the starting point's x coordinate
+     * @param y
+     *            the starting point's y coordinate
+     * @param width
+     *            the width of the line to draw
+     * @param drawLeftCorner
+     *            to draw the left corner
+     * @param drawRightCorner
+     *            to draw the right corner
+     *
+     * @see #drawLineHorizontalBorderTop(GC, int, int, int)
+     * @since 1.5
+     */
+    public static void drawLineHorizontalBorderTop(GC gc, int x, int y, int width, boolean drawLeftCorner, boolean drawRightCorner) {
+
+        if (width == 0) {
+            return;
+        }
+
+        // adjust the position and length in order to create the corners
+        int lineWidth = gc.getLineWidth();
+        if (width > 0) {
+            if (drawLeftCorner) {
+                x = x - (lineWidth - 1);
+                width = width + (lineWidth - 1);
+            }
+            if (drawRightCorner) {
+                width = width + (lineWidth - 1);
+            }
+        } else {
+            if (drawRightCorner) {
+                x = x + (lineWidth - 1);
+                width = width - (lineWidth - 1);
+            }
+            if (drawLeftCorner) {
+                width = width - (lineWidth - 1);
+            }
+        }
+
+        drawLineHorizontalBorderTop(gc, x, y, width);
     }
 
     /**
@@ -554,8 +762,9 @@ public class GraphicsUtils {
      * @param height
      *            the height of the line to draw
      *
-     * @see GraphicsUtils#drawLineVertical
-     * @see GraphicsUtils#drawLineVerticalBorderLeft
+     * @see #drawLineVertical(GC, int, int, int)
+     * @see #drawLineVerticalBorderLeft(GC, int, int, int)
+     * @see #drawLineVerticalBorderRight(GC, int, int, int, boolean, boolean)
      * @since 1.5
      */
     public static void drawLineVerticalBorderRight(GC gc, int x, int y, int height) {
@@ -569,6 +778,57 @@ public class GraphicsUtils {
         x = x + (lineWidth / 2);
 
         drawLineVertical(gc, x, y, height);
+    }
+
+    /**
+     * The difference between this method and
+     * {@link #drawLineVerticalBorderRight(GC, int, int, int)} is that the
+     * line could be extended to draw top and/or bottom corners (e.g. the
+     * corners of a rectangle).
+     *
+     * @param gc
+     *            the GC to use to draw
+     * @param x
+     *            the starting point's x coordinate
+     * @param y
+     *            the starting point's y coordinate
+     * @param height
+     *            the height of the line to draw
+     * @param drawTopCorner
+     *            to draw the top corner
+     * @param drawBottomCorner
+     *            to draw the bottom corner
+     *
+     * @see #drawLineVerticalBorderRight(GC, int, int, int)
+     * @since 1.5
+     */
+    public static void drawLineVerticalBorderRight(GC gc, int x, int y, int height, boolean drawTopCorner, boolean drawBottomCorner) {
+
+        if (height == 0) {
+            return;
+        }
+
+        // adjust the position and length in order to create the corners
+        int lineWidth = gc.getLineWidth();
+        if (height > 0) {
+            if (drawTopCorner) {
+                y = y - (lineWidth - 1);
+                height = height + (lineWidth - 1);
+            }
+            if (drawBottomCorner) {
+                height = height + (lineWidth - 1);
+            }
+        } else {
+            if (drawBottomCorner) {
+                y = y + (lineWidth - 1);
+                height = height - (lineWidth - 1);
+            }
+            if (drawTopCorner) {
+                height = height - (lineWidth - 1);
+            }
+        }
+
+        drawLineVerticalBorderRight(gc, x, y, height);
     }
 
     /**
@@ -589,8 +849,9 @@ public class GraphicsUtils {
      * @param height
      *            the height of the line to draw
      *
-     * @see GraphicsUtils#drawLineVertical
-     * @see GraphicsUtils#drawLineVerticalBorderRight
+     * @see #drawLineVertical(GC, int, int, int)
+     * @see #drawLineVerticalBorderRight(GC, int, int, int)
+     * @see #drawLineVerticalBorderLeft(GC, int, int, int, boolean, boolean)
      * @since 1.5
      */
     public static void drawLineVerticalBorderLeft(GC gc, int x, int y, int height) {
@@ -604,6 +865,57 @@ public class GraphicsUtils {
         x = x - ((lineWidth - 1) / 2);
 
         drawLineVertical(gc, x, y, height);
+    }
+
+    /**
+     * The difference between this method and
+     * {@link #drawLineVerticalBorderLeft(GC, int, int, int)} is that the line
+     * could be extended to draw top and/or bottom corners (e.g. the corners of
+     * a rectangle).
+     *
+     * @param gc
+     *            the GC to use to draw
+     * @param x
+     *            the starting point's x coordinate
+     * @param y
+     *            the starting point's y coordinate
+     * @param height
+     *            the height of the line to draw
+     * @param drawTopCorner
+     *            to draw the top corner
+     * @param drawBottomCorner
+     *            to draw the bottom corner
+     *
+     * @see #drawLineVerticalBorderLeft(GC, int, int, int)
+     * @since 1.5
+     */
+    public static void drawLineVerticalBorderLeft(GC gc, int x, int y, int height, boolean drawTopCorner, boolean drawBottomCorner) {
+
+        if (height == 0) {
+            return;
+        }
+
+        // adjust the position and length in order to create the corners
+        int lineWidth = gc.getLineWidth();
+        if (height > 0) {
+            if (drawTopCorner) {
+                y = y - (lineWidth - 1);
+                height = height + (lineWidth - 1);
+            }
+            if (drawBottomCorner) {
+                height = height + (lineWidth - 1);
+            }
+        } else {
+            if (drawBottomCorner) {
+                y = y + (lineWidth - 1);
+                height = height - (lineWidth - 1);
+            }
+            if (drawTopCorner) {
+                height = height - (lineWidth - 1);
+            }
+        }
+
+        drawLineVerticalBorderLeft(gc, x, y, height);
     }
 
     /**
@@ -663,7 +975,7 @@ public class GraphicsUtils {
         gc.setLineWidth(borderStyle.getThickness());
         gc.setForeground(borderStyle.getColor());
 
-        switch (borderStyle.getLineDrawMode()) {
+        switch (borderStyle.getBorderMode()) {
             case CENTERED:
                 drawRectangle(gc, rect);
                 break;
@@ -671,7 +983,7 @@ public class GraphicsUtils {
                 drawRectangleBorderInternal(gc, rect);
                 break;
             case EXTERNAL:
-                drawRectangleExternal(gc, rect);
+                drawRectangleBorderExternal(gc, rect);
                 break;
         }
 
@@ -696,8 +1008,8 @@ public class GraphicsUtils {
      * @param rect
      *            the rectangle to draw
      *
-     * @see GraphicsUtils#drawRectangleBorderInternal
-     * @see GraphicsUtils#drawRectangleExternal
+     * @see #drawRectangleBorderInternal
+     * @see #drawRectangleBorderExternal
      * @since 1.5
      */
     public static void drawRectangle(GC gc, Rectangle rect) {
@@ -770,8 +1082,8 @@ public class GraphicsUtils {
      *            the GC to use to draw
      * @param rect
      *            the rectangle to draw
-     * @see GraphicsUtils#drawRectangle(GC, Rectangle)
-     * @see GraphicsUtils#drawRectangleExternal
+     * @see #drawRectangle(GC, Rectangle)
+     * @see #drawRectangleBorderExternal
      * @since 1.5
      */
     public static void drawRectangleBorderInternal(GC gc, Rectangle rect) {
@@ -844,44 +1156,33 @@ public class GraphicsUtils {
     }
 
     /**
-     * Draws an external rectangle around the given rectangle. The external
-     * rectangle will never overlap the given rectangle. The increased border
-     * thickness resulting from {@link GC#getLineWidth} will be strictly drawn
-     * outside of the rectangle.
+     * Draws a rectangle. The increased border thickness resulting from
+     * {@link GC#getLineWidth} will be strictly drawn outside of the rectangle.
+     * <p>
+     * Unlike {@link GC#drawRectangle(Rectangle)}:
+     * <ul>
+     * <li>the width and height of the resulting rectangle will be always
+     * exactly {@code rect.width} and {@code rect.height}
+     * <li>the rectangle will always start at the given coordinates even in case
+     * of negative width/height
+     * </ul>
      *
      * @param gc
      *            the GC to use to draw
      * @param rect
-     *            the rectangle to consider to draw the external rectangle
+     *            the rectangle to draw
      *
-     * @see GraphicsUtils#drawRectangle(GC, Rectangle)
-     * @see GraphicsUtils#drawRectangleBorderInternal
+     * @see #drawRectangle(GC, Rectangle)
+     * @see #drawRectangleBorderInternal
      * @since 1.5
      */
-    public static void drawRectangleExternal(GC gc, Rectangle rect) {
+    public static void drawRectangleBorderExternal(GC gc, Rectangle rect) {
 
         if (rect.width == 0 || rect.height == 0) {
             return;
         }
 
         Rectangle rectangle = new Rectangle(rect.x, rect.y, rect.width, rect.height);
-
-        // since we draw externally, we position and resize the rectangle
-        // accordingly
-        if (rectangle.width > 0) {
-            rectangle.x--;
-            rectangle.width += 2;
-        } else {
-            rectangle.x++;
-            rectangle.width -= 2;
-        }
-        if (rectangle.height > 0) {
-            rectangle.y--;
-            rectangle.height += 2;
-        } else {
-            rectangle.y++;
-            rectangle.height -= 2;
-        }
 
         int lineWidth = gc.getLineWidth();
 
