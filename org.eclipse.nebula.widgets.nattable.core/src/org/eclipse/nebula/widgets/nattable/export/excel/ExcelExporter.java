@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *     Original authors and others - initial API and implementation
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 450443
  *     Jan Haensli <jan.haensli@inventage.com> - Bug 452453
+ *     Uwe Peuker <dev@upeuker.net> - Bug 500787
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.export.excel;
 
@@ -16,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,6 +48,7 @@ public class ExcelExporter implements ILayerExporter {
     private static final String SHEETNAME_PLACEHOLDER = "${sheetname}"; //$NON-NLS-1$
 
     private String charset = "windows-1252"; //$NON-NLS-1$
+    private Charset exportCharSet;
     private String sheetname = "Sheet1"; //$NON-NLS-1$
 
     /**
@@ -60,7 +63,7 @@ public class ExcelExporter implements ILayerExporter {
      */
     public ExcelExporter() {
         this(new FileOutputStreamProvider("table_export.xls", //$NON-NLS-1$
-        new String[] { "Excel Workbook (*.xls)" }, new String[] { "*.xls" })); //$NON-NLS-1$ //$NON-NLS-2$
+                new String[] { "Excel Workbook (*.xls)" }, new String[] { "*.xls" })); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -81,7 +84,9 @@ public class ExcelExporter implements ILayerExporter {
     }
 
     @Override
-    public void exportBegin(OutputStream outputStream) throws IOException {}
+    public void exportBegin(OutputStream outputStream) throws IOException {
+        this.exportCharSet = Charset.forName(this.charset);
+    }
 
     @Override
     public void exportEnd(OutputStream outputStream) throws IOException {}
@@ -168,7 +173,7 @@ public class ExcelExporter implements ILayerExporter {
     }
 
     private byte[] asBytes(String string) {
-        return string.getBytes();
+        return string.getBytes(this.exportCharSet);
     }
 
     private String getFontInCSSFormat(Font font) {
