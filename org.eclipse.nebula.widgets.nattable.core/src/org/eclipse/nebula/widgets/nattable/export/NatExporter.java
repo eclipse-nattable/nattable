@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Uwe Peuker <dev@upeuker.net> - Bug 500788
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.export;
 
@@ -41,6 +42,7 @@ public class NatExporter {
     private static final Log log = LogFactory.getLog(NatExporter.class);
 
     private final Shell shell;
+    private boolean openResult = true;
 
     public NatExporter(Shell shell) {
         this.shell = shell;
@@ -268,10 +270,26 @@ public class NatExporter {
     }
 
     private void openExport(ILayerExporter exporter) {
-        if (exporter.getResult() != null
+        if (NatExport.this.openResult && exporter.getResult() != null
                 && exporter.getResult() instanceof File) {
             Program.launch(((File) exporter.getResult()).getAbsolutePath());
         }
+    }
+
+    /**
+     * Sets the behavior after finishing the export.
+     *
+     * The default ist opening the created export file with the associated
+     * application. You can prevent the opening by setting openResult to false.
+     *
+     * @param openResult 
+     *        set to <code>true</code> to open the created export file, 
+     *        <code>false</false> otherwise
+     *
+     * @since 1.5
+     */
+    public void setOpenResult(boolean openResult) {
+        this.openResult = openResult;
     }
 
 }
