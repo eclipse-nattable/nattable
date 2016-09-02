@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     neal zhang <nujiah001@126.com> - change some methods and fields visibility
+ *     Loris Securo <lorissek@gmail.com> - Bug 500750
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
@@ -15,8 +16,12 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.painter.cell.BorderPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.BorderPainter.BorderCell;
+import org.eclipse.nebula.widgets.nattable.painter.cell.BorderPainter.PaintModeEnum;
 import org.eclipse.nebula.widgets.nattable.painter.layer.GridLineCellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle.BorderModeEnum;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -103,158 +108,118 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
             int xOffset, int yOffset, Rectangle pixelRectangle,
             IConfigRegistry configRegistry) {
 
+        super.paintLayer(natLayer, gc, xOffset, yOffset, pixelRectangle, configRegistry);
+
         Rectangle positionRectangle = getPositionRectangleFromPixelRectangle(natLayer, pixelRectangle);
         int columnPositionOffset = positionRectangle.x;
         int rowPositionOffset = positionRectangle.y;
 
-        super.paintLayer(natLayer, gc, xOffset, yOffset, pixelRectangle, configRegistry);
+        // nothing to draw, we exit
+        if (positionRectangle.width == 0 || positionRectangle.height == 0) {
+            return;
+        }
 
-        // Save gc settings
-        int originalLineStyle = gc.getLineStyle();
-        int originalLineWidth = gc.getLineWidth();
-        Color originalForeground = gc.getForeground();
+        BorderCell[][] borderCells;
+        boolean atLeastOne = false;
+        PaintModeEnum paintMode;
 
-        // Apply border settings
-        applyBorderStyle(gc, configRegistry);
+        // tentative way to know that this is a single cell update
+        if (positionRectangle.width <= 2 && positionRectangle.height <= 2) {
 
-        // Draw horizontal borders
-        for (int columnPosition = columnPositionOffset; columnPosition < columnPositionOffset + positionRectangle.width; columnPosition++) {
+            // In order to correctly paint the selection borders in case of
+            // single
+            // cell updates we need to consider also the adjacent cells.
+            // Therefore we try to retrieve also cells that are outside the
+            // pixelRectangle but still inside our layer.
 
-            ILayerCell previousCell = null;
-            ILayerCell currentCell = null;
-            ILayerCell afterCell = null;
-            for (int rowPosition = rowPositionOffset; rowPosition < rowPositionOffset + positionRectangle.height; rowPosition++) {
+            // +2 because we are going to read also adjacent cells in the
+            // extremities
+            borderCells = new BorderCell[positionRectangle.height + 2][positionRectangle.width + 2];
 
-                currentCell = natLayer.getCellByPosition(columnPosition, rowPosition);
-                afterCell = natLayer.getCellByPosition(columnPosition, rowPosition + 1);
+            // we need to repaint only the internal borders of the external
+            // cells
+            paintMode = PaintModeEnum.NO_EXTERNAL_BORDERS;
 
-                if (currentCell != null) {
-                    Rectangle currentCellBounds = currentCell.getBounds();
+            // -1/+1 because we are going to read also adjacent cells in the
+            // extremities
+            for (int columnPosition = columnPositionOffset - 1, ix = 0; columnPosition < columnPositionOffset + positionRectangle.width + 1; columnPosition++, ix++) {
+                for (int rowPosition = rowPositionOffset - 1, iy = 0; rowPosition < rowPositionOffset + positionRectangle.height + 1; rowPosition++, iy++) {
 
-                    if (isSelected(currentCell)) {
-                        int x0 = currentCellBounds.x - 1;
-                        int x1 = currentCellBounds.x + currentCellBounds.width - 1;
+                    boolean insideBorder = false;
+                    Rectangle cellBounds = null;
 
-                        int y = currentCellBounds.y - 1;
+                    ILayerCell currentCell = natLayer.getCellByPosition(columnPosition, rowPosition);
+                    if (currentCell != null) {
 
-                        if (previousCell != null) {
-                            Rectangle previousCellBounds = previousCell.getBounds();
-                            x0 = Math.max(x0, previousCellBounds.x - 1);
-                            x1 = Math.min(x1, previousCellBounds.x + previousCellBounds.width - 1);
-                        }
+                        cellBounds = currentCell.getBounds();
 
-                        if (previousCell == null || !isSelected(previousCell)) {
-                            gc.drawLine(x0, y, x1, y);
-                        }
+                        // the cell should be considered only if it is in our
+                        // layer
+                        boolean toBeConsidered = isInCurrentLayer(ix, iy, xOffset, yOffset, cellBounds, borderCells);
 
-                        // check after
-                        if (afterCell == null || !isSelected(afterCell)) {
-                            Rectangle cellBounds = afterCell != null ? afterCell.getBounds() : currentCell.getBounds();
-
-                            y = currentCellBounds.y + currentCellBounds.height - 1;
-
-                            x0 = Math.max(x0, cellBounds.x - 1);
-                            x1 = Math.min(x1, cellBounds.x + cellBounds.width - 1);
-
-                            gc.drawLine(x0, y, x1, y);
-                        }
-                    } else {
-                        // check if previous was selected to not override the
-                        // border again
-                        // this is necessary because of single cell updates
-                        if (positionRectangle.width == 2
-                                || positionRectangle.height == 2) {
-                            if (afterCell != null && isSelected(afterCell)) {
-                                Rectangle afterCellBounds = afterCell.getBounds();
-
-                                int x0 = Math.max(
-                                        afterCellBounds.x - 1,
-                                        currentCellBounds.x - 1);
-                                int x1 = Math.min(
-                                        afterCellBounds.x + afterCellBounds.width - 1,
-                                        currentCellBounds.x + currentCellBounds.width - 1);
-
-                                int y = currentCellBounds.y + currentCellBounds.height - 1;
-                                gc.drawLine(x0, y, x1, y);
-                            }
+                        if (toBeConsidered && isSelected(currentCell)) {
+                            insideBorder = true;
+                            atLeastOne = true;
                         }
                     }
+
+                    Rectangle fixedBounds = fixBoundsInGridLines(cellBounds, xOffset, yOffset);
+                    BorderCell borderCell = new BorderCell(fixedBounds, insideBorder);
+                    borderCells[iy][ix] = borderCell;
+
                 }
-                previousCell = currentCell;
+            }
+        } else {
+
+            borderCells = new BorderCell[positionRectangle.height][positionRectangle.width];
+            paintMode = PaintModeEnum.ALL;
+
+            for (int columnPosition = columnPositionOffset, ix = 0; columnPosition < columnPositionOffset + positionRectangle.width; columnPosition++, ix++) {
+                for (int rowPosition = rowPositionOffset, iy = 0; rowPosition < rowPositionOffset + positionRectangle.height; rowPosition++, iy++) {
+
+                    boolean insideBorder = false;
+                    Rectangle cellBounds = null;
+
+                    ILayerCell currentCell = natLayer.getCellByPosition(columnPosition, rowPosition);
+                    if (currentCell != null) {
+
+                        // In case of spanned cells the border painter needs to
+                        // know the bounds of adjacent cells even if they are
+                        // not selected. This is the reason why we get the
+                        // bounds also for non selected cells.
+
+                        cellBounds = currentCell.getBounds();
+
+                        if (isSelected(currentCell)) {
+                            insideBorder = true;
+                            atLeastOne = true;
+                        }
+                    }
+
+                    Rectangle fixedBounds = fixBoundsInGridLines(cellBounds, xOffset, yOffset);
+                    BorderCell borderCell = new BorderCell(fixedBounds, insideBorder);
+                    borderCells[iy][ix] = borderCell;
+
+                }
             }
         }
 
-        // Draw vertical borders
-        for (int rowPosition = rowPositionOffset; rowPosition < rowPositionOffset + positionRectangle.height; rowPosition++) {
+        if (atLeastOne) {
+            // Save gc settings
+            int originalLineStyle = gc.getLineStyle();
+            int originalLineWidth = gc.getLineWidth();
+            Color originalForeground = gc.getForeground();
 
-            ILayerCell previousCell = null;
-            ILayerCell currentCell = null;
-            ILayerCell afterCell = null;
-            for (int columnPosition = columnPositionOffset; columnPosition < columnPositionOffset + positionRectangle.width; columnPosition++) {
+            BorderStyle borderStyle = getBorderStyle(configRegistry);
 
-                currentCell = natLayer.getCellByPosition(columnPosition, rowPosition);
-                afterCell = natLayer.getCellByPosition(columnPosition + 1, rowPosition);
+            BorderPainter borderPainter = new BorderPainter(borderCells, borderStyle, paintMode);
+            borderPainter.paintBorder(gc);
 
-                if (currentCell != null) {
-                    Rectangle currentCellBounds = currentCell.getBounds();
-
-                    if (isSelected(currentCell)) {
-                        int y0 = currentCellBounds.y - 1;
-                        int y1 = currentCellBounds.y + currentCellBounds.height - 1;
-
-                        int x = currentCellBounds.x - 1;
-
-                        if (previousCell != null) {
-                            Rectangle previousCellBounds = previousCell.getBounds();
-                            y0 = Math.max(y0, previousCellBounds.y - 1);
-                            y1 = Math.min(y1, previousCellBounds.y + previousCellBounds.height - 1);
-                        }
-
-                        if (previousCell == null || !isSelected(previousCell)) {
-                            gc.drawLine(x, y0, x, y1);
-                        }
-
-                        // check after
-                        if (afterCell == null || !isSelected(afterCell)) {
-                            Rectangle cellBounds = afterCell != null ? afterCell.getBounds() : currentCell.getBounds();
-
-                            x = currentCellBounds.x + currentCellBounds.width - 1;
-
-                            y0 = Math.max(y0, cellBounds.y - 1);
-                            y1 = Math.min(y1, cellBounds.y + cellBounds.height - 1);
-
-                            gc.drawLine(x, y0, x, y1);
-                        }
-                    } else {
-                        // check if previous was selected to not override the
-                        // border again
-                        // this is necessary because of single cell updates
-                        if (positionRectangle.width == 2
-                                || positionRectangle.height == 2) {
-                            if (afterCell != null && isSelected(afterCell)) {
-                                Rectangle afterCellBounds = afterCell.getBounds();
-
-                                int y0 = Math.max(
-                                        afterCellBounds.y - 1,
-                                        currentCellBounds.y - 1);
-                                int y1 = Math.min(
-                                        afterCellBounds.y + afterCellBounds.height - 1,
-                                        currentCellBounds.y + currentCellBounds.height - 1);
-
-                                int x = currentCellBounds.x + currentCellBounds.width - 1;
-                                gc.drawLine(x, y0, x, y1);
-                            }
-                        }
-                    }
-                }
-                previousCell = currentCell;
-            }
+            // Restore original gc settings
+            gc.setLineStyle(originalLineStyle);
+            gc.setLineWidth(originalLineWidth);
+            gc.setForeground(originalForeground);
         }
-
-        // Restore original gc settings
-        gc.setLineStyle(originalLineStyle);
-        gc.setLineWidth(originalLineWidth);
-        gc.setForeground(originalForeground);
     }
 
     private boolean isSelected(ILayerCell cell) {
@@ -262,6 +227,109 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
                 || cell.getDisplayMode() == DisplayMode.SELECT_HOVER);
     }
 
+    /**
+     * Returns a rectangle that will cover the left and top grid lines, if they
+     * are present.
+     *
+     * @param cellBounds
+     *            the rectangle that needs to be considered
+     * @param xOffset
+     *            the starting x coordinate of the area we can draw on. The fix
+     *            will not be applied if the <code>cellBounds</code> are placed
+     *            on this limit.
+     * @param yOffset
+     *            the starting y coordinate of the area we can draw on. The fix
+     *            will not be applied if the <code>cellBounds</code> are placed
+     *            on this limit.
+     *
+     * @since 1.5
+     */
+    protected Rectangle fixBoundsInGridLines(Rectangle cellBounds, int xOffset, int yOffset) {
+
+        if (cellBounds == null) {
+            return null;
+        }
+
+        Rectangle fixedBounds = new Rectangle(cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height);
+
+        // when grid lines are rendered we want the border
+        // to cover them, otherwise we remain inside the
+        // cell
+        if (this.renderGridLines && fixedBounds.x != 0 && fixedBounds.x != xOffset) {
+            fixedBounds.x--;
+            fixedBounds.width++;
+        }
+        if (this.renderGridLines && fixedBounds.y != 0 && fixedBounds.y != yOffset) {
+            fixedBounds.y--;
+            fixedBounds.height++;
+        }
+
+        return fixedBounds;
+    }
+
+    /**
+     * Tries to detect if the cell is part of the current layer. It does so
+     * using xOffset/yOffset (which are not affected by single cell updates) and
+     * detecting overlapping of cells, which should not be possible in the same
+     * layer. It's not perfect, there might be false positives.
+     *
+     * @since 1.5
+     */
+    protected boolean isInCurrentLayer(int ix, int iy, int xOffset, int yOffset, Rectangle cellBounds, BorderCell[][] borderCells) {
+
+        // If the cell bounds are not inside the x/y offset, we consider it part
+        // of another layer
+        if (ix == 0) {
+            if (cellBounds.x + cellBounds.width <= xOffset) {
+                return false;
+            }
+        }
+        if (iy == 0) {
+            if (cellBounds.y + cellBounds.height <= yOffset) {
+                return false;
+            }
+        }
+
+        // if the previous cell is overlapping the current cell we consider it
+        // part of another layer
+        if (ix == 1) {
+            if (borderCells[iy][ix - 1].isInsideBorder) {
+                Rectangle prevCellBounds = borderCells[iy][ix - 1].bounds;
+                if (prevCellBounds.x + prevCellBounds.width > cellBounds.x) {
+                    borderCells[iy][ix - 1].isInsideBorder = false;
+                }
+            }
+        }
+        if (iy == 1) {
+            if (borderCells[iy - 1][ix].isInsideBorder) {
+                Rectangle prevCellBounds = borderCells[iy - 1][ix].bounds;
+                if (prevCellBounds.y + prevCellBounds.height > cellBounds.y) {
+                    borderCells[iy - 1][ix].isInsideBorder = false;
+                }
+            }
+        }
+
+        // it's an external cell and it's getting overlapped by the previous
+        // cell, we consider it part of another layer
+        if (ix == borderCells[iy].length - 1) {
+            Rectangle prevCellBounds = borderCells[iy][ix - 1].bounds;
+            if (prevCellBounds.x + prevCellBounds.width > cellBounds.x) {
+                return false;
+            }
+        }
+        if (iy == borderCells.length - 1) {
+            Rectangle prevCellBounds = borderCells[iy - 1][ix].bounds;
+            if (prevCellBounds.y + prevCellBounds.height > cellBounds.y) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @deprecated Use {@link #getBorderStyle} instead.
+     */
+    @Deprecated
     protected void applyBorderStyle(GC gc, IConfigRegistry configRegistry) {
         BorderStyle borderStyle = configRegistry.getConfigAttribute(
                 SelectionConfigAttributes.SELECTION_GRID_LINE_STYLE,
@@ -297,6 +365,54 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
             gc.setLineWidth(borderStyle.getThickness());
             gc.setForeground(borderStyle.getColor());
         }
+    }
+
+    /**
+     * Get the border style that should be used to render the border for cells
+     * that are currently selected. Checks the {@link IConfigRegistry} for a
+     * registered {@link IStyle} for the
+     * {@link SelectionConfigAttributes#SELECTION_GRID_LINE_STYLE} label or the
+     * {@link SelectionStyleLabels#SELECTION_ANCHOR_GRID_LINE_STYLE} label. If
+     * none is registered, a default line style will be returned.
+     *
+     * @param configRegistry
+     *            The {@link IConfigRegistry} to retrieve the style information
+     *            from.
+     *
+     * @return The border style that should be used
+     *
+     * @since 1.5
+     */
+    protected BorderStyle getBorderStyle(IConfigRegistry configRegistry) {
+        BorderStyle borderStyle = configRegistry.getConfigAttribute(
+                SelectionConfigAttributes.SELECTION_GRID_LINE_STYLE,
+                DisplayMode.SELECT);
+
+        // check for backwards compatibility style configuration
+        if (borderStyle == null) {
+            // Note: If there is no style configured for the
+            // SelectionStyleLabels.SELECTION_ANCHOR_GRID_LINE_STYLE
+            // label, the style configured for DisplayMode.SELECT will be
+            // retrieved by this call.
+            // Ensure that the selection style configuration does not contain a
+            // border style configuration to avoid strange rendering behavior.
+            // By default there is no border configuration added, so there
+            // shouldn't be issues with backwards compatibility. And if there
+            // are some, they can be solved easily by adding the necessary
+            // border style configuration.
+            IStyle cellStyle = configRegistry.getConfigAttribute(
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.SELECT,
+                    SelectionStyleLabels.SELECTION_ANCHOR_GRID_LINE_STYLE);
+            borderStyle = cellStyle != null ? cellStyle.getAttributeValue(CellStyleAttributes.BORDER_STYLE) : null;
+        }
+
+        // if there is no border style configured, use the default
+        if (borderStyle == null) {
+            borderStyle = new BorderStyle(1, GUIHelper.COLOR_BLACK, LineStyleEnum.DOTTED, BorderModeEnum.CENTERED);
+        }
+
+        return borderStyle;
     }
 
 }
