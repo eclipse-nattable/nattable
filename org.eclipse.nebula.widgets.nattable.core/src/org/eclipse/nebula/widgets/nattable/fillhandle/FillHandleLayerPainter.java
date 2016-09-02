@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2016 CEA LIST and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,8 +8,7 @@
  *
  * Contributors:
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
- *      Loris Securo <lorissek@gmail.com> - Bug 499513
- *      Loris Securo <lorissek@gmail.com> - Bug 499551
+ *      Loris Securo <lorissek@gmail.com> - Bug 499513, 499551, 500764
  *
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.fillhandle;
@@ -21,9 +20,12 @@ import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
 import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillHandleConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.painter.cell.BorderPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.BorderPainter.BorderCell;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayerPainter;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle.BorderModeEnum;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -221,157 +223,74 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
 
         super.paintLayer(natLayer, gc, xOffset, yOffset, pixelRectangle, configRegistry);
 
-        // Save gc settings
-        int originalLineStyle = gc.getLineStyle();
-        int originalLineWidth = gc.getLineWidth();
-        Color originalForeground = gc.getForeground();
-
-        // Apply border settings
-        applyHandleBorderStyle(gc, configRegistry);
-
-        int handleBorderWidth = gc.getLineWidth();
-
-        // if the line width is 1, gc.drawline will draw a longer line than
-        // when the line width is > 1, so we reduce it
-        int lengthFix = (handleBorderWidth == 1) ? -1 : 0;
-
         ILayerCell fillHandleCell = null;
 
-        // Draw horizontal borders
-        for (int columnPosition = columnPositionOffset; columnPosition < columnPositionOffset + positionRectangle.width; columnPosition++) {
+        BorderCell[][] borderCells = new BorderCell[positionRectangle.height][positionRectangle.width];
+        boolean atLeastOne = false;
 
-            ILayerCell previousCell = natLayer.getCellByPosition(columnPosition, rowPositionOffset - 1);
-            ILayerCell currentCell = natLayer.getCellByPosition(columnPosition, rowPositionOffset);
+        for (int columnPosition = columnPositionOffset, ix = 0; columnPosition < columnPositionOffset + positionRectangle.width; columnPosition++, ix++) {
+            for (int rowPosition = rowPositionOffset, iy = 0; rowPosition < rowPositionOffset + positionRectangle.height; rowPosition++, iy++) {
 
-            for (int rowPosition = rowPositionOffset; rowPosition < rowPositionOffset + positionRectangle.height; rowPosition++) {
+                boolean insideBorder = false;
+                Rectangle cellBounds = null;
 
-                ILayerCell afterCell = natLayer.getCellByPosition(columnPosition, rowPosition + 1);
-
+                ILayerCell currentCell = natLayer.getCellByPosition(columnPosition, rowPosition);
                 if (currentCell != null) {
 
+                    cellBounds = currentCell.getBounds();
+
                     if (isFillHandleRegion(currentCell)) {
+                        insideBorder = true;
+                        atLeastOne = true;
+                    }
 
-                        // if previous cell is not inside the fill region, draw
-                        // the top border
-                        if (previousCell == null || !isFillHandleRegion(previousCell)) {
-
-                            Rectangle currentCellBounds = currentCell.getBounds();
-
-                            int x0 = currentCellBounds.x;
-                            int x1 = currentCellBounds.x + currentCellBounds.width + lengthFix;
-
-                            int y = currentCellBounds.y + (handleBorderWidth / 2);
-
-                            // when grid lines are rendered we want the border
-                            // to cover them, otherwise we remain inside the
-                            // cell
-                            if (this.renderGridLines && currentCellBounds.x != 0 && currentCellBounds.x != pixelRectangle.x) {
-                                x0--;
-                            }
-
-                            if (this.renderGridLines && currentCellBounds.y != 0 && currentCellBounds.y != pixelRectangle.y) {
-                                y--;
-                            }
-
-                            gc.drawLine(x0, y, x1, y);
-
-                        }
-
-                        // if after cell is not inside the fill region, draw the
-                        // bottom border
-                        if (afterCell == null || (!isFillHandleRegion(afterCell))) {
-
-                            Rectangle currentCellBounds = currentCell.getBounds();
-
-                            int x0 = currentCellBounds.x;
-                            int x1 = currentCellBounds.x + currentCellBounds.width + lengthFix;
-
-                            int y = currentCellBounds.y + (handleBorderWidth / 2) + currentCellBounds.height - handleBorderWidth;
-
-                            if (this.renderGridLines && currentCellBounds.x != 0 && currentCellBounds.x != pixelRectangle.x) {
-                                x0--;
-                            }
-
-                            gc.drawLine(x0, y, x1, y);
-
-                        }
+                    if (fillHandleCell == null && isFillHandleCell(currentCell)) {
+                        fillHandleCell = currentCell;
                     }
                 }
 
-                if (fillHandleCell == null && isFillHandleCell(currentCell)) {
-                    fillHandleCell = currentCell;
-                }
-
-                previousCell = currentCell;
-                currentCell = afterCell;
+                Rectangle fixedBounds = fixBoundsInGridLines(cellBounds, xOffset, yOffset);
+                BorderCell borderCell = new BorderCell(fixedBounds, insideBorder);
+                borderCells[iy][ix] = borderCell;
             }
         }
 
-        // Draw vertical borders
-        for (int rowPosition = rowPositionOffset; rowPosition < rowPositionOffset + positionRectangle.height; rowPosition++) {
+        if (atLeastOne) {
+            // Save gc settings
+            int originalLineStyle = gc.getLineStyle();
+            int originalLineWidth = gc.getLineWidth();
+            Color originalForeground = gc.getForeground();
 
-            ILayerCell previousCell = natLayer.getCellByPosition(columnPositionOffset - 1, rowPosition);
-            ILayerCell currentCell = natLayer.getCellByPosition(columnPositionOffset, rowPosition);
+            BorderStyle fillHandleRegionBorderStyle = getHandleBorderStyle(configRegistry);
 
-            for (int columnPosition = columnPositionOffset; columnPosition < columnPositionOffset + positionRectangle.width; columnPosition++) {
+            BorderPainter borderPainter = new BorderPainter(borderCells, fillHandleRegionBorderStyle);
+            borderPainter.paintBorder(gc);
 
-                ILayerCell afterCell = natLayer.getCellByPosition(columnPosition + 1, rowPosition);
-
-                if (currentCell != null) {
-                    if (isFillHandleRegion(currentCell)) {
-
-                        // if previous cell is not inside the fill region, draw
-                        // the left border
-                        if (previousCell == null || !isFillHandleRegion(previousCell)) {
-
-                            Rectangle currentCellBounds = currentCell.getBounds();
-
-                            int x = currentCellBounds.x + (handleBorderWidth / 2);
-
-                            int y0 = currentCellBounds.y;
-                            int y1 = currentCellBounds.y + currentCellBounds.height + lengthFix;
-
-                            if (this.renderGridLines && currentCellBounds.x != 0 && currentCellBounds.x != pixelRectangle.x) {
-                                x--;
-                            }
-
-                            if (this.renderGridLines && currentCellBounds.y != 0 && currentCellBounds.y != pixelRectangle.y) {
-                                y0--;
-                            }
-
-                            gc.drawLine(x, y0, x, y1);
-
-                        }
-
-                        // if after cell is not inside the fill region, draw the
-                        // right border
-                        if (afterCell == null || (!isFillHandleRegion(afterCell))) {
-
-                            Rectangle currentCellBounds = currentCell.getBounds();
-
-                            int x = currentCellBounds.x + (handleBorderWidth / 2) + currentCellBounds.width - handleBorderWidth;
-
-                            int y0 = currentCellBounds.y;
-                            int y1 = currentCellBounds.y + currentCellBounds.height + lengthFix;
-
-                            gc.drawLine(x, y0, x, y1);
-
-                        }
-                    }
-                }
-                previousCell = currentCell;
-                currentCell = afterCell;
-            }
+            // Restore original gc settings
+            gc.setLineStyle(originalLineStyle);
+            gc.setLineWidth(originalLineWidth);
+            gc.setForeground(originalForeground);
         }
-
-        // Restore original gc settings
-        gc.setLineStyle(originalLineStyle);
-        gc.setLineWidth(originalLineWidth);
-        gc.setForeground(originalForeground);
 
         // paint the border around the copied cells if a clipboard is set
         if (this.clipboard != null && this.clipboard.getCopiedCells() != null) {
             paintCopyBorder(natLayer, gc, xOffset, yOffset, pixelRectangle, configRegistry);
+        }
+
+        // in case of single cell update, the fill handle might (partially)
+        // disappear if it's in an adjacent cell; so we check the adjacent cells
+        // to find it and eventually repaint it
+        if (fillHandleCell == null && positionRectangle.width <= 2 && positionRectangle.height <= 2) {
+            for (int columnPosition = columnPositionOffset - 1; columnPosition < columnPositionOffset + positionRectangle.width + 1 && fillHandleCell == null; columnPosition++) {
+                for (int rowPosition = rowPositionOffset - 1; rowPosition < rowPositionOffset + positionRectangle.height + 1 && fillHandleCell == null; rowPosition++) {
+                    ILayerCell currentCell = natLayer.getCellByPosition(columnPosition, rowPosition);
+                    if (currentCell != null) {
+                        if (isFillHandleCell(currentCell)) {
+                            fillHandleCell = currentCell;
+                        }
+                    }
+                }
+            }
         }
 
         if (fillHandleCell != null) {
@@ -539,7 +458,9 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
      * @param configRegistry
      *            The {@link IConfigRegistry} to retrieve the style information
      *            from.
+     * @deprecated Use {@link #getHandleBorderStyle} instead.
      */
+    @Deprecated
     protected void applyHandleBorderStyle(GC gc, IConfigRegistry configRegistry) {
         BorderStyle borderStyle = configRegistry.getConfigAttribute(
                 FillHandleConfigAttributes.FILL_HANDLE_REGION_BORDER_STYLE,
@@ -555,6 +476,34 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
             gc.setLineWidth(borderStyle.getThickness());
             gc.setForeground(borderStyle.getColor());
         }
+    }
+
+    /**
+     * Get the border style that should be used to render the border for cells
+     * that are currently part of the fill handle region. Checks the
+     * {@link IConfigRegistry} for a registered {@link IStyle} for the
+     * {@link FillHandleConfigAttributes#FILL_HANDLE_REGION_BORDER_STYLE} label.
+     * If none is registered, a default line style will be returned.
+     *
+     * @param configRegistry
+     *            The {@link IConfigRegistry} to retrieve the style information
+     *            from.
+     *
+     * @return The border style that should be used
+     *
+     * @since 1.5
+     */
+    protected BorderStyle getHandleBorderStyle(IConfigRegistry configRegistry) {
+        BorderStyle borderStyle = configRegistry.getConfigAttribute(
+                FillHandleConfigAttributes.FILL_HANDLE_REGION_BORDER_STYLE,
+                DisplayMode.NORMAL);
+
+        // if there is no border style configured, use the default
+        if (borderStyle == null) {
+            borderStyle = new BorderStyle(2, GUIHelper.getColor(0, 125, 10), LineStyleEnum.SOLID, BorderModeEnum.INTERNAL);
+        }
+
+        return borderStyle;
     }
 
     /**
