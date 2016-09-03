@@ -7,11 +7,12 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
- *     Loris Securo <lorissek@gmail.com> - Bug 499701
+ *     Loris Securo <lorissek@gmail.com> - Bug 499701, 500800
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle.BorderModeEnum;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -1204,5 +1205,71 @@ public class GraphicsUtils {
         }
 
         drawRectangle(gc, rectangle);
+    }
+
+    /**
+     * Returns the external bounds of the rectangle that would be obtained by
+     * painting <code>rectangle</code> with <code>borderStyle</code> using one
+     * of the <code>GraphicsUtils.drawRectangle...</code> methods.
+     *
+     * @param rectangle
+     *            the rectangle to consider
+     * @param borderStyle
+     *            the border style to consider
+     * @return the external bounds of what would be the resulting rectangle
+     *
+     * @since 1.5
+     */
+    public static Rectangle getResultingExternalBounds(Rectangle rectangle, BorderStyle borderStyle) {
+        if (rectangle == null || borderStyle == null) {
+            return null;
+        }
+
+        Rectangle resultingRectangle = new Rectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+
+        int borderWidth = borderStyle.getThickness();
+        BorderModeEnum borderMode = borderStyle.getBorderMode();
+
+        switch (borderMode) {
+            case CENTERED:
+                if (resultingRectangle.width > 0) {
+                    resultingRectangle.x = resultingRectangle.x - (borderWidth / 2);
+                    resultingRectangle.width = resultingRectangle.width + (borderWidth - 1);
+                } else {
+                    resultingRectangle.x = resultingRectangle.x + ((borderWidth - 1) / 2);
+                    resultingRectangle.width = resultingRectangle.width - (borderWidth - 1);
+                }
+
+                if (resultingRectangle.height > 0) {
+                    resultingRectangle.y = resultingRectangle.y - (borderWidth / 2);
+                    resultingRectangle.height = resultingRectangle.height + (borderWidth - 1);
+                } else {
+                    resultingRectangle.y = resultingRectangle.y + ((borderWidth - 1) / 2);
+                    resultingRectangle.height = resultingRectangle.height - (borderWidth - 1);
+                }
+                break;
+            case EXTERNAL:
+                if (resultingRectangle.width > 0) {
+                    resultingRectangle.x = resultingRectangle.x - (borderWidth - 1);
+                    resultingRectangle.width = resultingRectangle.width + ((borderWidth - 1) * 2);
+                } else {
+                    resultingRectangle.x = resultingRectangle.x + (borderWidth - 1);
+                    resultingRectangle.width = resultingRectangle.width - ((borderWidth - 1) * 2);
+                }
+
+                if (resultingRectangle.height > 0) {
+                    resultingRectangle.y = resultingRectangle.y - (borderWidth - 1);
+                    resultingRectangle.height = resultingRectangle.height + ((borderWidth - 1) * 2);
+                } else {
+                    resultingRectangle.y = resultingRectangle.y + (borderWidth - 1);
+                    resultingRectangle.height = resultingRectangle.height - ((borderWidth - 1) * 2);
+                }
+                break;
+            case INTERNAL:
+                // the external bounds remain the same
+                break;
+        }
+
+        return resultingRectangle;
     }
 }

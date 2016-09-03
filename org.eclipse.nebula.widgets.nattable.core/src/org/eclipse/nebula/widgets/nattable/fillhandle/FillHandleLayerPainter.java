@@ -8,7 +8,7 @@
  *
  * Contributors:
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
- *      Loris Securo <lorissek@gmail.com> - Bug 499513, 499551, 500764
+ *      Loris Securo <lorissek@gmail.com> - Bug 499513, 499551, 500764, 500800
  *
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.fillhandle;
@@ -22,6 +22,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BorderPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BorderPainter.BorderCell;
+import org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayerPainter;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
@@ -261,7 +262,7 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
             int originalLineWidth = gc.getLineWidth();
             Color originalForeground = gc.getForeground();
 
-            BorderStyle fillHandleRegionBorderStyle = getHandleBorderStyle(configRegistry);
+            BorderStyle fillHandleRegionBorderStyle = getHandleRegionBorderStyle(configRegistry);
 
             BorderPainter borderPainter = new BorderPainter(borderCells, fillHandleRegionBorderStyle);
             borderPainter.paintBorder(gc);
@@ -308,45 +309,17 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
             IConfigRegistry configRegistry) {
 
         // Save gc settings
-        int originalLineStyle = gc.getLineStyle();
-        int originalLineWidth = gc.getLineWidth();
-        Color originalForeground = gc.getForeground();
         Color originalBackground = gc.getBackground();
         Rectangle originalClipping = gc.getClipping();
 
         Rectangle bounds = fillHandleCell.getBounds();
 
-        applyHandleStyle(gc, configRegistry);
-
-        int borderWidth = gc.getLineWidth();
-
-        int fillHandleSize = GUIHelper.convertHorizontalPixelToDpi(6);
+        int fillHandleSize = GUIHelper.convertHorizontalPixelToDpi(7);
 
         // positions offset starting from the lower right corner of the fill
         // handle cell
         int fillHandleOffsetX = -GUIHelper.convertHorizontalPixelToDpi(4);
         int fillHandleOffsetY = -GUIHelper.convertHorizontalPixelToDpi(4);
-
-        // only the last row/column might need to increase the clipping
-        ILayer layer = fillHandleCell.getLayer();
-        if (fillHandleCell.getColumnPosition() == layer.getColumnCount() - 1
-                || fillHandleCell.getRowPosition() == layer.getRowCount() - 1) {
-
-            // how many pixels of the fill handle are outside the cell
-            int fillHandlePixelsOutsideX = Math.max(0, fillHandleSize + fillHandleOffsetX + (borderWidth / 2) + (borderWidth % 2));
-            int fillHandlePixelsOutsideY = Math.max(0, fillHandleSize + fillHandleOffsetY + (borderWidth / 2) + (borderWidth % 2));
-
-            // how much we need to increment the gc clipping to paint the whole
-            // fill handle
-            int clippingWidthIncrement = Math.max(0, (bounds.x + bounds.width + fillHandlePixelsOutsideX) - (originalClipping.x + originalClipping.width));
-            int clippingHeightIncrement = Math.max(0, (bounds.y + bounds.height + fillHandlePixelsOutsideY) - (originalClipping.y + originalClipping.height));
-
-            if (clippingWidthIncrement > 0 || clippingHeightIncrement > 0) {
-                gc.setClipping(originalClipping.x, originalClipping.y,
-                        originalClipping.width + clippingWidthIncrement,
-                        originalClipping.height + clippingHeightIncrement);
-            }
-        }
 
         Rectangle handleInterior = new Rectangle(
                 bounds.x + bounds.width + fillHandleOffsetX,
@@ -354,19 +327,28 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
                 fillHandleSize,
                 fillHandleSize);
 
-        gc.fillRectangle(handleInterior);
-        gc.drawRectangle(handleInterior);
+        BorderStyle borderStyle = getHandleBorderStyle(configRegistry);
 
-        this.handleBounds = new Rectangle(
-                handleInterior.x - (borderWidth / 2),
-                handleInterior.y - (borderWidth / 2),
-                handleInterior.width + borderWidth,
-                handleInterior.height + borderWidth);
+        this.handleBounds = GraphicsUtils.getResultingExternalBounds(handleInterior, borderStyle);
+
+        // how much we need to increment the gc clipping to paint the whole
+        // fill handle
+        int clippingWidthIncrement = Math.max(0, (this.handleBounds.x + this.handleBounds.width) - (originalClipping.x + originalClipping.width));
+        int clippingHeightIncrement = Math.max(0, (this.handleBounds.y + this.handleBounds.height) - (originalClipping.y + originalClipping.height));
+
+        if (clippingWidthIncrement > 0 || clippingHeightIncrement > 0) {
+            gc.setClipping(originalClipping.x, originalClipping.y,
+                    originalClipping.width + clippingWidthIncrement,
+                    originalClipping.height + clippingHeightIncrement);
+        }
+
+        Color color = getHandleColor(configRegistry);
+        gc.setBackground(color);
+
+        GraphicsUtils.fillRectangle(gc, handleInterior);
+        GraphicsUtils.drawRectangle(gc, handleInterior, borderStyle);
 
         // Restore original gc settings
-        gc.setLineStyle(originalLineStyle);
-        gc.setLineWidth(originalLineWidth);
-        gc.setForeground(originalForeground);
         gc.setBackground(originalBackground);
         gc.setClipping(originalClipping);
     }
@@ -458,7 +440,7 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
      * @param configRegistry
      *            The {@link IConfigRegistry} to retrieve the style information
      *            from.
-     * @deprecated Use {@link #getHandleBorderStyle} instead.
+     * @deprecated Use {@link #getHandleRegionBorderStyle} instead.
      */
     @Deprecated
     protected void applyHandleBorderStyle(GC gc, IConfigRegistry configRegistry) {
@@ -493,7 +475,7 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
      *
      * @since 1.5
      */
-    protected BorderStyle getHandleBorderStyle(IConfigRegistry configRegistry) {
+    protected BorderStyle getHandleRegionBorderStyle(IConfigRegistry configRegistry) {
         BorderStyle borderStyle = configRegistry.getConfigAttribute(
                 FillHandleConfigAttributes.FILL_HANDLE_REGION_BORDER_STYLE,
                 DisplayMode.NORMAL);
@@ -520,7 +502,10 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
      *            fill handle style. Can be <code>null</code> which results in
      *            using the default style of a green square with white 1 pixel
      *            solid line border.
+     * @deprecated Use {@link #getHandleColor} and {@link #getHandleBorderStyle}
+     *             instead.
      */
+    @Deprecated
     protected void applyHandleStyle(GC gc, IConfigRegistry configRegistry) {
         if (configRegistry != null) {
             BorderStyle borderStyle = configRegistry.getConfigAttribute(
@@ -555,6 +540,62 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
             // set default color
             gc.setBackground(GUIHelper.getColor(0, 125, 10));
         }
+    }
+
+    /**
+     * Returns the color that should be used to render the fill handle. If the
+     * {@link IConfigRegistry} is <code>null</code> or does not contain
+     * configurations for the color of the fill handle, a default dark green
+     * color is used.
+     *
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to determine the configured
+     *            fill handle color. Can be <code>null</code> which results in
+     *            returning a default dark green color.
+     *
+     * @return the color that should be used
+     *
+     * @since 1.5
+     */
+    protected Color getHandleColor(IConfigRegistry configRegistry) {
+        if (configRegistry != null) {
+            Color color = configRegistry.getConfigAttribute(
+                    FillHandleConfigAttributes.FILL_HANDLE_COLOR,
+                    DisplayMode.NORMAL);
+
+            if (color != null) {
+                return color;
+            }
+        }
+        return GUIHelper.getColor(0, 125, 10);
+    }
+
+    /**
+     * Returns the border style that should be used to render the border of the
+     * fill handle. If the {@link IConfigRegistry} is <code>null</code> or does
+     * not contain configurations for styling the border of the fill handle, a
+     * default style is used.
+     *
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to determine the configured
+     *            fill handle border style. Can be <code>null</code> which
+     *            results in returning a default style.
+     *
+     * @return the border style that should be used
+     *
+     * @since 1.5
+     */
+    protected BorderStyle getHandleBorderStyle(IConfigRegistry configRegistry) {
+        if (configRegistry != null) {
+            BorderStyle borderStyle = configRegistry.getConfigAttribute(
+                    FillHandleConfigAttributes.FILL_HANDLE_BORDER_STYLE,
+                    DisplayMode.NORMAL);
+
+            if (borderStyle != null) {
+                return borderStyle;
+            }
+        }
+        return new BorderStyle(1, GUIHelper.COLOR_WHITE, LineStyleEnum.SOLID, BorderModeEnum.CENTERED);
     }
 
     /**
