@@ -6,10 +6,10 @@
    <feature url="features/org.eclipse.nebula.widgets.nattable.extension.glazedlists.source.feature_1.4.0.qualifier.jar" id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.source.feature" version="1.4.0.qualifier">
       <category name="nattable-extensions"/>
    </feature>
-   <feature url="features/org.eclipse.nebula.widgets.nattable.extension.poi.feature_1.4.0.qualifier.jar" id="org.eclipse.nebula.widgets.nattable.extension.poi.feature" version="1.4.0.qualifier">
+   <feature url="features/org.eclipse.nebula.widgets.nattable.extension.poi.feature_1.5.0.qualifier.jar" id="org.eclipse.nebula.widgets.nattable.extension.poi.feature" version="1.5.0.qualifier">
       <category name="nattable-extensions"/>
    </feature>
-   <feature url="features/org.eclipse.nebula.widgets.nattable.extension.poi.source.feature_1.4.0.qualifier.jar" id="org.eclipse.nebula.widgets.nattable.extension.poi.source.feature" version="1.4.0.qualifier">
+   <feature url="features/org.eclipse.nebula.widgets.nattable.extension.poi.source.feature_1.5.0.qualifier.jar" id="org.eclipse.nebula.widgets.nattable.extension.poi.source.feature" version="1.5.0.qualifier">
       <category name="nattable-extensions"/>
    </feature>
    <feature url="features/org.eclipse.nebula.widgets.nattable.extension.e4.feature_1.0.0.qualifier.jar" id="org.eclipse.nebula.widgets.nattable.extension.e4.feature" version="1.0.0.qualifier">

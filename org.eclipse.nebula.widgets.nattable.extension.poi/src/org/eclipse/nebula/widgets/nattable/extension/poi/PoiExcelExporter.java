@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,6 +35,7 @@ import org.eclipse.nebula.widgets.nattable.export.ILayerExporter;
 import org.eclipse.nebula.widgets.nattable.export.IOutputStreamProvider;
 import org.eclipse.nebula.widgets.nattable.formula.FormulaParser;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.painter.cell.AbstractTextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.VerticalTextPainter;
@@ -62,6 +63,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 
     private boolean applyBackgroundColor = true;
     private boolean applyVerticalTextConfiguration = false;
+    private boolean applyTextWrapping = false;
 
     private String sheetname;
 
@@ -156,11 +158,12 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         int hAlign = HorizontalAlignmentEnum.getSWTStyle(cellStyle);
         int vAlign = VerticalAlignmentEnum.getSWTStyle(cellStyle);
 
-        boolean vertical = this.applyVerticalTextConfiguration ? isVertical(configRegistry.getConfigAttribute(
+        ICellPainter cellPainter = configRegistry.getConfigAttribute(
                 CellConfigAttributes.CELL_PAINTER,
                 DisplayMode.NORMAL,
-                cell.getConfigLabels().getLabels()))
-                : false;
+                cell.getConfigLabels().getLabels());
+        boolean vertical = this.applyVerticalTextConfiguration ? isVertical(cellPainter) : false;
+        boolean wrap = this.applyTextWrapping ? wrapText(cellPainter) : false;
 
         if (exportDisplayValue == null)
             exportDisplayValue = ""; //$NON-NLS-1$
@@ -201,7 +204,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
             xlCell.setCellValue(exportDisplayValue.toString());
         }
 
-        CellStyle xlCellStyle = getExcelCellStyle(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical);
+        CellStyle xlCellStyle = getExcelCellStyle(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical, wrap);
         xlCell.setCellStyle(xlCellStyle);
     }
 
@@ -217,9 +220,25 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         return false;
     }
 
-    private CellStyle getExcelCellStyle(Color fg, Color bg, FontData fontData, String dataFormat, int hAlign, int vAlign, boolean vertical) {
+    private boolean wrapText(ICellPainter cellPainter) {
+        if (cellPainter instanceof AbstractTextPainter) {
+            return ((AbstractTextPainter) cellPainter).isWrapText();
+        } else if (cellPainter instanceof CellPainterWrapper) {
+            return wrapText(((CellPainterWrapper) cellPainter).getWrappedPainter());
+        } else if (cellPainter instanceof CellPainterDecorator) {
+            return (wrapText(((CellPainterDecorator) cellPainter).getBaseCellPainter())
+                    || wrapText(((CellPainterDecorator) cellPainter).getDecoratorCellPainter()));
+        }
+        return false;
+    }
 
-        CellStyle xlCellStyle = this.xlCellStyles.get(new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical));
+    private CellStyle getExcelCellStyle(
+            Color fg, Color bg, FontData fontData,
+            String dataFormat, int hAlign, int vAlign,
+            boolean vertical, boolean wrap) {
+
+        CellStyle xlCellStyle = this.xlCellStyles.get(
+                new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical, wrap));
 
         if (xlCellStyle == null) {
             xlCellStyle = this.xlWorkbook.createCellStyle();
@@ -238,6 +257,9 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 
             if (vertical)
                 xlCellStyle.setRotation((short) 90);
+
+            if (wrap)
+                xlCellStyle.setWrapText(wrap);
 
             switch (hAlign) {
                 case SWT.CENTER:
@@ -268,7 +290,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
             }
 
             this.xlCellStyles.put(
-                    new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical), xlCellStyle);
+                    new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical, wrap), xlCellStyle);
         }
         return xlCellStyle;
     }
@@ -327,6 +349,30 @@ public abstract class PoiExcelExporter implements ILayerExporter {
      */
     public void setApplyVerticalTextConfiguration(boolean inspectVertical) {
         this.applyVerticalTextConfiguration = inspectVertical;
+    }
+
+    /**
+     * Configure this exporter whether it should check for text wrapping
+     * configuration in NatTable and apply the corresponding style attribute in
+     * the export, or not.
+     * <p>
+     * Note: As showing text wrapping in NatTable is not a style information but
+     * a configured via painter implementation, the check whether text is
+     * wrapped needs to be done via reflection. Therefore setting this value to
+     * <code>true</code> could cause performance issues. As wrapped text is not
+     * the default case and the effect on performance might be negative, the
+     * default value for this configuration is <code>false</code>. If wrapped
+     * text (e.g. column headers) should also be exported wrapped, you need to
+     * set this value to <code>true</code>.
+     *
+     * @param inspectTextWrap
+     *            <code>true</code> to configure this exporter to check for text
+     *            wrapping configuration, <code>false</code> to never apply text
+     *            wrapping to the export.
+     * @since 1.5
+     */
+    public void setApplyTextWrapping(boolean inspectTextWrap) {
+        this.applyTextWrapping = inspectTextWrap;
     }
 
     protected abstract Workbook createWorkbook();

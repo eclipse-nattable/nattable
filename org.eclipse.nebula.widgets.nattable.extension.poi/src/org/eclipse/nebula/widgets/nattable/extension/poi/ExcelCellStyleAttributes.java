@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,9 +22,18 @@ public class ExcelCellStyleAttributes {
     private final int hAlign;
     private final int vAlign;
     private final boolean vertical;
+    private final boolean wrap;
 
     public ExcelCellStyleAttributes(Color fg, Color bg, FontData fontData,
             String dataFormat, int hAlign, int vAlign, boolean vertical) {
+        this(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical, false);
+    }
+
+    /**
+     * @since 1.5
+     */
+    public ExcelCellStyleAttributes(Color fg, Color bg, FontData fontData,
+            String dataFormat, int hAlign, int vAlign, boolean vertical, boolean wrap) {
         this.fg = fg;
         this.bg = bg;
         this.fontData = fontData;
@@ -32,6 +41,7 @@ public class ExcelCellStyleAttributes {
         this.hAlign = hAlign;
         this.vAlign = vAlign;
         this.vertical = vertical;
+        this.wrap = wrap;
     }
 
     @Override
@@ -45,6 +55,7 @@ public class ExcelCellStyleAttributes {
         result = prime * result + this.hAlign;
         result = prime * result + this.vAlign;
         result = prime * result + (this.vertical ? 1231 : 1237);
+        result = prime * result + (this.wrap ? 1231 : 1237);
         return result;
     }
 
@@ -82,6 +93,8 @@ public class ExcelCellStyleAttributes {
         if (this.vAlign != other.vAlign)
             return false;
         if (this.vertical != other.vertical)
+            return false;
+        if (this.wrap != other.wrap)
             return false;
         return true;
     }
