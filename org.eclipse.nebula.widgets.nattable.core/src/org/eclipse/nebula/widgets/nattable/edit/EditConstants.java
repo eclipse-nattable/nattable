@@ -15,7 +15,6 @@ package org.eclipse.nebula.widgets.nattable.edit;
  *
  * @since 1.4
  * @noextend This class is not intended to be subclassed by clients.
- * @noinstantiate This class is not intended to be instantiated by clients.
  */
 public interface EditConstants {
 
