@@ -279,12 +279,13 @@ public class NatExporter {
     /**
      * Sets the behavior after finishing the export.
      *
-     * The default ist opening the created export file with the associated
-     * application. You can prevent the opening by setting openResult to false.
+     * The default is opening the created export file with the associated
+     * application. You can prevent the opening by setting openResult to
+     * <code>false</code>.
      *
      * @param openResult
      *            set to <code>true</code> to open the created export file,
-     *            <code>false</false> otherwise
+     *            <code>false</code> otherwise
      *
      * @since 1.5
      */
