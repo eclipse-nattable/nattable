@@ -270,7 +270,7 @@ public class NatExporter {
     }
 
     private void openExport(ILayerExporter exporter) {
-        if (NatExport.this.openResult && exporter.getResult() != null
+        if (this.openResult && exporter.getResult() != null
                 && exporter.getResult() instanceof File) {
             Program.launch(((File) exporter.getResult()).getAbsolutePath());
         }
@@ -282,9 +282,9 @@ public class NatExporter {
      * The default ist opening the created export file with the associated
      * application. You can prevent the opening by setting openResult to false.
      *
-     * @param openResult 
-     *        set to <code>true</code> to open the created export file, 
-     *        <code>false</false> otherwise
+     * @param openResult
+     *            set to <code>true</code> to open the created export file,
+     *            <code>false</false> otherwise
      *
      * @since 1.5
      */

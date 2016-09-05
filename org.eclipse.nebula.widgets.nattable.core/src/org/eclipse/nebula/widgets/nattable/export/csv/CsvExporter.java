@@ -53,7 +53,10 @@ public class CsvExporter implements ILayerExporter {
      */
     public CsvExporter(final IOutputStreamProvider outputStreamProvider) {
         if (outputStreamProvider == null) {
-            this.outputStreamProvider = new FileOutputStreamProvider(DEFAULT_EXPORT_FILE_NAME, new String[] { CSV_FILE_FILTER }, new String[] { CSV_FILE_EXTENSION });
+            this.outputStreamProvider = new FileOutputStreamProvider(
+                    DEFAULT_EXPORT_FILE_NAME,
+                    new String[] { CSV_FILE_FILTER },
+                    new String[] { CSV_FILE_EXTENSION });
         } else {
             this.outputStreamProvider = outputStreamProvider;
         }
@@ -122,7 +125,10 @@ public class CsvExporter implements ILayerExporter {
     }
 
     @Override
-    public void exportCell(final OutputStream outputStream, final Object exportDisplayValue, final ILayerCell cell,
+    public void exportCell(
+            final OutputStream outputStream,
+            final Object exportDisplayValue,
+            final ILayerCell cell,
             final IConfigRegistry configRegistry) throws IOException {
 
         if (this.rowCellInserted) {

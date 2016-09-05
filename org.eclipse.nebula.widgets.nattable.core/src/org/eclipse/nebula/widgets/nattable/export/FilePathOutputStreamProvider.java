@@ -52,7 +52,7 @@ public class FilePathOutputStreamProvider implements IOutputStreamProvider {
         try {
             this.stream = new PrintStream(this.filePath);
         } catch (final FileNotFoundException e) {
-            FilePathOutputStreamProvider.LOG.error("Failed to open or create the file: " + this.filePath, e); //$NON-NLS-1$
+            LOG.error("Failed to open or create the file: " + this.filePath, e); //$NON-NLS-1$
         }
 
         return this.stream;
