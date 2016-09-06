@@ -39,7 +39,7 @@ public abstract class AbstractMathFunction extends AbstractFunction {
     public void addFunctionValue(FunctionValue value) {
         if (value instanceof StringFunctionValue) {
             throw new FunctionException("#VALUE!", //$NON-NLS-1$
-            Messages.getString("FormulaParser.error.invalidNumberValue", new Object[] { value.getValue() })); //$NON-NLS-1$
+                    Messages.getString("FormulaParser.error.invalidNumberValue", value.getValue())); //$NON-NLS-1$
         }
 
         if (value instanceof MultipleValueFunctionValue) {
@@ -66,8 +66,7 @@ public abstract class AbstractMathFunction extends AbstractFunction {
 
         if (value instanceof BigDecimal) {
             return (BigDecimal) value;
-        }
-        else if (value instanceof Number) {
+        } else if (value instanceof Number) {
             return new BigDecimal(((Number) value).doubleValue());
         }
         return new BigDecimal(value.toString());
@@ -88,7 +87,7 @@ public abstract class AbstractMathFunction extends AbstractFunction {
         for (FunctionValue value : values) {
             if (value instanceof StringFunctionValue) {
                 throw new FunctionException("#VALUE!", //$NON-NLS-1$
-                Messages.getString("FormulaParser.error.invalidNumberValue", new Object[] { value.getValue() })); //$NON-NLS-1$
+                        Messages.getString("FormulaParser.error.invalidNumberValue", value.getValue())); //$NON-NLS-1$
             }
         }
     }

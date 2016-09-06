@@ -29,8 +29,9 @@ public class DefaultCharacterDisplayConverter extends DisplayConverter {
     public Object displayToCanonicalValue(Object displayValue) {
         if (isNotNull(displayValue) && isNotEmpty(displayValue.toString())) {
             if (displayValue.toString().length() > 1) {
-                throw new ConversionFailedException(Messages.getString("DefaultCharacterDisplayConverter.failure", //$NON-NLS-1$
-                        new Object[] { displayValue }));
+                throw new ConversionFailedException(
+                        Messages.getString("DefaultCharacterDisplayConverter.failure", //$NON-NLS-1$
+                                displayValue));
             } else {
                 return displayValue.toString().charAt(0);
             }

@@ -55,7 +55,7 @@ public class Messages {
      * @return The localized String for the given key and the current set
      *         {@link Locale} with replaced placeholders.
      */
-    public static String getString(String key, Object[] args) {
+    public static String getString(String key, Object... args) {
         return MessageFormat.format(RESOURCE_BUNDLE.getString(key), args);
     }
 

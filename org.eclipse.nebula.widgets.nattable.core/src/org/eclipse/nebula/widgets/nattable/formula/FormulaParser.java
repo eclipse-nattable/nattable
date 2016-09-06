@@ -386,9 +386,9 @@ public class FormulaParser {
             try {
                 fv = functionClass.newInstance();
             } catch (InstantiationException e) {
-                throw new IllegalArgumentException(Messages.getString("FormulaParser.error.instantiation", new Object[] { e.getLocalizedMessage() }), e); //$NON-NLS-1$
+                throw new IllegalArgumentException(Messages.getString("FormulaParser.error.instantiation", e.getLocalizedMessage()), e); //$NON-NLS-1$
             } catch (IllegalAccessException e) {
-                throw new IllegalArgumentException(Messages.getString("FormulaParser.error.instantiation", new Object[] { e.getLocalizedMessage() }), e); //$NON-NLS-1$
+                throw new IllegalArgumentException(Messages.getString("FormulaParser.error.instantiation", e.getLocalizedMessage()), e); //$NON-NLS-1$
             }
 
             // process parameter

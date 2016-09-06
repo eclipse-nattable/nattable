@@ -48,7 +48,7 @@ public abstract class NumericDisplayConverter extends DisplayConverter {
             return null;
         } catch (Exception e) {
             throw new ConversionFailedException(Messages.getString("NumericDisplayConverter.failure", //$NON-NLS-1$
-                    new Object[] { displayValue }), e);
+                    displayValue), e);
         }
     }
 
