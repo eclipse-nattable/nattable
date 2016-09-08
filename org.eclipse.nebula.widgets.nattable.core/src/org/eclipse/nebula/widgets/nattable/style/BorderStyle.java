@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,7 +24,7 @@ public class BorderStyle {
     private int thickness = 1;
     private Color color = GUIHelper.COLOR_BLACK;
     private LineStyleEnum lineStyle = LineStyleEnum.SOLID;
-    private BorderModeEnum lineDrawMode = BorderModeEnum.CENTERED;
+    private BorderModeEnum borderMode = BorderModeEnum.CENTERED;
 
     public enum LineStyleEnum {
         SOLID, DASHED, DOTTED, DASHDOT, DASHDOTDOT;
@@ -65,11 +65,11 @@ public class BorderStyle {
     /**
      * @since 1.5
      */
-    public BorderStyle(int thickness, Color color, LineStyleEnum lineStyle, BorderModeEnum lineDrawMode) {
+    public BorderStyle(int thickness, Color color, LineStyleEnum lineStyle, BorderModeEnum borderMode) {
         this.thickness = thickness;
         this.color = color;
         this.lineStyle = lineStyle;
-        this.lineDrawMode = lineDrawMode;
+        this.borderMode = borderMode;
     }
 
     /**
@@ -83,6 +83,9 @@ public class BorderStyle {
         this.thickness = Integer.parseInt(tokens[0]);
         this.color = ColorPersistor.asColor(tokens[1]);
         this.lineStyle = LineStyleEnum.valueOf(tokens[2]);
+        if (tokens.length > 3) {
+            this.borderMode = BorderModeEnum.valueOf(tokens[3]);
+        }
     }
 
     public int getThickness() {
@@ -100,8 +103,8 @@ public class BorderStyle {
     /**
      * @since 1.5
      */
-    public BorderModeEnum getLineDrawMode() {
-        return this.lineDrawMode;
+    public BorderModeEnum getBorderMode() {
+        return this.borderMode;
     }
 
     public void setThickness(int thickness) {
@@ -119,8 +122,8 @@ public class BorderStyle {
     /**
      * @since 1.5
      */
-    public void setLineDrawMode(BorderModeEnum lineDrawMode) {
-        this.lineDrawMode = lineDrawMode;
+    public void setBorderMode(BorderModeEnum borderMode) {
+        this.borderMode = borderMode;
     }
 
     @Override
@@ -132,6 +135,8 @@ public class BorderStyle {
         if (getClass() != obj.getClass())
             return false;
         BorderStyle other = (BorderStyle) obj;
+        if (this.borderMode != other.borderMode)
+            return false;
         if (this.color == null) {
             if (other.color != null)
                 return false;
@@ -148,6 +153,7 @@ public class BorderStyle {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((this.borderMode == null) ? 0 : this.borderMode.hashCode());
         result = prime * result + ((this.color == null) ? 0 : this.color.hashCode());
         result = prime * result + ((this.lineStyle == null) ? 0 : this.lineStyle.hashCode());
         result = prime * result + this.thickness;
@@ -163,6 +169,7 @@ public class BorderStyle {
     public String toString() {
         return this.thickness + "|" + //$NON-NLS-1$
                 ColorPersistor.asString(this.color) + "|" + //$NON-NLS-1$
-                this.lineStyle;
+                this.lineStyle + "|" + //$NON-NLS-1$
+                this.borderMode;
     }
 }
