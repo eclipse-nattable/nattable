@@ -12,6 +12,7 @@
 package org.eclipse.nebula.widgets.nattable.extension.poi;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -20,14 +21,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Picture;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.util.IOUtils;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
@@ -52,6 +59,8 @@ import org.eclipse.swt.widgets.Shell;
 
 public abstract class PoiExcelExporter implements ILayerExporter {
 
+    private static final Log LOG = LogFactory.getLog(PoiExcelExporter.class);
+
     private final IOutputStreamProvider outputStreamProvider;
 
     private Map<ExcelCellStyleAttributes, CellStyle> xlCellStyles;
@@ -69,6 +78,9 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 
     protected FormulaParser formulaParser;
     protected NumberFormat nf = NumberFormat.getInstance();
+
+    protected CreationHelper helper;
+    protected Drawing drawing;
 
     public PoiExcelExporter(IOutputStreamProvider outputStreamProvider) {
         this.outputStreamProvider = outputStreamProvider;
@@ -178,6 +190,8 @@ public abstract class PoiExcelExporter implements ILayerExporter {
             xlCell.setCellValue((Date) exportDisplayValue);
         } else if (exportDisplayValue instanceof Number) {
             xlCell.setCellValue(((Number) exportDisplayValue).doubleValue());
+        } else if (exportDisplayValue instanceof InputStream) {
+            exportImage((InputStream) exportDisplayValue, xlCell);
         } else if (this.formulaParser != null) {
             // formula export is enabled, so we perform checks on the cell
             // values
@@ -427,4 +441,49 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         this.nf = nf;
     }
 
+    /**
+     * Adds a picture to the workbook at the given cell position.
+     *
+     * @param is
+     *            The {@link InputStream} to access the picture. This will be
+     *            automatically closed after reading.
+     * @param xlCell
+     *            The {@link Cell} to position the image to.
+     * @since 1.5
+     */
+    protected void exportImage(InputStream is, Cell xlCell) {
+        try {
+            byte[] bytes = IOUtils.toByteArray(is);
+            int pictureIdx = this.xlWorkbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
+
+            if (this.helper == null) {
+                this.helper = this.xlWorkbook.getCreationHelper();
+            }
+
+            // Create the drawing patriarch.
+            // This is the top level container for all shapes.
+            if (this.drawing == null) {
+                this.drawing = this.xlSheet.createDrawingPatriarch();
+            }
+
+            // add a picture shape
+            ClientAnchor anchor = this.helper.createClientAnchor();
+            // set top-left corner of the picture,
+            // subsequent call of Picture#resize() will operate relative to it
+            anchor.setCol1(xlCell.getColumnIndex());
+            anchor.setRow1(xlCell.getRowIndex());
+            Picture pict = this.drawing.createPicture(anchor, pictureIdx);
+
+            // auto-size picture relative to its top-left corner
+            pict.resize();
+        } catch (IOException e) {
+            LOG.error("Error on transforming the image input stream to byte array", e); //$NON-NLS-1$
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                LOG.error("Error on closing the image input stream", e); //$NON-NLS-1$
+            }
+        }
+    }
 }

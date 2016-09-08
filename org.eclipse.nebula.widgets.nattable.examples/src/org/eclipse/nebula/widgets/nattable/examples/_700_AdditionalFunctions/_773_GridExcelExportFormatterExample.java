@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Dirk Fauth and others.
+ * Copyright (c) 2013, 2016 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,11 +43,14 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.VerticalTextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.BeveledBorderDecorator;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -110,6 +113,8 @@ public class _773_GridExcelExportFormatterExample extends AbstractNatExample {
         SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
         ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
+        bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
+
         // build the column header layer
         IDataProvider columnHeaderDataProvider =
                 new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
@@ -168,14 +173,14 @@ public class _773_GridExcelExportFormatterExample extends AbstractNatExample {
                 configRegistry.registerConfigAttribute(
                         ExportConfigAttributes.EXPORT_FORMATTER,
                         new IExportFormatter() {
-                    @Override
-                    public Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry) {
-                        // simply return the data value which is an
-                        // integer for the row header doing this avoids the
-                        // default conversion to string for export
-                        return cell.getDataValue();
-                    }
-                },
+                            @Override
+                            public Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry) {
+                                // simply return the data value which is an
+                                // integer for the row header doing this avoids
+                                // the default conversion to string for export
+                                return cell.getDataValue();
+                            }
+                        },
                         DisplayMode.NORMAL,
                         GridRegion.ROW_HEADER);
 
@@ -186,6 +191,11 @@ public class _773_GridExcelExportFormatterExample extends AbstractNatExample {
                         DisplayMode.NORMAL,
                         GridRegion.COLUMN_HEADER);
 
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        new CheckBoxPainter(),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
             }
         });
 
@@ -215,7 +225,15 @@ public class _773_GridExcelExportFormatterExample extends AbstractNatExample {
             if (data != null) {
                 try {
                     if (data instanceof Boolean) {
-                        return ((Boolean) data).booleanValue() ? "X" : ""; //$NON-NLS-1$ //$NON-NLS-2$
+                        // as an example we export images via InputStreams here
+                        // this is supported since 1.5
+                        // alternatively a String or any other value could be
+                        // returned, e.g.
+                        // return ((Boolean) data).booleanValue() ? "X" : "";
+                        if ((Boolean) data) {
+                            return GUIHelper.getInternalImageUrl("checked").openStream();
+                        }
+                        return GUIHelper.getInternalImageUrl("unchecked").openStream();
                     } else if (data instanceof Date) {
                         // return the Date object directly to ensure Date type
                         // in export

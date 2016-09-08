@@ -227,7 +227,7 @@ public class GUIHelper {
     public static Image getImage(String imageName) {
         Image image = JFaceResources.getImage(imageName);
         if (image == null) {
-            URL imageUrl = getInternalImageUrl(imageName);
+            URL imageUrl = getInternalImageUrl(imageName, needScaling());
             if (imageUrl != null) {
                 ImageDescriptor imageDescriptor = ImageDescriptor.createFromURL(imageUrl);
 
@@ -262,7 +262,7 @@ public class GUIHelper {
      */
     public static ImageDescriptor getImageDescriptor(String imageName) {
         ImageDescriptor imageDescriptor = null;
-        URL imageUrl = getInternalImageUrl(imageName);
+        URL imageUrl = getInternalImageUrl(imageName, needScaling());
         if (imageUrl != null) {
             imageDescriptor = ImageDescriptor.createFromURL(imageUrl);
         }
@@ -278,15 +278,36 @@ public class GUIHelper {
      * @return The URL of the internal NatTable image or <code>null</code> if
      *         there is no image found for the given name at the internal image
      *         resource location.
+     *
+     * @since 1.5
      */
-    private static URL getInternalImageUrl(String imageName) {
+    public static URL getInternalImageUrl(String imageName) {
+        return getInternalImageUrl(imageName, false);
+    }
+
+    /**
+     * Searches for the image with the given filename in the NatTable internal
+     * image resource folder with file extensions <i>.png</i> and <i>.gif</i>.
+     *
+     * @param imageName
+     *            The filename of the image (without extension)
+     * @param needScaling
+     *            <code>true</code> in case the scaled version is requested,
+     *            <code>false</code> if the original version is requested
+     * @return The URL of the internal NatTable image or <code>null</code> if
+     *         there is no image found for the given name at the internal image
+     *         resource location.
+     * 
+     * @since 1.5
+     */
+    public static URL getInternalImageUrl(String imageName, boolean needScaling) {
         for (String dir : IMAGE_DIRS) {
             for (String ext : IMAGE_EXTENSIONS) {
                 // add search for scaled image
                 // e.g. imageName = checkbox -->
                 // org/eclipse/nebula/widgets/nattable/images/checkbox_128_128.png
                 URL url = null;
-                if (needScaling()) {
+                if (needScaling) {
                     url = GUIHelper.class.getClassLoader().getResource(
                             dir + imageName + getScalingImageSuffix() + ext);
                 }
