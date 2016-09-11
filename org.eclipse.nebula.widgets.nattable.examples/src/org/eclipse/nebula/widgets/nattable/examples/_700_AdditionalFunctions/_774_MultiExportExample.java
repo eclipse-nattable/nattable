@@ -29,6 +29,7 @@ import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.export.IExportFormatter;
+import org.eclipse.nebula.widgets.nattable.export.ILayerExporter;
 import org.eclipse.nebula.widgets.nattable.export.NatExporter;
 import org.eclipse.nebula.widgets.nattable.extension.poi.HSSFExcelExporter;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
@@ -235,7 +236,8 @@ public class _774_MultiExportExample extends AbstractNatExample {
                             @Override
                             public Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry) {
                                 // simply return the data value which is an
-                                // integer for the row header doing this avoids the
+                                // integer for the row header doing this avoids
+                                // the
                                 // default conversion to string for export
                                 return cell.getDataValue();
                             }
@@ -246,15 +248,16 @@ public class _774_MultiExportExample extends AbstractNatExample {
                 configRegistry.registerConfigAttribute(
                         ExportConfigAttributes.EXPORT_FORMATTER,
                         new IExportFormatter() {
-                    @Override
-                    public Object formatForExport(ILayerCell cell,
-                            IConfigRegistry configRegistry) {
-                        // simply return the data value which is an
-                        // integer for the row header doing this avoids the
-                        // default conversion to string for export
-                        return cell.getDataValue();
-                    }
-                },
+                            @Override
+                            public Object formatForExport(ILayerCell cell,
+                                    IConfigRegistry configRegistry) {
+                                // simply return the data value which is an
+                                // integer for the row header doing this avoids
+                                // the
+                                // default conversion to string for export
+                                return cell.getDataValue();
+                            }
+                        },
                         DisplayMode.NORMAL,
                         GridRegion.ROW_HEADER);
             }
@@ -268,11 +271,19 @@ public class _774_MultiExportExample extends AbstractNatExample {
         addColumnButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                // get the ILayerExporter that is registered for the persons
+                // table, otherwise the exporter registered there would have no
+                // effect. For multi table export the ILayerExporter specified
+                // in the method call is used always
+                ILayerExporter exporter = natTable.getConfigRegistry().getConfigAttribute(
+                        ExportConfigAttributes.EXPORTER,
+                        DisplayMode.NORMAL);
+
                 Map<String, NatTable> export = new HashMap<String, NatTable>();
                 export.put("Persons", natTable);
                 export.put("Numbers", numberNatTable);
                 new NatExporter(Display.getCurrent().getActiveShell())
-                        .exportMultipleNatTables(new HSSFExcelExporter(), export);
+                        .exportMultipleNatTables(exporter, export);
             }
         });
 
