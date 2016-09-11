@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,12 +11,10 @@
 package org.eclipse.nebula.widgets.nattable.export;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
@@ -28,17 +26,14 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class FileOutputStreamProvider implements IOutputStreamProvider {
 
-    private static final Log log = LogFactory
-            .getLog(FileOutputStreamProvider.class);
-
     protected String defaultFileName;
     protected String[] defaultFilterNames;
     protected String[] defaultFilterExtensions;
 
     protected String currentFileName;
 
-    public FileOutputStreamProvider(String defaultFileName,
-            String[] defaultFilterNames, String[] defaultFilterExtensions) {
+    public FileOutputStreamProvider(
+            String defaultFileName, String[] defaultFilterNames, String[] defaultFilterExtensions) {
         this.defaultFileName = defaultFileName;
         this.defaultFilterNames = defaultFilterNames;
         this.defaultFilterExtensions = defaultFilterExtensions;
@@ -56,12 +51,10 @@ public class FileOutputStreamProvider implements IOutputStreamProvider {
         String filterPath;
         String relativeFileName;
 
-        int lastIndexOfFileSeparator = this.defaultFileName
-                .lastIndexOf(File.separator);
+        int lastIndexOfFileSeparator = this.defaultFileName.lastIndexOf(File.separator);
         if (lastIndexOfFileSeparator >= 0) {
             filterPath = this.defaultFileName.substring(0, lastIndexOfFileSeparator);
-            relativeFileName = this.defaultFileName
-                    .substring(lastIndexOfFileSeparator + 1);
+            relativeFileName = this.defaultFileName.substring(lastIndexOfFileSeparator + 1);
         } else {
             filterPath = "/"; //$NON-NLS-1$
             relativeFileName = this.defaultFileName;
@@ -80,11 +73,9 @@ public class FileOutputStreamProvider implements IOutputStreamProvider {
 
         try {
             return new PrintStream(this.currentFileName);
-        } catch (FileNotFoundException e) {
-            log.error(
-                    "Failed to open or create the file: " + this.currentFileName, e); //$NON-NLS-1$
-            this.currentFileName = null;
-            return null;
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    Messages.getString("FileOutputStreamProvider.errorMessage", this.currentFileName), e); //$NON-NLS-1$
         }
     }
 

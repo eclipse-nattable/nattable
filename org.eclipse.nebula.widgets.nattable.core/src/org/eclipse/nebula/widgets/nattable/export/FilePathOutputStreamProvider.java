@@ -15,8 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -28,8 +27,6 @@ import org.eclipse.swt.widgets.Shell;
  * @since 1.5
  */
 public class FilePathOutputStreamProvider implements IOutputStreamProvider {
-
-    private static final Log LOG = LogFactory.getLog(FilePathOutputStreamProvider.class);
 
     private final String filePath;
     private OutputStream stream = null;
@@ -52,7 +49,8 @@ public class FilePathOutputStreamProvider implements IOutputStreamProvider {
         try {
             this.stream = new PrintStream(this.filePath);
         } catch (final FileNotFoundException e) {
-            LOG.error("Failed to open or create the file: " + this.filePath, e); //$NON-NLS-1$
+            throw new RuntimeException(
+                    Messages.getString("FileOutputStreamProvider.errorMessage", this.filePath), e); //$NON-NLS-1$
         }
 
         return this.stream;

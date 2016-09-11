@@ -30,6 +30,7 @@ import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRowValuesCommand;
+import org.eclipse.nebula.widgets.nattable.ui.ExceptionDialog;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
@@ -43,6 +44,7 @@ public class NatExporter {
 
     private final Shell shell;
     private boolean openResult = true;
+    private boolean exportSucceeded = true;
 
     public NatExporter(Shell shell) {
         this.shell = shell;
@@ -66,7 +68,7 @@ public class NatExporter {
                 ExportConfigAttributes.EXPORTER,
                 DisplayMode.NORMAL);
 
-        final OutputStream outputStream = exporter.getOutputStream(this.shell);
+        final OutputStream outputStream = getOutputStream(exporter);
         if (outputStream == null) {
             return;
         }
@@ -80,8 +82,11 @@ public class NatExporter {
                     exportLayer(exporter, outputStream, "", layer, configRegistry); //$NON-NLS-1$
 
                     exporter.exportEnd(outputStream);
-                } catch (IOException e) {
-                    throw new RuntimeException("Failed to export.", e); //$NON-NLS-1$
+
+                    NatExporter.this.exportSucceeded = true;
+                } catch (Exception e) {
+                    NatExporter.this.exportSucceeded = false;
+                    handleExportException(e);
                 } finally {
                     try {
                         outputStream.close();
@@ -117,7 +122,7 @@ public class NatExporter {
             final ILayerExporter exporter,
             final Map<String, NatTable> natTablesMap) {
 
-        final OutputStream outputStream = exporter.getOutputStream(this.shell);
+        final OutputStream outputStream = getOutputStream(exporter);
         if (outputStream == null) {
             return;
         }
@@ -135,8 +140,11 @@ public class NatExporter {
                     }
 
                     exporter.exportEnd(outputStream);
-                } catch (IOException e) {
-                    throw new RuntimeException("Failed to export.", e); //$NON-NLS-1$
+
+                    NatExporter.this.exportSucceeded = true;
+                } catch (Exception e) {
+                    NatExporter.this.exportSucceeded = false;
+                    handleExportException(e);
                 } finally {
                     try {
                         outputStream.close();
@@ -240,7 +248,7 @@ public class NatExporter {
 
             exporter.exportLayerEnd(outputStream, layerName);
         } catch (Exception e) {
-            log.error("Export failed", e); //$NON-NLS-1$
+            throw new RuntimeException(e);
         } finally {
             // These must be fired at the end of the thread execution
             layer.setClientAreaProvider(originalClientAreaProvider);
@@ -270,7 +278,9 @@ public class NatExporter {
     }
 
     private void openExport(ILayerExporter exporter) {
-        if (this.openResult && exporter.getResult() != null
+        if (this.exportSucceeded
+                && this.openResult
+                && exporter.getResult() != null
                 && exporter.getResult() instanceof File) {
             Program.launch(((File) exporter.getResult()).getAbsolutePath());
         }
@@ -293,4 +303,42 @@ public class NatExporter {
         this.openResult = openResult;
     }
 
+    /**
+     * Method that is used to retrieve the {@link OutputStream} to write the
+     * export to in a safe way. Any occurring exception will be handled inside.
+     *
+     * @param exporter
+     *            The {@link ILayerExporter} that should be used
+     * @return The {@link OutputStream} that is used to write the export to or
+     *         <code>null</code> if an error occurs.
+     *
+     * @since 1.5
+     */
+    protected OutputStream getOutputStream(ILayerExporter exporter) {
+        OutputStream outputStream = null;
+        try {
+            outputStream = exporter.getOutputStream(this.shell);
+        } catch (Exception e) {
+            handleExportException(e);
+        }
+        return outputStream;
+    }
+
+    /**
+     * Method that is used to handle exceptions that are raised while processing
+     * the export.
+     *
+     * @param e
+     *            The exception that should be handled.
+     * @since 1.5
+     */
+    protected void handleExportException(Exception e) {
+        log.error("Failed to export.", e); //$NON-NLS-1$
+
+        ExceptionDialog.open(
+                this.shell,
+                Messages.getString("ErrorDialog.title"), //$NON-NLS-1$
+                Messages.getString("NatExporter.errorMessagePrefix", e.getLocalizedMessage()), //$NON-NLS-1$
+                e);
+    }
 }
