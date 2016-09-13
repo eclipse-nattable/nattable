@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,12 +10,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,28 +49,50 @@ public class ColumnHideShowLayerPersistenceTest {
         Properties properties = new Properties();
         this.layer.saveState("prefix", properties);
 
-        Assert.assertEquals(1, properties.size());
-        Assert.assertEquals("3,5,6,", properties.getProperty("prefix"
-                + ColumnHideShowLayer.PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES));
+        assertEquals(1, properties.size());
+        assertEquals("3,5,6,", properties.getProperty("prefix" + ColumnHideShowLayer.PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES));
     }
 
     @Test
     public void testLoadState() {
         Properties properties = new Properties();
-        properties.setProperty("prefix"
-                + ColumnHideShowLayer.PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES,
-                "1,3,5,");
+        properties.setProperty("prefix" + ColumnHideShowLayer.PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES, "1,3,5,");
 
         this.layer.loadState("prefix", properties);
 
-        Assert.assertEquals(7, this.layer.getColumnCount());
+        assertEquals(7, this.layer.getColumnCount());
 
-        Assert.assertEquals(0, this.layer.getColumnIndexByPosition(0));
-        Assert.assertEquals(2, this.layer.getColumnIndexByPosition(1));
-        Assert.assertEquals(4, this.layer.getColumnIndexByPosition(2));
-        Assert.assertEquals(6, this.layer.getColumnIndexByPosition(3));
-        Assert.assertEquals(7, this.layer.getColumnIndexByPosition(4));
-        Assert.assertEquals(8, this.layer.getColumnIndexByPosition(5));
-        Assert.assertEquals(9, this.layer.getColumnIndexByPosition(6));
+        assertEquals(0, this.layer.getColumnIndexByPosition(0));
+        assertEquals(2, this.layer.getColumnIndexByPosition(1));
+        assertEquals(4, this.layer.getColumnIndexByPosition(2));
+        assertEquals(6, this.layer.getColumnIndexByPosition(3));
+        assertEquals(7, this.layer.getColumnIndexByPosition(4));
+        assertEquals(8, this.layer.getColumnIndexByPosition(5));
+        assertEquals(9, this.layer.getColumnIndexByPosition(6));
+    }
+
+    @Test
+    public void testSaveResetSaveLoad() {
+        // first hide a column and save
+        this.layer.hideColumnPositions(Arrays.asList(new Integer[] { 1 }));
+
+        assertEquals(1, this.layer.getHiddenColumnIndexes().size());
+
+        Properties properties = new Properties();
+        this.layer.saveState("prefix", properties);
+
+        assertEquals(1, properties.size());
+        assertEquals("1,", properties.getProperty("prefix" + ColumnHideShowLayer.PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES));
+
+        this.layer.showColumnIndexes(Arrays.asList(new Integer[] { 1 }));
+
+        assertEquals(0, this.layer.getHiddenColumnIndexes().size());
+        this.layer.saveState("prefix", properties);
+
+        assertEquals(0, properties.size());
+
+        this.layer.loadState("prefix", properties);
+
+        assertEquals(0, this.layer.getHiddenColumnIndexes().size());
     }
 }
