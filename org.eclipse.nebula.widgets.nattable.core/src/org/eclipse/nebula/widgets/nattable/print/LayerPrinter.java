@@ -11,7 +11,9 @@
 package org.eclipse.nebula.widgets.nattable.print;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -51,9 +53,21 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class LayerPrinter {
 
-    private final IConfigRegistry configRegistry;
-    private final ILayer layer;
-    private final IClientAreaProvider originalClientAreaProvider;
+    private class PrintTarget {
+
+        private final IConfigRegistry configRegistry;
+        private final ILayer layer;
+        private final IClientAreaProvider originalClientAreaProvider;
+
+        PrintTarget(ILayer layer, IConfigRegistry configRegistry) {
+            this.layer = layer;
+            this.configRegistry = configRegistry;
+            this.originalClientAreaProvider = layer.getClientAreaProvider();
+        }
+    }
+
+    private final List<PrintTarget> printTargets = new ArrayList<PrintTarget>();
+
     public static final int FOOTER_HEIGHT_IN_PRINTER_DPI = 300;
 
     final SimpleDateFormat dateFormat;
@@ -79,9 +93,7 @@ public class LayerPrinter {
      *            The ConfigRegistry needed for rendering to the print GC.
      */
     public LayerPrinter(ILayer layer, IConfigRegistry configRegistry) {
-        this.layer = layer;
-        this.configRegistry = configRegistry;
-        this.originalClientAreaProvider = layer.getClientAreaProvider();
+        this.printTargets.add(new PrintTarget(layer, configRegistry));
 
         // configure the footer height
         Integer fh = configRegistry.getConfigAttribute(
@@ -109,8 +121,27 @@ public class LayerPrinter {
     }
 
     /**
+     * Adds the given {@link ILayer} as print target. It can be used to register
+     * multiple NatTable or layer stacks in one print job.
+     *
+     * @param layer
+     *            The {@link ILayer} that should be printed together with the
+     *            main {@link ILayer} registered via constructor.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} that should be used to print the
+     *            given {@link ILayer}.
+     *
+     * @since 1.5
+     */
+    public void addPrintTarget(ILayer layer, IConfigRegistry configRegistry) {
+        this.printTargets.add(new PrintTarget(layer, configRegistry));
+    }
+
+    /**
      * Computes the scale factor to match the printer resolution.
      *
+     * @param layer
+     *            The layer for which the scale factor should be calculated.
      * @param printer
      *            The printer that will be used.
      * @param dpi
@@ -121,7 +152,7 @@ public class LayerPrinter {
      * @return The amount to scale the screen resolution by, to match the
      *         printer the resolution.
      */
-    private float[] computeScaleFactor(Printer printer, boolean dpi) {
+    private float[] computeScaleFactor(ILayer layer, Printer printer, boolean dpi) {
         Point screenDPI = Display.getDefault().getDPI();
         Point printerDPI = printer.getDPI();
 
@@ -129,7 +160,7 @@ public class LayerPrinter {
         float sfY = Float.valueOf(printerDPI.y) / Float.valueOf(screenDPI.y);
 
         if (!dpi && (this.fittingMode != Direction.NONE)) {
-            Rectangle total = getTotalArea();
+            Rectangle total = getTotalArea(layer);
             Rectangle print = computePrintArea(printer);
 
             float pixelX = Float.valueOf(print.width) / Float.valueOf(total.width);
@@ -149,36 +180,57 @@ public class LayerPrinter {
     }
 
     /**
+     * @param layer
+     *            The layer for which the total area is requested.
      * @return The size of the layer to fit all the contents.
      */
-    private Rectangle getTotalArea() {
-        return new Rectangle(0, 0, this.layer.getWidth(), this.layer.getHeight());
+    private Rectangle getTotalArea(ILayer layer) {
+        return new Rectangle(0, 0, layer.getWidth(), layer.getHeight());
+    }
+
+    /**
+     * Calculates number of horizontal and vertical pages needed to print all
+     * registered layers.
+     *
+     * @param printer
+     *            The printer that will be used.
+     * @return The number of pages that are needed to print.
+     */
+    private int getPageCount(Printer printer) {
+        int result = 0;
+        for (PrintTarget target : this.printTargets) {
+            Point layerResult = getPageCount(target, printer);
+            result += (layerResult.x * layerResult.y);
+        }
+        return result;
     }
 
     /**
      * Calculates number of horizontal and vertical pages needed to print the
-     * entire layer.
+     * entire layer of the given print target.
      *
+     * @param target
+     *            The print target to print.
      * @param printer
      *            The printer that will be used.
      * @return The number of horizontal and vertical pages that are needed to
-     *         print the layer.
+     *         print the layer of the given print target.
      */
-    private Point getPageCount(Printer printer) {
+    private Point getPageCount(PrintTarget target, Printer printer) {
         Rectangle printArea = computePrintArea(printer);
-        float[] scaleFactor = computeScaleFactor(printer, false);
+        float[] scaleFactor = computeScaleFactor(target.layer, printer, false);
 
-        Integer[] gridLineWidth = getGridLineWidth();
+        Integer[] gridLineWidth = getGridLineWidth(target.configRegistry);
 
         // calculate pages based on non cut off columns/rows
         int numOfHorizontalPages = 0;
-        int pageWidth = Float.valueOf(printArea.width / scaleFactor[0]).intValue();
+        int pageWidth = Math.round(Float.valueOf(printArea.width / scaleFactor[0]));
         int endX = 0;
-        while (endX < this.layer.getWidth()) {
+        while (endX < target.layer.getWidth()) {
             endX += pageWidth;
-            int colPos = this.layer.getColumnPositionByX(endX);
+            int colPos = target.layer.getColumnPositionByX(endX);
             if (colPos >= 0) {
-                ILayerCell cell = findColumnCellForBounds(colPos);
+                ILayerCell cell = findColumnCellForBounds(target.layer, colPos);
                 if (cell != null) {
                     Rectangle cellBounds = cell.getBounds();
                     if (cellBounds.x < endX) {
@@ -187,20 +239,20 @@ public class LayerPrinter {
                     }
                 }
             } else {
-                endX = this.layer.getWidth();
+                endX = target.layer.getWidth();
             }
 
             numOfHorizontalPages++;
         }
 
         int numOfVerticalPages = 0;
-        int pageHeight = Float.valueOf((printArea.height - getFooterHeightInPrinterDPI()) / scaleFactor[1]).intValue();
+        int pageHeight = Math.round(Float.valueOf((printArea.height - getFooterHeightInPrinterDPI()) / scaleFactor[1]));
         int endY = 0;
-        while (endY < this.layer.getHeight()) {
+        while (endY < target.layer.getHeight()) {
             endY += pageHeight;
-            int rowPos = this.layer.getRowPositionByY(endY);
+            int rowPos = target.layer.getRowPositionByY(endY);
             if (rowPos >= 0) {
-                ILayerCell cell = findRowCellForBounds(rowPos);
+                ILayerCell cell = findRowCellForBounds(target.layer, rowPos);
                 if (cell != null) {
                     Rectangle cellBounds = cell.getBounds();
                     if (cellBounds.y < endY) {
@@ -209,37 +261,37 @@ public class LayerPrinter {
                     }
                 }
             } else {
-                endY = this.layer.getHeight();
+                endY = target.layer.getHeight();
             }
 
             numOfVerticalPages++;
         }
 
         if (gridLineWidth[0] == null) {
-            LayerPrinter.this.configRegistry.unregisterConfigAttribute(CellConfigAttributes.GRID_LINE_WIDTH);
+            target.configRegistry.unregisterConfigAttribute(CellConfigAttributes.GRID_LINE_WIDTH);
         }
 
         return new Point(numOfHorizontalPages, numOfVerticalPages);
     }
 
-    private ILayerCell findColumnCellForBounds(int colPos) {
+    private ILayerCell findColumnCellForBounds(ILayer layer, int colPos) {
         int rowPos = 0;
-        ILayerCell cell = this.layer.getCellByPosition(colPos, rowPos);
+        ILayerCell cell = layer.getCellByPosition(colPos, rowPos);
         while (cell != null && cell.isSpannedCell()) {
             // if the cell is spanned, check the cell at the next row
             rowPos++;
-            cell = this.layer.getCellByPosition(colPos, rowPos);
+            cell = layer.getCellByPosition(colPos, rowPos);
         }
         return cell;
     }
 
-    private ILayerCell findRowCellForBounds(int rowPos) {
+    private ILayerCell findRowCellForBounds(ILayer layer, int rowPos) {
         int colPos = 0;
-        ILayerCell cell = this.layer.getCellByPosition(colPos, rowPos);
+        ILayerCell cell = layer.getCellByPosition(colPos, rowPos);
         while (cell != null && cell.isSpannedCell()) {
             // if the cell is spanned, check the cell at the next column
             colPos++;
-            cell = this.layer.getCellByPosition(colPos, rowPos);
+            cell = layer.getCellByPosition(colPos, rowPos);
         }
         return cell;
     }
@@ -254,20 +306,23 @@ public class LayerPrinter {
     }
 
     /**
+     * @param configRegistry
+     *            The {@link IConfigRegistry} to retrieve the grid line width
+     *            from.
      * @return Integer array that contains the original configured width at
      *         index 0 and the grid line width to use at index 1.
      * @since 1.5
      */
-    protected Integer[] getGridLineWidth() {
+    protected Integer[] getGridLineWidth(IConfigRegistry configRegistry) {
         // check if a grid line width is configured
-        Integer width = LayerPrinter.this.configRegistry.getConfigAttribute(
+        Integer width = configRegistry.getConfigAttribute(
                 CellConfigAttributes.GRID_LINE_WIDTH,
                 DisplayMode.NORMAL);
         Integer gridLineWidth = width;
         // if no explicit width is set, we temporary specify a grid line
         // width of 2 for optimized grid line printing
         if (width == null) {
-            LayerPrinter.this.configRegistry.registerConfigAttribute(
+            configRegistry.registerConfigAttribute(
                     CellConfigAttributes.GRID_LINE_WIDTH, 2);
             gridLineWidth = 2;
         }
@@ -284,7 +339,9 @@ public class LayerPrinter {
     public void print(final Shell shell) {
         // turn viewport off to ensure calculation of the print pages for the
         // whole table
-        this.layer.doCommand(new TurnViewportOffCommand());
+        for (PrintTarget target : this.printTargets) {
+            target.layer.doCommand(new TurnViewportOffCommand());
+        }
 
         Printer printer = null;
         try {
@@ -294,7 +351,9 @@ public class LayerPrinter {
             }
         } finally {
             // turn viewport on
-            this.layer.doCommand(new TurnViewportOnCommand());
+            for (PrintTarget target : this.printTargets) {
+                target.layer.doCommand(new TurnViewportOnCommand());
+            }
         }
 
         // Note: As we are operating on the same layer instance that is shown in
@@ -338,12 +397,12 @@ public class LayerPrinter {
      */
     private Printer setupPrinter(final Shell shell) {
         Printer defaultPrinter = new Printer();
-        Point pageCount = getPageCount(defaultPrinter);
+        int pageCount = getPageCount(defaultPrinter);
         defaultPrinter.dispose();
 
         final PrintDialog printDialog = new PrintDialog(shell);
         printDialog.setStartPage(1);
-        printDialog.setEndPage(pageCount.x * pageCount.y);
+        printDialog.setEndPage(pageCount);
         printDialog.setScope(PrinterData.ALL_PAGES);
 
         PrinterData printerData = printDialog.open();
@@ -432,139 +491,153 @@ public class LayerPrinter {
 
         @Override
         public void run() {
-            LayerPrinter.this.layer.doCommand(new TurnViewportOffCommand());
-            float[] scaleFactor = null;
-            float[] dpiFactor = null;
-            try {
-                scaleFactor = computeScaleFactor(this.printer, false);
-                dpiFactor = computeScaleFactor(this.printer, true);
-            } finally {
-                LayerPrinter.this.layer.doCommand(new TurnViewportOnCommand());
-            }
-
-            Integer[] gridLineWidth = getGridLineWidth();
-
-            // if pre-rendering is enabled, render in-memory to trigger content
-            // based auto-resizing
-            if (LayerPrinter.this.preRender) {
-                Transform tempTransform = new Transform(this.printer);
-                tempTransform.scale(scaleFactor[0], scaleFactor[1]);
-                AutoResizeHelper.autoResize(LayerPrinter.this.layer, LayerPrinter.this.configRegistry);
-                tempTransform.dispose();
-            }
-
             if (this.printer.startJob("NatTable")) { //$NON-NLS-1$
+                GC gc = new GC(this.printer);
                 try {
-                    // if a SummaryRowLayer is in the layer stack, we need to
-                    // ensure that the values are calculated
-                    LayerPrinter.this.layer.doCommand(new CalculateSummaryRowValuesCommand());
-
-                    // ensure that the viewport is turned off
-                    LayerPrinter.this.layer.doCommand(new TurnViewportOffCommand());
-
-                    // ensure that formula processing is performed in the
-                    // current thread
-                    LayerPrinter.this.layer.doCommand(new DisableFormulaCachingCommand());
-
-                    // set the size of the layer according to the print
-                    // settings made by the user
-                    setLayerSize(this.printer.getPrinterData());
-
-                    final Rectangle printerClientArea = computePrintArea(this.printer);
-                    final int printBoundsWidth = Float.valueOf(printerClientArea.width / scaleFactor[0]).intValue();
-                    int printBoundsHeight = Float.valueOf((printerClientArea.height - getFooterHeightInPrinterDPI()) / scaleFactor[1]).intValue();
-
-                    final Point pageCount = getPageCount(this.printer);
-                    GC gc = new GC(this.printer);
-
-                    // Print pages Left to Right and then Top to Down
                     int currentPage = 1;
 
-                    int startY = 0;
-                    for (int verticalPageNumber = 0; verticalPageNumber < pageCount.y; verticalPageNumber++) {
-
-                        int endY = startY + printBoundsHeight;
-                        int rowPos = LayerPrinter.this.layer.getRowPositionByY(endY);
-                        if (rowPos >= 0) {
-                            ILayerCell cell = findRowCellForBounds(rowPos);
-                            if (cell != null) {
-                                Rectangle cellBounds = cell.getBounds();
-                                if (cellBounds.y < endY) {
-                                    printBoundsHeight -= (endY - cellBounds.y);
-                                }
-                            }
+                    for (PrintTarget target : LayerPrinter.this.printTargets) {
+                        target.layer.doCommand(new TurnViewportOffCommand());
+                        float[] scaleFactor = null;
+                        float[] dpiFactor = null;
+                        try {
+                            scaleFactor = computeScaleFactor(target.layer, this.printer, false);
+                            dpiFactor = computeScaleFactor(target.layer, this.printer, true);
+                        } finally {
+                            target.layer.doCommand(new TurnViewportOnCommand());
                         }
 
-                        int startX = 0;
-                        for (int horizontalPageNumber = 0; horizontalPageNumber < pageCount.x; horizontalPageNumber++) {
+                        Integer[] gridLineWidth = getGridLineWidth(target.configRegistry);
 
-                            // Calculate bounds for the next page
-                            Rectangle printBounds = new Rectangle(
-                                    startX,
-                                    startY,
-                                    printBoundsWidth,
-                                    printBoundsHeight);
+                        // if pre-rendering is enabled, render in-memory to
+                        // trigger content based auto-resizing
+                        if (LayerPrinter.this.preRender) {
+                            Transform tempTransform = new Transform(this.printer);
+                            tempTransform.scale(scaleFactor[0], scaleFactor[1]);
+                            AutoResizeHelper.autoResize(target.layer, target.configRegistry);
+                            tempTransform.dispose();
+                        }
 
-                            int endX = startX + printBounds.width;
-                            int colPos = LayerPrinter.this.layer.getColumnPositionByX(endX);
-                            if (colPos >= 0) {
-                                ILayerCell cell = findColumnCellForBounds(colPos);
-                                if (cell != null) {
-                                    Rectangle cellBounds = cell.getBounds();
-                                    if (cellBounds.x < endX) {
-                                        printBounds.width -= (endX - cellBounds.x);
+                        try {
+                            // if a SummaryRowLayer is in the layer stack, we
+                            // need to ensure that the values are calculated
+                            target.layer.doCommand(new CalculateSummaryRowValuesCommand());
+
+                            // ensure that the viewport is turned off
+                            target.layer.doCommand(new TurnViewportOffCommand());
+
+                            // ensure that formula processing is performed in
+                            // the current thread
+                            target.layer.doCommand(new DisableFormulaCachingCommand());
+
+                            // set the size of the layer according to the print
+                            // settings made by the user
+                            setLayerSize(target, this.printer.getPrinterData());
+
+                            final Rectangle printerClientArea = computePrintArea(this.printer);
+                            final int printBoundsWidth = Math.round(Float.valueOf(printerClientArea.width / scaleFactor[0]));
+                            int printBoundsHeight = Math.round(Float.valueOf((printerClientArea.height - getFooterHeightInPrinterDPI()) / scaleFactor[1]));
+
+                            final Point pageCount = getPageCount(target, this.printer);
+
+                            // Print pages Left to Right and then Top to Down
+                            int startY = 0;
+                            for (int verticalPageNumber = 0; verticalPageNumber < pageCount.y; verticalPageNumber++) {
+
+                                int endY = startY + printBoundsHeight;
+                                // int rowPos =
+                                // target.layer.getRowPositionByY(endY);
+                                int rowPos = target.layer.getRowPositionByY(endY);
+                                if (rowPos >= 0) {
+                                    ILayerCell cell = findRowCellForBounds(target.layer, rowPos);
+                                    if (cell != null) {
+                                        Rectangle cellBounds = cell.getBounds();
+                                        if (cellBounds.y < endY) {
+                                            printBoundsHeight -= (endY - cellBounds.y);
+                                        }
                                     }
                                 }
+
+                                int startX = 0;
+                                for (int horizontalPageNumber = 0; horizontalPageNumber < pageCount.x; horizontalPageNumber++) {
+
+                                    // Calculate bounds for the next page
+                                    Rectangle printBounds = new Rectangle(
+                                            startX,
+                                            startY,
+                                            printBoundsWidth,
+                                            printBoundsHeight);
+
+                                    int endX = startX + printBounds.width;
+                                    int colPos = target.layer.getColumnPositionByX(endX);
+                                    if (colPos >= 0) {
+                                        ILayerCell cell = findColumnCellForBounds(target.layer, colPos);
+                                        if (cell != null) {
+                                            Rectangle cellBounds = cell.getBounds();
+                                            if (cellBounds.x < endX) {
+                                                printBounds.width -= (endX - cellBounds.x);
+                                            }
+                                        }
+                                    }
+
+                                    Rectangle footerBounds = new Rectangle(
+                                            Math.round(Float.valueOf((printerClientArea.width / dpiFactor[0]) * horizontalPageNumber)),
+                                            Math.round(Float.valueOf(((printerClientArea.height - getFooterHeightInPrinterDPI()) / dpiFactor[1]) * verticalPageNumber)),
+                                            Math.round(Float.valueOf(printerClientArea.width / dpiFactor[0])),
+                                            Math.round(Float.valueOf((printerClientArea.height - getFooterHeightInPrinterDPI()) / dpiFactor[1])));
+
+                                    if (shouldPrint(this.printer.getPrinterData(), currentPage)) {
+                                        this.printer.startPage();
+
+                                        Transform printerTransform = new Transform(this.printer);
+                                        Transform footerTransform = new Transform(this.printer);
+
+                                        // FIXME
+                                        Rectangle intersect = new Rectangle(
+                                                0,
+                                                0,
+                                                target.layer.getWidth(),
+                                                target.layer.getHeight());
+
+                                        intersect = printBounds.intersection(intersect);
+
+                                        configureScalingTransform(printerTransform, scaleFactor, printerClientArea, intersect);
+                                        configureScalingTransform(footerTransform, dpiFactor, printerClientArea, footerBounds);
+
+                                        gc.setTransform(printerTransform);
+                                        printLayer(target, gc, intersect);
+
+                                        gc.setTransform(footerTransform);
+                                        printFooter(gc, currentPage, footerBounds, target.configRegistry);
+
+                                        this.printer.endPage();
+                                        printerTransform.dispose();
+                                        footerTransform.dispose();
+                                    }
+                                    currentPage++;
+
+                                    startX += printBounds.width;
+                                }
+                                startY += printBoundsHeight;
                             }
 
-                            Rectangle footerBounds = new Rectangle(
-                                    Float.valueOf((printerClientArea.width / dpiFactor[0]) * horizontalPageNumber).intValue(),
-                                    Float.valueOf(((printerClientArea.height - getFooterHeightInPrinterDPI()) / dpiFactor[1]) * verticalPageNumber).intValue(),
-                                    Float.valueOf(printerClientArea.width / dpiFactor[0]).intValue(),
-                                    Float.valueOf((printerClientArea.height - getFooterHeightInPrinterDPI()) / dpiFactor[1]).intValue());
-
-                            if (shouldPrint(this.printer.getPrinterData(), currentPage)) {
-                                this.printer.startPage();
-
-                                Transform printerTransform = new Transform(this.printer);
-                                Transform footerTransform = new Transform(this.printer);
-
-                                configureScalingTransform(printerTransform, scaleFactor, printerClientArea, printBounds);
-                                configureScalingTransform(footerTransform, dpiFactor, printerClientArea, footerBounds);
-
-                                gc.setTransform(printerTransform);
-                                printLayer(gc, printBounds);
-
-                                gc.setTransform(footerTransform);
-                                printFooter(gc, currentPage, footerBounds);
-
-                                this.printer.endPage();
-                                printerTransform.dispose();
-                                footerTransform.dispose();
-                            }
-                            currentPage++;
-
-                            startX += printBounds.width - gridLineWidth[1];
+                        } finally {
+                            restoreLayerState(target);
                         }
-                        startY += printBoundsHeight - gridLineWidth[1];
+
+                        // there was no explicit width configured, so we
+                        // configured a temporary one for grid line printing.
+                        // this configuration needs to be removed again
+                        if (gridLineWidth[0] == null) {
+                            target.configRegistry.unregisterConfigAttribute(CellConfigAttributes.GRID_LINE_WIDTH);
+                        }
                     }
-
+                } finally {
                     this.printer.endJob();
-
                     gc.dispose();
                     this.printer.dispose();
-                } finally {
-                    restoreLayerState();
                 }
             }
-
-            // there was no explicit width configured, so we configured a
-            // temporary one for grid line printing. this configuration needs to
-            // be removed again
-            if (gridLineWidth[0] == null) {
-                LayerPrinter.this.configRegistry.unregisterConfigAttribute(CellConfigAttributes.GRID_LINE_WIDTH);
-            }
-
         }
 
         /**
@@ -606,17 +679,19 @@ public class LayerPrinter {
          * size needs to be extended so that all the contents fit in the
          * viewport to ensure that we print the <i>entire</i> table.
          *
+         * @param target
+         *            The print target to print.
          * @param printerData
          *            The PrinterData that was configured by the user on the
          *            PrintDialog.
          */
-        private void setLayerSize(PrinterData printerData) {
+        private void setLayerSize(PrintTarget target, PrinterData printerData) {
             if (printerData != null && printerData.scope == PrinterData.SELECTION) {
-                LayerPrinter.this.layer.setClientAreaProvider(LayerPrinter.this.originalClientAreaProvider);
+                target.layer.setClientAreaProvider(target.originalClientAreaProvider);
             } else {
-                final Rectangle fullLayerSize = getTotalArea();
+                final Rectangle fullLayerSize = getTotalArea(target.layer);
 
-                LayerPrinter.this.layer.setClientAreaProvider(new IClientAreaProvider() {
+                target.layer.setClientAreaProvider(new IClientAreaProvider() {
                     @Override
                     public Rectangle getClientArea() {
                         return fullLayerSize;
@@ -626,21 +701,23 @@ public class LayerPrinter {
                 // in case the whole layer should be printed or only the
                 // selected pages, we need to ensure to set the starting point
                 // to 0/0
-                LayerPrinter.this.layer.doCommand(new PrintEntireGridCommand());
+                target.layer.doCommand(new PrintEntireGridCommand());
             }
         }
 
         /**
          * Print the part of the layer that matches the given print bounds.
          *
+         * @param target
+         *            The print target to print
          * @param gc
          *            The print GC to render the layer to.
          * @param printBounds
          *            The bounds of the print page.
          */
-        private void printLayer(GC gc, Rectangle printBounds) {
-            LayerPrinter.this.layer.getLayerPainter().paintLayer(
-                    LayerPrinter.this.layer, gc, 0, 0, printBounds, LayerPrinter.this.configRegistry);
+        private void printLayer(PrintTarget target, GC gc, Rectangle printBounds) {
+            target.layer.getLayerPainter().paintLayer(
+                    target.layer, gc, 0, 0, printBounds, target.configRegistry);
         }
 
         /**
@@ -652,8 +729,11 @@ public class LayerPrinter {
          *            The total number of pages that are printed.
          * @param printBounds
          *            The bounds of the print page.
+         * @param configRegistry
+         *            The {@link IConfigRegistry} needed to retrieve the footer
+         *            style.
          */
-        private void printFooter(GC gc, int totalPageCount, Rectangle printBounds) {
+        private void printFooter(GC gc, int totalPageCount, Rectangle printBounds, IConfigRegistry configRegistry) {
             Color oldForeground = gc.getForeground();
             Color oldBackground = gc.getBackground();
             Font oldFont = gc.getFont();
@@ -662,7 +742,7 @@ public class LayerPrinter {
             Color footerBackground = null;
             Font footerFont = null;
 
-            IStyle style = LayerPrinter.this.configRegistry.getConfigAttribute(
+            IStyle style = configRegistry.getConfigAttribute(
                     PrintConfigAttributes.FOOTER_STYLE,
                     DisplayMode.NORMAL);
             if (style != null) {
@@ -699,11 +779,14 @@ public class LayerPrinter {
          * Restores the layer state to match the display characteristics again.
          * This is done by resetting the client area provider, turning the
          * viewport on and enabling formula result caching again.
+         *
+         * @param target
+         *            The print target whose state should be restarted.
          */
-        private void restoreLayerState() {
-            LayerPrinter.this.layer.setClientAreaProvider(LayerPrinter.this.originalClientAreaProvider);
-            LayerPrinter.this.layer.doCommand(new TurnViewportOnCommand());
-            LayerPrinter.this.layer.doCommand(new EnableFormulaCachingCommand());
+        private void restoreLayerState(PrintTarget target) {
+            target.layer.setClientAreaProvider(target.originalClientAreaProvider);
+            target.layer.doCommand(new TurnViewportOnCommand());
+            target.layer.doCommand(new EnableFormulaCachingCommand());
         }
 
     }
