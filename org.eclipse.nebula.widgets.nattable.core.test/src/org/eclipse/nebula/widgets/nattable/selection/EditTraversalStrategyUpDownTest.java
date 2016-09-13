@@ -1219,5 +1219,11 @@ public class EditTraversalStrategyUpDownTest {
     private void processShiftEnter() {
         Text textControl = ((Text) this.natTable.getActiveCellEditor().getEditorControl());
         SWTUtils.pressKeyOnControl(SWT.CR, SWT.SHIFT, textControl);
+        // wait shortly to ensure that the event can be processed
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
