@@ -73,6 +73,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
     private boolean applyBackgroundColor = true;
     private boolean applyVerticalTextConfiguration = false;
     private boolean applyTextWrapping = false;
+    private boolean applyCellDimensions = false;
 
     private String sheetname;
 
@@ -145,6 +146,15 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         if (columnPosition != cell.getOriginColumnPosition()
                 || rowPosition != cell.getOriginRowPosition()) {
             return;
+        }
+
+        if (this.applyCellDimensions) {
+            if (cell.getColumnSpan() == 1) {
+                this.xlSheet.setColumnWidth(columnPosition, getPoiColumnWidth(cell.getBounds().width) + getPoiColumnWidth(5));
+            }
+            if (cell.getRowSpan() == 1) {
+                this.xlRow.setHeight(getPoiRowHeight(cell.getBounds().height));
+            }
         }
 
         Cell xlCell = this.xlRow.createCell(columnPosition);
@@ -389,6 +399,21 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         this.applyTextWrapping = inspectTextWrap;
     }
 
+    /**
+     * Configure this exporter whether it should apply the cell dimensions to
+     * the same size configuration the NatTable shows.
+     *
+     * @param apply
+     *            <code>true</code> to configure this exporter to apply the cell
+     *            dimensions based on the NatTable cell dimensions,
+     *            <code>false</code> if the Excel default cell dimensions should
+     *            be used.
+     * @since 1.5
+     */
+    public void setApplyCellDimensions(boolean apply) {
+        this.applyCellDimensions = apply;
+    }
+
     protected abstract Workbook createWorkbook();
 
     protected abstract void setFillForegroundColor(CellStyle xlCellStyle, Color swtColor);
@@ -485,5 +510,17 @@ public abstract class PoiExcelExporter implements ILayerExporter {
                 LOG.error("Error on closing the image input stream", e); //$NON-NLS-1$
             }
         }
+    }
+
+    private int getPoiColumnWidth(int pixel) {
+        return (256 * (pixel / 7)) + 128;
+    }
+
+    private short getPoiRowHeight(int pixel) {
+        double points = pixel;
+        points *= 72;
+        points /= 96;
+        points *= 21;
+        return (short) points;
     }
 }

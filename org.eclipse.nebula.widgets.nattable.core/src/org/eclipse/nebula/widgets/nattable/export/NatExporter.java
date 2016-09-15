@@ -28,6 +28,7 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
+import org.eclipse.nebula.widgets.nattable.resize.AutoResizeHelper;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRowValuesCommand;
 import org.eclipse.nebula.widgets.nattable.ui.ExceptionDialog;
@@ -45,6 +46,11 @@ public class NatExporter {
     private final Shell shell;
     private boolean openResult = true;
     private boolean exportSucceeded = true;
+
+    /**
+     * @since 1.5
+     */
+    protected boolean preRender = true;
 
     public NatExporter(Shell shell) {
         this.shell = shell;
@@ -186,6 +192,10 @@ public class NatExporter {
             final String layerName,
             final ILayer layer,
             final IConfigRegistry configRegistry) {
+
+        if (this.preRender) {
+            AutoResizeHelper.autoResize(layer, configRegistry);
+        }
 
         IClientAreaProvider originalClientAreaProvider = layer.getClientAreaProvider();
 
@@ -340,5 +350,26 @@ public class NatExporter {
                 Messages.getString("ErrorDialog.title"), //$NON-NLS-1$
                 Messages.getString("NatExporter.errorMessagePrefix", e.getLocalizedMessage()), //$NON-NLS-1$
                 e);
+    }
+
+    /**
+     * Enable in-memory pre-rendering. This is necessary in case content
+     * painters are used that are configured for content based auto-resizing.
+     *
+     * @since 1.5
+     */
+    public void enablePreRendering() {
+        this.preRender = true;
+    }
+
+    /**
+     * Disable in-memory pre-rendering. You should consider to disable
+     * pre-rendering if no content painters are used that are configured for
+     * content based auto-resizing.
+     *
+     * @since 1.5
+     */
+    public void disablePreRendering() {
+        this.preRender = false;
     }
 }
