@@ -592,7 +592,6 @@ public class LayerPrinter {
                                         Transform printerTransform = new Transform(this.printer);
                                         Transform footerTransform = new Transform(this.printer);
 
-                                        // FIXME
                                         Rectangle intersect = new Rectangle(
                                                 0,
                                                 0,
