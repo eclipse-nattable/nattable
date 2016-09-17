@@ -74,6 +74,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
     private boolean applyVerticalTextConfiguration = false;
     private boolean applyTextWrapping = false;
     private boolean applyCellDimensions = false;
+    private boolean applyCellBorders = false;
 
     private String sheetname;
 
@@ -127,7 +128,11 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 
     @Override
     public void exportRowBegin(OutputStream outputStream, int rowPosition) throws IOException {
-        this.xlRow = this.xlSheet.createRow(rowPosition);
+        // check if row was already created because of spanning
+        this.xlRow = this.xlSheet.getRow(rowPosition);
+        if (this.xlRow == null) {
+            this.xlRow = this.xlSheet.createRow(rowPosition);
+        }
     }
 
     @Override
@@ -157,14 +162,10 @@ public abstract class PoiExcelExporter implements ILayerExporter {
             }
         }
 
-        Cell xlCell = this.xlRow.createCell(columnPosition);
-
-        int columnSpan = cell.getColumnSpan();
-        int rowSpan = cell.getRowSpan();
-        if (columnSpan > 1 || rowSpan > 1) {
-            int lastRow = rowPosition + rowSpan - 1;
-            int lastColumn = columnPosition + columnSpan - 1;
-            this.xlSheet.addMergedRegion(new CellRangeAddress(rowPosition, lastRow, columnPosition, lastColumn));
+        // check if cell was already created because of spanning
+        Cell xlCell = this.xlRow.getCell(columnPosition);
+        if (xlCell == null) {
+            xlCell = this.xlRow.createCell(columnPosition);
         }
 
         CellStyleProxy cellStyle = new CellStyleProxy(
@@ -186,6 +187,34 @@ public abstract class PoiExcelExporter implements ILayerExporter {
                 cell.getConfigLabels().getLabels());
         boolean vertical = this.applyVerticalTextConfiguration ? isVertical(cellPainter) : false;
         boolean wrap = this.applyTextWrapping ? wrapText(cellPainter) : false;
+
+        CellStyle xlCellStyle = getExcelCellStyle(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical, wrap, this.applyCellBorders);
+        xlCell.setCellStyle(xlCellStyle);
+
+        int columnSpan = cell.getColumnSpan();
+        int rowSpan = cell.getRowSpan();
+        if (columnSpan > 1 || rowSpan > 1) {
+            int lastRow = rowPosition + rowSpan - 1;
+            int lastColumn = columnPosition + columnSpan - 1;
+            this.xlSheet.addMergedRegion(new CellRangeAddress(rowPosition, lastRow, columnPosition, lastColumn));
+
+            // apply style to all cells that get merged
+            Row tempRow = null;
+            Cell tempCell = null;
+            for (int i = rowPosition; i <= lastRow; i++) {
+                tempRow = this.xlSheet.getRow(i);
+                if (tempRow == null) {
+                    tempRow = this.xlSheet.createRow(i);
+                }
+                for (int j = columnPosition; j <= lastColumn; j++) {
+                    tempCell = tempRow.getCell(j);
+                    if (tempCell == null) {
+                        tempCell = tempRow.createCell(j);
+                    }
+                    tempCell.setCellStyle(xlCellStyle);
+                }
+            }
+        }
 
         if (exportDisplayValue == null)
             exportDisplayValue = ""; //$NON-NLS-1$
@@ -227,9 +256,6 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         } else {
             xlCell.setCellValue(exportDisplayValue.toString());
         }
-
-        CellStyle xlCellStyle = getExcelCellStyle(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical, wrap);
-        xlCell.setCellStyle(xlCellStyle);
     }
 
     private boolean isVertical(ICellPainter cellPainter) {
@@ -259,10 +285,10 @@ public abstract class PoiExcelExporter implements ILayerExporter {
     private CellStyle getExcelCellStyle(
             Color fg, Color bg, FontData fontData,
             String dataFormat, int hAlign, int vAlign,
-            boolean vertical, boolean wrap) {
+            boolean vertical, boolean wrap, boolean border) {
 
         CellStyle xlCellStyle = this.xlCellStyles.get(
-                new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical, wrap));
+                new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical, wrap, border));
 
         if (xlCellStyle == null) {
             xlCellStyle = this.xlWorkbook.createCellStyle();
@@ -284,6 +310,13 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 
             if (wrap)
                 xlCellStyle.setWrapText(wrap);
+
+            if (border) {
+                xlCellStyle.setBorderTop(CellStyle.BORDER_THIN);
+                xlCellStyle.setBorderRight(CellStyle.BORDER_THIN);
+                xlCellStyle.setBorderBottom(CellStyle.BORDER_THIN);
+                xlCellStyle.setBorderLeft(CellStyle.BORDER_THIN);
+            }
 
             switch (hAlign) {
                 case SWT.CENTER:
@@ -314,7 +347,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
             }
 
             this.xlCellStyles.put(
-                    new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical, wrap), xlCellStyle);
+                    new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical, wrap, border), xlCellStyle);
         }
         return xlCellStyle;
     }
@@ -412,6 +445,20 @@ public abstract class PoiExcelExporter implements ILayerExporter {
      */
     public void setApplyCellDimensions(boolean apply) {
         this.applyCellDimensions = apply;
+    }
+
+    /**
+     * Configure this exporter whether it should render cell borders on all
+     * cells. This should typically be enabled if background colors should be
+     * applied to make the cell borders visible.
+     *
+     * @param apply
+     *            <code>true</code> to configure this exporter to render cell
+     *            borders, <code>false</code> if not.
+     * @since 1.5
+     */
+    public void setApplyCellBorders(boolean apply) {
+        this.applyCellBorders = apply;
     }
 
     protected abstract Workbook createWorkbook();

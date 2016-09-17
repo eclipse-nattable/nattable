@@ -23,17 +23,18 @@ public class ExcelCellStyleAttributes {
     private final int vAlign;
     private final boolean vertical;
     private final boolean wrap;
+    private final boolean border;
 
     public ExcelCellStyleAttributes(Color fg, Color bg, FontData fontData,
             String dataFormat, int hAlign, int vAlign, boolean vertical) {
-        this(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical, false);
+        this(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical, false, false);
     }
 
     /**
      * @since 1.5
      */
     public ExcelCellStyleAttributes(Color fg, Color bg, FontData fontData,
-            String dataFormat, int hAlign, int vAlign, boolean vertical, boolean wrap) {
+            String dataFormat, int hAlign, int vAlign, boolean vertical, boolean wrap, boolean border) {
         this.fg = fg;
         this.bg = bg;
         this.fontData = fontData;
@@ -42,6 +43,7 @@ public class ExcelCellStyleAttributes {
         this.vAlign = vAlign;
         this.vertical = vertical;
         this.wrap = wrap;
+        this.border = border;
     }
 
     @Override
@@ -56,6 +58,7 @@ public class ExcelCellStyleAttributes {
         result = prime * result + this.vAlign;
         result = prime * result + (this.vertical ? 1231 : 1237);
         result = prime * result + (this.wrap ? 1231 : 1237);
+        result = prime * result + (this.border ? 1231 : 1237);
         return result;
     }
 
@@ -95,6 +98,8 @@ public class ExcelCellStyleAttributes {
         if (this.vertical != other.vertical)
             return false;
         if (this.wrap != other.wrap)
+            return false;
+        if (this.border != other.border)
             return false;
         return true;
     }
