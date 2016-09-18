@@ -108,6 +108,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         this.sheetNumber = 0;
         this.xlSheet = null;
         this.xlRow = null;
+        this.drawing = null;
     }
 
     @Override
