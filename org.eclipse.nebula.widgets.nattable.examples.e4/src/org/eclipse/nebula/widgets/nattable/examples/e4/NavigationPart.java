@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Modifier;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -27,6 +28,7 @@ import java.util.StringTokenizer;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
@@ -45,6 +47,7 @@ import org.eclipse.nebula.widgets.nattable.examples.runner.NavContentProvider;
 import org.eclipse.nebula.widgets.nattable.examples.runner.NavLabelProvider;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.wiring.BundleWiring;
 
@@ -173,7 +176,9 @@ public class NavigationPart {
                 reader.close();
             } else {
                 System.out.println("examples.index not found, reconstructing");
-                examples = NatTableExamples.createExamplesIndex(null);
+                Bundle bundle = FrameworkUtil.getBundle(NatTableExamples.class);
+                URL location = FileLocator.resolve(bundle.getEntry("/"));
+                examples = NatTableExamples.createExamplesIndex(location.getPath().trim());
             }
 
             // add e4 examples
