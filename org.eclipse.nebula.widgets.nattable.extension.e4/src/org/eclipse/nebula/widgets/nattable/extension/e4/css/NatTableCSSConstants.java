@@ -185,6 +185,16 @@ public interface NatTableCSSConstants {
      */
     String RENDER_GRID_LINES = "render-grid-lines";
     /**
+     * CSS property to specify whether words should automatically or not.
+     * Default is <code>false</code>.
+     * <p>
+     * Available values: <code>true, false</code>
+     * </p>
+     *
+     * @since 1.1
+     */
+    String WORD_WRAP = "word-wrap";
+    /**
      * CSS property to specify whether text should automatically wrapped between
      * words or not. Default is <code>false</code>.
      * <p>

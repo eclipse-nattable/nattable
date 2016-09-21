@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -49,6 +49,10 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 
     public static final String LINE_SEPARATOR = System.getProperty("line.separator"); //$NON-NLS-1$
 
+    /**
+     * @since 1.5
+     */
+    protected boolean wordWrapping = false;
     protected boolean wrapText;
     protected final boolean paintBg;
     protected boolean paintFg = true;
@@ -334,7 +338,31 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 
         // take the whole width of the text
         int textLength = getLengthFromCache(gc, text);
-        if (this.calculateByTextLength && this.wrapText) {
+
+        if (this.wordWrapping) {
+            if (availableLength < textLength) {
+                String[] lines = text.split(NEW_LINE_REGEX);
+                for (String textLine : lines) {
+                    if (output.length() > 0) {
+                        output.append(LINE_SEPARATOR);
+                    }
+
+                    StringBuilder line = new StringBuilder();
+                    for (char c : textLine.toCharArray()) {
+                        line.append(c);
+                        int length = getLengthFromCache(gc, line.toString());
+                        if (length >= availableLength) {
+                            output.append(line.substring(0, line.length() - 1)).append(LINE_SEPARATOR);
+                            line = new StringBuilder();
+                            line.append(c);
+                        }
+                    }
+                    output.append(line);
+                }
+            } else {
+                output.append(text);
+            }
+        } else if (this.calculateByTextLength && this.wrapText) {
             if (availableLength < textLength) {
                 // calculate length by finding the longest word in text
                 textLength = (availableLength - (2 * this.spacing));
@@ -397,7 +425,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
     }
 
     /**
-     * This method gets only called if word wrapping is enabled. Concatenates
+     * This method gets only called if text wrapping is enabled. Concatenates
      * the two given words by taking the availableSpace into account. If
      * concatenating those two words with a space as delimiter does fit into the
      * available space the return value is exactly this. Else instead of a space
@@ -716,4 +744,54 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
         }
     }
 
+    /**
+     * Return whether word wrapping is enabled or not.
+     * <p>
+     * Word wrapping is the wrapping behavior similar to spreadsheet
+     * applications where words are wrapped if there is not enough space. Text
+     * wrapping on the other hand only wraps whole words.
+     * </p>
+     * <p>
+     * Enabling this feature could result in slow rendering performance. It is
+     * therefore disabled by default.
+     * </p>
+     * <p>
+     * <b>Note:</b> If word wrapping is enabled, features like automatic size
+     * calculation by text length and text wrapping are ignored.
+     * </p>
+     *
+     * @return <code>true</code> if word wrapping is enabled, <code>false</code>
+     *         if not.
+     *
+     * @since 1.5
+     */
+    public boolean isWordWrapping() {
+        return this.wordWrapping;
+    }
+
+    /**
+     * Configure whether word wrapping should be enabled or not.
+     * <p>
+     * Word wrapping is the wrapping behavior similar to spreadsheet
+     * applications where words are wrapped if there is not enough space. Text
+     * wrapping on the other hand only wraps whole words.
+     * </p>
+     * <p>
+     * Enabling this feature could result in slow rendering performance. It is
+     * therefore disabled by default.
+     * </p>
+     * <p>
+     * <b>Note:</b> If word wrapping is enabled, features like automatic size
+     * calculation by text length and text wrapping are ignored.
+     * </p>
+     *
+     * @param wordWrapping
+     *            <code>true</code> to enable word wrapping, <code>false</code>
+     *            to disable it.
+     *
+     * @since 1.5
+     */
+    public void setWordWrapping(boolean wordWrapping) {
+        this.wordWrapping = wordWrapping;
+    }
 }

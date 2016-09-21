@@ -273,7 +273,8 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 
     private boolean wrapText(ICellPainter cellPainter) {
         if (cellPainter instanceof AbstractTextPainter) {
-            return ((AbstractTextPainter) cellPainter).isWrapText();
+            return ((AbstractTextPainter) cellPainter).isWordWrapping()
+                    || ((AbstractTextPainter) cellPainter).isWrapText();
         } else if (cellPainter instanceof CellPainterWrapper) {
             return wrapText(((CellPainterWrapper) cellPainter).getWrappedPainter());
         } else if (cellPainter instanceof CellPainterDecorator) {
