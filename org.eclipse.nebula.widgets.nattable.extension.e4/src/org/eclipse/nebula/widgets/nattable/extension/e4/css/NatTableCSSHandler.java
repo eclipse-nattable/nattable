@@ -536,6 +536,11 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                         newColor,
                         displayMode,
                         label);
+            } else if (NatTableCSSConstants.WORD_WRAP.equalsIgnoreCase(property)
+                    && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
+                NatTableCSSHelper
+                        .getPainterProperties(context, displayMode)
+                        .put(NatTableCSSConstants.WORD_WRAP, NatTableCSSHelper.getBoolean(value, false));
             } else if (NatTableCSSConstants.TEXT_WRAP.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 NatTableCSSHelper
@@ -1190,6 +1195,24 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                         style.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR),
                         engine,
                         null);
+            } else if (NatTableCSSConstants.WORD_WRAP.equalsIgnoreCase(property)) {
+                Boolean wrap = Boolean.FALSE;
+
+                ICellPainter painter = natTable.getConfigRegistry().getConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        displayMode,
+                        label);
+                if (painter != null) {
+                    while (painter instanceof CellPainterWrapper) {
+                        painter = ((CellPainterWrapper) painter).getWrappedPainter();
+                    }
+                }
+
+                if (painter instanceof AbstractTextPainter) {
+                    wrap = ((AbstractTextPainter) painter).isWordWrapping();
+                }
+
+                return wrap.toString();
             } else if (NatTableCSSConstants.TEXT_WRAP.equalsIgnoreCase(property)) {
                 Boolean wrap = Boolean.FALSE;
 

@@ -315,7 +315,7 @@ public class CellPainterFactory {
      */
     public ICellPainter getCellPainter(List<String> painterValues, Map<String, Object> painterProperties) {
         String backgroundKey = null;
-        List<String> decoratorKeys = new ArrayList<String>();
+        List<String> decoratorKeys = new ArrayList<>();
         String contentKey = null;
 
         if (isBackgroundPainterKey(painterValues.get(0))) {
@@ -493,6 +493,12 @@ public class CellPainterFactory {
      *            The painter properties to apply.
      */
     public void initTextPainter(AbstractTextPainter painter, Map<String, Object> painterProperties) {
+        boolean wrapWord = false;
+        if (painterProperties.containsKey(NatTableCSSConstants.WORD_WRAP)) {
+            wrapWord = (Boolean) painterProperties.get(NatTableCSSConstants.WORD_WRAP);
+        }
+        painter.setWordWrapping(wrapWord);
+
         boolean wrapText = false;
         if (painterProperties.containsKey(NatTableCSSConstants.TEXT_WRAP)) {
             wrapText = (Boolean) painterProperties.get(NatTableCSSConstants.TEXT_WRAP);

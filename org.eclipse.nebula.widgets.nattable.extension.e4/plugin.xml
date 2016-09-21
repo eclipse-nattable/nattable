@@ -97,6 +97,9 @@
                name="text-decoration">
          </property-name>
          <property-name
+               name="word-wrap">
+         </property-name>
+         <property-name
                name="text-wrap">
          </property-name>
          <property-name
@@ -249,6 +252,9 @@
          </property-name>
          <property-name
                name="text-decoration">
+         </property-name>
+         <property-name
+               name="word-wrap">
          </property-name>
          <property-name
                name="text-wrap">
