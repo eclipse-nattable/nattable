@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -114,7 +114,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
     private ModeSupport modeSupport;
 
-    private final EventConflaterChain conflaterChain = new EventConflaterChain();
+    private final EventConflaterChain conflaterChain;
 
     private final List<IOverlayPainter> overlayPainters = new ArrayList<IOverlayPainter>();
 
@@ -187,13 +187,15 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
     /**
      * @param parent
-     *            widget for the table.
+     *            a composite control which will be the parent of the new
+     *            instance (cannot be null)
      * @param autoconfigure
-     *            if set to False - No auto configuration is done - Default
-     *            settings are <i>not</i> loaded. Configuration(s) have to be
-     *            manually added by invoking addConfiguration(). At the minimum
-     *            the {@link DefaultNatTableStyleConfiguration} must be added
-     *            for the table to render.
+     *            if set to <code>false</code> no auto configuration is done.
+     *            Default settings are <i>not</i> loaded. Configuration(s) have
+     *            to be manually added by invoking
+     *            {@link #addConfiguration(IConfiguration)}. At the minimum the
+     *            {@link DefaultNatTableStyleConfiguration} must be added for
+     *            the table to render.
      */
     public NatTable(Composite parent, boolean autoconfigure) {
         this(parent, DEFAULT_STYLE_OPTIONS, autoconfigure);
@@ -219,8 +221,45 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
         this(parent, style, layer, true);
     }
 
-    public NatTable(final Composite parent, final int style,
+    public NatTable(
+            final Composite parent, final int style,
             final ILayer layer, boolean autoconfigure) {
+        this(parent, style, layer, new EventConflaterChain(), autoconfigure);
+    }
+
+    /**
+     * Only use this constructor to specify a custom EventConflaterChain with
+     * different refresh interval settings in case you are facing issues on
+     * rendering, e.g. low FPS <i>(laggy)</i> behavior on scrolling (refresh
+     * interval too high) or flickering UI (refresh interval too low).
+     *
+     * @param parent
+     *            a composite control which will be the parent of the new
+     *            instance (cannot be null)
+     * @param style
+     *            the style of control to construct
+     *            {@link #DEFAULT_STYLE_OPTIONS}
+     * @param layer
+     *            the {@link ILayer} that should be rendered by this NatTable
+     * @param chain
+     *            the {@link EventConflaterChain} used to conflate events that
+     *            trigger for example repainting. By default an
+     *            {@link EventConflaterChain} is registered with a refresh
+     *            interval specified via
+     *            {@link EventConflaterChain#DEFAULT_REFRESH_INTERVAL}.
+     * @param autoconfigure
+     *            if set to <code>false</code> no auto configuration is done.
+     *            Default settings are <i>not</i> loaded. Configuration(s) have
+     *            to be manually added by invoking
+     *            {@link #addConfiguration(IConfiguration)}. At the minimum the
+     *            {@link DefaultNatTableStyleConfiguration} must be added for
+     *            the table to render.
+     *
+     * @since 1.5
+     */
+    public NatTable(
+            final Composite parent, final int style,
+            final ILayer layer, EventConflaterChain chain, boolean autoconfigure) {
         super(parent, style);
 
         // Disable scroll bars by default; if a Viewport is available, it will
@@ -238,6 +277,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
             configure();
         }
 
+        this.conflaterChain = chain;
         this.conflaterChain.add(getVisualChangeEventConflater());
         this.conflaterChain.start();
 
@@ -1174,7 +1214,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
      *
      * @return The labels that are used within this NatTable for conditional
      *         styling.
-     * 
+     *
      * @since 1.4
      */
     public Collection<String> getProvidedLabels() {
