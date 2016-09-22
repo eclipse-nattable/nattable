@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,7 +25,7 @@ import org.eclipse.nebula.widgets.nattable.util.Scheduler;
 public class EventConflaterChain implements IEventConflater {
 
     public static final int DEFAULT_INITIAL_DELAY = 100;
-    public static final int DEFAULT_REFRESH_INTERVAL = 100;
+    public static final int DEFAULT_REFRESH_INTERVAL = 20;
     private static final Scheduler scheduler = new Scheduler("EventConflaterChain"); //$NON-NLS-1$
 
     private final List<IEventConflater> chain = new LinkedList<IEventConflater>();
@@ -49,8 +49,8 @@ public class EventConflaterChain implements IEventConflater {
 
     public void start() {
         if (!this.started) {
-            this.future = scheduler.scheduleWithFixedDelay(getConflaterTask(),
-                    this.initialDelay, this.refreshInterval);
+            this.future = scheduler.scheduleWithFixedDelay(
+                    getConflaterTask(), this.initialDelay, this.refreshInterval);
             this.started = true;
         }
     }
