@@ -339,29 +339,24 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
         // take the whole width of the text
         int textLength = getLengthFromCache(gc, text);
 
-        if (this.wordWrapping) {
-            if (availableLength < textLength) {
-                String[] lines = text.split(NEW_LINE_REGEX);
-                for (String textLine : lines) {
-                    if (output.length() > 0) {
-                        output.append(LINE_SEPARATOR);
-                    }
-
-                    StringBuilder line = new StringBuilder();
-                    for (char c : textLine.toCharArray()) {
-                        line.append(c);
-                        int length = getLengthFromCache(gc, line.toString());
-                        if (length >= availableLength) {
-                            output.append(line.substring(0, line.length() - 1)).append(LINE_SEPARATOR);
-                            line = new StringBuilder();
-                            line.append(c);
-                        }
-                    }
-                    output.append(line);
+        if (this.wordWrapping || (!this.calculateByTextLength && this.wrapText)) {
+            String[] lines = text.split(NEW_LINE_REGEX);
+            for (String line : lines) {
+                if (output.length() > 0) {
+                    output.append(LINE_SEPARATOR);
                 }
-            } else {
-                output.append(text);
+
+                String[] words = line.split("\\s"); //$NON-NLS-1$
+
+                // concat the words with spaces and newlines
+                String computedText = ""; //$NON-NLS-1$
+                for (String word : words) {
+                    computedText = computeTextToDisplay(computedText, word, gc, availableLength);
+                }
+
+                output.append(computedText);
             }
+
         } else if (this.calculateByTextLength && this.wrapText) {
             if (availableLength < textLength) {
                 // calculate length by finding the longest word in text
@@ -399,24 +394,6 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
             // padding can occur on using decorators like the
             // BeveledBorderDecorator or the PaddingDecorator
             setNewMinLength(cell, textLength + calculatePadding(cell, availableLength) + (2 * this.spacing));
-        } else if (!this.calculateByTextLength && this.wrapText) {
-            String[] lines = text.split(NEW_LINE_REGEX);
-            for (String line : lines) {
-                if (output.length() > 0) {
-                    output.append(LINE_SEPARATOR);
-                }
-
-                String[] words = line.split("\\s"); //$NON-NLS-1$
-
-                // concat the words with spaces and newlines
-                String computedText = ""; //$NON-NLS-1$
-                for (String word : words) {
-                    computedText = computeTextToDisplay(computedText, word, gc, availableLength);
-                }
-
-                output.append(computedText);
-            }
-
         } else if (!this.calculateByTextLength && !this.wrapText) {
             output.append(modifyTextToDisplay(text, gc, availableLength + (2 * this.spacing)));
         }
@@ -498,45 +475,60 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
                 // space this way every line will get ... if it doesn't fit
                 int lineLength = getLengthFromCache(gc, line);
                 if (lineLength > availableLength) {
-                    int numExtraChars = 0;
+                    if (!this.wordWrapping) {
+                        int numExtraChars = 0;
 
-                    int newStringLength = line.length();
-                    String trialLabelText = line + DOT;
-                    int newTextExtent = getLengthFromCache(gc, trialLabelText);
+                        int newStringLength = line.length();
+                        String trialLabelText = line + DOT;
+                        int newTextExtent = getLengthFromCache(gc, trialLabelText);
 
-                    while (newTextExtent > availableLength + 1 && newStringLength > 0) {
-                        double avgWidthPerChar = (double) newTextExtent / trialLabelText.length();
-                        numExtraChars += 1 + (int) ((newTextExtent - availableLength) / avgWidthPerChar);
+                        while (newTextExtent > availableLength + 1 && newStringLength > 0) {
+                            double avgWidthPerChar = (double) newTextExtent / trialLabelText.length();
+                            numExtraChars += 1 + (int) ((newTextExtent - availableLength) / avgWidthPerChar);
 
-                        newStringLength = line.length() - numExtraChars;
-                        if (newStringLength > 0) {
-                            trialLabelText = line.substring(0, newStringLength) + DOT;
-                            newTextExtent = getLengthFromCache(gc, trialLabelText);
-                        }
-                    }
-
-                    if (numExtraChars > line.length()) {
-                        numExtraChars = line.length();
-                    }
-
-                    // now we have gone too short, lets add chars one at a time
-                    // to exceed the width...
-                    String testString = line;
-                    for (int i = 0; i < line.length(); i++) {
-                        testString = line.substring(0, line.length() + i - numExtraChars) + DOT;
-                        textLength = getLengthFromCache(gc, testString);
-
-                        if (textLength >= availableLength) {
-
-                            // now roll back one as this was the first number
-                            // that exceeded
-                            if (line.length() + i - numExtraChars < 1) {
-                                line = EMPTY;
-                            } else {
-                                line = line.substring(0, line.length() + i - numExtraChars - 1) + DOT;
+                            newStringLength = line.length() - numExtraChars;
+                            if (newStringLength > 0) {
+                                trialLabelText = line.substring(0, newStringLength) + DOT;
+                                newTextExtent = getLengthFromCache(gc, trialLabelText);
                             }
-                            break;
                         }
+
+                        if (numExtraChars > line.length()) {
+                            numExtraChars = line.length();
+                        }
+
+                        // now we have gone too short, lets add chars one at a
+                        // time to exceed the width...
+                        String testString = line;
+                        for (int i = 0; i < line.length(); i++) {
+                            testString = line.substring(0, line.length() + i - numExtraChars) + DOT;
+                            textLength = getLengthFromCache(gc, testString);
+
+                            if (textLength >= availableLength) {
+
+                                // now roll back one as this was the first
+                                // number that exceeded
+                                if (line.length() + i - numExtraChars < 1) {
+                                    line = EMPTY;
+                                } else {
+                                    line = line.substring(0, line.length() + i - numExtraChars - 1) + DOT;
+                                }
+                                break;
+                            }
+                        }
+                    } else {
+                        StringBuilder output = new StringBuilder();
+                        StringBuilder wrap = new StringBuilder();
+                        for (char c : line.toCharArray()) {
+                            wrap.append(c);
+                            int length = getLengthFromCache(gc, wrap.toString());
+                            if (length >= availableLength) {
+                                output.append(wrap.substring(0, wrap.length() - 1)).append(LINE_SEPARATOR);
+                                wrap = new StringBuilder();
+                                wrap.append(c);
+                            }
+                        }
+                        line = output.append(wrap).toString();
                     }
                 }
                 result.append(line);
