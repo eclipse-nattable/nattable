@@ -177,6 +177,10 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         org.eclipse.swt.graphics.Font font = cellStyle.getAttributeValue(CellStyleAttributes.FONT);
         FontData fontData = font.getFontData()[0];
         String dataFormat = null;
+        if (exportDisplayValue instanceof Calendar
+                || exportDisplayValue instanceof Date) {
+            dataFormat = getDataFormatString(cell, configRegistry);
+        }
 
         int hAlign = HorizontalAlignmentEnum.getSWTStyle(cellStyle);
         int vAlign = VerticalAlignmentEnum.getSWTStyle(cellStyle);
@@ -222,10 +226,8 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         if (exportDisplayValue instanceof Boolean) {
             xlCell.setCellValue((Boolean) exportDisplayValue);
         } else if (exportDisplayValue instanceof Calendar) {
-            dataFormat = getDataFormatString(cell, configRegistry);
             xlCell.setCellValue((Calendar) exportDisplayValue);
         } else if (exportDisplayValue instanceof Date) {
-            dataFormat = getDataFormatString(cell, configRegistry);
             xlCell.setCellValue((Date) exportDisplayValue);
         } else if (exportDisplayValue instanceof Number) {
             xlCell.setCellValue(((Number) exportDisplayValue).doubleValue());
@@ -600,6 +602,6 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         points *= 72;
         points /= 96;
         points *= 21;
-        return (short) points;
+        return (short) (points + 32);
     }
 }
