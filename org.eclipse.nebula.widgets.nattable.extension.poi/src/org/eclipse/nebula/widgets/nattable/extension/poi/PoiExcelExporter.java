@@ -73,7 +73,8 @@ public abstract class PoiExcelExporter implements ILayerExporter {
     private boolean applyBackgroundColor = true;
     private boolean applyVerticalTextConfiguration = false;
     private boolean applyTextWrapping = false;
-    private boolean applyCellDimensions = false;
+    private boolean applyColumnWidths = false;
+    private boolean applyRowHeights = false;
     private boolean applyCellBorders = false;
 
     private String sheetname;
@@ -154,13 +155,11 @@ public abstract class PoiExcelExporter implements ILayerExporter {
             return;
         }
 
-        if (this.applyCellDimensions) {
-            if (cell.getColumnSpan() == 1) {
-                this.xlSheet.setColumnWidth(columnPosition, getPoiColumnWidth(cell.getBounds().width) + getPoiColumnWidth(5));
-            }
-            if (cell.getRowSpan() == 1) {
-                this.xlRow.setHeight(getPoiRowHeight(cell.getBounds().height));
-            }
+        if (this.applyColumnWidths && cell.getColumnSpan() == 1) {
+            this.xlSheet.setColumnWidth(columnPosition, getPoiColumnWidth(cell.getBounds().width) + getPoiColumnWidth(5));
+        }
+        if (this.applyRowHeights && cell.getRowSpan() == 1) {
+            this.xlRow.setHeight(getPoiRowHeight(cell.getBounds().height));
         }
 
         // check if cell was already created because of spanning
@@ -446,7 +445,38 @@ public abstract class PoiExcelExporter implements ILayerExporter {
      * @since 1.5
      */
     public void setApplyCellDimensions(boolean apply) {
-        this.applyCellDimensions = apply;
+        this.applyColumnWidths = apply;
+        this.applyRowHeights = apply;
+    }
+
+    /**
+     * Configure this exporter whether it should apply the column widths to the
+     * same size configuration the NatTable shows.
+     *
+     * @param apply
+     *            <code>true</code> to configure this exporter to apply the
+     *            column widths based on the NatTable cell dimensions,
+     *            <code>false</code> if the Excel default cell dimensions should
+     *            be used.
+     * @since 1.5
+     */
+    public void setApplyColumnWidths(boolean apply) {
+        this.applyColumnWidths = apply;
+    }
+
+    /**
+     * Configure this exporter whether it should apply the row heights to the
+     * same size configuration the NatTable shows.
+     *
+     * @param apply
+     *            <code>true</code> to configure this exporter to apply the row
+     *            heights based on the NatTable cell dimensions,
+     *            <code>false</code> if the Excel default cell dimensions should
+     *            be used.
+     * @since 1.5
+     */
+    public void setApplyRowHeights(boolean apply) {
+        this.applyRowHeights = apply;
     }
 
     /**
