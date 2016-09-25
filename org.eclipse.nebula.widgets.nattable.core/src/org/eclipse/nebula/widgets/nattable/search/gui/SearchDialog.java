@@ -92,6 +92,7 @@ public class SearchDialog extends Dialog {
     private Stack<SelectionItem> selections = new Stack<SelectionItem>();
 
     // Dialog settings
+    private IDialogSettings originalSettings;
     private IDialogSettings dialogSettings;
     private IDialogSettings dialogBounds;
     private Rectangle dialogPositionValue;
@@ -141,10 +142,16 @@ public class SearchDialog extends Dialog {
     }
 
     public void setInput(NatTable natTable, IDialogSettings settings) {
-        if (natTable.equals(this.natTable)) {
+        if (natTable != null && natTable.equals(this.natTable)) {
             return;
         }
         this.natTable = natTable;
+        ILayer result = findSelectionLayer(this.natTable.getLayer());
+        if (result != null && result instanceof SelectionLayer) {
+            this.selectionLayer = (SelectionLayer) result;
+        }
+
+        this.originalSettings = settings;
         if (settings == null) {
             this.dialogSettings = null;
             this.dialogBounds = null;
@@ -165,6 +172,27 @@ public class SearchDialog extends Dialog {
     @Override
     protected boolean isResizable() {
         return true;
+    }
+
+    /**
+     * @since 1.5
+     */
+    public boolean isModal() {
+        return (getShellStyle() & SWT.APPLICATION_MODAL) != 0;
+    }
+
+    /**
+     * @since 1.5
+     */
+    public NatTable getNatTable() {
+        return this.natTable;
+    }
+
+    /**
+     * @since 1.5
+     */
+    public IDialogSettings getOriginalDialogSettings() {
+        return this.originalSettings;
     }
 
     @Override
@@ -197,8 +225,7 @@ public class SearchDialog extends Dialog {
     private ILayer findSelectionLayer(ILayer layer) {
         if (layer == null || layer instanceof SelectionLayer) {
             return layer;
-        }
-        else if (layer instanceof CompositeLayer) {
+        } else if (layer instanceof CompositeLayer) {
             // if the layer is a CompositeLayer, search for the SelectionLayer
             // in every region as the SelectionLayer is typically placed in the
             // bottom/right most region (e.g. the body in a grid, the search is
@@ -445,7 +472,8 @@ public class SearchDialog extends Dialog {
         this.columnFirstButton.setSelection(this.columnFirstValue);
         // TODO
         // includeCollapsedButton = new Button(optionsGroup, SWT.CHECK);
-        //		includeCollapsedButton.setText(Messages.getString("Search.includeCollapsedLabel")); //$NON-NLS-1$
+        // includeCollapsedButton.setText(Messages.getString("Search.includeCollapsedLabel"));
+        // //$NON-NLS-1$
         // includeCollapsedButton.setSelection(includeCollapsedValue);
 
         return row;
@@ -749,8 +777,9 @@ public class SearchDialog extends Dialog {
         this.incrementalValue = s.getBoolean("incremental"); //$NON-NLS-1$
         this.regexValue = s.getBoolean("isRegEx"); //$NON-NLS-1$
         // TODO
-        //		includeCollapsedValue = s.get("includeCollapsed") == null //$NON-NLS-1$
-        //				|| s.getBoolean("includeCollapsed"); //$NON-NLS-1$
+        // includeCollapsedValue = s.get("includeCollapsed") == null
+        // //$NON-NLS-1$
+        // || s.getBoolean("includeCollapsed"); //$NON-NLS-1$
         this.columnFirstValue = s.getBoolean("columnFirst"); //$NON-NLS-1$
 
         String[] findHistoryConfig = s.getArray("findhistory"); //$NON-NLS-1$
@@ -777,7 +806,7 @@ public class SearchDialog extends Dialog {
         s.put("incremental", this.incrementalValue); //$NON-NLS-1$
         s.put("isRegEx", this.regexValue); //$NON-NLS-1$
         // TODO
-        //		s.put("includeCollapsed", includeCollapsedValue); //$NON-NLS-1$
+        // s.put("includeCollapsed", includeCollapsedValue); //$NON-NLS-1$
         s.put("columnFirst", this.columnFirstValue); //$NON-NLS-1$
 
         String findString = this.findCombo.getText();

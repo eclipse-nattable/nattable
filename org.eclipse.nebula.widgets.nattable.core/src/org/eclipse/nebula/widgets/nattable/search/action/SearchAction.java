@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,8 +16,10 @@ import org.eclipse.nebula.widgets.nattable.search.CellValueAsStringComparator;
 import org.eclipse.nebula.widgets.nattable.search.gui.SearchDialog;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 
 /**
@@ -26,22 +28,22 @@ import org.eclipse.swt.events.KeyEvent;
  */
 public class SearchAction implements IKeyAction {
 
-    private static class Context {
-        NatTable natTable;
-        IDialogSettings dialogSettings;
-        private boolean modal;
-
-        Context(NatTable natTable, IDialogSettings dialogSettings, boolean modal) {
-            this.natTable = natTable;
-            this.dialogSettings = dialogSettings;
-            this.modal = modal;
-        }
-    }
-
-    private static Context activeContext;
     private static SearchDialog dialog;
 
-    private Context context;
+    private NatTable natTable;
+    private IDialogSettings dialogSettings;
+    private boolean modal;
+
+    private DisposeListener listener = new DisposeListener() {
+
+        @Override
+        public void widgetDisposed(DisposeEvent e) {
+            if (dialog != null) {
+                dialog.close();
+                dialog = null;
+            }
+        }
+    };
 
     /**
      * Constructs an action with a modal Find dialog.
@@ -66,18 +68,16 @@ public class SearchAction implements IKeyAction {
         }
     }
 
-    private SearchAction(NatTable natTable, IDialogSettings dialogSettings,
-            boolean modal) {
-        this.context = new Context(natTable, dialogSettings, modal);
+    private SearchAction(NatTable natTable, IDialogSettings dialogSettings, boolean modal) {
+        this.natTable = natTable;
+        this.dialogSettings = dialogSettings;
+        this.modal = modal;
         if (natTable != null) {
-            natTable.addFocusListener(new FocusListener() {
+            natTable.addFocusListener(new FocusAdapter() {
                 @Override
                 public void focusGained(FocusEvent e) {
                     setActiveContext();
                 }
-
-                @Override
-                public void focusLost(FocusEvent e) {}
             });
         }
     }
@@ -87,9 +87,8 @@ public class SearchAction implements IKeyAction {
             dialog.close();
             dialog = null;
         }
-        activeContext = this.context;
         if (dialog != null) {
-            dialog.setInput(this.context.natTable, this.context.dialogSettings);
+            dialog.setInput(this.natTable, this.dialogSettings);
         }
     }
 
@@ -101,27 +100,35 @@ public class SearchAction implements IKeyAction {
      * @return whether this context is equivalent to the active context
      */
     private boolean isEquivalentToActiveContext() {
-        if (this.context.modal) {
-            return this.context.equals(activeContext);
+        if (this.modal) {
+            return (this.natTable == dialog.getNatTable()
+                    && this.dialogSettings == dialog.getOriginalDialogSettings()
+                    && this.modal == dialog.isModal());
         }
-        if (activeContext.modal) {
+        if (dialog.isModal()) {
             return false;
         }
-        return !activeContext.natTable.isDisposed()
-                && this.context.natTable.getShell().equals(
-                        activeContext.natTable.getShell())
-                && this.context.dialogSettings.equals(activeContext.dialogSettings);
+        return !this.natTable.isDisposed()
+                && this.natTable.getShell().equals(dialog.getNatTable().getShell())
+                && ((this.dialogSettings == null && dialog.getOriginalDialogSettings() == null)
+                        || this.dialogSettings.equals(dialog.getOriginalDialogSettings()));
     }
 
     @Override
     public void run(final NatTable natTable, KeyEvent event) {
-        this.context.natTable = natTable;
+        if (this.natTable != natTable) {
+            if (this.natTable != null) {
+                this.natTable.removeDisposeListener(this.listener);
+            }
+            this.natTable = natTable;
+            this.natTable.addDisposeListener(this.listener);
+        }
         setActiveContext();
         if (dialog == null) {
-            dialog = new SearchDialog(this.context.natTable.getShell(),
+            dialog = new SearchDialog(this.natTable.getShell(),
                     new CellValueAsStringComparator<String>(),
-                    this.context.modal ? SWT.NONE : SWT.APPLICATION_MODAL);
-            dialog.setInput(this.context.natTable, this.context.dialogSettings);
+                    this.modal ? SWT.NONE : SWT.APPLICATION_MODAL);
+            dialog.setInput(this.natTable, this.dialogSettings);
         }
         dialog.open();
     }
