@@ -21,7 +21,10 @@ import org.eclipse.nebula.widgets.nattable.print.LayerPrinter;
  */
 public class PrintCommandHandler extends AbstractLayerCommandHandler<PrintCommand> {
 
-    private final ILayer layer;
+    /**
+     * @since 1.5
+     */
+    protected final ILayer layer;
 
     /**
      * @param layer

@@ -58,11 +58,13 @@ public class LayerPrinter {
         private final IConfigRegistry configRegistry;
         private final ILayer layer;
         private final IClientAreaProvider originalClientAreaProvider;
+        private final boolean repeat;
 
-        PrintTarget(ILayer layer, IConfigRegistry configRegistry) {
+        PrintTarget(ILayer layer, IConfigRegistry configRegistry, boolean repeat) {
             this.layer = layer;
             this.configRegistry = configRegistry;
             this.originalClientAreaProvider = layer.getClientAreaProvider();
+            this.repeat = repeat;
         }
     }
 
@@ -82,6 +84,10 @@ public class LayerPrinter {
 
     private final Direction fittingMode;
 
+    private int headerHeight = 0;
+
+    private ILayer repeatHeaderLayer;
+
     /**
      *
      * @param layer
@@ -93,7 +99,26 @@ public class LayerPrinter {
      *            The ConfigRegistry needed for rendering to the print GC.
      */
     public LayerPrinter(ILayer layer, IConfigRegistry configRegistry) {
-        this.printTargets.add(new PrintTarget(layer, configRegistry));
+        this(layer, configRegistry, false);
+    }
+
+    /**
+     *
+     * @param layer
+     *            The layer to print. Usually the top most layer in the layer
+     *            stack. For grids this should be the GridLayer, for custom
+     *            CompositeLayer compositions the CompositeLayer, otherwise the
+     *            ViewportLayer is a good choice.
+     * @param configRegistry
+     *            The ConfigRegistry needed for rendering to the print GC.
+     * @param repeat
+     *            Flag to configure whether the given layer should be printed on
+     *            every page. Needed for example in case an additional header
+     *            layer is used outside the main table.
+     * @since 1.5
+     */
+    public LayerPrinter(ILayer layer, IConfigRegistry configRegistry, boolean repeat) {
+        this.printTargets.add(new PrintTarget(layer, configRegistry, repeat));
 
         // configure the footer height
         Integer fh = configRegistry.getConfigAttribute(
@@ -134,7 +159,31 @@ public class LayerPrinter {
      * @since 1.5
      */
     public void addPrintTarget(ILayer layer, IConfigRegistry configRegistry) {
-        this.printTargets.add(new PrintTarget(layer, configRegistry));
+        this.printTargets.add(new PrintTarget(layer, configRegistry, false));
+    }
+
+    /**
+     * Configure printing to repeat the header layer on every print page. For
+     * this it is necessary to specify the header layer that should be repeated
+     * in order to calculate the necessary header height on printing.
+     * <p>
+     * <b>Note:</b> The layer that is set as repeat layer via this method needs
+     * to be part of the print layer, e.g. the column header layer of a given
+     * grid layer.
+     * </p>
+     *
+     * @param layer
+     *            The {@link ILayer} that should be repeated as header on every
+     *            print page.
+     * @since 1.5
+     */
+    public void repeatHeaderLayer(ILayer layer) {
+        this.repeatHeaderLayer = layer;
+        if (this.repeatHeaderLayer != null) {
+            this.headerHeight = this.repeatHeaderLayer.getHeight();
+        } else {
+            this.headerHeight = 0;
+        }
     }
 
     /**
@@ -161,6 +210,8 @@ public class LayerPrinter {
 
         if (!dpi && (this.fittingMode != Direction.NONE)) {
             Rectangle total = getTotalArea(layer);
+            // TODO this is for the additional layer
+            // total.height += this.headerHeight;
             Rectangle print = computePrintArea(printer);
 
             float pixelX = Float.valueOf(print.width) / Float.valueOf(total.width);
@@ -246,9 +297,12 @@ public class LayerPrinter {
         }
 
         int numOfVerticalPages = 0;
-        int pageHeight = Math.round(Float.valueOf((printArea.height - getFooterHeightInPrinterDPI()) / scaleFactor[1]));
+        // TODO
+        int headerHeightInDpi = (this.headerHeight != 0 && this.repeatHeaderLayer != null)
+                ? Math.round(Float.valueOf((this.headerHeight * scaleFactor[1]))) : 0;
+        int pageHeight = Math.round(Float.valueOf((printArea.height - headerHeightInDpi - getFooterHeightInPrinterDPI()) / scaleFactor[1]));
         int endY = 0;
-        while (endY < target.layer.getHeight()) {
+        while (endY < (target.layer.getHeight() - this.headerHeight)) {
             endY += pageHeight;
             int rowPos = target.layer.getRowPositionByY(endY);
             if (rowPos >= 0) {
@@ -497,6 +551,17 @@ public class LayerPrinter {
                     int currentPage = 1;
 
                     for (PrintTarget target : LayerPrinter.this.printTargets) {
+                        // if pre-rendering is enabled, render in-memory to
+                        // trigger content based auto-resizing
+                        if (LayerPrinter.this.preRender) {
+                            AutoResizeHelper.autoResize(target.layer, target.configRegistry);
+
+                            // TODO
+                            if (LayerPrinter.this.repeatHeaderLayer != null) {
+                                LayerPrinter.this.headerHeight = LayerPrinter.this.repeatHeaderLayer.getHeight();
+                            }
+                        }
+
                         target.layer.doCommand(new TurnViewportOffCommand());
                         float[] scaleFactor = null;
                         float[] dpiFactor = null;
@@ -508,15 +573,6 @@ public class LayerPrinter {
                         }
 
                         Integer[] gridLineWidth = getGridLineWidth(target.configRegistry);
-
-                        // if pre-rendering is enabled, render in-memory to
-                        // trigger content based auto-resizing
-                        if (LayerPrinter.this.preRender) {
-                            Transform tempTransform = new Transform(this.printer);
-                            tempTransform.scale(scaleFactor[0], scaleFactor[1]);
-                            AutoResizeHelper.autoResize(target.layer, target.configRegistry);
-                            tempTransform.dispose();
-                        }
 
                         try {
                             // if a SummaryRowLayer is in the layer stack, we
@@ -536,12 +592,15 @@ public class LayerPrinter {
 
                             final Rectangle printerClientArea = computePrintArea(this.printer);
                             final int printBoundsWidth = Math.round(Float.valueOf(printerClientArea.width / scaleFactor[0]));
-                            int printBoundsHeight = Math.round(Float.valueOf((printerClientArea.height - getFooterHeightInPrinterDPI()) / scaleFactor[1]));
+                            // TODO
+                            int headerHeightDPI = Math.round(Float.valueOf((LayerPrinter.this.headerHeight * scaleFactor[1])));
+                            int printBoundsHeight = Math.round(Float.valueOf((printerClientArea.height - headerHeightDPI - getFooterHeightInPrinterDPI()) / scaleFactor[1]));
 
                             final Point pageCount = getPageCount(target, this.printer);
 
                             // Print pages Left to Right and then Top to Down
-                            int startY = 0;
+                            // TODO
+                            int startY = LayerPrinter.this.headerHeight;
                             for (int verticalPageNumber = 0; verticalPageNumber < pageCount.y; verticalPageNumber++) {
 
                                 int endY = startY + printBoundsHeight;
@@ -590,6 +649,7 @@ public class LayerPrinter {
                                         this.printer.startPage();
 
                                         Transform printerTransform = new Transform(this.printer);
+                                        Transform headerTransform = new Transform(this.printer);
                                         Transform footerTransform = new Transform(this.printer);
 
                                         Rectangle intersect = new Rectangle(
@@ -601,11 +661,20 @@ public class LayerPrinter {
                                         intersect = printBounds.intersection(intersect);
 
                                         configureScalingTransform(printerTransform, scaleFactor, printerClientArea, intersect);
-                                        configureScalingTransform(footerTransform, dpiFactor, printerClientArea, footerBounds);
+                                        configureScalingTransform(headerTransform, scaleFactor, printerClientArea, intersect);
+
+                                        // TODO
+                                        if (LayerPrinter.this.repeatHeaderLayer != null) {
+                                            headerTransform.translate(0, startY);
+                                            gc.setTransform(headerTransform);
+                                            printLayer(target, gc, new Rectangle(printBounds.x, 0, printBounds.width, LayerPrinter.this.headerHeight));
+                                            printerTransform.translate(0, LayerPrinter.this.headerHeight);
+                                        }
 
                                         gc.setTransform(printerTransform);
                                         printLayer(target, gc, intersect);
 
+                                        configureScalingTransform(footerTransform, dpiFactor, printerClientArea, footerBounds);
                                         gc.setTransform(footerTransform);
                                         printFooter(gc, currentPage, footerBounds, target.configRegistry);
 
