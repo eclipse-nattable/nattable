@@ -39,8 +39,12 @@ public class SearchAction implements IKeyAction {
         @Override
         public void widgetDisposed(DisposeEvent e) {
             if (dialog != null) {
-                dialog.close();
-                dialog = null;
+                if (dialog.isModal()) {
+                    dialog.close();
+                    dialog = null;
+                } else {
+                    dialog.setInput(null, null);
+                }
             }
         }
     };
@@ -79,11 +83,14 @@ public class SearchAction implements IKeyAction {
                     setActiveContext();
                 }
             });
+            natTable.addDisposeListener(this.listener);
         }
     }
 
     protected void setActiveContext() {
-        if (dialog != null && !isEquivalentToActiveContext()) {
+        if (dialog != null
+                && dialog.getNatTable() != null
+                && !isEquivalentToActiveContext()) {
             dialog.close();
             dialog = null;
         }
@@ -109,6 +116,7 @@ public class SearchAction implements IKeyAction {
             return false;
         }
         return !this.natTable.isDisposed()
+                && (dialog.getNatTable() != null && !dialog.getNatTable().isDisposed())
                 && this.natTable.getShell().equals(dialog.getNatTable().getShell())
                 && ((this.dialogSettings == null && dialog.getOriginalDialogSettings() == null)
                         || this.dialogSettings.equals(dialog.getOriginalDialogSettings()));

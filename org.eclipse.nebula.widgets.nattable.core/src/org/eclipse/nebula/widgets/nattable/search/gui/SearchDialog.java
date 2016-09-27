@@ -146,9 +146,19 @@ public class SearchDialog extends Dialog {
             return;
         }
         this.natTable = natTable;
-        ILayer result = findSelectionLayer(this.natTable.getLayer());
-        if (result != null && result instanceof SelectionLayer) {
-            this.selectionLayer = (SelectionLayer) result;
+        if (natTable != null) {
+            ILayer result = findSelectionLayer(this.natTable.getLayer());
+            if (result != null && result instanceof SelectionLayer) {
+                this.selectionLayer = (SelectionLayer) result;
+                if (this.findButton != null && !this.findButton.isDisposed()) {
+                    this.findButton.setEnabled(true);
+                }
+            }
+        } else {
+            this.selectionLayer = null;
+            if (this.findButton != null && !this.findButton.isDisposed()) {
+                this.findButton.setEnabled(false);
+            }
         }
 
         this.originalSettings = settings;
@@ -372,7 +382,7 @@ public class SearchDialog extends Dialog {
                         && SearchDialog.this.incrementalButton.getSelection()) {
                     doIncrementalFind();
                 }
-                SearchDialog.this.findButton.setEnabled(SearchDialog.this.findCombo.getText().length() > 0);
+                SearchDialog.this.findButton.setEnabled(SearchDialog.this.findCombo.getText().length() > 0 && SearchDialog.this.selectionLayer != null);
             }
         };
         this.findCombo.addModifyListener(this.findComboModifyListener);
