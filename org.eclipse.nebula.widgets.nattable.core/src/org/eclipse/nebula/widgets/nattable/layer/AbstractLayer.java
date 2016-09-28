@@ -60,7 +60,7 @@ public abstract class AbstractLayer implements ILayer {
 
     protected final Map<Class<? extends ILayerCommand>, ILayerCommandHandler<? extends ILayerCommand>> commandHandlers =
             new LinkedHashMap<Class<? extends ILayerCommand>, ILayerCommandHandler<? extends ILayerCommand>>();
-    protected final Map<Class<? extends ILayerEvent>, ILayerEventHandler<? extends ILayerEvent>> eventHandlers =
+    protected Map<Class<? extends ILayerEvent>, ILayerEventHandler<? extends ILayerEvent>> eventHandlers =
             new HashMap<Class<? extends ILayerEvent>, ILayerEventHandler<? extends ILayerEvent>>();
 
     private final List<IPersistable> persistables = new LinkedList<IPersistable>();
@@ -72,7 +72,7 @@ public abstract class AbstractLayer implements ILayer {
     /**
      * {@link ReadWriteLock} that is used to ensure that no concurrent
      * modifications happen on event handling
-     * 
+     *
      * @since 1.4
      */
     protected ReadWriteLock eventHelperLock = new ReentrantReadWriteLock();
@@ -247,27 +247,31 @@ public abstract class AbstractLayer implements ILayer {
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void handleLayerEvent(ILayerEvent event) {
+        Map<Class<? extends ILayerEvent>, ILayerEventHandler<? extends ILayerEvent>> currentEventHandlers;
         this.eventHelperLock.readLock().lock();
         try {
-            for (Class<? extends ILayerEvent> eventClass : this.eventHandlers.keySet()) {
-                if (eventClass.isInstance(event)) {
-                    ILayerEventHandler eventHandler = this.eventHandlers.get(eventClass);
-                    eventHandler.handleLayerEvent(event);
-                }
-            }
-
-            // Pass on the event to our parent
-            if (event.convertToLocal(this)) {
-                fireLayerEvent(event);
-            }
+            currentEventHandlers = this.eventHandlers;
         } finally {
             this.eventHelperLock.readLock().unlock();
+        }
+
+        for (Class<? extends ILayerEvent> eventClass : currentEventHandlers.keySet()) {
+            if (eventClass.isInstance(event)) {
+                ILayerEventHandler eventHandler = currentEventHandlers.get(eventClass);
+                eventHandler.handleLayerEvent(event);
+            }
+        }
+
+        // Pass on the event to our parent
+        if (event.convertToLocal(this)) {
+            fireLayerEvent(event);
         }
     }
 
     public void registerEventHandler(ILayerEventHandler<?> eventHandler) {
         this.eventHelperLock.writeLock().lock();
         try {
+            this.eventHandlers = new HashMap<Class<? extends ILayerEvent>, ILayerEventHandler<? extends ILayerEvent>>(this.eventHandlers);
             this.eventHandlers.put(eventHandler.getLayerEventClass(), eventHandler);
         } finally {
             this.eventHelperLock.writeLock().unlock();
@@ -277,6 +281,7 @@ public abstract class AbstractLayer implements ILayer {
     public void unregisterEventHandler(ILayerEventHandler<?> eventHandler) {
         this.eventHelperLock.writeLock().lock();
         try {
+            this.eventHandlers = new HashMap<Class<? extends ILayerEvent>, ILayerEventHandler<? extends ILayerEvent>>(this.eventHandlers);
             this.eventHandlers.remove(eventHandler.getLayerEventClass());
         } finally {
             this.eventHelperLock.writeLock().unlock();
