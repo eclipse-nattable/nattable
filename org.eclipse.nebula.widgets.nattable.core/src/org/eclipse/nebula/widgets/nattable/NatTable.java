@@ -17,6 +17,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -148,8 +150,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
         @Override
         public void handleEvent(Event event) {
             // as resizing doesn't cause the current active editor to loose
-            // focus
-            // we are closing the current active editor manually
+            // focus we are closing the current active editor manually
             if (!commitAndCloseActiveCellEditor()) {
                 // if committing didn't work out we need to perform a hard close
                 // otherwise the state of the table would be unstale
@@ -668,7 +669,14 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
     @Override
     public void handleLayerEvent(ILayerEvent event) {
-        for (ILayerListener layerListener : this.listeners) {
+        List<ILayerListener> currentListeners;
+        this.eventListenerLock.readLock().lock();
+        try {
+            currentListeners = this.listeners;
+        } finally {
+            this.eventListenerLock.readLock().unlock();
+        }
+        for (ILayerListener layerListener : currentListeners) {
             layerListener.handleLayerEvent(event);
         }
 
@@ -818,14 +826,21 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
     }
 
     @Override
-    public void unregisterCommandHandler(
-            Class<? extends ILayerCommand> commandClass) {
+    public void unregisterCommandHandler(Class<? extends ILayerCommand> commandClass) {
         this.underlyingLayer.unregisterCommandHandler(commandClass);
     }
 
     // Events
 
-    private final List<ILayerListener> listeners = new ArrayList<ILayerListener>();
+    private List<ILayerListener> listeners = new ArrayList<ILayerListener>();
+
+    /**
+     * {@link ReadWriteLock} that is used to ensure that no concurrent
+     * modifications happen on event handling
+     *
+     * @since 1.5
+     */
+    protected ReadWriteLock eventListenerLock = new ReentrantReadWriteLock();
 
     @Override
     public void fireLayerEvent(ILayerEvent event) {
@@ -834,17 +849,28 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
     @Override
     public void addLayerListener(ILayerListener listener) {
-        this.listeners.add(listener);
+        this.eventListenerLock.writeLock().lock();
+        try {
+            this.listeners = new ArrayList<ILayerListener>(this.listeners);
+            this.listeners.add(listener);
+        } finally {
+            this.eventListenerLock.writeLock().unlock();
+        }
     }
 
     @Override
     public void removeLayerListener(ILayerListener listener) {
-        this.listeners.remove(listener);
+        this.eventListenerLock.writeLock().lock();
+        try {
+            this.listeners = new ArrayList<ILayerListener>(this.listeners);
+            this.listeners.remove(listener);
+        } finally {
+            this.eventListenerLock.writeLock().unlock();
+        }
     }
 
     @Override
-    public boolean hasLayerListener(
-            Class<? extends ILayerListener> layerListenerClass) {
+    public boolean hasLayerListener(Class<? extends ILayerListener> layerListenerClass) {
         for (ILayerListener listener : this.listeners) {
             if (listener.getClass().equals(layerListenerClass)) {
                 return true;
