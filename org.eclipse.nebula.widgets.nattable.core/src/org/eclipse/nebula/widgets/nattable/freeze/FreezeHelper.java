@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Dirk Fauth and others.
+ * Copyright (c) 2012, 2016 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.freeze;
 
@@ -33,9 +33,6 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
  * @see FreezePositionCommand
  * @see FreezeSelectionCommand
  * @see UnFreezeGridCommand
- *
- * @author Dirk Fauth
- *
  */
 public class FreezeHelper {
 
@@ -58,8 +55,10 @@ public class FreezeHelper {
      * @see FreezePositionCommand
      * @see FreezeSelectionCommand
      */
-    public static void freeze(FreezeLayer freezeLayer,
-            ViewportLayer viewportLayer, PositionCoordinate topLeftPosition,
+    public static void freeze(
+            FreezeLayer freezeLayer,
+            ViewportLayer viewportLayer,
+            PositionCoordinate topLeftPosition,
             PositionCoordinate bottomRightPosition) {
 
         if (freezeLayer == null || viewportLayer == null) {
@@ -67,23 +66,21 @@ public class FreezeHelper {
         }
 
         if (topLeftPosition != null && bottomRightPosition != null) {
-            freezeLayer.setTopLeftPosition(topLeftPosition.columnPosition,
+            freezeLayer.setTopLeftPosition(
+                    topLeftPosition.columnPosition,
                     topLeftPosition.rowPosition);
             freezeLayer.setBottomRightPosition(
                     bottomRightPosition.columnPosition,
                     bottomRightPosition.rowPosition);
 
-            IUniqueIndexLayer scrollableLayer = viewportLayer
-                    .getScrollableLayer();
-            int originX = bottomRightPosition.columnPosition == scrollableLayer
-                    .getColumnCount() - 1 ? scrollableLayer.getWidth()
-                    : scrollableLayer
-                            .getStartXOfColumnPosition(bottomRightPosition.columnPosition + 1);
-            int originY = bottomRightPosition.rowPosition == scrollableLayer
-                    .getRowCount() - 1 ? scrollableLayer.getHeight()
-                    : scrollableLayer
-                            .getStartYOfRowPosition(bottomRightPosition.rowPosition + 1);
+            IUniqueIndexLayer scrollableLayer = viewportLayer.getScrollableLayer();
+            int originX = (bottomRightPosition.columnPosition == scrollableLayer.getColumnCount() - 1)
+                    ? scrollableLayer.getWidth() : scrollableLayer.getStartXOfColumnPosition(bottomRightPosition.columnPosition + 1);
+            int originY = (bottomRightPosition.rowPosition == scrollableLayer.getRowCount() - 1)
+                    ? scrollableLayer.getHeight() : scrollableLayer.getStartYOfRowPosition(bottomRightPosition.rowPosition + 1);
             viewportLayer.setMinimumOrigin(originX, originY);
+            viewportLayer.setOriginX(0);
+            viewportLayer.setOriginY(0);
             viewportLayer.fireLayerEvent(new FreezeEvent(viewportLayer));
         }
     }
@@ -100,8 +97,7 @@ public class FreezeHelper {
      *
      * @see UnFreezeGridCommand
      */
-    public static void unfreeze(FreezeLayer freezeLayer,
-            ViewportLayer viewportLayer) {
+    public static void unfreeze(FreezeLayer freezeLayer, ViewportLayer viewportLayer) {
         if (freezeLayer == null || viewportLayer == null) {
             throw new IllegalArgumentException("freezeLayer and viewportLayer can not be null!"); //$NON-NLS-1$
         }
@@ -123,13 +119,10 @@ public class FreezeHelper {
      * @param viewportLayer
      *            The ViewportLayer of the grid to perform the freeze action.
      */
-    public static void resetViewport(FreezeLayer freezeLayer,
-            ViewportLayer viewportLayer) {
+    public static void resetViewport(FreezeLayer freezeLayer, ViewportLayer viewportLayer) {
         PositionCoordinate topLeftPosition = freezeLayer.getTopLeftPosition();
         viewportLayer.resetOrigin(
-                viewportLayer.getScrollableLayer().getStartXOfColumnPosition(
-                        Math.max(0, topLeftPosition.columnPosition)),
-                viewportLayer.getScrollableLayer().getStartYOfRowPosition(
-                        Math.max(0, topLeftPosition.rowPosition)));
+                viewportLayer.getScrollableLayer().getStartXOfColumnPosition(Math.max(0, topLeftPosition.columnPosition)),
+                viewportLayer.getScrollableLayer().getStartYOfRowPosition(Math.max(0, topLeftPosition.rowPosition)));
     }
 }
