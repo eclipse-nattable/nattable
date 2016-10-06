@@ -88,6 +88,8 @@ public class LayerPrinter {
 
     private ILayer repeatHeaderLayer;
 
+    private boolean join = false;
+
     /**
      *
      * @param layer
@@ -163,6 +165,21 @@ public class LayerPrinter {
     }
 
     /**
+     * Configure whether multiple print targets should be joined for printing or
+     * not.
+     *
+     * @param join
+     *            <code>true</code> if the print targets should be printed
+     *            consecutively, <code>false</code> if every print target should
+     *            start with a new page. Default is <code>false</code>.
+     *
+     * @since 1.5
+     */
+    public void joinPrintTargets(boolean join) {
+        this.join = join;
+    }
+
+    /**
      * Configure printing to repeat the header layer on every print page. For
      * this it is necessary to specify the header layer that should be repeated
      * in order to calculate the necessary header height on printing.
@@ -184,6 +201,23 @@ public class LayerPrinter {
         } else {
             this.headerHeight = 0;
         }
+    }
+
+    /**
+     *
+     * @return The height of the print target that should be repeated on every
+     *         page. Typically only the first registered one in case of multiple
+     *         print targets. If there is only one print target or no print
+     *         target should be repeated it returns 0.
+     */
+    private int getRepeatPrintTargetHeight() {
+        int result = 0;
+        for (PrintTarget target : this.printTargets) {
+            if (target.repeat) {
+                result += target.layer.getHeight();
+            }
+        }
+        return result;
     }
 
     /**
@@ -210,12 +244,28 @@ public class LayerPrinter {
 
         if (!dpi && (this.fittingMode != Direction.NONE)) {
             Rectangle total = getTotalArea(layer);
-            // TODO this is for the additional layer
-            // total.height += this.headerHeight;
+            if (this.join || this.printTargets.get(0).repeat) {
+                // calculate the total height of all targets
+                total.height = 0;
+                for (PrintTarget target : this.printTargets) {
+                    total.height += target.layer.getHeight();
+                }
+            }
             Rectangle print = computePrintArea(printer);
 
             float pixelX = Float.valueOf(print.width) / Float.valueOf(total.width);
             float pixelY = (Float.valueOf(print.height) - getFooterHeightInPrinterDPI()) / Float.valueOf(total.height);
+
+            // only support down-scaling, no stretching
+            // stretching could cause serious issues, e.g. vertical
+            // stretching for one row could cause a really long running
+            // operation because the width gets really really big
+            if (pixelX > sfX) {
+                pixelX = sfX;
+            }
+            if (pixelY > sfY) {
+                pixelY = sfY;
+            }
 
             switch (this.fittingMode) {
                 case HORIZONTAL:
@@ -228,6 +278,38 @@ public class LayerPrinter {
         }
 
         return new float[] { sfX, sfY };
+    }
+
+    /**
+     * Computes the scale factor to match the printer resolution. In case of
+     * fitting mode configurations and multiple print targets, the common
+     * scaling factor will be calculated and returned.
+     *
+     * @param layer
+     *            The layer for which the scale factor should be calculated.
+     * @param printer
+     *            The printer that will be used.
+     * @return The amount to scale the screen resolution by, to match the
+     *         printer the resolution.
+     */
+    private float[] computeLayerScaleFactor(ILayer layer, Printer printer) {
+        float[] scaleFactor = null;
+        if (this.fittingMode == Direction.NONE
+                || (!this.join && !this.printTargets.get(0).repeat)) {
+            scaleFactor = computeScaleFactor(layer, printer, false);
+        } else {
+            // search for the common scaling factor
+            for (PrintTarget tempTarget : this.printTargets) {
+                float[] tempFactor = computeScaleFactor(tempTarget.layer, printer, false);
+                if (scaleFactor == null) {
+                    scaleFactor = tempFactor;
+                } else {
+                    scaleFactor[0] = Math.min(scaleFactor[0], tempFactor[0]);
+                    scaleFactor[1] = Math.min(scaleFactor[1], tempFactor[1]);
+                }
+            }
+        }
+        return scaleFactor;
     }
 
     /**
@@ -249,10 +331,22 @@ public class LayerPrinter {
      */
     private int getPageCount(Printer printer) {
         int result = 0;
+        int available = -1;
         for (PrintTarget target : this.printTargets) {
-            Point layerResult = getPageCount(target, printer);
-            result += (layerResult.x * layerResult.y);
+            if (!target.repeat) {
+                int[] layerResult = getPageCount(target, printer, available);
+                result += (layerResult[0] * layerResult[1]);
+
+                // as the print targets should be joined and the print was
+                // started on an existing page, we need to reduce the page count
+                if (this.join && available > 0) {
+                    result--;
+                }
+
+                available = layerResult[2];
+            }
         }
+
         return result;
     }
 
@@ -264,12 +358,17 @@ public class LayerPrinter {
      *            The print target to print.
      * @param printer
      *            The printer that will be used.
+     * @param available
+     *            The remaining available space on a page after the target is
+     *            printed in case the print targets should be glued, -1
+     *            otherwise.
      * @return The number of horizontal and vertical pages that are needed to
-     *         print the layer of the given print target.
+     *         print the layer of the given print target and the remaining space
+     *         on a page if the print targets should be glued.
      */
-    private Point getPageCount(PrintTarget target, Printer printer) {
+    private int[] getPageCount(PrintTarget target, Printer printer, int available) {
         Rectangle printArea = computePrintArea(printer);
-        float[] scaleFactor = computeScaleFactor(target.layer, printer, false);
+        float[] scaleFactor = computeLayerScaleFactor(target.layer, printer);
 
         Integer[] gridLineWidth = getGridLineWidth(target.configRegistry);
 
@@ -297,13 +396,23 @@ public class LayerPrinter {
         }
 
         int numOfVerticalPages = 0;
-        // TODO
+        int repeatPrintTargetHeightInDpi = Math.round(Float.valueOf(getRepeatPrintTargetHeight() * scaleFactor[1]));
         int headerHeightInDpi = (this.headerHeight != 0 && this.repeatHeaderLayer != null)
                 ? Math.round(Float.valueOf((this.headerHeight * scaleFactor[1]))) : 0;
-        int pageHeight = Math.round(Float.valueOf((printArea.height - headerHeightInDpi - getFooterHeightInPrinterDPI()) / scaleFactor[1]));
+        int pageHeight = Math.round(Float.valueOf(
+                (printArea.height - repeatPrintTargetHeightInDpi - headerHeightInDpi - getFooterHeightInPrinterDPI()) / scaleFactor[1]));
+        int firstPageHeight = (available < 0)
+                ? Math.round(Float.valueOf((printArea.height - repeatPrintTargetHeightInDpi - getFooterHeightInPrinterDPI()) / scaleFactor[1]))
+                : available;
         int endY = 0;
+        int added = 0;
+        int remaining = -1;
         while (endY < (target.layer.getHeight() - this.headerHeight)) {
-            endY += pageHeight;
+            // on the first page we don't need to take care of the repeat
+            // header height
+            added = (numOfVerticalPages == 0) ? firstPageHeight : pageHeight;
+            endY += added;
+
             int rowPos = target.layer.getRowPositionByY(endY);
             if (rowPos >= 0) {
                 ILayerCell cell = findRowCellForBounds(target.layer, rowPos);
@@ -315,6 +424,11 @@ public class LayerPrinter {
                     }
                 }
             } else {
+                // in case the print targets should be glued we need to
+                // calculate the remaining space for the following print target
+                if (this.join) {
+                    remaining = ((numOfVerticalPages == 0) ? firstPageHeight : pageHeight) - (target.layer.getHeight() - (endY - added));
+                }
                 endY = target.layer.getHeight();
             }
 
@@ -325,7 +439,7 @@ public class LayerPrinter {
             target.configRegistry.unregisterConfigAttribute(CellConfigAttributes.GRID_LINE_WIDTH);
         }
 
-        return new Point(numOfHorizontalPages, numOfVerticalPages);
+        return new int[] { numOfHorizontalPages, numOfVerticalPages, remaining };
     }
 
     private ILayerCell findColumnCellForBounds(ILayer layer, int colPos) {
@@ -547,30 +661,48 @@ public class LayerPrinter {
         public void run() {
             if (this.printer.startJob("NatTable")) { //$NON-NLS-1$
                 GC gc = new GC(this.printer);
+
+                // turn the viewport for all targets off to ensure everything is
+                // taken into account for calculation and printing
+                for (PrintTarget target : LayerPrinter.this.printTargets) {
+                    target.layer.doCommand(new TurnViewportOffCommand());
+                }
+
                 try {
                     int currentPage = 1;
 
+                    Integer[] repeatHeaderGridLineWidth = null;
+
+                    int available = -1;
+                    boolean newPage = true;
+                    boolean pageStarted = false;
                     for (PrintTarget target : LayerPrinter.this.printTargets) {
+                        if (target.repeat) {
+                            // we do not render the repeat print target directly
+                            // as it is handled on every page while printing
+                            repeatHeaderGridLineWidth = getGridLineWidth(target.configRegistry);
+                            continue;
+                        }
+
                         // if pre-rendering is enabled, render in-memory to
                         // trigger content based auto-resizing
                         if (LayerPrinter.this.preRender) {
-                            AutoResizeHelper.autoResize(target.layer, target.configRegistry);
+                            try {
+                                AutoResizeHelper.autoResize(target.layer, target.configRegistry);
+                            } finally {
+                                // the AutoResizeHelper also toggles the
+                                // viewport state we need to ensure that it is
+                                // still turned off afterwards
+                                target.layer.doCommand(new TurnViewportOffCommand());
+                            }
 
-                            // TODO
                             if (LayerPrinter.this.repeatHeaderLayer != null) {
                                 LayerPrinter.this.headerHeight = LayerPrinter.this.repeatHeaderLayer.getHeight();
                             }
                         }
 
-                        target.layer.doCommand(new TurnViewportOffCommand());
-                        float[] scaleFactor = null;
-                        float[] dpiFactor = null;
-                        try {
-                            scaleFactor = computeScaleFactor(target.layer, this.printer, false);
-                            dpiFactor = computeScaleFactor(target.layer, this.printer, true);
-                        } finally {
-                            target.layer.doCommand(new TurnViewportOnCommand());
-                        }
+                        float[] scaleFactor = computeLayerScaleFactor(target.layer, this.printer);
+                        float[] dpiFactor = computeScaleFactor(target.layer, this.printer, true);
 
                         Integer[] gridLineWidth = getGridLineWidth(target.configRegistry);
 
@@ -578,9 +710,6 @@ public class LayerPrinter {
                             // if a SummaryRowLayer is in the layer stack, we
                             // need to ensure that the values are calculated
                             target.layer.doCommand(new CalculateSummaryRowValuesCommand());
-
-                            // ensure that the viewport is turned off
-                            target.layer.doCommand(new TurnViewportOffCommand());
 
                             // ensure that formula processing is performed in
                             // the current thread
@@ -592,18 +721,26 @@ public class LayerPrinter {
 
                             final Rectangle printerClientArea = computePrintArea(this.printer);
                             final int printBoundsWidth = Math.round(Float.valueOf(printerClientArea.width / scaleFactor[0]));
-                            // TODO
+                            int repeatPrintTargetHeight = getRepeatPrintTargetHeight();
+                            int repeatPrintTargetHeightInDpi = Math.round(Float.valueOf(repeatPrintTargetHeight * scaleFactor[1]));
                             int headerHeightDPI = Math.round(Float.valueOf((LayerPrinter.this.headerHeight * scaleFactor[1])));
-                            int printBoundsHeight = Math.round(Float.valueOf((printerClientArea.height - headerHeightDPI - getFooterHeightInPrinterDPI()) / scaleFactor[1]));
+                            int printBoundsHeight = Math.round(Float.valueOf((printerClientArea.height - repeatPrintTargetHeightInDpi - headerHeightDPI - getFooterHeightInPrinterDPI()) / scaleFactor[1]));
 
-                            final Point pageCount = getPageCount(target, this.printer);
+                            int firstPagePrintBoundsHeight = (available < 0)
+                                    ? Math.round(Float.valueOf((printerClientArea.height - repeatPrintTargetHeightInDpi - getFooterHeightInPrinterDPI()) / scaleFactor[1]))
+                                    : available;
+
+                            final int[] pageCount = getPageCount(target, this.printer, available);
 
                             // Print pages Left to Right and then Top to Down
-                            // TODO
-                            int startY = LayerPrinter.this.headerHeight;
-                            for (int verticalPageNumber = 0; verticalPageNumber < pageCount.y; verticalPageNumber++) {
+                            int startY = 0;
+                            for (int verticalPageNumber = 0; verticalPageNumber < pageCount[1]; verticalPageNumber++) {
 
-                                int endY = startY + printBoundsHeight;
+                                // on the first page we don't need to take care
+                                // of the repeat header height
+                                int pbh = (verticalPageNumber == 0 ? firstPagePrintBoundsHeight : printBoundsHeight);
+
+                                int endY = startY + pbh;
                                 // int rowPos =
                                 // target.layer.getRowPositionByY(endY);
                                 int rowPos = target.layer.getRowPositionByY(endY);
@@ -612,20 +749,20 @@ public class LayerPrinter {
                                     if (cell != null) {
                                         Rectangle cellBounds = cell.getBounds();
                                         if (cellBounds.y < endY) {
-                                            printBoundsHeight -= (endY - cellBounds.y);
+                                            pbh -= (endY - cellBounds.y);
                                         }
                                     }
                                 }
 
                                 int startX = 0;
-                                for (int horizontalPageNumber = 0; horizontalPageNumber < pageCount.x; horizontalPageNumber++) {
+                                for (int horizontalPageNumber = 0; horizontalPageNumber < pageCount[0]; horizontalPageNumber++) {
 
                                     // Calculate bounds for the next page
                                     Rectangle printBounds = new Rectangle(
                                             startX,
                                             startY,
                                             printBoundsWidth,
-                                            printBoundsHeight);
+                                            pbh);
 
                                     int endX = startX + printBounds.width;
                                     int colPos = target.layer.getColumnPositionByX(endX);
@@ -646,9 +783,29 @@ public class LayerPrinter {
                                             Math.round(Float.valueOf((printerClientArea.height - getFooterHeightInPrinterDPI()) / dpiFactor[1])));
 
                                     if (shouldPrint(this.printer.getPrinterData(), currentPage)) {
-                                        this.printer.startPage();
+                                        // end a page that was previously
+                                        // started
+                                        if (pageStarted) {
+                                            this.printer.endPage();
+                                            newPage = true;
+                                        }
+
+                                        // start a new page
+                                        if (newPage) {
+                                            this.printer.startPage();
+                                            pageStarted = true;
+                                            newPage = false;
+                                        }
+
+                                        // ensure there is a next page
+                                        // will be set to false afterwards again
+                                        // if multiple targets fit on one page
+                                        if (!pageStarted && !newPage) {
+                                            pageStarted = true;
+                                        }
 
                                         Transform printerTransform = new Transform(this.printer);
+                                        Transform repeatTransform = new Transform(this.printer);
                                         Transform headerTransform = new Transform(this.printer);
                                         Transform footerTransform = new Transform(this.printer);
 
@@ -661,14 +818,38 @@ public class LayerPrinter {
                                         intersect = printBounds.intersection(intersect);
 
                                         configureScalingTransform(printerTransform, scaleFactor, printerClientArea, intersect);
+                                        configureScalingTransform(repeatTransform, scaleFactor, printerClientArea, intersect);
                                         configureScalingTransform(headerTransform, scaleFactor, printerClientArea, intersect);
 
-                                        // TODO
-                                        if (LayerPrinter.this.repeatHeaderLayer != null) {
-                                            headerTransform.translate(0, startY);
+                                        if (repeatPrintTargetHeight > 0) {
+                                            repeatTransform.translate(0, startY);
+                                            gc.setTransform(repeatTransform);
+
+                                            Rectangle repeatIntersect = new Rectangle(
+                                                    0,
+                                                    0,
+                                                    LayerPrinter.this.printTargets.get(0).layer.getWidth(),
+                                                    LayerPrinter.this.printTargets.get(0).layer.getHeight());
+
+                                            repeatIntersect = printBounds.intersection(repeatIntersect);
+
+                                            printLayer(LayerPrinter.this.printTargets.get(0), gc, new Rectangle(repeatIntersect.x, 0, repeatIntersect.width, repeatPrintTargetHeight));
+                                            printerTransform.translate(0, repeatPrintTargetHeight);
+                                        }
+
+                                        if (LayerPrinter.this.repeatHeaderLayer != null && verticalPageNumber != 0) {
+                                            headerTransform.translate(0, startY + repeatPrintTargetHeight);
                                             gc.setTransform(headerTransform);
-                                            printLayer(target, gc, new Rectangle(printBounds.x, 0, printBounds.width, LayerPrinter.this.headerHeight));
+                                            printLayer(target, gc, new Rectangle(printBounds.x, 0, intersect.width, LayerPrinter.this.headerHeight));
                                             printerTransform.translate(0, LayerPrinter.this.headerHeight);
+                                        }
+
+                                        // on joining print targets we need to
+                                        // transform for rendering the first
+                                        // page on the same page as the previous
+                                        // target
+                                        if (LayerPrinter.this.join && available > 0 && verticalPageNumber == 0) {
+                                            printerTransform.translate(0, (printBoundsHeight + LayerPrinter.this.headerHeight) - available);
                                         }
 
                                         gc.setTransform(printerTransform);
@@ -678,15 +859,33 @@ public class LayerPrinter {
                                         gc.setTransform(footerTransform);
                                         printFooter(gc, currentPage, footerBounds, target.configRegistry);
 
-                                        this.printer.endPage();
                                         printerTransform.dispose();
+                                        repeatTransform.dispose();
+                                        headerTransform.dispose();
                                         footerTransform.dispose();
                                     }
                                     currentPage++;
 
                                     startX += printBounds.width;
                                 }
-                                startY += printBoundsHeight;
+                                startY += pbh;
+                                available = pageCount[2];
+                            }
+
+                            if (LayerPrinter.this.join && available > 0) {
+                                currentPage--;
+                            }
+
+                            // after last page is printed, check if the page
+                            // needs to end or if it should be used for the next
+                            // print target
+                            if (!LayerPrinter.this.join || available < 0) {
+                                this.printer.endPage();
+                                newPage = true;
+                                pageStarted = false;
+                            } else if (LayerPrinter.this.join && available > 0) {
+                                newPage = false;
+                                pageStarted = false;
                             }
 
                         } finally {
@@ -700,10 +899,19 @@ public class LayerPrinter {
                             target.configRegistry.unregisterConfigAttribute(CellConfigAttributes.GRID_LINE_WIDTH);
                         }
                     }
+
+                    if (repeatHeaderGridLineWidth != null && repeatHeaderGridLineWidth[0] == null) {
+                        LayerPrinter.this.printTargets.get(0).configRegistry.unregisterConfigAttribute(CellConfigAttributes.GRID_LINE_WIDTH);
+                    }
                 } finally {
                     this.printer.endJob();
                     gc.dispose();
                     this.printer.dispose();
+
+                    // turn viewport on
+                    for (PrintTarget target : LayerPrinter.this.printTargets) {
+                        target.layer.doCommand(new TurnViewportOnCommand());
+                    }
                 }
             }
         }
@@ -853,7 +1061,6 @@ public class LayerPrinter {
          */
         private void restoreLayerState(PrintTarget target) {
             target.layer.setClientAreaProvider(target.originalClientAreaProvider);
-            target.layer.doCommand(new TurnViewportOnCommand());
             target.layer.doCommand(new EnableFormulaCachingCommand());
         }
 
