@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,8 +17,7 @@ import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
-public class FreezeCommandHandler extends
-        AbstractLayerCommandHandler<IFreezeCommand> {
+public class FreezeCommandHandler extends AbstractLayerCommandHandler<IFreezeCommand> {
 
     protected final FreezeLayer freezeLayer;
 
@@ -26,8 +25,7 @@ public class FreezeCommandHandler extends
 
     protected final SelectionLayer selectionLayer;
 
-    public FreezeCommandHandler(FreezeLayer freezeLayer,
-            ViewportLayer viewportLayer, SelectionLayer selectionLayer) {
+    public FreezeCommandHandler(FreezeLayer freezeLayer, ViewportLayer viewportLayer, SelectionLayer selectionLayer) {
         this.freezeLayer = freezeLayer;
         this.viewportLayer = viewportLayer;
         this.selectionLayer = selectionLayer;
@@ -45,7 +43,7 @@ public class FreezeCommandHandler extends
             // freeze for a whole column
             FreezeColumnCommand freezeColumnCommand = (FreezeColumnCommand) command;
             IFreezeCoordinatesProvider coordinatesProvider = new FreezeColumnStrategy(
-                    this.freezeLayer, freezeColumnCommand.getColumnPosition());
+                    this.freezeLayer, this.viewportLayer, freezeColumnCommand.getColumnPosition());
             handleFreezeCommand(coordinatesProvider,
                     freezeColumnCommand.isToggle(), command.isOverrideFreeze());
             return true;
@@ -53,7 +51,7 @@ public class FreezeCommandHandler extends
             // freeze for a whole row
             FreezeRowCommand freezeRowCommand = (FreezeRowCommand) command;
             IFreezeCoordinatesProvider coordinatesProvider = new FreezeRowStrategy(
-                    this.freezeLayer, freezeRowCommand.getRowPosition());
+                    this.freezeLayer, this.viewportLayer, freezeRowCommand.getRowPosition());
             handleFreezeCommand(coordinatesProvider,
                     freezeRowCommand.isToggle(), command.isOverrideFreeze());
             return true;
@@ -61,7 +59,7 @@ public class FreezeCommandHandler extends
             // freeze for a given position
             FreezePositionCommand freezePositionCommand = (FreezePositionCommand) command;
             IFreezeCoordinatesProvider coordinatesProvider = new FreezePositionStrategy(
-                    this.freezeLayer, freezePositionCommand.getColumnPosition(),
+                    this.freezeLayer, this.viewportLayer, freezePositionCommand.getColumnPosition(),
                     freezePositionCommand.getRowPosition());
             handleFreezeCommand(coordinatesProvider,
                     freezePositionCommand.isToggle(),
@@ -99,8 +97,7 @@ public class FreezeCommandHandler extends
      *            whether to override a current frozen state.
      */
     protected void handleFreezeCommand(
-            IFreezeCoordinatesProvider coordinatesProvider, boolean toggle,
-            boolean override) {
+            IFreezeCoordinatesProvider coordinatesProvider, boolean toggle, boolean override) {
 
         if (!this.freezeLayer.isFrozen() || override) {
             // if we are in a frozen state and be configured to override, reset
@@ -109,13 +106,10 @@ public class FreezeCommandHandler extends
                 FreezeHelper.resetViewport(this.freezeLayer, this.viewportLayer);
             }
 
-            final PositionCoordinate topLeftPosition = coordinatesProvider
-                    .getTopLeftPosition();
-            final PositionCoordinate bottomRightPosition = coordinatesProvider
-                    .getBottomRightPosition();
+            final PositionCoordinate topLeftPosition = coordinatesProvider.getTopLeftPosition();
+            final PositionCoordinate bottomRightPosition = coordinatesProvider.getBottomRightPosition();
 
-            FreezeHelper.freeze(this.freezeLayer, this.viewportLayer, topLeftPosition,
-                    bottomRightPosition);
+            FreezeHelper.freeze(this.freezeLayer, this.viewportLayer, topLeftPosition, bottomRightPosition);
         } else if (toggle) {
             // if frozen and toggle = true
             handleUnfreeze();
