@@ -59,4 +59,12 @@ public interface PrintConfigAttributes {
      * font style attributes are supported.
      */
     ConfigAttribute<IStyle> FOOTER_STYLE = new ConfigAttribute<IStyle>();
+
+    /**
+     * Configuration attribute to configure the pattern for rendering the page
+     * information in the footer. The pattern can include placeholders for the
+     * current page and the total page count, where {0} = current page and {1} =
+     * total page count, e.g. <i>Page {0}/{1}</i> to show <i>Page 1/6</i>
+     */
+    ConfigAttribute<String> FOOTER_PAGE_PATTERN = new ConfigAttribute<String>();
 }

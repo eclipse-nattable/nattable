@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.print;
 
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -74,6 +75,7 @@ public class LayerPrinter {
 
     final SimpleDateFormat dateFormat;
     private final String footerDate;
+    private final String footerPagePattern;
 
     private final int footerHeight;
 
@@ -127,6 +129,11 @@ public class LayerPrinter {
                 PrintConfigAttributes.FOOTER_HEIGHT,
                 DisplayMode.NORMAL);
         this.footerHeight = (fh != null) ? fh : FOOTER_HEIGHT_IN_PRINTER_DPI;
+
+        String pagePattern = configRegistry.getConfigAttribute(
+                PrintConfigAttributes.FOOTER_PAGE_PATTERN,
+                DisplayMode.NORMAL);
+        this.footerPagePattern = (pagePattern != null) ? pagePattern : Messages.getString("Printer.page"); //$NON-NLS-1$
 
         // configure the footer date
         String configuredFormat = configRegistry.getConfigAttribute(
@@ -670,6 +677,7 @@ public class LayerPrinter {
 
                 try {
                     int currentPage = 1;
+                    int totalPageCount = getPageCount(this.printer);
 
                     Integer[] repeatHeaderGridLineWidth = null;
 
@@ -857,7 +865,7 @@ public class LayerPrinter {
 
                                         configureScalingTransform(footerTransform, dpiFactor, printerClientArea, footerBounds);
                                         gc.setTransform(footerTransform);
-                                        printFooter(gc, currentPage, footerBounds, target.configRegistry);
+                                        printFooter(gc, currentPage, totalPageCount, footerBounds, target.configRegistry);
 
                                         printerTransform.dispose();
                                         repeatTransform.dispose();
@@ -1009,7 +1017,7 @@ public class LayerPrinter {
          *            The {@link IConfigRegistry} needed to retrieve the footer
          *            style.
          */
-        private void printFooter(GC gc, int totalPageCount, Rectangle printBounds, IConfigRegistry configRegistry) {
+        private void printFooter(GC gc, int currentPage, int totalPageCount, Rectangle printBounds, IConfigRegistry configRegistry) {
             Color oldForeground = gc.getForeground();
             Color oldBackground = gc.getBackground();
             Font oldFont = gc.getFont();
@@ -1037,7 +1045,7 @@ public class LayerPrinter {
                     printBounds.y + printBounds.height + 10);
 
             gc.drawText(
-                    Messages.getString("Printer.page") + " " + totalPageCount, //$NON-NLS-1$ //$NON-NLS-2$
+                    MessageFormat.format(LayerPrinter.this.footerPagePattern, currentPage, totalPageCount),
                     printBounds.x,
                     printBounds.y + printBounds.height + 15);
 
