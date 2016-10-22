@@ -40,6 +40,19 @@ public interface PrintConfigAttributes {
     ConfigAttribute<Direction> FITTING_MODE = new ConfigAttribute<Direction>();
 
     /**
+     * Configuration attribute to configure a scaling option in case
+     * {@link #FITTING_MODE} is set. By default only downscaling is supported on
+     * enabling the fit-to-page scaling. By setting {@link #STRETCH} to
+     * <code>true</code> also upscaling will be performed to make the most out
+     * of the available space.
+     * <p>
+     * <b>Note:</b> stretching is only supported for fitting mode
+     * {@link Direction#HORIZONTAL}.
+     * </p>
+     */
+    ConfigAttribute<Boolean> STRETCH = new ConfigAttribute<Boolean>();
+
+    /**
      * Configuration attribute to configure the date format that is used for
      * rendering the print date in the footer region. If not specified the
      * default value <i>EEE, d MMM yyyy HH:mm a</i> will be used.

@@ -17,6 +17,8 @@ import java.util.Map;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.Direction;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
@@ -39,10 +41,12 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.print.LayerPrinter;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintCommandHandler;
 import org.eclipse.nebula.widgets.nattable.print.config.DefaultPrintBindings;
+import org.eclipse.nebula.widgets.nattable.print.config.PrintConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
@@ -50,11 +54,16 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 public class _762_MultiPrintExample extends AbstractNatExample {
+
+    Button joinTablesButton;
+    Button repeatHeaderTableButton;
+    Button repeatColumnHeaderButton;
 
     public static void main(String[] args) throws Exception {
         StandaloneNatExampleRunner.run(new _762_MultiPrintExample());
@@ -79,47 +88,110 @@ public class _762_MultiPrintExample extends AbstractNatExample {
         GridDataFactory.fillDefaults().grab(true, true).applyTo(gridPanel);
 
         Composite buttonPanel = new Composite(panel, SWT.NONE);
-        buttonPanel.setLayout(new GridLayout());
+        buttonPanel.setLayout(new GridLayout(4, false));
         GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
 
-        NatTable natTable = createSmallTable(gridPanel);
-        NatTable grid = createGrid(gridPanel);
+        NatTable headerTable = createSmallTable(gridPanel);
+        NatTable bodyTable = createGrid(gridPanel);
 
         // create a custom command handler for printing of multiple NatTable
         // instances
-        PrintCommandHandler handler = new PrintCommandHandler(natTable.getLayer()) {
+        PrintCommandHandler handler = new PrintCommandHandler(headerTable.getLayer()) {
             @Override
             public boolean doCommand(PrintCommand command) {
-                LayerPrinter printer = new LayerPrinter(natTable.getLayer(), natTable.getConfigRegistry());
-                printer.addPrintTarget(grid.getLayer(), grid.getConfigRegistry());
-                printer.print(natTable.getShell());
+                LayerPrinter printer = new LayerPrinter(headerTable, headerTable.getConfigRegistry(), _762_MultiPrintExample.this.repeatHeaderTableButton.getSelection());
+                printer.addPrintTarget(bodyTable, bodyTable.getConfigRegistry());
+                printer.joinPrintTargets(_762_MultiPrintExample.this.joinTablesButton.getSelection());
+                if (_762_MultiPrintExample.this.repeatColumnHeaderButton.getSelection()) {
+                    printer.repeatHeaderLayer(((GridLayer) bodyTable.getLayer()).getColumnHeaderLayer());
+                }
+                printer.print(headerTable.getShell());
                 return true;
             };
         };
 
         // register the handler to both NatTable instances
-        natTable.getLayer().registerCommandHandler(handler);
-        grid.getLayer().registerCommandHandler(handler);
+        headerTable.getLayer().registerCommandHandler(handler);
+        bodyTable.getLayer().registerCommandHandler(handler);
+
+        Composite multiTableConfigPanel = new Composite(buttonPanel, SWT.NONE);
+        multiTableConfigPanel.setLayout(new RowLayout(SWT.VERTICAL));
+        this.joinTablesButton = new Button(multiTableConfigPanel, SWT.CHECK);
+        this.joinTablesButton.setText("Join Tables");
+        this.repeatHeaderTableButton = new Button(multiTableConfigPanel, SWT.CHECK);
+        this.repeatHeaderTableButton.setText("Repeat Header Table");
+        this.repeatColumnHeaderButton = new Button(multiTableConfigPanel, SWT.CHECK);
+        this.repeatColumnHeaderButton.setText("Repeat Column Header");
+
+        Composite fittingConfigPanel = new Composite(buttonPanel, SWT.NONE);
+        fittingConfigPanel.setLayout(new RowLayout(SWT.VERTICAL));
+        Button fitHorizontalButton = new Button(fittingConfigPanel, SWT.CHECK);
+        fitHorizontalButton.setText("Fit Horizontally");
+        Button fitVerticalButton = new Button(fittingConfigPanel, SWT.CHECK);
+        fitVerticalButton.setText("Fit Vertically");
+        Button stretchButton = new Button(fittingConfigPanel, SWT.CHECK);
+        stretchButton.setText("Stretch");
+        stretchButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                headerTable.getConfigRegistry().registerConfigAttribute(
+                        PrintConfigAttributes.STRETCH,
+                        stretchButton.getSelection());
+            }
+        });
+
+        fitHorizontalButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                updateFittingConfig(
+                        headerTable.getConfigRegistry(),
+                        fitHorizontalButton.getSelection(),
+                        fitVerticalButton.getSelection());
+            }
+        });
+
+        fitVerticalButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                updateFittingConfig(
+                        headerTable.getConfigRegistry(),
+                        fitHorizontalButton.getSelection(),
+                        fitVerticalButton.getSelection());
+            }
+        });
 
         Button addColumnButton = new Button(buttonPanel, SWT.PUSH);
         addColumnButton.setText("Print");
         addColumnButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                natTable.doCommand(
+                headerTable.doCommand(
                         new PrintCommand(
-                                natTable.getConfigRegistry(),
-                                natTable.getShell()));
+                                headerTable.getConfigRegistry(),
+                                headerTable.getShell()));
             }
         });
 
         return panel;
     }
 
+    private void updateFittingConfig(IConfigRegistry configRegistry, boolean fitHorizontally, boolean fitVertically) {
+        Direction dir = Direction.NONE;
+        if (fitHorizontally && fitVertically) {
+            dir = Direction.BOTH;
+        } else if (fitHorizontally && !fitVertically) {
+            dir = Direction.HORIZONTAL;
+        } else if (!fitHorizontally && fitVertically) {
+            dir = Direction.VERTICAL;
+        }
+        configRegistry.registerConfigAttribute(
+                PrintConfigAttributes.FITTING_MODE,
+                dir);
+    }
+
     private NatTable createSmallTable(Composite parent) {
         // property names of the Person class
-        String[] propertyNames = { "firstName", "lastName", "gender",
-                "married", "birthday" };
+        String[] propertyNames = { "firstName", "lastName", "gender", "married", "birthday" };
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<String, String>();
@@ -131,7 +203,7 @@ public class _762_MultiPrintExample extends AbstractNatExample {
 
         IDataProvider bodyDataProvider =
                 new DefaultBodyDataProvider<Person>(
-                        PersonService.getPersons(150), propertyNames);
+                        PersonService.getPersons(3), propertyNames);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
         ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
@@ -140,9 +212,20 @@ public class _762_MultiPrintExample extends AbstractNatExample {
 
         // adding this configuration adds the styles and the painters to use
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-        natTable.addConfiguration(new DefaultPrintBindings());
+        natTable.addConfiguration(new DefaultPrintBindings() {
+            @Override
+            public void configureRegistry(IConfigRegistry configRegistry) {
+                super.configureRegistry(configRegistry);
+
+                configRegistry.registerConfigAttribute(
+                        PrintConfigAttributes.FOOTER_PAGE_PATTERN,
+                        "Page {0} of {1}");
+            }
+        });
 
         natTable.configure();
+
+        natTable.addOverlayPainter(new NatTableBorderOverlayPainter());
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 
@@ -214,6 +297,8 @@ public class _762_MultiPrintExample extends AbstractNatExample {
                 new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 
         NatTable natTable = new NatTable(parent, gridLayer);
+
+        natTable.addOverlayPainter(new NatTableBorderOverlayPainter());
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 
