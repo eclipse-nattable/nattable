@@ -702,7 +702,7 @@ public class LayerPrinter {
      *
      * @since 1.5
      */
-    public void disableCountCalculation() {
+    public void disablePageCountCalculation() {
         this.calculatePageCount = false;
     }
 
