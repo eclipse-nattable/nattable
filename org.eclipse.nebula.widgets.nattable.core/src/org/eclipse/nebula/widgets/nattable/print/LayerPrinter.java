@@ -93,6 +93,8 @@ public class LayerPrinter {
 
     private boolean join = false;
 
+    private boolean calculatePageCount = true;
+
     /**
      *
      * @param layer
@@ -602,14 +604,17 @@ public class LayerPrinter {
      *         user.
      */
     private Printer setupPrinter(final Shell shell) {
-        Printer defaultPrinter = new Printer();
-        int pageCount = getPageCount(defaultPrinter);
-        defaultPrinter.dispose();
-
         final PrintDialog printDialog = new PrintDialog(shell);
         printDialog.setStartPage(1);
-        printDialog.setEndPage(pageCount);
         printDialog.setScope(PrinterData.ALL_PAGES);
+
+        if (this.calculatePageCount) {
+            Printer defaultPrinter = new Printer();
+            int pageCount = getPageCount(defaultPrinter);
+            defaultPrinter.dispose();
+
+            printDialog.setEndPage(pageCount);
+        }
 
         PrinterData printerData = printDialog.open();
         if (printerData == null) {
@@ -676,6 +681,29 @@ public class LayerPrinter {
      */
     public void disablePreRendering() {
         this.preRender = false;
+    }
+
+    /**
+     * Enable page count calculation for opening the print dialog. This will
+     * show the total page count in the print dialog.
+     *
+     * @since 1.5
+     */
+    public void enablePageCountCalculation() {
+        this.calculatePageCount = true;
+    }
+
+    /**
+     * Disable page count calculation for opening the print dialog. The page
+     * count is pre-calculated to show how many pages are printed. This
+     * pre-calculation can take some time for more complicated print setups.
+     * Therefore it may be useful to disable that pre-calculation to get a
+     * better user experience on opening the print dialog.
+     *
+     * @since 1.5
+     */
+    public void disableCountCalculation() {
+        this.calculatePageCount = false;
     }
 
     /**
