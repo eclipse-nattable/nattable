@@ -545,23 +545,9 @@ public class LayerPrinter {
      *            The shell which should be the parent of the PrintDialog.
      */
     public void print(final Shell shell) {
-        // turn viewport off to ensure calculation of the print pages for the
-        // whole table
-        for (PrintTarget target : this.printTargets) {
-            target.layer.doCommand(new TurnViewportOffCommand());
-        }
-
-        Printer printer = null;
-        try {
-            printer = setupPrinter(shell);
-            if (printer == null) {
-                return;
-            }
-        } finally {
-            // turn viewport on
-            for (PrintTarget target : this.printTargets) {
-                target.layer.doCommand(new TurnViewportOnCommand());
-            }
+        Printer printer = setupPrinter(shell);
+        if (printer == null) {
+            return;
         }
 
         // Note: As we are operating on the same layer instance that is shown in
@@ -609,11 +595,32 @@ public class LayerPrinter {
         printDialog.setScope(PrinterData.ALL_PAGES);
 
         if (this.calculatePageCount) {
-            Printer defaultPrinter = new Printer();
-            int pageCount = getPageCount(defaultPrinter);
-            defaultPrinter.dispose();
+            // if pre-rendering is enabled, render in-memory to
+            // trigger content based auto-resizing
+            if (LayerPrinter.this.preRender) {
+                for (PrintTarget target : LayerPrinter.this.printTargets) {
+                    AutoResizeHelper.autoResize(target.layer, target.configRegistry);
+                }
+            }
 
-            printDialog.setEndPage(pageCount);
+            // turn viewport off to ensure calculation of the print pages for
+            // the whole table
+            for (PrintTarget target : this.printTargets) {
+                target.layer.doCommand(new TurnViewportOffCommand());
+            }
+
+            try {
+                Printer defaultPrinter = new Printer();
+                int pageCount = getPageCount(defaultPrinter);
+                defaultPrinter.dispose();
+
+                printDialog.setEndPage(pageCount);
+            } finally {
+                // turn viewport on
+                for (PrintTarget target : this.printTargets) {
+                    target.layer.doCommand(new TurnViewportOnCommand());
+                }
+            }
         }
 
         PrinterData printerData = printDialog.open();
@@ -728,9 +735,19 @@ public class LayerPrinter {
             if (this.printer.startJob("NatTable")) { //$NON-NLS-1$
                 GC gc = new GC(this.printer);
 
-                // turn the viewport for all targets off to ensure everything is
-                // taken into account for calculation and printing
                 for (PrintTarget target : LayerPrinter.this.printTargets) {
+                    // if pre-rendering is enabled, render in-memory to
+                    // trigger content based auto-resizing
+                    if (LayerPrinter.this.preRender) {
+                        AutoResizeHelper.autoResize(target.layer, target.configRegistry);
+
+                        if (LayerPrinter.this.repeatHeaderLayer != null) {
+                            LayerPrinter.this.headerHeight = LayerPrinter.this.repeatHeaderLayer.getHeight();
+                        }
+                    }
+                    // turn the viewport for all targets off to ensure
+                    // everything is taken into account for calculation and
+                    // printing
                     target.layer.doCommand(new TurnViewportOffCommand());
                 }
 
