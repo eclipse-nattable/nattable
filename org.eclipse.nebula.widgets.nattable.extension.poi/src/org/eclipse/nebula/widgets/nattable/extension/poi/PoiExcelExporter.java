@@ -85,6 +85,9 @@ public abstract class PoiExcelExporter implements ILayerExporter {
     protected CreationHelper helper;
     protected Drawing drawing;
 
+    protected boolean exportOnSameSheet = false;
+    protected int currentRow = 0;
+
     public PoiExcelExporter(IOutputStreamProvider outputStreamProvider) {
         this.outputStreamProvider = outputStreamProvider;
     }
@@ -110,6 +113,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         this.xlSheet = null;
         this.xlRow = null;
         this.drawing = null;
+        this.currentRow = 0;
     }
 
     @Override
@@ -130,11 +134,15 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 
     @Override
     public void exportRowBegin(OutputStream outputStream, int rowPosition) throws IOException {
+        int pos = this.exportOnSameSheet ? this.currentRow : rowPosition;
+
         // check if row was already created because of spanning
-        this.xlRow = this.xlSheet.getRow(rowPosition);
+        this.xlRow = this.xlSheet.getRow(pos);
         if (this.xlRow == null) {
-            this.xlRow = this.xlSheet.createRow(rowPosition);
+            this.xlRow = this.xlSheet.createRow(pos);
         }
+
+        this.currentRow++;
     }
 
     @Override
@@ -591,6 +599,20 @@ public abstract class PoiExcelExporter implements ILayerExporter {
                 LOG.error("Error on closing the image input stream", e); //$NON-NLS-1$
             }
         }
+    }
+
+    /**
+     *
+     * @param sameSheet
+     *            <code>true</code> if multiple NatTable instances should be
+     *            exported on the same sheet, <code>false</code> if every
+     *            instance should be exported on separate sheets. Default is
+     *            <code>false</code>.
+     *
+     * @since 1.5
+     */
+    public void setExportOnSameSheet(boolean sameSheet) {
+        this.exportOnSameSheet = sameSheet;
     }
 
     private int getPoiColumnWidth(int pixel) {

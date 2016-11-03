@@ -127,6 +127,32 @@ public class NatExporter {
     public void exportMultipleNatTables(
             final ILayerExporter exporter,
             final Map<String, NatTable> natTablesMap) {
+        exportMultipleNatTables(exporter, natTablesMap, false, null);
+    }
+
+    /**
+     * Export multiple NatTable instances to one file by using the given
+     * ILayerExporter.
+     *
+     * @param exporter
+     *            The ILayerExporter to use for exporting.
+     * @param natTablesMap
+     *            The NatTable instances to export. They keys in the map will be
+     *            used as sheet titles while the values are the instances to
+     *            export.
+     * @param exportOnSameSheet
+     *            Flag to configure whether multiple NatTable instances should
+     *            be exported on the same sheet or not.
+     * @param sheetName
+     *            The sheet name that should be used in case of exporting
+     *            multiple NatTables on a single sheet.
+     * @since 1.5
+     */
+    public void exportMultipleNatTables(
+            final ILayerExporter exporter,
+            final Map<String, NatTable> natTablesMap,
+            final boolean exportOnSameSheet,
+            final String sheetName) {
 
         final OutputStream outputStream = getOutputStream(exporter);
         if (outputStream == null) {
@@ -139,10 +165,17 @@ public class NatExporter {
                 try {
                     exporter.exportBegin(outputStream);
 
+                    if (exportOnSameSheet) {
+                        exporter.exportLayerBegin(outputStream, sheetName);
+                    }
+
                     for (String name : natTablesMap.keySet()) {
                         NatTable natTable = natTablesMap.get(name);
-                        exportLayer(exporter, outputStream, name, natTable,
-                                natTable.getConfigRegistry());
+                        exportLayer(exporter, outputStream, name, natTable, natTable.getConfigRegistry(), !exportOnSameSheet);
+                    }
+
+                    if (exportOnSameSheet) {
+                        exporter.exportLayerEnd(outputStream, sheetName);
                     }
 
                     exporter.exportEnd(outputStream);
@@ -173,18 +206,33 @@ public class NatExporter {
 
     /**
      * Exports the given layer to the outputStream using the provided exporter.
-     * The exporter.exportBegin() method should be called before this method is
-     * invoked, and exporter.exportEnd() should be called after this method
-     * returns. If multiple layers are being exported as part of a single
-     * logical export operation, then exporter.exportBegin() will be called once
-     * at the very beginning, followed by n calls to this exportLayer() method,
-     * and finally followed by exporter.exportEnd().
+     * The {@link ILayerExporter#exportBegin(OutputStream)} method should be
+     * called before this method is invoked, and
+     * {@link ILayerExporter#exportEnd(OutputStream)} should be called after
+     * this method returns. If multiple layers are being exported as part of a
+     * single logical export operation, then
+     * {@link ILayerExporter#exportBegin(OutputStream)} will be called once at
+     * the very beginning, followed by n calls to this method, and finally
+     * followed by {@link ILayerExporter#exportEnd(OutputStream)}.
+     *
+     * <p>
+     * <b>Note:</b> This method calls
+     * {@link #exportLayer(ILayerExporter, OutputStream, String, ILayer, IConfigRegistry, boolean)}
+     * with the parameter <i>initExportLayer</i> set to <code>true</code>.
+     * </p>
      *
      * @param exporter
+     *            The {@link ILayerExporter} that should be used for exporting.
      * @param outputStream
+     *            The {@link OutputStream} that should be used to write the
+     *            export to.
      * @param layerName
+     *            The name that should be set as sheet name of the export.
      * @param layer
+     *            The {@link ILayer} that should be exported.
      * @param configRegistry
+     *            The {@link IConfigRegistry} needed to retrieve the export
+     *            configurations.
      */
     protected void exportLayer(
             final ILayerExporter exporter,
@@ -192,6 +240,50 @@ public class NatExporter {
             final String layerName,
             final ILayer layer,
             final IConfigRegistry configRegistry) {
+
+        exportLayer(exporter, outputStream, layerName, layer, configRegistry, true);
+    }
+
+    /**
+     * Exports the given layer to the outputStream using the provided exporter.
+     * The {@link ILayerExporter#exportBegin(OutputStream)} method should be
+     * called before this method is invoked, and
+     * {@link ILayerExporter#exportEnd(OutputStream)} should be called after
+     * this method returns. If multiple layers are being exported as part of a
+     * single logical export operation, then
+     * {@link ILayerExporter#exportBegin(OutputStream)} will be called once at
+     * the very beginning, followed by n calls to this method, and finally
+     * followed by {@link ILayerExporter#exportEnd(OutputStream)}.
+     *
+     * @param exporter
+     *            The {@link ILayerExporter} that should be used for exporting.
+     * @param outputStream
+     *            The {@link OutputStream} that should be used to write the
+     *            export to.
+     * @param layerName
+     *            The name that should be set as sheet name of the export.
+     * @param layer
+     *            The {@link ILayer} that should be exported.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to retrieve the export
+     *            configurations.
+     * @param initExportLayer
+     *            flag to configure whether
+     *            {@link ILayerExporter#exportLayerBegin(OutputStream, String)}
+     *            and
+     *            {@link ILayerExporter#exportLayerEnd(OutputStream, String)}
+     *            should be called or not. Should be set to <code>true</code> if
+     *            multiple NatTable instances should be exported on the same
+     *            sheet.
+     * @since 1.5
+     */
+    protected void exportLayer(
+            final ILayerExporter exporter,
+            final OutputStream outputStream,
+            final String layerName,
+            final ILayer layer,
+            final IConfigRegistry configRegistry,
+            final boolean initExportLayer) {
 
         if (this.preRender) {
             AutoResizeHelper.autoResize(layer, configRegistry);
@@ -233,7 +325,9 @@ public class NatExporter {
         }
 
         try {
-            exporter.exportLayerBegin(outputStream, layerName);
+            if (initExportLayer) {
+                exporter.exportLayerBegin(outputStream, layerName);
+            }
 
             for (int rowPosition = 0; rowPosition < layer.getRowCount(); rowPosition++) {
                 exporter.exportRowBegin(outputStream, rowPosition);
@@ -256,7 +350,9 @@ public class NatExporter {
                 exporter.exportRowEnd(outputStream, rowPosition);
             }
 
-            exporter.exportLayerEnd(outputStream, layerName);
+            if (initExportLayer) {
+                exporter.exportLayerEnd(outputStream, layerName);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
