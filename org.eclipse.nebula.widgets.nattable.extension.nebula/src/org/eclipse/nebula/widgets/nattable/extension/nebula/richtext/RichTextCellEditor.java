@@ -12,11 +12,17 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.nebula.richtext;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.edit.editor.AbstractCellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.richtext.RichTextEditor;
+import org.eclipse.nebula.widgets.richtext.RichTextEditorConfiguration;
 import org.eclipse.nebula.widgets.richtext.toolbar.JavaCallbackListener;
-import org.eclipse.nebula.widgets.richtext.toolbar.ToolbarConfiguration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -24,7 +30,13 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+/**
+ * NatTable {@link ICellEditor} implementation that makes use of the Nebula
+ * {@link RichTextEditor}.
+ */
 public class RichTextCellEditor extends AbstractCellEditor {
+
+    private static final Log LOG = LogFactory.getLog(RichTextCellEditor.class);
 
     /**
      * The rich text editor control, initially <code>null</code>.
@@ -32,36 +44,114 @@ public class RichTextCellEditor extends AbstractCellEditor {
     protected RichTextEditor editor = null;
 
     /**
-     * The {@link ToolbarConfiguration} that should be used for creating the
-     * inline rich text editor control. If <code>null</code> the default
-     * {@link ToolbarConfiguration} will be used.
+     * The {@link RichTextEditorConfiguration} that should be used for creating
+     * the inline rich text editor control. If <code>null</code> the default
+     * {@link RichTextEditorConfiguration} will be used.
      */
-    protected ToolbarConfiguration toolbarConfiguration;
+    protected RichTextEditorConfiguration editorConfiguration;
 
     /**
      * The style bits that are used to create the rich text editor control.
      */
     protected int style;
 
+    /**
+     * Create a new resizable {@link RichTextCellEditor} with a default
+     * configuration.
+     */
     public RichTextCellEditor() {
-        this(null, SWT.RESIZE);
+        this((RichTextEditorConfiguration) null, SWT.RESIZE);
     }
 
-    public RichTextCellEditor(ToolbarConfiguration toolbarConfiguration) {
+    /**
+     * Create a new resizable {@link RichTextCellEditor} with the given
+     * configuration.
+     *
+     * @param toolbarConfiguration
+     *            The
+     *            {@link org.eclipse.nebula.widgets.richtext.toolbar.ToolbarConfiguration}
+     *            that should be used for creating the {@link RichTextEditor}.
+     * @deprecated Use a constructor with {@link RichTextEditorConfiguration}
+     *             parameter
+     */
+    @Deprecated
+    public RichTextCellEditor(org.eclipse.nebula.widgets.richtext.toolbar.ToolbarConfiguration toolbarConfiguration) {
         this(toolbarConfiguration, SWT.RESIZE);
     }
 
-    public RichTextCellEditor(int style) {
-        this(null, style);
+    /**
+     * Create a new resizable {@link RichTextCellEditor} with the given
+     * configuration.
+     *
+     * @param editorConfiguration
+     *            The {@link RichTextEditorConfiguration} that should be used
+     *            for creating the {@link RichTextEditor}
+     *
+     * @since 1.1
+     */
+    public RichTextCellEditor(RichTextEditorConfiguration editorConfiguration) {
+        this(editorConfiguration, SWT.RESIZE);
     }
 
-    public RichTextCellEditor(ToolbarConfiguration toolbarConfiguration, int style) {
-        if (toolbarConfiguration == null) {
-            toolbarConfiguration = new ToolbarConfiguration();
-            toolbarConfiguration.toolbarCollapsible = true;
-            toolbarConfiguration.toolbarInitialExpanded = true;
+    /**
+     * Create a new {@link RichTextCellEditor} with a default configuration and
+     * the given style bits.
+     *
+     * @param style
+     *            The style bits that should be used to create the rich text
+     *            editor control.
+     */
+    public RichTextCellEditor(int style) {
+        this((RichTextEditorConfiguration) null, style);
+    }
+
+    /**
+     * Create a new {@link RichTextCellEditor} with the given configuration and
+     * the given style bits.
+     *
+     * @param toolbarConfiguration
+     *            The
+     *            {@link org.eclipse.nebula.widgets.richtext.toolbar.ToolbarConfiguration}
+     *            that should be used for creating the {@link RichTextEditor}.
+     * @param style
+     *            The style bits that should be used to create the rich text
+     *            editor control.
+     * @deprecated Use a constructor with {@link RichTextEditorConfiguration}
+     *             parameter
+     */
+    @Deprecated
+    public RichTextCellEditor(org.eclipse.nebula.widgets.richtext.toolbar.ToolbarConfiguration toolbarConfiguration, int style) {
+        this((RichTextEditorConfiguration) null, style);
+
+        try {
+            Constructor<RichTextEditorConfiguration> declaredConstructor =
+                    RichTextEditorConfiguration.class.getDeclaredConstructor(org.eclipse.nebula.widgets.richtext.toolbar.ToolbarConfiguration.class);
+            declaredConstructor.setAccessible(true);
+            this.editorConfiguration = declaredConstructor.newInstance(toolbarConfiguration);
+        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            LOG.error("Error on creating RichTextCellEditor with ToolbarConfiguration", e);
         }
-        this.toolbarConfiguration = toolbarConfiguration;
+    }
+
+    /**
+     * Create a new {@link RichTextCellEditor} with the given configuration and
+     * the given style bits.
+     *
+     * @param editorConfiguration
+     *            The {@link RichTextEditorConfiguration} that should be used
+     *            for creating the {@link RichTextEditor}
+     * @param style
+     *            The style bits that should be used to create the rich text
+     *            editor control.
+     * @since 1.1
+     */
+    public RichTextCellEditor(RichTextEditorConfiguration editorConfiguration, int style) {
+        if (editorConfiguration == null) {
+            editorConfiguration = new RichTextEditorConfiguration();
+            editorConfiguration.setToolbarCollapsible(true);
+            editorConfiguration.setToolbarInitialExpanded(true);
+        }
+        this.editorConfiguration = editorConfiguration;
         this.style = style | SWT.EMBEDDED;
     }
 
@@ -76,7 +166,7 @@ public class RichTextCellEditor extends AbstractCellEditor {
     }
 
     @Override
-    public Control getEditorControl() {
+    public RichTextEditor getEditorControl() {
         return this.editor;
     }
 
@@ -138,7 +228,7 @@ public class RichTextCellEditor extends AbstractCellEditor {
      * @return the created RichTextEditor
      */
     protected RichTextEditor createRichTextEditor(Composite parent) {
-        return new RichTextEditor(parent, this.toolbarConfiguration, this.style) {
+        return new RichTextEditor(parent, this.editorConfiguration, this.style) {
             @Override
             protected int getMinimumHeight() {
                 return getMinimumDimension().y;
