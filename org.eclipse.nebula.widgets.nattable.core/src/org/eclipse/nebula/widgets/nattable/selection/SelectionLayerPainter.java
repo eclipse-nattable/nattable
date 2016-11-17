@@ -115,7 +115,7 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
         int rowPositionOffset = positionRectangle.y;
 
         // nothing to draw, we exit
-        if (positionRectangle.width == 0 || positionRectangle.height == 0) {
+        if (positionRectangle.width <= 0 || positionRectangle.height <= 0) {
             return;
         }
 
@@ -127,8 +127,7 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
         if (positionRectangle.width <= 2 && positionRectangle.height <= 2) {
 
             // In order to correctly paint the selection borders in case of
-            // single
-            // cell updates we need to consider also the adjacent cells.
+            // single cell updates we need to consider also the adjacent cells.
             // Therefore we try to retrieve also cells that are outside the
             // pixelRectangle but still inside our layer.
 
