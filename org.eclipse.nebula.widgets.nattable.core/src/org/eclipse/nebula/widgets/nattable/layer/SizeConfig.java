@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -237,7 +237,7 @@ public class SizeConfig implements IPersistable {
             // if percentage sizing is used, the sizes in defaultSize are used
             // as percentage values and not as pixel values, therefore another
             // value needs to be considered
-            return upScale(position * this.defaultSize);
+            return position * upScale(this.defaultSize);
         } else {
             // See if the cache is valid, if not clear it.
             if (!this.isAggregatedSizeCacheValid) {
@@ -724,7 +724,8 @@ public class SizeConfig implements IPersistable {
         for (Integer resizedPosition : mapToUse.keySet()) {
             if (resizedPosition.intValue() < position) {
                 resizedColumns++;
-                resizeAggregate += mapToUse.get(resizedPosition);
+                int size = mapToUse.get(resizedPosition);
+                resizeAggregate += isPercentageSizing() ? size : upScale(size);
             } else {
                 break;
             }
@@ -735,15 +736,17 @@ public class SizeConfig implements IPersistable {
             if (defaultPosition.intValue() < position) {
                 if (!mapToUse.containsKey(defaultPosition)) {
                     resizedColumns++;
-                    resizeAggregate += this.defaultSizeMap.get(defaultPosition).intValue();
+                    int size = this.defaultSizeMap.get(defaultPosition);
+                    resizeAggregate += isPercentageSizing() ? size : upScale(size);
                 }
             } else {
                 break;
             }
         }
 
-        int result = (position * this.defaultSize) + resizeAggregate - (resizedColumns * this.defaultSize);
-        return isPercentageSizing() ? result : upScale(result);
+        int result = (position - resizedColumns) * (isPercentageSizing() ? this.defaultSize : upScale(this.defaultSize));
+        result += resizeAggregate;
+        return result;
     }
 
     /**

@@ -149,14 +149,15 @@ public class SizeConfigScalingTest {
         sc.setSize(2, 75);
         assertEquals(525, sc.getAggregateSize(5));
         sc.setDefaultSize(75);
-        assertEquals(450, sc.getAggregateSize(5));
+        assertEquals(451, sc.getAggregateSize(5));
         sc.setSize(2, 100);
-        assertEquals(476, sc.getAggregateSize(5));
+        assertEquals(477, sc.getAggregateSize(5));
     }
 
     @Test
     public void testRounding() {
-        final SizeConfig sc = new SizeConfig(100);
+        // results in 128 upscaled because of rounding
+        final SizeConfig sc = new SizeConfig(102);
         sc.setDpiConverter(new AbstractDpiConverter() {
 
             @Override
@@ -169,6 +170,59 @@ public class SizeConfigScalingTest {
 
         assertEquals(178, sc.downScale(222));
         assertEquals(223, sc.upScale(178));
+
+        assertEquals(128, sc.getSize(0));
+        assertEquals(128, sc.getSize(1));
+        assertEquals(128, sc.getSize(2));
+
+        assertEquals(384, sc.getAggregateSize(3));
+    }
+
+    @Test
+    public void testRoundingAllCustomSize() {
+        final SizeConfig sc = new SizeConfig(100);
+        sc.setDpiConverter(new AbstractDpiConverter() {
+
+            @Override
+            protected void readDpiFromDisplay() {
+                // use dpi of 120 which will result in a dpi factor of 1.25
+                this.dpi = 120;
+            }
+
+        });
+
+        sc.setSize(0, 127);
+        sc.setSize(1, 127);
+        sc.setSize(2, 127);
+
+        assertEquals(128, sc.getSize(0));
+        assertEquals(128, sc.getSize(1));
+        assertEquals(128, sc.getSize(2));
+
+        assertEquals(384, sc.getAggregateSize(3));
+    }
+
+    @Test
+    public void testRoundingMixedSize() {
+        final SizeConfig sc = new SizeConfig(102);
+        sc.setDpiConverter(new AbstractDpiConverter() {
+
+            @Override
+            protected void readDpiFromDisplay() {
+                // use dpi of 120 which will result in a dpi factor of 1.25
+                this.dpi = 120;
+            }
+
+        });
+
+        // results because of scaling in 223
+        sc.setSize(1, 222);
+
+        assertEquals(128, sc.getSize(0));
+        assertEquals(223, sc.getSize(1));
+        assertEquals(128, sc.getSize(2));
+
+        assertEquals(479, sc.getAggregateSize(3));
     }
 
     @Test
