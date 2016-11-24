@@ -259,11 +259,11 @@ public class SizeConfig implements IPersistable {
             size = this.realSizeMap.get(position);
         } else {
             if (this.sizeMap.containsKey(position)) {
-                size = upScale(this.sizeMap.get(position));
+                size = this.sizeMap.get(position);
             }
         }
         if (size != null) {
-            return size.intValue();
+            return upScale(size.intValue());
         } else {
             return upScale(getDefaultSize(position));
         }
@@ -295,7 +295,7 @@ public class SizeConfig implements IPersistable {
             // check whether the given value should be remembered as is or if it
             // needs to be calculated
             if (!isPercentageSizing(position)) {
-                this.sizeMap.put(position, downScale(size));
+                this.sizeMap.put(position, size);
             } else {
                 if (this.availableSpace > 0) {
                     Double percentage = ((double) size * 100) / this.availableSpace;
@@ -725,7 +725,7 @@ public class SizeConfig implements IPersistable {
             if (resizedPosition.intValue() < position) {
                 resizedColumns++;
                 int size = mapToUse.get(resizedPosition);
-                resizeAggregate += isPercentageSizing() ? size : upScale(size);
+                resizeAggregate += upScale(size);
             } else {
                 break;
             }
@@ -737,14 +737,14 @@ public class SizeConfig implements IPersistable {
                 if (!mapToUse.containsKey(defaultPosition)) {
                     resizedColumns++;
                     int size = this.defaultSizeMap.get(defaultPosition);
-                    resizeAggregate += isPercentageSizing() ? size : upScale(size);
+                    resizeAggregate += upScale(size);
                 }
             } else {
                 break;
             }
         }
 
-        int result = (position - resizedColumns) * (isPercentageSizing() ? this.defaultSize : upScale(this.defaultSize));
+        int result = (position - resizedColumns) * upScale(this.defaultSize);
         result += resizeAggregate;
         return result;
     }

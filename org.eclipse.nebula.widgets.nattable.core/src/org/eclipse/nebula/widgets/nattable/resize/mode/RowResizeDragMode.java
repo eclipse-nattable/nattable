@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -47,13 +47,11 @@ public class RowResizeDragMode implements IDragMode {
     @Override
     public void mouseDown(NatTable natTable, MouseEvent event) {
         natTable.forceFocus();
-        this.gridRowPositionToResize = CellEdgeDetectUtil.getRowPositionToResize(
-                natTable, new Point(event.x, event.y));
+        this.gridRowPositionToResize =
+                CellEdgeDetectUtil.getRowPositionToResize(natTable, new Point(event.x, event.y));
         if (this.gridRowPositionToResize > 0) {
-            this.gridRowStartY = natTable
-                    .getStartYOfRowPosition(this.gridRowPositionToResize);
-            this.originalRowHeight = natTable
-                    .getRowHeightByPosition(this.gridRowPositionToResize);
+            this.gridRowStartY = natTable.getStartYOfRowPosition(this.gridRowPositionToResize);
+            this.originalRowHeight = natTable.getRowHeightByPosition(this.gridRowPositionToResize);
             this.startY = event.y;
             natTable.addOverlayPainter(this.overlayPainter);
         }
@@ -74,16 +72,12 @@ public class RowResizeDragMode implements IDragMode {
 
             Set<Integer> rowsToRepaint = new HashSet<Integer>();
 
-            rowsToRepaint.add(Integer.valueOf(natTable
-                    .getRowPositionByY(this.currentY - overlayExtent)));
-            rowsToRepaint.add(Integer.valueOf(natTable
-                    .getRowPositionByY(this.currentY + overlayExtent)));
+            rowsToRepaint.add(natTable.getRowPositionByY(this.currentY - overlayExtent));
+            rowsToRepaint.add(natTable.getRowPositionByY(this.currentY + overlayExtent));
 
             if (this.lastY >= 0) {
-                rowsToRepaint.add(Integer.valueOf(natTable
-                        .getRowPositionByY(this.lastY - overlayExtent)));
-                rowsToRepaint.add(Integer.valueOf(natTable
-                        .getRowPositionByY(this.lastY + overlayExtent)));
+                rowsToRepaint.add(natTable.getRowPositionByY(this.lastY - overlayExtent));
+                rowsToRepaint.add(natTable.getRowPositionByY(this.lastY + overlayExtent));
             }
 
             for (Integer rowToRepaint : rowsToRepaint) {
@@ -103,10 +97,14 @@ public class RowResizeDragMode implements IDragMode {
     private void updateRowHeight(ILayer natLayer, MouseEvent e) {
         int dragHeight = e.y - this.startY;
         int newRowHeight = this.originalRowHeight + dragHeight;
-        if (newRowHeight < getRowHeightMinimum())
+        if (newRowHeight < getRowHeightMinimum()) {
             newRowHeight = getRowHeightMinimum();
-        natLayer.doCommand(new RowResizeCommand(natLayer,
-                this.gridRowPositionToResize, newRowHeight));
+        }
+        natLayer.doCommand(
+                new RowResizeCommand(
+                        natLayer,
+                        this.gridRowPositionToResize,
+                        GUIHelper.convertHorizontalDpiToPixel(newRowHeight)));
     }
 
     // XXX: should ask the layer for its minimum row height

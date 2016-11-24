@@ -45,8 +45,8 @@ public class SizeConfigScalingTest {
     @Test
     public void sizeOverride() throws Exception {
         this.sizeConfig.setSize(5, 120);
-
-        assertEquals(120, this.sizeConfig.getSize(5));
+        // width of 120 pixels is upscaled to 180
+        assertEquals(180, this.sizeConfig.getSize(5));
     }
 
     @Test
@@ -55,9 +55,11 @@ public class SizeConfigScalingTest {
         this.sizeConfig.setSize(0, 10);
 
         // rounding issue with downscaling and upscaling
-        assertEquals(11, this.sizeConfig.getAggregateSize(1));
-        assertEquals(611, this.sizeConfig.getAggregateSize(5));
-        assertEquals(1331, this.sizeConfig.getAggregateSize(10));
+        assertEquals(15, this.sizeConfig.getAggregateSize(1));
+        // 10 + 400 + 120
+        assertEquals(795, this.sizeConfig.getAggregateSize(6));
+        // 10 + 800 + 120
+        assertEquals(1395, this.sizeConfig.getAggregateSize(10));
     }
 
     @Test
@@ -66,7 +68,7 @@ public class SizeConfigScalingTest {
         this.sizeConfig.setPositionResizable(2, true);
         this.sizeConfig.setSize(2, 120);
 
-        assertEquals(420, this.sizeConfig.getAggregateSize(3));
+        assertEquals(480, this.sizeConfig.getAggregateSize(3));
     }
 
     @Test
@@ -102,7 +104,7 @@ public class SizeConfigScalingTest {
         sc.setSize(1, 30);
         // use global default for 3rd and 4th position
 
-        assertEquals(210, sc.getAggregateSize(4));
+        assertEquals(240, sc.getAggregateSize(4));
     }
 
     @Test
@@ -120,13 +122,16 @@ public class SizeConfigScalingTest {
 
         sc.setSize(0, 30);
         sc.setSize(1, 30);
-        sc.setDefaultSize(0, 10); // must not be considered as there is a size
+        // must not be considered as there is a size
         // set on 1st position
-        sc.setDefaultSize(2, 10); // must be considered as there is no size
+        sc.setDefaultSize(0, 10);
+        // must be considered as there is no size
         // setting on 3rd position
+        sc.setDefaultSize(2, 10);
         // use global default for 4th position
 
-        assertEquals(150, sc.getAggregateSize(4));
+        // 30 + 30 + 10 + 50
+        assertEquals(180, sc.getAggregateSize(4));
     }
 
     @Test
@@ -142,16 +147,17 @@ public class SizeConfigScalingTest {
 
         });
 
+        assertEquals(750, sc.getAggregateSize(5));
         sc.setSize(0, 75);
-        assertEquals(675, sc.getAggregateSize(5));
+        assertEquals(713, sc.getAggregateSize(5));
         sc.setSize(1, 75);
-        assertEquals(600, sc.getAggregateSize(5));
+        assertEquals(676, sc.getAggregateSize(5));
         sc.setSize(2, 75);
-        assertEquals(525, sc.getAggregateSize(5));
+        assertEquals(639, sc.getAggregateSize(5));
         sc.setDefaultSize(75);
-        assertEquals(451, sc.getAggregateSize(5));
+        assertEquals(565, sc.getAggregateSize(5));
         sc.setSize(2, 100);
-        assertEquals(477, sc.getAggregateSize(5));
+        assertEquals(602, sc.getAggregateSize(5));
     }
 
     @Test
@@ -191,9 +197,9 @@ public class SizeConfigScalingTest {
 
         });
 
-        sc.setSize(0, 127);
-        sc.setSize(1, 127);
-        sc.setSize(2, 127);
+        sc.setSize(0, 102);
+        sc.setSize(1, 102);
+        sc.setSize(2, 102);
 
         assertEquals(128, sc.getSize(0));
         assertEquals(128, sc.getSize(1));
@@ -216,7 +222,7 @@ public class SizeConfigScalingTest {
         });
 
         // results because of scaling in 223
-        sc.setSize(1, 222);
+        sc.setSize(1, 178);
 
         assertEquals(128, sc.getSize(0));
         assertEquals(223, sc.getSize(1));

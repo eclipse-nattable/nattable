@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -51,10 +51,8 @@ public class ColumnResizeDragMode implements IDragMode {
         this.columnPositionToResize =
                 CellEdgeDetectUtil.getColumnPositionToResize(natTable, new Point(event.x, event.y));
         if (this.columnPositionToResize >= 0) {
-            this.gridColumnStartX =
-                    natTable.getStartXOfColumnPosition(this.columnPositionToResize);
-            this.originalColumnWidth =
-                    natTable.getColumnWidthByPosition(this.columnPositionToResize);
+            this.gridColumnStartX = natTable.getStartXOfColumnPosition(this.columnPositionToResize);
+            this.originalColumnWidth = natTable.getColumnWidthByPosition(this.columnPositionToResize);
             this.startX = event.x;
             natTable.addOverlayPainter(this.overlayPainter);
         }
@@ -70,8 +68,7 @@ public class ColumnResizeDragMode implements IDragMode {
         if (this.checkMinimumWidth
                 && this.currentX < this.gridColumnStartX + getColumnWidthMinimum()) {
             this.currentX = this.gridColumnStartX + getColumnWidthMinimum();
-        }
-        else {
+        } else {
             int overlayExtent = ColumnResizeOverlayPainter.COLUMN_RESIZE_OVERLAY_WIDTH / 2;
 
             Set<Integer> columnsToRepaint = new HashSet<Integer>();
@@ -107,7 +104,10 @@ public class ColumnResizeDragMode implements IDragMode {
             newColumnWidth = getColumnWidthMinimum();
         }
         natLayer.doCommand(
-                new ColumnResizeCommand(natLayer, this.columnPositionToResize, newColumnWidth));
+                new ColumnResizeCommand(
+                        natLayer,
+                        this.columnPositionToResize,
+                        GUIHelper.convertVerticalDpiToPixel(newColumnWidth)));
     }
 
     // XXX: This method must ask the layer what it's minimum width is!

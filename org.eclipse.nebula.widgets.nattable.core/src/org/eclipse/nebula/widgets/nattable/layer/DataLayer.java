@@ -482,13 +482,13 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
             boolean refresh = false;
             if (isColumnPercentageSizing()) {
                 this.columnWidthConfig.calculatePercentages(
-                        clientAreaResizeCommand.getCalcArea().width,
+                        this.columnWidthConfig.downScale(clientAreaResizeCommand.getCalcArea().width),
                         getColumnCount());
                 refresh = true;
             }
             if (isRowPercentageSizing()) {
                 this.rowHeightConfig.calculatePercentages(
-                        clientAreaResizeCommand.getCalcArea().height,
+                        this.rowHeightConfig.downScale(clientAreaResizeCommand.getCalcArea().height),
                         getRowCount());
                 refresh = true;
             }
