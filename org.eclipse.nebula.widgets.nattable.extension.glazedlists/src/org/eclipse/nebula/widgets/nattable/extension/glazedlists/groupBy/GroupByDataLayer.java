@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,6 +30,7 @@ import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
+import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeData;
@@ -45,6 +46,7 @@ import org.eclipse.nebula.widgets.nattable.sort.ISortModel;
 import org.eclipse.nebula.widgets.nattable.sort.SortDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRowValuesCommand;
+import org.eclipse.nebula.widgets.nattable.tree.ITreeData;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.util.CalculatedValueCache;
 import org.eclipse.nebula.widgets.nattable.util.ICalculatedValueCache;
@@ -60,6 +62,29 @@ import ca.odell.glazedlists.TreeList;
 import ca.odell.glazedlists.TreeList.ExpansionModel;
 import ca.odell.glazedlists.matchers.Matcher;
 
+/**
+ * Specialized {@link DataLayer} that needs to be used in the body layer stack
+ * for adding the groupBy feature to a NatTable composition. Internally creates
+ * a {@link TreeList} and a {@link IDataProvider} for Objects, necessary as
+ * dynamically new {@link GroupByObject}s will be added to the {@link TreeList}
+ * by the {@link GroupByTreeFormat}.
+ *
+ * <p>
+ * This layer also supports calculating summary values for created groups. Note
+ * that it is necessary to call
+ * {@link #initializeTreeComparator(ISortModel, IUniqueIndexLayer, boolean)}
+ * after creation to ensure that sorting is working correctly with the groupBy
+ * feature.
+ * </p>
+ *
+ * @param <T>
+ *            The type of the row objects.
+ *
+ * @see GroupByObject
+ * @see GroupByTreeFormat
+ * @see GroupByColumnAccessor
+ * @see GroupByDataLayerConfiguration
+ */
 public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
     /**
@@ -115,37 +140,308 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
     /** Map the group to a dynamic list of group elements */
     private final Map<GroupByObject, FilterList<T>> filtersByGroup = new ConcurrentHashMap<GroupByObject, FilterList<T>>();
 
-    public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList, IColumnAccessor<T> columnAccessor) {
+    private final Map<GroupByObject, List<T>> itemsByGroup = new ConcurrentHashMap<GroupByObject, List<T>>();
+
+    /**
+     * Create a new {@link GroupByDataLayer} with the given configuration that:
+     * <ul>
+     * <li>uses the default <code>GroupByExpansionModel</code> which shows all
+     * nodes initially expanded</li>
+     * <li>has smoothUpdates enabled which leads to showing the summary values
+     * that were calculated before until the new value calculation is done</li>
+     * <li>uses the default {@link GroupByDataLayerConfiguration}</li>
+     * <li>does not support groupBy summary values because of the missing
+     * {@link IConfigRegistry} reference</li>
+     * </ul>
+     *
+     * @param groupByModel
+     *            The {@link GroupByModel} that is used to define the tree
+     *            structure based on the groupBy state. Needs to be provided as
+     *            it is at least shared between the {@link GroupByDataLayer} and
+     *            the {@link GroupByHeaderLayer}.
+     * @param eventList
+     *            The {@link EventList} that should be used as source of the
+     *            internally created {@link TreeList}. This should be highest
+     *            list in the {@link EventList} stack in use, e.g. if sorting
+     *            and filtering is also enabled and the lists are created like
+     *            this:
+     *
+     *            <pre>
+     * EventList&lt;T&gt; eventList = GlazedLists.eventList(values);
+     * TransformedList&lt;T, T&gt; rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+     * SortedList&lt;T&gt; sortedList = new SortedList&lt;&gt;(rowObjectsGlazedList, null);
+     * FilterList&lt;T&gt; filterList = new FilterList&lt;&gt;(sortedList);
+     *            </pre>
+     *
+     *            the <code>FilterList</code> needs to be used as parameter
+     *            here.
+     * @param columnAccessor
+     *            The {@link IColumnAccessor} that should be used to access the
+     *            base row objects.
+     */
+    public GroupByDataLayer(
+            GroupByModel groupByModel,
+            EventList<T> eventList,
+            IColumnAccessor<T> columnAccessor) {
         this(groupByModel, eventList, columnAccessor, null, true);
     }
 
-    public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList, IColumnAccessor<T> columnAccessor,
+    /**
+     * Create a new {@link GroupByDataLayer} with the given configuration that:
+     * <ul>
+     * <li>uses the default <code>GroupByExpansionModel</code> which shows all
+     * nodes initially expanded</li>
+     * <li>has smoothUpdates enabled which leads to showing the summary values
+     * that were calculated before until the new value calculation is done</li>
+     * <li>does not support groupBy summary values because of the missing
+     * {@link IConfigRegistry} reference</li>
+     * </ul>
+     *
+     * @param groupByModel
+     *            The {@link GroupByModel} that is used to define the tree
+     *            structure based on the groupBy state. Needs to be provided as
+     *            it is at least shared between the {@link GroupByDataLayer} and
+     *            the {@link GroupByHeaderLayer}.
+     * @param eventList
+     *            The {@link EventList} that should be used as source of the
+     *            internally created {@link TreeList}. This should be highest
+     *            list in the {@link EventList} stack in use, e.g. if sorting
+     *            and filtering is also enabled and the lists are created like
+     *            this:
+     *
+     *            <pre>
+     * EventList&lt;T&gt; eventList = GlazedLists.eventList(values);
+     * TransformedList&lt;T, T&gt; rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+     * SortedList&lt;T&gt; sortedList = new SortedList&lt;&gt;(rowObjectsGlazedList, null);
+     * FilterList&lt;T&gt; filterList = new FilterList&lt;&gt;(sortedList);
+     *            </pre>
+     *
+     *            the <code>FilterList</code> needs to be used as parameter
+     *            here.
+     * @param columnAccessor
+     *            The {@link IColumnAccessor} that should be used to access the
+     *            base row objects.
+     * @param useDefaultConfiguration
+     *            <code>true</code> to add the default
+     *            {@link GroupByDataLayerConfiguration}, <code>false</code> for
+     *            not adding the default configuration.
+     */
+    public GroupByDataLayer(
+            GroupByModel groupByModel,
+            EventList<T> eventList,
+            IColumnAccessor<T> columnAccessor,
             boolean useDefaultConfiguration) {
 
         this(groupByModel, eventList, columnAccessor, null, useDefaultConfiguration);
     }
 
-    public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList, IColumnAccessor<T> columnAccessor,
+    /**
+     * Create a new {@link GroupByDataLayer} with the given configuration that:
+     * <ul>
+     * <li>uses the default <code>GroupByExpansionModel</code> which shows all
+     * nodes initially expanded</li>
+     * <li>has smoothUpdates enabled which leads to showing the summary values
+     * that were calculated before until the new value calculation is done</li>
+     * <li>uses the default {@link GroupByDataLayerConfiguration}</li>
+     * </ul>
+     *
+     * @param groupByModel
+     *            The {@link GroupByModel} that is used to define the tree
+     *            structure based on the groupBy state. Needs to be provided as
+     *            it is at least shared between the {@link GroupByDataLayer} and
+     *            the {@link GroupByHeaderLayer}.
+     * @param eventList
+     *            The {@link EventList} that should be used as source of the
+     *            internally created {@link TreeList}. This should be highest
+     *            list in the {@link EventList} stack in use, e.g. if sorting
+     *            and filtering is also enabled and the lists are created like
+     *            this:
+     *
+     *            <pre>
+     * EventList&lt;T&gt; eventList = GlazedLists.eventList(values);
+     * TransformedList&lt;T, T&gt; rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+     * SortedList&lt;T&gt; sortedList = new SortedList&lt;&gt;(rowObjectsGlazedList, null);
+     * FilterList&lt;T&gt; filterList = new FilterList&lt;&gt;(sortedList);
+     *            </pre>
+     *
+     *            the <code>FilterList</code> needs to be used as parameter
+     *            here.
+     * @param columnAccessor
+     *            The {@link IColumnAccessor} that should be used to access the
+     *            base row objects.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to retrieve the groupBy
+     *            summary configurations.
+     */
+    public GroupByDataLayer(
+            GroupByModel groupByModel,
+            EventList<T> eventList,
+            IColumnAccessor<T> columnAccessor,
             IConfigRegistry configRegistry) {
 
         this(groupByModel, eventList, columnAccessor, configRegistry, true);
     }
 
-    public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList, IColumnAccessor<T> columnAccessor,
-            IConfigRegistry configRegistry, boolean useDefaultConfiguration) {
+    /**
+     * Create a new {@link GroupByDataLayer} with the given configuration that:
+     * <ul>
+     * <li>uses the default <code>GroupByExpansionModel</code> which shows all
+     * nodes initially expanded</li>
+     * <li>has smoothUpdates enabled which leads to showing the summary values
+     * that were calculated before until the new value calculation is done</li>
+     * </ul>
+     *
+     * @param groupByModel
+     *            The {@link GroupByModel} that is used to define the tree
+     *            structure based on the groupBy state. Needs to be provided as
+     *            it is at least shared between the {@link GroupByDataLayer} and
+     *            the {@link GroupByHeaderLayer}.
+     * @param eventList
+     *            The {@link EventList} that should be used as source of the
+     *            internally created {@link TreeList}. This should be highest
+     *            list in the {@link EventList} stack in use, e.g. if sorting
+     *            and filtering is also enabled and the lists are created like
+     *            this:
+     *
+     *            <pre>
+     * EventList&lt;T&gt; eventList = GlazedLists.eventList(values);
+     * TransformedList&lt;T, T&gt; rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+     * SortedList&lt;T&gt; sortedList = new SortedList&lt;&gt;(rowObjectsGlazedList, null);
+     * FilterList&lt;T&gt; filterList = new FilterList&lt;&gt;(sortedList);
+     *            </pre>
+     *
+     *            the <code>FilterList</code> needs to be used as parameter
+     *            here.
+     * @param columnAccessor
+     *            The {@link IColumnAccessor} that should be used to access the
+     *            base row objects.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to retrieve the groupBy
+     *            summary configurations.
+     * @param useDefaultConfiguration
+     *            <code>true</code> to add the default
+     *            {@link GroupByDataLayerConfiguration}, <code>false</code> for
+     *            not adding the default configuration.
+     */
+    public GroupByDataLayer(
+            GroupByModel groupByModel,
+            EventList<T> eventList,
+            IColumnAccessor<T> columnAccessor,
+            IConfigRegistry configRegistry,
+            boolean useDefaultConfiguration) {
 
         this(groupByModel, eventList, columnAccessor, configRegistry, true, useDefaultConfiguration);
     }
 
-    public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList, IColumnAccessor<T> columnAccessor,
-            IConfigRegistry configRegistry, boolean smoothUpdates, boolean useDefaultConfiguration) {
+    /**
+     * Create a new {@link GroupByDataLayer} with the given configuration that:
+     * <ul>
+     * <li>uses the default <code>GroupByExpansionModel</code> which shows all
+     * nodes initially expanded</li>
+     * </ul>
+     *
+     * @param groupByModel
+     *            The {@link GroupByModel} that is used to define the tree
+     *            structure based on the groupBy state. Needs to be provided as
+     *            it is at least shared between the {@link GroupByDataLayer} and
+     *            the {@link GroupByHeaderLayer}.
+     * @param eventList
+     *            The {@link EventList} that should be used as source of the
+     *            internally created {@link TreeList}. This should be highest
+     *            list in the {@link EventList} stack in use, e.g. if sorting
+     *            and filtering is also enabled and the lists are created like
+     *            this:
+     *
+     *            <pre>
+     * EventList&lt;T&gt; eventList = GlazedLists.eventList(values);
+     * TransformedList&lt;T, T&gt; rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+     * SortedList&lt;T&gt; sortedList = new SortedList&lt;&gt;(rowObjectsGlazedList, null);
+     * FilterList&lt;T&gt; filterList = new FilterList&lt;&gt;(sortedList);
+     *            </pre>
+     *
+     *            the <code>FilterList</code> needs to be used as parameter
+     *            here.
+     * @param columnAccessor
+     *            The {@link IColumnAccessor} that should be used to access the
+     *            base row objects.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to retrieve the groupBy
+     *            summary configurations.
+     * @param smoothUpdates
+     *            <code>true</code> if the summary values that were calculated
+     *            before should be returned until the new value calculation is
+     *            done, <code>false</code> if <code>null</code> should be
+     *            returned until the calculation is finished.
+     * @param useDefaultConfiguration
+     *            <code>true</code> to add the default
+     *            {@link GroupByDataLayerConfiguration}, <code>false</code> for
+     *            not adding the default configuration.
+     */
+    public GroupByDataLayer(
+            GroupByModel groupByModel,
+            EventList<T> eventList,
+            IColumnAccessor<T> columnAccessor,
+            IConfigRegistry configRegistry,
+            boolean smoothUpdates,
+            boolean useDefaultConfiguration) {
 
         this(groupByModel, eventList, columnAccessor, null, configRegistry, smoothUpdates, useDefaultConfiguration);
     }
 
+    /**
+     * Create a new {@link GroupByDataLayer} with the given configuration.
+     *
+     * @param groupByModel
+     *            The {@link GroupByModel} that is used to define the tree
+     *            structure based on the groupBy state. Needs to be provided as
+     *            it is at least shared between the {@link GroupByDataLayer} and
+     *            the {@link GroupByHeaderLayer}.
+     * @param eventList
+     *            The {@link EventList} that should be used as source of the
+     *            internally created {@link TreeList}. This should be highest
+     *            list in the {@link EventList} stack in use, e.g. if sorting
+     *            and filtering is also enabled and the lists are created like
+     *            this:
+     *
+     *            <pre>
+     * EventList&lt;T&gt; eventList = GlazedLists.eventList(values);
+     * TransformedList&lt;T, T&gt; rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+     * SortedList&lt;T&gt; sortedList = new SortedList&lt;&gt;(rowObjectsGlazedList, null);
+     * FilterList&lt;T&gt; filterList = new FilterList&lt;&gt;(sortedList);
+     *            </pre>
+     *
+     *            the <code>FilterList</code> needs to be used as parameter
+     *            here.
+     * @param columnAccessor
+     *            The {@link IColumnAccessor} that should be used to access the
+     *            base row objects.
+     * @param expansionModel
+     *            The {@link ExpansionModel} that should be used on the
+     *            internally created {@link TreeList}. If set to
+     *            <code>null</code> the internal default GroupByExpansionModel
+     *            will be used that shows all nodes initially expanded.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to retrieve the groupBy
+     *            summary configurations.
+     * @param smoothUpdates
+     *            <code>true</code> if the summary values that were calculated
+     *            before should be returned until the new value calculation is
+     *            done, <code>false</code> if <code>null</code> should be
+     *            returned until the calculation is finished.
+     * @param useDefaultConfiguration
+     *            <code>true</code> to add the default
+     *            {@link GroupByDataLayerConfiguration}, <code>false</code> for
+     *            not adding the default configuration.
+     */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList, IColumnAccessor<T> columnAccessor,
-            ExpansionModel<Object> expansionModel, IConfigRegistry configRegistry, boolean smoothUpdates, boolean useDefaultConfiguration) {
+    public GroupByDataLayer(
+            GroupByModel groupByModel,
+            EventList<T> eventList,
+            IColumnAccessor<T> columnAccessor,
+            ExpansionModel<Object> expansionModel,
+            IConfigRegistry configRegistry,
+            boolean smoothUpdates,
+            boolean useDefaultConfiguration) {
 
         this.eventList = eventList;
         this.columnAccessor = columnAccessor;
@@ -159,14 +455,14 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
         this.treeList = new TreeList(eventList, this.treeFormat, expansionModel != null ? expansionModel : new GroupByExpansionModel());
 
-        this.treeData = new GlazedListTreeData<Object>(getTreeList());
+        this.treeData = new GlazedListTreeData<Object>(this.treeList);
         this.treeRowModel = new GlazedListTreeRowModel<Object>(this.treeData);
 
         this.configRegistry = configRegistry;
 
         this.valueCache = new CalculatedValueCache(this, true, false, smoothUpdates);
 
-        setDataProvider(new ListDataProvider<Object>(getTreeList(), this.groupByColumnAccessor));
+        setDataProvider(new ListDataProvider<Object>(this.treeList, this.groupByColumnAccessor));
 
         if (useDefaultConfiguration) {
             addConfiguration(new GroupByDataLayerConfiguration(this));
@@ -412,7 +708,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
             final IGroupBySummaryProvider<T> summaryProvider = getGroupBySummaryProvider(labelStack);
             if (summaryProvider != null) {
-                final List<T> children = getElementsInGroup(groupByObject);
+                final List<T> children = getItemsInGroup(groupByObject);
                 return this.valueCache.getCalculatedValue(
                         columnPosition,
                         rowPosition,
@@ -494,7 +790,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
                         final IGroupBySummaryProvider<T> summaryProvider = getGroupBySummaryProvider(labelStack);
                         if (summaryProvider != null) {
                             GroupByObject groupByObject = (GroupByObject) this.treeData.getDataAtIndex(i);
-                            final List<T> children = getElementsInGroup(groupByObject);
+                            final List<T> children = getItemsInGroup(groupByObject);
                             final int col = j;
                             this.valueCache.getCalculatedValue(j, i, new GroupByValueCacheKey(j, i, groupByObject), false, new ICalculator() {
                                 @Override
@@ -587,22 +883,62 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
     }
 
     /**
-     * Get the list of elements for a group, create it if it doesn't exists.
-     * <br>
-     * We could also use
-     * <code>treeData.getChildren(groupDescriptor, true)</code> but it's less
-     * efficient.
+     * Get the list of the items in a group. Used for example to calculate the
+     * group summary values or group item count.
+     * <p>
+     * It returns the same as {@link ITreeData#getChildren(Object, boolean)},
+     * e.g. <code>treeData.getChildren(groupDescriptor, true)</code>, but in a
+     * more efficient way.
+     * </p>
+     * <p>
+     * Note: This method returns a filtered view on the base list. Therefore it
+     * is not thread-safe as it could lead to concurrent modification exceptions
+     * if the underlying list changes while the FilterList is processed.
+     * </p>
      *
      * @param group
      *            The {@link GroupByObject} for which the children should be
      *            retrieved.
      * @return The {@link FilterList} of elements
+     *
+     * @deprecated Use {@link #getItemsInGroup(GroupByObject)}
      */
+    @Deprecated
     public FilterList<T> getElementsInGroup(GroupByObject group) {
         FilterList<T> elementsInGroup = this.filtersByGroup.get(group);
         if (elementsInGroup == null) {
             elementsInGroup = new FilterList<T>(this.eventList, getGroupDescriptorMatcher(group, this.columnAccessor));
             this.filtersByGroup.put(group, elementsInGroup);
+        }
+        return elementsInGroup;
+    }
+
+    /**
+     * Get the list of the items in a group. Used for example to calculate the
+     * group summary values or group item count.
+     * <p>
+     * Note: This method returns a new list and is therefore thread safe.
+     * </p>
+     *
+     * @param group
+     *            The {@link GroupByObject} for which the children should be
+     *            retrieved.
+     * @return The list of items in the group specified by the given
+     *         {@link GroupByObject}
+     *
+     * @since 1.5
+     */
+    public List<T> getItemsInGroup(GroupByObject group) {
+        List<T> elementsInGroup = this.itemsByGroup.get(group);
+        if (elementsInGroup == null) {
+            this.eventList.getReadWriteLock().readLock().lock();
+            try {
+                FilterList<T> filterList = new FilterList<T>(this.eventList, getGroupDescriptorMatcher(group, this.columnAccessor));
+                elementsInGroup = new ArrayList<T>(filterList);
+                this.itemsByGroup.put(group, elementsInGroup);
+            } finally {
+                this.eventList.getReadWriteLock().readLock().unlock();
+            }
         }
         return elementsInGroup;
     }

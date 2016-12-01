@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015 Dirk Fauth and others.
+ * Copyright (c) 2014, 2017 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -96,7 +96,7 @@ public class GroupByDisplayConverter<T> extends ContextualDisplayConverter {
                         cell.getConfigLabels().getLabels());
 
                 if (childCountPattern != null && childCountPattern.length() > 0) {
-                    List<T> children = this.groupByDataLayer.getElementsInGroup(groupByObject);
+                    List<T> children = this.groupByDataLayer.getItemsInGroup(groupByObject);
                     int directChildCount = this.groupByDataLayer.getTreeRowModel().getDirectChildren(cell.getRowIndex()).size();
                     displayValue = String.valueOf(displayValue)
                             + " " //$NON-NLS-1$

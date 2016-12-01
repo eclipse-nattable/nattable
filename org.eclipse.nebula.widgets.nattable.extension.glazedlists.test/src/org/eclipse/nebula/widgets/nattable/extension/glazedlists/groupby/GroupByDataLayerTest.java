@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth and others.
+ * Copyright (c) 2014, 2017 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -72,18 +72,18 @@ public class GroupByDataLayerTest {
     public void setup() {
         this.groupByModel = new GroupByModel();
         EventList<Person> eventList = GlazedLists.eventList(PersonService.getFixedPersons());
-        this.sortedList = new SortedList<Person>(eventList, null);
+        this.sortedList = new SortedList<>(eventList, null);
 
-        this.columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Person>(this.propertyNames);
+        this.columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(this.propertyNames);
 
-        this.dataLayer = new GroupByDataLayer<Person>(this.groupByModel, this.sortedList, this.columnPropertyAccessor, this.configRegistry);
+        this.dataLayer = new GroupByDataLayer<>(this.groupByModel, this.sortedList, this.columnPropertyAccessor, this.configRegistry);
         this.dataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
     }
 
     void addSummaryConfiguration() {
         this.configRegistry.registerConfigAttribute(
                 GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                new SummationGroupBySummaryProvider<Person>(GroupByDataLayerTest.this.columnPropertyAccessor),
+                new SummationGroupBySummaryProvider<>(GroupByDataLayerTest.this.columnPropertyAccessor),
                 DisplayMode.NORMAL,
                 GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 2);
 
@@ -131,7 +131,7 @@ public class GroupByDataLayerTest {
         DataLayer columnHeaderDataLayer =
                 new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
         columnHeaderDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
-        this.sortModel = new GlazedListsSortModel<Person>(
+        this.sortModel = new GlazedListsSortModel<>(
                 this.sortedList,
                 this.columnPropertyAccessor,
                 this.configRegistry,
@@ -170,7 +170,7 @@ public class GroupByDataLayerTest {
         this.groupByModel.addGroupByColumnIndex(1);
 
         // collect GroupBy Objects
-        List<GroupByObject> groupByObjects = new ArrayList<GroupByObject>();
+        List<GroupByObject> groupByObjects = new ArrayList<>();
         for (Object o : this.dataLayer.getTreeList()) {
             if (o instanceof GroupByObject) {
                 groupByObjects.add((GroupByObject) o);
@@ -180,7 +180,7 @@ public class GroupByDataLayerTest {
         // test with getElementsInGroup() class GroupDescriptorMatcher.
         // testing like this, cause setup would be complex
         for (GroupByObject o : groupByObjects) {
-            this.dataLayer.getElementsInGroup(o);
+            this.dataLayer.getItemsInGroup(o);
         }
 
         // if we get here, there is no NullPointerException in
@@ -875,5 +875,35 @@ public class GroupByDataLayerTest {
         assertTrue(labels.contains(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + 3));
         assertTrue(labels.contains(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + 4));
         assertTrue(labels.contains(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + 5));
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    public void testGroupByItemCount() {
+        // groupBy lastname
+        this.groupByModel.addGroupByColumnIndex(1);
+
+        GroupByObject flanders = (GroupByObject) this.dataLayer.getTreeList().get(0);
+        assertEquals("Flanders", flanders.getValue());
+        GroupByObject simpsons = (GroupByObject) this.dataLayer.getTreeList().get(9);
+        assertEquals("Simpson", simpsons.getValue());
+
+        List<Person> elementsInGroup = this.dataLayer.getElementsInGroup(flanders);
+        List<Person> itemsInGroup = this.dataLayer.getItemsInGroup(flanders);
+        List<Object> rowModelChildren = this.dataLayer.getTreeRowModel().getChildren(0);
+        assertEquals(8, elementsInGroup.size());
+        assertEquals(8, itemsInGroup.size());
+        assertEquals(8, rowModelChildren.size());
+        assertEquals(elementsInGroup, itemsInGroup);
+        assertEquals(itemsInGroup, rowModelChildren);
+
+        elementsInGroup = this.dataLayer.getElementsInGroup(simpsons);
+        itemsInGroup = this.dataLayer.getItemsInGroup(simpsons);
+        rowModelChildren = this.dataLayer.getTreeRowModel().getChildren(9);
+        assertEquals(10, elementsInGroup.size());
+        assertEquals(10, itemsInGroup.size());
+        assertEquals(10, rowModelChildren.size());
+        assertEquals(elementsInGroup, itemsInGroup);
+        assertEquals(itemsInGroup, rowModelChildren);
     }
 }
