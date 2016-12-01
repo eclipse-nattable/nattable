@@ -149,6 +149,13 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
     protected Image iconImage;
 
     /**
+     * The list of the canonical values that are currently shown in the opened
+     * NatCombo. Needed in case of multi selection and dynamic changing content
+     * via data provider.
+     */
+    private List<?> currentCanonicalValues;
+
+    /**
      * Create a new single selection {@link ComboBoxCellEditor} based on the
      * given list of items, showing the default number of items in the dropdown
      * of the combo.
@@ -282,14 +289,8 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 
             // Item selected from list
             if (selectionIndices.length > 0) {
-                List<?> values = null;
-                if (this.dataProvider != null) {
-                    values = this.dataProvider.getValues(getColumnIndex(), getRowIndex());
-                } else {
-                    values = this.canonicalValues;
-                }
                 for (int i : selectionIndices) {
-                    result.add(values.get(i));
+                    result.add(this.currentCanonicalValues.get(i));
                 }
             } else {
                 // if there is no selection in the dropdown, we need to check if
@@ -357,20 +358,25 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
     private void fillCombo() {
         List<String> displayValues = new ArrayList<String>();
 
-        List<?> values;
         if (this.dataProvider != null) {
-            values = this.dataProvider.getValues(getColumnIndex(), getRowIndex());
+            this.currentCanonicalValues = this.dataProvider.getValues(getColumnIndex(), getRowIndex());
         } else {
-            values = this.canonicalValues;
+            this.currentCanonicalValues = this.canonicalValues;
         }
 
-        for (Object canonicalValue : values) {
+        for (Object canonicalValue : this.currentCanonicalValues) {
             Object displayValue = this.displayConverter.canonicalToDisplayValue(
                     this.layerCell, this.configRegistry, canonicalValue);
             displayValues.add(displayValue != null ? displayValue.toString() : ""); //$NON-NLS-1$
         }
 
         this.combo.setItems(displayValues.toArray(ArrayUtil.STRING_TYPE_ARRAY));
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        this.currentCanonicalValues = null;
     }
 
     @Override
