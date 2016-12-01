@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015 Dirk Fauth and others.
+ * Copyright (c) 2014, 2016 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,9 @@ package org.eclipse.nebula.widgets.nattable.util;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
@@ -146,7 +148,14 @@ public class CalculatedValueCache implements ICalculatedValueCache {
      */
     public CalculatedValueCache(ILayer layer, boolean useColumnAsKey, boolean useRowAsKey, boolean smoothUpdates) {
         this.layer = layer;
-        this.executor = Executors.newCachedThreadPool();
+        this.executor = new ThreadPoolExecutor(
+                Runtime.getRuntime().availableProcessors() + 1,
+                Runtime.getRuntime().availableProcessors() + 1,
+                5000,
+                TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>());
+
+        ((ThreadPoolExecutor) this.executor).allowCoreThreadTimeOut(true);
 
         this.useColumnAsKey = useColumnAsKey;
         this.useRowAsKey = useRowAsKey;
