@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,27 +29,27 @@ public class Scheduler implements ThreadFactory {
         this.threadNamePrefix = threadNamePrefix;
     }
 
-    public synchronized ScheduledFuture<?> schedule(Runnable runnable,
-            long initialDelayMillis) {
-        return getThreadPool().schedule(runnable, initialDelayMillis,
-                TimeUnit.MILLISECONDS);
+    public synchronized ScheduledFuture<?> schedule(Runnable runnable, long initialDelayMillis) {
+        return getThreadPool().schedule(runnable, initialDelayMillis, TimeUnit.MILLISECONDS);
     }
 
     public synchronized ScheduledFuture<?> scheduleAtFixedRate(
-            Runnable runnable, long initialDelayMillis,
-            long refreshIntervalMillis) {
+            Runnable runnable, long initialDelayMillis, long refreshIntervalMillis) {
         this.scheduledTasks++;
-        return getThreadPool().scheduleAtFixedRate(runnable,
-                initialDelayMillis, refreshIntervalMillis,
+        return getThreadPool().scheduleAtFixedRate(
+                runnable,
+                initialDelayMillis,
+                refreshIntervalMillis,
                 TimeUnit.MILLISECONDS);
     }
 
     public synchronized ScheduledFuture<?> scheduleWithFixedDelay(
-            Runnable runnable, long initialDelayMillis,
-            long refreshIntervalMillis) {
+            Runnable runnable, long initialDelayMillis, long refreshIntervalMillis) {
         this.scheduledTasks++;
-        return getThreadPool().scheduleWithFixedDelay(runnable,
-                initialDelayMillis, refreshIntervalMillis,
+        return getThreadPool().scheduleWithFixedDelay(
+                runnable,
+                initialDelayMillis,
+                refreshIntervalMillis,
                 TimeUnit.MILLISECONDS);
     }
 
@@ -63,6 +63,18 @@ public class Scheduler implements ThreadFactory {
     public synchronized void unschedule(ScheduledFuture<?> future) {
         future.cancel(false);
         if (this.threadPool != null && --this.scheduledTasks <= 0) {
+            this.threadPool.shutdownNow();
+            this.threadPool = null;
+        }
+    }
+
+    /**
+     * Terminate all actively executing tasks and shutdown the scheduler.
+     *
+     * @since 1.5
+     */
+    public synchronized void shutdownNow() {
+        if (this.threadPool != null) {
             this.threadPool.shutdownNow();
             this.threadPool = null;
         }

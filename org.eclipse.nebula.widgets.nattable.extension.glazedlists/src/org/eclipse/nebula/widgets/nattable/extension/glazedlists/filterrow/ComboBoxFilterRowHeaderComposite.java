@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Dirk Fauth and others.
+ * Copyright (c) 2013, 2016 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
@@ -723,6 +724,8 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
         } else if (command instanceof ClearAllFiltersCommand) {
             setAllValuesSelected();
             handled = true;
+        } else if (command instanceof DisposeResourcesCommand) {
+            this.comboBoxDataProvider.dispose();
         }
 
         if (handled) {

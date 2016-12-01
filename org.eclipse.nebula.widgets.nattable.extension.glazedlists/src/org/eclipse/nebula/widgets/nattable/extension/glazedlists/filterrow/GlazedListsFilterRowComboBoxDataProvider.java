@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Dirk Fauth and others.
+ * Copyright (c) 2013, 2016 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,6 +23,7 @@ import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxD
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.util.Scheduler;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
@@ -45,7 +47,11 @@ import ca.odell.glazedlists.event.ListEventListener;
 public class GlazedListsFilterRowComboBoxDataProvider<T> extends
         FilterRowComboBoxDataProvider<T> implements ListEventListener<T> {
 
-    private static final Log log = LogFactory.getLog(GlazedListsFilterRowComboBoxDataProvider.class);
+    private static final Log LOG = LogFactory.getLog(GlazedListsFilterRowComboBoxDataProvider.class);
+
+    private static final Scheduler SCHEDULER = new Scheduler("GlazedListsFilterRowComboBoxDataProvider"); //$NON-NLS-1$
+
+    private AtomicBoolean changeHandlingProcessing = new AtomicBoolean(false);
 
     /**
      * @param bodyLayer
@@ -98,29 +104,48 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
         if (baseCollection instanceof EventList) {
             ((EventList<T>) baseCollection).addListEventListener(this);
         } else {
-            log.error("baseCollection is not of type EventList. List changes can not be tracked."); //$NON-NLS-1$
+            LOG.error("baseCollection is not of type EventList. List changes can not be tracked."); //$NON-NLS-1$
         }
     }
 
     @Override
     public void listChanged(ListEvent<T> listChanges) {
-        // a new row was added or a row was deleted
+        if (!this.changeHandlingProcessing.getAndSet(true)) {
+            // a new row was added or a row was deleted
+            SCHEDULER.schedule(new Runnable() {
 
-        // remember the cache before updating
-        Map<Integer, List<?>> cacheBefore = new HashMap<Integer, List<?>>(getValueCache());
+                @Override
+                public void run() {
+                    // remember the cache before updating
+                    Map<Integer, List<?>> cacheBefore = new HashMap<Integer, List<?>>(getValueCache());
 
-        // perform a refresh of the whole cache
-        getValueCache().clear();
-        if (!this.lazyLoading) {
-            buildValueCache();
-        }
+                    // perform a refresh of the whole cache
+                    getValueCache().clear();
 
-        // fire events for every column
-        for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
-            fireCacheUpdateEvent(buildUpdateEvent(
-                    entry.getKey(),
-                    entry.getValue(),
-                    getValueCache().get(entry.getKey())));
+                    if (!GlazedListsFilterRowComboBoxDataProvider.this.lazyLoading) {
+                        buildValueCache();
+                    }
+
+                    // fire events for every column
+                    for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
+
+                        if (GlazedListsFilterRowComboBoxDataProvider.this.lazyLoading) {
+                            // to determine the diff for the update event the
+                            // current values need to be collected, otherwise on
+                            // clear() - addAll() a full reset will be triggered
+                            // since there are no cached values
+                            getValueCache().put(entry.getKey(), collectValues(entry.getKey()));
+                        }
+
+                        fireCacheUpdateEvent(buildUpdateEvent(
+                                entry.getKey(),
+                                entry.getValue(),
+                                getValueCache().get(entry.getKey())));
+                    }
+
+                    GlazedListsFilterRowComboBoxDataProvider.this.changeHandlingProcessing.set(false);
+                }
+            }, 100);
         }
     }
 
@@ -141,5 +166,11 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
                     cacheBefore,
                     getValueCache().get(column)));
         }
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        SCHEDULER.shutdownNow();
     }
 }

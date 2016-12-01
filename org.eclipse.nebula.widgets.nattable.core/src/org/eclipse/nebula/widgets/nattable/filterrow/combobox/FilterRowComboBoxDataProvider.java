@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Dirk Fauth and others.
+ * Copyright (c) 2013, 2016 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -374,4 +374,12 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
         this.cachingEnabled = cachingEnabled;
     }
 
+    /**
+     * Cleanup acquired resources.
+     *
+     * @since 1.5
+     */
+    public void dispose() {
+        // nothing to do here
+    }
 }
