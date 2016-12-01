@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Dirk Fauth and others.
+ * Copyright (c) 2013, 2016 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -53,14 +53,21 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
+import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemState;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -76,6 +83,11 @@ import ca.odell.glazedlists.matchers.Matcher;
  */
 public class _6033_GlazedListsStaticFilterExample extends AbstractNatExample {
 
+    private static final String ADD_FLANDERS_MENUITEM = "addFlanders";
+    private static final String REMOVE_FLANDERS_MENUITEM = "removeFlanders";
+    private static final String ADD_SIMPSON_MENUITEM = "addSimpson";
+    private static final String REMOVE_SIMPSON_MENUITEM = "removeSimpson";
+
     public static void main(String[] args) throws Exception {
         StandaloneNatExampleRunner.run(new _6033_GlazedListsStaticFilterExample());
     }
@@ -85,7 +97,7 @@ public class _6033_GlazedListsStaticFilterExample extends AbstractNatExample {
         return "This example shows the usage of the filter row within a grid"
                 + " that is using GlazedLists FilterList for filtering. It also"
                 + " shows how to combine the filter row with static filters."
-                + " This example will never show persons with last name Flanders.";
+                + " You can add static filters via the context menu on the corner region.";
     }
 
     @Override
@@ -95,9 +107,8 @@ public class _6033_GlazedListsStaticFilterExample extends AbstractNatExample {
         ConfigRegistry configRegistry = new ConfigRegistry();
 
         // property names of the Person class
-        String[] propertyNames = { "firstName", "lastName", "gender",
-                "married", "birthday", "address.street", "address.housenumber",
-                "address.postalCode", "address.city" };
+        String[] propertyNames = { "firstName", "lastName", "gender", "married", "birthday",
+                "address.street", "address.housenumber", "address.postalCode", "address.city" };
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<String, String>();
@@ -130,19 +141,12 @@ public class _6033_GlazedListsStaticFilterExample extends AbstractNatExample {
                         bodyLayerStack,
                         bodyLayerStack.getSelectionLayer());
 
-        // add a static filter to always sort out persons with last name
-        // Flanders
+        // add the ability to add static filters programmatically
         DefaultGlazedListsStaticFilterStrategy<PersonWithAddress> filterStrategy =
                 new DefaultGlazedListsStaticFilterStrategy<PersonWithAddress>(
                         bodyLayerStack.getFilterList(),
                         columnPropertyAccessor,
                         configRegistry);
-        filterStrategy.addStaticFilter(new Matcher<PersonWithAddress>() {
-            @Override
-            public boolean matches(PersonWithAddress person) {
-                return !(person.getLastName() != null && person.getLastName().equals("Flanders"));
-            }
-        });
 
         // Note: The column header layer is wrapped in a filter row composite.
         // This plugs in the filter row functionality
@@ -197,20 +201,157 @@ public class _6033_GlazedListsStaticFilterExample extends AbstractNatExample {
         // add filter row configuration
         natTable.addConfiguration(new FilterRowConfiguration());
 
-        natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
-            @Override
-            protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
-                return super.createCornerMenu(natTable)
-                        .withStateManagerMenuItemProvider();
-            }
-        });
+        natTable.addConfiguration(new StaticFilterHeaderMenu(natTable, filterStrategy));
 
         natTable.configure();
 
-        natTable.registerCommandHandler(
-                new DisplayPersistenceDialogCommandHandler(natTable));
-
         return natTable;
+    }
+
+    /**
+     * Specialized {@link HeaderMenuConfiguration} that adds menu items to add
+     * and remove static filters via the corner header menu.
+     */
+    private class StaticFilterHeaderMenu extends HeaderMenuConfiguration {
+
+        private DefaultGlazedListsStaticFilterStrategy<PersonWithAddress> filterStrategy;
+
+        private boolean flandersMatcherActive = false;
+        private boolean simpsonMatcherActive = false;
+
+        private Matcher<PersonWithAddress> flandersMatcher = new Matcher<PersonWithAddress>() {
+            @Override
+            public boolean matches(PersonWithAddress person) {
+                return !(person.getLastName() != null && person.getLastName().equals("Flanders"));
+            }
+        };
+
+        private Matcher<PersonWithAddress> simpsonMatcher = new Matcher<PersonWithAddress>() {
+            @Override
+            public boolean matches(PersonWithAddress person) {
+                return !(person.getLastName() != null && person.getLastName().equals("Simpson"));
+            }
+        };
+
+        private StaticFilterHeaderMenu(
+                NatTable natTable, DefaultGlazedListsStaticFilterStrategy<PersonWithAddress> filterStrategy) {
+            super(natTable);
+            this.filterStrategy = filterStrategy;
+        }
+
+        @Override
+        protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
+            return super.createCornerMenu(natTable)
+                    .withMenuItemProvider(ADD_FLANDERS_MENUITEM, new IMenuItemProvider() {
+                        @Override
+                        public void addMenuItem(NatTable natTable, Menu popupMenu) {
+                            MenuItem clearItem = new MenuItem(popupMenu, SWT.PUSH);
+                            clearItem.setText("Add Flanders filter");
+                            clearItem.setEnabled(true);
+
+                            clearItem.addSelectionListener(new SelectionAdapter() {
+                                @Override
+                                public void widgetSelected(SelectionEvent e) {
+                                    StaticFilterHeaderMenu.this.filterStrategy.addStaticFilter(StaticFilterHeaderMenu.this.flandersMatcher);
+                                    StaticFilterHeaderMenu.this.flandersMatcherActive = true;
+                                }
+                            });
+                        }
+                    })
+                    .withVisibleState(ADD_FLANDERS_MENUITEM, new IMenuItemState() {
+
+                        @Override
+                        public boolean isActive(NatEventData natEventData) {
+                            return !StaticFilterHeaderMenu.this.flandersMatcherActive;
+                        }
+                    })
+                    .withMenuItemProvider(REMOVE_FLANDERS_MENUITEM, new IMenuItemProvider() {
+                        @Override
+                        public void addMenuItem(NatTable natTable, Menu popupMenu) {
+                            MenuItem clearItem = new MenuItem(popupMenu, SWT.PUSH);
+                            clearItem.setText("Remove Flanders filter");
+                            clearItem.setEnabled(true);
+
+                            clearItem.addSelectionListener(new SelectionAdapter() {
+                                @Override
+                                public void widgetSelected(SelectionEvent e) {
+                                    StaticFilterHeaderMenu.this.filterStrategy.removeStaticFilter(StaticFilterHeaderMenu.this.flandersMatcher);
+                                    StaticFilterHeaderMenu.this.flandersMatcherActive = false;
+                                }
+                            });
+                        }
+                    })
+                    .withVisibleState(REMOVE_FLANDERS_MENUITEM, new IMenuItemState() {
+
+                        @Override
+                        public boolean isActive(NatEventData natEventData) {
+                            return StaticFilterHeaderMenu.this.flandersMatcherActive;
+                        }
+                    })
+                    .withMenuItemProvider(ADD_SIMPSON_MENUITEM, new IMenuItemProvider() {
+                        @Override
+                        public void addMenuItem(NatTable natTable, Menu popupMenu) {
+                            MenuItem clearItem = new MenuItem(popupMenu, SWT.PUSH);
+                            clearItem.setText("Add Simpson filter");
+                            clearItem.setEnabled(true);
+
+                            clearItem.addSelectionListener(new SelectionAdapter() {
+                                @Override
+                                public void widgetSelected(SelectionEvent e) {
+                                    StaticFilterHeaderMenu.this.filterStrategy.addStaticFilter(StaticFilterHeaderMenu.this.simpsonMatcher);
+                                    StaticFilterHeaderMenu.this.simpsonMatcherActive = true;
+                                }
+                            });
+                        }
+                    })
+                    .withVisibleState(ADD_SIMPSON_MENUITEM, new IMenuItemState() {
+
+                        @Override
+                        public boolean isActive(NatEventData natEventData) {
+                            return !StaticFilterHeaderMenu.this.simpsonMatcherActive;
+                        }
+                    })
+                    .withMenuItemProvider(REMOVE_SIMPSON_MENUITEM, new IMenuItemProvider() {
+                        @Override
+                        public void addMenuItem(NatTable natTable, Menu popupMenu) {
+                            MenuItem clearItem = new MenuItem(popupMenu, SWT.PUSH);
+                            clearItem.setText("Remove Simpson filter");
+                            clearItem.setEnabled(true);
+
+                            clearItem.addSelectionListener(new SelectionAdapter() {
+                                @Override
+                                public void widgetSelected(SelectionEvent e) {
+                                    StaticFilterHeaderMenu.this.filterStrategy.removeStaticFilter(StaticFilterHeaderMenu.this.simpsonMatcher);
+                                    StaticFilterHeaderMenu.this.simpsonMatcherActive = false;
+                                }
+                            });
+                        }
+                    })
+                    .withVisibleState(REMOVE_SIMPSON_MENUITEM, new IMenuItemState() {
+
+                        @Override
+                        public boolean isActive(NatEventData natEventData) {
+                            return StaticFilterHeaderMenu.this.simpsonMatcherActive;
+                        }
+                    })
+                    .withMenuItemProvider(new IMenuItemProvider() {
+                        @Override
+                        public void addMenuItem(NatTable natTable, Menu popupMenu) {
+                            MenuItem clearItem = new MenuItem(popupMenu, SWT.PUSH);
+                            clearItem.setText("Clear Static Filters");
+                            clearItem.setEnabled(true);
+
+                            clearItem.addSelectionListener(new SelectionAdapter() {
+                                @Override
+                                public void widgetSelected(SelectionEvent e) {
+                                    StaticFilterHeaderMenu.this.filterStrategy.clearStaticFilter();
+                                    StaticFilterHeaderMenu.this.flandersMatcherActive = false;
+                                    StaticFilterHeaderMenu.this.simpsonMatcherActive = false;
+                                }
+                            });
+                        }
+                    });
+        }
     }
 
     /**

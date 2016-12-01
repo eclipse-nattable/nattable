@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -150,5 +151,18 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends DefaultGlazedList
      */
     public void removeStaticFilter(final MatcherEditor<T> matcherEditor) {
         removeStaticFilter(matcherEditor.getMatcher());
+    }
+
+    /**
+     * Removes all applied static filters from this filter strategy.
+     *
+     * @since 1.5
+     */
+    public void clearStaticFilter() {
+        Collection<MatcherEditor<T>> staticMatcher = this.staticMatcherEditor.values();
+        if (!staticMatcher.isEmpty()) {
+            this.getMatcherEditor().getMatcherEditors().removeAll(staticMatcher);
+            this.staticMatcherEditor.clear();
+        }
     }
 }
