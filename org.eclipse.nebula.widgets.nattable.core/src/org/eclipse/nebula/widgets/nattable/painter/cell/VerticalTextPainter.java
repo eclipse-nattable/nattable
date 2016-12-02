@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -148,7 +148,8 @@ public class VerticalTextPainter extends AbstractTextPainter {
     @Override
     public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
         setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
-        return gc.textExtent(convertDataType(cell, configRegistry)).y + (this.spacing * 2);
+        String value = convertDataType(cell, configRegistry);
+        return gc.textExtent(value).y + (this.spacing * 2) + (getNumberOfNewLines(value) - 1) * this.lineSpacing;
     }
 
     @Override
@@ -181,7 +182,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
             // if the content height is bigger than the available column width
             // we're extending the column width (only if word wrapping is
             // enabled)
-            int contentHeight = (fontHeight * numberOfNewLines) + (this.spacing * 2);
+            int contentHeight = (fontHeight * numberOfNewLines) + (this.lineSpacing * (numberOfNewLines - 1)) + (this.spacing * 2);
             int contentToCellDiff = (cell.getBounds().width - rectangle.width);
 
             if ((contentHeight > rectangle.width) && this.calculateByTextHeight) {
@@ -241,16 +242,19 @@ public class VerticalTextPainter extends AbstractTextPainter {
                     String[] lines = text.split("\n"); //$NON-NLS-1$
 
                     boolean firstline = true;
+                    int previousXOffset = 0;
                     for (String line : lines) {
                         int lineContentWidth = Math.min(getLengthFromCache(gc, line), rectangle.height);
 
                         if (!isRotateClockwise()) {
+                            int xOffset = -rectangle.x
+                                    + (-lineContentWidth - rectangle.y)
+                                    - CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, lineContentWidth);
+
                             if (firstline) {
                                 transform.rotate(-90f);
-
-                                int xOffset = -rectangle.x + (-lineContentWidth - rectangle.y)
-                                        - CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, lineContentWidth);
-                                int yOffset = rectangle.x + -rectangle.y
+                                int yOffset = rectangle.x
+                                        + -rectangle.y
                                         + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentHeight)
                                         + this.spacing;
 
@@ -258,9 +262,15 @@ public class VerticalTextPainter extends AbstractTextPainter {
 
                                 firstline = false;
                             } else {
-                                transform.translate(0, fontHeight);
+                                transform.translate(xOffset - previousXOffset, fontHeight + this.lineSpacing);
                             }
+
+                            previousXOffset = xOffset;
                         } else {
+                            int xOffset = rectangle.y
+                                    - rectangle.x
+                                    + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, lineContentWidth);
+
                             if (firstline) {
                                 transform.rotate(90f);
 
@@ -268,17 +278,22 @@ public class VerticalTextPainter extends AbstractTextPainter {
                                 if (horizontalPadding != 0) {
                                     horizontalPadding += gc.getFontMetrics().getLeading();
                                 }
-
-                                int xOffset = rectangle.y - rectangle.x
-                                        + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, lineContentWidth);
-                                int yOffset = -contentHeight - rectangle.y - rectangle.x + fontHeight - horizontalPadding + this.spacing;
+                                int yOffset = -contentHeight
+                                        - rectangle.y
+                                        - rectangle.x
+                                        - horizontalPadding
+                                        + this.spacing
+                                        + (fontHeight * (numberOfNewLines - 1))
+                                        + (this.lineSpacing * (numberOfNewLines - 1));
 
                                 transform.translate(xOffset, yOffset);
 
                                 firstline = false;
                             } else {
-                                transform.translate(0, -fontHeight);
+                                transform.translate(xOffset - previousXOffset, -fontHeight - this.lineSpacing);
                             }
+
+                            previousXOffset = xOffset;
                         }
 
                         gc.setTransform(transform);

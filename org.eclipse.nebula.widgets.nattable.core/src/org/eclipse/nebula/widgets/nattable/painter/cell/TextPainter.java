@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -136,7 +136,8 @@ public class TextPainter extends AbstractTextPainter {
     @Override
     public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
         setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
-        return gc.textExtent(convertDataType(cell, configRegistry)).y + (this.spacing * 2) + 1;
+        String value = convertDataType(cell, configRegistry);
+        return gc.textExtent(value).y + (this.spacing * 2) + 1 + (getNumberOfNewLines(value) - 1) * this.lineSpacing;
     }
 
     @Override
@@ -162,7 +163,7 @@ public class TextPainter extends AbstractTextPainter {
 
             // if the content height is bigger than the available row height
             // we're extending the row height (only if word wrapping is enabled)
-            int contentHeight = (fontHeight * numberOfNewLines) + (this.spacing * 2);
+            int contentHeight = (fontHeight * numberOfNewLines) + (this.lineSpacing * (numberOfNewLines - 1)) + (this.spacing * 2);
             int contentToCellDiff = (cell.getBounds().height - rectangle.height);
 
             if (performRowResize(contentHeight, rectangle)) {
@@ -215,6 +216,7 @@ public class TextPainter extends AbstractTextPainter {
 
                     // after every line calculate the y start pos new
                     yStartPos += fontHeight;
+                    yStartPos += this.lineSpacing;
                 }
             }
 

@@ -57,6 +57,10 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
     protected final boolean paintBg;
     protected boolean paintFg = true;
     protected int spacing = 5;
+    /**
+     * @since 1.5
+     */
+    protected int lineSpacing = 0;
     // can only grow but will not calculate the minimal length
     protected boolean calculateByTextLength;
     protected boolean calculateByTextHeight;
@@ -785,5 +789,19 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      */
     public void setWordWrapping(boolean wordWrapping) {
         this.wordWrapping = wordWrapping;
+    }
+
+    /**
+     * Specify the number of pixels that should be added between lines. Default
+     * is 0, which means that the line height is defined by the font height
+     * only.
+     *
+     * @param spacing
+     *            The number of pixels that should be added between lines
+     *
+     * @since 1.5
+     */
+    public void setLineSpacing(int spacing) {
+        this.lineSpacing = spacing;
     }
 }
