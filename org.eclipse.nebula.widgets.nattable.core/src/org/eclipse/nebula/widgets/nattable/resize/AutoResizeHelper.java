@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Dirk Fauth.
+ * Copyright (c) 2015, 2016 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.Display;
  * Note that this operation is expensive in terms of memory consumption and
  * processing time. Be careful when using this helper for huge tables.
  * </p>
- * 
+ *
  * @since 1.4
  */
 public class AutoResizeHelper {
@@ -61,6 +61,14 @@ public class AutoResizeHelper {
      * Flag to indicate that an automatic resize was triggered on rendering.
      */
     protected boolean resizedOnPrinting = true;
+
+    /**
+     * Width and height for the internal created Image that is used for
+     * in-memory rendering.
+     *
+     * @since 1.5
+     */
+    protected int blockSize = 10000;
 
     /**
      * {@link ILayerListener} that is added to the {@link ILayer} to get
@@ -138,12 +146,30 @@ public class AutoResizeHelper {
      * automatic size calculation, this painting will trigger the resize events.
      */
     protected void paintInMemory() {
-        Image tmpImage = new Image(Display.getDefault(), this.totalArea.width, this.totalArea.height);
+        Image tmpImage = new Image(Display.getDefault(), this.blockSize, this.blockSize);
         GC tempGC = new GC(tmpImage);
 
         try {
-            // render the layer on the temporary GC
-            paintLayer(tempGC, this.totalArea);
+            Rectangle rect = new Rectangle(0, 0, this.blockSize, this.blockSize);
+            while (rect.x <= this.totalArea.width) {
+
+                while (rect.y <= this.totalArea.height) {
+                    // render the layer on the temporary GC
+                    paintLayer(tempGC, rect);
+
+                    rect.y += this.blockSize;
+                }
+
+                rect.y = 0;
+
+                if (this.resizedOnPrinting) {
+                    // in case resizing was triggered, start over with updated
+                    // total area
+                    break;
+                } else {
+                    rect.x += this.blockSize;
+                }
+            }
         } finally {
             // ensure the temporary created resources are disposed after
             // processing
