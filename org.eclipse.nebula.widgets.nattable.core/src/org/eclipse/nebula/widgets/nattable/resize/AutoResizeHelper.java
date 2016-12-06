@@ -52,6 +52,13 @@ public class AutoResizeHelper {
      */
     protected Rectangle totalArea;
     /**
+     * The total area of the previous in-memory rendering. Needed to reduce the
+     * rendering area on consecutive calls.
+     * 
+     * @since 1.5
+     */
+    protected Rectangle prevArea = null;
+    /**
      * The original {@link IClientAreaProvider} needed to restore the original
      * state after processing.
      */
@@ -60,15 +67,7 @@ public class AutoResizeHelper {
     /**
      * Flag to indicate that an automatic resize was triggered on rendering.
      */
-    protected boolean resizedOnPrinting = true;
-
-    /**
-     * Width and height for the internal created Image that is used for
-     * in-memory rendering.
-     *
-     * @since 1.5
-     */
-    protected int blockSize = 10000;
+    protected volatile boolean resizedOnPrinting = true;
 
     /**
      * {@link ILayerListener} that is added to the {@link ILayer} to get
@@ -135,6 +134,8 @@ public class AutoResizeHelper {
                 helper.resizedOnPrinting = false;
                 helper.calculateTotalArea();
                 helper.paintInMemory();
+
+                helper.prevArea = helper.totalArea;
             }
         } finally {
             helper.restore();
@@ -146,29 +147,31 @@ public class AutoResizeHelper {
      * automatic size calculation, this painting will trigger the resize events.
      */
     protected void paintInMemory() {
-        Image tmpImage = new Image(Display.getDefault(), this.blockSize, this.blockSize);
+        Image tmpImage = new Image(Display.getDefault(), 100, 100);
         GC tempGC = new GC(tmpImage);
 
         try {
-            Rectangle rect = new Rectangle(0, 0, this.blockSize, this.blockSize);
-            while (rect.x <= this.totalArea.width) {
-
-                while (rect.y <= this.totalArea.height) {
-                    // render the layer on the temporary GC
-                    paintLayer(tempGC, rect);
-
-                    rect.y += this.blockSize;
+            if (this.prevArea != null) {
+                Rectangle bottom = new Rectangle(
+                        0,
+                        this.prevArea.height,
+                        this.totalArea.width,
+                        this.totalArea.height - this.prevArea.height);
+                if (bottom.height > 0) {
+                    paintLayer(tempGC, bottom);
                 }
 
-                rect.y = 0;
-
-                if (this.resizedOnPrinting) {
-                    // in case resizing was triggered, start over with updated
-                    // total area
-                    break;
-                } else {
-                    rect.x += this.blockSize;
+                Rectangle right = new Rectangle(
+                        this.prevArea.width,
+                        0,
+                        this.totalArea.width - this.prevArea.width,
+                        this.totalArea.height);
+                if (right.width > 0) {
+                    paintLayer(tempGC, right);
                 }
+            } else {
+                // render the layer on the temporary GC
+                paintLayer(tempGC, this.totalArea);
             }
         } finally {
             // ensure the temporary created resources are disposed after
