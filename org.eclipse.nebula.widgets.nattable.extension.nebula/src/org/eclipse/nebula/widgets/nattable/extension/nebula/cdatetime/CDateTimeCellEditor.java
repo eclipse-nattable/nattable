@@ -38,6 +38,8 @@ import org.eclipse.swt.widgets.Shell;
  * Therefore the methods to deal with the canonical values need to be overriden
  * too, to avoid conversion of the canonical value to display value by using the
  * IDisplayConverter that is registered together with this editor.
+ * 
+ * @since 1.1
  */
 public class CDateTimeCellEditor extends AbstractCellEditor {
 

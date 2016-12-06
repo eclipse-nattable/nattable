@@ -47,8 +47,18 @@ public class RichTextCellEditor extends AbstractCellEditor {
      * The {@link RichTextEditorConfiguration} that should be used for creating
      * the inline rich text editor control. If <code>null</code> the default
      * {@link RichTextEditorConfiguration} will be used.
+     *
+     * @since 1.1
      */
     protected RichTextEditorConfiguration editorConfiguration;
+
+    /**
+     * @deprecated Only exists for backwards compatibility to avoid API
+     *             breakage. The {@link RichTextEditorConfiguration} should be
+     *             used instead!
+     */
+    @Deprecated
+    protected org.eclipse.nebula.widgets.richtext.toolbar.ToolbarConfiguration toolbarConfiguration;
 
     /**
      * The style bits that are used to create the rich text editor control.
@@ -122,6 +132,7 @@ public class RichTextCellEditor extends AbstractCellEditor {
     @Deprecated
     public RichTextCellEditor(org.eclipse.nebula.widgets.richtext.toolbar.ToolbarConfiguration toolbarConfiguration, int style) {
         this((RichTextEditorConfiguration) null, style);
+        this.toolbarConfiguration = toolbarConfiguration;
 
         try {
             Constructor<RichTextEditorConfiguration> declaredConstructor =
@@ -165,6 +176,9 @@ public class RichTextCellEditor extends AbstractCellEditor {
         this.editor.setText(value != null ? (String) value : "");
     }
 
+    /**
+     * @since 1.1
+     */
     @Override
     public RichTextEditor getEditorControl() {
         return this.editor;
