@@ -521,10 +521,8 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     }
 
     /**
-     * Configures how the column sizing of this {@link DataLayer} is handled.
-     * Default is pixel sizing. If percentage sizing should be used you have to
-     * ensure that the size value for every column is set explicitly and that
-     * the sum of the column sizes doesn't exceed 100.
+     * Configures how the column sizing of this {@link DataLayer} is handled,
+     * either pixel sizing or percentage sizing. Default is pixel sizing.
      *
      * @param percentageSizing
      *            <code>true</code> if the column sizing should be done by
@@ -548,10 +546,8 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     }
 
     /**
-     * Configures how the column sizing of this {@link DataLayer} is handled.
-     * Default is pixel sizing. If percentage sizing should be used you have to
-     * ensure that the size value for every column is set explicitly and that
-     * the sum of the column sizes doesn't exceed 100.
+     * Configures how the column sizing of this {@link DataLayer} is handled for
+     * the given column. Default is pixel sizing.
      *
      * @param position
      *            The position for which the sizing configuration should be set.
@@ -574,10 +570,8 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     }
 
     /**
-     * Configures how the row sizing of this {@link DataLayer} is handled.
-     * Default is pixel sizing. If percentage sizing should be used you have to
-     * ensure that the size value for every row is set explicitly and that the
-     * sum of the row sizes doesn't exceed 100.
+     * Configures how the row sizing of this {@link DataLayer} is handled,
+     * either pixel sizing or percentage sizing. Default is pixel sizing.
      *
      * @param percentageSizing
      *            <code>true</code> if the row sizing should be done by
@@ -601,10 +595,8 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     }
 
     /**
-     * Configures how the row sizing of this {@link DataLayer} is handled.
-     * Default is pixel sizing. If percentage sizing should be used you have to
-     * ensure that the size value for every row is set explicitly and that the
-     * sum of the row sizes doesn't exceed 100.
+     * Configures how the row sizing of this {@link DataLayer} is handled for
+     * the given row. Default is pixel sizing.
      *
      * @param position
      *            The row position for which the sizing configuration should be
