@@ -80,9 +80,9 @@ public class _5055_SelectionTraversalExample extends AbstractNatExample {
         // property names of the Person class
         String[] propertyNames = { "firstName", "lastName", "gender", "married", "birthday" };
         IColumnPropertyAccessor<Person> columnPropertyAccessor =
-                new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
         IRowDataProvider<Person> bodyDataProvider =
-                new ListDataProvider<Person>(PersonService.getPersons(3), columnPropertyAccessor);
+                new ListDataProvider<>(PersonService.getPersons(3), columnPropertyAccessor);
 
         Composite panel = new Composite(parent, SWT.NONE);
         panel.setLayout(new GridLayout());

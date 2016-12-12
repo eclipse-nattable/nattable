@@ -63,14 +63,14 @@ public class FullFeaturedBodyLayerStack<T> extends AbstractLayerTransform {
             IConfigRegistry configRegistry, ColumnGroupModel columnGroupModel,
             boolean useDefaultConfiguration) {
 
-        IColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<T>(
+        IColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(
                 propertyNames);
-        this.bodyDataProvider = new ListDataProvider<T>(eventList,
+        this.bodyDataProvider = new ListDataProvider<>(eventList,
                 columnPropertyAccessor);
         this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
-        this.glazedListsEventLayer = new GlazedListsEventLayer<T>(this.bodyDataLayer,
+        this.glazedListsEventLayer = new GlazedListsEventLayer<>(this.bodyDataLayer,
                 eventList);
-        this.blinkingLayer = new BlinkLayer<T>(this.glazedListsEventLayer,
+        this.blinkingLayer = new BlinkLayer<>(this.glazedListsEventLayer,
                 this.bodyDataProvider, rowIdAccessor, columnPropertyAccessor,
                 configRegistry);
         SummaryRowLayer summaryRowLayer = new SummaryRowLayer(this.blinkingLayer,

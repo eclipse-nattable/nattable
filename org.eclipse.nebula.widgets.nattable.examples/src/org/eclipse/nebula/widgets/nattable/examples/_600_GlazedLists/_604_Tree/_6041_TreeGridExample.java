@@ -100,7 +100,7 @@ public class _6041_TreeGridExample extends AbstractNatExample {
         String[] propertyNames = { "lastName", "firstName", "gender", "married", "birthday" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("gender", "Gender");
@@ -108,10 +108,10 @@ public class _6041_TreeGridExample extends AbstractNatExample {
         propertyToLabelMap.put("birthday", "Birthday");
 
         IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
-                new ReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
 
         final BodyLayerStack<PersonWithAddress> bodyLayerStack =
-                new BodyLayerStack<PersonWithAddress>(
+                new BodyLayerStack<>(
                         PersonService.getPersonsWithAddress(50),
                         columnPropertyAccessor, new PersonWithAddressTreeFormat());
 
@@ -237,21 +237,21 @@ public class _6041_TreeGridExample extends AbstractNatExample {
 
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator will be set by configuration
-            SortedList<T> sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+            SortedList<T> sortedList = new SortedList<>(rowObjectsGlazedList, null);
             // wrap the SortedList with the TreeList
             this.treeList = new TreeList<T>(sortedList, treeFormat, TreeList.NODES_START_EXPANDED);
 
-            this.bodyDataProvider = new ListDataProvider<T>(this.treeList, columnPropertyAccessor);
+            this.bodyDataProvider = new ListDataProvider<>(this.treeList, columnPropertyAccessor);
             DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
 
             // simply apply labels for every column by index
             bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
 
             // layer for event handling of GlazedLists and PropertyChanges
-            GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer, this.treeList);
+            GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<>(bodyDataLayer, this.treeList);
 
-            GlazedListTreeData<T> treeData = new GlazedListTreeData<T>(this.treeList);
-            ITreeRowModel<T> treeRowModel = new GlazedListTreeRowModel<T>(treeData);
+            GlazedListTreeData<T> treeData = new GlazedListTreeData<>(this.treeList);
+            ITreeRowModel<T> treeRowModel = new GlazedListTreeRowModel<>(treeData);
 
             this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
 
@@ -287,7 +287,7 @@ public class _6041_TreeGridExample extends AbstractNatExample {
      */
     private class PersonWithAddressTreeFormat implements TreeList.Format<PersonWithAddress> {
 
-        private Map<String, PersonWithAddress> parentMapping = new HashMap<String, PersonWithAddress>();
+        private Map<String, PersonWithAddress> parentMapping = new HashMap<>();
 
         /**
          * Populate path with a list describing the path from a root node to

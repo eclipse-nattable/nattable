@@ -70,14 +70,14 @@ public class ColumnStructureUpdatesExampleGridLayer<T> extends GridLayer {
         // Body - with list event listener
         // NOTE: Remember to use the SortedList constructor with 'null' for the
         // Comparator
-        SortedList<T> sortedList = new SortedList<T>(eventList, null);
-        IColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<T>(
+        SortedList<T> sortedList = new SortedList<>(eventList, null);
+        IColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(
                 propertyNames);
-        this.bodyDataProvider = new ListDataProviderExample<T>(sortedList,
+        this.bodyDataProvider = new ListDataProviderExample<>(sortedList,
                 columnPropertyAccessor);
 
         this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
-        GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
+        GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<>(
                 this.bodyDataLayer, eventList);
         DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(
                 glazedListsEventLayer);
@@ -91,8 +91,8 @@ public class ColumnStructureUpdatesExampleGridLayer<T> extends GridLayer {
                 this.columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
 
         // Auto configure off. Configurations have to applied manually.
-        SortHeaderLayer<T> columnHeaderSortableLayer = new SortHeaderLayer<T>(
-                columnHeaderLayer, new GlazedListsSortModel<T>(sortedList,
+        SortHeaderLayer<T> columnHeaderSortableLayer = new SortHeaderLayer<>(
+                columnHeaderLayer, new GlazedListsSortModel<>(sortedList,
                         columnPropertyAccessor, configRegistry,
                         this.columnHeaderDataLayer),
                 false);

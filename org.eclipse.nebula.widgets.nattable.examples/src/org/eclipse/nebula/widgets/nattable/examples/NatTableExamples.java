@@ -34,7 +34,7 @@ public class NatTableExamples {
 
             InputStream inputStream = NatTableExamples.class.getResourceAsStream("/examples.index");
             if (inputStream != null) {
-                examples = new ArrayList<String>();
+                examples = new ArrayList<>();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                 String line = reader.readLine();
                 while (line != null) {
@@ -59,7 +59,7 @@ public class NatTableExamples {
 
     public static List<String> createExamplesIndex(String basedir)
             throws IOException {
-        List<String> examples = new ArrayList<String>();
+        List<String> examples = new ArrayList<>();
 
         File examplesDir = new File(basedir, "src" + INatExample.BASE_PATH);
         findTutorialExamples(examplesDir, examples);

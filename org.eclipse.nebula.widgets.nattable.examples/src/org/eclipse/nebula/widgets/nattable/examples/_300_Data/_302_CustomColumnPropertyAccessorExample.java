@@ -58,7 +58,7 @@ public class _302_CustomColumnPropertyAccessorExample extends
                 new PersonWithAddressColumnPropertyAccessor();
 
         IDataProvider bodyDataProvider =
-                new ListDataProvider<PersonWithAddress>(
+                new ListDataProvider<>(
                         PersonService.getPersonsWithAddress(10),
                         columnPropertyAccessor);
         final DataLayer bodyDataLayer =
@@ -105,7 +105,7 @@ public class _302_CustomColumnPropertyAccessorExample extends
                 "city"
         };
 
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put(DataModelConstants.FIRSTNAME_PROPERTYNAME, "Firstname");
         propertyToLabelMap.put(DataModelConstants.LASTNAME_PROPERTYNAME, "Lastname");
         propertyToLabelMap.put(DataModelConstants.GENDER_PROPERTYNAME, "Gender");

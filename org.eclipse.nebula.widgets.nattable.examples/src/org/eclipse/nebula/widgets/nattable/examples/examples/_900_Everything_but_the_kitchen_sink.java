@@ -115,19 +115,19 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
 
         // Body
 
-        LinkedList<BlinkingRowDataFixture> rowData = new LinkedList<BlinkingRowDataFixture>();
+        LinkedList<BlinkingRowDataFixture> rowData = new LinkedList<>();
         this.baseEventList = GlazedLists.threadSafeList(GlazedLists
                 .eventList(rowData));
-        ObservableElementList<BlinkingRowDataFixture> observableElementList = new ObservableElementList<BlinkingRowDataFixture>(
+        ObservableElementList<BlinkingRowDataFixture> observableElementList = new ObservableElementList<>(
                 this.baseEventList,
                 GlazedLists.beanConnector(BlinkingRowDataFixture.class));
-        FilterList<BlinkingRowDataFixture> filterList = new FilterList<BlinkingRowDataFixture>(
+        FilterList<BlinkingRowDataFixture> filterList = new FilterList<>(
                 observableElementList);
-        SortedList<BlinkingRowDataFixture> sortedList = new SortedList<BlinkingRowDataFixture>(
+        SortedList<BlinkingRowDataFixture> sortedList = new SortedList<>(
                 filterList, null);
 
         FullFeaturedBodyLayerStack<BlinkingRowDataFixture> bodyLayer =
-                new FullFeaturedBodyLayerStack<BlinkingRowDataFixture>(
+                new FullFeaturedBodyLayerStack<>(
                         sortedList,
                         new IRowIdAccessor<BlinkingRowDataFixture>() {
 
@@ -145,7 +145,7 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
         registerBlinkingConfigCells(configRegistry);
 
         // Column header
-        FullFeaturedColumnHeaderLayerStack<BlinkingRowDataFixture> columnHeaderLayer = new FullFeaturedColumnHeaderLayerStack<BlinkingRowDataFixture>(
+        FullFeaturedColumnHeaderLayerStack<BlinkingRowDataFixture> columnHeaderLayer = new FullFeaturedColumnHeaderLayerStack<>(
                 sortedList, filterList, propertyNames, propertyToLabelMap,
                 bodyLayer, bodyLayer.getSelectionLayer(), columnGroupModel,
                 configRegistry);
@@ -210,7 +210,7 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
         bodyLayer.registerCommandHandler(columnChooserCommandHandler);
 
         // Summary row configuration
-        this.natTable.addConfiguration(new MySummaryRow<BlinkingRowDataFixture>(
+        this.natTable.addConfiguration(new MySummaryRow<>(
                 this.bodyDataProvider));
         this.natTable.configure();
 
@@ -328,7 +328,7 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
                 // Load data
                 while (this.list.size() < DATASET_SIZE) {
                     // Add to buffer
-                    List<BlinkingRowDataFixture> buffer = new ArrayList<BlinkingRowDataFixture>();
+                    List<BlinkingRowDataFixture> buffer = new ArrayList<>();
                     for (int i = 0; i < 100; i++) {
                         buffer.addAll(BlinkingRowDataFixture
                                 .getList(this.changeListener));

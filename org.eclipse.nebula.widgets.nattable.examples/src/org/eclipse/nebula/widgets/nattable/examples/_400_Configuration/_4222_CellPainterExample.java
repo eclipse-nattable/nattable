@@ -94,7 +94,7 @@ public class _4222_CellPainterExample extends AbstractNatExample {
                 "favouriteDrinks" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("password", "Password");
@@ -109,7 +109,7 @@ public class _4222_CellPainterExample extends AbstractNatExample {
         propertyToLabelMap.put("favouriteDrinks", "Drinks");
 
         IDataProvider bodyDataProvider =
-                new ListDataProvider<ExtendedPersonWithAddress>(
+                new ListDataProvider<>(
                         PersonService.getExtendedPersonsWithAddress(10),
                         new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(propertyNames));
 

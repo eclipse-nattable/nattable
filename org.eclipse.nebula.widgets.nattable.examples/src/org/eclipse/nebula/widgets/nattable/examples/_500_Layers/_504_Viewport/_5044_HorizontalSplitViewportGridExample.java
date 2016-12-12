@@ -100,7 +100,7 @@ public class _5044_HorizontalSplitViewportGridExample extends AbstractNatExample
                 "address.street", "address.housenumber", "address.postalCode", "address.city" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -112,9 +112,9 @@ public class _5044_HorizontalSplitViewportGridExample extends AbstractNatExample
         propertyToLabelMap.put("address.city", "City");
 
         IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
-                new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
+                new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
 
-        final BodyLayerStack<PersonWithAddress> bodyLayer = new BodyLayerStack<PersonWithAddress>(
+        final BodyLayerStack<PersonWithAddress> bodyLayer = new BodyLayerStack<>(
                 PersonService.getPersonsWithAddress(50), columnPropertyAccessor);
 
         // build the row header layer
@@ -331,7 +331,7 @@ public class _5044_HorizontalSplitViewportGridExample extends AbstractNatExample
         private final ViewportLayer viewportLayerRight;
 
         public BodyLayerStack(List<T> values, IColumnPropertyAccessor<T> columnPropertyAccessor) {
-            this.bodyDataProvider = new ListDataProvider<T>(values, columnPropertyAccessor);
+            this.bodyDataProvider = new ListDataProvider<>(values, columnPropertyAccessor);
             DataLayer bodyDataLayer = new DataLayer(getBodyDataProvider());
 
             // use our custom reorder drag mode configuration instead of the

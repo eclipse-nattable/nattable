@@ -47,15 +47,15 @@ public class FilterRowExampleGridLayer extends GridLayer {
 
         // Underlying data source
         EventList<RowDataFixture> eventList = GlazedLists.eventList(RowDataListFixture.getList());
-        FilterList<RowDataFixture> filterList = new FilterList<RowDataFixture>(eventList);
+        FilterList<RowDataFixture> filterList = new FilterList<>(eventList);
         String[] propertyNames = RowDataListFixture.getPropertyNames();
         Map<String, String> propertyToLabelMap = RowDataListFixture.getPropertyToLabelMap();
 
         // Body layer
         IColumnPropertyAccessor<RowDataFixture> columnPropertyAccessor =
-                new ReflectiveColumnPropertyAccessor<RowDataFixture>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
         this.bodyDataProvider =
-                new ListDataProvider<RowDataFixture>(filterList, columnPropertyAccessor);
+                new ListDataProvider<>(filterList, columnPropertyAccessor);
         DataLayer bodyDataLayer =
                 new DataLayer(this.bodyDataProvider);
         DefaultBodyLayerStack bodyLayer =
@@ -79,8 +79,8 @@ public class FilterRowExampleGridLayer extends GridLayer {
         // Note: The column header layer is wrapped in a filter row composite.
         // This plugs in the filter row functionality
         FilterRowHeaderComposite<RowDataFixture> filterRowHeaderLayer =
-                new FilterRowHeaderComposite<RowDataFixture>(
-                        new DefaultGlazedListsFilterStrategy<RowDataFixture>(filterList, columnPropertyAccessor, configRegistry),
+                new FilterRowHeaderComposite<>(
+                        new DefaultGlazedListsFilterStrategy<>(filterList, columnPropertyAccessor, configRegistry),
                         columnHeaderLayer, columnHeaderDataProvider, configRegistry);
 
         ColumnOverrideLabelAccumulator labelAccumulator =

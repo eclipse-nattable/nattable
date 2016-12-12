@@ -59,17 +59,17 @@ public class StaticFilterExampleGridLayer extends GridLayer {
         TransformedList<RowDataFixture, RowDataFixture> rowObjectsGlazedList =
                 GlazedLists.threadSafeList(eventList);
         SortedList<RowDataFixture> sortedList =
-                new SortedList<RowDataFixture>(rowObjectsGlazedList, null);
+                new SortedList<>(rowObjectsGlazedList, null);
         FilterList<RowDataFixture> filterList =
-                new FilterList<RowDataFixture>(sortedList);
+                new FilterList<>(sortedList);
         String[] propertyNames = RowDataListFixture.getPropertyNames();
         Map<String, String> propertyToLabelMap = RowDataListFixture.getPropertyToLabelMap();
 
         // Body layer
         IColumnPropertyAccessor<RowDataFixture> columnPropertyAccessor =
-                new ReflectiveColumnPropertyAccessor<RowDataFixture>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
 
-        this.bodyDataProvider = new ListDataProvider<RowDataFixture>(filterList, columnPropertyAccessor);
+        this.bodyDataProvider = new ListDataProvider<>(filterList, columnPropertyAccessor);
         // add a static filter that only shows RowDataFixtures with a rating
         // other than "AAA"
         // bodyDataProvider = new
@@ -83,7 +83,7 @@ public class StaticFilterExampleGridLayer extends GridLayer {
 
         this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
         GlazedListsEventLayer<RowDataFixture> glazedListsEventLayer =
-                new GlazedListsEventLayer<RowDataFixture>(this.bodyDataLayer, eventList);
+                new GlazedListsEventLayer<>(this.bodyDataLayer, eventList);
         DefaultBodyLayerStack bodyLayer =
                 new DefaultBodyLayerStack(glazedListsEventLayer);
         ColumnOverrideLabelAccumulator bodyLabelAccumulator =
@@ -103,9 +103,9 @@ public class StaticFilterExampleGridLayer extends GridLayer {
                 new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
 
         SortHeaderLayer<RowDataFixture> sortHeaderLayer =
-                new SortHeaderLayer<RowDataFixture>(
+                new SortHeaderLayer<>(
                         columnHeaderLayer,
-                        new GlazedListsSortModel<RowDataFixture>(
+                        new GlazedListsSortModel<>(
                                 sortedList, columnPropertyAccessor, configRegistry, columnHeaderDataLayer),
                         false);
         sortHeaderLayer.addConfiguration(new SingleClickSortConfiguration());
@@ -118,7 +118,7 @@ public class StaticFilterExampleGridLayer extends GridLayer {
         // DefaultGlazedListsFilterStrategy<RowDataFixture>(autoFilterMatcherEditor,
         // columnPropertyAccessor, configRegistry);
         DefaultGlazedListsStaticFilterStrategy<RowDataFixture> filterStrategy =
-                new DefaultGlazedListsStaticFilterStrategy<RowDataFixture>(
+                new DefaultGlazedListsStaticFilterStrategy<>(
                         filterList, columnPropertyAccessor, configRegistry);
         filterStrategy.addStaticFilter(new Matcher<RowDataFixture>() {
 
@@ -129,7 +129,7 @@ public class StaticFilterExampleGridLayer extends GridLayer {
         });
 
         FilterRowHeaderComposite<RowDataFixture> filterRowHeaderLayer =
-                new FilterRowHeaderComposite<RowDataFixture>(
+                new FilterRowHeaderComposite<>(
                         filterStrategy, sortHeaderLayer, columnHeaderDataProvider, configRegistry);
 
         ColumnOverrideLabelAccumulator labelAccumulator =

@@ -77,7 +77,7 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
                 "married", "birthday" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -93,9 +93,9 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
         List<PersonWithAddress> data = PersonService.getPersonsWithAddress(10);
 
         IColumnPropertyAccessor<PersonWithAddress> accessor =
-                new ReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
         IDataProvider bodyDataProvider =
-                new ListDataProvider<PersonWithAddress>(data, accessor);
+                new ListDataProvider<>(data, accessor);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
         ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
@@ -112,7 +112,7 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
 
         ConfigRegistry configRegistry = new ConfigRegistry();
         SortHeaderLayer<PersonWithAddress> sortHeaderLayer =
-                new SortHeaderLayer<PersonWithAddress>(columnHeaderLayer, new PersonWithAddressSortModel(data));
+                new SortHeaderLayer<>(columnHeaderLayer, new PersonWithAddressSortModel(data));
 
         // build the row header layer
         IDataProvider rowHeaderDataProvider =
@@ -218,7 +218,7 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
          */
         @Override
         public List<Integer> getSortedColumnIndexes() {
-            List<Integer> indexes = new ArrayList<Integer>();
+            List<Integer> indexes = new ArrayList<>();
             if (this.currentSortColumn > -1) {
                 indexes.add(Integer.valueOf(this.currentSortColumn));
             }

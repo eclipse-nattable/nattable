@@ -73,7 +73,7 @@ public class _5112_TwoLevelColumnGroupingExample extends AbstractNatExample {
                 "money", "description", "favouriteFood", "favouriteDrinks" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -90,7 +90,7 @@ public class _5112_TwoLevelColumnGroupingExample extends AbstractNatExample {
         propertyToLabelMap.put("favouriteDrinks", "Drinks");
 
         IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor =
-                new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(propertyNames);
+                new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
 
         ColumnGroupModel columnGroupModel = new ColumnGroupModel();
         ColumnGroupModel sndColumnGroupModel = new ColumnGroupModel();
@@ -101,7 +101,7 @@ public class _5112_TwoLevelColumnGroupingExample extends AbstractNatExample {
         // underlying layer. But in this case using the ViewportLayer directly
         // as body layer is also working.
         IDataProvider bodyDataProvider =
-                new ListDataProvider<ExtendedPersonWithAddress>(
+                new ListDataProvider<>(
                         PersonService.getExtendedPersonsWithAddress(10),
                         columnPropertyAccessor);
         DataLayer bodyDataLayer =

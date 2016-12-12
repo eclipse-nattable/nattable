@@ -63,7 +63,7 @@ public class Selection_events extends AbstractNatExample {
 
         // Custom selection configuration
         SelectionLayer selectionLayer = this.gridLayer.getSelectionLayer();
-        selectionLayer.setSelectionModel(new RowSelectionModel<RowDataFixture>(
+        selectionLayer.setSelectionModel(new RowSelectionModel<>(
                 selectionLayer, this.gridLayer.getBodyDataProvider(),
                 new IRowIdAccessor<RowDataFixture>() {
 

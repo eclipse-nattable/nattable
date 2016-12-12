@@ -105,7 +105,7 @@ public class _303_CalculatedDataExample extends AbstractNatExample {
                 "columnThreeNumber", "columnFourNumber", "columnFiveNumber" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("columnOneNumber", "100%");
         propertyToLabelMap.put("columnTwoNumber", "Value One");
         propertyToLabelMap.put("columnThreeNumber", "Value Two");
@@ -249,7 +249,7 @@ public class _303_CalculatedDataExample extends AbstractNatExample {
 
         public CalculatingBodyLayerStack(EventList<NumberValues> valuesToShow, ConfigRegistry configRegistry) {
             IDataProvider dataProvider =
-                    new ListDataProvider<NumberValues>(valuesToShow, new CalculatingDataProvider());
+                    new ListDataProvider<>(valuesToShow, new CalculatingDataProvider());
             this.bodyDataLayer = new DataLayer(dataProvider);
             this.columnReorderLayer = new ColumnReorderLayer(this.bodyDataLayer);
             this.columnHideShowLayer = new ColumnHideShowLayer(this.columnReorderLayer);

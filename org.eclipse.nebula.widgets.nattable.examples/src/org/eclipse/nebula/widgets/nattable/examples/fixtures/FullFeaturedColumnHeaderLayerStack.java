@@ -56,17 +56,17 @@ public class FullFeaturedColumnHeaderLayerStack<T> extends
         this.columnHeaderLayer = new ColumnHeaderLayer(this.columnHeaderDataLayer,
                 bodyLayer, selectionLayer);
 
-        final ReflectiveColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<T>(
+        final ReflectiveColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(
                 propertyNames);
-        this.sortableColumnHeaderLayer = new SortHeaderLayer<T>(this.columnHeaderLayer,
-                new GlazedListsSortModel<T>(sortedList, columnPropertyAccessor,
+        this.sortableColumnHeaderLayer = new SortHeaderLayer<>(this.columnHeaderLayer,
+                new GlazedListsSortModel<>(sortedList, columnPropertyAccessor,
                         configRegistry, this.columnHeaderDataLayer));
 
         this.columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
                 this.sortableColumnHeaderLayer, selectionLayer, columnGroupModel);
 
-        FilterRowHeaderComposite<T> composite = new FilterRowHeaderComposite<T>(
-                new DefaultGlazedListsFilterStrategy<T>(filterList,
+        FilterRowHeaderComposite<T> composite = new FilterRowHeaderComposite<>(
+                new DefaultGlazedListsFilterStrategy<>(filterList,
                         columnPropertyAccessor, configRegistry),
                 this.columnGroupHeaderLayer, this.columnHeaderDataProvider,
                 configRegistry);

@@ -28,7 +28,7 @@ public class NavContentProvider implements ITreeContentProvider {
     protected Collection<String> getChildren(final String parentPath) {
         Collection<String> children = this.pathToChildrenMap.get(parentPath);
         if (children == null) {
-            children = new LinkedHashSet<String>();
+            children = new LinkedHashSet<>();
             this.pathToChildrenMap.put(parentPath, children);
         }
         return children;
@@ -41,7 +41,7 @@ public class NavContentProvider implements ITreeContentProvider {
 
     @Override
     public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-        this.pathToChildrenMap = new HashMap<String, Collection<String>>();
+        this.pathToChildrenMap = new HashMap<>();
     }
 
     @Override
@@ -67,7 +67,7 @@ public class NavContentProvider implements ITreeContentProvider {
 
     @Override
     public Object[] getElements(Object inputElement) {
-        Set<String> topLevelElements = new LinkedHashSet<String>();
+        Set<String> topLevelElements = new LinkedHashSet<>();
 
         String[] examplePaths = (String[]) inputElement;
         for (final String examplePath : examplePaths) {

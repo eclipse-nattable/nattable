@@ -80,16 +80,16 @@ public class _424_NebulaRichTextIntegrationExample extends AbstractNatExample {
 
         String[] propertyNames = new String[] { "firstName", "lastName", "gender", "married", "description" };
 
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
         propertyToLabelMap.put("married", "Married");
         propertyToLabelMap.put("description", "Description");
 
-        IColumnAccessor<Person> columnAccessor = new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
+        IColumnAccessor<Person> columnAccessor = new ReflectiveColumnPropertyAccessor<>(propertyNames);
         List<Person> persons = PersonService.getPersons(10);
-        IDataProvider bodyDataProvider = new ListDataProvider<Person>(persons, columnAccessor);
+        IDataProvider bodyDataProvider = new ListDataProvider<>(persons, columnAccessor);
 
         DefaultColumnHeaderDataProvider columnHeaderDataProvider =
                 new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);

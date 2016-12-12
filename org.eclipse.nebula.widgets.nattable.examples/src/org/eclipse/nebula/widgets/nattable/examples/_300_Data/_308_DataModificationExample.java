@@ -100,7 +100,7 @@ public class _308_DataModificationExample extends AbstractNatExample {
                 "birthday" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> personPropertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> personPropertyToLabelMap = new HashMap<>();
         personPropertyToLabelMap.put("firstName", "Firstname");
         personPropertyToLabelMap.put("lastName", "Lastname");
         personPropertyToLabelMap.put("gender", "Gender");
@@ -116,7 +116,7 @@ public class _308_DataModificationExample extends AbstractNatExample {
         IDataProvider personRowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> addressPropertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> addressPropertyToLabelMap = new HashMap<>();
         addressPropertyToLabelMap.put("street", "Street");
         addressPropertyToLabelMap.put("housenumber", "Housenumber");
         addressPropertyToLabelMap.put("postalCode", "Postal Code");
@@ -155,9 +155,9 @@ public class _308_DataModificationExample extends AbstractNatExample {
         DefaultBodyLayerStack bodyLayerStack = new DefaultBodyLayerStack(bodyDataLayer);
 
         bodyDataLayer.registerCommandHandler(
-                new DeleteRowCommandHandler<Person>(bodyDataProvider.getList()));
+                new DeleteRowCommandHandler<>(bodyDataProvider.getList()));
         bodyDataLayer.registerCommandHandler(
-                new InsertRowCommandHandler<Person>(bodyDataProvider.getList()));
+                new InsertRowCommandHandler<>(bodyDataProvider.getList()));
 
         // create the column header layer stack
         DataLayer columnHeaderDataLayer = new DataLayer(personColumnHeaderDataProvider);
@@ -226,7 +226,7 @@ public class _308_DataModificationExample extends AbstractNatExample {
                                 @Override
                                 public void widgetSelected(SelectionEvent event) {
                                     int rowPosition = MenuItemProviders.getNatEventData(event).getRowPosition();
-                                    natTable.doCommand(new InsertRowCommand<Person>(bodyDataLayer, rowPosition, PersonService.getPersons(1).get(0)));
+                                    natTable.doCommand(new InsertRowCommand<>(bodyDataLayer, rowPosition, PersonService.getPersons(1).get(0)));
                                 }
                             });
                         }
@@ -305,7 +305,7 @@ public class _308_DataModificationExample extends AbstractNatExample {
 
         @Override
         public ILayerCommand cloneCommand() {
-            return new InsertRowCommand<T>(this);
+            return new InsertRowCommand<>(this);
         }
 
         public T getObject() {

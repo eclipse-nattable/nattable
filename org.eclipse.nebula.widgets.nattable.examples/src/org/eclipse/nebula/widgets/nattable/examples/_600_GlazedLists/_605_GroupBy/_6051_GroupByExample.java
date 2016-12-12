@@ -95,7 +95,7 @@ public class _6051_GroupByExample extends AbstractNatExample {
                 "address.postalCode", "address.city" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -107,10 +107,10 @@ public class _6051_GroupByExample extends AbstractNatExample {
         propertyToLabelMap.put("address.city", "City");
 
         IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
-                new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
+                new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
 
         BodyLayerStack<PersonWithAddress> bodyLayerStack =
-                new BodyLayerStack<PersonWithAddress>(
+                new BodyLayerStack<>(
                         PersonService.getPersonsWithAddress(100), columnPropertyAccessor);
 
         // build the column header layer
@@ -262,17 +262,17 @@ public class _6051_GroupByExample extends AbstractNatExample {
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator
             // will be set by configuration
-            this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+            this.sortedList = new SortedList<>(rowObjectsGlazedList, null);
 
             // Use the GroupByDataLayer instead of the default DataLayer
             GroupByDataLayer<T> bodyDataLayer =
-                    new GroupByDataLayer<T>(getGroupByModel(), this.sortedList, columnPropertyAccessor);
+                    new GroupByDataLayer<>(getGroupByModel(), this.sortedList, columnPropertyAccessor);
             // get the IDataProvider that was created by the GroupByDataLayer
             this.bodyDataProvider = bodyDataLayer.getDataProvider();
 
             // layer for event handling of GlazedLists and PropertyChanges
             GlazedListsEventLayer<T> glazedListsEventLayer =
-                    new GlazedListsEventLayer<T>(bodyDataLayer, this.sortedList);
+                    new GlazedListsEventLayer<>(bodyDataLayer, this.sortedList);
 
             this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
 

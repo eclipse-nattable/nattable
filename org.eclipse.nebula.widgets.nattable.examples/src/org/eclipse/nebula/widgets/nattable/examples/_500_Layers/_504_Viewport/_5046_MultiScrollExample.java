@@ -384,9 +384,9 @@ public class _5046_MultiScrollExample extends AbstractNatExample {
             this.propertyToLabelMap.put("birthday", "Birthday");
 
             IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
-                    new ReflectiveColumnPropertyAccessor<PersonWithAddress>(this.propertyNames);
+                    new ReflectiveColumnPropertyAccessor<>(this.propertyNames);
 
-            this.bodyDataProvider = new ListDataProvider<PersonWithAddress>(values, columnPropertyAccessor);
+            this.bodyDataProvider = new ListDataProvider<>(values, columnPropertyAccessor);
             this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
             this.selectionLayer = new SelectionLayer(this.bodyDataLayer);
             this.viewportLayer = new ViewportLayer(this.selectionLayer);
@@ -426,9 +426,9 @@ public class _5046_MultiScrollExample extends AbstractNatExample {
             this.propertyToLabelMap.put("address.city", "City");
 
             IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
-                    new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(this.propertyNames);
+                    new ExtendedReflectiveColumnPropertyAccessor<>(this.propertyNames);
 
-            this.bodyDataProvider = new ListDataProvider<PersonWithAddress>(values, columnPropertyAccessor);
+            this.bodyDataProvider = new ListDataProvider<>(values, columnPropertyAccessor);
             this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
             this.selectionLayer = new SelectionLayer(this.bodyDataLayer);
             this.viewportLayer = new ViewportLayer(this.selectionLayer);

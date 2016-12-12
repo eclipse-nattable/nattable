@@ -23,7 +23,6 @@ import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnProperty
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
-import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
@@ -195,7 +194,7 @@ public class _762_MultiPrintExample extends AbstractNatExample {
         String[] propertyNames = { "firstName", "lastName", "gender", "married", "birthday" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -203,7 +202,7 @@ public class _762_MultiPrintExample extends AbstractNatExample {
         propertyToLabelMap.put("birthday", "Birthday");
 
         IDataProvider bodyDataProvider =
-                new DefaultBodyDataProvider<Person>(
+                new DefaultBodyDataProvider<>(
                         PersonService.getPersons(3), propertyNames);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
@@ -240,7 +239,7 @@ public class _762_MultiPrintExample extends AbstractNatExample {
                 "address.postalCode", "address.city" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -260,9 +259,9 @@ public class _762_MultiPrintExample extends AbstractNatExample {
         List<PersonWithAddress> data = PersonService.getPersonsWithAddress(100);
 
         IColumnPropertyAccessor<PersonWithAddress> accessor =
-                new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
+                new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
         IDataProvider bodyDataProvider =
-                new ListDataProvider<PersonWithAddress>(data, accessor);
+                new ListDataProvider<>(data, accessor);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
         ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);

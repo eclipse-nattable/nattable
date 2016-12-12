@@ -65,7 +65,7 @@ public class _100_Row_groups extends AbstractNatExample {
         Map<String, String> propertyToLabelMap = RowGroupDataListFixture.getPropertyToLabelMap();
 
         DefaultBodyDataProvider<RowGroupDataFixture> bodyDataProvider =
-                new DefaultBodyDataProvider<RowGroupDataFixture>(RowGroupDataListFixture.getList(2000), propertyNames);
+                new DefaultBodyDataProvider<>(RowGroupDataListFixture.getList(2000), propertyNames);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 
         ColumnReorderLayer columnReorderLayer =
@@ -76,10 +76,10 @@ public class _100_Row_groups extends AbstractNatExample {
         RowHideShowLayer rowHideShowLayer =
                 new RowHideShowLayer(columnHideShowLayer);
         RowGroupModel<RowGroupDataFixture> rowGroupModel =
-                new RowGroupModel<RowGroupDataFixture>();
+                new RowGroupModel<>();
         rowGroupModel.setDataProvider(bodyDataProvider);
         RowGroupExpandCollapseLayer<RowGroupDataFixture> rowExpandCollapseLayer =
-                new RowGroupExpandCollapseLayer<RowGroupDataFixture>(rowHideShowLayer, rowGroupModel);
+                new RowGroupExpandCollapseLayer<>(rowHideShowLayer, rowGroupModel);
 
         SelectionLayer selectionLayer =
                 new SelectionLayer(rowExpandCollapseLayer);
@@ -107,23 +107,23 @@ public class _100_Row_groups extends AbstractNatExample {
         rowHeaderLayer.addConfiguration(new RowHeaderConfiguration());
 
         RowGroupHeaderLayer<RowGroupDataFixture> rowGroupHeaderLayer =
-                new RowGroupHeaderLayer<RowGroupDataFixture>(rowHeaderLayer, selectionLayer, rowGroupModel);
+                new RowGroupHeaderLayer<>(rowHeaderLayer, selectionLayer, rowGroupModel);
         rowGroupHeaderLayer.setColumnWidth(20);
 
         // Create a group of rows for the model.
         RowGroup<RowGroupDataFixture> rowGroup =
-                new RowGroup<RowGroupDataFixture>(rowGroupModel, "Group 1", true);
+                new RowGroup<>(rowGroupModel, "Group 1", true);
         rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(1));
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(2));
         rowGroupModel.addRowGroup(rowGroup);
 
-        rowGroup = new RowGroup<RowGroupDataFixture>(rowGroupModel, "Group 2", true);
+        rowGroup = new RowGroup<>(rowGroupModel, "Group 2", true);
         rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(11));
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(12));
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(13));
         rowGroupModel.addRowGroup(rowGroup);
 
-        rowGroup = new RowGroup<RowGroupDataFixture>(rowGroupModel, "Group 3", false);
+        rowGroup = new RowGroup<>(rowGroupModel, "Group 3", false);
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(18));
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(19));
         rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(20));

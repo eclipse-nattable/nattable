@@ -84,7 +84,7 @@ public class Real_time_data_updates extends AbstractNatExample {
                 .getList(this.defaultDatasetSize));
 
         ConfigRegistry configRegistry = new ConfigRegistry();
-        GlazedListsGridLayer<RowDataFixture> glazedListsGridLayer = new GlazedListsGridLayer<RowDataFixture>(
+        GlazedListsGridLayer<RowDataFixture> glazedListsGridLayer = new GlazedListsGridLayer<>(
                 this.eventList, RowDataListFixture.getPropertyNames(),
                 RowDataListFixture.getPropertyToLabelMap(), configRegistry);
 
@@ -101,12 +101,12 @@ public class Real_time_data_updates extends AbstractNatExample {
                 .getBodyDataProvider();
 
         // Select complete rows
-        RowOnlySelectionConfiguration<RowDataFixture> selectionConfig = new RowOnlySelectionConfiguration<RowDataFixture>();
+        RowOnlySelectionConfiguration<RowDataFixture> selectionConfig = new RowOnlySelectionConfiguration<>();
         selectionLayer.addConfiguration(selectionConfig);
         this.nattable.addConfiguration(new RowOnlySelectionBindings());
 
         // Preserve selection on updates and sort
-        selectionLayer.setSelectionModel(new RowSelectionModel<RowDataFixture>(
+        selectionLayer.setSelectionModel(new RowSelectionModel<>(
                 selectionLayer, bodyDataProvider,
                 new IRowIdAccessor<RowDataFixture>() {
 

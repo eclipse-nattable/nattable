@@ -107,7 +107,7 @@ public class _448_CDateTimeEditorExample extends AbstractNatExample {
                 "columnThreeDate", "columnFourDate", "columnFiveDate", "columnSixCalendar" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("columnOneDate", "Date/Time");
         propertyToLabelMap.put("columnTwoDate", "Date");
         propertyToLabelMap.put("columnThreeDate", "Time");
@@ -180,7 +180,7 @@ public class _448_CDateTimeEditorExample extends AbstractNatExample {
 
         public DateBodyLayerStack(EventList<DateValues> valuesToShow, final String[] propertyNames, ConfigRegistry configRegistry) {
             IDataProvider dataProvider =
-                    new ListDataProvider<DateValues>(valuesToShow, new ReflectiveColumnPropertyAccessor<>(propertyNames));
+                    new ListDataProvider<>(valuesToShow, new ReflectiveColumnPropertyAccessor<>(propertyNames));
             this.bodyDataLayer = new DataLayer(dataProvider);
             this.columnReorderLayer = new ColumnReorderLayer(this.bodyDataLayer);
             this.columnHideShowLayer = new ColumnHideShowLayer(this.columnReorderLayer);

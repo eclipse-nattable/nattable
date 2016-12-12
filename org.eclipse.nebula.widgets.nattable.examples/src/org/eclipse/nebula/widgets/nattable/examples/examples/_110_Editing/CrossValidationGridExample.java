@@ -95,7 +95,7 @@ public class CrossValidationGridExample extends AbstractNatExample {
         String[] propertyNames = { "title", "description", "where", "fromDate", "toDate" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("title", "Title");
         propertyToLabelMap.put("description", "Description");
         propertyToLabelMap.put("where", "Where");
@@ -125,7 +125,7 @@ public class CrossValidationGridExample extends AbstractNatExample {
     }
 
     private List<EventData> createEventData() {
-        List<EventData> result = new ArrayList<EventData>();
+        List<EventData> result = new ArrayList<>();
 
         EventData ed = new EventData();
         ed.setTitle("My correct event");

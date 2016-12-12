@@ -59,7 +59,7 @@ public class Applying_style_to_a_cell extends AbstractNatExample {
         // Label accumulator - adds labels to all cells with the given data
         // value
         CellOverrideLabelAccumulator<RowDataFixture> cellLabelAccumulator =
-                new CellOverrideLabelAccumulator<RowDataFixture>(gridLayer.getBodyDataProvider());
+                new CellOverrideLabelAccumulator<>(gridLayer.getBodyDataProvider());
         cellLabelAccumulator.registerOverride("AAA", 2, CELL_LABEL);
 
         // Register your cell style, against the label applied to the cell

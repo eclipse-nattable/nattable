@@ -80,7 +80,7 @@ public class _000_Column_groups extends AbstractNatExample {
         String[] propertyNames = RowDataListFixture.getPropertyNames();
         Map<String, String> propertyToLabelMap = RowDataListFixture.getPropertyToLabelMap();
         DefaultBodyDataProvider<RowDataFixture> bodyDataProvider =
-                new DefaultBodyDataProvider<RowDataFixture>(RowDataListFixture.getList(200), propertyNames);
+                new DefaultBodyDataProvider<>(RowDataListFixture.getList(200), propertyNames);
         ColumnGroupBodyLayerStack bodyLayer =
                 new ColumnGroupBodyLayerStack(new DataLayer(bodyDataProvider), this.columnGroupModel);
 

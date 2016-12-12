@@ -86,7 +86,7 @@ public class _806_SortableColumnGroupingExample extends AbstractNatExample {
         };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -102,17 +102,17 @@ public class _806_SortableColumnGroupingExample extends AbstractNatExample {
         // as body layer is also working.
 
         EventList<Person> persons = GlazedLists.eventList(PersonService.getPersons(10));
-        SortedList<Person> sortedList = new SortedList<Person>(persons, null);
+        SortedList<Person> sortedList = new SortedList<>(persons, null);
 
         IColumnPropertyAccessor<Person> accessor =
-                new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
         IDataProvider bodyDataProvider =
-                new ListDataProvider<Person>(sortedList, accessor);
+                new ListDataProvider<>(sortedList, accessor);
         DataLayer bodyDataLayer =
                 new DataLayer(bodyDataProvider);
 
         GlazedListsEventLayer<Person> eventLayer =
-                new GlazedListsEventLayer<Person>(bodyDataLayer, sortedList);
+                new GlazedListsEventLayer<>(bodyDataLayer, sortedList);
 
         ColumnReorderLayer columnReorderLayer =
                 new ColumnReorderLayer(eventLayer);
@@ -137,9 +137,9 @@ public class _806_SortableColumnGroupingExample extends AbstractNatExample {
 
         ConfigRegistry configRegistry = new ConfigRegistry();
         SortHeaderLayer<Person> sortHeaderLayer =
-                new SortHeaderLayer<Person>(
+                new SortHeaderLayer<>(
                         columnHeaderLayer,
-                        new GlazedListsSortModel<Person>(
+                        new GlazedListsSortModel<>(
                                 sortedList,
                                 accessor,
                                 configRegistry,

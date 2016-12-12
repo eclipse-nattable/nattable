@@ -47,8 +47,8 @@ import org.eclipse.swt.widgets.Shell;
 public class TabbedNatExampleRunner {
 
     private static CTabFolder tabFolder;
-    private static Map<INatExample, Control> exampleControlMap = new HashMap<INatExample, Control>();
-    private static Map<String, INatExample> examplePathMap = new HashMap<String, INatExample>();
+    private static Map<INatExample, Control> exampleControlMap = new HashMap<>();
+    private static Map<String, INatExample> examplePathMap = new HashMap<>();
     private static Link link;;
 
     public static void run(String... examplePaths)

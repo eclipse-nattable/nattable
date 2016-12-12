@@ -101,17 +101,17 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
         String[] propertyNames = { "name", "age", "money", "gender", "city" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("name", "Name");
         propertyToLabelMap.put("age", "Age");
         propertyToLabelMap.put("money", "Money");
         propertyToLabelMap.put("gender", "Gender");
         propertyToLabelMap.put("city", "City");
 
-        IColumnPropertyAccessor<MyRowObject> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<MyRowObject>(
+        IColumnPropertyAccessor<MyRowObject> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(
                 propertyNames);
 
-        BodyLayerStack<MyRowObject> bodyLayerStack = new BodyLayerStack<MyRowObject>(
+        BodyLayerStack<MyRowObject> bodyLayerStack = new BodyLayerStack<>(
                 createMyRowObjects(50), columnPropertyAccessor);
         // add a label accumulator to be able to register converter
         bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(
@@ -127,8 +127,8 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
 
         // Note: The column header layer is wrapped in a filter row composite.
         // This plugs in the filter row functionality
-        FilterRowHeaderComposite<MyRowObject> filterRowHeaderLayer = new FilterRowHeaderComposite<MyRowObject>(
-                new DefaultGlazedListsFilterStrategy<MyRowObject>(
+        FilterRowHeaderComposite<MyRowObject> filterRowHeaderLayer = new FilterRowHeaderComposite<>(
+                new DefaultGlazedListsFilterStrategy<>(
                         bodyLayerStack.getFilterList(), columnPropertyAccessor,
                         configRegistry), columnHeaderLayer,
                 columnHeaderDataLayer.getDataProvider(), configRegistry);
@@ -207,17 +207,17 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator
             // will be set by configuration
-            SortedList<T> sortedList = new SortedList<T>(rowObjectsGlazedList,
+            SortedList<T> sortedList = new SortedList<>(rowObjectsGlazedList,
                     null);
             // wrap the SortedList with the FilterList
-            this.filterList = new FilterList<T>(sortedList);
+            this.filterList = new FilterList<>(sortedList);
 
-            this.bodyDataProvider = new ListDataProvider<T>(this.filterList,
+            this.bodyDataProvider = new ListDataProvider<>(this.filterList,
                     columnPropertyAccessor);
             this.bodyDataLayer = new DataLayer(getBodyDataProvider());
 
             // layer for event handling of GlazedLists and PropertyChanges
-            GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
+            GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<>(
                     getBodyDataLayer(), this.filterList);
 
             this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
@@ -417,7 +417,7 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
     }
 
     private List<MyRowObject> createMyRowObjects(int amount) {
-        List<MyRowObject> result = new ArrayList<MyRowObject>();
+        List<MyRowObject> result = new ArrayList<>();
 
         MyRowObject obj = null;
         for (int i = 0; i < amount; i++) {
@@ -512,7 +512,7 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
 
     }
 
-    private List<City> possibleCities = new ArrayList<City>();
+    private List<City> possibleCities = new ArrayList<>();
     {
         this.possibleCities.add(new City(1111, "Springfield"));
         this.possibleCities.add(new City(2222, "Shelbyville"));

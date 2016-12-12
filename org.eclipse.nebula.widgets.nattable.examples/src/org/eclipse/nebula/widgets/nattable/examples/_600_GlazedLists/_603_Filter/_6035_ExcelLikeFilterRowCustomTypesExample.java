@@ -103,17 +103,17 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
         String[] propertyNames = { "name", "age", "money", "gender", "city" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("name", "Name");
         propertyToLabelMap.put("age", "Age");
         propertyToLabelMap.put("money", "Money");
         propertyToLabelMap.put("gender", "Gender");
         propertyToLabelMap.put("city", "City");
 
-        IColumnPropertyAccessor<MyRowObject> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<MyRowObject>(
+        IColumnPropertyAccessor<MyRowObject> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(
                 propertyNames);
 
-        BodyLayerStack<MyRowObject> bodyLayerStack = new BodyLayerStack<MyRowObject>(
+        BodyLayerStack<MyRowObject> bodyLayerStack = new BodyLayerStack<>(
                 createMyRowObjects(50), columnPropertyAccessor);
         // add a label accumulator to be able to register converter
         bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(
@@ -128,7 +128,7 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
                 bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // example on how to configure a different icon if a filter is applied
-        ComboBoxFilterRowHeaderComposite<MyRowObject> filterRowHeaderLayer = new ComboBoxFilterRowHeaderComposite<MyRowObject>(
+        ComboBoxFilterRowHeaderComposite<MyRowObject> filterRowHeaderLayer = new ComboBoxFilterRowHeaderComposite<>(
                 bodyLayerStack.getFilterList(),
                 bodyLayerStack.getBodyDataLayer(),
                 bodyLayerStack.getSortedList(), columnPropertyAccessor,
@@ -232,16 +232,16 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator
             // will be set by configuration
-            this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+            this.sortedList = new SortedList<>(rowObjectsGlazedList, null);
             // wrap the SortedList with the FilterList
-            this.filterList = new FilterList<T>(getSortedList());
+            this.filterList = new FilterList<>(getSortedList());
 
-            this.bodyDataProvider = new ListDataProvider<T>(this.filterList,
+            this.bodyDataProvider = new ListDataProvider<>(this.filterList,
                     columnPropertyAccessor);
             this.bodyDataLayer = new DataLayer(getBodyDataProvider());
 
             // layer for event handling of GlazedLists and PropertyChanges
-            GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
+            GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<>(
                     this.bodyDataLayer, this.filterList);
 
             this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
@@ -397,7 +397,7 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
     }
 
     private List<MyRowObject> createMyRowObjects(int amount) {
-        List<MyRowObject> result = new ArrayList<MyRowObject>();
+        List<MyRowObject> result = new ArrayList<>();
 
         MyRowObject obj = null;
         for (int i = 0; i < amount; i++) {
@@ -492,7 +492,7 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
 
     }
 
-    private List<City> possibleCities = new ArrayList<City>();
+    private List<City> possibleCities = new ArrayList<>();
     {
         this.possibleCities.add(new City(1111, "Springfield"));
         this.possibleCities.add(new City(2222, "Shelbyville"));

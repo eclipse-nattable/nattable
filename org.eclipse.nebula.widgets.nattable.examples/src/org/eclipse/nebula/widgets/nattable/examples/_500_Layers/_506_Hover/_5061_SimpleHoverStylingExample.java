@@ -16,7 +16,6 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
-import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
@@ -65,7 +64,7 @@ public class _5061_SimpleHoverStylingExample extends AbstractNatExample {
         // underlying layer. But in this case using the ViewportLayer directly
         // as body layer is also working.
         IDataProvider bodyDataProvider =
-                new DefaultBodyDataProvider<Person>(
+                new DefaultBodyDataProvider<>(
                         PersonService.getPersons(10),
                         propertyNames);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);

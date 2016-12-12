@@ -38,7 +38,7 @@ public class Derived_or_computed_column_data extends AbstractNatExample {
 
     @Override
     public Control createExampleControl(Composite parent) {
-        List<Person> myList = new ArrayList<Person>();
+        List<Person> myList = new ArrayList<>();
         myList.add(new Person("Homer", "Simpson", "Sargeant", 1234567890L));
         myList.add(new Person("Waylon", "Smithers", "Admiral", 6666666666L));
         myList.add(new Person("Bart", "Smithers", "General", 9125798342L));
@@ -48,7 +48,7 @@ public class Derived_or_computed_column_data extends AbstractNatExample {
         String[] propertyNames = { "firstName", "lastName", "rank",
                 "serialNumber" };
 
-        final IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Person>(
+        final IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(
                 propertyNames);
 
         // Add derived 'fullName' column
@@ -104,7 +104,7 @@ public class Derived_or_computed_column_data extends AbstractNatExample {
             }
         };
 
-        final IDataProvider listDataProvider = new ListDataProvider<Person>(
+        final IDataProvider listDataProvider = new ListDataProvider<>(
                 myList, derivedColumnPropertyAccessor);
 
         // Column header data provider includes derived properties

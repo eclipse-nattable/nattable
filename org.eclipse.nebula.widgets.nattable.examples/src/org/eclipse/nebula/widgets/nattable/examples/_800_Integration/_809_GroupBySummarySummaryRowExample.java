@@ -170,7 +170,7 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
                 "birthday" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("age", "Age");
@@ -180,13 +180,13 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         propertyToLabelMap.put("birthday", "Birthday");
 
         final IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor =
-                new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(propertyNames);
+                new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
 
         // to enable the group by summary feature, the GroupByDataLayer needs to
         // know the ConfigRegistry
         List<ExtendedPersonWithAddress> persons = PersonService.getExtendedPersonsWithAddress(10000);
         final BodyLayerStack<ExtendedPersonWithAddress> bodyLayerStack =
-                new BodyLayerStack<ExtendedPersonWithAddress>(persons, columnPropertyAccessor, configRegistry);
+                new BodyLayerStack<>(persons, columnPropertyAccessor, configRegistry);
 
         bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(new ColumnLabelAccumulator());
 
@@ -200,9 +200,9 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
 
         // add sorting
         SortHeaderLayer<ExtendedPersonWithAddress> sortHeaderLayer =
-                new SortHeaderLayer<ExtendedPersonWithAddress>(
+                new SortHeaderLayer<>(
                         columnHeaderLayer,
-                        new GlazedListsSortModel<ExtendedPersonWithAddress>(
+                        new GlazedListsSortModel<>(
                                 bodyLayerStack.getSortedList(),
                                 columnPropertyAccessor,
                                 configRegistry,
@@ -326,7 +326,7 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         natTable.addConfiguration(new SingleClickSortConfiguration());
 
         this.sumMoneyGroupBySummaryProvider =
-                new SummationGroupBySummaryProvider<ExtendedPersonWithAddress>(columnPropertyAccessor);
+                new SummationGroupBySummaryProvider<>(columnPropertyAccessor);
         this.avgMoneyGroupBySummaryProvider = new AverageMoneyGroupBySummaryProvider();
 
         // create a new IDataProvider that operates on the basic underlying list
@@ -334,7 +334,7 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         // is operating on the TreeList, and on collapsing a node, the children
         // will be not visible, which has effect on the summary value.
         final IDataProvider summaryDataProvider =
-                new ListDataProvider<ExtendedPersonWithAddress>(bodyLayerStack.getSortedList(), columnPropertyAccessor);
+                new ListDataProvider<>(bodyLayerStack.getSortedList(), columnPropertyAccessor);
         this.sumMoneySummaryProvider = new SummationSummaryProvider(summaryDataProvider, false);
         this.avgMoneySummaryProvider = new AverageMoneySummaryProvider(summaryDataProvider);
 
@@ -588,18 +588,18 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator
             // will be set by configuration
-            this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+            this.sortedList = new SortedList<>(rowObjectsGlazedList, null);
 
             // Use the GroupByDataLayer instead of the default DataLayer
             this.bodyDataLayer =
-                    new GroupByDataLayer<T>(getGroupByModel(), this.sortedList, columnPropertyAccessor, configRegistry);
+                    new GroupByDataLayer<>(getGroupByModel(), this.sortedList, columnPropertyAccessor, configRegistry);
             // get the IDataProvider that was created by the GroupByDataLayer
             this.bodyDataProvider =
                     this.bodyDataLayer.getDataProvider();
 
             // layer for event handling of GlazedLists and PropertyChanges
             this.glazedListsEventLayer =
-                    new GlazedListsEventLayer<T>(this.bodyDataLayer, this.sortedList);
+                    new GlazedListsEventLayer<>(this.bodyDataLayer, this.sortedList);
 
             // NOTE:
             // we need to tell the GroupByDataLayer to clear its cache if

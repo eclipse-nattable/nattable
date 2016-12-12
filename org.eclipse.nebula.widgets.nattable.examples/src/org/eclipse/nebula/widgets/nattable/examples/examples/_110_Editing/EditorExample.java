@@ -98,7 +98,7 @@ public class EditorExample extends AbstractNatExample {
                 "favouriteDrinks", "filename" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("password", "Password");
@@ -114,7 +114,7 @@ public class EditorExample extends AbstractNatExample {
         propertyToLabelMap.put("filename", "Filename");
 
         IDataProvider bodyDataProvider =
-                new ListDataProvider<ExtendedPersonWithAddress>(
+                new ListDataProvider<>(
                         PersonService.getExtendedPersonsWithAddress(10),
                         new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(propertyNames));
 
@@ -199,7 +199,7 @@ class EditorConfiguration extends AbstractRegistryConfiguration {
                 EditorExample.COLUMN_TWO_LABEL);
 
         // configure a custom message for the multi edit dialog
-        Map<String, Object> editDialogSettings = new HashMap<String, Object>();
+        Map<String, Object> editDialogSettings = new HashMap<>();
         editDialogSettings.put(ICellEditDialog.DIALOG_MESSAGE, "Please specify the lastname in here:");
 
         configRegistry.registerConfigAttribute(
@@ -266,7 +266,7 @@ class EditorConfiguration extends AbstractRegistryConfiguration {
 
         // configure custom dialog settings
         Display display = Display.getCurrent();
-        Map<String, Object> editDialogSettings = new HashMap<String, Object>();
+        Map<String, Object> editDialogSettings = new HashMap<>();
         editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_TITLE, "My custom value");
         editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_ICON, display.getSystemImage(SWT.ICON_WARNING));
         editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_RESIZABLE, Boolean.TRUE);

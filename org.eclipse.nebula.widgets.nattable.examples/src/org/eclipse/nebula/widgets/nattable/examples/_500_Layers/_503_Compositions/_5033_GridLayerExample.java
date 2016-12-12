@@ -63,7 +63,7 @@ public class _5033_GridLayerExample extends AbstractNatExample {
                 "birthday" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -71,13 +71,13 @@ public class _5033_GridLayerExample extends AbstractNatExample {
         propertyToLabelMap.put("birthday", "Birthday");
 
         IColumnPropertyAccessor<Person> columnPropertyAccessor =
-                new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
 
         final List<Person> data = PersonService.getPersons(10);
 
         // create the body layer stack
         IDataProvider bodyDataProvider =
-                new ListDataProvider<Person>(data, columnPropertyAccessor);
+                new ListDataProvider<>(data, columnPropertyAccessor);
         final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         final SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
         ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);

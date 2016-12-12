@@ -125,7 +125,7 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
                 "columnThreeNumber", "columnFourNumber", "columnFiveNumber" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("columnOneNumber", "100%");
         propertyToLabelMap.put("columnTwoNumber", "Value One");
         propertyToLabelMap.put("columnThreeNumber", "Value Two");
@@ -336,7 +336,7 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
 
         public CalculatingBodyLayerStack(EventList<NumberValues> valuesToShow, ConfigRegistry configRegistry) {
             final CachedValueCalculatingDataProvider<NumberValues> dataProvider =
-                    new CachedValueCalculatingDataProvider<NumberValues>(valuesToShow, new BasicDataColumnAccessor());
+                    new CachedValueCalculatingDataProvider<>(valuesToShow, new BasicDataColumnAccessor());
             this.bodyDataLayer = new DataLayer(dataProvider);
             // adding this listener will trigger updates on data changes
             this.bodyDataLayer.addLayerListener(new ILayerListener() {
@@ -367,7 +367,7 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
             dataProvider.setCacheEventLayer(this.bodyDataLayer);
 
             this.glazedListsEventLayer =
-                    new GlazedListsEventLayer<NumberValues>(this.bodyDataLayer, valuesToShow);
+                    new GlazedListsEventLayer<>(this.bodyDataLayer, valuesToShow);
             this.summaryRowLayer =
                     new SummaryRowLayer(this.glazedListsEventLayer, configRegistry, false);
             this.summaryRowLayer.addConfiguration(

@@ -68,7 +68,7 @@ public class _5052_RowSelectionExample extends AbstractNatExample {
                 "married", "birthday" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -76,13 +76,13 @@ public class _5052_RowSelectionExample extends AbstractNatExample {
         propertyToLabelMap.put("birthday", "Birthday");
 
         IColumnPropertyAccessor<Person> columnPropertyAccessor =
-                new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
 
         final List<Person> data = PersonService.getPersons(10);
 
         // create the body layer stack
         IRowDataProvider<Person> bodyDataProvider =
-                new ListDataProvider<Person>(data, columnPropertyAccessor);
+                new ListDataProvider<>(data, columnPropertyAccessor);
         final DataLayer bodyDataLayer =
                 new DataLayer(bodyDataProvider);
         // create a SelectionLayer without using the default configuration
@@ -95,7 +95,7 @@ public class _5052_RowSelectionExample extends AbstractNatExample {
 
         // use a RowSelectionModel that will perform row selections and is able
         // to identify a row via unique ID
-        selectionLayer.setSelectionModel(new RowSelectionModel<Person>(
+        selectionLayer.setSelectionModel(new RowSelectionModel<>(
                 selectionLayer, bodyDataProvider, new IRowIdAccessor<Person>() {
 
                     @Override

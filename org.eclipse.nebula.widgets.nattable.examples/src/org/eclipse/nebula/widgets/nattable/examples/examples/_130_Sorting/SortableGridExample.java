@@ -89,7 +89,7 @@ public class SortableGridExample extends AbstractNatExample {
 
         ConfigRegistry configRegistry = new ConfigRegistry();
         GlazedListsGridLayer<RowDataFixture> glazedListsGridLayer =
-                new GlazedListsGridLayer<RowDataFixture>(
+                new GlazedListsGridLayer<>(
                         this.rowObjectsGlazedList,
                         RowDataListFixture.getPropertyNames(),
                         RowDataListFixture.getPropertyToLabelMap(),

@@ -58,12 +58,12 @@ public class _5032_HorizontalCompositionExample extends AbstractNatExample {
                 "birthday" };
 
         IColumnPropertyAccessor<Person> columnPropertyAccessor =
-                new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
 
         final List<Person> data = PersonService.getPersons(10);
 
         IRowDataProvider<Person> bodyDataProvider =
-                new ListDataProvider<Person>(data, columnPropertyAccessor);
+                new ListDataProvider<>(data, columnPropertyAccessor);
         final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         final SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
         ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);

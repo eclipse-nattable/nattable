@@ -69,9 +69,9 @@ public class _5121_SummaryRowExample extends AbstractNatExample {
                 "columnThreeNumber", "columnFourNumber", "columnFiveNumber" };
 
         IColumnPropertyAccessor<NumberValues> cpa =
-                new ReflectiveColumnPropertyAccessor<NumberValues>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
         IDataProvider dataProvider =
-                new ListDataProvider<NumberValues>(createNumberValueList(), cpa);
+                new ListDataProvider<>(createNumberValueList(), cpa);
 
         ConfigRegistry configRegistry = new ConfigRegistry();
 
@@ -93,7 +93,7 @@ public class _5121_SummaryRowExample extends AbstractNatExample {
     }
 
     private List<NumberValues> createNumberValueList() {
-        List<NumberValues> result = new ArrayList<NumberValues>();
+        List<NumberValues> result = new ArrayList<>();
 
         NumberValues nv = new NumberValues();
         nv.setColumnOneNumber(5);

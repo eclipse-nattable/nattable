@@ -116,7 +116,7 @@ public class _802_CalculatingGridExample extends AbstractNatExample {
                 "columnThreeNumber", "columnFourNumber", "columnFiveNumber" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("columnOneNumber", "100%");
         propertyToLabelMap.put("columnTwoNumber", "Value One");
         propertyToLabelMap.put("columnThreeNumber", "Value Two");
@@ -261,9 +261,9 @@ public class _802_CalculatingGridExample extends AbstractNatExample {
         private final ViewportLayer viewportLayer;
 
         public CalculatingBodyLayerStack(EventList<NumberValues> valuesToShow, ConfigRegistry configRegistry) {
-            IDataProvider dataProvider = new ListDataProvider<NumberValues>(valuesToShow, new CalculatingDataProvider());
+            IDataProvider dataProvider = new ListDataProvider<>(valuesToShow, new CalculatingDataProvider());
             this.bodyDataLayer = new DataLayer(dataProvider);
-            this.glazedListsEventLayer = new GlazedListsEventLayer<NumberValues>(this.bodyDataLayer, valuesToShow);
+            this.glazedListsEventLayer = new GlazedListsEventLayer<>(this.bodyDataLayer, valuesToShow);
             this.summaryRowLayer = new SummaryRowLayer(this.glazedListsEventLayer, configRegistry, false);
             this.summaryRowLayer.addConfiguration(new CalculatingSummaryRowConfiguration(this.bodyDataLayer.getDataProvider()));
             this.columnReorderLayer = new ColumnReorderLayer(this.summaryRowLayer);

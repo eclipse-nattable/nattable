@@ -75,7 +75,7 @@ public class _606_GlazedListsRowHideShowExample extends AbstractNatExample {
         String[] propertyNames = { "firstName", "lastName", "gender", "married", "birthday" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -91,11 +91,11 @@ public class _606_GlazedListsRowHideShowExample extends AbstractNatExample {
         // first wrap the base list in a GlazedLists EventList and a FilterList
         // so it is possible to filter
         EventList<Person> eventList = GlazedLists.eventList(PersonService.getPersons(10));
-        FilterList<Person> filterList = new FilterList<Person>(eventList);
+        FilterList<Person> filterList = new FilterList<>(eventList);
 
         // use the GlazedListsDataProvider for some performance tweaks
         final IRowDataProvider<Person> bodyDataProvider =
-                new ListDataProvider<Person>(filterList, new ReflectiveColumnPropertyAccessor<Person>(propertyNames));
+                new ListDataProvider<>(filterList, new ReflectiveColumnPropertyAccessor<Person>(propertyNames));
         // create the IRowIdAccessor that is necessary for row hide/show
         final IRowIdAccessor<Person> rowIdAccessor = new IRowIdAccessor<Person>() {
             @Override
@@ -109,10 +109,10 @@ public class _606_GlazedListsRowHideShowExample extends AbstractNatExample {
         // add a DetailGlazedListsEventLayer event layer that is responsible for
         // updating the grid on list changes
         DetailGlazedListsEventLayer<Person> glazedListsEventLayer =
-                new DetailGlazedListsEventLayer<Person>(bodyDataLayer, filterList);
+                new DetailGlazedListsEventLayer<>(bodyDataLayer, filterList);
 
         GlazedListsRowHideShowLayer<Person> rowHideShowLayer =
-                new GlazedListsRowHideShowLayer<Person>(glazedListsEventLayer, bodyDataProvider, rowIdAccessor, filterList);
+                new GlazedListsRowHideShowLayer<>(glazedListsEventLayer, bodyDataProvider, rowIdAccessor, filterList);
 
         SelectionLayer selectionLayer = new SelectionLayer(rowHideShowLayer);
         ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);

@@ -124,7 +124,7 @@ public class _801_VerticalCompositionWithFeaturesExample extends AbstractNatExam
         };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -132,7 +132,7 @@ public class _801_VerticalCompositionWithFeaturesExample extends AbstractNatExam
         propertyToLabelMap.put("birthday", "Birthday");
 
         IColumnPropertyAccessor<Person> columnPropertyAccessor =
-                new ExtendedReflectiveColumnPropertyAccessor<Person>(propertyNames);
+                new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
 
         List<Person> values = PersonService.getPersons(10);
         final EventList<Person> eventList = GlazedLists.eventList(values);
@@ -140,17 +140,17 @@ public class _801_VerticalCompositionWithFeaturesExample extends AbstractNatExam
 
         // use the SortedList constructor with 'null' for the Comparator because
         // the Comparator will be set by configuration
-        SortedList<Person> sortedList = new SortedList<Person>(rowObjectsGlazedList, null);
+        SortedList<Person> sortedList = new SortedList<>(rowObjectsGlazedList, null);
         // wrap the SortedList with the FilterList
-        FilterList<Person> filterList = new FilterList<Person>(sortedList);
+        FilterList<Person> filterList = new FilterList<>(sortedList);
 
         IRowDataProvider<Person> bodyDataProvider =
-                new ListDataProvider<Person>(filterList, columnPropertyAccessor);
+                new ListDataProvider<>(filterList, columnPropertyAccessor);
         final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
 
         GlazedListsEventLayer<Person> eventLayer =
-                new GlazedListsEventLayer<Person>(bodyDataLayer, filterList);
+                new GlazedListsEventLayer<>(bodyDataLayer, filterList);
         final SelectionLayer selectionLayer =
                 new SelectionLayer(eventLayer);
         ViewportLayer viewportLayer =
@@ -165,9 +165,9 @@ public class _801_VerticalCompositionWithFeaturesExample extends AbstractNatExam
 
         // add sorting
         SortHeaderLayer<Person> sortHeaderLayer =
-                new SortHeaderLayer<Person>(
+                new SortHeaderLayer<>(
                         columnHeaderLayer,
-                        new GlazedListsSortModel<Person>(
+                        new GlazedListsSortModel<>(
                                 sortedList,
                                 columnPropertyAccessor,
                                 configRegistry,
@@ -176,8 +176,8 @@ public class _801_VerticalCompositionWithFeaturesExample extends AbstractNatExam
 
         // add the filter row functionality
         final FilterRowHeaderComposite<Person> filterRowHeaderLayer =
-                new FilterRowHeaderComposite<Person>(
-                        new DefaultGlazedListsFilterStrategy<Person>(
+                new FilterRowHeaderComposite<>(
+                        new DefaultGlazedListsFilterStrategy<>(
                                 filterList,
                                 columnPropertyAccessor,
                                 configRegistry),
@@ -258,7 +258,7 @@ public class _801_VerticalCompositionWithFeaturesExample extends AbstractNatExam
         natTable.configure();
 
         final RowSelectionProvider<Person> selectionProvider =
-                new RowSelectionProvider<Person>(selectionLayer, bodyDataProvider, false);
+                new RowSelectionProvider<>(selectionLayer, bodyDataProvider, false);
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 

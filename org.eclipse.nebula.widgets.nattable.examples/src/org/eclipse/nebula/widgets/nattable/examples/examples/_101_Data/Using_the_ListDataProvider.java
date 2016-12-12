@@ -43,7 +43,7 @@ public class Using_the_ListDataProvider extends AbstractNatExample {
 
     @Override
     public Control createExampleControl(Composite parent) {
-        List<Person> myList = new ArrayList<Person>();
+        List<Person> myList = new ArrayList<>();
         myList.add(new Person("Homer", "Simpson", "Sargeant", 1234567890L));
         myList.add(new Person("Waylon", "Smithers", "Admiral", 6666666666L));
         myList.add(new Person("Bart", "Smithers", "General", 9125798342L));
@@ -53,9 +53,9 @@ public class Using_the_ListDataProvider extends AbstractNatExample {
         String[] propertyNames = { "firstName", "lastName", "rank",
                 "serialNumber" };
 
-        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Person>(
+        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(
                 propertyNames);
-        IDataProvider listDataProvider = new ListDataProvider<Person>(myList,
+        IDataProvider listDataProvider = new ListDataProvider<>(myList,
                 columnPropertyAccessor);
         ILayer layer = new DataLayer(listDataProvider);
 

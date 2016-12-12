@@ -69,7 +69,7 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
     private final Timer timer = new Timer();
 
     private final EventList<Tuple> baseTupleList;
-    private final List<String> headers = new ArrayList<String>();
+    private final List<String> headers = new ArrayList<>();
     private final BasicEventList<Tuple> eventList;
 
     public BlinkingGlazedListExample() {
@@ -78,7 +78,7 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
         this.headers.add("Price");
         this.headers.add("Quantity");
 
-        this.eventList = new BasicEventList<Tuple>();
+        this.eventList = new BasicEventList<>();
         this.baseTupleList = GlazedLists.threadSafeList(this.eventList);
     }
 
@@ -103,19 +103,19 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
 
         ConfigRegistry configRegistry = new ConfigRegistry();
 
-        ObservableElementList<Tuple> observableTupleList = new ObservableElementList<Tuple>(
+        ObservableElementList<Tuple> observableTupleList = new ObservableElementList<>(
                 this.baseTupleList, GlazedLists.beanConnector(Tuple.class));
         TupleColumnPropertyAccessor columnPropertyAccessor = new TupleColumnPropertyAccessor();
-        ListDataProvider<Tuple> bodyDataProvider = new ListDataProvider<Tuple>(
+        ListDataProvider<Tuple> bodyDataProvider = new ListDataProvider<>(
                 observableTupleList, columnPropertyAccessor);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 
         // Enable capturing glazed list update events
-        GlazedListsEventLayer<Tuple> glazedListEventsLayer = new GlazedListsEventLayer<Tuple>(
+        GlazedListsEventLayer<Tuple> glazedListEventsLayer = new GlazedListsEventLayer<>(
                 bodyDataLayer, this.baseTupleList);
 
         // Enable blinking
-        final BlinkLayer<Tuple> blinkingLayer = new BlinkLayer<Tuple>(
+        final BlinkLayer<Tuple> blinkingLayer = new BlinkLayer<>(
                 glazedListEventsLayer, bodyDataProvider, getRowIdAccessor(),
                 columnPropertyAccessor, configRegistry);
 

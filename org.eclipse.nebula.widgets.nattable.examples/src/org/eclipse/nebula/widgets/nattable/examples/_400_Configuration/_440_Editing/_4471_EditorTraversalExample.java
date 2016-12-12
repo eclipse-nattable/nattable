@@ -71,14 +71,14 @@ public class _4471_EditorTraversalExample extends AbstractNatExample {
         String[] propertyNames = { "firstName", "lastName", "birthday", "married", "gender" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("married", "Married");
         propertyToLabelMap.put("gender", "Gender");
         propertyToLabelMap.put("birthday", "Birthday");
 
-        IRowDataProvider<Person> bodyDataProvider = new ListDataProvider<Person>(
+        IRowDataProvider<Person> bodyDataProvider = new ListDataProvider<>(
                 PersonService.getPersons(10),
                 new ExtendedReflectiveColumnPropertyAccessor<Person>(propertyNames));
 

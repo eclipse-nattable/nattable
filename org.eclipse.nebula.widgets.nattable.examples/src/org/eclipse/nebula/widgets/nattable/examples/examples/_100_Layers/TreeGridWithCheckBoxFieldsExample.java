@@ -107,24 +107,24 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
         // Underlying data source
         createDatums();
         EventList<Datum> eventList = GlazedLists.eventList(this.datums.values());
-        SortedList<Datum> sortedList = new SortedList<Datum>(eventList, null);
+        SortedList<Datum> sortedList = new SortedList<>(eventList, null);
         // TreeList <RowDataFixture> treeList = new
         // TreeList<RowDataFixture>(eventList, new RowDataFixtureTreeFormat(),
         // new RowDataFixtureExpansionModel());
 
         String[] propertyNames = new String[] { "self", "bar" };
-        IColumnPropertyAccessor<Datum> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Datum>(propertyNames);
+        IColumnPropertyAccessor<Datum> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(propertyNames);
 
         // Column header layer
         IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames);
         DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
 
-        ISortModel sortModel = new GlazedListsSortModel<Datum>(sortedList, columnPropertyAccessor, configRegistry, columnHeaderDataLayer);
+        ISortModel sortModel = new GlazedListsSortModel<>(sortedList, columnPropertyAccessor, configRegistry, columnHeaderDataLayer);
 
-        final TreeList<Datum> treeList = new TreeList<Datum>(sortedList, new DatumTreeFormat(sortModel), new DatumExpansionModel());
-        GlazedListTreeData<Datum> treeData = new GlazedListTreeData<Datum>(treeList);
+        final TreeList<Datum> treeList = new TreeList<>(sortedList, new DatumTreeFormat(sortModel), new DatumExpansionModel());
+        GlazedListTreeData<Datum> treeData = new GlazedListTreeData<>(treeList);
 
-        ListDataProvider<Datum> bodyDataProvider = new ListDataProvider<Datum>(treeList, columnPropertyAccessor);
+        ListDataProvider<Datum> bodyDataProvider = new ListDataProvider<>(treeList, columnPropertyAccessor);
         final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 
         // Handle update of CheckBoxField objects in column 0
@@ -155,7 +155,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
         // Hide/Show or GlazedList TreeList Hide/Show
         // TreeLayer treeLayer = new TreeLayer(selectionLayer, new
         // TreeRowModel<Datum>(treeData), true);
-        final TreeLayer treeLayer = new TreeLayer(selectionLayer, new GlazedListTreeRowModel<Datum>(treeData));
+        final TreeLayer treeLayer = new TreeLayer(selectionLayer, new GlazedListTreeRowModel<>(treeData));
 
         ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
 
@@ -167,7 +167,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
         columnHeaderDataLayer.setConfigLabelAccumulator(labelAccumulator);
 
         // Register labels
-        SortHeaderLayer<Datum> sortHeaderLayer = new SortHeaderLayer<Datum>(columnHeaderLayer, sortModel, false);
+        SortHeaderLayer<Datum> sortHeaderLayer = new SortHeaderLayer<>(columnHeaderLayer, sortModel, false);
 
         // Row header layer
         DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
@@ -317,7 +317,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
 
         @Override
         public Comparator<Datum> getComparator(int depth) {
-            return new SortableTreeComparator<Datum>(
+            return new SortableTreeComparator<>(
                     GlazedLists.beanPropertyComparator(Datum.class, "self"),
                     this.sortModel);
         }
@@ -358,7 +358,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
     public class Datum implements Comparable<Datum> {
 
         private final Datum parent;
-        private final List<Datum> children = new ArrayList<Datum>();
+        private final List<Datum> children = new ArrayList<>();
 
         private final String name;
         private boolean on;
@@ -467,7 +467,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
 
     }
 
-    private Map<String, Datum> datums = new HashMap<String, Datum>();
+    private Map<String, Datum> datums = new HashMap<>();
 
     private void createDatum(String parent, String foo, boolean fooFlag, int bar) {
         Datum datum = new Datum(this.datums.get(parent), foo, fooFlag, bar);

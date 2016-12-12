@@ -81,7 +81,7 @@ public class _5045_ScrollableRowHeaderExample extends AbstractNatExample {
         String[] propertyNames = { "firstName", "lastName", "gender", "married", "birthday" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -89,10 +89,10 @@ public class _5045_ScrollableRowHeaderExample extends AbstractNatExample {
         propertyToLabelMap.put("birthday", "Birthday");
 
         IColumnPropertyAccessor<Person> columnPropertyAccessor =
-                new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
 
         IDataProvider bodyDataProvider =
-                new ListDataProvider<Person>(PersonService.getPersons(10), columnPropertyAccessor);
+                new ListDataProvider<>(PersonService.getPersons(10), columnPropertyAccessor);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
         ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);

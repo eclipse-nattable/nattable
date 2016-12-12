@@ -72,7 +72,7 @@ public class _5113_RowGroupingExample extends AbstractNatExample {
                 "married", "birthday" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -85,7 +85,7 @@ public class _5113_RowGroupingExample extends AbstractNatExample {
         // underlying layer. But in this case using the ViewportLayer directly
         // as body layer is also working.
         IRowDataProvider<Person> bodyDataProvider =
-                new DefaultBodyDataProvider<Person>(getStaticPersonList(), propertyNames);
+                new DefaultBodyDataProvider<>(getStaticPersonList(), propertyNames);
         DataLayer bodyDataLayer =
                 new DataLayer(bodyDataProvider);
 
@@ -96,10 +96,10 @@ public class _5113_RowGroupingExample extends AbstractNatExample {
 
         RowHideShowLayer rowHideShowLayer =
                 new RowHideShowLayer(columnHideShowLayer);
-        RowGroupModel<Person> rowGroupModel = new RowGroupModel<Person>();
+        RowGroupModel<Person> rowGroupModel = new RowGroupModel<>();
         rowGroupModel.setDataProvider(bodyDataProvider);
         RowGroupExpandCollapseLayer<Person> rowExpandCollapseLayer =
-                new RowGroupExpandCollapseLayer<Person>(rowHideShowLayer, rowGroupModel);
+                new RowGroupExpandCollapseLayer<>(rowHideShowLayer, rowGroupModel);
 
         SelectionLayer selectionLayer =
                 new SelectionLayer(rowExpandCollapseLayer);
@@ -127,11 +127,11 @@ public class _5113_RowGroupingExample extends AbstractNatExample {
         rowHeaderLayer.addConfiguration(new RowHeaderConfiguration());
 
         RowGroupHeaderLayer<Person> rowGroupHeaderLayer =
-                new RowGroupHeaderLayer<Person>(rowHeaderLayer, selectionLayer, rowGroupModel);
+                new RowGroupHeaderLayer<>(rowHeaderLayer, selectionLayer, rowGroupModel);
         rowGroupHeaderLayer.setColumnWidth(20);
 
         // Create a group of rows for the model.
-        RowGroup<Person> rowGroup = new RowGroup<Person>(rowGroupModel, "Simpson", false);
+        RowGroup<Person> rowGroup = new RowGroup<>(rowGroupModel, "Simpson", false);
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(0));
         rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(1));
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(2));
@@ -139,14 +139,14 @@ public class _5113_RowGroupingExample extends AbstractNatExample {
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(4));
         rowGroupModel.addRowGroup(rowGroup);
 
-        rowGroup = new RowGroup<Person>(rowGroupModel, "Flanders", false);
+        rowGroup = new RowGroup<>(rowGroupModel, "Flanders", false);
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(5));
         rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(6));
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(7));
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(8));
         rowGroupModel.addRowGroup(rowGroup);
 
-        rowGroup = new RowGroup<Person>(rowGroupModel, "Lovejoy", true);
+        rowGroup = new RowGroup<>(rowGroupModel, "Lovejoy", true);
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(9));
         rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(10));
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(11));
@@ -176,7 +176,7 @@ public class _5113_RowGroupingExample extends AbstractNatExample {
     }
 
     private List<Person> getStaticPersonList() {
-        List<Person> result = new ArrayList<Person>();
+        List<Person> result = new ArrayList<>();
 
         // create some persons
         result.add(new Person(1, "Homer", "Simpson", Gender.MALE, true, new Date()));

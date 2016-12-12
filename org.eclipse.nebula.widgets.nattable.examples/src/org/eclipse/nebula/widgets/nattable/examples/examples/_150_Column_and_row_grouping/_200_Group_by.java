@@ -87,7 +87,7 @@ public class _200_Group_by extends AbstractNatExample {
         Map<String, String> propertyToLabelMap =
                 RowDataListFixture.getPropertyToLabelMap();
         IColumnPropertyAccessor<RowDataFixture> reflectiveColumnPropertyAccessor =
-                new ReflectiveColumnPropertyAccessor<RowDataFixture>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
 
         GroupByModel groupByModel = new GroupByModel();
 
@@ -95,13 +95,13 @@ public class _200_Group_by extends AbstractNatExample {
         ConfigRegistry configRegistry = new ConfigRegistry();
         configRegistry.registerConfigAttribute(
                 GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                new SummationGroupBySummaryProvider<RowDataFixture>(reflectiveColumnPropertyAccessor),
+                new SummationGroupBySummaryProvider<>(reflectiveColumnPropertyAccessor),
                 DisplayMode.NORMAL,
                 GroupByDataLayer.GROUP_BY_COLUMN_PREFIX
                         + RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.LOT_SIZE_PROP_NAME));
 
         GroupByDataLayer<RowDataFixture> bodyDataLayer =
-                new GroupByDataLayer<RowDataFixture>(
+                new GroupByDataLayer<>(
                         groupByModel, eventList, reflectiveColumnPropertyAccessor, configRegistry);
 
         // Body layer

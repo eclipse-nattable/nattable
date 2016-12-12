@@ -99,7 +99,7 @@ public class _5124_SummaryRowPositionGridExample extends AbstractNatExample {
                 "columnThreeNumber", "columnFourNumber", "columnFiveNumber" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("columnOneNumber", "Column 1");
         propertyToLabelMap.put("columnTwoNumber", "Column 2");
         propertyToLabelMap.put("columnThreeNumber", "Column 3");
@@ -107,9 +107,9 @@ public class _5124_SummaryRowPositionGridExample extends AbstractNatExample {
         propertyToLabelMap.put("columnFiveNumber", "Column 5");
 
         IColumnPropertyAccessor<NumberValues> cpa =
-                new ReflectiveColumnPropertyAccessor<NumberValues>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
         IDataProvider dataProvider =
-                new ListDataProvider<NumberValues>(createNumberValueList(), cpa);
+                new ListDataProvider<>(createNumberValueList(), cpa);
 
         ConfigRegistry configRegistry = new ConfigRegistry();
 
@@ -188,7 +188,7 @@ public class _5124_SummaryRowPositionGridExample extends AbstractNatExample {
     }
 
     private List<NumberValues> createNumberValueList() {
-        List<NumberValues> result = new ArrayList<NumberValues>();
+        List<NumberValues> result = new ArrayList<>();
 
         for (int i = 0; i < 25; i++) {
             NumberValues nv = new NumberValues();

@@ -111,7 +111,7 @@ public class _306_CalculatedFormulaDataExample extends AbstractNatExample {
                 "columnThreeNumber", "columnFourNumber", "columnFiveNumber" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("columnOneNumber", "100%");
         propertyToLabelMap.put("columnTwoNumber", "Value One");
         propertyToLabelMap.put("columnThreeNumber", "Value Two");
@@ -238,7 +238,7 @@ public class _306_CalculatedFormulaDataExample extends AbstractNatExample {
         public CalculatingBodyLayerStack(EventList<NumberValues> valuesToShow, ConfigRegistry configRegistry) {
 
             IColumnAccessor<NumberValues> ca =
-                    new ReflectiveColumnPropertyAccessor<NumberValues>(
+                    new ReflectiveColumnPropertyAccessor<>(
                             new String[] { "columnOneNumber", "columnTwoNumber", "columnThreeNumber" });
 
             IDataProvider dataProvider = new CalculatingDataProvider(valuesToShow, ca);

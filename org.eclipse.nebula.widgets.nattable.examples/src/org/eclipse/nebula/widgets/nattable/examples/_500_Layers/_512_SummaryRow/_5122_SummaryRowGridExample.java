@@ -94,16 +94,16 @@ public class _5122_SummaryRowGridExample extends AbstractNatExample {
                 "columnThreeNumber", "columnFourNumber", "columnFiveNumber" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("columnOneNumber", "Column 1");
         propertyToLabelMap.put("columnTwoNumber", "Column 2");
         propertyToLabelMap.put("columnThreeNumber", "Column 3");
         propertyToLabelMap.put("columnFourNumber", "Column 4");
         propertyToLabelMap.put("columnFiveNumber", "Column 5");
 
-        IColumnPropertyAccessor<NumberValues> cpa = new ReflectiveColumnPropertyAccessor<NumberValues>(
+        IColumnPropertyAccessor<NumberValues> cpa = new ReflectiveColumnPropertyAccessor<>(
                 propertyNames);
-        IDataProvider dataProvider = new ListDataProvider<NumberValues>(
+        IDataProvider dataProvider = new ListDataProvider<>(
                 createNumberValueList(), cpa);
 
         ConfigRegistry configRegistry = new ConfigRegistry();
@@ -120,7 +120,7 @@ public class _5122_SummaryRowGridExample extends AbstractNatExample {
     }
 
     private List<NumberValues> createNumberValueList() {
-        List<NumberValues> result = new ArrayList<NumberValues>();
+        List<NumberValues> result = new ArrayList<>();
 
         for (int i = 0; i < 25; i++) {
             NumberValues nv = new NumberValues();

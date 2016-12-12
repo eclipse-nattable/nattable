@@ -64,9 +64,9 @@ public class _5043_VerticalSplitViewportExample extends AbstractNatExample {
                 "address.street", "address.housenumber", "address.postalCode", "address.city" };
 
         IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
-                new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
+                new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
 
-        IDataProvider bodyDataProvider = new ListDataProvider<PersonWithAddress>(
+        IDataProvider bodyDataProvider = new ListDataProvider<>(
                 PersonService.getPersonsWithAddress(50), columnPropertyAccessor);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 

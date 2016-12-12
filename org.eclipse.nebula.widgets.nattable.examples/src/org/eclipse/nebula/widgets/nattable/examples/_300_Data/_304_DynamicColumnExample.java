@@ -54,9 +54,9 @@ import org.eclipse.swt.widgets.Control;
  */
 public class _304_DynamicColumnExample extends AbstractNatExample {
 
-    private List<String> columns = new ArrayList<String>();
+    private List<String> columns = new ArrayList<>();
 
-    private List<Map<String, String>> values = new ArrayList<Map<String, String>>();
+    private List<Map<String, String>> values = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
         StandaloneNatExampleRunner.run(600, 650,
@@ -97,7 +97,7 @@ public class _304_DynamicColumnExample extends AbstractNatExample {
         ConfigRegistry configRegistry = new ConfigRegistry();
 
         // create the body layer stack
-        IDataProvider bodyDataProvider = new ListDataProvider<Map<String, String>>(
+        IDataProvider bodyDataProvider = new ListDataProvider<>(
                 this.values, new MyColumnPropertyAccessor());
         final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         DefaultBodyLayerStack bodyLayerStack = new DefaultBodyLayerStack(
@@ -158,7 +158,7 @@ public class _304_DynamicColumnExample extends AbstractNatExample {
     }
 
     private Map<String, String> createValueRow(String value) {
-        Map<String, String> valueRow = new HashMap<String, String>();
+        Map<String, String> valueRow = new HashMap<>();
 
         for (int i = 0; i < this.columns.size(); i++) {
             String column = this.columns.get(i);

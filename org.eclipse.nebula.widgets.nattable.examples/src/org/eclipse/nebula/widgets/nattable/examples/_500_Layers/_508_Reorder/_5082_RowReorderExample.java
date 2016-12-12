@@ -65,7 +65,7 @@ public class _5082_RowReorderExample extends AbstractNatExample {
                 "birthday" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -79,7 +79,7 @@ public class _5082_RowReorderExample extends AbstractNatExample {
         // as body layer is also working.
         final List<Person> contents = PersonService.getPersons(10);
         IDataProvider bodyDataProvider =
-                new DefaultBodyDataProvider<Person>(contents, propertyNames);
+                new DefaultBodyDataProvider<>(contents, propertyNames);
         final DataLayer bodyDataLayer =
                 new DataLayer(bodyDataProvider);
         final RowReorderLayer rowReorderLayer =

@@ -97,12 +97,12 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
         String[] propertyNames = { "lastName", "firstName" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("firstName", "Firstname");
 
         IColumnPropertyAccessor<Person> columnPropertyAccessor =
-                new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
 
         IRowIdAccessor<Person> rowIdAccessor = new IRowIdAccessor<Person>() {
             @Override
@@ -114,7 +114,7 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
         // create the first table
         // create the body layer stack
         final IRowDataProvider<Person> firstBodyDataProvider =
-                new ListDataProvider<Person>(getSimpsonsList(), columnPropertyAccessor);
+                new ListDataProvider<>(getSimpsonsList(), columnPropertyAccessor);
         final DataLayer firstBodyDataLayer =
                 new DataLayer(firstBodyDataProvider);
         final SelectionLayer firstSelectionLayer =
@@ -125,7 +125,7 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
         // use a RowSelectionModel that will perform row selections and is able
         // to identify a row via unique ID
         firstSelectionLayer.setSelectionModel(
-                new RowSelectionModel<Person>(
+                new RowSelectionModel<>(
                         firstSelectionLayer,
                         firstBodyDataProvider,
                         rowIdAccessor));
@@ -173,7 +173,7 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
         // create the second table
         // create the body layer stack
         final IRowDataProvider<Person> secondBodyDataProvider =
-                new ListDataProvider<Person>(getFlandersList(), columnPropertyAccessor);
+                new ListDataProvider<>(getFlandersList(), columnPropertyAccessor);
         final DataLayer secondBodyDataLayer =
                 new DataLayer(secondBodyDataProvider);
         final SelectionLayer secondSelectionLayer =
@@ -184,7 +184,7 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
         // use a RowSelectionModel that will perform row selections and is able
         // to identify a row via unique ID
         secondSelectionLayer.setSelectionModel(
-                new RowSelectionModel<Person>(
+                new RowSelectionModel<>(
                         secondSelectionLayer,
                         secondBodyDataProvider,
                         rowIdAccessor));
@@ -232,7 +232,7 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
 
         // set ISelectionProvider
         final RowSelectionProvider<Person> selectionProvider =
-                new RowSelectionProvider<Person>(
+                new RowSelectionProvider<>(
                         firstSelectionLayer,
                         firstBodyDataProvider);
 
@@ -297,7 +297,7 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
     }
 
     private List<Person> getSimpsonsList() {
-        List<Person> result = new ArrayList<Person>();
+        List<Person> result = new ArrayList<>();
 
         result.add(new Person(1, "Homer", "Simpson", Gender.MALE, true, new Date()));
         result.add(new Person(2, "Marge", "Simpson", Gender.FEMALE, true, new Date()));
@@ -309,7 +309,7 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
     }
 
     private List<Person> getFlandersList() {
-        List<Person> result = new ArrayList<Person>();
+        List<Person> result = new ArrayList<>();
 
         result.add(new Person(6, "Ned", "Flanders", Gender.MALE, true, new Date()));
         result.add(new Person(7, "Maude", "Flanders", Gender.FEMALE, true, new Date()));

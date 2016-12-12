@@ -57,7 +57,7 @@ public class Get_and_set_selected_objects extends AbstractNatExample {
         Person nelson = new Person("Nelson", "Muntz", "Private", 0000000001L);
         Person frink = new Person("John", "Frink", "Lieutenant", 3141592654L);
 
-        List<Person> myList = new ArrayList<Person>();
+        List<Person> myList = new ArrayList<>();
         myList.add(homer);
         myList.add(smithers);
         myList.add(bart);
@@ -67,9 +67,9 @@ public class Get_and_set_selected_objects extends AbstractNatExample {
         String[] propertyNames = { "firstName", "lastName", "rank",
                 "serialNumber" };
 
-        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Person>(
+        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(
                 propertyNames);
-        IRowDataProvider<Person> bodyDataProvider = new ListDataProvider<Person>(
+        IRowDataProvider<Person> bodyDataProvider = new ListDataProvider<>(
                 myList, columnPropertyAccessor);
 
         DefaultGridLayer gridLayer = new DefaultGridLayer(bodyDataProvider,
@@ -77,7 +77,7 @@ public class Get_and_set_selected_objects extends AbstractNatExample {
 
         NatTable natTable = new NatTable(parent, gridLayer);
 
-        ISelectionProvider selectionProvider = new RowSelectionProvider<Person>(
+        ISelectionProvider selectionProvider = new RowSelectionProvider<>(
                 gridLayer.getBodyLayer().getSelectionLayer(), bodyDataProvider,
                 false); // Provides rows where any cell in the row is selected
 

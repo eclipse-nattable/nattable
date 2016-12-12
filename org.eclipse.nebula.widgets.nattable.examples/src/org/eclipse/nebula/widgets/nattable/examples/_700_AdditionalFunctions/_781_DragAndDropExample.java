@@ -77,12 +77,12 @@ public class _781_DragAndDropExample extends AbstractNatExample {
 
         // create two data lists with consecutive id's
         List<Person> data = PersonService.getPersons(20);
-        List<Person> subData1 = new ArrayList<Person>();
+        List<Person> subData1 = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Person p = data.get(i);
             subData1.add(p);
         }
-        List<Person> subData2 = new ArrayList<Person>();
+        List<Person> subData2 = new ArrayList<>();
         for (int i = 10; i < 20; i++) {
             Person p = data.get(i);
             subData2.add(p);
@@ -102,21 +102,21 @@ public class _781_DragAndDropExample extends AbstractNatExample {
         String[] propertyNames = { "firstName", "lastName" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
 
         IColumnPropertyAccessor<Person> columnPropertyAccessor =
-                new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
 
         IRowDataProvider<Person> bodyDataProvider =
-                new ListDataProvider<Person>(data, columnPropertyAccessor);
+                new ListDataProvider<>(data, columnPropertyAccessor);
         final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         ColumnReorderLayer reorderLayer = new ColumnReorderLayer(bodyDataLayer);
         final SelectionLayer selectionLayer = new SelectionLayer(reorderLayer);
 
         // set row selection model with single selection enabled
-        selectionLayer.setSelectionModel(new RowSelectionModel<Person>(
+        selectionLayer.setSelectionModel(new RowSelectionModel<>(
                 selectionLayer,
                 bodyDataProvider,
                 new IRowIdAccessor<Person>() {

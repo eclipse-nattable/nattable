@@ -84,17 +84,17 @@ public class GlazedListsGridLayer<T> extends GridLayer {
         // Body - with list event listener
         // NOTE: Remember to use the SortedList constructor with 'null' for the
         // Comparator
-        SortedList<T> sortedList = new SortedList<T>(eventList, null);
-        this.bodyDataProvider = new ListDataProvider<T>(sortedList,
+        SortedList<T> sortedList = new SortedList<>(eventList, null);
+        this.bodyDataProvider = new ListDataProvider<>(sortedList,
                 columnPropertyAccessor);
 
         this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
-        GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
+        GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<>(
                 this.bodyDataLayer, eventList);
         this.bodyLayerStack = new DefaultBodyLayerStack(glazedListsEventLayer);
 
         // Column header
-        this.columnHeaderLayerStack = new GlazedListsColumnHeaderLayerStack<T>(
+        this.columnHeaderLayerStack = new GlazedListsColumnHeaderLayerStack<>(
                 columnHeaderDataProvider, sortedList, columnPropertyAccessor,
                 configRegistry, this.bodyLayerStack);
 

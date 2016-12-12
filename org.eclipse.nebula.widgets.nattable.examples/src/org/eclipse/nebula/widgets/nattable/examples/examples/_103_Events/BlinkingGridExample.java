@@ -78,23 +78,23 @@ public class BlinkingGridExample extends AbstractNatExample {
         ConfigRegistry configRegistry = new ConfigRegistry();
 
         // Body
-        LinkedList<BlinkingRowDataFixture> rowData = new LinkedList<BlinkingRowDataFixture>();
+        LinkedList<BlinkingRowDataFixture> rowData = new LinkedList<>();
         EventList<BlinkingRowDataFixture> eventList = GlazedLists.eventList(rowData);
         ObservableElementList<BlinkingRowDataFixture> observableElementList =
-                new ObservableElementList<BlinkingRowDataFixture>(
+                new ObservableElementList<>(
                         eventList,
                         GlazedLists.beanConnector(BlinkingRowDataFixture.class));
         IColumnPropertyAccessor<BlinkingRowDataFixture> columnPropertyAccessor =
-                new ReflectiveColumnPropertyAccessor<BlinkingRowDataFixture>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
         this.bodyDataProvider =
-                new ListDataProvider<BlinkingRowDataFixture>(observableElementList, columnPropertyAccessor);
+                new ListDataProvider<>(observableElementList, columnPropertyAccessor);
 
         final DataLayer bodyLayer = new DataLayer(this.bodyDataProvider);
 
         GlazedListsEventLayer<BlinkingRowDataFixture> glazedListsEventLayer =
-                new GlazedListsEventLayer<BlinkingRowDataFixture>(bodyLayer, observableElementList);
+                new GlazedListsEventLayer<>(bodyLayer, observableElementList);
         BlinkLayer<BlinkingRowDataFixture> blinkingLayer =
-                new BlinkLayer<BlinkingRowDataFixture>(
+                new BlinkLayer<>(
                         glazedListsEventLayer,
                         this.bodyDataProvider,
                         new IRowIdAccessor<BlinkingRowDataFixture>() {

@@ -111,7 +111,7 @@ public class _6033_GlazedListsStaticFilterExample extends AbstractNatExample {
                 "address.street", "address.housenumber", "address.postalCode", "address.city" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -123,10 +123,10 @@ public class _6033_GlazedListsStaticFilterExample extends AbstractNatExample {
         propertyToLabelMap.put("address.city", "City");
 
         IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
-                new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
+                new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
 
         BodyLayerStack<PersonWithAddress> bodyLayerStack =
-                new BodyLayerStack<PersonWithAddress>(
+                new BodyLayerStack<>(
                         PersonService.getPersonsWithAddress(50),
                         columnPropertyAccessor);
 
@@ -143,7 +143,7 @@ public class _6033_GlazedListsStaticFilterExample extends AbstractNatExample {
 
         // add the ability to add static filters programmatically
         DefaultGlazedListsStaticFilterStrategy<PersonWithAddress> filterStrategy =
-                new DefaultGlazedListsStaticFilterStrategy<PersonWithAddress>(
+                new DefaultGlazedListsStaticFilterStrategy<>(
                         bodyLayerStack.getFilterList(),
                         columnPropertyAccessor,
                         configRegistry);
@@ -151,7 +151,7 @@ public class _6033_GlazedListsStaticFilterExample extends AbstractNatExample {
         // Note: The column header layer is wrapped in a filter row composite.
         // This plugs in the filter row functionality
         FilterRowHeaderComposite<PersonWithAddress> filterRowHeaderLayer =
-                new FilterRowHeaderComposite<PersonWithAddress>(
+                new FilterRowHeaderComposite<>(
                         filterStrategy,
                         columnHeaderLayer,
                         columnHeaderDataLayer.getDataProvider(),
@@ -376,17 +376,17 @@ public class _6033_GlazedListsStaticFilterExample extends AbstractNatExample {
 
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator will be set by configuration
-            SortedList<T> sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+            SortedList<T> sortedList = new SortedList<>(rowObjectsGlazedList, null);
             // wrap the SortedList with the FilterList
-            this.filterList = new FilterList<T>(sortedList);
+            this.filterList = new FilterList<>(sortedList);
 
             this.bodyDataProvider =
-                    new ListDataProvider<T>(this.filterList, columnPropertyAccessor);
+                    new ListDataProvider<>(this.filterList, columnPropertyAccessor);
             DataLayer bodyDataLayer = new DataLayer(getBodyDataProvider());
 
             // layer for event handling of GlazedLists and PropertyChanges
             GlazedListsEventLayer<T> glazedListsEventLayer =
-                    new GlazedListsEventLayer<T>(bodyDataLayer, this.filterList);
+                    new GlazedListsEventLayer<>(bodyDataLayer, this.filterList);
 
             this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
             ViewportLayer viewportLayer = new ViewportLayer(getSelectionLayer());

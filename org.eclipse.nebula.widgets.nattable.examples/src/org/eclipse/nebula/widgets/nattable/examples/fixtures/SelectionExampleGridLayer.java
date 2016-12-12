@@ -47,9 +47,9 @@ public class SelectionExampleGridLayer extends GridLayer {
         Map<String, String> propertyToLabelMap = RowDataListFixture.getPropertyToLabelMap();
 
         IColumnPropertyAccessor<RowDataFixture> columnPropertyAccessor =
-                new ReflectiveColumnPropertyAccessor<RowDataFixture>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
         this.bodyDataProvider =
-                new ListDataProvider<RowDataFixture>(eventList, columnPropertyAccessor);
+                new ListDataProvider<>(eventList, columnPropertyAccessor);
 
         this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
         this.bodyLayer = new SelectionExampleBodyLayerStack(this.bodyDataLayer);

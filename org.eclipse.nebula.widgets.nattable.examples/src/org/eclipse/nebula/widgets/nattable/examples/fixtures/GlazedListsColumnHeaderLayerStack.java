@@ -57,8 +57,8 @@ public class GlazedListsColumnHeaderLayerStack<T> extends
         this.columnHeaderLayer = new ColumnHeaderLayer(this.dataLayer, bodyLayerStack,
                 bodyLayerStack.getSelectionLayer());
 
-        SortHeaderLayer<T> sortHeaderLayer = new SortHeaderLayer<T>(
-                this.columnHeaderLayer, new GlazedListsSortModel<T>(sortedList,
+        SortHeaderLayer<T> sortHeaderLayer = new SortHeaderLayer<>(
+                this.columnHeaderLayer, new GlazedListsSortModel<>(sortedList,
                         columnPropertyAccessor, configRegistry, this.dataLayer),
                 false);
 

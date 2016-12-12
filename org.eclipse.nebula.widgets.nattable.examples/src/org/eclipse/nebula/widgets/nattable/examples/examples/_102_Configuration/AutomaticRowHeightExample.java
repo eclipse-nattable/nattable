@@ -59,7 +59,7 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
 
     private static final Display DISPLAY = Display.getDefault();
 
-    private final List<LogRecord> logMessages = new ArrayList<LogRecord>();
+    private final List<LogRecord> logMessages = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
         StandaloneNatExampleRunner.run(new AutomaticRowHeightExample());
@@ -89,7 +89,7 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
         loadMessages();
 
         ListDataProvider<LogRecord> dataProvider =
-                new ListDataProvider<LogRecord>(
+                new ListDataProvider<>(
                         this.logMessages,
                         new ReflectiveColumnPropertyAccessor<LogRecord>(new String[] { "message" })); //$NON-NLS-1$
         DataLayer dataLayer = new DataLayer(dataProvider);

@@ -99,7 +99,7 @@ public class _6034_ExcelLikeFilterRowExample extends AbstractNatExample {
                 "address.postalCode", "address.city" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -111,10 +111,10 @@ public class _6034_ExcelLikeFilterRowExample extends AbstractNatExample {
         propertyToLabelMap.put("address.city", "City");
 
         IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
-                new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
+                new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
 
         final BodyLayerStack<PersonWithAddress> bodyLayerStack =
-                new BodyLayerStack<PersonWithAddress>(
+                new BodyLayerStack<>(
                         PersonService.getPersonsWithAddress(50),
                         columnPropertyAccessor);
 
@@ -130,7 +130,7 @@ public class _6034_ExcelLikeFilterRowExample extends AbstractNatExample {
                         bodyLayerStack.getSelectionLayer());
 
         ComboBoxFilterRowHeaderComposite<PersonWithAddress> filterRowHeaderLayer =
-                new ComboBoxFilterRowHeaderComposite<PersonWithAddress>(
+                new ComboBoxFilterRowHeaderComposite<>(
                         bodyLayerStack.getFilterList(),
                         bodyLayerStack.getGlazedListsEventLayer(),
                         bodyLayerStack.getSortedList(),
@@ -252,17 +252,17 @@ public class _6034_ExcelLikeFilterRowExample extends AbstractNatExample {
 
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator will be set by configuration
-            this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+            this.sortedList = new SortedList<>(rowObjectsGlazedList, null);
             // wrap the SortedList with the FilterList
-            this.filterList = new FilterList<T>(this.sortedList);
+            this.filterList = new FilterList<>(this.sortedList);
 
             this.bodyDataProvider =
-                    new ListDataProvider<T>(this.filterList, columnPropertyAccessor);
+                    new ListDataProvider<>(this.filterList, columnPropertyAccessor);
             this.bodyDataLayer = new DataLayer(getBodyDataProvider());
 
             // layer for event handling of GlazedLists and PropertyChanges
             this.glazedListsEventLayer =
-                    new GlazedListsEventLayer<T>(this.bodyDataLayer, this.filterList);
+                    new GlazedListsEventLayer<>(this.bodyDataLayer, this.filterList);
 
             this.selectionLayer = new SelectionLayer(getGlazedListsEventLayer());
             ViewportLayer viewportLayer = new ViewportLayer(getSelectionLayer());

@@ -126,7 +126,7 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
                 "favouriteDrinks", "filename" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("password", "Password");
@@ -144,7 +144,7 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
         ConfigRegistry configRegistry = new ConfigRegistry();
 
         GlazedListsGridEditorGridLayer<ExtendedPersonWithAddress> gridLayer =
-                new GlazedListsGridEditorGridLayer<ExtendedPersonWithAddress>(
+                new GlazedListsGridEditorGridLayer<>(
                         PersonService.getExtendedPersonsWithAddress(10),
                         configRegistry, propertyNames, propertyToLabelMap);
 
@@ -203,12 +203,12 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
             this.rowObjectsGlazedList = GlazedLists.threadSafeList(this.eventList);
             // NOTE: Remember to use the SortedList constructor with 'null' for
             // the Comparator
-            this.sortedList = new SortedList<T>(this.rowObjectsGlazedList, null);
-            this.filterList = new FilterList<T>(this.sortedList);
+            this.sortedList = new SortedList<>(this.rowObjectsGlazedList, null);
+            this.filterList = new FilterList<>(this.sortedList);
 
-            IDataProvider dataProvider = new ListDataProvider<T>(this.filterList, cpa);
+            IDataProvider dataProvider = new ListDataProvider<>(this.filterList, cpa);
             this.bodyDataLayer = new DataLayer(dataProvider);
-            this.glazedListsEventLayer = new GlazedListsEventLayer<T>(this.bodyDataLayer, this.filterList);
+            this.glazedListsEventLayer = new GlazedListsEventLayer<>(this.bodyDataLayer, this.filterList);
             this.columnReorderLayer = new ColumnReorderLayer(this.glazedListsEventLayer);
             this.columnHideShowLayer = new ColumnHideShowLayer(this.columnReorderLayer);
             this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
@@ -239,17 +239,17 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
             ColumnHeaderLayer columnHeaderLayer =
                     new ColumnHeaderLayer(dataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
-            SortHeaderLayer<T> sortHeaderLayer = new SortHeaderLayer<T>(
+            SortHeaderLayer<T> sortHeaderLayer = new SortHeaderLayer<>(
                     columnHeaderLayer,
-                    new GlazedListsSortModel<T>(
+                    new GlazedListsSortModel<>(
                             bodyLayerStack.sortedList, columnPropertyAccessor, configRegistry, dataLayer),
                     false);
 
             // Note: The column header layer is wrapped in a filter row
             // composite.
             // This plugs in the filter row functionality
-            FilterRowHeaderComposite<T> filterRowHeaderLayer = new FilterRowHeaderComposite<T>(
-                    new DefaultGlazedListsFilterStrategy<T>(
+            FilterRowHeaderComposite<T> filterRowHeaderLayer = new FilterRowHeaderComposite<>(
+                    new DefaultGlazedListsFilterStrategy<>(
                             bodyLayerStack.filterList, columnPropertyAccessor, configRegistry),
                     sortHeaderLayer, dataProvider, configRegistry);
 
@@ -276,9 +276,9 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
 
             // Body
             IColumnPropertyAccessor<T> columnAccessor =
-                    new ExtendedReflectiveColumnPropertyAccessor<T>(propertyNames);
+                    new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
             GlazedListsEditorBodyLayerStack<T> bodyLayer =
-                    new GlazedListsEditorBodyLayerStack<T>(valuesToShow, columnAccessor, configRegistry);
+                    new GlazedListsEditorBodyLayerStack<>(valuesToShow, columnAccessor, configRegistry);
 
             SelectionLayer selectionLayer = bodyLayer.getSelectionLayer();
 
@@ -286,7 +286,7 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
             IDataProvider columnHeaderDataProvider =
                     new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
             GlazedListsEditorColumnHeaderLayerStack<T> columnHeaderLayer =
-                    new GlazedListsEditorColumnHeaderLayerStack<T>(
+                    new GlazedListsEditorColumnHeaderLayerStack<>(
                             columnHeaderDataProvider, bodyLayer, columnAccessor, configRegistry);
 
             // Row header
@@ -358,7 +358,7 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
                     _804_GlazedListsEditorExample.COLUMN_TWO_LABEL);
 
             // configure a custom message for the multi edit dialog
-            Map<String, Object> editDialogSettings = new HashMap<String, Object>();
+            Map<String, Object> editDialogSettings = new HashMap<>();
             editDialogSettings.put(ICellEditDialog.DIALOG_MESSAGE, "Please specify the lastname in here:");
 
             configRegistry.registerConfigAttribute(
@@ -426,7 +426,7 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
 
             // configure custom dialog settings
             Display display = Display.getCurrent();
-            Map<String, Object> editDialogSettings = new HashMap<String, Object>();
+            Map<String, Object> editDialogSettings = new HashMap<>();
             editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_TITLE, "My custom value");
             editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_ICON, display.getSystemImage(SWT.ICON_WARNING));
             editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_RESIZABLE, Boolean.TRUE);

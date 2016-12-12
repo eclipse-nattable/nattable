@@ -98,7 +98,7 @@ public class _5014_SpanningDataLayerExample extends AbstractNatExample {
         private final int columnCount;
         private final int rowCount;
 
-        private Map<Point, Object> values = new HashMap<Point, Object>();
+        private Map<Point, Object> values = new HashMap<>();
 
         private static final int BLOCK_SIZE = 4;
         private static final int CELL_SPAN = 2;

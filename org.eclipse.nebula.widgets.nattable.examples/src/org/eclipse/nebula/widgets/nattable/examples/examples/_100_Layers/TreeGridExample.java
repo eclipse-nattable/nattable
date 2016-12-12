@@ -81,10 +81,10 @@ public class TreeGridExample extends AbstractNatExample {
         // Underlying data source
         createDatums();
         EventList<Datum> eventList = GlazedLists.eventList(this.datums.values());
-        SortedList<Datum> sortedList = new SortedList<Datum>(eventList, null);
+        SortedList<Datum> sortedList = new SortedList<>(eventList, null);
 
         String[] propertyNames = new String[] { "foo", "bar" };
-        IColumnPropertyAccessor<Datum> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Datum>(
+        IColumnPropertyAccessor<Datum> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(
                 propertyNames);
 
         // Column header layer
@@ -93,20 +93,20 @@ public class TreeGridExample extends AbstractNatExample {
         DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
                 columnHeaderDataProvider);
 
-        ISortModel sortModel = new GlazedListsSortModel<Datum>(sortedList,
+        ISortModel sortModel = new GlazedListsSortModel<>(sortedList,
                 columnPropertyAccessor, configRegistry, columnHeaderDataLayer);
 
-        final TreeList<Datum> treeList = new TreeList<Datum>(sortedList,
+        final TreeList<Datum> treeList = new TreeList<>(sortedList,
                 new DatumTreeFormat(sortModel), new DatumExpansionModel());
-        GlazedListTreeData<Datum> treeData = new GlazedListTreeData<Datum>(treeList);
+        GlazedListTreeData<Datum> treeData = new GlazedListTreeData<>(treeList);
 
-        ListDataProvider<Datum> bodyDataProvider = new ListDataProvider<Datum>(
+        ListDataProvider<Datum> bodyDataProvider = new ListDataProvider<>(
                 treeList, columnPropertyAccessor);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 
         // GlazedListsEventLayer<Datum> glazedListsEventLayer =
         // new GlazedListsEventLayer<Datum>(bodyDataLayer, treeList);
-        DetailGlazedListsEventLayer<Datum> glazedListsEventLayer = new DetailGlazedListsEventLayer<Datum>(
+        DetailGlazedListsEventLayer<Datum> glazedListsEventLayer = new DetailGlazedListsEventLayer<>(
                 bodyDataLayer, treeList);
 
         // Body layer
@@ -123,7 +123,7 @@ public class TreeGridExample extends AbstractNatExample {
         // TreeLayer treeLayer = new TreeLayer(rowHideShowLayer, new
         // TreeRowModel<Datum>(treeData), true);
         TreeLayer treeLayer = new TreeLayer(rowHideShowLayer,
-                new GlazedListTreeRowModel<Datum>(treeData), false);
+                new GlazedListTreeRowModel<>(treeData), false);
 
         SelectionLayer selectionLayer = new SelectionLayer(treeLayer);
 
@@ -139,7 +139,7 @@ public class TreeGridExample extends AbstractNatExample {
         columnHeaderDataLayer.setConfigLabelAccumulator(labelAccumulator);
 
         // Register labels
-        SortHeaderLayer<Datum> sortHeaderLayer = new SortHeaderLayer<Datum>(
+        SortHeaderLayer<Datum> sortHeaderLayer = new SortHeaderLayer<>(
                 columnHeaderLayer, sortModel, false);
 
         // Row header layer
@@ -290,7 +290,7 @@ public class TreeGridExample extends AbstractNatExample {
             };
 
             // return test;
-            return new SortableTreeComparator<Datum>(
+            return new SortableTreeComparator<>(
                     test,
                     // GlazedLists.beanPropertyComparator(Datum.class, "foo"),
                     this.sortModel);
@@ -363,7 +363,7 @@ public class TreeGridExample extends AbstractNatExample {
 
     }
 
-    private Map<String, Datum> datums = new HashMap<String, Datum>();
+    private Map<String, Datum> datums = new HashMap<>();
 
     private void createDatum(String parent, String foo, int bar) {
         Datum datum = new Datum(this.datums.get(parent), foo, bar);

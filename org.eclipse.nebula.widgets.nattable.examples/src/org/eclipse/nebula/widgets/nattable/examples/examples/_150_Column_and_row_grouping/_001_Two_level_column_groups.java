@@ -58,7 +58,7 @@ public class _001_Two_level_column_groups extends AbstractNatExample {
         String[] propertyNames = RowDataListFixture.getPropertyNames();
         Map<String, String> propertyToLabelMap = RowDataListFixture.getPropertyToLabelMap();
         DefaultBodyDataProvider<RowDataFixture> bodyDataProvider =
-                new DefaultBodyDataProvider<RowDataFixture>(RowDataListFixture.getList(2000), propertyNames);
+                new DefaultBodyDataProvider<>(RowDataListFixture.getList(2000), propertyNames);
         ColumnGroupBodyLayerStack bodyLayer =
                 new ColumnGroupBodyLayerStack(
                         new DataLayer(bodyDataProvider),

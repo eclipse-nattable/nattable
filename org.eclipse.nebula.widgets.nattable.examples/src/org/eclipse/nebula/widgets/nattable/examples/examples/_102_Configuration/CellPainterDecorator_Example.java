@@ -86,7 +86,7 @@ public class CellPainterDecorator_Example extends AbstractNatExample {
                 "columnSixNumber", "columnSevenNumber", "columnEightNumber" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("columnOneNumber", "C 1");
         propertyToLabelMap.put("columnTwoNumber", "C 2");
         propertyToLabelMap.put("columnThreeNumber", "C 3");
@@ -117,7 +117,7 @@ public class CellPainterDecorator_Example extends AbstractNatExample {
     }
 
     private List<NumberValues> createNumberValuesList() {
-        List<NumberValues> result = new ArrayList<NumberValues>();
+        List<NumberValues> result = new ArrayList<>();
 
         NumberValues nv = null;
         for (int i = 0; i < 3; i++) {

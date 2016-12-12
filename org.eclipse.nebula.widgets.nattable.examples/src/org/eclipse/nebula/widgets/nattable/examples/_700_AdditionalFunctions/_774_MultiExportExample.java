@@ -102,7 +102,7 @@ public class _774_MultiExportExample extends AbstractNatExample {
                 "married", "birthday" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -201,14 +201,14 @@ public class _774_MultiExportExample extends AbstractNatExample {
                 "columnThreeNumber", "columnFourNumber", "columnFiveNumber" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> numberPropertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> numberPropertyToLabelMap = new HashMap<>();
         numberPropertyToLabelMap.put("columnOneNumber", "Value One");
         numberPropertyToLabelMap.put("columnTwoNumber", "Value Two");
         numberPropertyToLabelMap.put("columnThreeNumber", "Value Three");
         numberPropertyToLabelMap.put("columnFourNumber", "Value Four");
         numberPropertyToLabelMap.put("columnFiveNumber", "Value Five");
 
-        List<NumberValues> valuesToShow = new ArrayList<NumberValues>();
+        List<NumberValues> valuesToShow = new ArrayList<>();
         valuesToShow.add(createNumberValues());
         valuesToShow.add(createNumberValues());
         valuesToShow.add(createNumberValues());
@@ -279,7 +279,7 @@ public class _774_MultiExportExample extends AbstractNatExample {
                         ExportConfigAttributes.EXPORTER,
                         DisplayMode.NORMAL);
 
-                Map<String, NatTable> export = new HashMap<String, NatTable>();
+                Map<String, NatTable> export = new HashMap<>();
                 export.put("Persons", natTable);
                 export.put("Numbers", numberNatTable);
                 new NatExporter(Display.getCurrent().getActiveShell())
@@ -298,7 +298,7 @@ public class _774_MultiExportExample extends AbstractNatExample {
         // underlying layer. But in this case using the ViewportLayer directly
         // as body layer is also working.
         IDataProvider bodyDataProvider =
-                new DefaultBodyDataProvider<T>(values, propertyNames);
+                new DefaultBodyDataProvider<>(values, propertyNames);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
         ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);

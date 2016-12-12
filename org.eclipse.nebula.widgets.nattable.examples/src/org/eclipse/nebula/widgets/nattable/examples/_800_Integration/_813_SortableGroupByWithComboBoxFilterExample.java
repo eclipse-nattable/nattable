@@ -128,7 +128,7 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
                 "married", "gender", "birthday" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("age", "Age");
@@ -138,12 +138,12 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
         propertyToLabelMap.put("birthday", "Birthday");
 
         final IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor =
-                new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(propertyNames);
+                new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
 
         // to enable the group by summary feature, the GroupByDataLayer needs to
         // know the ConfigRegistry
         final BodyLayerStack<ExtendedPersonWithAddress> bodyLayerStack =
-                new BodyLayerStack<ExtendedPersonWithAddress>(
+                new BodyLayerStack<>(
                         PersonService.getExtendedPersonsWithAddress(10000),
                         columnPropertyAccessor,
                         configRegistry);
@@ -159,9 +159,9 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
                 new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // add sorting
-        SortHeaderLayer<ExtendedPersonWithAddress> sortHeaderLayer = new SortHeaderLayer<ExtendedPersonWithAddress>(
+        SortHeaderLayer<ExtendedPersonWithAddress> sortHeaderLayer = new SortHeaderLayer<>(
                 columnHeaderLayer,
-                new GlazedListsSortModel<ExtendedPersonWithAddress>(
+                new GlazedListsSortModel<>(
                         bodyLayerStack.getSortedList(),
                         columnPropertyAccessor,
                         configRegistry,
@@ -176,7 +176,7 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
                 true);
 
         ComboBoxFilterRowHeaderComposite<ExtendedPersonWithAddress> filterRowHeaderLayer =
-                new ComboBoxFilterRowHeaderComposite<ExtendedPersonWithAddress>(
+                new ComboBoxFilterRowHeaderComposite<>(
                         bodyLayerStack.getFilterList(),
                         bodyLayerStack.getGlazedListsEventLayer(),
                         bodyLayerStack.getSortedList(),
@@ -243,7 +243,7 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
         // add sorting configuration
         natTable.addConfiguration(new SingleClickSortConfiguration());
 
-        this.sumMoneySummaryProvider = new SummationGroupBySummaryProvider<ExtendedPersonWithAddress>(
+        this.sumMoneySummaryProvider = new SummationGroupBySummaryProvider<>(
                 columnPropertyAccessor);
         this.avgMoneySummaryProvider = new AverageMoneyGroupBySummaryProvider();
 
@@ -447,12 +447,12 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator
             // will be set by configuration
-            this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+            this.sortedList = new SortedList<>(rowObjectsGlazedList, null);
             // wrap the SortedList with the FilterList
-            this.filterList = new FilterList<T>(this.sortedList);
+            this.filterList = new FilterList<>(this.sortedList);
 
             // Use the GroupByDataLayer instead of the default DataLayer
-            this.bodyDataLayer = new GroupByDataLayer<T>(
+            this.bodyDataLayer = new GroupByDataLayer<>(
                     getGroupByModel(),
                     this.filterList,
                     columnPropertyAccessor,
@@ -462,7 +462,7 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
 
             // layer for event handling of GlazedLists and PropertyChanges
             this.glazedListsEventLayer =
-                    new GlazedListsEventLayer<T>(this.bodyDataLayer, this.filterList);
+                    new GlazedListsEventLayer<>(this.bodyDataLayer, this.filterList);
 
             ColumnReorderLayer columnReorderLayer =
                     new ColumnReorderLayer(this.glazedListsEventLayer);

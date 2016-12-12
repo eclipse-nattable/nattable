@@ -41,7 +41,7 @@ import ca.odell.glazedlists.GlazedLists;
 
 public class DynamicColumnExample extends AbstractNatExample {
 
-    private List<String> columns = new ArrayList<String>();
+    private List<String> columns = new ArrayList<>();
 
     private EventList<Map<String, String>> values = GlazedLists
             .eventList(new ArrayList<Map<String, String>>());
@@ -77,7 +77,7 @@ public class DynamicColumnExample extends AbstractNatExample {
 
         ConfigRegistry configRegistry = new ConfigRegistry();
 
-        final GlazedListsGridLayer<Map<String, String>> glazedListsGridLayer = new GlazedListsGridLayer<Map<String, String>>(
+        final GlazedListsGridLayer<Map<String, String>> glazedListsGridLayer = new GlazedListsGridLayer<>(
                 this.values, new MyColumnPropertyAccessor(),
                 new SimpleColumnHeaderDataProvider(), configRegistry, true);
 
@@ -119,7 +119,7 @@ public class DynamicColumnExample extends AbstractNatExample {
     }
 
     private Map<String, String> createValueRow(String value) {
-        Map<String, String> valueRow = new HashMap<String, String>();
+        Map<String, String> valueRow = new HashMap<>();
 
         for (int i = 0; i < this.columns.size(); i++) {
             String column = this.columns.get(i);

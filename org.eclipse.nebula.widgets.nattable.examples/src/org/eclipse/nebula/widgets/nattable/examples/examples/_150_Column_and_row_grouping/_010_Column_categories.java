@@ -58,7 +58,7 @@ public class _010_Column_categories extends AbstractNatExample {
         for (int i = 0; i < 20; i++) {
             propertyNames[i] = RowDataListFixture.getPropertyNames()[i];
         }
-        this.gridLayer = new GlazedListsGridLayer<RowDataFixture>(
+        this.gridLayer = new GlazedListsGridLayer<>(
                 GlazedLists.eventList(RowDataListFixture.getList()),
                 propertyNames,
                 RowDataListFixture.getPropertyToLabelMap(),

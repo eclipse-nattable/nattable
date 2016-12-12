@@ -83,13 +83,13 @@ public class _001_Getting_Started extends AbstractNatExample {
                         "Cartman", new Date(4000000)), new SimplePerson(140,
                         "Dogbert", new Date(5000000)));
 
-        this.propertyToLabels = new HashMap<String, String>();
+        this.propertyToLabels = new HashMap<>();
         this.propertyToLabels.put("id", "ID");
         this.propertyToLabels.put("name", "First Name");
         this.propertyToLabels.put("birthDate", "DOB");
 
         this.propertyNames = new String[] { "id", "name", "birthDate" };
-        return new ListDataProvider<SimplePerson>(people,
+        return new ListDataProvider<>(people,
                 new ReflectiveColumnPropertyAccessor<SimplePerson>(this.propertyNames));
 
     }

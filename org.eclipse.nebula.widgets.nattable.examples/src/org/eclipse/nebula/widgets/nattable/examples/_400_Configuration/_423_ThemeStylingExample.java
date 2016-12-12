@@ -107,7 +107,7 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
         String[] propertyNames = { "firstName", "lastName", "gender", "married", "birthday" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -120,7 +120,7 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
         // as underlying layer. But in this case using the ViewportLayer
         // directly as body layer is also working.
         final ListDataProvider<Person> bodyDataProvider =
-                new DefaultBodyDataProvider<Person>(PersonService.getPersons(10), propertyNames);
+                new DefaultBodyDataProvider<>(PersonService.getPersons(10), propertyNames);
         final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         HoverLayer bodyHoverLayer = new HoverLayer(bodyDataLayer);
         SelectionLayer selectionLayer = new SelectionLayer(bodyHoverLayer);

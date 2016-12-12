@@ -57,10 +57,10 @@ public class _5011_DataLayerExample extends AbstractNatExample {
         String[] propertyNames = { "firstName", "lastName", "gender",
                 "married", "birthday" };
 
-        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Person>(
+        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(
                 propertyNames);
 
-        IDataProvider bodyDataProvider = new ListDataProvider<Person>(
+        IDataProvider bodyDataProvider = new ListDataProvider<>(
                 PersonService.getPersons(10), columnPropertyAccessor);
         final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 

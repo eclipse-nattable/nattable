@@ -60,7 +60,7 @@ public class ColumnStructureUpdatesGridExample extends AbstractNatExample {
                 ArrayUtil.STRING_TYPE_ARRAY);
 
         ConfigRegistry configRegistry = new ConfigRegistry();
-        final ColumnStructureUpdatesExampleGridLayer<PricingDataBean> glazedListsGridLayer = new ColumnStructureUpdatesExampleGridLayer<PricingDataBean>(
+        final ColumnStructureUpdatesExampleGridLayer<PricingDataBean> glazedListsGridLayer = new ColumnStructureUpdatesExampleGridLayer<>(
                 this.rowObjectsGlazedList, propertyNames, propertyToLabelMap,
                 configRegistry, true);
         final NatTable natTable = new NatTable(parent, glazedListsGridLayer,
@@ -115,7 +115,7 @@ public class ColumnStructureUpdatesGridExample extends AbstractNatExample {
     }
 
     private Map<String, String> populateColHeaderPropertiesToLabelsMap() {
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         ColumnHeaders[] columnHeaders = ColumnHeaders.values();
         for (int i = 0; i < columnHeaders.length; i++) {
             propertyToLabelMap.put(columnHeaders[i].getProperty(),

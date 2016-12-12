@@ -107,7 +107,7 @@ public class _307_ChangeDataProviderExample extends AbstractNatExample {
                 "birthday" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> personPropertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> personPropertyToLabelMap = new HashMap<>();
         personPropertyToLabelMap.put("firstName", "Firstname");
         personPropertyToLabelMap.put("lastName", "Lastname");
         personPropertyToLabelMap.put("gender", "Gender");
@@ -130,7 +130,7 @@ public class _307_ChangeDataProviderExample extends AbstractNatExample {
                 "city" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> addressPropertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> addressPropertyToLabelMap = new HashMap<>();
         addressPropertyToLabelMap.put("street", "Street");
         addressPropertyToLabelMap.put("housenumber", "Housenumber");
         addressPropertyToLabelMap.put("postalCode", "Postal Code");

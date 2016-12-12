@@ -100,15 +100,15 @@ public class DynamicColumnHeaderHeightExample extends AbstractNatExample {
 
         // Underlying data source
         EventList<RowDataFixture> eventList = GlazedLists.eventList(RowDataListFixture.getList(200));
-        FilterList<RowDataFixture> filterList = new FilterList<RowDataFixture>(eventList);
+        FilterList<RowDataFixture> filterList = new FilterList<>(eventList);
         String[] propertyNames = RowDataListFixture.getPropertyNames();
         Map<String, String> propertyToLabelMap = RowDataListFixture.getPropertyToLabelMap();
 
         // Body
         IColumnPropertyAccessor<RowDataFixture> columnPropertyAccessor =
-                new ReflectiveColumnPropertyAccessor<RowDataFixture>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
         ListDataProvider<RowDataFixture> bodyDataProvider =
-                new ListDataProvider<RowDataFixture>(filterList, columnPropertyAccessor);
+                new ListDataProvider<>(filterList, columnPropertyAccessor);
         DataLayer bodyDataLayer =
                 new DataLayer(bodyDataProvider);
         ColumnGroupBodyLayerStack bodyLayer =
@@ -142,8 +142,8 @@ public class DynamicColumnHeaderHeightExample extends AbstractNatExample {
         // Note: The column header layer is wrapped in a filter row composite.
         // This plugs in the filter row functionality
         final FilterRowHeaderComposite<RowDataFixture> filterRowHeaderLayer =
-                new FilterRowHeaderComposite<RowDataFixture>(
-                        new DefaultGlazedListsFilterStrategy<RowDataFixture>(filterList, columnPropertyAccessor, configRegistry),
+                new FilterRowHeaderComposite<>(
+                        new DefaultGlazedListsFilterStrategy<>(filterList, columnPropertyAccessor, configRegistry),
                         columnGroupHeaderLayer,
                         columnHeaderDataProvider,
                         configRegistry);

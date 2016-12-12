@@ -52,10 +52,10 @@ public class _4221_NatGridLayerPainterExample extends AbstractNatExample {
         String[] propertyNames = { "firstName", "lastName", "gender", "married", "birthday" };
 
         IColumnPropertyAccessor<Person> columnPropertyAccessor =
-                new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
 
         IDataProvider bodyDataProvider =
-                new ListDataProvider<Person>(PersonService.getPersons(10), columnPropertyAccessor);
+                new ListDataProvider<>(PersonService.getPersons(10), columnPropertyAccessor);
         final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 
         // use different style bits to avoid rendering of inactive scrollbars

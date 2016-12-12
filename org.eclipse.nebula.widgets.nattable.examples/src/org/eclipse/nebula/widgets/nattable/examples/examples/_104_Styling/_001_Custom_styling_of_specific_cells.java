@@ -67,16 +67,16 @@ public class _001_Custom_styling_of_specific_cells extends AbstractNatExample {
 
     @Override
     public Control createExampleControl(Composite parent) {
-        List<SimplePerson> myList = new ArrayList<SimplePerson>();
+        List<SimplePerson> myList = new ArrayList<>();
         for (int i = 1; i <= 100; i++) {
             myList.add(new SimplePerson(i, "Joe" + i, new Date()));
         }
 
         String[] propertyNames = { "id", "name", "birthDate" };
 
-        IColumnPropertyAccessor<SimplePerson> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<SimplePerson>(
+        IColumnPropertyAccessor<SimplePerson> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(
                 propertyNames);
-        ListDataProvider<SimplePerson> listDataProvider = new ListDataProvider<SimplePerson>(
+        ListDataProvider<SimplePerson> listDataProvider = new ListDataProvider<>(
                 myList, columnPropertyAccessor);
         DefaultGridLayer gridLayer = new DefaultGridLayer(listDataProvider,
                 new DummyColumnHeaderDataProvider(listDataProvider));

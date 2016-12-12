@@ -104,7 +104,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
         String[] propertyNames = { "name", "age", "money", "gender", "city" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("name", "Name");
         propertyToLabelMap.put("age", "Age");
         propertyToLabelMap.put("money", "Money");
@@ -112,10 +112,10 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
         propertyToLabelMap.put("city", "City");
 
         IColumnPropertyAccessor<MyRowObject> columnPropertyAccessor =
-                new ReflectiveColumnPropertyAccessor<MyRowObject>(propertyNames);
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
 
         BodyLayerStack<MyRowObject> bodyLayerStack =
-                new BodyLayerStack<MyRowObject>(createMyRowObjects(50), columnPropertyAccessor);
+                new BodyLayerStack<>(createMyRowObjects(50), columnPropertyAccessor);
         // add a label accumulator to be able to register converter
         bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(new ColumnLabelAccumulator());
 
@@ -199,7 +199,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
         // but in order to show the custom objects sorted by comparator, we
         // need to set the appropriate ISortModel to the GroupByDataLayer
         bodyLayerStack.bodyDataLayer.initializeTreeComparator(
-                new GlazedListsSortModel<MyRowObject>(
+                new GlazedListsSortModel<>(
                         bodyLayerStack.sortedList,
                         columnPropertyAccessor,
                         configRegistry,
@@ -239,17 +239,17 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
 
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator will be set by configuration
-            this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+            this.sortedList = new SortedList<>(rowObjectsGlazedList, null);
 
             // Use the GroupByDataLayer instead of the default DataLayer
             this.bodyDataLayer =
-                    new GroupByDataLayer<T>(getGroupByModel(), this.sortedList, columnPropertyAccessor);
+                    new GroupByDataLayer<>(getGroupByModel(), this.sortedList, columnPropertyAccessor);
             // get the IDataProvider that was created by the GroupByDataLayer
             this.bodyDataProvider = this.bodyDataLayer.getDataProvider();
 
             // layer for event handling of GlazedLists and PropertyChanges
             GlazedListsEventLayer<T> glazedListsEventLayer =
-                    new GlazedListsEventLayer<T>(this.bodyDataLayer, this.sortedList);
+                    new GlazedListsEventLayer<>(this.bodyDataLayer, this.sortedList);
 
             ColumnReorderLayer reorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
             this.selectionLayer = new SelectionLayer(reorderLayer);
@@ -395,7 +395,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
     }
 
     private List<MyRowObject> createMyRowObjects(int amount) {
-        List<MyRowObject> result = new ArrayList<MyRowObject>();
+        List<MyRowObject> result = new ArrayList<>();
 
         MyRowObject obj = null;
         for (int i = 0; i < amount; i++) {
@@ -485,7 +485,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
 
     }
 
-    private List<City> possibleCities = new ArrayList<City>();
+    private List<City> possibleCities = new ArrayList<>();
     {
         this.possibleCities.add(new City(1111, "Springfield"));
         this.possibleCities.add(new City(2222, "Shelbyville"));

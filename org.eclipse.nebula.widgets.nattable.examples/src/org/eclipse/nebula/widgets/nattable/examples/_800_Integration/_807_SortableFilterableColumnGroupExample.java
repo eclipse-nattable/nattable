@@ -107,7 +107,7 @@ public class _807_SortableFilterableColumnGroupExample extends
                 "money", "description", "favouriteFood", "favouriteDrinks" };
 
         // mapping from property to label, needed for column header labels
-        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("gender", "Gender");
@@ -124,10 +124,10 @@ public class _807_SortableFilterableColumnGroupExample extends
         propertyToLabelMap.put("favouriteDrinks", "Drinks");
 
         IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor =
-                new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(propertyNames);
+                new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
 
         BodyLayerStack<ExtendedPersonWithAddress> bodyLayer =
-                new BodyLayerStack<ExtendedPersonWithAddress>(
+                new BodyLayerStack<>(
                         PersonService.getExtendedPersonsWithAddress(10),
                         columnPropertyAccessor, this.sndColumnGroupModel, this.columnGroupModel);
 
@@ -139,9 +139,9 @@ public class _807_SortableFilterableColumnGroupExample extends
                 new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
 
         SortHeaderLayer<ExtendedPersonWithAddress> sortHeaderLayer =
-                new SortHeaderLayer<ExtendedPersonWithAddress>(
+                new SortHeaderLayer<>(
                         columnHeaderLayer,
-                        new GlazedListsSortModel<ExtendedPersonWithAddress>(
+                        new GlazedListsSortModel<>(
                                 bodyLayer.getSortedList(),
                                 columnPropertyAccessor,
                                 configRegistry,
@@ -175,8 +175,8 @@ public class _807_SortableFilterableColumnGroupExample extends
         // Note: The column header layer is wrapped in a filter row composite.
         // This plugs in the filter row functionality
         FilterRowHeaderComposite<ExtendedPersonWithAddress> filterRowHeaderLayer =
-                new FilterRowHeaderComposite<ExtendedPersonWithAddress>(
-                        new DefaultGlazedListsFilterStrategy<ExtendedPersonWithAddress>(
+                new FilterRowHeaderComposite<>(
+                        new DefaultGlazedListsFilterStrategy<>(
                                 bodyLayer.getFilterList(), columnPropertyAccessor, configRegistry),
                         sndGroup,
                         columnHeaderDataLayer.getDataProvider(),
@@ -269,17 +269,17 @@ public class _807_SortableFilterableColumnGroupExample extends
 
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator will be set by configuration
-            this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+            this.sortedList = new SortedList<>(rowObjectsGlazedList, null);
             // wrap the SortedList with the FilterList
-            this.filterList = new FilterList<T>(getSortedList());
+            this.filterList = new FilterList<>(getSortedList());
 
             this.bodyDataProvider =
-                    new ListDataProvider<T>(this.filterList, columnPropertyAccessor);
+                    new ListDataProvider<>(this.filterList, columnPropertyAccessor);
             DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
 
             // layer for event handling of GlazedLists and PropertyChanges
             GlazedListsEventLayer<T> glazedListsEventLayer =
-                    new GlazedListsEventLayer<T>(bodyDataLayer, this.filterList);
+                    new GlazedListsEventLayer<>(bodyDataLayer, this.filterList);
 
             this.columnReorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
             this.columnGroupReorderLayer =
