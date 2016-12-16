@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Dirk Fauth <dirk.fauth@googlemail.com> - changed key for NatEventData and added column group menu items
+ *     Thanh Liem PHAN (ALL4TEC) <thanhliem.phan@all4tec.net> - Bug 509361
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.menu;
 
@@ -16,6 +17,10 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.columnCategories.ChooseColumnsFromCategoriesCommand;
 import org.eclipse.nebula.widgets.nattable.columnChooser.command.DisplayColumnChooserCommand;
 import org.eclipse.nebula.widgets.nattable.columnRename.DisplayColumnRenameDialogCommand;
+import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.export.command.ExportTableCommand;
+import org.eclipse.nebula.widgets.nattable.export.command.ExportTableCommandHandler;
+import org.eclipse.nebula.widgets.nattable.export.image.ImageExporter;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearAllFiltersCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ToggleFilterRowCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.DisplayColumnGroupRenameDialogCommand;
@@ -26,6 +31,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommand;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.InitializeAutoResizeColumnsCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.InitializeAutoResizeRowsCommand;
@@ -719,6 +725,71 @@ public class MenuItemProviders {
                         int columnIndex = natEventData.getNatTable().getColumnIndexByPosition(columnPosition);
                         natTable.doCommand(
                                 new RemoveColumnGroupCommand(columnIndex));
+                    }
+                });
+            }
+        };
+    }
+
+    /**
+     * Will create and return the {@link IMenuItemProvider} that adds the action
+     * for executing the {@link ExportTableCommand} to a popup menu. This
+     * command is intended to to export the NatTable to image.
+     *
+     * <p>
+     * <b>IMPORTANT:</b> the {@link ImageExporter} needs to be configured for
+     * the configuration attribute {@link ExportConfigAttributes#TABLE_EXPORTER}
+     * to really export to an image. Also the {@link ExportTableCommandHandler}
+     * needs to be registered on an {@link ILayer} in the layer stack, e.g. the
+     * GridLayer.
+     * </p>
+     *
+     * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
+     *         executes the {@link ExportTableCommand}. The {@link MenuItem}
+     *         will be shown with the localized default text configured in
+     *         NatTable core.
+     * @since 1.5
+     */
+    public static IMenuItemProvider exportToImageMenuItemProvider() {
+        return exportToImageMenuItemProvider("%MenuItemProviders.exportToImage"); //$NON-NLS-1$
+    }
+
+    /**
+     * Will create and return the {@link IMenuItemProvider} that adds the action
+     * for executing the {@link ExportTableCommand} to a popup menu. This
+     * command is intended to export the NatTable to image.
+     * <p>
+     * The {@link MenuItem} will be shown with the given menu label.
+     * </p>
+     * <p>
+     * <b>IMPORTANT:</b> the {@link ImageExporter} needs to be configured for
+     * the configuration attribute {@link ExportConfigAttributes#TABLE_EXPORTER}
+     * to really export to an image. Also the {@link ExportTableCommandHandler}
+     * needs to be registered on an {@link ILayer} in the layer stack, e.g. the
+     * GridLayer.
+     * </p>
+     *
+     * @param menuLabel
+     *            The text that will be showed for the generated
+     *            {@link MenuItem}
+     * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
+     *         executes the {@link ExportTableCommand}.
+     * @since 1.5
+     */
+    public static IMenuItemProvider exportToImageMenuItemProvider(final String menuLabel) {
+        return new IMenuItemProvider() {
+
+            @Override
+            public void addMenuItem(final NatTable natTable, Menu popupMenu) {
+                MenuItem exportToImage = new MenuItem(popupMenu, SWT.PUSH);
+                exportToImage.setText(Messages.getLocalizedMessage(menuLabel));
+                exportToImage.setImage(GUIHelper.getImage("export_image")); //$NON-NLS-1$
+                exportToImage.setEnabled(true);
+
+                exportToImage.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        natTable.doCommand(new ExportTableCommand(natTable.getConfigRegistry(), natTable.getShell()));
                     }
                 });
             }

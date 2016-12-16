@@ -27,6 +27,7 @@ import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleR
 import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.export.IExportFormatter;
 import org.eclipse.nebula.widgets.nattable.export.command.ExportCommand;
+import org.eclipse.nebula.widgets.nattable.export.image.config.DefaultImageExportBindings;
 import org.eclipse.nebula.widgets.nattable.extension.poi.HSSFExcelExporter;
 import org.eclipse.nebula.widgets.nattable.extension.poi.PoiExcelExporter;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
@@ -197,6 +198,8 @@ public class _773_GridExcelExportFormatterExample extends AbstractNatExample {
                         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
             }
         });
+
+        gridLayer.addConfiguration(new DefaultImageExportBindings());
 
         natTable.configure();
 

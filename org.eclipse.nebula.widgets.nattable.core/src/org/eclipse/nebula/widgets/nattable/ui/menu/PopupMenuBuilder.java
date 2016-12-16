@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *     Original authors and others - initial API and implementation
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 451490, 453219
  *     Roman Flueckiger <roman.flueckiger@mac.com> - Bug 451490
+ *     Thanh Liem PHAN (ALL4TEC) <thanhliem.phan@all4tec.net> - Bug 509361
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.menu;
 
@@ -19,6 +20,10 @@ import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.export.command.ExportTableCommandHandler;
+import org.eclipse.nebula.widgets.nattable.export.image.ImageExporter;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -50,6 +55,10 @@ public class PopupMenuBuilder {
     public static final String TOGGLE_FILTER_ROW_MENU_ITEM_ID = "toggleFilterRowMenuItem"; //$NON-NLS-1$
     public static final String STATE_MANAGER_MENU_ITEM_ID = "stateManagerMenuItem"; //$NON-NLS-1$
     public static final String SEPARATOR_MENU_ITEM_ID = "separatorMenuItem"; //$NON-NLS-1$
+    /**
+     * @since 1.5
+     */
+    public static final String EXPORT_IMAGE_MENU_ITEM_ID = "exportImageMenuItem"; //$NON-NLS-1$
 
     /**
      * The active NatTable instance the context menu should be added to. Needed
@@ -300,6 +309,54 @@ public class PopupMenuBuilder {
         return withMenuItemProvider(
                 SHOW_ALL_COLUMNS_MENU_ITEM_ID,
                 MenuItemProviders.showAllColumnsMenuItemProvider(menuLabel));
+    }
+
+    /**
+     * Add the menu item for exporting to image to the popup menu. Use the
+     * default text localized in NatTable core resource bundles.
+     *
+     * <p>
+     * <b>IMPORTANT:</b> the {@link ImageExporter} needs to be configured for
+     * the configuration attribute {@link ExportConfigAttributes#TABLE_EXPORTER}
+     * to really export to an image. Also the {@link ExportTableCommandHandler}
+     * needs to be registered on an {@link ILayer} in the layer stack, e.g. the
+     * GridLayer.
+     * </p>
+     *
+     * @return The {@link PopupMenuBuilder} with the export to image menu item
+     *         added.
+     * @see MenuItemProviders#exportToImageMenuItemProvider()
+     * @since 1.5
+     */
+    public PopupMenuBuilder withExportToImageMenuItem() {
+        return withMenuItemProvider(
+                EXPORT_IMAGE_MENU_ITEM_ID,
+                MenuItemProviders.exportToImageMenuItemProvider());
+    }
+
+    /**
+     * Add the menu item for exporting to image to the popup menu. Use the given
+     * String as label for the menu item.
+     *
+     * <p>
+     * <b>IMPORTANT:</b> the {@link ImageExporter} needs to be configured for
+     * the configuration attribute {@link ExportConfigAttributes#TABLE_EXPORTER}
+     * to really export to an image. Also the {@link ExportTableCommandHandler}
+     * needs to be registered on an {@link ILayer} in the layer stack, e.g. the
+     * GridLayer.
+     * </p>
+     *
+     * @param menuLabel
+     *            The label to use for exporting to image in the popup menu.
+     * @return The {@link PopupMenuBuilder} with the exporting to image menu
+     *         item added.
+     * @see MenuItemProviders#exportToImageMenuItemProvider(String)
+     * @since 1.5
+     */
+    public PopupMenuBuilder withExportToImageMenuItem(String menuLabel) {
+        return withMenuItemProvider(
+                EXPORT_IMAGE_MENU_ITEM_ID,
+                MenuItemProviders.exportToImageMenuItemProvider(menuLabel));
     }
 
     /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Thanh Liem PHAN (ALL4TEC) <thanhliem.phan@all4tec.net> - Bug 509361
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.export;
 
@@ -31,6 +32,10 @@ public class FileOutputStreamProvider implements IOutputStreamProvider {
     protected String[] defaultFilterExtensions;
 
     protected String currentFileName;
+    /**
+     * @since 1.5
+     */
+    protected int extFilterIndex = -1;
 
     public FileOutputStreamProvider(
             String defaultFileName, String[] defaultFilterNames, String[] defaultFilterExtensions) {
@@ -67,9 +72,17 @@ public class FileOutputStreamProvider implements IOutputStreamProvider {
         dialog.setFilterNames(this.defaultFilterNames);
         dialog.setFilterExtensions(this.defaultFilterExtensions);
         this.currentFileName = dialog.open();
+
+        // reset the extension filter index each time the FileDialog is opened
+        // to avoid the case that if the dialog is cancelled, the old value
+        // index could be accidentally reused
+        this.extFilterIndex = -1;
+
         if (this.currentFileName == null) {
             return null;
         }
+
+        this.extFilterIndex = dialog.getFilterIndex();
 
         try {
             return new PrintStream(this.currentFileName);
@@ -82,5 +95,17 @@ public class FileOutputStreamProvider implements IOutputStreamProvider {
     @Override
     public File getResult() {
         return (this.currentFileName != null) ? new File(this.currentFileName) : null;
+    }
+
+    /**
+     * Extension filter index is &gt;= 0 if there is a selected one in the file
+     * dialog. Extension filter index is equal -1 if the file dialog is not
+     * opened or no extension is selected.
+     *
+     * @return The extension filter index selected in the {@link FileDialog}.
+     * @since 1.5
+     */
+    public int getExtensionFilterIndex() {
+        return this.extFilterIndex;
     }
 }
