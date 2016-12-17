@@ -100,10 +100,11 @@ public class _762_MultiPrintExample extends AbstractNatExample {
             @Override
             public boolean doCommand(PrintCommand command) {
                 LayerPrinter printer = new LayerPrinter(headerTable, headerTable.getConfigRegistry(), _762_MultiPrintExample.this.repeatHeaderTableButton.getSelection());
-                printer.addPrintTarget(bodyTable, bodyTable.getConfigRegistry());
                 printer.joinPrintTargets(_762_MultiPrintExample.this.joinTablesButton.getSelection());
                 if (_762_MultiPrintExample.this.repeatColumnHeaderButton.getSelection()) {
-                    printer.repeatHeaderLayer(((GridLayer) bodyTable.getLayer()).getColumnHeaderLayer());
+                    printer.addPrintTarget(bodyTable, ((GridLayer) bodyTable.getLayer()).getColumnHeaderLayer(), bodyTable.getConfigRegistry());
+                } else {
+                    printer.addPrintTarget(bodyTable, bodyTable.getConfigRegistry());
                 }
                 printer.print(headerTable.getShell());
                 return true;
