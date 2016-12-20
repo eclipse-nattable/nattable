@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="NatTable Target" sequenceNumber="40">
+<?pde version="3.8"?><target name="NatTable Target" sequenceNumber="42">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
 <unit id="org.eclipse.equinox.executable.feature.group" version="3.6.300.v20160525-1303"/>
@@ -14,9 +14,9 @@
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.0.0.201609231530"/>
-<unit id="org.eclipse.nebula.widgets.richtext.feature.feature.group" version="1.0.0.201609231530"/>
-<repository location="http://download.eclipse.org/nebula/releases/1.1.0"/>
+<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.0.0.201612121953"/>
+<unit id="org.eclipse.nebula.widgets.richtext.feature.feature.group" version="1.2.0.201612121953"/>
+<repository location="http://download.eclipse.org/nebula/snapshot"/>
 </location>
 </locations>
 </target>
