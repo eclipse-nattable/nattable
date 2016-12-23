@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2016 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,14 +41,13 @@ import org.eclipse.nebula.widgets.nattable.reorder.config.DefaultRowReorderLayer
 import org.eclipse.nebula.widgets.nattable.reorder.event.RowReorderEvent;
 
 /**
- * Adds functionality for reordering rows(s) Also responsible for saving/loading
- * the row order state.
+ * Layer that is used to add the functionality for row reordering.
  *
  * @see DefaultRowReorderLayerConfiguration
  */
 public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
 
-    private static final Log log = LogFactory.getLog(RowReorderLayer.class);
+    private static final Log LOG = LogFactory.getLog(RowReorderLayer.class);
 
     public static final String PERSISTENCE_KEY_ROW_INDEX_ORDER = ".rowIndexOrder"; //$NON-NLS-1$
 
@@ -62,6 +61,15 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
     protected final List<Integer> rowIndexOrder = new ArrayList<Integer>();
 
     /**
+     * The internal mapping of index to position values. Used for performance
+     * reasons in {@link #getColumnPositionByIndex(int)} because
+     * {@link List#indexOf(Object)} doesn't scale well.
+     *
+     * @since 1.5
+     */
+    protected final Map<Integer, Integer> indexPositionMapping = new HashMap<Integer, Integer>();
+
+    /**
      * Caching of the starting y positions of the rows. Used to reduce
      * calculation time on rendering
      */
@@ -72,10 +80,28 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
      */
     private int reorderFromRowPosition;
 
+    /**
+     * Creates a {@link RowReorderLayer} on top of the given
+     * {@link IUniqueIndexLayer} and adds the
+     * {@link DefaultRowReorderLayerConfiguration}.
+     *
+     * @param underlyingLayer
+     *            The underlying layer.
+     */
     public RowReorderLayer(IUniqueIndexLayer underlyingLayer) {
         this(underlyingLayer, true);
     }
 
+    /**
+     * Creates a {@link RowReorderLayer} on top of the given
+     * {@link IUniqueIndexLayer}.
+     *
+     * @param underlyingLayer
+     *            The underlying layer.
+     * @param useDefaultConfiguration
+     *            <code>true</code> to add the
+     *            {@link DefaultRowReorderLayerConfiguration}
+     */
     public RowReorderLayer(IUniqueIndexLayer underlyingLayer, boolean useDefaultConfiguration) {
         super(underlyingLayer);
         this.underlyingLayer = underlyingLayer;
@@ -97,12 +123,15 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
                 Collection<StructuralDiff> structuralDiffs = structuralChangeEvent.getRowDiffs();
                 if (structuralDiffs == null) {
                     // Assume everything changed
-                    this.rowIndexOrder.clear();
                     populateIndexOrder();
                 } else {
                     // only react on ADD or DELETE and not on CHANGE
-                    StructuralChangeEventHelper.handleRowDelete(structuralDiffs, this.underlyingLayer, this.rowIndexOrder, true);
-                    StructuralChangeEventHelper.handleRowInsert(structuralDiffs, this.underlyingLayer, this.rowIndexOrder, true);
+                    StructuralChangeEventHelper.handleRowDelete(
+                            structuralDiffs, this.underlyingLayer, this.rowIndexOrder, true);
+                    StructuralChangeEventHelper.handleRowInsert(
+                            structuralDiffs, this.underlyingLayer, this.rowIndexOrder, true);
+                    // update index-position mapping
+                    refreshIndexPositionMapping();
                 }
                 invalidateCache();
             }
@@ -151,6 +180,8 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
             if (isRestoredStateValid(newRowIndexOrder)) {
                 this.rowIndexOrder.clear();
                 this.rowIndexOrder.addAll(newRowIndexOrder);
+                // refresh index-position mapping
+                refreshIndexPositionMapping();
             }
 
         }
@@ -166,7 +197,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
      */
     protected boolean isRestoredStateValid(List<Integer> newRowIndexOrder) {
         if (newRowIndexOrder.size() != getRowCount()) {
-            log.error("Number of persisted rows (" + newRowIndexOrder.size() + ") " + //$NON-NLS-1$ //$NON-NLS-2$
+            LOG.error("Number of persisted rows (" + newRowIndexOrder.size() + ") " + //$NON-NLS-1$ //$NON-NLS-2$
                     "is not the same as the number of rows in the data source (" //$NON-NLS-1$
                     + getRowCount() + ").\n" + //$NON-NLS-1$
                     "Skipping restore of row ordering"); //$NON-NLS-1$
@@ -174,8 +205,8 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
         }
 
         for (Integer index : newRowIndexOrder) {
-            if (!this.rowIndexOrder.contains(index)) {
-                log.error("Row index: " + index + " being restored, is not a available in the data soure.\n" + //$NON-NLS-1$ //$NON-NLS-2$
+            if (!this.indexPositionMapping.containsKey(index)) {
+                LOG.error("Row index: " + index + " being restored, is not a available in the data soure.\n" + //$NON-NLS-1$ //$NON-NLS-2$
                         "Skipping restore of row ordering"); //$NON-NLS-1$
                 return false;
             }
@@ -217,9 +248,24 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
      * Initially populate the index order to the local cache.
      */
     private void populateIndexOrder() {
+        this.rowIndexOrder.clear();
         ILayer underlyingLayer = getUnderlyingLayer();
         for (int rowPosition = 0; rowPosition < underlyingLayer.getRowCount(); rowPosition++) {
-            this.rowIndexOrder.add(underlyingLayer.getRowIndexByPosition(rowPosition));
+            int index = underlyingLayer.getRowIndexByPosition(rowPosition);
+            this.rowIndexOrder.add(index);
+            this.indexPositionMapping.put(index, rowPosition);
+        }
+    }
+
+    /**
+     * Initializes the internal index-position-mapping to reflect the internal
+     * row-index-order.
+     */
+    private void refreshIndexPositionMapping() {
+        this.indexPositionMapping.clear();
+        for (int position = 0; position < this.rowIndexOrder.size(); position++) {
+            int index = this.rowIndexOrder.get(position);
+            this.indexPositionMapping.put(index, position);
         }
     }
 
@@ -244,7 +290,8 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
 
     @Override
     public int getRowPositionByIndex(int rowIndex) {
-        return this.rowIndexOrder.indexOf(Integer.valueOf(rowIndex));
+        Integer result = this.indexPositionMapping.get(rowIndex);
+        return (result != null) ? result : -1;
     }
 
     @Override
@@ -293,8 +340,11 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
 
         Integer fromRowIndex = this.rowIndexOrder.get(fromRowPosition);
         this.rowIndexOrder.add(toRowPosition, fromRowIndex);
-
         this.rowIndexOrder.remove(fromRowPosition + (fromRowPosition > toRowPosition ? 1 : 0));
+
+        // update index-position mapping
+        refreshIndexPositionMapping();
+
         invalidateCache();
     }
 

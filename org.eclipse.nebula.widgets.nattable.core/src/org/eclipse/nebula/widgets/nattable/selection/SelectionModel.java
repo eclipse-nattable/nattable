@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -87,7 +87,6 @@ public class SelectionModel implements ISelectionModel {
         if (range != null) {
             addSelectionIntoList(range);
         }
-
     }
 
     private void addSelectionIntoList(Rectangle selection) {
@@ -281,13 +280,56 @@ public class SelectionModel implements ISelectionModel {
         return ObjectUtils.asIntArray(selectedColumns);
     }
 
+    /**
+     * @since 1.5
+     */
+    protected Set<Range> internalGetSelectedColumnPositions() {
+        Set<Range> selectedColumnsRange = new HashSet<Range>();
+
+        this.selectionsLock.readLock().lock();
+
+        int columnCount = this.selectionLayer.getColumnCount();
+        try {
+            for (Rectangle r : this.selections) {
+                if (r.x < columnCount) {
+                    int width = (r.x + r.width <= columnCount) ? r.width : columnCount - r.x;
+                    selectedColumnsRange.add(new Range(r.x, r.x + width));
+                }
+            }
+        } finally {
+            this.selectionsLock.readLock().unlock();
+        }
+
+        ArrayList<Range> ranges = new ArrayList<Range>(selectedColumnsRange);
+        Range.sortByStart(ranges);
+        List<Range> uniqueRanges = new ArrayList<Range>();
+
+        // Adjust for overlaps - between consecutive selections
+        for (int i = 0; i < ranges.size(); i++) {
+            if (i > 0) {
+                Range previousRange = ranges.get(i - 1);
+                Range currentRange = ranges.get(i);
+                if (previousRange.overlap(currentRange)
+                        || (previousRange.end == currentRange.start)) {
+                    int largerRangeEnd = (previousRange.end > currentRange.end) ? previousRange.end : currentRange.end;
+                    uniqueRanges.get(uniqueRanges.size() - 1).end = largerRangeEnd;
+                    ranges.get(i).end = largerRangeEnd;
+                } else {
+                    uniqueRanges.add(ranges.get(i));
+                }
+            } else {
+                uniqueRanges.add(ranges.get(i));
+            }
+        }
+        return new HashSet<Range>(uniqueRanges);
+    }
+
     @Override
     public boolean isColumnPositionSelected(int columnPosition) {
         this.selectionsLock.readLock().lock();
-
         try {
-            for (int column : getSelectedColumnPositions()) {
-                if (column == columnPosition) {
+            for (Range columnRange : internalGetSelectedColumnPositions()) {
+                if (columnRange.contains(columnPosition)) {
                     return true;
                 }
             }
@@ -331,7 +373,7 @@ public class SelectionModel implements ISelectionModel {
 
             // If X is same add up the height of the selected area
             for (Rectangle r : this.selections) {
-                // Column is within the bounds of the selcted rectangle
+                // Column is within the bounds of the selected rectangle
                 if (columnPosition >= r.x && columnPosition < r.x + r.width) {
                     selectedRectanglesInColumn.add(new Rectangle(
                             columnPosition,
@@ -365,7 +407,7 @@ public class SelectionModel implements ISelectionModel {
                         return false;
                     }
                 }
-                // Union will resolve any overlaping area
+                // Union will resolve any overlapping area
                 finalRectangle = finalRectangle.union(rectangle);
             }
             return finalRectangle.height >= columnHeight;
@@ -473,7 +515,7 @@ public class SelectionModel implements ISelectionModel {
 
             // If X is same add up the width of the selected area
             for (Rectangle r : this.selections) {
-                // Row is within the bounds of the selcted rectangle
+                // Row is within the bounds of the selected rectangle
                 if (rowPosition >= r.y && rowPosition < r.y + r.height) {
                     selectedRectanglesInRow.add(new Rectangle(
                             r.x,
@@ -506,7 +548,7 @@ public class SelectionModel implements ISelectionModel {
                         return false;
                     }
                 }
-                // Union will resolve any overlaping area
+                // Union will resolve any overlapping area
                 finalRectangle = finalRectangle.union(rectangle);
             }
             return finalRectangle.width >= rowWidth;
@@ -621,8 +663,7 @@ public class SelectionModel implements ISelectionModel {
                             break;
                         }
                     }
-                }
-                else {
+                } else {
                     for (StructuralDiff diff : event.getColumnDiffs()) {
                         // DiffTypeEnum.CHANGE is used for resizing and
                         // shouldn't result in clearing the selection
@@ -662,8 +703,7 @@ public class SelectionModel implements ISelectionModel {
                     }
                 }
             }
-        }
-        else {
+        } else {
             // keep the selection as is in case of changes
             // Note:
             // this is the the same code I posted in various forums as a

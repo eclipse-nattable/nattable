@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,40 +32,71 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralChangeEventHelper;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
+import org.eclipse.nebula.widgets.nattable.reorder.action.ColumnReorderDragMode;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderEndCommandHandler;
+import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderStartCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderStartCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.config.DefaultColumnReorderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
 
 /**
- * Adds functionality for reordering column(s) Also responsible for
- * saving/loading the column order state.
+ * Layer that is used to add the functionality for column reordering.
  *
  * @see DefaultColumnReorderLayerConfiguration
  */
 public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
 
-    private static final Log log = LogFactory.getLog(ColumnReorderLayer.class);
+    private static final Log LOG = LogFactory.getLog(ColumnReorderLayer.class);
 
     public static final String PERSISTENCE_KEY_COLUMN_INDEX_ORDER = ".columnIndexOrder"; //$NON-NLS-1$
 
     private final IUniqueIndexLayer underlyingLayer;
 
-    // Position X in the List contains the index of column at position X
+    /**
+     * The internal cache of the column index order. Used to track the
+     * reordering performed by this layer. Position X in the List contains the
+     * index of column at position X.
+     */
     protected final List<Integer> columnIndexOrder = new ArrayList<Integer>();
+
+    /**
+     * The internal mapping of index to position values. Used for performance
+     * reasons in {@link #getColumnPositionByIndex(int)} because
+     * {@link List#indexOf(Object)} doesn't scale well.
+     *
+     * @since 1.5
+     */
+    protected final Map<Integer, Integer> indexPositionMapping = new HashMap<Integer, Integer>();
 
     private final Map<Integer, Integer> startXCache = new HashMap<Integer, Integer>();
 
     private int reorderFromColumnPosition;
 
+    /**
+     * Creates a {@link ColumnReorderLayer} on top of the given
+     * {@link IUniqueIndexLayer} and adds the
+     * {@link DefaultColumnReorderLayerConfiguration}.
+     *
+     * @param underlyingLayer
+     *            The underlying layer.
+     */
     public ColumnReorderLayer(IUniqueIndexLayer underlyingLayer) {
         this(underlyingLayer, true);
     }
 
-    public ColumnReorderLayer(IUniqueIndexLayer underlyingLayer,
-            boolean useDefaultConfiguration) {
+    /**
+     * Creates a {@link ColumnReorderLayer} on top of the given
+     * {@link IUniqueIndexLayer}.
+     *
+     * @param underlyingLayer
+     *            The underlying layer.
+     * @param useDefaultConfiguration
+     *            <code>true</code> to add the
+     *            {@link DefaultColumnReorderLayerConfiguration}
+     */
+    public ColumnReorderLayer(IUniqueIndexLayer underlyingLayer, boolean useDefaultConfiguration) {
         super(underlyingLayer);
         this.underlyingLayer = underlyingLayer;
 
@@ -86,7 +117,6 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
                 Collection<StructuralDiff> structuralDiffs = structuralChangeEvent.getColumnDiffs();
                 if (structuralDiffs == null) {
                     // Assume everything changed
-                    this.columnIndexOrder.clear();
                     populateIndexOrder();
                 } else {
                     // only react on ADD or DELETE and not on CHANGE
@@ -94,6 +124,8 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
                             structuralDiffs, this.underlyingLayer, this.columnIndexOrder, true);
                     StructuralChangeEventHelper.handleColumnInsert(
                             structuralDiffs, this.underlyingLayer, this.columnIndexOrder, true);
+                    // update index-position mapping
+                    refreshIndexPositionMapping();
                 }
                 invalidateCache();
             }
@@ -142,6 +174,8 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
             if (isRestoredStateValid(newColumnIndexOrder)) {
                 this.columnIndexOrder.clear();
                 this.columnIndexOrder.addAll(newColumnIndexOrder);
+                // refresh index-position mapping
+                refreshIndexPositionMapping();
             }
 
         }
@@ -157,7 +191,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
      */
     protected boolean isRestoredStateValid(List<Integer> newColumnIndexOrder) {
         if (newColumnIndexOrder.size() != getColumnCount()) {
-            log.error("Number of persisted columns (" + newColumnIndexOrder.size() + ") " + //$NON-NLS-1$ //$NON-NLS-2$
+            LOG.error("Number of persisted columns (" + newColumnIndexOrder.size() + ") " + //$NON-NLS-1$ //$NON-NLS-2$
                     "is not the same as the number of columns in the data source (" //$NON-NLS-1$
                     + getColumnCount() + ").\n" + //$NON-NLS-1$
                     "Skipping restore of column ordering"); //$NON-NLS-1$
@@ -165,8 +199,8 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
         }
 
         for (Integer index : newColumnIndexOrder) {
-            if (!this.columnIndexOrder.contains(index)) {
-                log.error("Column index: " + index + " being restored, is not a available in the data soure.\n" + //$NON-NLS-1$ //$NON-NLS-2$
+            if (!this.indexPositionMapping.containsKey(index)) {
+                LOG.error("Column index: " + index + " being restored, is not a available in the data soure.\n" + //$NON-NLS-1$ //$NON-NLS-2$
                         "Skipping restore of column ordering"); //$NON-NLS-1$
                 return false;
             }
@@ -176,15 +210,18 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 
     // Columns
 
+    /**
+     *
+     * @return the internal kept ordering of column indexes.
+     */
     public List<Integer> getColumnIndexOrder() {
         return this.columnIndexOrder;
     }
 
     @Override
     public int getColumnIndexByPosition(int columnPosition) {
-        if (columnPosition >= 0
-                && columnPosition < this.columnIndexOrder.size()) {
-            return this.columnIndexOrder.get(columnPosition).intValue();
+        if (columnPosition >= 0 && columnPosition < this.columnIndexOrder.size()) {
+            return this.columnIndexOrder.get(columnPosition);
         } else {
             return -1;
         }
@@ -192,7 +229,8 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 
     @Override
     public int getColumnPositionByIndex(int columnIndex) {
-        return this.columnIndexOrder.indexOf(Integer.valueOf(columnIndex));
+        Integer result = this.indexPositionMapping.get(columnIndex);
+        return (result != null) ? result : -1;
     }
 
     @Override
@@ -244,10 +282,29 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
         return aggregateWidth;
     }
 
+    /**
+     * Initialize the internal column index ordering from a clean state, which
+     * means it reflects the ordering from the underlying layer.
+     */
     private void populateIndexOrder() {
+        this.columnIndexOrder.clear();
         ILayer underlyingLayer = getUnderlyingLayer();
         for (int columnPosition = 0; columnPosition < underlyingLayer.getColumnCount(); columnPosition++) {
-            this.columnIndexOrder.add(Integer.valueOf(underlyingLayer.getColumnIndexByPosition(columnPosition)));
+            int index = underlyingLayer.getColumnIndexByPosition(columnPosition);
+            this.columnIndexOrder.add(index);
+            this.indexPositionMapping.put(index, columnPosition);
+        }
+    }
+
+    /**
+     * Initializes the internal index-position-mapping to reflect the internal
+     * column-index-order.
+     */
+    private void refreshIndexPositionMapping() {
+        this.indexPositionMapping.clear();
+        for (int position = 0; position < this.columnIndexOrder.size(); position++) {
+            int index = this.columnIndexOrder.get(position);
+            this.indexPositionMapping.put(index, position);
         }
     }
 
@@ -261,12 +318,17 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
     }
 
     /**
-     * Moves the column to the <i>LEFT</i> of the toColumnPosition
+     * Moves the given from-column to the specified edge of the column to move
+     * to.
      *
      * @param fromColumnPosition
      *            column position to move
      * @param toColumnPosition
      *            position to move the column to
+     * @param reorderToLeftEdge
+     *            <code>true</code> if the column should be moved to the left of
+     *            the given column to move to, <code>false</code> if it should
+     *            be positioned to the right
      */
     private void moveColumn(int fromColumnPosition, int toColumnPosition, boolean reorderToLeftEdge) {
         if (!reorderToLeftEdge) {
@@ -275,11 +337,23 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 
         Integer fromColumnIndex = this.columnIndexOrder.get(fromColumnPosition);
         this.columnIndexOrder.add(toColumnPosition, fromColumnIndex);
-
         this.columnIndexOrder.remove(fromColumnPosition + (fromColumnPosition > toColumnPosition ? 1 : 0));
+
+        // update index-position mapping
+        refreshIndexPositionMapping();
+
         invalidateCache();
     }
 
+    /**
+     * Moves the given from-column to the <b>left</b> edge of the column to move
+     * to.
+     *
+     * @param fromColumnPosition
+     *            column position to move
+     * @param toColumnPosition
+     *            position to move the column to
+     */
     public void reorderColumnPosition(int fromColumnPosition, int toColumnPosition) {
         boolean reorderToLeftEdge;
         if (toColumnPosition < getColumnCount()) {
@@ -291,11 +365,33 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
         reorderColumnPosition(fromColumnPosition, toColumnPosition, reorderToLeftEdge);
     }
 
+    /**
+     * Reorders the given from-column to the specified edge of the column to
+     * move to and fires a {@link ColumnReorderEvent}.
+     *
+     * @param fromColumnPosition
+     *            column position to move
+     * @param toColumnPosition
+     *            position to move the column to
+     * @param reorderToLeftEdge
+     *            <code>true</code> if the column should be moved to the left of
+     *            the given column to move to, <code>false</code> if it should
+     *            be positioned to the right
+     */
     public void reorderColumnPosition(int fromColumnPosition, int toColumnPosition, boolean reorderToLeftEdge) {
         moveColumn(fromColumnPosition, toColumnPosition, reorderToLeftEdge);
         fireLayerEvent(new ColumnReorderEvent(this, fromColumnPosition, toColumnPosition, reorderToLeftEdge));
     }
 
+    /**
+     * Reorders the given from-columns to the <b>left</b> edge of the column to
+     * move to.
+     *
+     * @param fromColumnPositions
+     *            column positions to move
+     * @param toColumnPosition
+     *            position to move the columns to
+     */
     public void reorderMultipleColumnPositions(List<Integer> fromColumnPositions, int toColumnPosition) {
         boolean reorderToLeftEdge;
         if (toColumnPosition < getColumnCount()) {
@@ -307,6 +403,19 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
         reorderMultipleColumnPositions(fromColumnPositions, toColumnPosition, reorderToLeftEdge);
     }
 
+    /**
+     * Reorders the given from-columns to the specified edge of the column to
+     * move to and fires a {@link ColumnReorderEvent}.
+     *
+     * @param fromColumnPositions
+     *            column positions to move
+     * @param toColumnPosition
+     *            position to move the columns to
+     * @param reorderToLeftEdge
+     *            <code>true</code> if the columns should be moved to the left
+     *            of the given column to move to, <code>false</code> if they
+     *            should be positioned to the right
+     */
     public void reorderMultipleColumnPositions(List<Integer> fromColumnPositions, int toColumnPosition, boolean reorderToLeftEdge) {
         // Moving from left to right
         final int fromColumnPositionsCount = fromColumnPositions.size();
@@ -333,14 +442,32 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
         fireLayerEvent(new ColumnReorderEvent(this, fromColumnPositions, toColumnPosition, reorderToLeftEdge));
     }
 
+    /**
+     * Clear the internal cache.
+     */
     private void invalidateCache() {
         this.startXCache.clear();
     }
 
+    /**
+     * Returns the column position from where the reorder process started. Used
+     * by the {@link ColumnReorderEndCommandHandler} which is triggered by the
+     * {@link ColumnReorderDragMode} when dragging a column is finished.
+     *
+     * @return The column position where the reorder started.
+     */
     public int getReorderFromColumnPosition() {
         return this.reorderFromColumnPosition;
     }
 
+    /**
+     * Sets the column position where a reorder process started. Typically done
+     * by calling the {@link ColumnReorderStartCommand} which is triggered by
+     * the {@link ColumnReorderDragMode}.
+     *
+     * @param fromColumnPosition
+     *            The column position where the reorder started.
+     */
     public void setReorderFromColumnPosition(int fromColumnPosition) {
         this.reorderFromColumnPosition = fromColumnPosition;
     }
