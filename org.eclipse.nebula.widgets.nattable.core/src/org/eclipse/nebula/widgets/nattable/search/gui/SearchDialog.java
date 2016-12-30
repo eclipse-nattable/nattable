@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,6 +33,7 @@ import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
+import org.eclipse.nebula.widgets.nattable.layer.cell.CellDisplayConversionUtils;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.search.ISearchDirection;
@@ -263,7 +264,12 @@ public class SearchDialog extends Dialog {
             return ""; //$NON-NLS-1$
         }
         final ILayerCell cell = this.selectionLayer.getCellByPosition(selection.columnPosition, selection.rowPosition);
-        return (cell == null || cell.getDataValue() == null) ? "" : cell.getDataValue().toString(); //$NON-NLS-1$
+        if (cell == null || cell.getDataValue() == null) {
+            return ""; //$NON-NLS-1$
+        } else if (this.natTable != null) {
+            return CellDisplayConversionUtils.convertDataType(cell, this.natTable.getConfigRegistry());
+        }
+        return cell.getDataValue().toString();
     }
 
     @Override
