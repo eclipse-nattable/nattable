@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2016 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,7 +19,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 /**
  * {@link ILayerCommandHandler} for the {@link ColumnSizeConfigurationCommand}.
  * Determines the column positions to resize based on the given label.
- * 
+ *
  * @since 1.4
  */
 public class ColumnSizeConfigurationCommandHandler implements ILayerCommandHandler<ColumnSizeConfigurationCommand> {
@@ -54,7 +54,7 @@ public class ColumnSizeConfigurationCommandHandler implements ILayerCommandHandl
                 }
             }
         }
-        return true;
+        return false;
     }
 
     @Override

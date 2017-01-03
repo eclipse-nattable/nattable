@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2016 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,7 +12,7 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.command;
 
-import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
+import org.eclipse.nebula.widgets.nattable.command.AbstractRegionCommand;
 
 /**
  * Command to configure column widths. Instead of knowing the column indexes to
@@ -21,14 +21,8 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
  *
  * @since 1.4
  */
-public class ColumnSizeConfigurationCommand extends AbstractContextFreeCommand {
+public class ColumnSizeConfigurationCommand extends AbstractRegionCommand {
 
-    /**
-     * The label that needs to be applied to a column in order to process the
-     * resize command. Is used to determine the column index. If
-     * <code>null</code> the default size will be set.
-     */
-    public final String label;
     /**
      * The width to set. Can be <code>null</code> in combination with
      * {@link #percentageSizing} == <code>true</code> to enable percentage
@@ -56,9 +50,13 @@ public class ColumnSizeConfigurationCommand extends AbstractContextFreeCommand {
      *            percentage or as pixel value.
      */
     public ColumnSizeConfigurationCommand(String label, Integer newColumnWidth, boolean percentageSizing) {
-        this.label = label;
+        super(label);
         this.newColumnWidth = newColumnWidth;
         this.percentageSizing = percentageSizing;
     }
 
+    @Override
+    public AbstractRegionCommand cloneForRegion() {
+        return new ColumnSizeConfigurationCommand(null, this.newColumnWidth, this.percentageSizing);
+    }
 }

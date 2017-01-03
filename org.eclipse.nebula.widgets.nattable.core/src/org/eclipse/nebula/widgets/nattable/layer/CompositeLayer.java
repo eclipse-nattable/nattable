@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 
+import org.eclipse.nebula.widgets.nattable.command.AbstractRegionCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -133,6 +134,20 @@ public class CompositeLayer extends AbstractLayer {
         if (super.doCommand(command)) {
             return true;
         }
+
+        if (command instanceof AbstractRegionCommand
+                && ((AbstractRegionCommand) command).label != null) {
+            AbstractRegionCommand arc = ((AbstractRegionCommand) command);
+            ILayer child = getChildLayerByRegionName(arc.label);
+            if (child != null) {
+                // execute and return true because the command was executed for
+                // a specific region that has been found, so nobody else should
+                // handle it further
+                child.doCommand(arc.cloneForRegion());
+                return true;
+            }
+        }
+
         return doCommandOnChildLayers(command);
     }
 

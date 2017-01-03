@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,11 +12,14 @@ package org.eclipse.nebula.widgets.nattable.resize.command;
 
 import static org.junit.Assert.assertEquals;
 
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
+import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
 import org.eclipse.swt.graphics.Rectangle;
 import org.junit.Before;
 import org.junit.Test;
@@ -134,5 +137,47 @@ public class RowSizeConfigurationCommandTest {
         assertEquals(200, this.dataLayer.getRowHeightByPosition(1));
         assertEquals(300, this.dataLayer.getRowHeightByPosition(2));
         assertEquals(300, this.dataLayer.getRowHeightByPosition(3));
+    }
+
+    @Test
+    public void testSetSizeInGrid() {
+        GridLayer grid = new DummyGridLayerStack();
+        assertEquals(20, grid.getColumnHeaderLayer().getRowHeightByPosition(0));
+        assertEquals(20, grid.getBodyLayer().getRowHeightByPosition(0));
+        assertEquals(20, grid.getBodyLayer().getRowHeightByPosition(9));
+
+        grid.doCommand(new RowSizeConfigurationCommand(null, 50, false));
+
+        assertEquals(50, grid.getColumnHeaderLayer().getRowHeightByPosition(0));
+        assertEquals(50, grid.getBodyLayer().getRowHeightByPosition(0));
+        assertEquals(50, grid.getBodyLayer().getRowHeightByPosition(9));
+    }
+
+    @Test
+    public void testSetSizeInBodyRegion() {
+        GridLayer grid = new DummyGridLayerStack();
+        assertEquals(20, grid.getColumnHeaderLayer().getRowHeightByPosition(0));
+        assertEquals(20, grid.getBodyLayer().getRowHeightByPosition(0));
+        assertEquals(20, grid.getBodyLayer().getRowHeightByPosition(9));
+
+        grid.doCommand(new RowSizeConfigurationCommand(GridRegion.BODY, 50, false));
+
+        assertEquals(20, grid.getColumnHeaderLayer().getRowHeightByPosition(0));
+        assertEquals(50, grid.getBodyLayer().getRowHeightByPosition(0));
+        assertEquals(50, grid.getBodyLayer().getRowHeightByPosition(9));
+    }
+
+    @Test
+    public void testSetSizeInColumnHeaderRegion() {
+        GridLayer grid = new DummyGridLayerStack();
+        assertEquals(20, grid.getColumnHeaderLayer().getRowHeightByPosition(0));
+        assertEquals(20, grid.getBodyLayer().getRowHeightByPosition(0));
+        assertEquals(20, grid.getBodyLayer().getRowHeightByPosition(9));
+
+        grid.doCommand(new RowSizeConfigurationCommand(GridRegion.COLUMN_HEADER, 50, false));
+
+        assertEquals(50, grid.getColumnHeaderLayer().getRowHeightByPosition(0));
+        assertEquals(20, grid.getBodyLayer().getRowHeightByPosition(0));
+        assertEquals(20, grid.getBodyLayer().getRowHeightByPosition(9));
     }
 }

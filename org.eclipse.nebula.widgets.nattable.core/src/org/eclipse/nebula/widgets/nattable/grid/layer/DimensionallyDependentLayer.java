@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Properties;
 
+import org.eclipse.nebula.widgets.nattable.command.AbstractRegionCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -155,14 +156,18 @@ public class DimensionallyDependentLayer extends AbstractLayer {
             return true;
         }
 
-        clonedCommand = command.cloneCommand();
-        if (this.horizontalLayerDependency.doCommand(clonedCommand)) {
-            return true;
-        }
+        // in case we have a command for a specific region we need to ensure
+        // that no other regions are affected
+        if (!(command instanceof AbstractRegionCommand)) {
+            clonedCommand = command.cloneCommand();
+            if (this.horizontalLayerDependency.doCommand(clonedCommand)) {
+                return true;
+            }
 
-        clonedCommand = command.cloneCommand();
-        if (this.verticalLayerDependency.doCommand(clonedCommand)) {
-            return true;
+            clonedCommand = command.cloneCommand();
+            if (this.verticalLayerDependency.doCommand(clonedCommand)) {
+                return true;
+            }
         }
 
         return this.baseLayer.doCommand(command);
