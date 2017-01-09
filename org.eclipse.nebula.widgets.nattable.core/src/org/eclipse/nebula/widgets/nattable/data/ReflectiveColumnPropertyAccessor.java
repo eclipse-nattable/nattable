@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,11 +34,12 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAccessor<R> {
 
-    private static final Log log = LogFactory.getLog(ReflectiveColumnPropertyAccessor.class);
+    private static final Log LOG = LogFactory.getLog(ReflectiveColumnPropertyAccessor.class);
 
     private final List<String> propertyNames;
 
-    private Map<String, PropertyDescriptor> propertyDescriptorMap;
+    private Map<Class<?>, Map<String, PropertyDescriptor>> propertyDescriptorMap =
+            new HashMap<Class<?>, Map<String, PropertyDescriptor>>();
 
     /**
      * @param propertyNames
@@ -69,7 +70,7 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
             Method readMethod = propertyDesc.getReadMethod();
             return readMethod.invoke(rowObj);
         } catch (Exception e) {
-            log.warn(e);
+            LOG.warn(e);
             throw new RuntimeException(e);
         }
     }
@@ -85,9 +86,9 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
             }
             writeMethod.invoke(rowObj, newValue);
         } catch (IllegalArgumentException ex) {
-            log.error("Data type being set does not match the data type of the setter method in the backing bean", ex); //$NON-NLS-1$
+            LOG.error("Data type being set does not match the data type of the setter method in the backing bean", ex); //$NON-NLS-1$
         } catch (Exception e) {
-            log.error(e);
+            LOG.error(e);
             throw new RuntimeException("Error while setting data value"); //$NON-NLS-1$
         }
     };
@@ -104,18 +105,20 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
 
     private PropertyDescriptor getPropertyDescriptor(R rowObj, int columnIndex) throws IntrospectionException {
         synchronized (rowObj) {
-            if (this.propertyDescriptorMap == null) {
-                this.propertyDescriptorMap = new HashMap<String, PropertyDescriptor>();
+            if (!this.propertyDescriptorMap.containsKey(rowObj.getClass())) {
                 PropertyDescriptor[] propertyDescriptors =
                         Introspector.getBeanInfo(rowObj.getClass()).getPropertyDescriptors();
+
+                Map<String, PropertyDescriptor> propertiesByAttribute = new HashMap<String, PropertyDescriptor>();
                 for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-                    this.propertyDescriptorMap.put(propertyDescriptor.getName(), propertyDescriptor);
+                    propertiesByAttribute.put(propertyDescriptor.getName(), propertyDescriptor);
                 }
+                this.propertyDescriptorMap.put(rowObj.getClass(), propertiesByAttribute);
             }
         }
 
         final String propertyName = this.propertyNames.get(columnIndex);
-        return this.propertyDescriptorMap.get(propertyName);
+        return this.propertyDescriptorMap.get(rowObj.getClass()).get(propertyName);
     }
 
 }
