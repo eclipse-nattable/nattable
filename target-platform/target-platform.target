@@ -1,22 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="NatTable Target" sequenceNumber="42">
+<?pde version="3.8"?><target name="NatTable Target" sequenceNumber="46">
 <locations>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
-<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.300.v20160525-1303"/>
-<unit id="org.eclipse.sdk.ide" version="4.6.0.I20160606-1100"/>
+<location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="false" type="InstallableUnit">
+<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.0.0.201701041652"/>
+<unit id="org.eclipse.nebula.widgets.richtext.feature.feature.group" version="1.2.0.201701041652"/>
+<unit id="org.eclipse.nebula.cwt.feature.feature.group" version="1.0.0.201701041652"/>
+<repository location="http://download.eclipse.org/nebula/snapshot"/>
+</location>
+<location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="false" type="InstallableUnit">
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.300.v20161122-1740"/>
+<unit id="org.eclipse.sdk.ide" version="4.6.2.M20161124-1400"/>
+<unit id="org.eclipse.equinox.sdk.feature.group" version="3.12.0.v20161122-1740"/>
+<unit id="org.eclipse.emf.sdk.feature.group" version="2.12.0.v20160526-0356"/>
 <repository location="http://download.eclipse.org/releases/neon/"/>
 </location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
+<location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="false" type="InstallableUnit">
+<unit id="org.apache.commons.codec.source" version="1.6.0.v201305230611"/>
+<unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
+<unit id="org.apache.poi.source" version="3.9.0.v201405241750"/>
 <unit id="org.apache.poi" version="3.9.0.v201405241750"/>
 <unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
+<unit id="com.ibm.icu.base" version="56.1.0.v201601250100"/>
+<unit id="com.ibm.icu.base.source" version="56.1.0.v201601250100"/>
 <unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
-<unit id="org.apache.poi.source" version="3.9.0.v201405241750"/>
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/"/>
 </location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.nebula.widgets.richtext.feature.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/nebula/snapshot"/>
+<location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="false" type="InstallableUnit">
+<unit id="org.eclipse.swt.dummyfragments.feature.group" version="1.0.0.v20161122-0613"/>
+<repository location="http://eclipseguru.github.io/missing-swt-fragments/"/>
 </location>
 </locations>
 </target>
