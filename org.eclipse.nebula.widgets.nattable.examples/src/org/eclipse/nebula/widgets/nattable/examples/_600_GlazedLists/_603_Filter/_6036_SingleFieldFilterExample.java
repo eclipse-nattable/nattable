@@ -78,6 +78,7 @@ public class _6036_SingleFieldFilterExample extends AbstractNatExample {
     public Control createExampleControl(Composite parent) {
         Composite panel = new Composite(parent, SWT.NONE);
         panel.setLayout(new GridLayout());
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(panel);
 
         Text input = new Text(panel, SWT.SINGLE | SWT.SEARCH | SWT.ICON_CANCEL);
         input.setMessage("type filter text");
