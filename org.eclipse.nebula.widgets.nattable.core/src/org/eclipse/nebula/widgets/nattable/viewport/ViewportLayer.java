@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -114,7 +114,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
     private MoveViewportRunnable edgeHoverRunnable;
 
-    private ILayerEventHandler<RowResizeEvent> resizeEventHandler;
+    private KeepRowInsideViewportEventHandler resizeEventHandler;
 
     public ViewportLayer(IUniqueIndexLayer underlyingLayer) {
         super(underlyingLayer);
@@ -260,10 +260,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
             PixelCoordinate previousMinimumOrigin = this.minimumOrigin;
 
             if (newMinimumOriginX != this.minimumOrigin.getX()) {
-                this.minimumOrigin = new PixelCoordinate(newMinimumOriginX,
-                        this.minimumOrigin.getY());
-                this.minimumOriginColumnPosition = this.scrollableLayer
-                        .getColumnPositionByX(this.minimumOrigin.getX());
+                this.minimumOrigin = new PixelCoordinate(newMinimumOriginX, this.minimumOrigin.getY());
+                this.minimumOriginColumnPosition = this.scrollableLayer.getColumnPositionByX(this.minimumOrigin.getX());
             }
 
             int delta = this.minimumOrigin.getX() - previousMinimumOrigin.getX();
@@ -290,10 +288,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
             PixelCoordinate previousMinimumOrigin = this.minimumOrigin;
 
             if (newMinimumOriginY != this.minimumOrigin.getY()) {
-                this.minimumOrigin = new PixelCoordinate(this.minimumOrigin.getX(),
-                        newMinimumOriginY);
-                this.minimumOriginRowPosition = this.scrollableLayer
-                        .getRowPositionByY(this.minimumOrigin.getY());
+                this.minimumOrigin = new PixelCoordinate(this.minimumOrigin.getX(), newMinimumOriginY);
+                this.minimumOriginRowPosition = this.scrollableLayer.getRowPositionByY(this.minimumOrigin.getY());
             }
 
             int delta = this.minimumOrigin.getY() - previousMinimumOrigin.getY();
@@ -352,8 +348,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
         if (x <= min) {
             return min;
         }
-        int max = Math.max(getUnderlyingLayer().getStartXOfColumnPosition(0)
-                + getUnderlyingLayer().getWidth(), min);
+        int max = Math.max(getUnderlyingLayer().getStartXOfColumnPosition(0) + getUnderlyingLayer().getWidth(), min);
         if (x > max) {
             return max;
         }
@@ -373,8 +368,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
         if (y <= min) {
             return min;
         }
-        int max = Math.max(getUnderlyingLayer().getStartYOfRowPosition(0)
-                + getUnderlyingLayer().getHeight(), min);
+        int max = Math.max(getUnderlyingLayer().getStartYOfRowPosition(0) + getUnderlyingLayer().getHeight(), min);
         if (y > max) {
             return max;
         }
@@ -575,8 +569,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
     @Override
     public int getColumnPositionByIndex(int columnIndex) {
-        return this.scrollableLayer.getColumnPositionByIndex(columnIndex)
-                - getOriginColumnPosition();
+        return this.scrollableLayer.getColumnPositionByIndex(columnIndex) - getOriginColumnPosition();
     }
 
     @Override
@@ -635,24 +628,19 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
     @Override
     public boolean isColumnPositionResizable(int columnPosition) {
-        return getUnderlyingLayer().isColumnPositionResizable(
-                getOriginColumnPosition() + columnPosition);
+        return getUnderlyingLayer().isColumnPositionResizable(getOriginColumnPosition() + columnPosition);
     }
 
     // X
 
     @Override
     public int getColumnPositionByX(int x) {
-        return getUnderlyingLayer()
-                .getColumnPositionByX(getOrigin().getX() + x)
-                - getOriginColumnPosition();
+        return getUnderlyingLayer().getColumnPositionByX(getOrigin().getX() + x) - getOriginColumnPosition();
     }
 
     @Override
     public int getStartXOfColumnPosition(int columnPosition) {
-        return getUnderlyingLayer().getStartXOfColumnPosition(
-                getOriginColumnPosition() + columnPosition)
-                - getOrigin().getX();
+        return getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition() + columnPosition) - getOrigin().getX();
     }
 
     // Vertical features
@@ -670,12 +658,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
             if (getMaxRowPosition() >= 0) {
                 return getMaxRowPosition();
             } else if (getMinRowPosition() >= 0) {
-                return Math.max(this.scrollableLayer.getRowCount()
-                        - getMinRowPosition(), 0);
+                return Math.max(this.scrollableLayer.getRowCount() - getMinRowPosition(), 0);
             }
 
-            return Math.max(this.scrollableLayer.getRowCount()
-                    - getMinimumOriginRowPosition(), 0);
+            return Math.max(this.scrollableLayer.getRowCount() - getMinimumOriginRowPosition(), 0);
         } else {
             if (this.cachedRowCount < 0) {
                 int availableHeight = getClientAreaHeight();
@@ -683,8 +669,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
                     // lower bound check
                     if (this.origin.getY() < this.minimumOrigin.getY()) {
-                        this.origin = new PixelCoordinate(this.origin.getX(),
-                                this.minimumOrigin.getY());
+                        this.origin = new PixelCoordinate(this.origin.getX(), this.minimumOrigin.getY());
                     }
 
                     recalculateAvailableHeightAndRowCount();
@@ -726,8 +711,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     @Override
     public int getHeight() {
         if (this.viewportOff) {
-            int height = this.scrollableLayer.getHeight()
-                    - this.scrollableLayer.getStartYOfRowPosition(getMinimumOriginRowPosition());
+            int height = this.scrollableLayer.getHeight() - this.scrollableLayer.getStartYOfRowPosition(getMinimumOriginRowPosition());
             if (getMaxRowPosition() >= 0) {
                 int maxHeight = getMaxHeight();
                 if (maxHeight < height) {
@@ -755,15 +739,12 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
     @Override
     public int getRowPositionByY(int y) {
-        return getUnderlyingLayer().getRowPositionByY(getOrigin().getY() + y)
-                - getOriginRowPosition();
+        return getUnderlyingLayer().getRowPositionByY(getOrigin().getY() + y) - getOriginRowPosition();
     }
 
     @Override
     public int getStartYOfRowPosition(int rowPosition) {
-        return getUnderlyingLayer().getStartYOfRowPosition(
-                getOriginRowPosition() + rowPosition)
-                - getOrigin().getY();
+        return getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition() + rowPosition) - getOrigin().getY();
     }
 
     // Cell features
@@ -772,8 +753,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     public Rectangle getBoundsByPosition(int columnPosition, int rowPosition) {
         int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
         int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
-        Rectangle bounds = getUnderlyingLayer().getBoundsByPosition(
-                underlyingColumnPosition, underlyingRowPosition);
+        Rectangle bounds = getUnderlyingLayer().getBoundsByPosition(underlyingColumnPosition, underlyingRowPosition);
         bounds.x -= getOrigin().getX();
         bounds.y -= getOrigin().getY();
         return bounds;
@@ -909,15 +889,12 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
                     // Move left
                     setOriginX(this.scrollableLayer.getStartXOfColumnPosition(scrollableColumnPosition));
                 } else {
-                    int scrollableColumnStartX = underlyingLayer
-                            .getStartXOfColumnPosition(scrollableColumnPosition);
-                    int scrollableColumnEndX = scrollableColumnStartX
-                            + underlyingLayer.getColumnWidthByPosition(scrollableColumnPosition);
+                    int scrollableColumnStartX = underlyingLayer.getStartXOfColumnPosition(scrollableColumnPosition);
+                    int scrollableColumnEndX = scrollableColumnStartX + underlyingLayer.getColumnWidthByPosition(scrollableColumnPosition);
                     int clientAreaWidth = getClientAreaWidth();
                     int viewportEndX = getOrigin().getX() + clientAreaWidth;
 
-                    int maxX = maxWidth >= 0 ? Math.min(maxWidth,
-                            scrollableColumnEndX) : scrollableColumnEndX;
+                    int maxX = maxWidth >= 0 ? Math.min(maxWidth, scrollableColumnEndX) : scrollableColumnEndX;
 
                     if (viewportEndX < maxX) {
                         // Move right
@@ -950,13 +927,11 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
                     setOriginY(this.scrollableLayer.getStartYOfRowPosition(scrollableRowPosition));
                 } else {
                     int scrollableRowStartY = underlyingLayer.getStartYOfRowPosition(scrollableRowPosition);
-                    int scrollableRowEndY = scrollableRowStartY
-                            + underlyingLayer.getRowHeightByPosition(scrollableRowPosition);
+                    int scrollableRowEndY = scrollableRowStartY + underlyingLayer.getRowHeightByPosition(scrollableRowPosition);
                     int clientAreaHeight = getClientAreaHeight();
                     int viewportEndY = getOrigin().getY() + clientAreaHeight;
 
-                    int maxY = maxHeight >= 0 ? Math.min(maxHeight,
-                            scrollableRowEndY) : scrollableRowEndY;
+                    int maxY = maxHeight >= 0 ? Math.min(maxHeight, scrollableRowEndY) : scrollableRowEndY;
 
                     if (viewportEndY < maxY) {
                         // Move down
@@ -977,8 +952,17 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
                     Display.getCurrent().timerExec(100, new Runnable() {
                         @Override
                         public void run() {
-                            unregisterEventHandler(ViewportLayer.this.resizeEventHandler);
-                            ViewportLayer.this.resizeEventHandler = null;
+                            // check if no resize events occurred and unregister
+                            // in that case
+                            if (!ViewportLayer.this.resizeEventHandler.handled) {
+                                unregisterEventHandler(ViewportLayer.this.resizeEventHandler);
+                                ViewportLayer.this.resizeEventHandler = null;
+                            } else {
+                                // reset the handled flag and wait for another
+                                // 100ms
+                                ViewportLayer.this.resizeEventHandler.handled = false;
+                                Display.getCurrent().timerExec(100, this);
+                            }
                         }
                     });
                 }
@@ -996,8 +980,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     public boolean doCommand(ILayerCommand command) {
         if (command instanceof ClientAreaResizeCommand
                 && command.convertToTargetLayer(this)) {
-            if (this.processingClientAreaResizeCommand)
+            if (this.processingClientAreaResizeCommand) {
                 return false;
+            }
 
             this.processingClientAreaResizeCommand = true;
 
@@ -1093,8 +1078,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
         if (this.hBarListener != null) {
             this.hBarListener.recalculateScrollBarSize();
 
-            if (!this.hBarListener.scroller.isDisposed() 
-            		&& !this.hBarListener.scroller.getEnabled()) {
+            if (!this.hBarListener.scroller.isDisposed()
+                    && !this.hBarListener.scroller.getEnabled()) {
                 setOriginX(this.minimumOrigin.getX());
             } else {
                 setOriginX(this.origin.getX());
@@ -1109,8 +1094,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
         if (this.vBarListener != null) {
             this.vBarListener.recalculateScrollBarSize();
 
-            if (!this.vBarListener.scroller.isDisposed() 
-            		&& !this.vBarListener.scroller.getEnabled()) {
+            if (!this.vBarListener.scroller.isDisposed()
+                    && !this.vBarListener.scroller.getEnabled()) {
                 setOriginY(this.minimumOrigin.getY());
             } else {
                 setOriginY(this.origin.getY());
@@ -1182,8 +1167,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * @return The width of the visible columns for the current set origin.
      */
     private int calculateVisibleWidth(int originX) {
-        int partialVisibleColumnWidth = getUnderlyingLayer()
-                .getStartXOfColumnPosition(getOriginColumnPosition() + 1) - originX;
+        int partialVisibleColumnWidth = getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition() + 1) - originX;
         int visibleWidth = partialVisibleColumnWidth;
         for (int i = getOriginColumnPosition() + 1; i < getMaxColumnPosition(); i++) {
             visibleWidth += getUnderlyingLayer().getColumnWidthByPosition(i);
@@ -1237,8 +1221,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * @return The height of the visible rows for the current set origin.
      */
     private int calculateVisibleHeight(int originY) {
-        int partialVisibleRowHeight = getUnderlyingLayer()
-                .getStartYOfRowPosition(getOriginRowPosition() + 1) - originY;
+        int partialVisibleRowHeight = getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition() + 1) - originY;
         int visibleHeight = partialVisibleRowHeight;
         for (int i = getOriginRowPosition() + 1; i < getMaxRowPosition(); i++) {
             visibleHeight += getUnderlyingLayer().getRowHeightByPosition(i);
@@ -1261,8 +1244,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
     protected MoveSelectionCommand scrollVerticallyByAPageCommand(ScrollSelectionCommand scrollSelectionCommand) {
         return new MoveSelectionCommand(
-                scrollSelectionCommand.getDirection(), getRowCount(),
-                scrollSelectionCommand.isShiftMask(), scrollSelectionCommand.isControlMask());
+                scrollSelectionCommand.getDirection(),
+                getRowCount(),
+                scrollSelectionCommand.isShiftMask(),
+                scrollSelectionCommand.isControlMask());
     }
 
     /**
@@ -1270,8 +1255,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      *         <code>false</code> otherwise
      */
     protected boolean isLastColumnCompletelyDisplayed() {
-        int lastDisplayableColumnIndex = getUnderlyingLayer()
-                .getColumnIndexByPosition(getUnderlyingLayer().getColumnCount() - 1);
+        int lastDisplayableColumnIndex = getUnderlyingLayer().getColumnIndexByPosition(getUnderlyingLayer().getColumnCount() - 1);
         int visibleColumnCount = getColumnCount();
         int lastVisibleColumnIndex = getColumnIndexByPosition(visibleColumnCount - 1);
 
@@ -1284,8 +1268,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      *         <code>false</code> otherwise
      */
     protected boolean isLastRowCompletelyDisplayed() {
-        int lastDisplayableRowIndex = getUnderlyingLayer()
-                .getRowIndexByPosition(getUnderlyingLayer().getRowCount() - 1);
+        int lastDisplayableRowIndex = getUnderlyingLayer().getRowIndexByPosition(getUnderlyingLayer().getRowCount() - 1);
         int visibleRowCount = getRowCount();
         int lastVisibleRowIndex = getRowIndexByPosition(visibleRowCount - 1);
 
@@ -1364,15 +1347,12 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
             int clientAreaWidth = getClientAreaWidth();
             if (visibleWidth < clientAreaWidth) {
                 int possibleWidth = 0;
-                int columnCount = getMaxColumnPosition() >= 0 ? getMaxColumnPosition()
-                        : this.scrollableLayer.getColumnCount();
+                int columnCount = getMaxColumnPosition() >= 0 ? getMaxColumnPosition() : this.scrollableLayer.getColumnCount();
                 for (int col = columnPosition; col < columnCount; col++) {
-                    possibleWidth += this.scrollableLayer
-                            .getColumnWidthByPosition(col);
+                    possibleWidth += this.scrollableLayer.getColumnWidthByPosition(col);
                 }
                 if (possibleWidth >= clientAreaWidth) {
-                    newOriginX = this.scrollableLayer
-                            .getStartXOfColumnPosition(columnPosition);
+                    newOriginX = this.scrollableLayer.getStartXOfColumnPosition(columnPosition);
                 } else {
                     newOriginX = this.scrollableLayer.getWidth() - clientAreaWidth;
                 }
@@ -1406,8 +1386,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
                 newOriginY = newOriginY - delta;
                 // as the height of the other split viewport has changed, we
                 // need to update the minimum height too
-                this.minimumOrigin = new PixelCoordinate(this.minimumOrigin.getX(),
-                        this.minimumOrigin.getY() - delta);
+                this.minimumOrigin = new PixelCoordinate(this.minimumOrigin.getX(), this.minimumOrigin.getY() - delta);
             }
         } else {
             int originY = this.savedOrigin.getY();
@@ -1415,15 +1394,12 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
             int clientAreaHeight = getClientAreaHeight();
             if (visibleHeight < clientAreaHeight) {
                 int possibleHeight = 0;
-                int rowCount = getMaxRowPosition() >= 0 ? getMaxRowPosition()
-                        : this.scrollableLayer.getRowCount();
+                int rowCount = getMaxRowPosition() >= 0 ? getMaxRowPosition() : this.scrollableLayer.getRowCount();
                 for (int row = rowPosition; row < rowCount; row++) {
-                    possibleHeight += this.scrollableLayer
-                            .getRowHeightByPosition(row);
+                    possibleHeight += this.scrollableLayer.getRowHeightByPosition(row);
                 }
                 if (possibleHeight >= clientAreaHeight) {
-                    newOriginY = this.scrollableLayer
-                            .getStartYOfRowPosition(rowPosition);
+                    newOriginY = this.scrollableLayer.getStartYOfRowPosition(rowPosition);
                 } else {
                     newOriginY = this.scrollableLayer.getHeight() - clientAreaHeight;
                 }
@@ -1728,12 +1704,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
             }
 
             if (this.x != 0) {
-                setOriginX(getUnderlyingLayer().getStartXOfColumnPosition(
-                        getOriginColumnPosition() + this.x));
+                setOriginX(getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition() + this.x));
             }
             if (this.y != 0) {
-                setOriginY(getUnderlyingLayer().getStartYOfRowPosition(
-                        getOriginRowPosition() + this.y));
+                setOriginY(getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition() + this.y));
             }
 
             this.display.timerExec(100, this);
@@ -1750,6 +1724,11 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
         private final int rowPosition;
 
+        /**
+         * Flag to indicate that a {@link RowResizeEvent} was handled.
+         */
+        public boolean handled = false;
+
         public KeepRowInsideViewportEventHandler(int rowPosition) {
             this.rowPosition = rowPosition;
         }
@@ -1757,6 +1736,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
         @Override
         public void handleLayerEvent(RowResizeEvent event) {
             moveRowPositionIntoViewport(this.rowPosition);
+            this.handled = true;
         }
 
         @Override
