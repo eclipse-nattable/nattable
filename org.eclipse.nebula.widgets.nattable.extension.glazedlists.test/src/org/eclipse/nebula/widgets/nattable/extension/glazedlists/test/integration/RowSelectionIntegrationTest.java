@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -67,7 +67,7 @@ public class RowSelectionIntegrationTest {
         this.eventListFixture = GlazedLists.eventList(RowDataListFixture.getList(10));
 
         GlazedListsGridLayer<RowDataFixture> gridLayer =
-                new GlazedListsGridLayer<RowDataFixture>(
+                new GlazedListsGridLayer<>(
                         this.eventListFixture,
                         RowDataListFixture.getPropertyNames(),
                         RowDataListFixture.getPropertyToLabelMap(),
@@ -77,13 +77,13 @@ public class RowSelectionIntegrationTest {
 
         this.selectionLayer = gridLayer.getBodyLayerStack().getSelectionLayer();
         this.bodyDataProvider = gridLayer.getBodyDataProvider();
-        this.selectionProvider = new RowSelectionProvider<RowDataFixture>(this.selectionLayer, this.bodyDataProvider);
+        this.selectionProvider = new RowSelectionProvider<>(this.selectionLayer, this.bodyDataProvider);
 
         this.nattable.addConfiguration(new DefaultSortConfiguration());
 
         // Enable preserve selection on data update
         this.selectionLayer.setSelectionModel(
-                new RowSelectionModel<RowDataFixture>(
+                new RowSelectionModel<>(
                         this.selectionLayer,
                         this.bodyDataProvider,
                         new IRowIdAccessor<RowDataFixture>() {
@@ -193,8 +193,7 @@ public class RowSelectionIntegrationTest {
 
         this.nattable.doCommand(new SelectRowsCommand(this.selectionLayer, 0, 0, false, false));
         // the second call first clears the selection and then applies the new
-        // one
-        // clearing by default also fires a CellSelectionEvent with negative
+        // one clearing by default also fires a CellSelectionEvent with negative
         // values
         this.nattable.doCommand(new SelectRowsCommand(this.selectionLayer, 0, 3, false, false));
     }
@@ -316,6 +315,13 @@ public class RowSelectionIntegrationTest {
     public void shouldReturnEmptySelectionOnNoSelection() {
         this.selectionLayer.clear();
         assertEquals(StructuredSelection.EMPTY, this.selectionProvider.getSelection());
+    }
+
+    @Test
+    public void shouldIgnoreNullSelectionListener() {
+        // this test succeeds if no NPE occurs
+        this.selectionProvider.addSelectionChangedListener(null);
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 1, 0, false, true));
     }
 
     private RowDataFixture getSelected() {
