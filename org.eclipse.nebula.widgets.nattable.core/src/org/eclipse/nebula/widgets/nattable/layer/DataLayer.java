@@ -155,7 +155,9 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
      * Gets the value at the given column and row index.
      *
      * @param columnIndex
+     *            The column index of the cell whose value is requested.
      * @param rowIndex
+     *            The row index of the cell whose value is requested.
      * @return the data value associated with the specified cell
      */
     public Object getDataValue(int columnIndex, int rowIndex) {
@@ -168,8 +170,11 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
      * supported.
      *
      * @param columnIndex
+     *            The column index of the cell whose value is requested.
      * @param rowIndex
+     *            The row index of the cell whose value is requested.
      * @param newValue
+     *            The new value that should be set.
      */
     public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
         this.dataProvider.setDataValue(columnIndex, rowIndex, newValue);
