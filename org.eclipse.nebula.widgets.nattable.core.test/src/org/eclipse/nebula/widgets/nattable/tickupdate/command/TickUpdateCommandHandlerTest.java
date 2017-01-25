@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,8 +11,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.tickupdate.command;
 
-import static org.eclipse.nebula.widgets.nattable.style.DisplayMode.EDIT;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 
@@ -23,9 +23,13 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.test.fixture.TickUpdateHandlerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.tickupdate.TickUpdateConfigAttributes;
@@ -121,12 +125,12 @@ public class TickUpdateCommandHandlerTest {
         this.testConfigRegistry.registerConfigAttribute(
                 EditConfigAttributes.CELL_EDITOR,
                 new ComboBoxCellEditor(Arrays.asList("")),
-                EDIT,
+                DisplayMode.EDIT,
                 "COMBO_BOX_EDITOR_LABEL");
         this.testConfigRegistry.registerConfigAttribute(
                 EditConfigAttributes.CELL_EDITOR,
                 new TextCellEditor(),
-                EDIT,
+                DisplayMode.EDIT,
                 "TEXT_BOX_EDITOR_LABEL");
 
         assertEquals("[1, 1]", this.selectionLayer.getDataValueByPosition(1, 1));
@@ -157,4 +161,21 @@ public class TickUpdateCommandHandlerTest {
         assertEquals("[1, 2]up", this.selectionLayer.getDataValueByPosition(1, 2));
     }
 
+    @Test
+    public void shouldNotThrowExceptionOnNoSelection() {
+        // if no exception occurs this test succeeds
+        // we also check that no update has been triggered
+        this.selectionLayer.clear();
+
+        this.selectionLayer.addLayerListener(new ILayerListener() {
+
+            @Override
+            public void handleLayerEvent(ILayerEvent event) {
+                if (event instanceof CellVisualChangeEvent) {
+                    fail("update triggered");
+                }
+            }
+        });
+        this.commandHandler.doCommand(new TickUpdateCommand(this.testConfigRegistry, true));
+    }
 }
