@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,58 +10,62 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.search.strategy;
 
+import static org.junit.Assert.assertEquals;
+
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.search.CellValueAsStringComparator;
-import org.eclipse.nebula.widgets.nattable.search.strategy.RowSearchStrategy;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.GridLayerFixture;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 public class RowSearchStrategyTest {
 
+    private DefaultGridLayer gridLayer;
     private ILayer layer;
     private ConfigRegistry configRegistry;
 
     @Before
     public void setUp() {
-        DefaultGridLayer gridLayer = new GridLayerFixture();
-        this.layer = gridLayer.getBodyLayer().getSelectionLayer();
+        this.gridLayer = new GridLayerFixture();
+        this.layer = this.gridLayer.getBodyLayer().getSelectionLayer();
 
         this.configRegistry = new ConfigRegistry();
-        new DefaultNatTableStyleConfiguration()
-                .configureRegistry(this.configRegistry);
+        new DefaultNatTableStyleConfiguration().configureRegistry(this.configRegistry);
     }
 
     @Test
     public void shouldAccessCellInSelectedRow() {
         // Select three rows for searching
-        RowSearchStrategy rowStrategy = new RowSearchStrategy(new int[] { 0, 2,
-                4 }, this.configRegistry);
-        PositionCoordinate[] cellsToSearch = rowStrategy
-                .getRowCellsToSearch(this.layer);
+        RowSearchStrategy rowStrategy = new RowSearchStrategy(new int[] { 0, 2, 4 }, this.configRegistry);
+        PositionCoordinate[] cellsToSearch = rowStrategy.getRowCellsToSearch(this.layer);
+
         PositionCoordinate cell = cellsToSearch[0];
-        Assert.assertEquals(0, cell.getRowPosition());
+        assertEquals(0, cell.getRowPosition());
+
         cell = cellsToSearch[10];
-        Assert.assertEquals(2, cell.getRowPosition());
+        assertEquals(2, cell.getRowPosition());
+
         cell = cellsToSearch[20];
-        Assert.assertEquals(4, cell.getRowPosition());
-        Assert.assertEquals(30, cellsToSearch.length);
+        assertEquals(4, cell.getRowPosition());
+        assertEquals(30, cellsToSearch.length);
+
+        // the SelectionLayer is not set as context layer, therefore nothing
+        // should happen
+        assertEquals(0, this.gridLayer.getBodyLayer().getSelectionLayer().getSelectedCells().size());
     }
 
     @Test
     public void shouldSearchAllBodyCellsForRowInSelection() {
-        RowSearchStrategy rowStrategy = new RowSearchStrategy(new int[] { 2, 0,
-                4 }, this.configRegistry);
-        rowStrategy
-                .setComparator(new CellValueAsStringComparator<Comparable<String>>());
+        RowSearchStrategy rowStrategy = new RowSearchStrategy(new int[] { 2, 0, 4 }, this.configRegistry);
+        rowStrategy.setComparator(new CellValueAsStringComparator<>());
         rowStrategy.setContextLayer(this.layer);
+
         PositionCoordinate cell = rowStrategy.executeSearch("[2,2]");
-        Assert.assertEquals(2, cell.getColumnPosition());
-        Assert.assertEquals(2, cell.getRowPosition());
+        assertEquals(2, cell.getColumnPosition());
+        assertEquals(2, cell.getRowPosition());
     }
 }

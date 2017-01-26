@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -104,5 +104,17 @@ public abstract class AbstractSearchStrategy implements ISearchStrategy {
 
     public void setComparator(Comparator<?> comparator) {
         this.comparator = comparator;
+    }
+
+    /**
+     *
+     * @return <code>false</code> if the result should be processed by the
+     *         caller, <code>true</code> if the strategy deals with the result
+     *         itself.
+     *
+     * @since 1.5
+     */
+    public boolean processResultInternally() {
+        return false;
     }
 }

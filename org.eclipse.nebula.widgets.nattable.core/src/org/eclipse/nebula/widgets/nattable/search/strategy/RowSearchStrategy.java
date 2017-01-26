@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,8 +31,7 @@ public class RowSearchStrategy extends AbstractSearchStrategy {
         this(rowPositions, 0, configRegistry, ISearchDirection.SEARCH_FORWARD);
     }
 
-    public RowSearchStrategy(int[] rowPositions, int startingColumnPosition,
-            IConfigRegistry configRegistry, String searchDirection) {
+    public RowSearchStrategy(int[] rowPositions, int startingColumnPosition, IConfigRegistry configRegistry, String searchDirection) {
         this.rowPositions = rowPositions;
         this.startingColumnPosition = startingColumnPosition;
         this.configRegistry = configRegistry;
@@ -40,14 +39,19 @@ public class RowSearchStrategy extends AbstractSearchStrategy {
     }
 
     @Override
-    public PositionCoordinate executeSearch(Object valueToMatch)
-            throws PatternSyntaxException {
+    public PositionCoordinate executeSearch(Object valueToMatch) throws PatternSyntaxException {
         @SuppressWarnings("unchecked")
-        Comparator<String> comparator2 = (Comparator<String>) getComparator();
-        return CellDisplayValueSearchUtil.findCell(getContextLayer(),
-                this.configRegistry, getRowCellsToSearch(getContextLayer()),
-                valueToMatch, comparator2, isCaseSensitive(), isWholeWord(),
-                isRegex(), isIncludeCollapsed());
+        Comparator<String> comparator = (Comparator<String>) getComparator();
+        return CellDisplayValueSearchUtil.findCell(
+                getContextLayer(),
+                this.configRegistry,
+                getRowCellsToSearch(getContextLayer()),
+                valueToMatch,
+                comparator,
+                isCaseSensitive(),
+                isWholeWord(),
+                isRegex(),
+                isIncludeCollapsed());
     }
 
     public void setStartingColumnPosition(int startingColumnPosition) {
@@ -73,15 +77,20 @@ public class RowSearchStrategy extends AbstractSearchStrategy {
         for (int rowIndex = 0; rowIndex < this.rowPositions.length; rowIndex++) {
             final int startingRowPosition = this.rowPositions[rowIndex];
             if (this.searchDirection.equals(ISearchDirection.SEARCH_BACKWARDS)) {
-                cellsToSearch.addAll(CellDisplayValueSearchUtil
-                        .getDescendingCellCoordinatesRowFirst(
-                                getContextLayer(), columnPosition,
-                                startingRowPosition, width, 1));
+                cellsToSearch.addAll(CellDisplayValueSearchUtil.getDescendingCellCoordinatesRowFirst(
+                        getContextLayer(),
+                        columnPosition,
+                        startingRowPosition,
+                        width,
+                        1));
                 columnPosition = columnCount - 1;
             } else {
-                cellsToSearch.addAll(CellDisplayValueSearchUtil
-                        .getCellCoordinatesRowFirst(getContextLayer(),
-                                columnPosition, startingRowPosition, width, 1));
+                cellsToSearch.addAll(CellDisplayValueSearchUtil.getCellCoordinatesRowFirst(
+                        getContextLayer(),
+                        columnPosition,
+                        startingRowPosition,
+                        width,
+                        1));
                 columnPosition = 0;
             }
             width = columnCount;

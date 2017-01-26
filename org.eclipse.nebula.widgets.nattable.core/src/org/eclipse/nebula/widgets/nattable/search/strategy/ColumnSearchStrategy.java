@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,14 +27,11 @@ public class ColumnSearchStrategy extends AbstractSearchStrategy {
     private final String searchDirection;
     private final IConfigRegistry configRegistry;
 
-    public ColumnSearchStrategy(int[] columnPositions,
-            IConfigRegistry configRegistry) {
-        this(columnPositions, 0, configRegistry,
-                ISearchDirection.SEARCH_FORWARD);
+    public ColumnSearchStrategy(int[] columnPositions, IConfigRegistry configRegistry) {
+        this(columnPositions, 0, configRegistry, ISearchDirection.SEARCH_FORWARD);
     }
 
-    public ColumnSearchStrategy(int[] columnPositions, int startingRowPosition,
-            IConfigRegistry configRegistry, String searchDirection) {
+    public ColumnSearchStrategy(int[] columnPositions, int startingRowPosition, IConfigRegistry configRegistry, String searchDirection) {
         this.columnPositions = columnPositions;
         this.startingRowPosition = startingRowPosition;
         this.configRegistry = configRegistry;
@@ -42,14 +39,19 @@ public class ColumnSearchStrategy extends AbstractSearchStrategy {
     }
 
     @Override
-    public PositionCoordinate executeSearch(Object valueToMatch)
-            throws PatternSyntaxException {
+    public PositionCoordinate executeSearch(Object valueToMatch) throws PatternSyntaxException {
         @SuppressWarnings("unchecked")
-        Comparator<String> comparator2 = (Comparator<String>) getComparator();
-        return CellDisplayValueSearchUtil.findCell(getContextLayer(),
-                this.configRegistry, getColumnCellsToSearch(getContextLayer()),
-                valueToMatch, comparator2, isCaseSensitive(), isWholeWord(),
-                isRegex(), isIncludeCollapsed());
+        Comparator<String> comparator = (Comparator<String>) getComparator();
+        return CellDisplayValueSearchUtil.findCell(
+                getContextLayer(),
+                this.configRegistry,
+                getColumnCellsToSearch(getContextLayer()),
+                valueToMatch,
+                comparator,
+                isCaseSensitive(),
+                isWholeWord(),
+                isRegex(),
+                isIncludeCollapsed());
     }
 
     public void setStartingRowPosition(int startingRowPosition) {
@@ -75,18 +77,20 @@ public class ColumnSearchStrategy extends AbstractSearchStrategy {
         for (int columnIndex = 0; columnIndex < this.columnPositions.length; columnIndex++) {
             final int startingColumnPosition = this.columnPositions[columnIndex];
             if (this.searchDirection.equals(ISearchDirection.SEARCH_BACKWARDS)) {
-                cellsToSearch
-                        .addAll(CellDisplayValueSearchUtil
-                                .getDescendingCellCoordinates(
-                                        getContextLayer(),
-                                        startingColumnPosition, rowPosition, 1,
-                                        height));
+                cellsToSearch.addAll(CellDisplayValueSearchUtil.getDescendingCellCoordinates(
+                        getContextLayer(),
+                        startingColumnPosition,
+                        rowPosition,
+                        1,
+                        height));
                 rowPosition = rowCount - 1;
             } else {
-                cellsToSearch
-                        .addAll(CellDisplayValueSearchUtil.getCellCoordinates(
-                                getContextLayer(), startingColumnPosition,
-                                rowPosition, 1, height));
+                cellsToSearch.addAll(CellDisplayValueSearchUtil.getCellCoordinates(
+                        getContextLayer(),
+                        startingColumnPosition,
+                        rowPosition,
+                        1,
+                        height));
                 rowPosition = 0;
             }
             height = rowCount;

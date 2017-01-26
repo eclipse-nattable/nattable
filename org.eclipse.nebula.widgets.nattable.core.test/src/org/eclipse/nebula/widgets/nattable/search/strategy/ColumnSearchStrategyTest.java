@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.search.strategy;
 
+import static org.junit.Assert.assertEquals;
+
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
@@ -17,21 +19,20 @@ import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.search.CellValueAsStringComparator;
-import org.eclipse.nebula.widgets.nattable.search.strategy.ColumnSearchStrategy;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.GridLayerFixture;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 public class ColumnSearchStrategyTest {
 
+    private DefaultGridLayer gridLayer;
     private ILayer layer;
     private ConfigRegistry configRegistry;
 
     @Before
     public void setUp() {
-        DefaultGridLayer gridLayer = new GridLayerFixture();
-        this.layer = gridLayer.getBodyLayer().getSelectionLayer();
+        this.gridLayer = new GridLayerFixture();
+        this.layer = this.gridLayer.getBodyLayer().getSelectionLayer();
         this.configRegistry = new ConfigRegistry();
         this.configRegistry.registerConfigAttribute(
                 CellConfigAttributes.DISPLAY_CONVERTER,
@@ -41,32 +42,30 @@ public class ColumnSearchStrategyTest {
     @Test
     public void shouldAccessCellsInSelectedColumn() {
         // Choose three columns for searching
-        ColumnSearchStrategy columnSearchStrategy = new ColumnSearchStrategy(
-                new int[] { 2, 5, 8 }, this.configRegistry);
-        columnSearchStrategy
-                .setComparator(new CellValueAsStringComparator<Comparable<String>>());
-        PositionCoordinate[] cellsToSearch = columnSearchStrategy
-                .getColumnCellsToSearch(this.layer);
+        ColumnSearchStrategy columnSearchStrategy = new ColumnSearchStrategy(new int[] { 2, 5, 8 }, this.configRegistry);
+        columnSearchStrategy.setComparator(new CellValueAsStringComparator<>());
+        PositionCoordinate[] cellsToSearch = columnSearchStrategy.getColumnCellsToSearch(this.layer);
 
         PositionCoordinate cell = cellsToSearch[0];
-        Assert.assertEquals(2, cell.columnPosition);
+        assertEquals(2, cell.columnPosition);
         cell = cellsToSearch[5];
-        Assert.assertEquals(5, cell.columnPosition);
+        assertEquals(5, cell.columnPosition);
         cell = cellsToSearch[10];
-        Assert.assertEquals(8, cell.columnPosition);
+        assertEquals(8, cell.columnPosition);
 
-        Assert.assertEquals(15, cellsToSearch.length);
+        assertEquals(15, cellsToSearch.length);
+
+        assertEquals(0, this.gridLayer.getBodyLayer().getSelectionLayer().getSelectedCells().size());
     }
 
     @Test
     public void shouldSearchAllBodyCellsForColumnInSelection() {
-        ColumnSearchStrategy columnSearchStrategy = new ColumnSearchStrategy(
-                new int[] { 2, 5, 8 }, this.configRegistry);
-        columnSearchStrategy
-                .setComparator(new CellValueAsStringComparator<Comparable<String>>());
+        ColumnSearchStrategy columnSearchStrategy = new ColumnSearchStrategy(new int[] { 2, 5, 8 }, this.configRegistry);
+        columnSearchStrategy.setComparator(new CellValueAsStringComparator<>());
         columnSearchStrategy.setContextLayer(this.layer);
+
         PositionCoordinate cell = columnSearchStrategy.executeSearch("[2,2]");
-        Assert.assertEquals(2, cell.getColumnPosition());
-        Assert.assertEquals(2, cell.getRowPosition());
+        assertEquals(2, cell.getColumnPosition());
+        assertEquals(2, cell.getRowPosition());
     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,10 @@
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.search.strategy;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -26,7 +30,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,12 +37,13 @@ public class GridSearchStrategyTest {
 
     // Has 10 columns and 5 rows
     private DefaultGridLayer gridLayer;
+    private SelectionLayer selectionLayer;
     private ConfigRegistry configRegistry;
 
     @Before
     public void setUp() {
-        this.gridLayer = new DefaultGridLayer(getBodyDataProvider(),
-                GridLayerFixture.colHeaderDataProvider);
+        this.gridLayer = new DefaultGridLayer(getBodyDataProvider(), GridLayerFixture.colHeaderDataProvider);
+        this.selectionLayer = this.gridLayer.getBodyLayer().getSelectionLayer();
         this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
 
             @Override
@@ -48,12 +52,12 @@ public class GridSearchStrategyTest {
             }
 
         });
-        this.gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display
-                .getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+        this.gridLayer.doCommand(
+                new ClientAreaResizeCommand(
+                        new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
 
         this.configRegistry = new ConfigRegistry();
-        new DefaultNatTableStyleConfiguration()
-                .configureRegistry(this.configRegistry);
+        new DefaultNatTableStyleConfiguration().configureRegistry(this.configRegistry);
     }
 
     public IDataProvider getBodyDataProvider() {
@@ -77,8 +81,7 @@ public class GridSearchStrategyTest {
                 } else if (columnIndex == 0 && rowIndex == 0) {
                     dataValue = "Body";
                 } else {
-                    dataValue = this.bodyDataProvider.getDataValue(columnIndex,
-                            rowIndex);
+                    dataValue = this.bodyDataProvider.getDataValue(columnIndex, rowIndex);
                 }
                 return dataValue;
             }
@@ -89,8 +92,7 @@ public class GridSearchStrategyTest {
             }
 
             @Override
-            public void setDataValue(int columnIndex, int rowIndex,
-                    Object newValue) {
+            public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
                 this.bodyDataProvider.setDataValue(columnIndex, rowIndex, newValue);
             }
 
@@ -100,93 +102,100 @@ public class GridSearchStrategyTest {
     @Test
     public void searchShouldWrapAroundColumn() {
         // Select search starting point in composite coordinates
-        this.gridLayer
-                .doCommand(new SelectCellCommand(this.gridLayer, 3, 4, false, false));
+        this.gridLayer.doCommand(new SelectCellCommand(this.gridLayer, 3, 4, false, false));
 
-        GridSearchStrategy gridStrategy = new GridSearchStrategy(
-                this.configRegistry, false, true);
+        GridSearchStrategy gridStrategy = new GridSearchStrategy(this.configRegistry, false, true);
 
         // If we don't specify to wrap the search, it will not find it.
-        final SelectionLayer selectionLayer = this.gridLayer.getBodyLayer()
-                .getSelectionLayer();
-        gridStrategy.setContextLayer(selectionLayer);
+        gridStrategy.setContextLayer(this.selectionLayer);
         gridStrategy.setCaseSensitive(true);
-        gridStrategy
-                .setComparator(new CellValueAsStringComparator<Comparable<String>>());
-        Assert.assertNull(gridStrategy.executeSearch("body"));
+        gridStrategy.setComparator(new CellValueAsStringComparator<>());
 
-        gridStrategy.setWrapSearch(true);
+        PositionCoordinate searchResult = gridStrategy.executeSearch("body");
+        assertNull(searchResult);
+
         // Should find it when wrap search is enabled.
-        Assert.assertNotNull(gridStrategy.executeSearch("Body"));
+        gridStrategy.setWrapSearch(true);
+
+        searchResult = gridStrategy.executeSearch("body");
+        assertNotNull(searchResult);
+        assertEquals(2, searchResult.columnPosition);
+        assertEquals(2, searchResult.rowPosition);
     }
 
     @Test
     public void searchShouldWrapAroundRow() {
         // Select search starting point in composite coordinates
-        this.gridLayer
-                .doCommand(new SelectCellCommand(this.gridLayer, 3, 4, false, false));
+        this.gridLayer.doCommand(new SelectCellCommand(this.gridLayer, 3, 4, false, false));
 
-        GridSearchStrategy gridStrategy = new GridSearchStrategy(
-                this.configRegistry, false, true);
-        gridStrategy
-                .setComparator(new CellValueAsStringComparator<Comparable<String>>());
+        GridSearchStrategy gridStrategy = new GridSearchStrategy(this.configRegistry, false, true);
+        gridStrategy.setComparator(new CellValueAsStringComparator<>());
         // If we don't specify to wrap the search, it will not find it.
-        final SelectionLayer selectionLayer = this.gridLayer.getBodyLayer()
-                .getSelectionLayer();
-        gridStrategy.setContextLayer(selectionLayer);
-        Assert.assertNull(gridStrategy.executeSearch("[1,3]"));
+        gridStrategy.setContextLayer(this.selectionLayer);
 
-        gridStrategy.setWrapSearch(true);
+        PositionCoordinate searchResult = gridStrategy.executeSearch("[1,3]");
+        assertNull(searchResult);
 
         // Should find it when wrap search is enabled.
-        Assert.assertNotNull(gridStrategy.executeSearch("[1,3]"));
+        gridStrategy.setWrapSearch(true);
+
+        searchResult = gridStrategy.executeSearch("[1,3]");
+        assertNotNull(searchResult);
+        assertEquals(1, searchResult.columnPosition);
+        assertEquals(3, searchResult.rowPosition);
     }
 
     @Test
     public void searchShouldMoveBackwardsToFindCell() {
         // Select search starting point in composite coordinates
-        this.gridLayer
-                .doCommand(new SelectCellCommand(this.gridLayer, 3, 4, false, false));
+        this.gridLayer.doCommand(new SelectCellCommand(this.gridLayer, 3, 4, false, false));
 
-        GridSearchStrategy gridStrategy = new GridSearchStrategy(
-                this.configRegistry, false, ISearchDirection.SEARCH_BACKWARDS, true);
-        gridStrategy
-                .setComparator(new CellValueAsStringComparator<Comparable<String>>());
-        final SelectionLayer selectionLayer = this.gridLayer.getBodyLayer()
-                .getSelectionLayer();
-        gridStrategy.setContextLayer(selectionLayer);
+        GridSearchStrategy gridStrategy = new GridSearchStrategy(this.configRegistry, false, ISearchDirection.SEARCH_BACKWARDS, true);
+        gridStrategy.setComparator(new CellValueAsStringComparator<>());
+        gridStrategy.setContextLayer(this.selectionLayer);
 
-        Assert.assertNotNull(gridStrategy.executeSearch("[1,3]"));
+        PositionCoordinate searchResult = gridStrategy.executeSearch("[1,3]");
+        assertNotNull(searchResult);
+        assertEquals(1, searchResult.columnPosition);
+        assertEquals(3, searchResult.rowPosition);
     }
 
     @Test
     public void shouldFindAllCellsWithValue() {
-        GridSearchStrategy gridStrategy = new GridSearchStrategy(
-                this.configRegistry, true, ISearchDirection.SEARCH_BACKWARDS, true);
-        gridStrategy
-                .setComparator(new CellValueAsStringComparator<Comparable<String>>());
-        final SelectionLayer selectionLayer = this.gridLayer.getBodyLayer()
-                .getSelectionLayer();
-        gridStrategy.setContextLayer(selectionLayer);
+        GridSearchStrategy gridStrategy = new GridSearchStrategy(this.configRegistry, true, ISearchDirection.SEARCH_BACKWARDS, true);
+        gridStrategy.setComparator(new CellValueAsStringComparator<>());
+        gridStrategy.setContextLayer(this.selectionLayer);
         gridStrategy.setCaseSensitive(true);
+        gridStrategy.setWrapSearch(true);
 
         PositionCoordinate searchResult = gridStrategy.executeSearch("Body");
-        Assert.assertEquals(0, searchResult.columnPosition);
-        Assert.assertEquals(0, searchResult.rowPosition);
+        assertEquals(0, searchResult.columnPosition);
+        assertEquals(0, searchResult.rowPosition);
 
-        gridStrategy.setWrapSearch(true);
         // Simulate selecting the search result
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer,
-                searchResult.columnPosition, searchResult.rowPosition, false,
-                false));
+        this.selectionLayer.doCommand(
+                new SelectCellCommand(
+                        this.selectionLayer,
+                        searchResult.columnPosition,
+                        searchResult.rowPosition,
+                        false,
+                        false));
+
         searchResult = gridStrategy.executeSearch("Body");
-        // System.out.println(searchResult);
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer,
-                searchResult.columnPosition, searchResult.rowPosition, false,
-                false));
+        assertEquals(4, searchResult.columnPosition);
+        assertEquals(4, searchResult.rowPosition);
+
+        // Simulate selecting the search result
+        this.selectionLayer.doCommand(
+                new SelectCellCommand(
+                        this.selectionLayer,
+                        searchResult.columnPosition,
+                        searchResult.rowPosition,
+                        false,
+                        false));
+
         searchResult = gridStrategy.executeSearch("Body");
-        // System.out.println(searchResult);
-        Assert.assertEquals(3, searchResult.columnPosition);
-        Assert.assertEquals(3, searchResult.rowPosition);
+        assertEquals(3, searchResult.columnPosition);
+        assertEquals(3, searchResult.rowPosition);
     }
 }

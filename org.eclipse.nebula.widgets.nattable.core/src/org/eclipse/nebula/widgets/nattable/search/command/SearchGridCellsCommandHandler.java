@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,8 +21,7 @@ import org.eclipse.nebula.widgets.nattable.search.strategy.AbstractSearchStrateg
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 
-public class SearchGridCellsCommandHandler implements
-        ILayerCommandHandler<SearchCommand> {
+public class SearchGridCellsCommandHandler implements ILayerCommandHandler<SearchCommand> {
 
     private final SelectionLayer selectionLayer;
     private PositionCoordinate searchResultCellCoordinate;
@@ -37,14 +36,10 @@ public class SearchGridCellsCommandHandler implements
     };
 
     @Override
-    public boolean doCommand(ILayer targetLayer, SearchCommand searchCommand)
-            throws PatternSyntaxException {
+    public boolean doCommand(ILayer targetLayer, SearchCommand searchCommand) throws PatternSyntaxException {
         searchCommand.convertToTargetLayer(targetLayer);
 
-        AbstractSearchStrategy searchStrategy = (AbstractSearchStrategy) searchCommand
-                .getSearchStrategy();
-        final ILayerListener searchEventListener = searchCommand
-                .getSearchEventListener();
+        final ILayerListener searchEventListener = searchCommand.getSearchEventListener();
         if (searchEventListener != null) {
             this.selectionLayer.addLayerListener(searchEventListener);
         }
@@ -53,36 +48,41 @@ public class SearchGridCellsCommandHandler implements
             if (anchor.columnPosition < 0 || anchor.rowPosition < 0) {
                 anchor = new PositionCoordinate(this.selectionLayer, 0, 0);
             }
-            searchStrategy.setContextLayer(targetLayer);
             Object dataValueToFind = null;
             if ((dataValueToFind = searchCommand.getSearchText()) == null) {
-                dataValueToFind = this.selectionLayer.getDataValueByPosition(
-                        anchor.columnPosition, anchor.rowPosition);
+                dataValueToFind = this.selectionLayer.getDataValueByPosition(anchor.columnPosition, anchor.rowPosition);
             }
 
-            searchStrategy.setCaseSensitive(searchCommand.isCaseSensitive());
-            searchStrategy.setWrapSearch(searchCommand.isWrapSearch());
-            searchStrategy.setWholeWord(searchCommand.isWholeWord());
-            searchStrategy.setIncremental(searchCommand.isIncremental());
-            searchStrategy.setRegex(searchCommand.isRegex());
-            searchStrategy.setIncludeCollapsed(searchCommand
-                    .isIncludeCollapsed());
-            searchStrategy.setSearchDirection(searchCommand
-                    .getSearchDirection());
-            searchStrategy.setComparator(searchCommand.getComparator());
-            this.searchResultCellCoordinate = searchStrategy
-                    .executeSearch(dataValueToFind);
+            boolean performActionOnResult = true;
+            if (searchCommand.getSearchStrategy() instanceof AbstractSearchStrategy) {
+                AbstractSearchStrategy searchStrategy = (AbstractSearchStrategy) searchCommand.getSearchStrategy();
+                searchStrategy.setContextLayer(targetLayer);
+                searchStrategy.setCaseSensitive(searchCommand.isCaseSensitive());
+                searchStrategy.setWrapSearch(searchCommand.isWrapSearch());
+                searchStrategy.setWholeWord(searchCommand.isWholeWord());
+                searchStrategy.setIncremental(searchCommand.isIncremental());
+                searchStrategy.setRegex(searchCommand.isRegex());
+                searchStrategy.setIncludeCollapsed(searchCommand.isIncludeCollapsed());
+                searchStrategy.setSearchDirection(searchCommand.getSearchDirection());
+                searchStrategy.setComparator(searchCommand.getComparator());
+                performActionOnResult = !searchStrategy.processResultInternally();
+            }
 
-            this.selectionLayer.fireLayerEvent(new SearchEvent(
-                    this.searchResultCellCoordinate));
-            if (this.searchResultCellCoordinate != null) {
+            this.searchResultCellCoordinate = searchCommand.getSearchStrategy().executeSearch(dataValueToFind);
+
+            this.selectionLayer.fireLayerEvent(new SearchEvent(this.searchResultCellCoordinate));
+
+            if (performActionOnResult && this.searchResultCellCoordinate != null) {
                 final SelectCellCommand command = new SelectCellCommand(
                         this.selectionLayer,
                         this.searchResultCellCoordinate.columnPosition,
-                        this.searchResultCellCoordinate.rowPosition, false, false);
+                        this.searchResultCellCoordinate.rowPosition,
+                        false,
+                        false);
                 command.setForcingEntireCellIntoViewport(true);
                 this.selectionLayer.doCommand(command);
             }
+
         } finally {
             if (searchEventListener != null) {
                 this.selectionLayer.removeLayerListener(searchEventListener);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,13 +29,11 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
 
     private final IConfigRegistry configRegistry;
 
-    public GridSearchStrategy(IConfigRegistry configRegistry,
-            boolean wrapSearch, boolean columnFirst) {
+    public GridSearchStrategy(IConfigRegistry configRegistry, boolean wrapSearch, boolean columnFirst) {
         this(configRegistry, wrapSearch, ISearchDirection.SEARCH_FORWARD, columnFirst);
     }
 
-    public GridSearchStrategy(IConfigRegistry configRegistry,
-            boolean wrapSearch, String searchDirection, boolean columnFirst) {
+    public GridSearchStrategy(IConfigRegistry configRegistry, boolean wrapSearch, String searchDirection, boolean columnFirst) {
         this.configRegistry = configRegistry;
         this.wrapSearch = wrapSearch;
         this.searchDirection = searchDirection;
@@ -141,16 +139,28 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
 
         // Get a sequence of ranges for searching.
         List<GridRectangle> gridRanges = getRanges(
-                firstDimPosition, secondDimPosition, direction,
-                firstDimStart, firstDimEnd,
-                secondDimStart, secondDimEnd);
+                firstDimPosition,
+                secondDimPosition,
+                direction,
+                firstDimStart,
+                firstDimEnd,
+                secondDimStart,
+                secondDimEnd);
 
         // Perform the search.
         @SuppressWarnings("unchecked")
-        Comparator<String> comparator2 = (Comparator<String>) getComparator();
-        return CellDisplayValueSearchUtil.findCell(getContextLayer(),
-                this.configRegistry, gridRanges, valueToMatch, comparator2,
-                isCaseSensitive(), isWholeWord(), isRegex(), isColumnFirst(), isIncludeCollapsed());
+        Comparator<String> comparator = (Comparator<String>) getComparator();
+        return CellDisplayValueSearchUtil.findCell(
+                getContextLayer(),
+                this.configRegistry,
+                gridRanges,
+                valueToMatch,
+                comparator,
+                isCaseSensitive(),
+                isWholeWord(),
+                isRegex(),
+                isColumnFirst(),
+                isIncludeCollapsed());
     }
 
     /**
