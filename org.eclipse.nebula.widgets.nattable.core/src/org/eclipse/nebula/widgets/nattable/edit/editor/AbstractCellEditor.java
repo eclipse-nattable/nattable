@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -499,8 +499,8 @@ public abstract class AbstractCellEditor implements ICellEditor {
         @Override
         public void focusLost(FocusEvent e) {
             if (this.handleFocusChanges) {
-                if (!commit(MoveDirectionEnum.NONE, true)) {
-                    if (e.widget instanceof Control && !e.widget.isDisposed()) {
+                if (!e.widget.isDisposed() && !commit(MoveDirectionEnum.NONE, true)) {
+                    if (e.widget instanceof Control) {
                         ((Control) e.widget).forceFocus();
                     }
                 } else {
