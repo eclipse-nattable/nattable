@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2016 Dirk Fauth and others.
+ * Copyright (c) 2013, 2017 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -67,6 +67,13 @@ public class FilterNatCombo extends NatCombo {
      * The local selection String storage.
      */
     private String filterText;
+
+    /**
+     * List of ICheckStateListener that should be added to the select all table
+     * once it is created. Kept locally because the table creation is deferred
+     * to the first access.
+     */
+    private List<ICheckStateListener> checkStateListener = new ArrayList<ICheckStateListener>();
 
     /**
      * Creates a new FilterNatCombo using the given IStyle for rendering,
@@ -221,26 +228,19 @@ public class FilterNatCombo extends NatCombo {
                     this.selectAllItemViewer.getTable().computeSize(SWT.DEFAULT, viewerHeight, true).x,
                     listWidth);
 
-            this.dropdownTable.setSize(listWidth, listHeight);
-            this.selectAllItemViewer.getTable().setSize(listWidth, viewerHeight);
+            Point textPosition = this.text.toDisplay(this.text.getLocation());
+
+            int filterTextBoxHeight = this.showDropdownFilter ? this.filterBox.computeSize(SWT.DEFAULT, SWT.DEFAULT).y : 0;
+            this.dropdownShell.setBounds(
+                    textPosition.x,
+                    textPosition.y + this.text.getBounds().height,
+                    listWidth + (this.dropdownTable.getGridLineWidth() * 2),
+                    listHeight + viewerHeight + filterTextBoxHeight);
 
             // as we performed auto resize for the columns, we now need to
             // ensure again that the columns
             // span the whole table width in case they shrunk
             calculateColumnWidth();
-
-            Point textPosition = this.text.toDisplay(this.text.getLocation());
-
-            // when scrollbars are enabled, we need to increase the shell width
-            if (this.dropdownTable.getVerticalBar() != null && this.maxVisibleItems > -1
-                    && this.dropdownTable.getItemCount() > this.maxVisibleItems) {
-                listWidth += gridLineAdjustment;
-            }
-
-            int filterTextBoxHeight = this.showDropdownFilter ? this.filterBox.computeSize(SWT.DEFAULT, SWT.DEFAULT).y : 0;
-            this.dropdownShell.setBounds(textPosition.x,
-                    textPosition.y + this.text.getBounds().height, listWidth,
-                    listHeight + viewerHeight + filterTextBoxHeight);
         }
     }
 
@@ -248,23 +248,15 @@ public class FilterNatCombo extends NatCombo {
     protected void calculateColumnWidth() {
         super.calculateColumnWidth();
 
-        int width = this.selectAllItemViewer.getTable().getBounds().width;
-        if (this.dropdownTable.getVerticalBar() != null && this.maxVisibleItems > -1
-                && this.dropdownTable.getItemCount() > this.maxVisibleItems) {
-            width -= this.dropdownTable.getVerticalBar().getSize().x;
-        } else {
-            // remove the left and the right grid line width so the column does
-            // not exceed the table
-            width -= this.dropdownTable.getGridLineWidth() * 2;
-        }
-        this.selectAllItemViewer.getTable().getColumn(0).setWidth(width);
+        this.selectAllItemViewer.getTable().getColumn(0).setWidth(
+                this.dropdownTable.getColumn(0).getWidth());
     }
 
     @Override
     protected void createDropdownControl(int style) {
         super.createDropdownControl(style);
 
-        int dropdownListStyle = style | SWT.V_SCROLL
+        int dropdownListStyle = style | SWT.NO_SCROLL
                 | HorizontalAlignmentEnum.getSWTStyle(this.cellStyle)
                 | SWT.FULL_SELECTION;
         this.selectAllItemViewer =
@@ -290,15 +282,11 @@ public class FilterNatCombo extends NatCombo {
         data.right = new FormAttachment(100);
         this.selectAllItemViewer.getTable().setLayoutData(data);
 
-        int filterTextBoxHeight = this.showDropdownFilter ? this.filterBox.computeSize(SWT.DEFAULT, SWT.DEFAULT).y : 0;
-
         data = new FormData();
-        // need to set the top attachment like this because attaching it to the
-        // viewer does some wrong calculations
-        data.top = new FormAttachment(this.dropdownShell,
-                this.selectAllItemViewer.getTable().getItemHeight() + filterTextBoxHeight, SWT.TOP);
+        data.top = new FormAttachment(this.selectAllItemViewer.getControl(), 0, SWT.BOTTOM);
         data.left = new FormAttachment(0);
         data.right = new FormAttachment(100);
+        data.bottom = new FormAttachment(100);
         this.dropdownTable.setLayoutData(data);
 
         this.selectAllItemViewer.setContentProvider(new IStructuredContentProvider() {
@@ -397,6 +385,10 @@ public class FilterNatCombo extends NatCombo {
             }
         });
 
+        for (ICheckStateListener l : this.checkStateListener) {
+            this.selectAllItemViewer.addCheckStateListener(l);
+        }
+
         // set an ICheckStateProvider that sets the checkbox state of the select
         // all checkbox regarding the selection of the items in the dropdown
         this.selectAllItemViewer.setCheckStateProvider(new ICheckStateProvider() {
@@ -444,7 +436,12 @@ public class FilterNatCombo extends NatCombo {
      *            The listener to add to the select all item
      */
     public void addCheckStateListener(ICheckStateListener listener) {
-        this.selectAllItemViewer.addCheckStateListener(listener);
+        if (listener != null) {
+            if (this.selectAllItemViewer != null) {
+                this.selectAllItemViewer.addCheckStateListener(listener);
+            }
+            this.checkStateListener.add(listener);
+        }
     }
 
     @Override
@@ -457,8 +454,8 @@ public class FilterNatCombo extends NatCombo {
 
     @Override
     public int getSelectionIndex() {
-        if (!this.dropdownTable.isDisposed()) {
-            return this.dropdownTable.getSelectionIndex();
+        if (!getDropdownTable().isDisposed()) {
+            return getDropdownTable().getSelectionIndex();
         } else if (this.filterText != null && this.filterText.length() > 0) {
             return this.itemList.indexOf(this.filterText);
         }
@@ -478,10 +475,10 @@ public class FilterNatCombo extends NatCombo {
     public void setSelection(String[] items) {
         String textValue = ""; //$NON-NLS-1$
         if (items != null) {
-            if (!this.dropdownTable.isDisposed()) {
+            if (!getDropdownTable().isDisposed()) {
                 setDropdownSelection(items);
                 if (this.freeEdit
-                        && this.dropdownTable.getSelectionCount() == 0) {
+                        && getDropdownTable().getSelectionCount() == 0) {
                     textValue = getTransformedText(items);
                 } else {
                     textValue = getTransformedTextForSelection();
@@ -495,8 +492,8 @@ public class FilterNatCombo extends NatCombo {
 
     @Override
     public void select(int index) {
-        if (!this.dropdownTable.isDisposed()) {
-            this.dropdownTable.select(index);
+        if (!getDropdownTable().isDisposed()) {
+            getDropdownTable().select(index);
             this.filterText = getTransformedTextForSelection();
         } else if (index >= 0) {
             this.filterText = this.itemList.get(index);
@@ -505,8 +502,8 @@ public class FilterNatCombo extends NatCombo {
 
     @Override
     public void select(int[] indeces) {
-        if (!this.dropdownTable.isDisposed()) {
-            this.dropdownTable.select(indeces);
+        if (!getDropdownTable().isDisposed()) {
+            getDropdownTable().select(indeces);
             this.filterText = getTransformedTextForSelection();
         } else {
             String[] selectedItems = new String[indeces.length];
