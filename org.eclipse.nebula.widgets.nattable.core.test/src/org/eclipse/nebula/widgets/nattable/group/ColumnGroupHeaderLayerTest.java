@@ -215,4 +215,20 @@ public class ColumnGroupHeaderLayerTest {
         stack = this.columnGroupLayer.getConfigLabelsByPosition(3, 0);
         assertEquals(0, stack.getLabels().size());
     }
+
+    @Test
+    public void testRowHeightByPosition() {
+        this.columnGroupLayer.clearAllGroups();
+        this.columnGroupLayer.setRowHeight(100);
+        // Height of the header column row - see fixture
+        assertEquals(120, this.columnGroupLayer.getHeight());
+        assertEquals(2, this.columnGroupLayer.getRowCount());
+        assertEquals(100, this.columnGroupLayer.getRowHeightByPosition(0));
+        assertEquals(20, this.columnGroupLayer.getRowHeightByPosition(1));
+        // Test calculated height
+        this.columnGroupLayer.setCalculateHeight(true);
+        assertEquals(20, this.columnGroupLayer.getHeight());
+        assertEquals(1, this.columnGroupLayer.getRowCount());
+        assertEquals(20, this.columnGroupLayer.getRowHeightByPosition(0));
+    }
 }

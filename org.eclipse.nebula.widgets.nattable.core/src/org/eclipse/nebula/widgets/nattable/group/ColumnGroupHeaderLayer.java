@@ -122,61 +122,67 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
     @Override
     public int getRowCount() {
-        if (!this.calculateHeight
-                || (this.model.getAllIndexesInGroups() != null
-                        && this.model.getAllIndexesInGroups().size() > 0)) {
-            return this.columnHeaderLayer.getRowCount() + 1;
-        }
-        return this.columnHeaderLayer.getRowCount();
+        return this.columnHeaderLayer.getRowCount() + getGroupRowCount();
+    }
+
+    private int getGroupRowCount() {
+        return isGroupRowIncluded() ? 1 : 0;
+    }
+
+    private int getGroupRowHeight() {
+        return isGroupRowIncluded() ? this.rowHeightConfig.getAggregateSize(1) : 0;
     }
 
     @Override
     public int getPreferredRowCount() {
-        return this.columnHeaderLayer.getPreferredRowCount() + 1;
+        return this.columnHeaderLayer.getPreferredRowCount() + getGroupRowCount();
     }
 
     @Override
     public int getRowIndexByPosition(int rowPosition) {
-        if (rowPosition == 0) {
+        if (rowPosition == 0 && isGroupRowIncluded()) {
             return rowPosition;
         } else {
-            return this.columnHeaderLayer.getRowIndexByPosition(rowPosition - 1);
+            return this.columnHeaderLayer.getRowIndexByPosition(rowPosition - this.getGroupRowCount());
         }
     }
 
     @Override
     public int localToUnderlyingRowPosition(int localRowPosition) {
-        if (localRowPosition == 0) {
+        if (localRowPosition == 0 && isGroupRowIncluded()) {
             return localRowPosition;
+        } else {
+            return localRowPosition - getGroupRowCount();
         }
-        return localRowPosition - 1;
+
     }
 
     // Height
 
     @Override
     public int getHeight() {
-        if (!this.calculateHeight
+        return this.getGroupRowHeight()
+                + this.columnHeaderLayer.getHeight();
+    }
+
+    private boolean isGroupRowIncluded() {
+        return !this.calculateHeight
                 || (this.model.getAllIndexesInGroups() != null
-                        && this.model.getAllIndexesInGroups().size() > 0)) {
-            return this.rowHeightConfig.getAggregateSize(1)
-                    + this.columnHeaderLayer.getHeight();
-        }
-        return this.columnHeaderLayer.getHeight();
+                        && !this.model.getAllIndexesInGroups().isEmpty());
     }
 
     @Override
     public int getPreferredHeight() {
-        return this.rowHeightConfig.getAggregateSize(1)
+        return getGroupRowHeight()
                 + this.columnHeaderLayer.getPreferredHeight();
     }
 
     @Override
     public int getRowHeightByPosition(int rowPosition) {
-        if (rowPosition == 0) {
+        if (rowPosition == 0 && isGroupRowIncluded()) {
             return this.rowHeightConfig.getSize(rowPosition);
         } else {
-            return this.columnHeaderLayer.getRowHeightByPosition(rowPosition - 1);
+            return this.columnHeaderLayer.getRowHeightByPosition(rowPosition - getGroupRowCount());
         }
     }
 
@@ -188,10 +194,10 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
     @Override
     public boolean isRowPositionResizable(int rowPosition) {
-        if (rowPosition == 0) {
+        if (rowPosition == 0 && isGroupRowIncluded()) {
             return this.rowHeightConfig.isPositionResizable(rowPosition);
         } else {
-            return this.columnHeaderLayer.isRowPositionResizable(rowPosition - 1);
+            return this.columnHeaderLayer.isRowPositionResizable(rowPosition - getGroupRowCount());
         }
     }
 
@@ -199,21 +205,29 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
     @Override
     public int getRowPositionByY(int y) {
-        int row0Height = getRowHeightByPosition(0);
-        if (y < row0Height) {
-            return 0;
+        if (this.isGroupRowIncluded()) {
+            int row0Height = getRowHeightByPosition(0);
+            if (y < row0Height) {
+                return 0;
+            } else {
+                return 1 + this.columnHeaderLayer.getRowPositionByY(y - row0Height);
+            }
         } else {
-            return 1 + this.columnHeaderLayer.getRowPositionByY(y - row0Height);
+            return this.columnHeaderLayer.getRowPositionByY(y);
         }
     }
 
     @Override
     public int getStartYOfRowPosition(int rowPosition) {
-        if (rowPosition == 0) {
-            return this.rowHeightConfig.getAggregateSize(rowPosition);
+        if (isGroupRowIncluded()) {
+            if (rowPosition == 0) {
+                return this.rowHeightConfig.getAggregateSize(rowPosition);
+            } else {
+                return getRowHeightByPosition(0)
+                        + this.columnHeaderLayer.getStartYOfRowPosition(rowPosition - 1);
+            }
         } else {
-            return getRowHeightByPosition(0)
-                    + this.columnHeaderLayer.getStartYOfRowPosition(rowPosition - 1);
+            return this.columnHeaderLayer.getStartYOfRowPosition(rowPosition);
         }
     }
 
@@ -428,12 +442,15 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
     }
 
     public void setCalculateHeight(boolean calculateHeight) {
+        boolean changed = calculateHeight != this.calculateHeight;
         this.calculateHeight = calculateHeight;
-
-        if (calculateHeight) {
-            this.model.registerColumnGroupModelListener(this.modelChangeListener);
-        } else {
-            this.model.unregisterColumnGroupModelListener(this.modelChangeListener);
+        if (changed) {
+            if (calculateHeight) {
+                this.model.registerColumnGroupModelListener(this.modelChangeListener);
+            } else {
+                this.model.unregisterColumnGroupModelListener(this.modelChangeListener);
+            }
+            this.fireLayerEvent(new RowStructuralRefreshEvent(this));
         }
     }
 
