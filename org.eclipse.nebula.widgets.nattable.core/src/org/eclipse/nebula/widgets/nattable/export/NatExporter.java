@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,40 +39,191 @@ import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 
+/**
+ * This class is used to perform exports of a NatTable or {@link ILayer} in a
+ * NatTable composition. The exporter to use can be configured via
+ * {@link IConfigRegistry} or directly given as method parameter.
+ *
+ * @see ExportConfigAttributes#EXPORTER
+ * @see ExportConfigAttributes#TABLE_EXPORTER
+ */
 public class NatExporter {
 
-    private static final Log log = LogFactory.getLog(NatExporter.class);
-
-    private final Shell shell;
-    private boolean openResult = true;
-    private boolean exportSucceeded = true;
+    private static final Log LOG = LogFactory.getLog(NatExporter.class);
 
     /**
+     * The {@link Shell} that should be used to open sub-dialogs and perform
+     * export operations in a background thread.
+     *
+     * @since 1.5
+     */
+    protected final Shell shell;
+    /**
+     * Flag that indicates if the created export result should be opened after
+     * the export is finished.
+     *
+     * @since 1.5
+     */
+    protected boolean openResult = true;
+    /**
+     * Flag that indicates that the export succeeded. Used to determine whether
+     * the export result can be opened or not.
+     *
+     * @since 1.5
+     */
+    protected boolean exportSucceeded = true;
+
+    /**
+     * Flag to configure whether in-memory pre-rendering is enabled or not. This
+     * is necessary in case content painters are used that are configured for
+     * content based auto-resizing.
+     *
      * @since 1.5
      */
     protected boolean preRender = true;
 
+    /**
+     * Create a new {@link NatExporter}.
+     * 
+     * @param shell
+     *            The {@link Shell} that should be used to open sub-dialogs and
+     *            perform export operations in a background thread. Can be
+     *            <code>null</code> but could lead to
+     *            {@link NullPointerException}s if {@link IExporter} are
+     *            configured, that use a {@link FileOutputStreamProvider}.
+     */
     public NatExporter(Shell shell) {
         this.shell = shell;
     }
 
     /**
-     * Exports a single ILayer using the ILayerExporter registered in the
-     * ConfigRegistry.
+     * Exports a single {@link ILayer} using the {@link ILayerExporter}
+     * registered in the {@link IConfigRegistry} for the key
+     * {@link ExportConfigAttributes#EXPORTER}.
      *
      * @param layer
-     *            The ILayer to export, usually a NatTable instance.
+     *            The {@link ILayer} to export, usually a NatTable instance.
      * @param configRegistry
-     *            The ConfigRegistry of the NatTable instance to export, that
-     *            contains the necessary export configurations.
+     *            The {@link IConfigRegistry} of the NatTable instance to
+     *            export, that contains the necessary export configurations.
      */
     public void exportSingleLayer(
             final ILayer layer,
             final IConfigRegistry configRegistry) {
 
-        final ILayerExporter exporter = configRegistry.getConfigAttribute(
+        ILayerExporter exporter = configRegistry.getConfigAttribute(
                 ExportConfigAttributes.EXPORTER,
                 DisplayMode.NORMAL);
+
+        exportSingleLayer(exporter, layer, configRegistry);
+    }
+
+    /**
+     * Exports a single {@link ILayer} using the given {@link ILayerExporter}.
+     *
+     * @param exporter
+     *            The {@link ILayerExporter} to use for exporting.
+     * @param layer
+     *            The {@link ILayer} to export, usually a NatTable instance.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} of the NatTable instance to
+     *            export, that contains the necessary export configurations.
+     *
+     * @since 1.5
+     */
+    public void exportSingleLayer(
+            final ILayerExporter exporter,
+            final ILayer layer,
+            final IConfigRegistry configRegistry) {
+
+        exportSingle(exporter, new BiConsumer<ILayerExporter, OutputStream>() {
+            @Override
+            public void apply(ILayerExporter exporter, OutputStream outputStream) {
+                try {
+                    exporter.exportBegin(outputStream);
+
+                    exportLayer(exporter, outputStream, "", layer, configRegistry); //$NON-NLS-1$
+
+                    exporter.exportEnd(outputStream);
+                } catch (IOException e) {
+                    // exception is handled in the caller
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
+    /**
+     * Exports a single {@link ILayer} using the {@link ILayerExporter}
+     * registered in the {@link IConfigRegistry} for the key
+     * {@link ExportConfigAttributes#EXPORTER}.
+     *
+     * @param layer
+     *            The {@link ILayer} to export, usually a NatTable instance.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} of the NatTable instance to
+     *            export, that contains the necessary export configurations.
+     *
+     * @since 1.5
+     */
+    public void exportSingleTable(
+            final ILayer layer,
+            final IConfigRegistry configRegistry) {
+
+        final ITableExporter exporter = configRegistry.getConfigAttribute(
+                ExportConfigAttributes.TABLE_EXPORTER,
+                DisplayMode.NORMAL);
+
+        exportSingleTable(exporter, layer, configRegistry);
+    }
+
+    /**
+     * Exports a single {@link ILayer} using the given {@link ITableExporter}.
+     *
+     * @param exporter
+     *            The {@link ITableExporter} to use for exporting.
+     * @param layer
+     *            The {@link ILayer} to export, usually a NatTable instance.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} of the NatTable instance to
+     *            export, that contains the necessary export configurations.
+     *
+     * @since 1.5
+     */
+    public void exportSingleTable(
+            final ITableExporter exporter,
+            final ILayer layer,
+            final IConfigRegistry configRegistry) {
+
+        exportSingle(exporter, new BiConsumer<ITableExporter, OutputStream>() {
+            @Override
+            public void apply(ITableExporter exporter, OutputStream outputStream) {
+                exportLayer(exporter, outputStream, layer, configRegistry);
+            }
+        });
+    }
+
+    /**
+     * Functional interface used to specify how the export should be performed
+     * for different exporter interface implementations. Can be removed once the
+     * source API level is updated to Java 1.8
+     *
+     * @param <T>
+     * @param <U>
+     */
+    private interface BiConsumer<T, U> {
+        void apply(T t, U u);
+    }
+
+    /**
+     *
+     * @param exporter
+     *            The {@link IExporter} to use for exporting.
+     * @param executable
+     *            The consumer implementation that is used to execute the export
+     *            and produce the output to an {@link OutputStream}
+     */
+    private <T extends IExporter> void exportSingle(final T exporter, final BiConsumer<T, OutputStream> executable) {
 
         final OutputStream outputStream = getOutputStream(exporter);
         if (outputStream == null) {
@@ -83,11 +234,7 @@ public class NatExporter {
             @Override
             public void run() {
                 try {
-                    exporter.exportBegin(outputStream);
-
-                    exportLayer(exporter, outputStream, "", layer, configRegistry); //$NON-NLS-1$
-
-                    exporter.exportEnd(outputStream);
+                    executable.apply(exporter, outputStream);
 
                     NatExporter.this.exportSucceeded = true;
                 } catch (Exception e) {
@@ -97,7 +244,7 @@ public class NatExporter {
                     try {
                         outputStream.close();
                     } catch (IOException e) {
-                        log.error("Failed to close the output stream", e); //$NON-NLS-1$
+                        LOG.error("Failed to close the output stream", e); //$NON-NLS-1$
                     }
                 }
 
@@ -109,6 +256,7 @@ public class NatExporter {
             // Run with the SWT display so that the progress bar can paint
             this.shell.getDisplay().asyncExec(exportRunnable);
         } else {
+            // execute in the current thread
             exportRunnable.run();
         }
     }
@@ -188,7 +336,7 @@ public class NatExporter {
                     try {
                         outputStream.close();
                     } catch (IOException e) {
-                        log.error("Failed to close the output stream", e); //$NON-NLS-1$
+                        LOG.error("Failed to close the output stream", e); //$NON-NLS-1$
                     }
                 }
 
@@ -285,6 +433,77 @@ public class NatExporter {
             final IConfigRegistry configRegistry,
             final boolean initExportLayer) {
 
+        exportLayer(new ITableExporter() {
+
+            @Override
+            public void exportTable(Shell shell, ProgressBar progressBar, OutputStream outputStream,
+                    ILayer layer, IConfigRegistry configRegistry) throws IOException {
+
+                if (initExportLayer) {
+                    exporter.exportLayerBegin(outputStream, layerName);
+                }
+
+                for (int rowPosition = 0; rowPosition < layer.getRowCount(); rowPosition++) {
+                    exporter.exportRowBegin(outputStream, rowPosition);
+                    if (progressBar != null) {
+                        progressBar.setSelection(rowPosition);
+                    }
+
+                    for (int columnPosition = 0; columnPosition < layer.getColumnCount(); columnPosition++) {
+                        ILayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);
+
+                        IExportFormatter exportFormatter = configRegistry.getConfigAttribute(
+                                ExportConfigAttributes.EXPORT_FORMATTER,
+                                cell.getDisplayMode(),
+                                cell.getConfigLabels().getLabels());
+                        Object exportDisplayValue = exportFormatter.formatForExport(cell, configRegistry);
+
+                        exporter.exportCell(outputStream, exportDisplayValue, cell, configRegistry);
+                    }
+
+                    exporter.exportRowEnd(outputStream, rowPosition);
+                }
+
+                if (initExportLayer) {
+                    exporter.exportLayerEnd(outputStream, layerName);
+                }
+            }
+
+            @Override
+            public OutputStream getOutputStream(Shell shell) {
+                return exporter.getOutputStream(shell);
+            }
+
+            @Override
+            public Object getResult() {
+                return exporter.getResult();
+            }
+        }, outputStream, layer, configRegistry);
+    }
+
+    /**
+     * Exports the given {@link ILayer} to the given {@link OutputStream} using
+     * the provided {@link ITableExporter}.
+     *
+     * @param exporter
+     *            The {@link ITableExporter} that should be used for exporting.
+     * @param outputStream
+     *            The {@link OutputStream} that should be used to write the
+     *            export to.
+     * @param layer
+     *            The {@link ILayer} that should be exported.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to retrieve the export
+     *            configurations.
+     *
+     * @since 1.5
+     */
+    protected void exportLayer(
+            final ITableExporter exporter,
+            final OutputStream outputStream,
+            final ILayer layer,
+            final IConfigRegistry configRegistry) {
+
         if (this.preRender) {
             AutoResizeHelper.autoResize(layer, configRegistry);
         }
@@ -311,11 +530,10 @@ public class NatExporter {
             Shell childShell = new Shell(this.shell.getDisplay(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
             childShell.setText(Messages.getString("NatExporter.exporting")); //$NON-NLS-1$
 
-            int startRow = 0;
             int endRow = layer.getRowCount() - 1;
 
             progressBar = new ProgressBar(childShell, SWT.SMOOTH);
-            progressBar.setMinimum(startRow);
+            progressBar.setMinimum(0);
             progressBar.setMaximum(endRow);
             progressBar.setBounds(0, 0, 400, 25);
             progressBar.setFocus();
@@ -325,34 +543,7 @@ public class NatExporter {
         }
 
         try {
-            if (initExportLayer) {
-                exporter.exportLayerBegin(outputStream, layerName);
-            }
-
-            for (int rowPosition = 0; rowPosition < layer.getRowCount(); rowPosition++) {
-                exporter.exportRowBegin(outputStream, rowPosition);
-                if (progressBar != null) {
-                    progressBar.setSelection(rowPosition);
-                }
-
-                for (int columnPosition = 0; columnPosition < layer.getColumnCount(); columnPosition++) {
-                    ILayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);
-
-                    IExportFormatter exportFormatter = configRegistry.getConfigAttribute(
-                            ExportConfigAttributes.EXPORT_FORMATTER,
-                            cell.getDisplayMode(),
-                            cell.getConfigLabels().getLabels());
-                    Object exportDisplayValue = exportFormatter.formatForExport(cell, configRegistry);
-
-                    exporter.exportCell(outputStream, exportDisplayValue, cell, configRegistry);
-                }
-
-                exporter.exportRowEnd(outputStream, rowPosition);
-            }
-
-            if (initExportLayer) {
-                exporter.exportLayerEnd(outputStream, layerName);
-            }
+            exporter.exportTable(this.shell, progressBar, outputStream, layer, configRegistry);
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
@@ -370,7 +561,16 @@ public class NatExporter {
         }
     }
 
-    private void setClientAreaToMaximum(ILayer layer) {
+    /**
+     * Increase the client area so it can include the whole {@link ILayer}.
+     *
+     * @param layer
+     *            The {@link ILayer} for which the client area should be
+     *            maximized.
+     *
+     * @since 1.5
+     */
+    protected void setClientAreaToMaximum(ILayer layer) {
         final Rectangle maxClientArea = new Rectangle(0, 0, layer.getWidth(), layer.getHeight());
 
         layer.setClientAreaProvider(new IClientAreaProvider() {
@@ -383,7 +583,16 @@ public class NatExporter {
         layer.doCommand(new PrintEntireGridCommand());
     }
 
-    private void openExport(ILayerExporter exporter) {
+    /**
+     * Open the export result in the matching application.
+     *
+     * @param exporter
+     *            The {@link IExporter} that was used to perform the export.
+     *            Needed to access the export result.
+     *
+     * @since 1.5
+     */
+    protected void openExport(IExporter exporter) {
         if (this.exportSucceeded
                 && this.openResult
                 && exporter.getResult() != null
@@ -420,7 +629,7 @@ public class NatExporter {
      *
      * @since 1.5
      */
-    protected OutputStream getOutputStream(ILayerExporter exporter) {
+    protected OutputStream getOutputStream(IExporter exporter) {
         OutputStream outputStream = null;
         try {
             outputStream = exporter.getOutputStream(this.shell);
@@ -439,7 +648,7 @@ public class NatExporter {
      * @since 1.5
      */
     protected void handleExportException(Exception e) {
-        log.error("Failed to export.", e); //$NON-NLS-1$
+        LOG.error("Failed to export.", e); //$NON-NLS-1$
 
         ExceptionDialog.open(
                 this.shell,

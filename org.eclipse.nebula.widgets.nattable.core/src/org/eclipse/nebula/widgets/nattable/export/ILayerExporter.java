@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,6 @@ import java.io.OutputStream;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
-import org.eclipse.swt.widgets.Shell;
 
 /**
  * An ILayerExporter is used to export a NatTable to an external format. Usually
@@ -29,23 +28,7 @@ import org.eclipse.swt.widgets.Shell;
  * @see NatExporter
  * @see ExportConfigAttributes
  */
-public interface ILayerExporter {
-
-    /**
-     *
-     * @param shell
-     *            The Shell where the current ILayer to export is connected to.
-     *            Necessary to support user interactions via dialogs on
-     *            configuring the output location.
-     * @return The OutputStream to write the export to.
-     */
-    OutputStream getOutputStream(Shell shell);
-
-    /**
-     * @return The result that is produced by this ILayerExporter. Usually the
-     *         file that is created or written by this exporter.
-     */
-    Object getResult();
+public interface ILayerExporter extends IExporter {
 
     /**
      * Need to be called only once at the beginning of an export operation. It
