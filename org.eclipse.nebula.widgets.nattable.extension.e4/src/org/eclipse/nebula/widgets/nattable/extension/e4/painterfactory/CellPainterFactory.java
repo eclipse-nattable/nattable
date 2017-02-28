@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2017 CEA LIST and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -516,6 +516,12 @@ public class CellPainterFactory {
         if ("vertical".equalsIgnoreCase(textDirection)) {
             vertical = true;
         }
+
+        int lineSpacing = 0;
+        if (painterProperties.containsKey(NatTableCSSConstants.LINE_SPACING)) {
+            lineSpacing = (Integer) painterProperties.get(NatTableCSSConstants.LINE_SPACING);
+        }
+        painter.setLineSpacing(lineSpacing);
 
         boolean calculateHeight = false;
         if (painterProperties.containsKey(NatTableCSSConstants.CALCULATE_CELL_HEIGHT)) {

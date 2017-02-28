@@ -40,7 +40,7 @@ public class NatTableElementAdapter extends WidgetElement {
      * Collection of virtual children that can be used as child selectors in CSS
      * that will be mapped to NatTable labels.
      */
-    List<Node> virtualChildren = new ArrayList<Node>();
+    List<Node> virtualChildren = new ArrayList<>();
 
     public NatTableElementAdapter(final NatTable natTable, final CSSEngine engine) {
         super(natTable, engine);

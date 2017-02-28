@@ -91,6 +91,9 @@
                name="border-width">
          </property-name>
          <property-name
+               name="border-mode">
+         </property-name>
+         <property-name
                name="password-echo-char">
          </property-name>
          <property-name
@@ -107,6 +110,9 @@
          </property-name>
          <property-name
                name="text-direction">
+         </property-name>
+         <property-name
+               name="line-spacing">
          </property-name>
          <property-name
                name="decoration">
@@ -248,6 +254,9 @@
                name="border-width">
          </property-name>
          <property-name
+               name="border-mode">
+         </property-name>
+         <property-name
                name="password-echo-char">
          </property-name>
          <property-name
@@ -264,6 +273,9 @@
          </property-name>
          <property-name
                name="text-direction">
+         </property-name>
+         <property-name
+               name="line-spacing">
          </property-name>
          <property-name
                name="decoration">

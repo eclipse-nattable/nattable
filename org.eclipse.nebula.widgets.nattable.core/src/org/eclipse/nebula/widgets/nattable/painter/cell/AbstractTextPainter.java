@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -789,6 +789,18 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      */
     public void setWordWrapping(boolean wordWrapping) {
         this.wordWrapping = wordWrapping;
+    }
+
+    /**
+     * Return the number of pixels that are added between lines. Default is 0,
+     * which means that the line height is defined by the font height only.
+     *
+     * @return The number of pixels that are added between lines
+     *
+     * @since 1.5
+     */
+    public int getLineSpacing() {
+        return this.lineSpacing;
     }
 
     /**

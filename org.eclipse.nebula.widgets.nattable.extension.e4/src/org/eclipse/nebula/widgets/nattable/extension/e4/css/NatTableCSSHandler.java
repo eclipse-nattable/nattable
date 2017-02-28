@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2017 CEA LIST and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -46,6 +46,7 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PercentageBarD
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnSizeConfigurationCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowSizeConfigurationCommand;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle.BorderModeEnum;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
@@ -290,7 +291,12 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                 BorderStyle borderStyle = NatTableCSSHelper.getBorderStyle(context, displayMode);
                 borderStyle.setThickness(
                         (int) ((CSSPrimitiveValue) value).getFloatValue(CSSPrimitiveValue.CSS_PT));
-
+            } else if (NatTableCSSConstants.BORDER_MODE.equalsIgnoreCase(property)
+                    && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
+                BorderStyle borderStyle = NatTableCSSHelper.getBorderStyle(context, displayMode);
+                CSSPrimitiveValue primitiveValue = (CSSPrimitiveValue) value;
+                borderStyle.setBorderMode(
+                        BorderModeEnum.valueOf(primitiveValue.getStringValue().toUpperCase()));
             } else if (NatTableCSSConstants.PASSWORD_ECHO_CHAR.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 String stringValue = value.getCssText();
@@ -556,6 +562,11 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                 NatTableCSSHelper
                         .getPainterProperties(context, displayMode)
                         .put(NatTableCSSConstants.TEXT_DIRECTION, value.getCssText());
+            } else if (NatTableCSSConstants.LINE_SPACING.equalsIgnoreCase(property)
+                    && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
+                NatTableCSSHelper
+                        .getPainterProperties(context, displayMode)
+                        .put(NatTableCSSConstants.LINE_SPACING, (int) ((CSSPrimitiveValue) value).getFloatValue(CSSPrimitiveValue.CSS_PT));
             } else if (NatTableCSSConstants.COLUMN_WIDTH.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 CSSPrimitiveValue primitiveValue = (CSSPrimitiveValue) value;
@@ -996,6 +1007,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                 ICSSValueConverter cssValueConverter = engine.getCSSValueConverter(String.class);
                 return border.getThickness() + " "
                         + border.getLineStyle().toString().toLowerCase()
+                        + " " + border.getBorderMode().toString().toLowerCase()
                         + " " + cssValueConverter.convert(
                                 border.getColor(),
                                 engine,
@@ -1025,6 +1037,13 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                         displayMode,
                         label);
                 return "" + border.getThickness();
+            } else if (NatTableCSSConstants.BORDER_MODE.equalsIgnoreCase(property)) {
+                BorderStyle border = NatTableCSSHelper.getNatTableStyle(
+                        natTable,
+                        CellStyleAttributes.BORDER_STYLE,
+                        displayMode,
+                        label);
+                return "" + border.getBorderMode();
             } else if (NatTableCSSConstants.PASSWORD_ECHO_CHAR.equalsIgnoreCase(property)) {
                 return "" + NatTableCSSHelper.getNatTableStyle(
                         natTable,
@@ -1249,6 +1268,24 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                 }
 
                 return trim.toString();
+            } else if (NatTableCSSConstants.LINE_SPACING.equalsIgnoreCase(property)) {
+                int spacing = 0;
+
+                ICellPainter painter = natTable.getConfigRegistry().getConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        displayMode,
+                        label);
+                if (painter != null) {
+                    while (painter instanceof CellPainterWrapper) {
+                        painter = ((CellPainterWrapper) painter).getWrappedPainter();
+                    }
+                }
+
+                if (painter instanceof AbstractTextPainter) {
+                    spacing = ((AbstractTextPainter) painter).getLineSpacing();
+                }
+
+                return "" + spacing;
             } else if (NatTableCSSConstants.TEXT_DIRECTION.equalsIgnoreCase(property)) {
                 String direction = "horizontal";
 
@@ -1374,6 +1411,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                 ICSSValueConverter cssValueConverter = engine.getCSSValueConverter(String.class);
                 return border.getThickness() + " "
                         + border.getLineStyle().toString().toLowerCase()
+                        + " " + border.getBorderMode().toString().toLowerCase()
                         + " " + cssValueConverter.convert(
                                 border.getColor(),
                                 engine,
@@ -1397,6 +1435,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                 ICSSValueConverter cssValueConverter = engine.getCSSValueConverter(String.class);
                 return border.getThickness() + " "
                         + border.getLineStyle().toString().toLowerCase()
+                        + " " + border.getBorderMode().toString().toLowerCase()
                         + " " + cssValueConverter.convert(
                                 border.getColor(),
                                 engine,

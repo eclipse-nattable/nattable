@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2017 CEA LIST and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -150,6 +150,16 @@ public interface NatTableCSSConstants {
      */
     String BORDER_WIDTH = "border-width";
     /**
+     * CSS property for {@link CellStyleAttributes#BORDER_STYLE}. Triggers the
+     * usage of the LineBorderDecorator.
+     * <p>
+     * Available values: <code>centered, internal, external</code>
+     * </p>
+     *
+     * @since 1.1
+     */
+    String BORDER_MODE = "border-mode";
+    /**
      * CSS property for {@link CellStyleAttributes#PASSWORD_ECHO_CHAR}. Does not
      * trigger the usage of the PasswordTextPainter. This needs to be done via
      * additional {@link IConfiguration} or <i>painter</i> CSS property.
@@ -218,6 +228,14 @@ public interface NatTableCSSConstants {
      * </p>
      */
     String TEXT_DIRECTION = "text-direction";
+    /**
+     * CSS property to specify an additional spacing between lines in a text. By
+     * default this value is zero which means the line height is specified only
+     * by the font height.
+     *
+     * @since 1.1
+     */
+    String LINE_SPACING = "line-spacing";
     /**
      * CSS property to configure the column width. Available values are:
      * <ul>

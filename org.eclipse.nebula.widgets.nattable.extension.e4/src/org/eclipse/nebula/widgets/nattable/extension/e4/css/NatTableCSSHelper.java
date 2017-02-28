@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2017 CEA LIST and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -44,6 +44,7 @@ import org.eclipse.nebula.widgets.nattable.data.convert.DefaultShortDisplayConve
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.PercentageDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle.BorderModeEnum;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleProxy;
@@ -518,9 +519,12 @@ public class NatTableCSSHelper {
                         if (CSS2ColorHelper.isColorName(primitiveValue.getStringValue())) {
                             borderStyle.setColor(
                                     (Color) engine.convert(value2, Color.class, display));
-                        } else {
+                        } else if (isLineStyle(primitiveValue.getStringValue().toUpperCase())) {
                             borderStyle.setLineStyle(
                                     LineStyleEnum.valueOf(primitiveValue.getStringValue().toUpperCase()));
+                        } else {
+                            borderStyle.setBorderMode(
+                                    BorderModeEnum.valueOf(primitiveValue.getStringValue().toUpperCase()));
                         }
                         break;
                     case CSSPrimitiveValue.CSS_RGBCOLOR:
@@ -536,6 +540,23 @@ public class NatTableCSSHelper {
                 }
             }
         }
+    }
+
+    /**
+     *
+     * @param style
+     *            The String value that should be checked if it is a
+     *            {@link LineStyleEnum} value.
+     * @return <code>true</code> if the given String is a {@link LineStyleEnum},
+     *         <code>false</code> if not.
+     */
+    private static boolean isLineStyle(String style) {
+        try {
+            LineStyleEnum.valueOf(style);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -620,7 +641,7 @@ public class NatTableCSSHelper {
         List<String> decorator = (List<String>) getContextValue(context, displayMode, NatTableCSSConstants.CV_DECORATOR_PAINTER);
 
         if (decorator == null) {
-            decorator = new ArrayList<String>();
+            decorator = new ArrayList<>();
             storeContextValue(context, displayMode, NatTableCSSConstants.CV_DECORATOR_PAINTER, decorator);
         }
 
@@ -643,7 +664,7 @@ public class NatTableCSSHelper {
                 (Map<String, Object>) getContextValue(context, displayMode, NatTableCSSConstants.CV_PAINTER_CONFIGURATION);
 
         if (painterProperties == null) {
-            painterProperties = new HashMap<String, Object>();
+            painterProperties = new HashMap<>();
             storeContextValue(context, displayMode, NatTableCSSConstants.CV_PAINTER_CONFIGURATION, painterProperties);
         }
 
@@ -668,7 +689,7 @@ public class NatTableCSSHelper {
     public static Map<String, Object> getPainterPropertiesInherited(
             CSSElementContext context, CSSElementContext natTableContext, String targetDisplayMode) {
 
-        Map<String, Object> painterProperties = new HashMap<String, Object>();
+        Map<String, Object> painterProperties = new HashMap<>();
 
         List<String> displayModes = displayModeOrdering.getDisplayModeOrdering(targetDisplayMode);
         String displayMode = null;
@@ -701,7 +722,7 @@ public class NatTableCSSHelper {
      * @return The list of string representations for painters.
      */
     public static List<String> resolvePainterRepresentation(CSSValue value) {
-        List<String> painterValues = new ArrayList<String>();
+        List<String> painterValues = new ArrayList<>();
         if (value.getCssValueType() == CSSValue.CSS_VALUE_LIST) {
             CSSValueList valueList = (CSSValueList) value;
             int length = valueList.getLength();
@@ -733,7 +754,7 @@ public class NatTableCSSHelper {
     public static void storeContextValue(CSSElementContext context, String displayMode, Object key, Object value) {
         Object subContext = context.getData(displayMode);
         if (subContext == null) {
-            subContext = new HashMap<Object, Object>();
+            subContext = new HashMap<>();
             context.setData(displayMode, subContext);
         }
 
