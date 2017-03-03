@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@
 package org.eclipse.nebula.widgets.nattable.edit.editor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
@@ -167,6 +168,22 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
      */
     public ComboBoxCellEditor(List<?> canonicalValues) {
         this(canonicalValues, NatCombo.DEFAULT_NUM_OF_VISIBLE_ITEMS);
+    }
+
+    /**
+     * Create a new single selection {@link ComboBoxCellEditor} based on the
+     * given list of items, showing the default number of items in the dropdown
+     * of the combo.
+     *
+     * @param canonicalValues
+     *            Array of items to be shown in the drop down box. These will be
+     *            converted using the {@link IDisplayConverter} for display
+     *            purposes
+     *
+     * @since 1.5
+     */
+    public ComboBoxCellEditor(Object... canonicalValues) {
+        this(Arrays.asList(canonicalValues), NatCombo.DEFAULT_NUM_OF_VISIBLE_ITEMS);
     }
 
     /**
