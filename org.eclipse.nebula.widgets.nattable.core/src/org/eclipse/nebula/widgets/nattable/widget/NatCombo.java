@@ -1088,6 +1088,10 @@ public class NatCombo extends Composite {
             }
         }
         this.text.setText(textValue);
+
+        if (this.multiselect) {
+            this.text.setSelection(textValue.length() - this.multiselectTextSuffix.length());
+        }
     }
 
     /**
