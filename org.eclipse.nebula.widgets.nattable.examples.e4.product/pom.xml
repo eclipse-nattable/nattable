@@ -29,27 +29,35 @@
          <version>${tycho-version}</version>
          <executions>
             <execution>
-               <id>create-product-distributions</id>
+               <id>materialize-products</id>
                <goals>
                   <goal>materialize-products</goal>
+               </goals>
+               <configuration>
+		         <products>
+                   <product>
+                     <id>org.eclipse.nebula.widgets.nattable.examples.e4.product</id>
+                     <rootFolders>
+                       <macosx>NatTable Example Application.app</macosx>
+                     </rootFolders>
+                   </product>
+                 </products>
+		       </configuration>
+            </execution>
+            <execution>
+               <id>archive-products</id>
+               <phase>pre-integration-test</phase>
+               <goals>
                   <goal>archive-products</goal>
                </goals>
+               <configuration>
+                 <formats>
+                   <linux>tar.gz</linux>
+                   <macosx>tar.gz</macosx>
+		         </formats>
+		       </configuration>
             </execution>
          </executions>
-         <configuration>
-           <formats>
-             <linux>tar.gz</linux>
-             <macosx>tar.gz</macosx>
-		   </formats>
-		   <products>
-             <product>
-               <id>org.eclipse.nebula.widgets.nattable.examples.e4.product</id>
-               <rootFolders>
-                 <macosx>NatTable Example Application.app</macosx>
-               </rootFolders>
-             </product>
-           </products>
-		 </configuration>
       </plugin>
    </plugins>
   </build>
@@ -59,48 +67,48 @@
       <id>sign</id>
       <build>
         <plugins>
-      <plugin>
-        <groupId>org.eclipse.cbi.maven.plugins</groupId>
-        <artifactId>eclipse-macsigner-plugin</artifactId>
-        <version>${cbi-version}</version>
-        <executions>
-          <execution>
-            <id>sign</id>
-            <phase>package</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-            <configuration>
-              <signFiles>
-                <signFile>${project.build.directory}/products/${product-folder}/macosx/cocoa/x86_64/NatTable Example Application.app</signFile>
-              </signFiles>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+          <plugin>
+            <groupId>org.eclipse.cbi.maven.plugins</groupId>
+            <artifactId>eclipse-macsigner-plugin</artifactId>
+            <version>${cbi-version}</version>
+            <executions>
+              <execution>
+                <id>sign</id>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <signFiles>
+                    <signFile>${project.build.directory}/products/${product-folder}/macosx/cocoa/x86_64/NatTable Example Application.app</signFile>
+                  </signFiles>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
       
-      <plugin>
-        <groupId>org.eclipse.cbi.maven.plugins</groupId>
-        <artifactId>eclipse-winsigner-plugin</artifactId>
-        <version>${cbi-version}</version>
-        <executions>
-          <execution>
-            <id>sign</id>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <signFiles>
-                <signFile>${project.build.directory}/products/${product-folder}/win32/win32/x86/nattable_examples.exe</signFile>
-                <signFile>${project.build.directory}/products/${product-folder}/win32/win32/x86/eclipsec.exe</signFile>
-                <signFile>${project.build.directory}/products/${product-folder}/win32/win32/x86_64/nattable_examples.exe</signFile>
-                <signFile>${project.build.directory}/products/${product-folder}/win32/win32/x86_64/eclipsec.exe</signFile>
-              </signFiles>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+          <plugin>
+            <groupId>org.eclipse.cbi.maven.plugins</groupId>
+            <artifactId>eclipse-winsigner-plugin</artifactId>
+            <version>${cbi-version}</version>
+            <executions>
+              <execution>
+                <id>sign</id>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <signFiles>
+                    <signFile>${project.build.directory}/products/${product-folder}/win32/win32/x86/nattable_examples.exe</signFile>
+                    <signFile>${project.build.directory}/products/${product-folder}/win32/win32/x86/eclipsec.exe</signFile>
+                    <signFile>${project.build.directory}/products/${product-folder}/win32/win32/x86_64/nattable_examples.exe</signFile>
+                    <signFile>${project.build.directory}/products/${product-folder}/win32/win32/x86_64/eclipsec.exe</signFile>
+                  </signFiles>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
