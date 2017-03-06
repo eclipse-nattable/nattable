@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2016 CEA LIST.
+ * Copyright (c) 2015, 2017 CEA LIST and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,7 +28,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
-import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportDragCommand;
+import org.eclipse.nebula.widgets.nattable.viewport.action.AutoScrollDragMode;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -49,7 +49,7 @@ import org.eclipse.swt.widgets.MenuItem;
  *
  * @since 1.4
  */
-public class FillHandleDragMode implements IDragMode {
+public class FillHandleDragMode extends AutoScrollDragMode {
 
     protected MouseEvent startEvent;
     protected Point startIndex;
@@ -73,6 +73,8 @@ public class FillHandleDragMode implements IDragMode {
      *            &amp; paste operation triggered by using the fill handle.
      */
     public FillHandleDragMode(SelectionLayer selectionLayer, InternalCellClipboard clipboard) {
+        super(true, true);
+
         if (selectionLayer == null) {
             throw new IllegalArgumentException("SelectionLayer can not be null"); //$NON-NLS-1$
         }
@@ -97,106 +99,84 @@ public class FillHandleDragMode implements IDragMode {
     }
 
     @Override
-    public void mouseMove(NatTable natTable, MouseEvent event) {
-        Rectangle clientArea = natTable.getClientAreaProvider().getClientArea();
+    protected void performDragAction(
+            NatTable natTable,
+            int x, int y,
+            MoveDirectionEnum horizontal, MoveDirectionEnum vertical) {
 
-        int x = event.x;
-        int y = event.y;
+        int selectedColumnPosition = natTable.getColumnPositionByX(x);
+        int selectedRowPosition = natTable.getRowPositionByY(y);
 
-        MoveDirectionEnum horizontal = MoveDirectionEnum.NONE;
-        if (event.x < 0) {
-            horizontal = MoveDirectionEnum.LEFT;
-            x = 0;
-        } else if (event.x > clientArea.width) {
-            horizontal = MoveDirectionEnum.RIGHT;
-            x = clientArea.width;
-        }
+        int selectedColumnIndex = natTable.getColumnIndexByPosition(selectedColumnPosition);
+        int selectedRowIndex = natTable.getRowIndexByPosition(selectedRowPosition);
 
-        MoveDirectionEnum vertical = MoveDirectionEnum.NONE;
-        if (event.y < 0) {
-            vertical = MoveDirectionEnum.UP;
-            y = 0;
-        } else if (event.y > clientArea.height) {
-            vertical = MoveDirectionEnum.DOWN;
-            y = clientArea.height;
-        }
+        if (selectedColumnPosition > -1 && selectedRowPosition > -1) {
+            Rectangle actionBounds = null;
 
-        if (natTable.doCommand(new ViewportDragCommand(horizontal, vertical))) {
+            int xStart = this.startIndex.x;
+            int yStart = this.startIndex.y;
 
-            int selectedColumnPosition = natTable.getColumnPositionByX(x);
-            int selectedRowPosition = natTable.getRowPositionByY(y);
+            Rectangle region = this.selectionLayer.getLastSelectedRegion();
 
-            int selectedColumnIndex = natTable.getColumnIndexByPosition(selectedColumnPosition);
-            int selectedRowIndex = natTable.getRowIndexByPosition(selectedRowPosition);
+            // only increase range in one direction
+            int xDiff = calculateIncreasedPositiveDiff(
+                    x,
+                    (x < this.startEvent.x) ? this.selectionCell.getBounds().x : this.startEvent.x);
+            int yDiff = calculateIncreasedPositiveDiff(
+                    y,
+                    (y < this.startEvent.y) ? this.selectionCell.getBounds().y : this.startEvent.y);
+            if (selectedColumnIndex >= region.x && selectedColumnIndex < (region.x + region.width)) {
+                xDiff = 0;
+            }
+            if (selectedRowIndex >= region.y && selectedRowIndex < (region.y + region.height)) {
+                yDiff = 0;
+            }
 
-            if (selectedColumnPosition > -1 && selectedRowPosition > -1) {
-                Rectangle actionBounds = null;
+            int width = -1;
+            int height = -1;
 
-                int xStart = this.startIndex.x;
-                int yStart = this.startIndex.y;
+            // check if only drag operations in one direction are supported
+            Direction direction = natTable.getConfigRegistry().getConfigAttribute(
+                    FillHandleConfigAttributes.ALLOWED_FILL_DIRECTION,
+                    DisplayMode.NORMAL,
+                    this.selectionCell.getConfigLabels().getLabels());
 
-                Rectangle region = this.selectionLayer.getLastSelectedRegion();
+            if (direction == null) {
+                direction = Direction.BOTH;
+            }
 
-                // only increase range in one direction
-                int xDiff = calculateIncreasedPositiveDiff(
-                        event.x,
-                        (event.x < this.startEvent.x) ? this.selectionCell.getBounds().x : this.startEvent.x);
-                int yDiff = calculateIncreasedPositiveDiff(
-                        event.y,
-                        (event.y < this.startEvent.y) ? this.selectionCell.getBounds().y : this.startEvent.y);
-                if (selectedColumnIndex >= region.x && selectedColumnIndex < (region.x + region.width)) {
-                    xDiff = 0;
-                }
-                if (selectedRowIndex >= region.y && selectedRowIndex < (region.y + region.height)) {
-                    yDiff = 0;
-                }
-
-                int width = -1;
-                int height = -1;
-
-                // check if only drag operations in one direction are supported
-                Direction direction = natTable.getConfigRegistry().getConfigAttribute(
-                        FillHandleConfigAttributes.ALLOWED_FILL_DIRECTION,
-                        DisplayMode.NORMAL,
-                        this.selectionCell.getConfigLabels().getLabels());
-
-                if (direction == null) {
-                    direction = Direction.BOTH;
-                }
-
-                if (direction != Direction.NONE) {
-                    if (direction == Direction.VERTICAL
-                            || (direction == Direction.BOTH && yDiff >= xDiff)) {
-                        int diff = calculateIncreasedPositiveDiff(selectedRowIndex, this.startIndex.y);
-                        height = Math.max(diff, this.selectionLayer.getSelectedRowCount());
-                        width = this.selectionLayer.getSelectedColumnPositions().length;
-                        this.direction = MoveDirectionEnum.DOWN;
-                        if ((selectedRowIndex - this.startIndex.y) < 0) {
-                            yStart = selectedRowIndex;
-                            height = diff + this.selectionLayer.getSelectedRowCount() - 1;
-                            this.direction = MoveDirectionEnum.UP;
-                        }
-                    } else {
-                        int diff = calculateIncreasedPositiveDiff(selectedColumnIndex, this.startIndex.x);
-                        height = this.selectionLayer.getSelectedRowCount();
-                        width = Math.max(diff, this.selectionLayer.getSelectedColumnPositions().length);
-                        this.direction = MoveDirectionEnum.RIGHT;
-                        if ((selectedColumnIndex - this.startIndex.x) < 0) {
-                            xStart = selectedColumnIndex;
-                            width = diff + this.selectionLayer.getSelectedColumnPositions().length - 1;
-                            this.direction = MoveDirectionEnum.LEFT;
-                        }
+            if (direction != Direction.NONE) {
+                if (direction == Direction.VERTICAL
+                        || (direction == Direction.BOTH && yDiff >= xDiff)) {
+                    int diff = calculateIncreasedPositiveDiff(selectedRowIndex, this.startIndex.y);
+                    height = Math.max(diff, this.selectionLayer.getSelectedRowCount());
+                    width = this.selectionLayer.getSelectedColumnPositions().length;
+                    this.direction = MoveDirectionEnum.DOWN;
+                    if ((selectedRowIndex - this.startIndex.y) < 0) {
+                        yStart = selectedRowIndex;
+                        height = diff + this.selectionLayer.getSelectedRowCount() - 1;
+                        this.direction = MoveDirectionEnum.UP;
                     }
-
-                    actionBounds = new Rectangle(
-                            xStart,
-                            yStart,
-                            width,
-                            height);
-
-                    this.selectionLayer.setFillHandleRegion(actionBounds);
-                    natTable.redraw();
+                } else {
+                    int diff = calculateIncreasedPositiveDiff(selectedColumnIndex, this.startIndex.x);
+                    height = this.selectionLayer.getSelectedRowCount();
+                    width = Math.max(diff, this.selectionLayer.getSelectedColumnPositions().length);
+                    this.direction = MoveDirectionEnum.RIGHT;
+                    if ((selectedColumnIndex - this.startIndex.x) < 0) {
+                        xStart = selectedColumnIndex;
+                        width = diff + this.selectionLayer.getSelectedColumnPositions().length - 1;
+                        this.direction = MoveDirectionEnum.LEFT;
+                    }
                 }
+
+                actionBounds = new Rectangle(
+                        xStart,
+                        yStart,
+                        width,
+                        height);
+
+                this.selectionLayer.setFillHandleRegion(actionBounds);
+                natTable.redraw();
             }
         }
     }
@@ -222,6 +202,9 @@ public class FillHandleDragMode implements IDragMode {
 
     @Override
     public void mouseUp(final NatTable natTable, MouseEvent event) {
+        // Cancel any active viewport drag
+        super.mouseUp(natTable, event);
+
         if (natTable.doCommand(
                 new CopyDataToClipboardCommand(
                         "\t", //$NON-NLS-1$
