@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Dirk Fauth and others.
+ * Copyright (c) 2013, 2017 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -118,7 +118,7 @@ public class _6051_GroupByExample extends AbstractNatExample {
                 new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
         DataLayer columnHeaderDataLayer =
                 new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-        ILayer columnHeaderLayer =
+        ColumnHeaderLayer columnHeaderLayer =
                 new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // build the row header layer
@@ -144,8 +144,11 @@ public class _6051_GroupByExample extends AbstractNatExample {
         // set the group by header on top of the grid
         CompositeLayer compositeGridLayer = new CompositeLayer(1, 2);
         final GroupByHeaderLayer groupByHeaderLayer =
-                new GroupByHeaderLayer(bodyLayerStack.getGroupByModel(),
-                        gridLayer, columnHeaderDataProvider);
+                new GroupByHeaderLayer(
+                        bodyLayerStack.getGroupByModel(),
+                        gridLayer,
+                        columnHeaderDataProvider,
+                        columnHeaderLayer);
         compositeGridLayer.setChildLayer(GroupByHeaderLayer.GROUP_BY_REGION, groupByHeaderLayer, 0, 0);
         compositeGridLayer.setChildLayer("Grid", gridLayer, 0, 1);
 
@@ -168,65 +171,65 @@ public class _6051_GroupByExample extends AbstractNatExample {
                         .withStateManagerMenuItemProvider()
                         .withMenuItemProvider(new IMenuItemProvider() {
 
-                    @Override
-                    public void addMenuItem(NatTable natTable, Menu popupMenu) {
-                        MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
-                        menuItem.setText("Toggle Group By Header"); //$NON-NLS-1$
-                        menuItem.setEnabled(true);
-
-                        menuItem.addSelectionListener(new SelectionAdapter() {
                             @Override
-                            public void widgetSelected(SelectionEvent event) {
-                                groupByHeaderLayer.setVisible(!groupByHeaderLayer.isVisible());
+                            public void addMenuItem(NatTable natTable, Menu popupMenu) {
+                                MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+                                menuItem.setText("Toggle Group By Header"); //$NON-NLS-1$
+                                menuItem.setEnabled(true);
+
+                                menuItem.addSelectionListener(new SelectionAdapter() {
+                                    @Override
+                                    public void widgetSelected(SelectionEvent event) {
+                                        groupByHeaderLayer.setVisible(!groupByHeaderLayer.isVisible());
+                                    }
+                                });
+                            }
+                        }).withMenuItemProvider(new IMenuItemProvider() {
+
+                            @Override
+                            public void addMenuItem(final NatTable natTable, Menu popupMenu) {
+                                MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+                                menuItem.setText("Collapse All"); //$NON-NLS-1$
+                                menuItem.setEnabled(true);
+
+                                menuItem.addSelectionListener(new SelectionAdapter() {
+                                    @Override
+                                    public void widgetSelected(SelectionEvent event) {
+                                        natTable.doCommand(new TreeCollapseAllCommand());
+                                    }
+                                });
+                            }
+                        }).withMenuItemProvider(new IMenuItemProvider() {
+
+                            @Override
+                            public void addMenuItem(final NatTable natTable, Menu popupMenu) {
+                                MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+                                menuItem.setText("Expand All"); //$NON-NLS-1$
+                                menuItem.setEnabled(true);
+
+                                menuItem.addSelectionListener(new SelectionAdapter() {
+                                    @Override
+                                    public void widgetSelected(SelectionEvent event) {
+                                        natTable.doCommand(new TreeExpandAllCommand());
+                                    }
+                                });
+                            }
+                        }).withMenuItemProvider(new IMenuItemProvider() {
+
+                            @Override
+                            public void addMenuItem(final NatTable natTable, Menu popupMenu) {
+                                MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+                                menuItem.setText("Expand to Level 2"); //$NON-NLS-1$
+                                menuItem.setEnabled(true);
+
+                                menuItem.addSelectionListener(new SelectionAdapter() {
+                                    @Override
+                                    public void widgetSelected(SelectionEvent event) {
+                                        natTable.doCommand(new TreeExpandToLevelCommand(2));
+                                    }
+                                });
                             }
                         });
-                    }
-                }).withMenuItemProvider(new IMenuItemProvider() {
-
-                    @Override
-                    public void addMenuItem(final NatTable natTable, Menu popupMenu) {
-                        MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
-                        menuItem.setText("Collapse All"); //$NON-NLS-1$
-                        menuItem.setEnabled(true);
-
-                        menuItem.addSelectionListener(new SelectionAdapter() {
-                            @Override
-                            public void widgetSelected(SelectionEvent event) {
-                                natTable.doCommand(new TreeCollapseAllCommand());
-                            }
-                        });
-                    }
-                }).withMenuItemProvider(new IMenuItemProvider() {
-
-                    @Override
-                    public void addMenuItem(final NatTable natTable, Menu popupMenu) {
-                        MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
-                        menuItem.setText("Expand All"); //$NON-NLS-1$
-                        menuItem.setEnabled(true);
-
-                        menuItem.addSelectionListener(new SelectionAdapter() {
-                            @Override
-                            public void widgetSelected(SelectionEvent event) {
-                                natTable.doCommand(new TreeExpandAllCommand());
-                            }
-                        });
-                    }
-                }).withMenuItemProvider(new IMenuItemProvider() {
-
-                    @Override
-                    public void addMenuItem(final NatTable natTable, Menu popupMenu) {
-                        MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
-                        menuItem.setText("Expand to Level 2"); //$NON-NLS-1$
-                        menuItem.setEnabled(true);
-
-                        menuItem.addSelectionListener(new SelectionAdapter() {
-                            @Override
-                            public void widgetSelected(SelectionEvent event) {
-                                natTable.doCommand(new TreeExpandToLevelCommand(2));
-                            }
-                        });
-                    }
-                });
             }
         });
 
