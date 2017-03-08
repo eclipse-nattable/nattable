@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.viewport.action;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportDragCommand;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Rectangle;
@@ -30,6 +31,8 @@ public abstract class AutoScrollDragMode implements IDragMode {
     private final boolean vertical;
 
     private AutoScrollRunnable runnable;
+
+    protected int horizontalBorderOffset = GUIHelper.convertHorizontalPixelToDpi(25);
 
     /**
      *
@@ -53,11 +56,11 @@ public abstract class AutoScrollDragMode implements IDragMode {
         int horizontalDiff = 0;
         MoveDirectionEnum horizontal = MoveDirectionEnum.NONE;
         if (this.horizontal) {
-            if (event.x < 0) {
+            if (event.x < this.horizontalBorderOffset) {
                 horizontal = MoveDirectionEnum.LEFT;
-                x = 0;
+                x = Math.max(0, event.x);
                 horizontalDiff = -event.x;
-            } else if (event.x > clientArea.width) {
+            } else if (event.x > (clientArea.width - this.horizontalBorderOffset)) {
                 horizontal = MoveDirectionEnum.RIGHT;
                 x = clientArea.width - 1;
                 horizontalDiff = event.x - clientArea.width;
