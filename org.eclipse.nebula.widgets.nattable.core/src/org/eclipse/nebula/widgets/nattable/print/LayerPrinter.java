@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -92,6 +92,8 @@ public class LayerPrinter {
     private boolean join = false;
 
     private boolean calculatePageCount = true;
+
+    private List<PrintListener> printListener = new ArrayList<PrintListener>();
 
     /**
      *
@@ -760,6 +762,31 @@ public class LayerPrinter {
     }
 
     /**
+     * Add the given {@link PrintListener} to be able to react on printing
+     * events like print start and print finished.
+     *
+     * @param listener
+     *            The {@link PrintListener} to add.
+     *
+     * @since 1.6
+     */
+    public void addPrintListener(PrintListener listener) {
+        this.printListener.add(listener);
+    }
+
+    /**
+     * Removes the given {@link PrintListener}.
+     *
+     * @param listener
+     *            The {@link PrintListener} to remove.
+     *
+     * @since 1.6
+     */
+    public void removePrintListener(PrintListener listener) {
+        this.printListener.remove(listener);
+    }
+
+    /**
      * The job for printing the layer.
      */
     private class PrintJob implements Runnable {
@@ -794,6 +821,10 @@ public class LayerPrinter {
                 }
 
                 try {
+                    for (PrintListener listener : LayerPrinter.this.printListener) {
+                        listener.printStarted();
+                    }
+
                     int currentPage = 1;
                     int totalPageCount = getPageCount(this.printer);
 
@@ -1030,6 +1061,10 @@ public class LayerPrinter {
                     // turn viewport on
                     for (PrintTarget target : LayerPrinter.this.printTargets) {
                         target.layer.doCommand(new TurnViewportOnCommand());
+                    }
+
+                    for (PrintListener listener : LayerPrinter.this.printListener) {
+                        listener.printFinished();
                     }
                 }
             }
