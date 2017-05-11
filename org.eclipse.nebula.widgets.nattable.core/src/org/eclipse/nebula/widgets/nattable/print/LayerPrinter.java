@@ -632,6 +632,14 @@ public class LayerPrinter {
         printDialog.setStartPage(1);
         printDialog.setScope(PrinterData.ALL_PAGES);
 
+        Integer orientation = this.printTargets.get(0).configRegistry.getConfigAttribute(
+                PrintConfigAttributes.DEFAULT_PAGE_ORIENTATION,
+                DisplayMode.NORMAL);
+
+        if (orientation != null) {
+            printDialog.getPrinterData().orientation = orientation;
+        }
+
         if (this.calculatePageCount) {
             // if pre-rendering is enabled, render in-memory to
             // trigger content based auto-resizing

@@ -80,4 +80,13 @@ public interface PrintConfigAttributes {
      * total page count, e.g. <i>Page {0}/{1}</i> to show <i>Page 1/6</i>
      */
     ConfigAttribute<String> FOOTER_PAGE_PATTERN = new ConfigAttribute<String>();
+
+    /**
+     * Configuration attribute to configure the default orientation of the paper
+     * that should be applied to the PrintDialog. Can be either
+     * PrinterData#PORTRAIT or PrinterData#LANDSCAPE.
+     * 
+     * @since 1.6
+     */
+    ConfigAttribute<Integer> DEFAULT_PAGE_ORIENTATION = new ConfigAttribute<Integer>();
 }

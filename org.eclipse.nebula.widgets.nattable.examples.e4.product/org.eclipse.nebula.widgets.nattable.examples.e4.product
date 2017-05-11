@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="org.eclipse.nebula.widgets.nattable.examples.e4" uid="org.eclipse.nebula.widgets.nattable.examples.e4.product" id="org.eclipse.nebula.widgets.nattable.examples.e4.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="1.5.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="org.eclipse.nebula.widgets.nattable.examples.e4" uid="org.eclipse.nebula.widgets.nattable.examples.e4.product" id="org.eclipse.nebula.widgets.nattable.examples.e4.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="1.6.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
@@ -14,7 +14,6 @@
    <windowImages i16="/org.eclipse.nebula.widgets.nattable.examples.e4/icons/nebula_logo_16.png" i32="/org.eclipse.nebula.widgets.nattable.examples.e4/icons/nebula_logo_32.png" i64="/org.eclipse.nebula.widgets.nattable.examples.e4/icons/nebula_logo_64.png"/>
 
    <launcher name="nattable_examples">
-      <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
@@ -30,7 +29,7 @@
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>
       <feature id="org.eclipse.nebula.widgets.nattable.examples.e4.rcp.feature" version="1.0.0.qualifier"/>
-      <feature id="org.eclipse.nebula.widgets.nattable.core.feature" version="1.5.0.qualifier"/>
+      <feature id="org.eclipse.nebula.widgets.nattable.core.feature" version="1.6.0.qualifier"/>
       <feature id="org.eclipse.nebula.widgets.nattable.extension.e4.feature" version="1.1.0.qualifier"/>
       <feature id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature" version="1.5.0.qualifier"/>
       <feature id="org.eclipse.nebula.widgets.nattable.examples.e4.feature" version="1.5.0.qualifier"/>
