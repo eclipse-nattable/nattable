@@ -1000,34 +1000,38 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
             if (this.hBarListener == null && this.horizontalScrollbarEnabled) {
                 ScrollBar hBar = scrollable.getHorizontalBar();
 
-                if (this.horizontalScroller != null) {
-                    hBar.setEnabled(false);
-                    hBar.setVisible(false);
-                } else {
-                    this.horizontalScroller = new ScrollBarScroller(hBar);
-                }
+                if (hBar != null) {
+                    if (this.horizontalScroller != null) {
+                        hBar.setEnabled(false);
+                        hBar.setVisible(false);
+                    } else {
+                        this.horizontalScroller = new ScrollBarScroller(hBar);
+                    }
 
-                this.hBarListener = new HorizontalScrollBarHandler(this, this.horizontalScroller);
+                    this.hBarListener = new HorizontalScrollBarHandler(this, this.horizontalScroller);
 
-                if (scrollable instanceof NatTable) {
-                    this.hBarListener.setTable((NatTable) scrollable);
+                    if (scrollable instanceof NatTable) {
+                        this.hBarListener.setTable((NatTable) scrollable);
+                    }
                 }
             }
 
             if (this.vBarListener == null && this.verticalScrollbarEnabled) {
                 ScrollBar vBar = scrollable.getVerticalBar();
 
-                if (this.verticalScroller != null) {
-                    vBar.setEnabled(false);
-                    vBar.setVisible(false);
-                } else {
-                    this.verticalScroller = new ScrollBarScroller(vBar);
-                }
+                if (vBar != null) {
+                    if (this.verticalScroller != null) {
+                        vBar.setEnabled(false);
+                        vBar.setVisible(false);
+                    } else {
+                        this.verticalScroller = new ScrollBarScroller(vBar);
+                    }
 
-                this.vBarListener = new VerticalScrollBarHandler(this, this.verticalScroller);
+                    this.vBarListener = new VerticalScrollBarHandler(this, this.verticalScroller);
 
-                if (scrollable instanceof NatTable) {
-                    this.vBarListener.setTable((NatTable) scrollable);
+                    if (scrollable instanceof NatTable) {
+                        this.vBarListener.setTable((NatTable) scrollable);
+                    }
                 }
             }
 

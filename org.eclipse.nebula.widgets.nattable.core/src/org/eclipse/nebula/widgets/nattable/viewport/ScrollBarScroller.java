@@ -1,23 +1,38 @@
 /*******************************************************************************
- * Copyright (c) Sep 3, 2013 esp and others.
+ * Copyright (c) 2013, 2017 Edwin Park and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    esp - initial API and implementation
+ *    Edwin Park - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.viewport;
 
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 
+/**
+ * {@link IScroller} implementation that wraps an SWT {@link ScrollBar}.
+ */
 public class ScrollBarScroller implements IScroller<ScrollBar> {
 
     private ScrollBar scrollBar;
 
+    /**
+     * Create a new {@link ScrollBarScroller} that wraps the given
+     * {@link ScrollBar}.
+     * 
+     * @param scrollBar
+     *            The {@link ScrollBar} to wrap. Can not be <code>null</code>.
+     * @throws IllegalArgumentException
+     *             if the given {@link ScrollBar} is <code>null</code>.
+     */
     public ScrollBarScroller(ScrollBar scrollBar) {
+        if (scrollBar == null) {
+            throw new IllegalArgumentException("ScrollBar can not be null!"); //$NON-NLS-1$
+        }
         this.scrollBar = scrollBar;
     }
 
