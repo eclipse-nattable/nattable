@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2016 Dirk Fauth and others.
+ * Copyright (c) 2013, 2017 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -186,7 +186,8 @@ public class TableCellPainter extends BackgroundPainter {
                     // update subGridY for calculated height
                     subGridY += subCellHeight + 1;
                     gc.setForeground(cell.getDisplayMode().equals(DisplayMode.SELECT)
-                            ? getSelectedGridColor() : getGridColor());
+                            ? getSelectedGridColor()
+                            : getGridColor());
                     gc.drawLine(bounds.x, subGridY, bounds.x + bounds.width, subGridY);
                     gc.setForeground(originalColor);
                     // increase subGridY by 1 so the next sub cell renders below
@@ -252,7 +253,7 @@ public class TableCellPainter extends BackgroundPainter {
     protected Object[] getDataAsArray(ILayerCell cell) {
         Object cellData = cell.getDataValue();
         Object[] cellDataArray = null;
-        if (cellData.getClass().isArray()) {
+        if (cellData != null && cellData.getClass().isArray()) {
             cellDataArray = (Object[]) cellData;
         } else if (cellData instanceof Collection) {
             Collection<?> cellDataCollection = (Collection<?>) cellData;
@@ -307,7 +308,8 @@ public class TableCellPainter extends BackgroundPainter {
      */
     protected int getSubCellHeight(ILayerCell subCell, GC gc, IConfigRegistry configRegistry) {
         return (this.fixedSubCellHeight >= 0)
-                ? this.fixedSubCellHeight : this.getInternalPainter().getPreferredHeight(subCell, gc, configRegistry);
+                ? this.fixedSubCellHeight
+                : this.getInternalPainter().getPreferredHeight(subCell, gc, configRegistry);
     }
 
     /**
