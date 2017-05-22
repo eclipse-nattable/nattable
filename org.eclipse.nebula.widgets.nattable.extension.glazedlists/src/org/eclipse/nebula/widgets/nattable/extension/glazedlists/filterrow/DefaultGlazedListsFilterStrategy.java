@@ -432,10 +432,11 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
                 // matcher editor
                 final Iterator<MatcherEditor<T>> matcherEditors = firstComp.getMatcherEditors().iterator();
                 while (matcherEditors.hasNext() && result) {
+                    MatcherEditor<T> e = matcherEditors.next();
                     final Iterator<MatcherEditor<T>> iterator = secondComp.getMatcherEditors().iterator();
                     boolean found = false;
                     while (iterator.hasNext() && !found) {
-                        found = matcherEditorEqual(iterator.next(), matcherEditors.next());
+                        found = matcherEditorEqual(iterator.next(), e);
                     }
                     result = found;
                 }
