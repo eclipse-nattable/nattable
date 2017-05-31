@@ -14,9 +14,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
+import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
+import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,4 +66,43 @@ public class RowSizeResetCommandTest {
         assertFalse(this.listener.containsInstanceOf(RowStructuralRefreshEvent.class));
     }
 
+    @Test
+    public void testResetAllRegions() {
+        DummyGridLayerStack dummyGridLayerStack = new DummyGridLayerStack();
+        NatTable natTable = new NatTableFixture(dummyGridLayerStack);
+
+        assertEquals(20, dummyGridLayerStack.getColumnHeaderDataLayer().getRowHeightByPosition(0));
+        assertEquals(20, dummyGridLayerStack.getBodyDataLayer().getRowHeightByPosition(2));
+
+        ((DataLayer) dummyGridLayerStack.getColumnHeaderDataLayer()).setRowHeightByPosition(0, 50);
+        ((DataLayer) dummyGridLayerStack.getBodyDataLayer()).setRowHeightByPosition(2, 50);
+
+        assertEquals(50, dummyGridLayerStack.getColumnHeaderDataLayer().getRowHeightByPosition(0));
+        assertEquals(50, dummyGridLayerStack.getBodyDataLayer().getRowHeightByPosition(2));
+
+        natTable.doCommand(new RowSizeResetCommand());
+
+        assertEquals(20, dummyGridLayerStack.getColumnHeaderDataLayer().getRowHeightByPosition(0));
+        assertEquals(20, dummyGridLayerStack.getBodyDataLayer().getRowHeightByPosition(2));
+    }
+
+    @Test
+    public void testResetOnlyBody() {
+        DummyGridLayerStack dummyGridLayerStack = new DummyGridLayerStack();
+        NatTable natTable = new NatTableFixture(dummyGridLayerStack);
+
+        assertEquals(20, dummyGridLayerStack.getColumnHeaderDataLayer().getRowHeightByPosition(0));
+        assertEquals(20, dummyGridLayerStack.getBodyDataLayer().getRowHeightByPosition(2));
+
+        ((DataLayer) dummyGridLayerStack.getColumnHeaderDataLayer()).setRowHeightByPosition(0, 50);
+        ((DataLayer) dummyGridLayerStack.getBodyDataLayer()).setRowHeightByPosition(2, 50);
+
+        assertEquals(50, dummyGridLayerStack.getColumnHeaderDataLayer().getRowHeightByPosition(0));
+        assertEquals(50, dummyGridLayerStack.getBodyDataLayer().getRowHeightByPosition(2));
+
+        natTable.doCommand(new RowSizeResetCommand(GridRegion.BODY));
+
+        assertEquals(50, dummyGridLayerStack.getColumnHeaderDataLayer().getRowHeightByPosition(0));
+        assertEquals(20, dummyGridLayerStack.getBodyDataLayer().getRowHeightByPosition(2));
+    }
 }

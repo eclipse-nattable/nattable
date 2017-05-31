@@ -34,7 +34,7 @@ public class ColumnSizeResetCommandHandler extends AbstractLayerCommandHandler<C
     @Override
     protected boolean doCommand(ColumnSizeResetCommand command) {
         this.dataLayer.resetColumnSizeConfiguration(command.fireEvent);
-        return true;
+        return false;
     }
 
 }

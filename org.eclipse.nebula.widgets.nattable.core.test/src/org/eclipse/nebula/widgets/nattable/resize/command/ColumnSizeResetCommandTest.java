@@ -14,9 +14,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralRefreshEvent;
+import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
+import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,6 +64,46 @@ public class ColumnSizeResetCommandTest {
         assertEquals(100, this.dataLayer.getColumnWidthByPosition(3));
         assertEquals(1, this.listener.getEventsCount());
         assertFalse(this.listener.containsInstanceOf(ColumnStructuralRefreshEvent.class));
+    }
+
+    @Test
+    public void testResetAllRegions() {
+        DummyGridLayerStack dummyGridLayerStack = new DummyGridLayerStack();
+        NatTable natTable = new NatTableFixture(dummyGridLayerStack);
+
+        assertEquals(40, dummyGridLayerStack.getRowHeaderDataLayer().getColumnWidthByPosition(0));
+        assertEquals(100, dummyGridLayerStack.getBodyDataLayer().getColumnWidthByPosition(2));
+
+        ((DataLayer) dummyGridLayerStack.getRowHeaderDataLayer()).setColumnWidthByPosition(0, 100);
+        ((DataLayer) dummyGridLayerStack.getBodyDataLayer()).setColumnWidthByPosition(2, 50);
+
+        assertEquals(100, dummyGridLayerStack.getRowHeaderDataLayer().getColumnWidthByPosition(0));
+        assertEquals(50, dummyGridLayerStack.getBodyDataLayer().getColumnWidthByPosition(2));
+
+        natTable.doCommand(new ColumnSizeResetCommand());
+
+        assertEquals(40, dummyGridLayerStack.getRowHeaderDataLayer().getColumnWidthByPosition(0));
+        assertEquals(100, dummyGridLayerStack.getBodyDataLayer().getColumnWidthByPosition(2));
+    }
+
+    @Test
+    public void testResetOnlyBody() {
+        DummyGridLayerStack dummyGridLayerStack = new DummyGridLayerStack();
+        NatTable natTable = new NatTableFixture(dummyGridLayerStack);
+
+        assertEquals(40, dummyGridLayerStack.getRowHeaderDataLayer().getColumnWidthByPosition(0));
+        assertEquals(100, dummyGridLayerStack.getBodyDataLayer().getColumnWidthByPosition(2));
+
+        ((DataLayer) dummyGridLayerStack.getRowHeaderDataLayer()).setColumnWidthByPosition(0, 100);
+        ((DataLayer) dummyGridLayerStack.getBodyDataLayer()).setColumnWidthByPosition(2, 50);
+
+        assertEquals(100, dummyGridLayerStack.getRowHeaderDataLayer().getColumnWidthByPosition(0));
+        assertEquals(50, dummyGridLayerStack.getBodyDataLayer().getColumnWidthByPosition(2));
+
+        natTable.doCommand(new ColumnSizeResetCommand(GridRegion.BODY));
+
+        assertEquals(100, dummyGridLayerStack.getRowHeaderDataLayer().getColumnWidthByPosition(0));
+        assertEquals(100, dummyGridLayerStack.getBodyDataLayer().getColumnWidthByPosition(2));
     }
 
 }

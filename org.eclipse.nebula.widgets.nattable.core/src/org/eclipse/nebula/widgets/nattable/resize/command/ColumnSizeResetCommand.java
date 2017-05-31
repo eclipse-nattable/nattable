@@ -10,17 +10,17 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.command;
 
-import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
+import org.eclipse.nebula.widgets.nattable.command.AbstractRegionCommand;
 
 /**
- * Command to reset the row size configurations. It will cause a reset of all
- * customizations done with regards to row sizing, e.g. resized rows will be
- * reset to the initial default size and all rows are share the same default
- * resizable behavior.
+ * Command to reset the column size configurations. It will cause a reset of all
+ * customizations done with regards to column sizing, e.g. resized columns will
+ * be reset to the initial default size and all columns are share the same
+ * default resizable behavior.
  *
  * @since 1.6
  */
-public class ColumnSizeResetCommand extends AbstractContextFreeCommand {
+public class ColumnSizeResetCommand extends AbstractRegionCommand {
 
     /**
      * Flag to indicate whether a refresh event should be triggered or not.
@@ -30,24 +30,65 @@ public class ColumnSizeResetCommand extends AbstractContextFreeCommand {
     public final boolean fireEvent;
 
     /**
-     * Creates a {@link ColumnSizeResetCommand} that triggers a refresh after
-     * the command is handled.
+     * Creates a {@link ColumnSizeResetCommand} to reset the size configuration
+     * of all regions, that triggers a refresh after the command is handled.
      */
     public ColumnSizeResetCommand() {
-        this(true);
+        this(null, true);
     }
 
     /**
-     * Creates a {@link ColumnSizeResetCommand}.
+     * Creates a {@link ColumnSizeResetCommand} to reset the size configuration
+     * of all regions.
      *
      * @param fireEvent
-     *            flag to indicate whether a refresh event should be triggered
+     *            Flag to indicate whether a refresh event should be triggered
      *            or not. Should be set to <code>false</code> in case additional
      *            actions should be executed before the repainting of the table
      *            should be triggered.
      */
     public ColumnSizeResetCommand(boolean fireEvent) {
+        this(null, fireEvent);
+    }
+
+    /**
+     * Creates a {@link ColumnSizeResetCommand} to reset the size configuration
+     * of the region with the given label. Triggers a refresh after the command
+     * is handled.
+     *
+     * @param label
+     *            The region label of the region on which the command should be
+     *            processed. If the label is <code>null</code> the command will
+     *            be processed by all regions or until the first layer in the
+     *            composition consumes the command.
+     */
+    public ColumnSizeResetCommand(String label) {
+        this(label, true);
+    }
+
+    /**
+     * Creates a {@link ColumnSizeResetCommand} to reset the size configuration
+     * of the region with the given label.
+     *
+     * @param label
+     *            The region label of the region on which the command should be
+     *            processed. If the label is <code>null</code> the command will
+     *            be processed by all regions or until the first layer in the
+     *            composition consumes the command.
+     * @param fireEvent
+     *            Flag to indicate whether a refresh event should be triggered
+     *            or not. Should be set to <code>false</code> in case additional
+     *            actions should be executed before the repainting of the table
+     *            should be triggered.
+     */
+    public ColumnSizeResetCommand(String label, boolean fireEvent) {
+        super(label);
         this.fireEvent = fireEvent;
+    }
+
+    @Override
+    public ColumnSizeResetCommand cloneForRegion() {
+        return new ColumnSizeResetCommand(null, this.fireEvent);
     }
 
 }

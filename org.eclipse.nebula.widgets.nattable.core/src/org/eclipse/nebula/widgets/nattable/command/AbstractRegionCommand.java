@@ -30,9 +30,12 @@ public abstract class AbstractRegionCommand extends AbstractContextFreeCommand {
     /**
      *
      * @param label
-     *            The label that needs to be applied to a row in order to
-     *            process the resize command. Is used to determine the row
-     *            index. If <code>null</code> the default size will be set.
+     *            The label that needs to be applied in order to process the
+     *            command. If the label matches a region, the command will be
+     *            only processed down the layer stack of the corresponding
+     *            region. If the label is <code>null</code> or a cell label, the
+     *            command will be processed by all or the first layer in the
+     *            composition that has a handler configured.
      */
     public AbstractRegionCommand(String label) {
         this.label = label;

@@ -34,7 +34,7 @@ public class RowSizeResetCommandHandler extends AbstractLayerCommandHandler<RowS
     @Override
     protected boolean doCommand(RowSizeResetCommand command) {
         this.dataLayer.resetRowSizeConfiguration(command.fireEvent);
-        return true;
+        return false;
     }
 
 }
