@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,6 +29,7 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleProxy;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -157,6 +158,16 @@ public class ExcelExporter implements ILayerExporter {
         Color fg = cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR);
         Color bg = cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
         Font font = cellStyle.getAttributeValue(CellStyleAttributes.FONT);
+
+        if (fg == null) {
+            fg = GUIHelper.COLOR_BLACK;
+        }
+        if (bg == null) {
+            bg = GUIHelper.COLOR_WHITE;
+        }
+        if (font == null) {
+            font = GUIHelper.DEFAULT_FONT;
+        }
 
         String htmlAttributes = String.format("style='color: %s; background-color: %s; %s;'", //$NON-NLS-1$
                 getColorInCSSFormat(fg), getColorInCSSFormat(bg),
