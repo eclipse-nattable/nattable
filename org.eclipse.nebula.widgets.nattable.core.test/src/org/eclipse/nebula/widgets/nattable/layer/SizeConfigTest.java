@@ -10,7 +10,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,14 +29,14 @@ public class SizeConfigTest {
 
     @Test
     public void getAggregateSize() throws Exception {
-        Assert.assertEquals(1000, this.sizeConfig.getAggregateSize(10));
+        assertEquals(1000, this.sizeConfig.getAggregateSize(10));
     }
 
     @Test
     public void sizeOverride() throws Exception {
         this.sizeConfig.setSize(5, 120);
 
-        Assert.assertEquals(120, this.sizeConfig.getSize(5));
+        assertEquals(120, this.sizeConfig.getSize(5));
     }
 
     @Test
@@ -41,9 +44,9 @@ public class SizeConfigTest {
         this.sizeConfig.setSize(5, 120);
         this.sizeConfig.setSize(0, 10);
 
-        Assert.assertEquals(10, this.sizeConfig.getAggregateSize(1));
-        Assert.assertEquals(410, this.sizeConfig.getAggregateSize(5));
-        Assert.assertEquals(930, this.sizeConfig.getAggregateSize(10));
+        assertEquals(10, this.sizeConfig.getAggregateSize(1));
+        assertEquals(410, this.sizeConfig.getAggregateSize(5));
+        assertEquals(930, this.sizeConfig.getAggregateSize(10));
     }
 
     @Test
@@ -52,7 +55,7 @@ public class SizeConfigTest {
         this.sizeConfig.setPositionResizable(2, true);
         this.sizeConfig.setSize(2, 120);
 
-        Assert.assertEquals(320, this.sizeConfig.getAggregateSize(3));
+        assertEquals(320, this.sizeConfig.getAggregateSize(3));
     }
 
     @Test
@@ -60,54 +63,81 @@ public class SizeConfigTest {
         this.sizeConfig.setResizableByDefault(false);
         this.sizeConfig.setSize(2, 120);
 
-        Assert.assertEquals(300, this.sizeConfig.getAggregateSize(3));
+        assertEquals(300, this.sizeConfig.getAggregateSize(3));
     }
 
     @Test
     public void allIndexesSameSize() throws Exception {
-        Assert.assertTrue(this.sizeConfig.isAllPositionsSameSize());
+        assertTrue(this.sizeConfig.isAllPositionsSameSize());
 
         this.sizeConfig.setSize(2, 120);
-        Assert.assertFalse(this.sizeConfig.isAllPositionsSameSize());
+        assertFalse(this.sizeConfig.isAllPositionsSameSize());
     }
 
     @Test
     public void testAggregateSize() {
-        final SizeConfig sc = new SizeConfig(50); // Global default of 50
+        // Global default of 50
+        final SizeConfig sc = new SizeConfig(50);
         sc.setSize(0, 20);
         sc.setSize(1, 20);
         // use global default for 3rd and 4th position
 
-        Assert.assertEquals(140, sc.getAggregateSize(4));
+        assertEquals(140, sc.getAggregateSize(4));
     }
 
     @Test
     public void testAggregateSizeWithPositionDefaults() {
-        final SizeConfig sc = new SizeConfig(50); // Global default of 50
+        // Global default of 50
+        final SizeConfig sc = new SizeConfig(50);
         sc.setSize(0, 20);
         sc.setSize(1, 20);
-        sc.setDefaultSize(0, 10); // must not be considered as there is a size
-                                  // set on 1st position
-        sc.setDefaultSize(2, 10); // must be considered as there is no size
-                                  // setting on 3rd position
+        // must not be considered as there is a size
+        // set on 1st position
+        sc.setDefaultSize(0, 10);
+        // must be considered as there is no size
+        // setting on 3rd position
+        sc.setDefaultSize(2, 10);
+
         // use global default for 4th position
 
-        Assert.assertEquals(100, sc.getAggregateSize(4));
+        assertEquals(100, sc.getAggregateSize(4));
     }
 
     @Test
     public void testAggregateSizeCache() {
         final SizeConfig sc = new SizeConfig(100);
         sc.setSize(0, 50);
-        Assert.assertEquals(450, sc.getAggregateSize(5));
+        assertEquals(450, sc.getAggregateSize(5));
         sc.setSize(1, 50);
-        Assert.assertEquals(400, sc.getAggregateSize(5));
+        assertEquals(400, sc.getAggregateSize(5));
         sc.setSize(2, 50);
-        Assert.assertEquals(350, sc.getAggregateSize(5));
+        assertEquals(350, sc.getAggregateSize(5));
         sc.setDefaultSize(75);
-        Assert.assertEquals(300, sc.getAggregateSize(5));
+        assertEquals(300, sc.getAggregateSize(5));
         sc.setSize(2, 100);
-        Assert.assertEquals(350, sc.getAggregateSize(5));
+        assertEquals(350, sc.getAggregateSize(5));
     }
 
+    @Test
+    public void testReset() {
+        final SizeConfig sc = new SizeConfig(50);
+        sc.setSize(0, 20);
+        sc.setSize(1, 20);
+        sc.setDefaultSize(2, 10);
+        sc.setPositionResizable(2, false);
+
+        assertEquals(20, sc.getSize(0));
+        assertEquals(20, sc.getSize(1));
+        assertEquals(10, sc.getSize(2));
+        assertEquals(50, sc.getSize(3));
+        assertFalse(sc.isPositionResizable(2));
+
+        sc.reset();
+
+        assertEquals(50, sc.getSize(0));
+        assertEquals(50, sc.getSize(1));
+        assertEquals(50, sc.getSize(2));
+        assertEquals(50, sc.getSize(3));
+        assertTrue(sc.isPositionResizable(2));
+    }
 }

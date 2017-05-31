@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -807,5 +807,19 @@ public class SizeConfig implements IPersistable {
      */
     public void setDpiConverter(IDpiConverter dpiConverter) {
         this.dpiConverter = dpiConverter;
+    }
+
+    /**
+     * Resets the configured size values held by this {@link SizeConfig}.
+     *
+     * @since 1.6
+     */
+    public void reset() {
+        this.defaultSizeMap.clear();
+        this.sizeMap.clear();
+        this.resizablesMap.clear();
+        this.percentageSizingMap.clear();
+        this.realSizeMap.clear();
+        this.aggregatedSizeCacheMap.clear();
     }
 }

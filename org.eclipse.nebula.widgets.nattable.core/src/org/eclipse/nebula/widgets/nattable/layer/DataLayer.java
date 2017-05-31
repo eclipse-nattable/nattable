@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,15 +26,19 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommandHandler;
+import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ResizeStructuralRefreshEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnSizeConfigurationCommandHandler;
+import org.eclipse.nebula.widgets.nattable.resize.command.ColumnSizeResetCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiColumnResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiRowResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowSizeConfigurationCommandHandler;
+import org.eclipse.nebula.widgets.nattable.resize.command.RowSizeResetCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
 
@@ -121,6 +125,8 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
         registerCommandHandler(new VisualRefreshCommandHandler());
         registerCommandHandler(new ConfigureScalingCommandHandler(
                 this.columnWidthConfig, this.rowHeightConfig));
+        registerCommandHandler(new ColumnSizeResetCommandHandler(this));
+        registerCommandHandler(new RowSizeResetCommandHandler(this));
     }
 
     /**
@@ -613,5 +619,39 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
      */
     public void setRowPercentageSizing(int position, boolean percentageSizing) {
         this.rowHeightConfig.setPercentageSizing(position, percentageSizing);
+    }
+
+    /**
+     * This method will reset all column size customizations, e.g. set column
+     * widths and whether columns can be resizable.
+     *
+     * @param fireEvent
+     *            flag to indicate whether a refresh event should be triggered
+     *            or not. Should be set to <code>false</code> in case additional
+     *            actions should be executed before the refresh should be done.
+     * @since 1.6
+     */
+    public void resetColumnSizeConfiguration(boolean fireEvent) {
+        this.columnWidthConfig.reset();
+        if (fireEvent) {
+            fireLayerEvent(new ColumnStructuralRefreshEvent(this));
+        }
+    }
+
+    /**
+     * This method will reset all row size customizations, e.g. set row heights
+     * and whether rows can be resizable.
+     *
+     * @param fireEvent
+     *            flag to indicate whether a refresh event should be triggered
+     *            or not. Should be set to <code>false</code> in case additional
+     *            actions should be executed before the refresh should be done.
+     * @since 1.6
+     */
+    public void resetRowSizeConfiguration(boolean fireEvent) {
+        this.rowHeightConfig.reset();
+        if (fireEvent) {
+            fireLayerEvent(new RowStructuralRefreshEvent(this));
+        }
     }
 }
