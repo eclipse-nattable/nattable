@@ -50,6 +50,8 @@ import org.junit.Test;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
 
 public class GroupByDataLayerTest {
 
@@ -906,4 +908,49 @@ public class GroupByDataLayerTest {
         assertEquals(elementsInGroup, itemsInGroup);
         assertEquals(itemsInGroup, rowModelChildren);
     }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    public void testGroupByItemCountAfterListChange() {
+        // groupBy lastname
+        this.groupByModel.addGroupByColumnIndex(1);
+
+        GroupByObject flanders = (GroupByObject) this.dataLayer.getTreeList().get(0);
+        assertEquals("Flanders", flanders.getValue());
+        GroupByObject simpsons = (GroupByObject) this.dataLayer.getTreeList().get(9);
+        assertEquals("Simpson", simpsons.getValue());
+
+        List<Person> elementsInGroup = this.dataLayer.getElementsInGroup(flanders);
+        List<Person> itemsInGroup = this.dataLayer.getItemsInGroup(flanders);
+        List<Object> rowModelChildren = this.dataLayer.getTreeRowModel().getChildren(0);
+        assertEquals(8, elementsInGroup.size());
+        assertEquals(8, itemsInGroup.size());
+        assertEquals(8, rowModelChildren.size());
+        assertEquals(elementsInGroup, itemsInGroup);
+        assertEquals(itemsInGroup, rowModelChildren);
+
+        this.sortedList.addListEventListener(new ListEventListener<Person>() {
+
+            @Override
+            public void listChanged(ListEvent<Person> listChanges) {
+                GroupByDataLayerTest.this.dataLayer.clearCache();
+            }
+        });
+
+        // add new Flanders
+        Person p = PersonService.createPersonWithAddress(4711);
+        p.setLastName("Flanders");
+
+        this.sortedList.add(p);
+
+        elementsInGroup = this.dataLayer.getElementsInGroup(flanders);
+        itemsInGroup = this.dataLayer.getItemsInGroup(flanders);
+        rowModelChildren = this.dataLayer.getTreeRowModel().getChildren(0);
+        assertEquals(9, elementsInGroup.size());
+        assertEquals(9, itemsInGroup.size());
+        assertEquals(9, rowModelChildren.size());
+        assertEquals(elementsInGroup, itemsInGroup);
+        assertEquals(itemsInGroup, rowModelChildren);
+    }
+
 }

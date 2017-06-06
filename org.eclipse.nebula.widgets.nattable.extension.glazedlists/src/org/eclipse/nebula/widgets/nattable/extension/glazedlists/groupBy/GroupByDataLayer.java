@@ -759,6 +759,9 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         this.valueCache.clearCache();
         // also clear the comparator cache to ensure correct sorting
         this.treeFormat.clearComparatorCache();
+        // clear the local cached items to re-calculate with the correct
+        // children
+        this.itemsByGroup.clear();
     }
 
     /**
@@ -776,6 +779,9 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         this.valueCache.killCache();
         // also clear the comparator cache to ensure correct sorting
         this.treeFormat.clearComparatorCache();
+        // clear the local cached items to re-calculate with the correct
+        // children
+        this.itemsByGroup.clear();
     }
 
     @Override

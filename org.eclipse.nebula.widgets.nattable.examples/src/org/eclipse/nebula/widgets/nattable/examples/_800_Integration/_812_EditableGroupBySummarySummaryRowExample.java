@@ -77,10 +77,13 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AbstractOverrider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
@@ -637,6 +640,23 @@ public class _812_EditableGroupBySummarySummaryRowExample extends AbstractNatExa
             // layer for event handling of GlazedLists and PropertyChanges
             GlazedListsEventLayer<T> glazedListsEventLayer =
                     new GlazedListsEventLayer<>(this.bodyDataLayer, this.sortedList);
+
+            // NOTE:
+            // we need to tell the GroupByDataLayer to clear its cache if
+            // a IVisualChangeEvent occurs. This is necessary because the
+            // GlazedListsEventLayer transforms GlazedLists change events to
+            // NatTable change events and fires the event the layer stack
+            // upwards. But as it sits on top of the GroupByDataLayer, the
+            // GroupByDataLayer never gets informed about the change.
+            glazedListsEventLayer.addLayerListener(new ILayerListener() {
+
+                @Override
+                public void handleLayerEvent(ILayerEvent event) {
+                    if (event instanceof IVisualChangeEvent) {
+                        BodyLayerStack.this.bodyDataLayer.clearCache();
+                    }
+                }
+            });
 
             SummaryRowLayer summaryRowLayer =
                     new SummaryRowLayer(glazedListsEventLayer, configRegistry, false);
