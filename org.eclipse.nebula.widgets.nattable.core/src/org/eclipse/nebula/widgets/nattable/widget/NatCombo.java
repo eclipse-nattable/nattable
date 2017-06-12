@@ -865,7 +865,7 @@ public class NatCombo extends Composite {
      * Hide the dropdown of this NatCombo.
      */
     public void hideDropdownControl() {
-        if (!this.dropdownShell.isDisposed()) {
+        if (this.dropdownShell != null && !this.dropdownShell.isDisposed()) {
             this.dropdownShell.setVisible(false);
         }
     }
