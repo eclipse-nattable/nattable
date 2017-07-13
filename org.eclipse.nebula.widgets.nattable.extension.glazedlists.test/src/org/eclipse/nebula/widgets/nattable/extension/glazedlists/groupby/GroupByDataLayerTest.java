@@ -953,4 +953,60 @@ public class GroupByDataLayerTest {
         assertEquals(itemsInGroup, rowModelChildren);
     }
 
+    @Test
+    public void testRetainCollapsedStateOnGrouping() {
+        assertEquals(18, this.dataLayer.getRowCount());
+
+        // groupBy lastname
+        this.groupByModel.addGroupByColumnIndex(1);
+        // 18 data rows + 2 GroupBy rows
+        assertEquals(20, this.dataLayer.getRowCount());
+
+        // collapse Flanders
+        this.dataLayer.getTreeRowModel().collapse(0);
+
+        // 18 data rows + 2 GroupBy rows - 8 flanders data rows collapsed
+        assertEquals(12, this.dataLayer.getRowCount());
+
+        // groupBy firstname
+        this.groupByModel.addGroupByColumnIndex(0);
+
+        // 18 data rows + 2 GroupBy rows lastname + 8 data rows firstname
+        // - 12 because Flanders is collapsed
+        assertEquals(16, this.dataLayer.getRowCount());
+    }
+
+    @Test
+    public void testClearCollapsedStateOnReGrouping() {
+        assertEquals(18, this.dataLayer.getRowCount());
+
+        // groupBy lastname
+        this.groupByModel.addGroupByColumnIndex(1);
+        // groupBy firstname
+        this.groupByModel.addGroupByColumnIndex(0);
+
+        // 18 data rows + 2 GroupBy rows lastname + 8 GroupBy rows firstname
+        assertEquals(28, this.dataLayer.getRowCount());
+
+        // collapse all Flanders sub-nodes
+        this.dataLayer.getTreeRowModel().collapse(10);
+        this.dataLayer.getTreeRowModel().collapse(7);
+        this.dataLayer.getTreeRowModel().collapse(4);
+        this.dataLayer.getTreeRowModel().collapse(1);
+
+        // 18 data rows + 2 GroupBy rows lastname + 8 GroupBy rows firstname - 8
+        // flanders data rows collapsed
+        assertEquals(20, this.dataLayer.getRowCount());
+
+        // ungroup firstname
+        this.groupByModel.removeGroupByColumnIndex(0);
+
+        // 18 data rows + 2 GroupBy rows
+        assertEquals(20, this.dataLayer.getRowCount());
+
+        // re-group firstname - new firstname groups start expanded
+        this.groupByModel.addGroupByColumnIndex(0);
+        assertEquals(28, this.dataLayer.getRowCount());
+    }
+
 }

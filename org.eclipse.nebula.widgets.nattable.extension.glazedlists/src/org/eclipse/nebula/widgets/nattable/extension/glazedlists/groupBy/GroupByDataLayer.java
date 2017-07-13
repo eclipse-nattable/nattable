@@ -18,12 +18,13 @@ package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
@@ -141,6 +142,25 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
     private final Map<GroupByObject, FilterList<T>> filtersByGroup = new ConcurrentHashMap<GroupByObject, FilterList<T>>();
 
     private final Map<GroupByObject, List<T>> itemsByGroup = new ConcurrentHashMap<GroupByObject, List<T>>();
+
+    /**
+     * The internal {@link TreeList.ExpansionModel} that is used by default if
+     * no custom one is used. Otherwise <code>null</code>. Needed to cleanup
+     * local caches to avoid memory leaks.
+     */
+    private GroupByExpansionModel groupByExpansionModel;
+
+    /**
+     * {@link Matcher} to filter for {@link GroupByObject}s in the
+     * {@link TreeList}.
+     */
+    private Matcher<Object> groupByMatcher = new Matcher<Object>() {
+
+        @Override
+        public boolean matches(Object item) {
+            return item instanceof GroupByObject;
+        }
+    };
 
     /**
      * Create a new {@link GroupByDataLayer} with the given configuration that:
@@ -453,7 +473,12 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         this.treeFormat = createGroupByTreeFormat(groupByModel, (IColumnAccessor<T>) this.groupByColumnAccessor);
         this.treeFormat.setComparator(new GroupByComparator<T>(groupByModel, columnAccessor, this));
 
-        this.treeList = new TreeList(eventList, this.treeFormat, expansionModel != null ? expansionModel : new GroupByExpansionModel());
+        if (expansionModel == null) {
+            this.groupByExpansionModel = new GroupByExpansionModel();
+            this.treeList = new TreeList(eventList, this.treeFormat, this.groupByExpansionModel);
+        } else {
+            this.treeList = new TreeList(eventList, this.treeFormat, expansionModel);
+        }
 
         this.treeData = new GlazedListTreeData<Object>(this.treeList);
         this.treeRowModel = new GlazedListTreeRowModel<Object>(this.treeData);
@@ -581,6 +606,17 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
                     EventList<T> temp = GlazedLists.eventList(GroupByDataLayer.this.eventList);
                     GroupByDataLayer.this.eventList.clear();
                     GroupByDataLayer.this.eventList.addAll(temp);
+
+                    /*
+                     * Collect the created GroupByObjects and cleanup local
+                     * caches
+                     */
+                    if (GroupByDataLayer.this.groupByExpansionModel != null) {
+                        FilterList<Object> groupByObjects = new FilterList<Object>(
+                                GroupByDataLayer.this.treeList,
+                                GroupByDataLayer.this.groupByMatcher);
+                        GroupByDataLayer.this.groupByExpansionModel.cleanupCollapsed(groupByObjects);
+                    }
                 } finally {
                     GroupByDataLayer.this.eventList.getReadWriteLock().writeLock().unlock();
                 }
@@ -864,18 +900,15 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      */
     private class GroupByExpansionModel implements TreeList.ExpansionModel<Object> {
 
-        // remember expand states because of update workaround
-        Map<Object, Boolean> expandStates = new HashMap<Object, Boolean>();
+        // remember collapsed states because of update workaround
+        Set<Object> collapsed = new HashSet<Object>();
 
         /**
          * Determine the specified element's initial expand/collapse state.
          */
         @Override
         public boolean isExpanded(final Object element, final List<Object> path) {
-            if (!this.expandStates.containsKey(element)) {
-                this.expandStates.put(element, true);
-            }
-            return this.expandStates.get(element);
+            return !this.collapsed.contains(element);
         }
 
         /**
@@ -884,7 +917,23 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
          */
         @Override
         public void setExpanded(final Object element, final List<Object> path, final boolean expanded) {
-            this.expandStates.put(element, expanded);
+            if (!expanded) {
+                this.collapsed.add(element);
+            } else {
+                this.collapsed.remove(element);
+            }
+        }
+
+        /**
+         * Cleanup the local cached set of collapsed {@link GroupByObject}s by
+         * removing the ones that are not contained anymore.
+         *
+         * @param groupByObjects
+         *            The existing {@link GroupByObject}s currently contained in
+         *            the tree.
+         */
+        public void cleanupCollapsed(Collection<Object> groupByObjects) {
+            this.collapsed.retainAll(groupByObjects);
         }
     }
 
