@@ -72,7 +72,6 @@ public class NatExporter {
      * @since 1.5
      */
     protected boolean exportSucceeded = true;
-
     /**
      * Flag to configure whether in-memory pre-rendering is enabled or not. This
      * is necessary in case content painters are used that are configured for
@@ -81,10 +80,21 @@ public class NatExporter {
      * @since 1.5
      */
     protected boolean preRender = true;
+    /**
+     * Flag to configure whether the export should be performed asynchronously
+     * or synchronously. By default this flag is set to <code>true</code> and
+     * the decision whether the execution should be performed synchronously or
+     * not is made based on whether a {@link Shell} is set or not. If a
+     * {@link Shell} is set and this flag is set to <code>false</code> the
+     * execution is performed synchronously.
+     *
+     * @since 1.6
+     */
+    private boolean runAsynchronously = true;
 
     /**
      * Create a new {@link NatExporter}.
-     * 
+     *
      * @param shell
      *            The {@link Shell} that should be used to open sub-dialogs and
      *            perform export operations in a background thread. Can be
@@ -93,7 +103,31 @@ public class NatExporter {
      *            configured, that use a {@link FileOutputStreamProvider}.
      */
     public NatExporter(Shell shell) {
+        this(shell, false);
+    }
+
+    /**
+     * Create a new {@link NatExporter}.
+     *
+     * @param shell
+     *            The {@link Shell} that should be used to open sub-dialogs and
+     *            perform export operations in a background thread. Can be
+     *            <code>null</code> but could lead to
+     *            {@link NullPointerException}s if {@link IExporter} are
+     *            configured, that use a {@link FileOutputStreamProvider}.
+     * @param executeSynchronously
+     *            Configure whether the export should be performed
+     *            asynchronously or synchronously. By default the decision
+     *            whether the execution should be performed synchronously or not
+     *            is made based on whether a {@link Shell} is set or not. If a
+     *            {@link Shell} is set and this flag is set to <code>true</code>
+     *            the execution is performed synchronously.
+     *
+     * @since 1.6
+     */
+    public NatExporter(Shell shell, boolean executeSynchronously) {
         this.shell = shell;
+        this.runAsynchronously = !executeSynchronously;
     }
 
     /**
@@ -254,7 +288,11 @@ public class NatExporter {
 
         if (this.shell != null) {
             // Run with the SWT display so that the progress bar can paint
-            this.shell.getDisplay().asyncExec(exportRunnable);
+            if (this.runAsynchronously) {
+                this.shell.getDisplay().asyncExec(exportRunnable);
+            } else {
+                this.shell.getDisplay().syncExec(exportRunnable);
+            }
         } else {
             // execute in the current thread
             exportRunnable.run();
@@ -346,7 +384,11 @@ public class NatExporter {
 
         if (this.shell != null) {
             // Run with the SWT display so that the progress bar can paint
-            this.shell.getDisplay().asyncExec(exportRunnable);
+            if (this.runAsynchronously) {
+                this.shell.getDisplay().asyncExec(exportRunnable);
+            } else {
+                this.shell.getDisplay().syncExec(exportRunnable);
+            }
         } else {
             exportRunnable.run();
         }

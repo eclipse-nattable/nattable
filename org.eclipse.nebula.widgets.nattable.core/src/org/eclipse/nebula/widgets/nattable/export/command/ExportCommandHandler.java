@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,26 +11,32 @@
 package org.eclipse.nebula.widgets.nattable.export.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
-import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.export.NatExporter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.swt.widgets.Shell;
 
-public class ExportCommandHandler extends
-        AbstractLayerCommandHandler<ExportCommand> {
+/**
+ * Command handler to handle the {@link ExportCommand} and trigger an export.
+ */
+public class ExportCommandHandler extends AbstractLayerCommandHandler<ExportCommand> {
 
     private final ILayer layer;
 
+    /**
+     * Creates an {@link ExportCommandHandler}.
+     *
+     * @param layer
+     *            The ILayer that should be exported. Typically a NatTable
+     *            instance, but can also be a lower layer in the stack to avoid
+     *            higher level modifications.
+     */
     public ExportCommandHandler(ILayer layer) {
         this.layer = layer;
     }
 
     @Override
     public boolean doCommand(final ExportCommand command) {
-        Shell shell = command.getShell();
-        IConfigRegistry configRegistry = command.getConfigRegistry();
-
-        new NatExporter(shell).exportSingleLayer(this.layer, configRegistry);
+        new NatExporter(command.getShell(), command.isExecuteSynchronously())
+                .exportSingleLayer(this.layer, command.getConfigRegistry());
 
         return true;
     }
