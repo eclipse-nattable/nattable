@@ -157,6 +157,14 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
     private List<?> currentCanonicalValues;
 
     /**
+     * Flag to configure whether the focus should be set to the text field or
+     * the dropdown of the combobox.
+     *
+     * @since 1.6
+     */
+    private boolean focusOnText = false;
+
+    /**
      * Create a new single selection {@link ComboBoxCellEditor} based on the
      * given list of items, showing the default number of items in the dropdown
      * of the combo.
@@ -252,16 +260,18 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
         // open the dropdown immediately after the Text control of the NatCombo
         // is positioned
         if (this.editMode == EditModeEnum.INLINE) {
+            final boolean focusOnText = (originalCanonicalValue instanceof Character || this.focusOnText);
+
             this.combo.addTextControlListener(new ControlAdapter() {
                 @Override
                 public void controlResized(ControlEvent e) {
-                    ComboBoxCellEditor.this.combo.showDropdownControl(originalCanonicalValue instanceof Character);
+                    ComboBoxCellEditor.this.combo.showDropdownControl(focusOnText);
                     ComboBoxCellEditor.this.combo.removeTextControlListener(this);
                 }
 
                 @Override
                 public void controlMoved(ControlEvent e) {
-                    ComboBoxCellEditor.this.combo.showDropdownControl(originalCanonicalValue instanceof Character);
+                    ComboBoxCellEditor.this.combo.showDropdownControl(focusOnText);
                     ComboBoxCellEditor.this.combo.removeTextControlListener(this);
                 }
             });
@@ -661,5 +671,30 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
      */
     public void setShowDropdownFilter(boolean showDropdownFilter) {
         this.showDropdownFilter = showDropdownFilter;
+    }
+
+    /**
+     *
+     * @return <code>true</code> if the focus on the activated combobox is set
+     *         to the text field, <code>false</code> if the dropdown gets the
+     *         focus. Default is <code>false</code>.
+     *
+     * @since 1.6
+     */
+    public boolean isFocusOnText() {
+        return this.focusOnText;
+    }
+
+    /**
+     *
+     * @param focusOnText
+     *            <code>true</code> if the focus on the activated combobox
+     *            should be set to the text field, <code>false</code> if the
+     *            dropdown should get the focus.
+     *
+     * @since 1.6
+     */
+    public void setFocusOnText(boolean focusOnText) {
+        this.focusOnText = focusOnText;
     }
 }
