@@ -326,7 +326,7 @@ public class LayerPrinter {
             Rectangle print = computePrintArea(printer);
 
             float pixelX = Float.valueOf(print.width) / Float.valueOf(total.width);
-            float pixelY = (Float.valueOf(print.height) - getFooterHeightInPrinterDPI()) / Float.valueOf(total.height);
+            float pixelY = Float.valueOf(print.height - getFooterHeightInPrinterDPI()) / Float.valueOf(total.height);
 
             // only support down-scaling, no stretching
             // stretching could cause serious issues, e.g. vertical
@@ -455,7 +455,7 @@ public class LayerPrinter {
 
         // calculate pages based on non cut off columns/rows
         int numOfHorizontalPages = 0;
-        int pageWidth = Math.round(Float.valueOf(printArea.width / scaleFactor[0]));
+        int pageWidth = Math.round(Float.valueOf(printArea.width) / scaleFactor[0]);
         int endX = 0;
         while (endX < target.layer.getWidth()) {
             endX += pageWidth;
@@ -478,12 +478,12 @@ public class LayerPrinter {
         int numOfVerticalPages = 0;
         // if we are ourself the print target that should be repeated, we don't
         // need to consider the repeat print target height
-        int repeatPrintTargetHeightInDpi = target.repeat ? 0 : Math.round(Float.valueOf(getRepeatPrintTargetHeight() * getRepeatPrintTargetScaleFactor(printer)[1]));
-        int headerHeightInDpi = (target.repeatHeaderLayer != null) ? Math.round(Float.valueOf((target.repeatHeaderLayer.getHeight() * scaleFactor[1]))) : 0;
+        int repeatPrintTargetHeightInDpi = target.repeat ? 0 : Math.round(Float.valueOf(getRepeatPrintTargetHeight()) * getRepeatPrintTargetScaleFactor(printer)[1]);
+        int headerHeightInDpi = (target.repeatHeaderLayer != null) ? Math.round(Float.valueOf(target.repeatHeaderLayer.getHeight()) * scaleFactor[1]) : 0;
         int pageHeight = Math.round(Float.valueOf((printArea.height - repeatPrintTargetHeightInDpi - headerHeightInDpi - getFooterHeightInPrinterDPI()) / scaleFactor[1]));
         int firstPageHeight = (available < 0)
                 ? Math.round(Float.valueOf((printArea.height - repeatPrintTargetHeightInDpi - getFooterHeightInPrinterDPI()) / scaleFactor[1]))
-                : Math.round(Float.valueOf(Math.round(Float.valueOf(available * prevScaleFactor[1])) / scaleFactor[1]));
+                : Math.round(Float.valueOf(available) * prevScaleFactor[1] / scaleFactor[1]);
         int endY = 0;
         int added = 0;
         int remaining = -1;
@@ -850,8 +850,8 @@ public class LayerPrinter {
 
                         int availablePixel = available;
                         if (available > 0) {
-                            int prevDPI = Math.round(Float.valueOf(available * prevScaleFactor[1]));
-                            availablePixel = Math.round(Float.valueOf(prevDPI / scaleFactor[1]));
+                            int prevDPI = Math.round(Float.valueOf(available) * prevScaleFactor[1]);
+                            availablePixel = Math.round(Float.valueOf(prevDPI) / scaleFactor[1]);
                         }
 
                         Integer[] gridLineWidth = getGridLineWidth(target.configRegistry);
@@ -870,15 +870,15 @@ public class LayerPrinter {
                             setLayerSize(target, this.printer.getPrinterData());
 
                             final Rectangle printerClientArea = computePrintArea(this.printer);
-                            final int printBoundsWidth = Math.round(Float.valueOf(printerClientArea.width / scaleFactor[0]));
+                            final int printBoundsWidth = Math.round(Float.valueOf(printerClientArea.width) / scaleFactor[0]);
                             int repeatPrintTargetHeight = getRepeatPrintTargetHeight();
                             float repeatPrintTargetHeightInDpi = repeatPrintTargetHeight * ((repeatScaleFactor != null) ? repeatScaleFactor[1] : 0);
                             int headerHeight = (target.repeatHeaderLayer != null) ? target.repeatHeaderLayer.getHeight() : 0;
                             float headerHeightDPI = headerHeight * scaleFactor[1];
-                            int printBoundsHeight = Math.round(Float.valueOf((printerClientArea.height - repeatPrintTargetHeightInDpi - headerHeightDPI - getFooterHeightInPrinterDPI()) / scaleFactor[1]));
+                            int printBoundsHeight = Math.round((Float.valueOf(printerClientArea.height) - repeatPrintTargetHeightInDpi - headerHeightDPI - Float.valueOf(getFooterHeightInPrinterDPI())) / scaleFactor[1]);
 
                             int firstPagePrintBoundsHeight = (available < 0)
-                                    ? Math.round(Float.valueOf((printerClientArea.height - repeatPrintTargetHeightInDpi - getFooterHeightInPrinterDPI()) / scaleFactor[1]))
+                                    ? Math.round((Float.valueOf(printerClientArea.height) - repeatPrintTargetHeightInDpi - Float.valueOf(getFooterHeightInPrinterDPI())) / scaleFactor[1])
                                     : availablePixel;
 
                             final int[] pageCount = getPageCount(target, this.printer, available, prevScaleFactor);
@@ -983,11 +983,11 @@ public class LayerPrinter {
                                             repeatIntersect = printBounds.intersection(repeatIntersect);
 
                                             printLayer(LayerPrinter.this.printTargets.get(0), gc, new Rectangle(repeatIntersect.x, 0, repeatIntersect.width, repeatPrintTargetHeight));
-                                            printerTransform.translate(0, Math.round(Float.valueOf(Math.round(Float.valueOf(repeatPrintTargetHeight * repeatScaleFactor[1])) / scaleFactor[1])));
+                                            printerTransform.translate(0, Math.round(Float.valueOf(repeatPrintTargetHeight) * repeatScaleFactor[1] / scaleFactor[1]));
                                         }
 
                                         if (target.repeatHeaderLayer != null && verticalPageNumber != 0) {
-                                            headerTransform.translate(0, startY + Math.round(Float.valueOf(Math.round(Float.valueOf(repeatPrintTargetHeight * ((repeatScaleFactor != null) ? repeatScaleFactor[1] : 0))) / scaleFactor[1])));
+                                            headerTransform.translate(0, startY + Math.round(Float.valueOf(repeatPrintTargetHeight) * ((repeatScaleFactor != null) ? repeatScaleFactor[1] : 0f) / scaleFactor[1]));
                                             gc.setTransform(headerTransform);
                                             printLayer(target, gc, new Rectangle(printBounds.x, 0, intersect.width, headerHeight));
                                             printerTransform.translate(0, headerHeight);
