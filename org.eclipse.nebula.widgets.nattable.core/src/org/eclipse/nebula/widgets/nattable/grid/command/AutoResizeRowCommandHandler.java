@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,8 +30,7 @@ import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
  * This handler assumes that the target layer is the NatTable itself on calling
  * doCommand()
  */
-public class AutoResizeRowCommandHandler implements
-        ILayerCommandHandler<AutoResizeRowsCommand> {
+public class AutoResizeRowCommandHandler implements ILayerCommandHandler<AutoResizeRowsCommand> {
 
     /**
      * The layer on which the command should be fired. Usually this will be the
@@ -82,14 +81,17 @@ public class AutoResizeRowCommandHandler implements
         targetLayer.doCommand(new TurnViewportOffCommand());
 
         int[] rowPositions = ObjectUtils.asIntArray(command.getRowPositions());
-        int[] gridRowPositions = convertFromPositionToCommandLayer(rowPositions);
+        int[] gridRowPositions =
+                command.doPositionTransformation() ? convertFromPositionToCommandLayer(rowPositions) : rowPositions;
 
         int[] gridRowHeights = MaxCellBoundsHelper.getPreferredRowHeights(
-                command.getConfigRegistry(), command.getGCFactory(),
-                this.commandLayer, gridRowPositions);
+                command.getConfigRegistry(),
+                command.getGCFactory(),
+                this.commandLayer,
+                gridRowPositions);
 
-        this.commandLayer.doCommand(new MultiRowResizeCommand(this.commandLayer,
-                gridRowPositions, gridRowHeights));
+        this.commandLayer.doCommand(
+                new MultiRowResizeCommand(this.commandLayer, gridRowPositions, gridRowHeights));
 
         targetLayer.doCommand(new TurnViewportOnCommand());
 
@@ -110,9 +112,8 @@ public class AutoResizeRowCommandHandler implements
         int[] commandLayerRowPositions = new int[rowPositions.length];
 
         for (int i = 0; i < rowPositions.length; i++) {
-            commandLayerRowPositions[i] = this.commandLayer
-                    .underlyingToLocalRowPosition(this.positionLayer,
-                            rowPositions[i]);
+            commandLayerRowPositions[i] =
+                    this.commandLayer.underlyingToLocalRowPosition(this.positionLayer, rowPositions[i]);
         }
         return commandLayerRowPositions;
     }

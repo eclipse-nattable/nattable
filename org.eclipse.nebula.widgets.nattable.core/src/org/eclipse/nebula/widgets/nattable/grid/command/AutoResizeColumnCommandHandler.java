@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,8 +30,7 @@ import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
  * This handler assumes that the target layer is the NatTable itself on calling
  * doCommand()
  */
-public class AutoResizeColumnCommandHandler implements
-        ILayerCommandHandler<AutoResizeColumnsCommand> {
+public class AutoResizeColumnCommandHandler implements ILayerCommandHandler<AutoResizeColumnsCommand> {
 
     /**
      * The layer on which the command should be fired. Usually this will be the
@@ -55,8 +54,7 @@ public class AutoResizeColumnCommandHandler implements
      *            Needs to be a layer at a lower position in the layer
      *            composition. Typically the body layer stack.
      */
-    public AutoResizeColumnCommandHandler(ILayer commandLayer,
-            ILayer positionLayer) {
+    public AutoResizeColumnCommandHandler(ILayer commandLayer, ILayer positionLayer) {
         this.commandLayer = commandLayer;
         this.positionLayer = positionLayer;
     }
@@ -78,24 +76,25 @@ public class AutoResizeColumnCommandHandler implements
     }
 
     @Override
-    public boolean doCommand(ILayer targetLayer,
-            AutoResizeColumnsCommand command) {
+    public boolean doCommand(ILayer targetLayer, AutoResizeColumnsCommand command) {
         // Need to resize selected columns even if they are outside the viewport
         // As this command is triggered by the InitialAutoResizeCommand we know
         // that the targetLayer is the
         // NatTable itself
         targetLayer.doCommand(new TurnViewportOffCommand());
 
-        int[] columnPositions = ObjectUtils.asIntArray(command
-                .getColumnPositions());
-        int[] gridColumnPositions = convertFromPositionToCommandLayer(columnPositions);
+        int[] columnPositions = ObjectUtils.asIntArray(command.getColumnPositions());
+        int[] gridColumnPositions =
+                command.doPositionTransformation() ? convertFromPositionToCommandLayer(columnPositions) : columnPositions;
 
         int[] gridColumnWidths = MaxCellBoundsHelper.getPreferredColumnWidths(
-                command.getConfigRegistry(), command.getGCFactory(),
-                this.commandLayer, gridColumnPositions);
+                command.getConfigRegistry(),
+                command.getGCFactory(),
+                this.commandLayer,
+                gridColumnPositions);
 
-        this.commandLayer.doCommand(new MultiColumnResizeCommand(this.commandLayer,
-                gridColumnPositions, gridColumnWidths));
+        this.commandLayer.doCommand(
+                new MultiColumnResizeCommand(this.commandLayer, gridColumnPositions, gridColumnWidths));
         targetLayer.doCommand(new TurnViewportOnCommand());
 
         return true;
@@ -115,9 +114,8 @@ public class AutoResizeColumnCommandHandler implements
         int[] commandLayerColumnPositions = new int[columnPositions.length];
 
         for (int i = 0; i < columnPositions.length; i++) {
-            commandLayerColumnPositions[i] = this.commandLayer
-                    .underlyingToLocalColumnPosition(this.positionLayer,
-                            columnPositions[i]);
+            commandLayerColumnPositions[i] =
+                    this.commandLayer.underlyingToLocalColumnPosition(this.positionLayer, columnPositions[i]);
         }
         return commandLayerColumnPositions;
     }
