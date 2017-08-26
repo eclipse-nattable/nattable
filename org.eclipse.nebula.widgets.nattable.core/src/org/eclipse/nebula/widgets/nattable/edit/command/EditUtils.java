@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -49,8 +49,10 @@ public class EditUtils {
      *         no selection.
      */
     public static ILayerCell getLastSelectedCell(SelectionLayer selectionLayer) {
-        PositionCoordinate selectionAnchor = selectionLayer.getSelectionAnchor();
-        return selectionLayer.getCellByPosition(selectionAnchor.columnPosition, selectionAnchor.rowPosition);
+        PositionCoordinate lastSelectedCell = selectionLayer.getLastSelectedCellPosition();
+        return (lastSelectedCell != null)
+                ? selectionLayer.getCellByPosition(lastSelectedCell.columnPosition, lastSelectedCell.rowPosition)
+                : null;
     }
 
     /**
