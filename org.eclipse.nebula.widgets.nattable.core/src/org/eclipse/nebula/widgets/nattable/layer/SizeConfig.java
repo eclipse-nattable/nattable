@@ -558,6 +558,15 @@ public class SizeConfig implements IPersistable {
             Integer positionValue = null;
             for (int i = 0; i < positionCount; i++) {
                 positionValue = this.sizeMap.get(i);
+                if (positionValue == null && isPercentageSizing(i)) {
+                    // remember the position for which no size information
+                    // exists needed to calculate the size for those positions
+                    // dependent on the remaining space
+                    noInfoPositions.add(i);
+                } else if (positionValue == null && !isPercentageSizing(i)) {
+                    positionValue = getDefaultSize(i);
+                }
+
                 if (positionValue != null) {
                     if (isPercentageSizing(i)) {
                         sum += positionValue;
@@ -569,11 +578,6 @@ public class SizeConfig implements IPersistable {
                     }
                     realSum += real;
                     this.realSizeMap.put(i, real);
-                } else {
-                    // remember the position for which no size information
-                    // exists needed to calculate the size for those positions
-                    // dependent on the remaining space
-                    noInfoPositions.add(i);
                 }
             }
 
@@ -656,11 +660,11 @@ public class SizeConfig implements IPersistable {
     protected int calculateAvailableSpace(int space) {
         if (!this.percentageSizingMap.isEmpty()) {
             if (this.percentageSizing) {
-                for (Map.Entry<Integer, Boolean> entry : this.percentageSizingMap
-                        .entrySet()) {
+                for (Map.Entry<Integer, Boolean> entry : this.percentageSizingMap.entrySet()) {
                     if (!entry.getValue()) {
-                        if (this.sizeMap.containsKey(entry.getKey()))
+                        if (this.sizeMap.containsKey(entry.getKey())) {
                             space -= this.sizeMap.get(entry.getKey());
+                        }
                     }
                 }
             }
