@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,13 +12,30 @@ package org.eclipse.nebula.widgets.nattable.hideshow.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.IColumnHideShowLayer;
 
-public class ShowAllColumnsCommandHandler extends
-        AbstractLayerCommandHandler<ShowAllColumnsCommand> {
+public class ShowAllColumnsCommandHandler extends AbstractLayerCommandHandler<ShowAllColumnsCommand> {
 
-    private final ColumnHideShowLayer columnHideShowLayer;
+    private final IColumnHideShowLayer columnHideShowLayer;
 
+    /**
+     *
+     * @param columnHideShowLayer
+     *            The {@link IColumnHideShowLayer} on which this command handler
+     *            should operate.
+     */
     public ShowAllColumnsCommandHandler(ColumnHideShowLayer columnHideShowLayer) {
+        this.columnHideShowLayer = columnHideShowLayer;
+    }
+
+    /**
+     *
+     * @param columnHideShowLayer
+     *            The {@link IColumnHideShowLayer} on which this command handler
+     *            should operate.
+     * @since 1.6
+     */
+    public ShowAllColumnsCommandHandler(IColumnHideShowLayer columnHideShowLayer) {
         this.columnHideShowLayer = columnHideShowLayer;
     }
 

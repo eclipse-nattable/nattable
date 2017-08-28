@@ -90,6 +90,17 @@ public class SizeConfig implements IPersistable {
      * The {@link IDpiConverter} that is used for scaling DPI conversion.
      */
     protected IDpiConverter dpiConverter;
+    /**
+     * Flag to configure percentage sizing behavior in case the percentage
+     * configuration is not 100% and there is space left. Setting this flag to
+     * <code>true</code> will cause distribution of the remaining space to the
+     * fixed percentage columns according to their ratio. This means the
+     * available space will always be fully taken. Setting it to
+     * <code>false</code> will not increase, so there will be space left.
+     *
+     * @since 1.6
+     */
+    private boolean distributeRemainingSpace = false;
 
     /**
      * Create a new {@link SizeConfig} with the given default size.
@@ -321,14 +332,17 @@ public class SizeConfig implements IPersistable {
                     // check the adjacent positions for percentage corrections
                     int nextPosition = position + 1;
                     while (diff != 0 && this.realSizeMap.containsKey(nextPosition)) {
-                        diff = updateAdjacentPosition(nextPosition, diff);
+                        if (isPositionResizable(nextPosition)) {
+                            diff = updateAdjacentPosition(nextPosition, diff);
+                        }
                         nextPosition++;
                     }
 
                     int previousPosition = position - 1;
-                    while (diff != 0
-                            && this.realSizeMap.containsKey(previousPosition)) {
-                        diff = updateAdjacentPosition(previousPosition, diff);
+                    while (diff != 0 && this.realSizeMap.containsKey(previousPosition)) {
+                        if (isPositionResizable(previousPosition)) {
+                            diff = updateAdjacentPosition(previousPosition, diff);
+                        }
                         previousPosition--;
                     }
 
@@ -555,6 +569,7 @@ public class SizeConfig implements IPersistable {
             int realSum = 0;
             int fixedSum = 0;
             List<Integer> noInfoPositions = new ArrayList<Integer>();
+            List<Integer> fixedPercentagePositions = new ArrayList<Integer>();
             Integer positionValue = null;
             for (int i = 0; i < positionCount; i++) {
                 positionValue = this.sizeMap.get(i);
@@ -570,8 +585,8 @@ public class SizeConfig implements IPersistable {
                 if (positionValue != null) {
                     if (isPercentageSizing(i)) {
                         sum += positionValue;
-                        real = calculatePercentageValue(positionValue,
-                                percentageSpace);
+                        real = calculatePercentageValue(positionValue, percentageSpace);
+                        fixedPercentagePositions.add(i);
                     } else {
                         real = positionValue;
                         fixedSum += real;
@@ -601,6 +616,28 @@ public class SizeConfig implements IPersistable {
                 // sum to 100 for correct calculation results.
                 sum = 100;
             }
+
+            // if percentage sizing is configured with fixed percentage values
+            // and not 100 percent are used and it is configured to distribute
+            // the remaining space, the fixed percentage positions are increased
+            // according to their ratio to always fill the whole space
+            if (sum < 100
+                    && !fixedPercentagePositions.isEmpty()
+                    && this.distributeRemainingSpace) {
+                double remaining = new Double(space) - realSum;
+                if (remaining > 0) {
+                    // calculate ratio
+                    for (int i = 0; i < fixedPercentagePositions.size(); i++) {
+                        Integer pos = fixedPercentagePositions.get(i);
+                        Integer percentage = this.sizeMap.get(pos);
+                        double ratio = Integer.valueOf(percentage).doubleValue() / Integer.valueOf(sum).doubleValue();
+                        int dist = Double.valueOf(remaining * ratio).intValue();
+                        this.realSizeMap.put(pos, this.realSizeMap.get(pos) + dist);
+                    }
+                    sum = 100;
+                }
+            }
+
             if (sum == 100) {
                 // check if the sum of the calculated values is the same as the
                 // given space if not distribute the missing pixels to some of
@@ -622,6 +659,12 @@ public class SizeConfig implements IPersistable {
                             // there are more missing pixels than columns
                             // start over at position 0
                             pos = 0;
+                        }
+
+                        // only increase columns that are not configured to
+                        // be hidden
+                        while (this.realSizeMap.get(pos) == 0) {
+                            pos++;
                         }
                         int posValue = this.realSizeMap.get(pos);
                         this.realSizeMap.put(pos, posValue + 1);
@@ -825,5 +868,68 @@ public class SizeConfig implements IPersistable {
         this.percentageSizingMap.clear();
         this.realSizeMap.clear();
         this.aggregatedSizeCacheMap.clear();
+    }
+
+    /**
+     * Resets the custom configured size of the given position. This way the
+     * default size will be applied for that position afterwards.
+     *
+     * @param position
+     *            The position for which the size configuration should be reset.
+     *
+     * @since 1.6
+     */
+    public void resetConfiguredSize(int position) {
+        this.sizeMap.remove(position);
+        this.isAggregatedSizeCacheValid = false;
+        calculatePercentages(this.availableSpace, this.realSizeMap.size());
+    }
+
+    /**
+     * Returns the configured size value for the given position or -1 if no
+     * custom size was configured and therefore the default size is used for
+     * that position.
+     *
+     * @param position
+     *            The position for which the configured size should be returned.
+     * @return The configured size or -1 in case the default size is used for
+     *         that position.
+     *
+     * @since 1.6
+     */
+    public int getConfiguredSize(int position) {
+        Integer configuredSize = this.sizeMap.get(position);
+        return (configuredSize != null) ? configuredSize : -1;
+    }
+
+    /**
+     *
+     * @return <code>true</code> if remaining space on fixed percentage sizing
+     *         is distributed to other percentage sized positions,
+     *         <code>false</code> if not. Default is <code>false</code>.
+     *
+     * @since 1.6
+     */
+    public boolean isDistributeRemainingSpace() {
+        return this.distributeRemainingSpace;
+    }
+
+    /**
+     * Configure the percentage sizing behavior when manually specifying
+     * percentages and not having 100% configured. By default the remaining
+     * space is not distributed to the configured positions. That means for
+     * example that 25% of 100 pixels will be 25, regardless of the other
+     * positions. When setting this flag to <code>true</code> the 25% will be
+     * increased so the whole available space is filled.
+     *
+     * @param distributeRemaining
+     *            <code>true</code> if remaining space on fixed percentage
+     *            sizing should be distributed to other percentage sized
+     *            positions, <code>false</code> if not.
+     *
+     * @since 1.6
+     */
+    public void setDistributeRemainingSpace(boolean distributeRemaining) {
+        this.distributeRemainingSpace = distributeRemaining;
     }
 }

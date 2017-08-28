@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Properties;
@@ -31,7 +32,16 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralChangeEventHelp
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
-public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
+/**
+ * Layer to add support for column hide/show feature to a NatTable. Technically
+ * the columns are hidden by this layer which leads to a index-position
+ * transformation. With percentage sizing this this leads to gaps for hidden
+ * columns as the size of the other columns is not re-calculated. For percentage
+ * sizing and size increase use the {@link ResizeColumnHideShowLayer}.
+ *
+ * @see ResizeColumnHideShowLayer
+ */
+public class ColumnHideShowLayer extends AbstractColumnHideShowLayer implements IColumnHideShowLayer {
 
     public static final String PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES = ".hiddenColumnIndexes"; //$NON-NLS-1$
 
@@ -115,6 +125,12 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
         return this.hiddenColumnIndexes;
     }
 
+    @Override
+    public void hideColumnPositions(Integer... columnPositions) {
+        hideColumnPositions(Arrays.asList(columnPositions));
+    }
+
+    @Override
     public void hideColumnPositions(Collection<Integer> columnPositions) {
         Set<Integer> columnIndexes = new HashSet<Integer>();
         for (Integer columnPosition : columnPositions) {
@@ -125,12 +141,19 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
         fireLayerEvent(new HideColumnPositionsEvent(this, columnPositions));
     }
 
+    @Override
+    public void showColumnIndexes(Integer... columnIndexes) {
+        showColumnIndexes(Arrays.asList(columnIndexes));
+    }
+
+    @Override
     public void showColumnIndexes(Collection<Integer> columnIndexes) {
         this.hiddenColumnIndexes.removeAll(columnIndexes);
         invalidateCache();
         fireLayerEvent(new ShowColumnPositionsEvent(this, getColumnPositionsByIndexes(columnIndexes)));
     }
 
+    @Override
     public void showAllColumns() {
         Collection<Integer> hiddenColumns = new ArrayList<Integer>(this.hiddenColumnIndexes);
         this.hiddenColumnIndexes.clear();

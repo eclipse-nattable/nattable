@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,15 +32,13 @@ public class LayerUtil {
         int startX = layer.getStartXOfColumnPosition(columnPosition);
         int endX = startX + layer.getColumnWidthByPosition(columnPosition);
         if (x < startX) {
-            if (startX == totalWidth) {
+            if (startX == totalWidth && startX != endX) {
                 return columnCount;
             }
             return findColumnPosition(xOffset, columnOffset, layer, x, startX, columnPosition);
-        }
-        else if (x >= endX) {
+        } else if (x >= endX) {
             return findColumnPosition(endX, columnPosition + 1, layer, x, totalWidth, columnCount);
-        }
-        else {
+        } else {
             return columnPosition;
         }
     }
@@ -64,15 +62,13 @@ public class LayerUtil {
         int startY = layer.getStartYOfRowPosition(rowPosition);
         int endY = startY + layer.getRowHeightByPosition(rowPosition);
         if (y < startY) {
-            if (startY == totalHeight) {
+            if (startY == totalHeight && startY != endY) {
                 return rowCount;
             }
             return findRowPosition(yOffset, rowOffset, layer, y, startY, rowPosition);
-        }
-        else if (y >= endY) {
+        } else if (y >= endY) {
             return findRowPosition(endY, rowPosition + 1, layer, y, totalHeight, rowCount);
-        }
-        else {
+        } else {
             return rowPosition;
         }
     }

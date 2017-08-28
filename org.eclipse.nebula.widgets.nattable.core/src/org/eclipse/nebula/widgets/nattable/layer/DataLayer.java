@@ -654,4 +654,141 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
             fireLayerEvent(new RowStructuralRefreshEvent(this));
         }
     }
+
+    /**
+     * This method will reset a custom set column size to the default size.
+     *
+     * @param position
+     *            The column position that should be reset.
+     * @param fireEvent
+     *            flag to indicate whether a refresh event should be triggered
+     *            or not. Should be set to <code>false</code> in case additional
+     *            actions should be executed before the refresh should be done.
+     * @since 1.6
+     */
+    public void resetColumnSize(int position, boolean fireEvent) {
+        this.columnWidthConfig.resetConfiguredSize(position);
+        if (fireEvent) {
+            fireLayerEvent(new ColumnStructuralRefreshEvent(this));
+        }
+    }
+
+    /**
+     * This method will reset a custom set row size to the default size.
+     *
+     * @param position
+     *            The row position that should be reset.
+     * @param fireEvent
+     *            flag to indicate whether a refresh event should be triggered
+     *            or not. Should be set to <code>false</code> in case additional
+     *            actions should be executed before the refresh should be done.
+     * @since 1.6
+     */
+    public void resetRowSize(int position, boolean fireEvent) {
+        this.rowHeightConfig.resetConfiguredSize(position);
+        if (fireEvent) {
+            fireLayerEvent(new RowStructuralRefreshEvent(this));
+        }
+    }
+
+    /**
+     * Returns the width of the given column position without any
+     * transformation. That means it returns the value that was set and not an
+     * upscaled value. For percentage sizing it also returns the percentage
+     * value and not the calculated pixel value.
+     *
+     * @param columnPosition
+     *            The column position for which the configured width should be
+     *            returned.
+     * @return The width that is configured for the given column position
+     *         without transformation.
+     * @see #getColumnWidthByPosition(int)
+     *
+     * @since 1.6
+     */
+    public int getConfiguredColumnWidthByPosition(int columnPosition) {
+        return this.columnWidthConfig.getConfiguredSize(columnPosition);
+    }
+
+    /**
+     * Returns the height of the given row position without any transformation.
+     * That means it returns the value that was set and not an upscaled value.
+     * For percentage sizing it also returns the percentage value and not the
+     * calculated pixel value.
+     *
+     * @param rowPosition
+     *            The row position for which the configured height should be
+     *            returned.
+     * @return The height that is configured for the given row position without
+     *         transformation.
+     * @see #getRowHeightByPosition(int)
+     *
+     * @since 1.6
+     */
+    public int getConfiguredRowHeightByPosition(int rowPosition) {
+        return this.rowHeightConfig.getConfiguredSize(rowPosition);
+    }
+
+    /**
+     *
+     * @return <code>true</code> if remaining space on fixed percentage sizing
+     *         is distributed to other percentage sized columns,
+     *         <code>false</code> if not. Default is <code>false</code>.
+     *
+     * @since 1.6
+     */
+    public boolean isDistributeRemainingColumnSpace() {
+        return this.columnWidthConfig.isDistributeRemainingSpace();
+    }
+
+    /**
+     * Configure the percentage sizing behavior when manually specifying
+     * percentages and not having 100% configured. By default the remaining
+     * space is not distributed to the configured positions. That means for
+     * example that 25% of 100 pixels will be 25, regardless of the other
+     * positions. When setting this flag to <code>true</code> the 25% will be
+     * increased so the whole available space is filled.
+     *
+     * @param distributeRemaining
+     *            <code>true</code> if remaining space on fixed percentage
+     *            sizing should be distributed to other percentage sized
+     *            columns, <code>false</code> if not.
+     *
+     * @since 1.6
+     */
+    public void setDistributeRemainingColumnSpace(boolean distributeRemaining) {
+        this.columnWidthConfig.setDistributeRemainingSpace(distributeRemaining);
+    }
+
+    /**
+     *
+     * @return <code>true</code> if remaining space on fixed percentage sizing
+     *         is distributed to other percentage sized rows, <code>false</code>
+     *         if not. Default is <code>false</code>.
+     *
+     * @since 1.6
+     */
+    public boolean isDistributeRemainingRowSpace() {
+        return this.rowHeightConfig.isDistributeRemainingSpace();
+    }
+
+    /**
+     * Configure the percentage sizing behavior when manually specifying
+     * percentages and not having 100% configured. By default the remaining
+     * space is not distributed to the configured positions. That means for
+     * example that 25% of 100 pixels will be 25, regardless of the other
+     * positions. When setting this flag to <code>true</code> the 25% will be
+     * increased so the whole available space is filled.
+     *
+     * @param distributeRemaining
+     *            <code>true</code> if remaining space on fixed percentage
+     *            sizing should be distributed to other percentage sized rows,
+     *            <code>false</code> if not.
+     *
+     * @since 1.6
+     */
+    public void setDistributeRemainingRowSpace(boolean distributeRemaining) {
+        this.rowHeightConfig.setDistributeRemainingSpace(distributeRemaining);
+    }
+
 }

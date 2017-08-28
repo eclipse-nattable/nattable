@@ -678,4 +678,52 @@ public class SizeConfigPercentageTest {
         assertEquals(100, sizeConfigMixedLastTakesAll.getSize(2));
         assertEquals(200, sizeConfigMixedLastTakesAll.getSize(3));
     }
+
+    @Test
+    public void remainingSpaceShouldBeDistributedOnFixedPercentageColumns() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        sizeConfig.setPercentage(0, 25);
+        sizeConfig.setPercentage(1, 25);
+        sizeConfig.setPercentage(2, 50);
+        sizeConfig.setDistributeRemainingSpace(true);
+
+        sizeConfig.calculatePercentages(500, 3);
+
+        assertEquals(500, sizeConfig.getAggregateSize(3));
+        assertEquals(125, sizeConfig.getSize(0));
+        assertEquals(125, sizeConfig.getSize(1));
+        assertEquals(250, sizeConfig.getSize(2));
+
+        sizeConfig.setPercentage(2, 0);
+        sizeConfig.calculatePercentages(500, 3);
+
+        assertEquals(500, sizeConfig.getAggregateSize(3));
+        assertEquals(250, sizeConfig.getSize(0));
+        assertEquals(250, sizeConfig.getSize(1));
+        assertEquals(0, sizeConfig.getSize(2));
+    }
+
+    @Test
+    public void remainingSpaceShouldBeDistributedOnFixedPercentageColumns2() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        sizeConfig.setPercentage(0, 25);
+        sizeConfig.setPercentage(1, 25);
+        sizeConfig.setPercentage(2, 50);
+        sizeConfig.setDistributeRemainingSpace(true);
+
+        sizeConfig.calculatePercentages(201, 3);
+
+        assertEquals(201, sizeConfig.getAggregateSize(3));
+        assertEquals(51, sizeConfig.getSize(0));
+        assertEquals(50, sizeConfig.getSize(1));
+        assertEquals(100, sizeConfig.getSize(2));
+
+        sizeConfig.setPercentage(2, 0);
+        sizeConfig.calculatePercentages(201, 3);
+
+        assertEquals(201, sizeConfig.getAggregateSize(3));
+        assertEquals(101, sizeConfig.getSize(0));
+        assertEquals(100, sizeConfig.getSize(1));
+        assertEquals(0, sizeConfig.getSize(2));
+    }
 }
