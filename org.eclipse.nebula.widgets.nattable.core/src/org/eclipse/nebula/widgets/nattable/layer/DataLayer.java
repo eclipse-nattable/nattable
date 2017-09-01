@@ -534,6 +534,15 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     /**
      * Configures how the column sizing of this {@link DataLayer} is handled,
      * either pixel sizing or percentage sizing. Default is pixel sizing.
+     * <p>
+     * <b>Note:</b> The configuration of this flag impacts the size calculation
+     * in mixed mode. If this flag is set to <code>false</code>, positions that
+     * are configured for fixed percentages will use the full available space
+     * for percentage calculation. Setting it to <code>true</code> will cause
+     * using the remaining space for percentage calculation. This means if also
+     * fixed pixel sized positions are configured, they will be subtracted from
+     * the full available space.
+     * </p>
      *
      * @param percentageSizing
      *            <code>true</code> if the column sizing should be done by
@@ -583,6 +592,15 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     /**
      * Configures how the row sizing of this {@link DataLayer} is handled,
      * either pixel sizing or percentage sizing. Default is pixel sizing.
+     * <p>
+     * <b>Note:</b> The configuration of this flag impacts the size calculation
+     * in mixed mode. If this flag is set to <code>false</code>, positions that
+     * are configured for fixed percentages will use the full available space
+     * for percentage calculation. Setting it to <code>true</code> will cause
+     * using the remaining space for percentage calculation. This means if also
+     * fixed pixel sized positions are configured, they will be subtracted from
+     * the full available space.
+     * </p>
      *
      * @param percentageSizing
      *            <code>true</code> if the row sizing should be done by

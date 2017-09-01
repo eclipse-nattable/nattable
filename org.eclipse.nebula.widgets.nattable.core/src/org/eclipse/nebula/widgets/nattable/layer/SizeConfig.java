@@ -502,10 +502,22 @@ public class SizeConfig implements IPersistable {
     }
 
     /**
+     * Configure whether the positions should be interpreted as percentage
+     * values or pixel values.
+     * <p>
+     * <b>Note:</b> The configuration of this flag impacts the size calculation
+     * in mixed mode. If this flag is set to <code>false</code>, positions that
+     * are configured for fixed percentages will use the full available space
+     * for percentage calculation. Setting it to <code>true</code> will cause
+     * using the remaining space for percentage calculation. This means if also
+     * fixed pixel sized positions are configured, they will be subtracted from
+     * the full available space.
+     * </p>
+     *
      * @param percentageSizing
      *            <code>true</code> if the size of the positions should be
-     *            interpreted percentaged, <code>false</code> if the size of the
-     *            positions should be interpreted by pixel.
+     *            interpreted as percentage values, <code>false</code> if the
+     *            size of the positions should be interpreted by pixel.
      */
     public void setPercentageSizing(boolean percentageSizing) {
         this.percentageSizing = percentageSizing;
@@ -662,8 +674,8 @@ public class SizeConfig implements IPersistable {
                         }
 
                         // only increase columns that are not configured to
-                        // be hidden
-                        while (this.realSizeMap.get(pos) == 0) {
+                        // be hidden or fixed size
+                        while (this.realSizeMap.get(pos) == 0 || !isPercentageSizing(pos)) {
                             pos++;
                         }
                         int posValue = this.realSizeMap.get(pos);

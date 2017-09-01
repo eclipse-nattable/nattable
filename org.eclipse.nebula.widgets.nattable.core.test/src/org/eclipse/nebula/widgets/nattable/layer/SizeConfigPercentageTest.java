@@ -726,4 +726,56 @@ public class SizeConfigPercentageTest {
         assertEquals(100, sizeConfig.getSize(1));
         assertEquals(0, sizeConfig.getSize(2));
     }
+
+    @Test
+    public void mixedConfigurationShouldBeCorrectlyCalculatedWithGeneralPercentage() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+
+        sizeConfig.setDistributeRemainingSpace(true);
+        sizeConfig.setPercentageSizing(true);
+        sizeConfig.setPercentage(0, 5);
+        sizeConfig.setPercentageSizing(1, false);
+        sizeConfig.setSize(1, 130);
+        sizeConfig.setPercentageSizing(4, false);
+        sizeConfig.setSize(4, 200);
+        sizeConfig.setPercentageSizing(5, false);
+        sizeConfig.setSize(5, 200);
+
+        sizeConfig.calculatePercentages(961, 7);
+
+        assertEquals(961, sizeConfig.getAggregateSize(7));
+        assertEquals(22, sizeConfig.getSize(0));
+        assertEquals(130, sizeConfig.getSize(1));
+        assertEquals(137, sizeConfig.getSize(2));
+        assertEquals(136, sizeConfig.getSize(3));
+        assertEquals(200, sizeConfig.getSize(4));
+        assertEquals(200, sizeConfig.getSize(5));
+        assertEquals(136, sizeConfig.getSize(6));
+    }
+
+    @Test
+    public void mixedConfigurationShouldBeCorrectlyCalculatedWithoutGeneralPercentage() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+
+        sizeConfig.setDistributeRemainingSpace(true);
+        sizeConfig.setPercentage(0, 5);
+        sizeConfig.setSize(1, 130);
+        sizeConfig.setPercentageSizing(2, true);
+        sizeConfig.setPercentageSizing(3, true);
+        sizeConfig.setSize(4, 200);
+        sizeConfig.setSize(5, 200);
+        sizeConfig.setPercentageSizing(6, true);
+
+        sizeConfig.calculatePercentages(961, 7);
+
+        assertEquals(961, sizeConfig.getAggregateSize(7));
+        assertEquals(49, sizeConfig.getSize(0));
+        assertEquals(130, sizeConfig.getSize(1));
+        assertEquals(128, sizeConfig.getSize(2));
+        assertEquals(127, sizeConfig.getSize(3));
+        assertEquals(200, sizeConfig.getSize(4));
+        assertEquals(200, sizeConfig.getSize(5));
+        assertEquals(127, sizeConfig.getSize(6));
+    }
+
 }
