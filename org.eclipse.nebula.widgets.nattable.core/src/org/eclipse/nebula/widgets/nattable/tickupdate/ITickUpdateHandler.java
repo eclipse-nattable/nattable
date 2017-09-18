@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -89,17 +89,14 @@ public interface ITickUpdateHandler {
         }
 
         @Override
-        public Object getIncrementedValue(Object currentValue,
-                double incrementSize) {
+        public Object getIncrementedValue(Object currentValue, double incrementSize) {
             if (currentValue instanceof Byte) {
-                return Integer.valueOf(
-                        ((Byte) currentValue)
-                                + Double.valueOf(Math.abs(incrementSize))
-                                        .byteValue()).byteValue();
+                return Integer.valueOf(((Byte) currentValue)
+                        + Double.valueOf(Math.abs(incrementSize)).byteValue()).byteValue();
             }
             if (currentValue instanceof Short) {
-                return Integer.valueOf(((Integer) currentValue)
-                        + Double.valueOf(Math.abs(incrementSize)).intValue());
+                return Integer.valueOf(((Short) currentValue)
+                        + Double.valueOf(Math.abs(incrementSize)).shortValue()).shortValue();
             }
             if (currentValue instanceof Integer) {
                 return Integer.valueOf(((Integer) currentValue)
@@ -126,17 +123,14 @@ public interface ITickUpdateHandler {
         }
 
         @Override
-        public Object getDecrementedValue(Object currentValue,
-                double decrementSize) {
+        public Object getDecrementedValue(Object currentValue, double decrementSize) {
             if (currentValue instanceof Byte) {
-                return Integer.valueOf(
-                        ((Byte) currentValue)
-                                - Double.valueOf(Math.abs(decrementSize))
-                                        .byteValue()).byteValue();
+                return Integer.valueOf(((Byte) currentValue)
+                        - Double.valueOf(Math.abs(decrementSize)).byteValue()).byteValue();
             }
             if (currentValue instanceof Short) {
-                return Integer.valueOf(((Integer) currentValue)
-                        - Double.valueOf(Math.abs(decrementSize)).intValue());
+                return Integer.valueOf(((Short) currentValue)
+                        - Double.valueOf(Math.abs(decrementSize)).shortValue()).shortValue();
             }
             if (currentValue instanceof Integer) {
                 return Integer.valueOf(((Integer) currentValue)
