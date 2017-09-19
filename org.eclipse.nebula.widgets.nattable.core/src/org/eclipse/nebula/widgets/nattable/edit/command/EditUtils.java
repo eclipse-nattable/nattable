@@ -162,8 +162,9 @@ public class EditUtils {
     /**
      * Checks if the cell at the specified coordinates is editable or not.
      * <p>
-     * Note: The coordinates need to be related to the given SelectionLayer,
-     * otherwise the wrong cell will be used for the check.
+     * Note: The coordinates need to be related to the given layer, otherwise
+     * the wrong cell will be used for the check.
+     * </p>
      *
      * @param layer
      *            The {@link ILayer} to check the cell coordinates against.
@@ -176,20 +177,21 @@ public class EditUtils {
      * @return <code>true</code> if the cell is editable, <code>false</code> if
      *         not
      */
-    public static boolean isCellEditable(ILayer layer,
-            IConfigRegistry configRegistry, PositionCoordinate cellCoords) {
+    public static boolean isCellEditable(ILayer layer, IConfigRegistry configRegistry, PositionCoordinate cellCoords) {
         ILayerCell layerCell = layer.getCellByPosition(cellCoords.columnPosition, cellCoords.rowPosition);
-        LabelStack labelStack = layerCell.getConfigLabels();
+        if (layerCell != null) {
+            LabelStack labelStack = layerCell.getConfigLabels();
 
-        IEditableRule editableRule = configRegistry.getConfigAttribute(
-                EditConfigAttributes.CELL_EDITABLE_RULE,
-                DisplayMode.EDIT,
-                labelStack.getLabels());
-        if (editableRule == null) {
-            return false;
+            IEditableRule editableRule = configRegistry.getConfigAttribute(
+                    EditConfigAttributes.CELL_EDITABLE_RULE,
+                    DisplayMode.EDIT,
+                    labelStack.getLabels());
+
+            if (editableRule != null) {
+                return editableRule.isEditable(layerCell, configRegistry);
+            }
         }
-
-        return editableRule.isEditable(layerCell, configRegistry);
+        return false;
     }
 
     /**
