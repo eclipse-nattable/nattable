@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,6 +29,17 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public class TextPainter extends AbstractTextPainter {
 
+    /**
+     * Flag to configure whether the preferred height is calculated on the
+     * wrapped text or on the text that would be rendered without wrapping.
+     * Default is <code>false</code>.
+     */
+    private boolean calculateWrappedHeight = false;
+
+    /**
+     * Creates a {@link TextPainter} that does not wrap text and paints the
+     * background.
+     */
     public TextPainter() {
         this(false, true);
     }
@@ -136,8 +147,14 @@ public class TextPainter extends AbstractTextPainter {
     @Override
     public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
         setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
-        String value = convertDataType(cell, configRegistry);
-        return gc.textExtent(value).y + (this.spacing * 2) + 1 + (getNumberOfNewLines(value) - 1) * this.lineSpacing;
+        String text = convertDataType(cell, configRegistry);
+        if (!this.calculateWrappedHeight) {
+            return gc.textExtent(text).y + (this.spacing * 2) + 1 + (getNumberOfNewLines(text) - 1) * this.lineSpacing;
+        } else {
+            text = getTextToDisplay(cell, gc, cell.getBounds().width, text);
+            int numberOfNewLines = getNumberOfNewLines(text);
+            return (gc.getFontMetrics().getHeight() * numberOfNewLines) + (this.lineSpacing * (numberOfNewLines - 1)) + (this.spacing * 2);
+        }
     }
 
     @Override
@@ -253,5 +270,32 @@ public class TextPainter extends AbstractTextPainter {
      */
     protected boolean performRowResize(int contentHeight, Rectangle rectangle) {
         return ((contentHeight > rectangle.height) && this.calculateByTextHeight);
+    }
+
+    /**
+     *
+     * @return Whether the preferred height is calculated on the wrapped text or
+     *         on the text that would be rendered without wrapping. Default is
+     *         <code>false</code>.
+     * @since 1.6
+     */
+    public boolean isCalculateWrappedHeight() {
+        return this.calculateWrappedHeight;
+    }
+
+    /**
+     * Configure how
+     * {@link #getPreferredHeight(ILayerCell, GC, IConfigRegistry)} calculates
+     * the height. Either based on the text as is, or taking text-wrapping into
+     * account if enabled.
+     *
+     * @param calculateWrappedHeight
+     *            <code>true</code> if the preferred height should be calculated
+     *            on the wrapped text, <code>false</code> if the preferred
+     *            height should be calculated without wrapping.
+     * @since 1.6
+     */
+    public void setCalculateWrappedHeight(boolean calculateWrappedHeight) {
+        this.calculateWrappedHeight = calculateWrappedHeight;
     }
 }
