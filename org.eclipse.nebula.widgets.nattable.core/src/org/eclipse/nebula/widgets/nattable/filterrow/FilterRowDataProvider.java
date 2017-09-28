@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,8 +9,6 @@
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow;
-
-import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isEmpty;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,8 +39,7 @@ import org.eclipse.nebula.widgets.nattable.util.PersistenceUtils;
  */
 public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 
-    private static final Log log = LogFactory
-            .getLog(FilterRowDataProvider.class);
+    private static final Log LOG = LogFactory.getLog(FilterRowDataProvider.class);
 
     /**
      * Replacement for the pipe character | that is used for persistence. If
@@ -51,9 +48,8 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
      * persistence mechanism in NatTable uses the pipe character for separation
      * of values, the persistence breaks for such cases. By replacing the pipe
      * in the regular expression with some silly uncommon value specified here,
-     * we ensure to be able to also persist pipes in the regular expressions,
-     * aswell as being backwards compatible with already saved filter row
-     * states.
+     * we ensure to be able to also persist pipes in the regular expressions, as
+     * well as being backwards compatible with already saved filter row states.
      */
     public static final String PIPE_REPLACEMENT = "°~°"; //$NON-NLS-1$
 
@@ -114,8 +110,10 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
      *            {@link IDisplayConverter} for converting the values on state
      *            save/load operations.
      */
-    public FilterRowDataProvider(IFilterStrategy<T> filterStrategy,
-            ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
+    public FilterRowDataProvider(
+            IFilterStrategy<T> filterStrategy,
+            ILayer columnHeaderLayer,
+            IDataProvider columnHeaderDataProvider,
             IConfigRegistry configRegistry) {
         this.filterStrategy = filterStrategy;
         this.columnHeaderLayer = columnHeaderLayer;
@@ -157,8 +155,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
      *            Map that contains the filter objects mapped to the column
      *            index.
      */
-    public void setFilterIndexToObjectMap(
-            Map<Integer, Object> filterIndexToObjectMap) {
+    public void setFilterIndexToObjectMap(Map<Integer, Object> filterIndexToObjectMap) {
         this.filterIndexToObjectMap = filterIndexToObjectMap;
     }
 
@@ -187,8 +184,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 
         this.filterStrategy.applyFilter(this.filterIndexToObjectMap);
 
-        this.columnHeaderLayer.fireLayerEvent(new FilterAppliedEvent(
-                this.columnHeaderLayer));
+        this.columnHeaderLayer.fireLayerEvent(new FilterAppliedEvent(this.columnHeaderLayer));
     }
 
     // Load/save state
@@ -197,24 +193,20 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
     public void saveState(String prefix, Properties properties) {
         Map<Integer, String> filterTextByIndex = new HashMap<Integer, String>();
         for (Integer columnIndex : this.filterIndexToObjectMap.keySet()) {
-            final IDisplayConverter converter = this.configRegistry
-                    .getConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER,
-                            DisplayMode.NORMAL,
-                            FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
-                                    + columnIndex);
+            final IDisplayConverter converter = this.configRegistry.getConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
 
-            String filterText = getFilterStringRepresentation(
-                    this.filterIndexToObjectMap.get(columnIndex), converter);
+            String filterText = getFilterStringRepresentation(this.filterIndexToObjectMap.get(columnIndex), converter);
             filterText = filterText.replace("|", PIPE_REPLACEMENT); //$NON-NLS-1$
             filterTextByIndex.put(columnIndex, filterText);
         }
 
         String string = PersistenceUtils.mapAsString(filterTextByIndex);
 
-        if (!isEmpty(string)) {
-            properties.put(prefix
-                    + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS,
-                    string);
+        if (!ObjectUtils.isEmpty(string)) {
+            properties.put(prefix + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS, string);
         }
     }
 
@@ -223,28 +215,25 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
         this.filterIndexToObjectMap.clear();
 
         try {
-            Object property = properties.get(prefix
-                    + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
-            Map<Integer, String> filterTextByIndex = PersistenceUtils
-                    .parseString(property);
+            Object property = properties.get(prefix + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
+            Map<Integer, String> filterTextByIndex = PersistenceUtils.parseString(property);
             for (Integer columnIndex : filterTextByIndex.keySet()) {
-                final IDisplayConverter converter = this.configRegistry
-                        .getConfigAttribute(
-                                CellConfigAttributes.DISPLAY_CONVERTER,
-                                DisplayMode.NORMAL,
-                                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
-                                        + columnIndex);
+                final IDisplayConverter converter = this.configRegistry.getConfigAttribute(
+                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        DisplayMode.NORMAL,
+                        FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
 
                 String filterText = filterTextByIndex.get(columnIndex);
                 filterText = filterText.replace(PIPE_REPLACEMENT, "|"); //$NON-NLS-1$
-                this.filterIndexToObjectMap.put(columnIndex,
-                        getFilterFromString(filterText, converter));
+                this.filterIndexToObjectMap.put(columnIndex, getFilterFromString(filterText, converter));
             }
         } catch (Exception e) {
-            log.error("Error while restoring filter row text!", e); //$NON-NLS-1$
+            LOG.error("Error while restoring filter row text!", e); //$NON-NLS-1$
         }
 
         this.filterStrategy.applyFilter(this.filterIndexToObjectMap);
+
+        this.columnHeaderLayer.fireLayerEvent(new FilterAppliedEvent(this.columnHeaderLayer));
     }
 
     /**
@@ -262,23 +251,20 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
      *            is necessary to support filtering of custom types.
      * @return The String representation of the filter value.
      */
-    private String getFilterStringRepresentation(Object filterValue,
-            IDisplayConverter converter) {
+    private String getFilterStringRepresentation(Object filterValue, IDisplayConverter converter) {
         // in case the filter value is a collection of values, we need to create
-        // a special
-        // string representation
+        // a special string representation
         if (filterValue instanceof Collection) {
-            String collectionSpec = FILTER_COLLECTION_PREFIX
-                    + filterValue.getClass().getName() + ")"; //$NON-NLS-1$
+            String collectionSpec = FILTER_COLLECTION_PREFIX + filterValue.getClass().getName() + ")"; //$NON-NLS-1$
             StringBuilder builder = new StringBuilder(collectionSpec);
             builder.append("["); //$NON-NLS-1$
             Collection<?> filterCollection = (Collection<?>) filterValue;
-            for (Iterator<?> iterator = filterCollection.iterator(); iterator
-                    .hasNext();) {
+            for (Iterator<?> iterator = filterCollection.iterator(); iterator.hasNext();) {
                 Object filterObject = iterator.next();
                 builder.append(converter.canonicalToDisplayValue(filterObject));
-                if (iterator.hasNext())
+                if (iterator.hasNext()) {
                     builder.append(IPersistable.VALUE_SEPARATOR);
+                }
             }
 
             builder.append("]"); //$NON-NLS-1$
@@ -308,25 +294,20 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
      * @throws ClassNotFoundException
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private Object getFilterFromString(String filterText,
-            IDisplayConverter converter) throws InstantiationException,
-            IllegalAccessException, ClassNotFoundException {
+    private Object getFilterFromString(String filterText, IDisplayConverter converter)
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+
         if (filterText.startsWith(FILTER_COLLECTION_PREFIX)) {
             // the filter text represents a collection
             int indexEndCollSpec = filterText.indexOf(")"); //$NON-NLS-1$
-            String collectionSpec = filterText.substring(
-                    filterText.indexOf("(") + 1, indexEndCollSpec); //$NON-NLS-1$
-            Collection filterCollection = (Collection) Class.forName(
-                    collectionSpec).newInstance();
+            String collectionSpec = filterText.substring(filterText.indexOf("(") + 1, indexEndCollSpec); //$NON-NLS-1$
+            Collection filterCollection = (Collection) Class.forName(collectionSpec).newInstance();
 
             // also get rid of the collection marks
-            filterText = filterText.substring(indexEndCollSpec + 2,
-                    filterText.length() - 1);
-            String[] filterSplit = filterText
-                    .split(IPersistable.VALUE_SEPARATOR);
+            filterText = filterText.substring(indexEndCollSpec + 2, filterText.length() - 1);
+            String[] filterSplit = filterText.split(IPersistable.VALUE_SEPARATOR);
             for (String filterString : filterSplit) {
-                filterCollection.add(converter
-                        .displayToCanonicalValue(filterString));
+                filterCollection.add(converter.displayToCanonicalValue(filterString));
             }
 
             return filterCollection;
@@ -340,6 +321,8 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
     public void clearAllFilters() {
         this.filterIndexToObjectMap.clear();
         this.filterStrategy.applyFilter(this.filterIndexToObjectMap);
+
+        this.columnHeaderLayer.fireLayerEvent(new FilterAppliedEvent(this.columnHeaderLayer));
     }
 
 }

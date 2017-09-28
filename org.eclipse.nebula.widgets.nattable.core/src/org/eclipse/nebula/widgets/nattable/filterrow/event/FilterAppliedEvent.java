@@ -10,9 +10,14 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow.event;
 
+import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 
+/**
+ * Special {@link RowStructuralRefreshEvent} that is fired in case the filter
+ * changes via {@link FilterRowDataProvider}. This includes clearing a filter.
+ */
 public class FilterAppliedEvent extends RowStructuralRefreshEvent {
 
     public FilterAppliedEvent(ILayer layer) {
