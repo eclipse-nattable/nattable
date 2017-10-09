@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Dirk Fauth and others.
+ * Copyright (c) 2013, 2017 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,11 +12,16 @@ package org.eclipse.nebula.widgets.nattable.layer.event;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
+import org.eclipse.swt.graphics.Point;
 
 /**
  * Helper class providing support for modifying cached index lists for
@@ -60,10 +65,11 @@ public class StructuralChangeEventHelper {
                 Range beforePositionRange = rowDiff.getBeforePositionRange();
                 for (int i = beforePositionRange.start; i < beforePositionRange.end; i++) {
                     int index = i;// underlyingLayer.getRowIndexByPosition(i);
-                    if (index >= 0)
+                    if (index >= 0) {
                         toRemove.add(index);
-                    else
+                    } else {
                         numberOfNoIndex++;
+                    }
                 }
             }
         }
@@ -82,8 +88,9 @@ public class StructuralChangeEventHelper {
                 }
             }
             int modRow = row - deletedBefore;
-            if (modRow >= 0)
+            if (modRow >= 0) {
                 modifiedRows.add(modRow);
+            }
         }
         cachedRowIndexes.clear();
         cachedRowIndexes.addAll(modifiedRows);
@@ -133,8 +140,9 @@ public class StructuralChangeEventHelper {
                     }
                 }
 
-                if (addToCache)
+                if (addToCache) {
                     modifiedRows.add(beforeIndex, beforePositionRange.start);
+                }
 
                 cachedRowIndexes.clear();
                 cachedRowIndexes.addAll(modifiedRows);
@@ -178,10 +186,11 @@ public class StructuralChangeEventHelper {
                 Range beforePositionRange = columnDiff.getBeforePositionRange();
                 for (int i = beforePositionRange.start; i < beforePositionRange.end; i++) {
                     int index = i;// underlyingLayer.getColumnIndexByPosition(i);
-                    if (index >= 0)
+                    if (index >= 0) {
                         toRemove.add(index);
-                    else
+                    } else {
                         numberOfNoIndex++;
+                    }
                 }
             }
         }
@@ -200,8 +209,9 @@ public class StructuralChangeEventHelper {
                 }
             }
             int modColumn = column - deletedBefore;
-            if (modColumn >= 0)
+            if (modColumn >= 0) {
                 modifiedColumns.add(modColumn);
+            }
         }
         cachedColumnIndexes.clear();
         cachedColumnIndexes.addAll(modifiedColumns);
@@ -251,8 +261,9 @@ public class StructuralChangeEventHelper {
                     }
                 }
 
-                if (addToCache)
+                if (addToCache) {
                     modifiedColumns.add(beforeIndex, beforePositionRange.start);
+                }
 
                 cachedColumnIndexes.clear();
                 cachedColumnIndexes.addAll(modifiedColumns);
@@ -274,7 +285,8 @@ public class StructuralChangeEventHelper {
      * <li>column at position 2 gets hidden</li>
      * <li>reorder column at index 0 to index 4</li>
      * <li>on handling the deletion of index 0 the hidden index 2 would be
-     * reduced to 1 (which is wrong because it is reordered not really deleted)</li>
+     * reduced to 1 (which is wrong because it is reordered not really
+     * deleted)</li>
      * <li>adding the column at index 4 would undo the hidden index
      * modification, because the insertion is handled separately and does not
      * know about the former deletion</li>
@@ -314,4 +326,236 @@ public class StructuralChangeEventHelper {
 
         return false;
     }
+
+    /**
+     * Will check for events that indicate that rows have been deleted. In that
+     * case the given cached dataChanges need to be updated because the index of
+     * the rows might have changed. E.g. cell with row at index 3 is changed in
+     * the given layer, deleting row at index 1 will cause the row at index 3 to
+     * be moved to index 2. Without transforming the index regarding the delete
+     * event, the wrong cell at the incorrect row would be shown as changed.
+     *
+     * @param rowDiffs
+     *            The collection of {@link StructuralDiff}s to handle.
+     * @param dataChanges
+     *            The map that contains the data changes identified by a
+     *            {@link Point} that should be updated.
+     *
+     * @since 1.6
+     */
+    public static <T> void handleRowDelete(Collection<StructuralDiff> rowDiffs, Map<Point, T> dataChanges) {
+        // for correct calculation the diffs need to be processed from lowest
+        // position to highest
+        List<StructuralDiff> diffs = new ArrayList<StructuralDiff>(rowDiffs);
+        Collections.sort(diffs, new Comparator<StructuralDiff>() {
+
+            @Override
+            public int compare(StructuralDiff o1, StructuralDiff o2) {
+                return o1.getBeforePositionRange().start - o2.getBeforePositionRange().start;
+            }
+        });
+
+        List<Integer> toRemove = new ArrayList<Integer>();
+        for (StructuralDiff rowDiff : diffs) {
+            if (rowDiff.getDiffType() != null
+                    && rowDiff.getDiffType().equals(DiffTypeEnum.DELETE)) {
+                Range beforePositionRange = rowDiff.getBeforePositionRange();
+                for (int i = beforePositionRange.start; i < beforePositionRange.end; i++) {
+                    int index = i;
+                    if (index >= 0) {
+                        toRemove.add(index);
+                    }
+                }
+            }
+        }
+
+        // modify row indexes regarding the deleted rows
+        Map<Point, T> modifiedRows = new HashMap<Point, T>();
+        for (Map.Entry<Point, T> entry : dataChanges.entrySet()) {
+            int rowPosition = entry.getKey().y;
+            if (!toRemove.contains(rowPosition)) {
+                // check number of removed indexes that are lower than the
+                // current one
+                int deletedBefore = 0;
+                for (Integer removed : toRemove) {
+                    if (removed < rowPosition) {
+                        deletedBefore++;
+                    }
+                }
+                int modRow = rowPosition - deletedBefore;
+                if (modRow >= 0) {
+                    modifiedRows.put(new Point(entry.getKey().x, modRow), entry.getValue());
+                }
+            }
+        }
+
+        dataChanges.clear();
+        dataChanges.putAll(modifiedRows);
+    }
+
+    /**
+     * Will check for events that indicate that rows are added. In that case the
+     * given cached dataChanges need to be updated because the index of the rows
+     * might have changed. E.g. Row with index 3 is hidden in the given layer,
+     * adding a row at index 1 will cause the row at index 3 to be moved to
+     * index 4. Without transforming the index regarding the add event, the
+     * wrong row would be hidden.
+     *
+     * @param rowDiffs
+     *            The collection of {@link StructuralDiff}s to handle.
+     * @param dataChanges
+     *            The map that contains the data changes identified by a
+     *            {@link Point} that should be updated.
+     *
+     * @since 1.6
+     */
+    public static <T> void handleRowInsert(Collection<StructuralDiff> rowDiffs, Map<Point, T> dataChanges) {
+        // for correct calculation the diffs need to be processed from highest
+        // position to lowest
+        List<StructuralDiff> diffs = new ArrayList<StructuralDiff>(rowDiffs);
+        Collections.sort(diffs, new Comparator<StructuralDiff>() {
+
+            @Override
+            public int compare(StructuralDiff o1, StructuralDiff o2) {
+                return o2.getBeforePositionRange().start - o1.getBeforePositionRange().start;
+            }
+        });
+
+        for (StructuralDiff rowDiff : diffs) {
+            if (rowDiff.getDiffType() != null
+                    && rowDiff.getDiffType().equals(DiffTypeEnum.ADD)) {
+                Range beforePositionRange = rowDiff.getBeforePositionRange();
+                // modify row indexes regarding the inserted rows
+                Map<Point, T> modifiedRows = new HashMap<Point, T>();
+                for (Map.Entry<Point, T> entry : dataChanges.entrySet()) {
+                    int rowPosition = entry.getKey().y;
+                    if (rowPosition >= beforePositionRange.start) {
+                        modifiedRows.put(new Point(entry.getKey().x, rowPosition + 1), entry.getValue());
+                    } else {
+                        modifiedRows.put(new Point(entry.getKey().x, rowPosition), entry.getValue());
+                    }
+                }
+
+                dataChanges.clear();
+                dataChanges.putAll(modifiedRows);
+            }
+        }
+    }
+
+    /**
+     * Will check for events that indicate that columns have been deleted. In
+     * that case the given cached dataChanges need to be updated because the
+     * index of the columns might have changed. E.g. cell with column at index 3
+     * is changed in the given layer, deleting column at index 1 will cause the
+     * column at index 3 to be moved to index 2. Without transforming the index
+     * regarding the delete event, the wrong cell at the incorrect column would
+     * be shown as changed.
+     *
+     * @param columnDiffs
+     *            The collection of {@link StructuralDiff}s to handle.
+     * @param dataChanges
+     *            The map that contains the data changes identified by a
+     *            {@link Point} that should be updated.
+     *
+     * @since 1.6
+     */
+    public static <T> void handleColumnDelete(Collection<StructuralDiff> columnDiffs, Map<Point, T> dataChanges) {
+        // for correct calculation the diffs need to be processed from lowest
+        // position to highest
+        List<StructuralDiff> diffs = new ArrayList<StructuralDiff>(columnDiffs);
+        Collections.sort(diffs, new Comparator<StructuralDiff>() {
+
+            @Override
+            public int compare(StructuralDiff o1, StructuralDiff o2) {
+                return o1.getBeforePositionRange().start - o2.getBeforePositionRange().start;
+            }
+        });
+
+        List<Integer> toRemove = new ArrayList<Integer>();
+        for (StructuralDiff columnDiff : diffs) {
+            if (columnDiff.getDiffType() != null
+                    && columnDiff.getDiffType().equals(DiffTypeEnum.DELETE)) {
+                Range beforePositionRange = columnDiff.getBeforePositionRange();
+                for (int i = beforePositionRange.start; i < beforePositionRange.end; i++) {
+                    int index = i;
+                    if (index >= 0) {
+                        toRemove.add(index);
+                    }
+                }
+            }
+        }
+
+        // modify column indexes regarding the deleted column
+        Map<Point, T> modifiedColumns = new HashMap<Point, T>();
+        for (Map.Entry<Point, T> entry : dataChanges.entrySet()) {
+            int columnPosition = entry.getKey().x;
+            if (!toRemove.contains(columnPosition)) {
+                // check number of removed indexes that are lower than the
+                // current one
+                int deletedBefore = 0;
+                for (Integer removed : toRemove) {
+                    if (removed < columnPosition) {
+                        deletedBefore++;
+                    }
+                }
+                int modColumn = columnPosition - deletedBefore;
+                if (modColumn >= 0) {
+                    modifiedColumns.put(new Point(modColumn, entry.getKey().y), entry.getValue());
+                }
+            }
+        }
+
+        dataChanges.clear();
+        dataChanges.putAll(modifiedColumns);
+    }
+
+    /**
+     * Will check for events that indicate that columns are added. In that case
+     * the given cached dataChanges need to be updated because the index of the
+     * columns might have changed. E.g. column with index 3 is hidden in the
+     * given layer, adding a column at index 1 will cause the column at index 3
+     * to be moved to index 4. Without transforming the index regarding the add
+     * event, the wrong column would be hidden.
+     *
+     * @param columnDiffs
+     *            The collection of {@link StructuralDiff}s to handle.
+     * @param dataChanges
+     *            The map that contains the data changes identified by a
+     *            {@link Point} that should be updated.
+     *
+     * @since 1.6
+     */
+    public static <T> void handleColumnInsert(Collection<StructuralDiff> columnDiffs, Map<Point, T> dataChanges) {
+        // for correct calculation the diffs need to be processed from highest
+        // position to lowest
+        List<StructuralDiff> diffs = new ArrayList<StructuralDiff>(columnDiffs);
+        Collections.sort(diffs, new Comparator<StructuralDiff>() {
+
+            @Override
+            public int compare(StructuralDiff o1, StructuralDiff o2) {
+                return o2.getBeforePositionRange().start - o1.getBeforePositionRange().start;
+            }
+        });
+
+        for (StructuralDiff columnDiff : diffs) {
+            if (columnDiff.getDiffType() != null
+                    && columnDiff.getDiffType().equals(DiffTypeEnum.ADD)) {
+                Range beforePositionRange = columnDiff.getBeforePositionRange();
+                // modify column indexes regarding the inserted columns
+                Map<Point, T> modifiedColumns = new HashMap<Point, T>();
+                for (Map.Entry<Point, T> entry : dataChanges.entrySet()) {
+                    int columnPosition = entry.getKey().x;
+                    if (columnPosition >= beforePositionRange.start) {
+                        modifiedColumns.put(new Point(columnPosition + 1, entry.getKey().y), entry.getValue());
+                    } else {
+                        modifiedColumns.put(new Point(columnPosition, entry.getKey().y), entry.getValue());
+                    }
+                }
+
+                dataChanges.clear();
+                dataChanges.putAll(modifiedColumns);
+            }
+        }
+    }
+
 }

@@ -1,0 +1,163 @@
+/*******************************************************************************
+ * Copyright (c) 2017 Dirk Fauth.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
+ ******************************************************************************/
+package org.eclipse.nebula.widgets.nattable.layer;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.eclipse.nebula.widgets.nattable.command.StructuralRefreshCommand;
+import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
+import org.eclipse.nebula.widgets.nattable.edit.command.DiscardDataChangesCommand;
+import org.eclipse.nebula.widgets.nattable.edit.command.SaveDataChangesCommand;
+import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
+import org.eclipse.nebula.widgets.nattable.edit.event.DataUpdateEvent;
+import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
+import org.junit.Before;
+import org.junit.Test;
+
+public class DataChangeLayerTempStorageTest {
+
+    private DataLayer dataLayer;
+    private DataChangeLayer dataChangeLayer;
+
+    private LayerListenerFixture listener;
+
+    @Before
+    public void setup() {
+        this.dataLayer = new DataLayer(
+                new ListDataProvider<>(
+                        PersonService.getFixedPersons(),
+                        new ReflectiveColumnPropertyAccessor<>(new String[] {
+                                "firstName",
+                                "lastName",
+                                "gender",
+                                "married",
+                                "birthday" })));
+        this.dataChangeLayer = new DataChangeLayer(this.dataLayer, true);
+
+        this.listener = new LayerListenerFixture();
+        this.dataLayer.addLayerListener(this.listener);
+    }
+
+    @Test
+    public void shouldNotUpdateDataInDataLayer() {
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+
+        this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));
+
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+        assertEquals("Lovejoy", this.dataChangeLayer.getDataValueByPosition(1, 1));
+        assertTrue("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(1, 1).hasLabel(DataChangeLayer.DIRTY));
+        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertTrue("Row 1 is not dirty", this.dataChangeLayer.isRowDirty(1));
+        assertTrue("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 1));
+    }
+
+    @Test
+    public void shouldClearWithoutReset() {
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+
+        this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));
+
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+        assertEquals("Lovejoy", this.dataChangeLayer.getDataValueByPosition(1, 1));
+
+        // clear locally stored data changes
+        this.dataChangeLayer.clearDataChanges();
+
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+        assertEquals("Simpson", this.dataChangeLayer.getDataValueByPosition(1, 1));
+        assertFalse("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(1, 1).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertFalse("Row 1 is not dirty", this.dataChangeLayer.isRowDirty(1));
+        assertFalse("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 1));
+
+        assertTrue("changed columns are not empty", this.dataChangeLayer.changedColumns.isEmpty());
+        assertTrue("changed rows are not empty", this.dataChangeLayer.changedRows.isEmpty());
+        assertTrue("changes are not empty", this.dataChangeLayer.dataChanges.isEmpty());
+    }
+
+    @Test
+    public void shouldDiscardChanges() {
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+
+        this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));
+
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+        assertEquals("Lovejoy", this.dataChangeLayer.getDataValueByPosition(1, 1));
+
+        this.dataChangeLayer.doCommand(new DiscardDataChangesCommand());
+
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+        assertEquals("Simpson", this.dataChangeLayer.getDataValueByPosition(1, 1));
+        assertFalse("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(1, 1).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertFalse("Row 1 is not dirty", this.dataChangeLayer.isRowDirty(1));
+        assertFalse("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 1));
+
+        assertTrue("changed columns are not empty", this.dataChangeLayer.changedColumns.isEmpty());
+        assertTrue("changed rows are not empty", this.dataChangeLayer.changedRows.isEmpty());
+        assertTrue("changes are not empty", this.dataChangeLayer.dataChanges.isEmpty());
+    }
+
+    @Test
+    public void shouldSaveChanges() {
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+
+        this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));
+
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+        assertEquals("Lovejoy", this.dataChangeLayer.getDataValueByPosition(1, 1));
+
+        this.dataChangeLayer.doCommand(new SaveDataChangesCommand());
+
+        assertEquals("Lovejoy", this.dataLayer.getDataValue(1, 1));
+        assertEquals("Lovejoy", this.dataChangeLayer.getDataValueByPosition(1, 1));
+        assertFalse("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(1, 1).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertFalse("Row 1 is not dirty", this.dataChangeLayer.isRowDirty(1));
+        assertFalse("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 1));
+
+        assertTrue("changed columns are not empty", this.dataChangeLayer.changedColumns.isEmpty());
+        assertTrue("changed rows are not empty", this.dataChangeLayer.changedRows.isEmpty());
+        assertTrue("changes are not empty", this.dataChangeLayer.dataChanges.isEmpty());
+
+        assertEquals(1, this.listener.getReceivedEvents().size());
+        assertTrue(this.listener.getReceivedEvents().get(0) instanceof DataUpdateEvent);
+    }
+
+    @Test
+    public void shouldClearOnStructuralChange() {
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+
+        this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));
+
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+        assertEquals("Lovejoy", this.dataChangeLayer.getDataValueByPosition(1, 1));
+
+        // clear locally stored data changes
+        this.dataChangeLayer.doCommand(new StructuralRefreshCommand());
+
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+        assertEquals("Simpson", this.dataChangeLayer.getDataValueByPosition(1, 1));
+        assertFalse("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(1, 1).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertFalse("Row 1 is not dirty", this.dataChangeLayer.isRowDirty(1));
+        assertFalse("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 1));
+
+        assertTrue("changed columns are not empty", this.dataChangeLayer.changedColumns.isEmpty());
+        assertTrue("changed rows are not empty", this.dataChangeLayer.changedRows.isEmpty());
+        assertTrue("changes are not empty", this.dataChangeLayer.dataChanges.isEmpty());
+    }
+}
