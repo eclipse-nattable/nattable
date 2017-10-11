@@ -19,9 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.datachange.CellKeyHandler;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
-import org.eclipse.swt.graphics.Point;
 
 /**
  * Helper class providing support for modifying cached index lists for
@@ -338,12 +338,15 @@ public class StructuralChangeEventHelper {
      * @param rowDiffs
      *            The collection of {@link StructuralDiff}s to handle.
      * @param dataChanges
-     *            The map that contains the data changes identified by a
-     *            {@link Point} that should be updated.
+     *            The map that contains the data changes identified by a key
+     *            that should be updated.
+     * @param keyHandler
+     *            the {@link CellKeyHandler} that needs to be used to operate on
+     *            the dataChanges correctly.
      *
      * @since 1.6
      */
-    public static <T> void handleRowDelete(Collection<StructuralDiff> rowDiffs, Map<Point, T> dataChanges) {
+    public static <K, T> void handleRowDelete(Collection<StructuralDiff> rowDiffs, Map<K, T> dataChanges, CellKeyHandler<K> keyHandler) {
         // for correct calculation the diffs need to be processed from lowest
         // position to highest
         List<StructuralDiff> diffs = new ArrayList<StructuralDiff>(rowDiffs);
@@ -370,21 +373,24 @@ public class StructuralChangeEventHelper {
         }
 
         // modify row indexes regarding the deleted rows
-        Map<Point, T> modifiedRows = new HashMap<Point, T>();
-        for (Map.Entry<Point, T> entry : dataChanges.entrySet()) {
-            int rowPosition = entry.getKey().y;
-            if (!toRemove.contains(rowPosition)) {
+        Map<K, T> modifiedRows = new HashMap<K, T>();
+        for (Map.Entry<K, T> entry : dataChanges.entrySet()) {
+            int columnIndex = keyHandler.getColumnIndex(entry.getKey());
+            int rowIndex = keyHandler.getRowIndex(entry.getKey());
+            if (!toRemove.contains(rowIndex)) {
                 // check number of removed indexes that are lower than the
                 // current one
                 int deletedBefore = 0;
                 for (Integer removed : toRemove) {
-                    if (removed < rowPosition) {
+                    if (removed < rowIndex) {
                         deletedBefore++;
                     }
                 }
-                int modRow = rowPosition - deletedBefore;
+                int modRow = rowIndex - deletedBefore;
                 if (modRow >= 0) {
-                    modifiedRows.put(new Point(entry.getKey().x, modRow), entry.getValue());
+                    modifiedRows.put(
+                            keyHandler.getKey(columnIndex, modRow),
+                            entry.getValue());
                 }
             }
         }
@@ -404,12 +410,15 @@ public class StructuralChangeEventHelper {
      * @param rowDiffs
      *            The collection of {@link StructuralDiff}s to handle.
      * @param dataChanges
-     *            The map that contains the data changes identified by a
-     *            {@link Point} that should be updated.
+     *            The map that contains the data changes identified by a key
+     *            that should be updated.
+     * @param keyHandler
+     *            the {@link CellKeyHandler} that needs to be used to operate on
+     *            the dataChanges correctly.
      *
      * @since 1.6
      */
-    public static <T> void handleRowInsert(Collection<StructuralDiff> rowDiffs, Map<Point, T> dataChanges) {
+    public static <K, T> void handleRowInsert(Collection<StructuralDiff> rowDiffs, Map<K, T> dataChanges, CellKeyHandler<K> keyHandler) {
         // for correct calculation the diffs need to be processed from highest
         // position to lowest
         List<StructuralDiff> diffs = new ArrayList<StructuralDiff>(rowDiffs);
@@ -426,13 +435,18 @@ public class StructuralChangeEventHelper {
                     && rowDiff.getDiffType().equals(DiffTypeEnum.ADD)) {
                 Range beforePositionRange = rowDiff.getBeforePositionRange();
                 // modify row indexes regarding the inserted rows
-                Map<Point, T> modifiedRows = new HashMap<Point, T>();
-                for (Map.Entry<Point, T> entry : dataChanges.entrySet()) {
-                    int rowPosition = entry.getKey().y;
-                    if (rowPosition >= beforePositionRange.start) {
-                        modifiedRows.put(new Point(entry.getKey().x, rowPosition + 1), entry.getValue());
+                Map<K, T> modifiedRows = new HashMap<K, T>();
+                for (Map.Entry<K, T> entry : dataChanges.entrySet()) {
+                    int columnIndex = keyHandler.getColumnIndex(entry.getKey());
+                    int rowIndex = keyHandler.getRowIndex(entry.getKey());
+                    if (rowIndex >= beforePositionRange.start) {
+                        modifiedRows.put(
+                                keyHandler.getKey(columnIndex, rowIndex + 1),
+                                entry.getValue());
                     } else {
-                        modifiedRows.put(new Point(entry.getKey().x, rowPosition), entry.getValue());
+                        modifiedRows.put(
+                                keyHandler.getKey(columnIndex, rowIndex),
+                                entry.getValue());
                     }
                 }
 
@@ -454,12 +468,15 @@ public class StructuralChangeEventHelper {
      * @param columnDiffs
      *            The collection of {@link StructuralDiff}s to handle.
      * @param dataChanges
-     *            The map that contains the data changes identified by a
-     *            {@link Point} that should be updated.
+     *            The map that contains the data changes identified by a key
+     *            that should be updated.
+     * @param keyHandler
+     *            the {@link CellKeyHandler} that needs to be used to operate on
+     *            the dataChanges correctly.
      *
      * @since 1.6
      */
-    public static <T> void handleColumnDelete(Collection<StructuralDiff> columnDiffs, Map<Point, T> dataChanges) {
+    public static <K, T> void handleColumnDelete(Collection<StructuralDiff> columnDiffs, Map<K, T> dataChanges, CellKeyHandler<K> keyHandler) {
         // for correct calculation the diffs need to be processed from lowest
         // position to highest
         List<StructuralDiff> diffs = new ArrayList<StructuralDiff>(columnDiffs);
@@ -486,21 +503,24 @@ public class StructuralChangeEventHelper {
         }
 
         // modify column indexes regarding the deleted column
-        Map<Point, T> modifiedColumns = new HashMap<Point, T>();
-        for (Map.Entry<Point, T> entry : dataChanges.entrySet()) {
-            int columnPosition = entry.getKey().x;
-            if (!toRemove.contains(columnPosition)) {
+        Map<K, T> modifiedColumns = new HashMap<K, T>();
+        for (Map.Entry<K, T> entry : dataChanges.entrySet()) {
+            int columnIndex = keyHandler.getColumnIndex(entry.getKey());
+            int rowIndex = keyHandler.getRowIndex(entry.getKey());
+            if (!toRemove.contains(columnIndex)) {
                 // check number of removed indexes that are lower than the
                 // current one
                 int deletedBefore = 0;
                 for (Integer removed : toRemove) {
-                    if (removed < columnPosition) {
+                    if (removed < columnIndex) {
                         deletedBefore++;
                     }
                 }
-                int modColumn = columnPosition - deletedBefore;
+                int modColumn = columnIndex - deletedBefore;
                 if (modColumn >= 0) {
-                    modifiedColumns.put(new Point(modColumn, entry.getKey().y), entry.getValue());
+                    modifiedColumns.put(
+                            keyHandler.getKey(modColumn, rowIndex),
+                            entry.getValue());
                 }
             }
         }
@@ -520,12 +540,15 @@ public class StructuralChangeEventHelper {
      * @param columnDiffs
      *            The collection of {@link StructuralDiff}s to handle.
      * @param dataChanges
-     *            The map that contains the data changes identified by a
-     *            {@link Point} that should be updated.
+     *            The map that contains the data changes identified by a key
+     *            that should be updated.
+     * @param keyHandler
+     *            the {@link CellKeyHandler} that needs to be used to operate on
+     *            the dataChanges correctly.
      *
      * @since 1.6
      */
-    public static <T> void handleColumnInsert(Collection<StructuralDiff> columnDiffs, Map<Point, T> dataChanges) {
+    public static <K, T> void handleColumnInsert(Collection<StructuralDiff> columnDiffs, Map<K, T> dataChanges, CellKeyHandler<K> keyHandler) {
         // for correct calculation the diffs need to be processed from highest
         // position to lowest
         List<StructuralDiff> diffs = new ArrayList<StructuralDiff>(columnDiffs);
@@ -542,13 +565,18 @@ public class StructuralChangeEventHelper {
                     && columnDiff.getDiffType().equals(DiffTypeEnum.ADD)) {
                 Range beforePositionRange = columnDiff.getBeforePositionRange();
                 // modify column indexes regarding the inserted columns
-                Map<Point, T> modifiedColumns = new HashMap<Point, T>();
-                for (Map.Entry<Point, T> entry : dataChanges.entrySet()) {
-                    int columnPosition = entry.getKey().x;
-                    if (columnPosition >= beforePositionRange.start) {
-                        modifiedColumns.put(new Point(columnPosition + 1, entry.getKey().y), entry.getValue());
+                Map<K, T> modifiedColumns = new HashMap<K, T>();
+                for (Map.Entry<K, T> entry : dataChanges.entrySet()) {
+                    int columnIndex = keyHandler.getColumnIndex(entry.getKey());
+                    int rowIndex = keyHandler.getRowIndex(entry.getKey());
+                    if (columnIndex >= beforePositionRange.start) {
+                        modifiedColumns.put(
+                                keyHandler.getKey(columnIndex + 1, rowIndex),
+                                entry.getValue());
                     } else {
-                        modifiedColumns.put(new Point(columnPosition, entry.getKey().y), entry.getValue());
+                        modifiedColumns.put(
+                                keyHandler.getKey(columnIndex, rowIndex),
+                                entry.getValue());
                     }
                 }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014, 2015 Dirk Fauth and others.
+ * Copyright (c) 2013, 2017 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,10 +11,13 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._800_Integration;
 
+import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jface.layout.GridDataFactory;
@@ -34,15 +37,22 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDateDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultIntegerDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.validate.DefaultDataValidator;
 import org.eclipse.nebula.widgets.nattable.dataset.person.ExtendedPersonWithAddress;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.command.EditCellCommandHandler;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditBindings;
+import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.editor.DateCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.event.InlineCellEditEventHandler;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
@@ -121,6 +131,7 @@ import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemState;
 import org.eclipse.nebula.widgets.nattable.ui.menu.MenuItemProviders;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -283,12 +294,75 @@ public class _812_EditableGroupBySummarySummaryRowExample extends AbstractNatExa
                 configRegistry.registerConfigAttribute(
                         EditConfigAttributes.CELL_EDITABLE_RULE,
                         IEditableRule.ALWAYS_EDITABLE);
+
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.DATA_VALIDATOR,
+                        new DefaultDataValidator());
+
+                // register matching editors
                 configRegistry.registerConfigAttribute(
                         EditConfigAttributes.CELL_EDITOR,
                         new TextCellEditor());
                 configRegistry.registerConfigAttribute(
-                        EditConfigAttributes.DATA_VALIDATOR,
-                        new DefaultDataValidator());
+                        EditConfigAttributes.CELL_EDITOR,
+                        new CheckBoxCellEditor(),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.CELL_EDITOR,
+                        new CheckBoxCellEditor(),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 5);
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.CELL_EDITOR,
+                        new DateCellEditor(),
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 6);
+
+                // register the correct converters
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        new DefaultIntegerDisplayConverter(),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        new DefaultDoubleDisplayConverter(),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        new DefaultBooleanDisplayConverter(),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        new DisplayConverter() {
+
+                            @Override
+                            public Object canonicalToDisplayValue(Object canonicalValue) {
+                                if (canonicalValue instanceof Gender) {
+                                    return ((Gender) canonicalValue) == Gender.MALE;
+                                }
+                                return null;
+                            }
+
+                            @Override
+                            public Object displayToCanonicalValue(Object displayValue) {
+                                Boolean displayBoolean = Boolean.valueOf(displayValue.toString());
+                                return displayBoolean ? Gender.MALE : Gender.FEMALE;
+                            }
+
+                        },
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 5);
+
+                DateFormat formatter = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
+                String pattern = ((SimpleDateFormat) formatter).toPattern();
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        new DefaultDateDisplayConverter(pattern),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 6);
             }
 
             @Override
@@ -322,6 +396,11 @@ public class _812_EditableGroupBySummarySummaryRowExample extends AbstractNatExa
                         new CheckBoxPainter(),
                         DisplayMode.NORMAL,
                         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        new CheckBoxPainter(GUIHelper.getImage("arrow_up"), GUIHelper.getImage("arrow_down")),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 5);
 
                 IStyle style = new Style();
                 style.setAttributeValue(
@@ -338,12 +417,6 @@ public class _812_EditableGroupBySummarySummaryRowExample extends AbstractNatExa
                         DisplayMode.NORMAL,
                         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
 
-                configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.DISPLAY_CONVERTER,
-                        new DefaultDoubleDisplayConverter(),
-                        DisplayMode.NORMAL,
-                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
-
                 // the main styling of the summary row cell in the row header is
                 // done via summary row default style, but we need to override
                 // the alignment
@@ -354,11 +427,13 @@ public class _812_EditableGroupBySummarySummaryRowExample extends AbstractNatExa
                 configRegistry.registerConfigAttribute(
                         CellConfigAttributes.CELL_STYLE,
                         style,
-                        DisplayMode.NORMAL, ROW_HEADER_SUMMARY_ROW);
+                        DisplayMode.NORMAL,
+                        ROW_HEADER_SUMMARY_ROW);
                 configRegistry.registerConfigAttribute(
                         CellConfigAttributes.CELL_STYLE,
                         style,
-                        DisplayMode.SELECT, ROW_HEADER_SUMMARY_ROW);
+                        DisplayMode.SELECT,
+                        ROW_HEADER_SUMMARY_ROW);
             }
         });
 

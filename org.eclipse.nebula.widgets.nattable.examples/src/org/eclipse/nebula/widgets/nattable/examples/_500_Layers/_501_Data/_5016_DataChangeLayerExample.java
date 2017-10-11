@@ -31,13 +31,15 @@ import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDateDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
+import org.eclipse.nebula.widgets.nattable.datachange.PointKeyHandler;
+import org.eclipse.nebula.widgets.nattable.datachange.DataChangeLayer;
+import org.eclipse.nebula.widgets.nattable.datachange.command.DiscardDataChangesCommand;
+import org.eclipse.nebula.widgets.nattable.datachange.command.SaveDataChangesCommand;
+import org.eclipse.nebula.widgets.nattable.datachange.command.SaveDataChangesCommandHandler;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
-import org.eclipse.nebula.widgets.nattable.edit.command.DiscardDataChangesCommand;
-import org.eclipse.nebula.widgets.nattable.edit.command.SaveDataChangesCommand;
-import org.eclipse.nebula.widgets.nattable.edit.command.SaveDataChangesCommandHandler;
 import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.DateCellEditor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
@@ -50,7 +52,6 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.CornerLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
-import org.eclipse.nebula.widgets.nattable.layer.DataChangeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
@@ -131,7 +132,7 @@ public class _5016_DataChangeLayerExample extends AbstractNatExample {
 
         // add a DataChangeLayer that tracks data changes but directly updates
         // the underlying data model
-        DataChangeLayer dataChangeLayer = new DataChangeLayer(bodyDataLayer, false);
+        DataChangeLayer dataChangeLayer = new DataChangeLayer(bodyDataLayer, new PointKeyHandler(), false);
 
         // we register a special command handler to perform custom changes on
         // save

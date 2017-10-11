@@ -10,40 +10,67 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._800_Integration;
 
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommand;
+import org.eclipse.nebula.widgets.nattable.config.AbstractLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDateDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultIntegerDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.validate.DefaultDataValidator;
+import org.eclipse.nebula.widgets.nattable.datachange.DataChangeLayer;
+import org.eclipse.nebula.widgets.nattable.datachange.IdIndexKeyHandler;
+import org.eclipse.nebula.widgets.nattable.datachange.command.DiscardDataChangesCommand;
+import org.eclipse.nebula.widgets.nattable.datachange.command.SaveDataChangesCommand;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Address;
 import org.eclipse.nebula.widgets.nattable.dataset.person.ExtendedPersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
+import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.edit.command.EditCellCommandHandler;
+import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditBindings;
+import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.editor.DateCellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.event.InlineCellEditEventHandler;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.DarkGroupByThemeExtension;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.DefaultGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigLabelModifier;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByDataLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByModel;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.ModernGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.SummationGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowHeaderComposite;
@@ -57,6 +84,7 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -71,10 +99,15 @@ import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfigurat
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.style.theme.DarkNatTableThemeConfiguration;
+import org.eclipse.nebula.widgets.nattable.style.theme.DefaultNatTableThemeConfiguration;
+import org.eclipse.nebula.widgets.nattable.style.theme.ModernNatTableThemeConfiguration;
+import org.eclipse.nebula.widgets.nattable.style.theme.ThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
@@ -87,6 +120,8 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -99,7 +134,7 @@ import ca.odell.glazedlists.TransformedList;
  * composition of a grid in conjunction with showing summary values of
  * groupings.
  */
-public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
+public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatExample {
 
     private IGroupBySummaryProvider<ExtendedPersonWithAddress> sumMoneySummaryProvider;
     private IGroupBySummaryProvider<ExtendedPersonWithAddress> avgMoneySummaryProvider;
@@ -107,7 +142,7 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
     private boolean useMoneySum = true;
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner.run(new _808_SortableGroupByWithFilterExample());
+        StandaloneNatExampleRunner.run(new _814_EditableSortableGroupByWithFilterExample());
     }
 
     @Override
@@ -145,8 +180,15 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
         // know the ConfigRegistry
         final BodyLayerStack<ExtendedPersonWithAddress> bodyLayerStack =
                 new BodyLayerStack<>(
-                        PersonService.getExtendedPersonsWithAddress(10000),
+                        PersonService.getExtendedPersonsWithAddress(20),
                         columnPropertyAccessor,
+                        new IRowIdAccessor<ExtendedPersonWithAddress>() {
+
+                            @Override
+                            public Serializable getRowId(ExtendedPersonWithAddress rowObject) {
+                                return rowObject.getId();
+                            }
+                        },
                         configRegistry);
 
         bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(new ColumnLabelAccumulator());
@@ -204,7 +246,7 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
                 new CornerLayer(cornerDataLayer, rowHeaderLayer, filterRowHeaderLayer);
 
         // build the grid layer
-        GridLayer gridLayer = new GridLayer(bodyLayerStack, filterRowHeaderLayer, rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer = new GridLayer(bodyLayerStack, filterRowHeaderLayer, rowHeaderLayer, cornerLayer, false);
 
         // set the group by header on top of the grid
         CompositeLayer compositeGridLayer = new CompositeLayer(1, 2);
@@ -212,6 +254,94 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
                 new GroupByHeaderLayer(bodyLayerStack.getGroupByModel(), gridLayer, columnHeaderDataProvider);
         compositeGridLayer.setChildLayer(GroupByHeaderLayer.GROUP_BY_REGION, groupByHeaderLayer, 0, 0);
         compositeGridLayer.setChildLayer("Grid", gridLayer, 0, 1);
+
+        // add editing capability
+        compositeGridLayer.addConfiguration(new AbstractLayerConfiguration<AbstractLayer>() {
+
+            @Override
+            public void configureRegistry(IConfigRegistry configRegistry) {
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.CELL_EDITABLE_RULE,
+                        IEditableRule.ALWAYS_EDITABLE);
+
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.DATA_VALIDATOR,
+                        new DefaultDataValidator());
+
+                // register matching editors
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.CELL_EDITOR,
+                        new TextCellEditor());
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.CELL_EDITOR,
+                        new CheckBoxCellEditor(),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.CELL_EDITOR,
+                        new CheckBoxCellEditor(),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 5);
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.CELL_EDITOR,
+                        new DateCellEditor(),
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 6);
+
+                // register the correct converters
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        new DefaultIntegerDisplayConverter(),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        new DefaultDoubleDisplayConverter(),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        new DefaultBooleanDisplayConverter(),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        new DisplayConverter() {
+
+                            @Override
+                            public Object canonicalToDisplayValue(Object canonicalValue) {
+                                if (canonicalValue instanceof Gender) {
+                                    return ((Gender) canonicalValue) == Gender.MALE;
+                                }
+                                return null;
+                            }
+
+                            @Override
+                            public Object displayToCanonicalValue(Object displayValue) {
+                                Boolean displayBoolean = Boolean.valueOf(displayValue.toString());
+                                return displayBoolean ? Gender.MALE : Gender.FEMALE;
+                            }
+
+                        },
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 5);
+
+                DateFormat formatter = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
+                String pattern = ((SimpleDateFormat) formatter).toPattern();
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        new DefaultDateDisplayConverter(pattern),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 6);
+            }
+
+            @Override
+            public void configureTypedLayer(AbstractLayer layer) {
+                layer.registerCommandHandler(new EditCellCommandHandler());
+                layer.registerEventHandler(new InlineCellEditEventHandler(layer));
+            }
+
+        });
+        compositeGridLayer.addConfiguration(new DefaultEditBindings());
 
         // turn the auto configuration off as we want to add our header menu
         // configuration
@@ -233,6 +363,11 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
                         new CheckBoxPainter(),
                         DisplayMode.NORMAL,
                         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        new CheckBoxPainter(GUIHelper.getImage("arrow_up"), GUIHelper.getImage("arrow_down")),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 5);
 
                 configRegistry.registerConfigAttribute(
                         CellConfigAttributes.DISPLAY_CONVERTER,
@@ -256,7 +391,7 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
             public void configureRegistry(IConfigRegistry configRegistry) {
                 configRegistry.registerConfigAttribute(
                         GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                        _808_SortableGroupByWithFilterExample.this.sumMoneySummaryProvider,
+                        _814_EditableSortableGroupByWithFilterExample.this.sumMoneySummaryProvider,
                         DisplayMode.NORMAL,
                         GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
 
@@ -300,11 +435,57 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
             protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
                 return super.createCornerMenu(natTable)
                         .withShowAllColumnsMenuItem()
-                        .withStateManagerMenuItemProvider();
+                        .withStateManagerMenuItemProvider()
+                        .withMenuItemProvider(new IMenuItemProvider() {
+
+                            @Override
+                            public void addMenuItem(NatTable natTable, Menu popupMenu) {
+                                MenuItem export = new MenuItem(popupMenu, SWT.PUSH);
+                                export.setText("Discard changes");
+                                export.setEnabled(true);
+
+                                export.addSelectionListener(new SelectionAdapter() {
+                                    @Override
+                                    public void widgetSelected(SelectionEvent e) {
+                                        natTable.doCommand(new DiscardDataChangesCommand());
+                                    }
+                                });
+
+                            }
+                        })
+                        .withMenuItemProvider(new IMenuItemProvider() {
+
+                            @Override
+                            public void addMenuItem(NatTable natTable, Menu popupMenu) {
+                                MenuItem export = new MenuItem(popupMenu, SWT.PUSH);
+                                export.setText("Save changes");
+                                export.setEnabled(true);
+
+                                export.addSelectionListener(new SelectionAdapter() {
+                                    @Override
+                                    public void widgetSelected(SelectionEvent e) {
+                                        natTable.doCommand(new SaveDataChangesCommand());
+                                    }
+                                });
+
+                            }
+                        });
             }
         });
 
         natTable.configure();
+
+        // set the modern theme to visualize the summary better
+        final ThemeConfiguration defaultTheme = new DefaultNatTableThemeConfiguration();
+        defaultTheme.addThemeExtension(new DefaultGroupByThemeExtension());
+
+        final ThemeConfiguration modernTheme = new ModernNatTableThemeConfiguration();
+        modernTheme.addThemeExtension(new ModernGroupByThemeExtension());
+
+        final ThemeConfiguration darkTheme = new DarkNatTableThemeConfiguration();
+        darkTheme.addThemeExtension(new DarkGroupByThemeExtension());
+
+        natTable.setTheme(modernTheme);
 
         natTable.registerCommandHandler(
                 new DisplayPersistenceDialogCommandHandler(natTable));
@@ -360,17 +541,17 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
                 // calculation gets triggered
                 bodyLayerStack.getBodyDataLayer().clearCache();
 
-                _808_SortableGroupByWithFilterExample.this.useMoneySum = !_808_SortableGroupByWithFilterExample.this.useMoneySum;
-                if (_808_SortableGroupByWithFilterExample.this.useMoneySum) {
+                _814_EditableSortableGroupByWithFilterExample.this.useMoneySum = !_814_EditableSortableGroupByWithFilterExample.this.useMoneySum;
+                if (_814_EditableSortableGroupByWithFilterExample.this.useMoneySum) {
                     configRegistry.registerConfigAttribute(
                             GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                            _808_SortableGroupByWithFilterExample.this.sumMoneySummaryProvider,
+                            _814_EditableSortableGroupByWithFilterExample.this.sumMoneySummaryProvider,
                             DisplayMode.NORMAL,
                             GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
                 } else {
                     configRegistry.registerConfigAttribute(
                             GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                            _808_SortableGroupByWithFilterExample.this.avgMoneySummaryProvider,
+                            _814_EditableSortableGroupByWithFilterExample.this.avgMoneySummaryProvider,
                             DisplayMode.NORMAL,
                             GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
                 }
@@ -426,7 +607,7 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
         private final SortedList<T> sortedList;
         private final FilterList<T> filterList;
 
-        private final IDataProvider bodyDataProvider;
+        private final IRowDataProvider<T> bodyDataProvider;
 
         private final GroupByDataLayer<T> bodyDataLayer;
 
@@ -436,8 +617,10 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
 
         private final GroupByModel groupByModel = new GroupByModel();
 
+        @SuppressWarnings("unchecked")
         public BodyLayerStack(List<T> values,
                 IColumnPropertyAccessor<T> columnPropertyAccessor,
+                IRowIdAccessor<T> rowIdAccessor,
                 ConfigRegistry configRegistry) {
             // wrapping of the list to show into GlazedLists
             // see http://publicobject.com/glazedlists/ for further information
@@ -458,20 +641,32 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
                     columnPropertyAccessor,
                     configRegistry);
             // get the IDataProvider that was created by the GroupByDataLayer
-            this.bodyDataProvider = this.bodyDataLayer.getDataProvider();
+            this.bodyDataProvider = (IRowDataProvider<T>) this.bodyDataLayer.getDataProvider();
 
             // layer for event handling of GlazedLists and PropertyChanges
             GlazedListsEventLayer<T> glazedListsEventLayer =
                     new GlazedListsEventLayer<>(this.bodyDataLayer, this.filterList);
 
+            // the DataChangeLayer can be placed on top of the
+            // GlazedListsEventLayer or directly on the DataLayer. Best results
+            // will be when placed near the DataLayer without index-position
+            // transformations in between, and placing on top of the
+            // GlazedListsEventLayer ensures that events are sent and handled on
+            // changes on the list.
+            DataChangeLayer changeLayer =
+                    new DataChangeLayer(
+                            glazedListsEventLayer,
+                            new IdIndexKeyHandler<>(this.bodyDataProvider, rowIdAccessor),
+                            false);
+
             ColumnReorderLayer columnReorderLayer =
-                    new ColumnReorderLayer(glazedListsEventLayer);
+                    new ColumnReorderLayer(changeLayer);
             ColumnHideShowLayer columnHideShowLayer =
                     new ColumnHideShowLayer(columnReorderLayer);
             this.selectionLayer =
                     new SelectionLayer(columnHideShowLayer);
 
-            // add a tree layer to visualise the grouping
+            // add a tree layer to visualize the grouping
             this.treeLayer = new TreeLayer(this.selectionLayer, this.bodyDataLayer.getTreeRowModel());
 
             ViewportLayer viewportLayer = new ViewportLayer(this.treeLayer);

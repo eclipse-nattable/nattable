@@ -8,10 +8,10 @@
  * Contributors:
  *     Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  ******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.edit.command;
+package org.eclipse.nebula.widgets.nattable.datachange.command;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
-import org.eclipse.nebula.widgets.nattable.layer.DataChangeLayer;
+import org.eclipse.nebula.widgets.nattable.datachange.DataChangeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 /**

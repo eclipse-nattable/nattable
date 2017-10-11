@@ -8,28 +8,34 @@
  * Contributors:
  *     Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  ******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.layer;
+package org.eclipse.nebula.widgets.nattable.datachange;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
-import org.eclipse.nebula.widgets.nattable.edit.command.DiscardDataChangesCommand;
-import org.eclipse.nebula.widgets.nattable.edit.command.DiscardDataChangesCommandHandler;
-import org.eclipse.nebula.widgets.nattable.edit.command.SaveDataChangesCommand;
-import org.eclipse.nebula.widgets.nattable.edit.command.SaveDataChangesCommandHandler;
+import org.eclipse.nebula.widgets.nattable.datachange.command.DiscardDataChangesCommand;
+import org.eclipse.nebula.widgets.nattable.datachange.command.DiscardDataChangesCommandHandler;
+import org.eclipse.nebula.widgets.nattable.datachange.command.SaveDataChangesCommand;
+import org.eclipse.nebula.widgets.nattable.datachange.command.SaveDataChangesCommandHandler;
+import org.eclipse.nebula.widgets.nattable.datachange.config.DefaultDataChangeConfiguration;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
 import org.eclipse.nebula.widgets.nattable.edit.event.DataUpdateEvent;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
+import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralChangeEventHelper;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
-import org.eclipse.swt.graphics.Point;
 
 /**
  * {@link ILayer} that can be used to add a mechanism that highlights cells
@@ -45,8 +51,14 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
      */
     public static final String DIRTY = "DIRTY"; //$NON-NLS-1$
 
+    /**
+     * The column indexes of columns that contain dirty cells.
+     */
     protected final Set<Integer> changedColumns = new HashSet<Integer>();
 
+    /**
+     * The row indexes of rows that contain dirty cells.
+     */
     protected final Set<Integer> changedRows = new HashSet<Integer>();
 
     /**
@@ -57,7 +69,7 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
      * contain {@link UpdateDataCommand}s in case temporaryDataStorage is
      * enabled.
      */
-    protected Map<Point, UpdateDataCommand> dataChanges = new LinkedHashMap<Point, UpdateDataCommand>();
+    protected Map<Object, UpdateDataCommand> dataChanges = new LinkedHashMap<Object, UpdateDataCommand>();;
 
     /**
      * Flag that is used to configure whether the {@link UpdateDataCommand}
@@ -65,7 +77,18 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
      */
     private final boolean temporaryDataStorage;
 
+    /**
+     * Flag that is used to temporarily disable event handling. Used for example
+     * to not handle {@link DataUpdateEvent}s on save.
+     */
     protected boolean handleDataUpdateEvents = true;
+
+    /**
+     * The {@link CellKeyHandler} that is used to store dataChanges for a
+     * specific key.
+     */
+    @SuppressWarnings("rawtypes")
+    protected CellKeyHandler keyHandler;
 
     /**
      * Create a new {@link DataChangeLayer}.
@@ -74,6 +97,9 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
      *            The {@link ILayer} on top of which this
      *            {@link DataChangeLayer} should be created. Typically the
      *            {@link DataLayer}.
+     * @param keyHandler
+     *            The {@link CellKeyHandler} that should be used to store
+     *            dataChanges for a specific key.
      * @param temporaryDataStorage
      *            <code>true</code> if the data changes should be handled
      *            temporary in this layer and update the model on save,
@@ -81,10 +107,39 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
      *            applied to the underlying model and on save some additional
      *            save operations should be performed.
      */
-    public DataChangeLayer(IUniqueIndexLayer underlyingLayer, boolean temporaryDataStorage) {
+    public DataChangeLayer(IUniqueIndexLayer underlyingLayer, CellKeyHandler<?> keyHandler, boolean temporaryDataStorage) {
+        this(underlyingLayer, keyHandler, temporaryDataStorage, true);
+    }
+
+    /**
+     * Create a new {@link DataChangeLayer}.
+     *
+     * @param underlyingLayer
+     *            The {@link ILayer} on top of which this
+     *            {@link DataChangeLayer} should be created. Typically the
+     *            {@link DataLayer}.
+     * @param keyHandler
+     *            The {@link CellKeyHandler} that should be used to store
+     *            dataChanges for a specific key.
+     * @param temporaryDataStorage
+     *            <code>true</code> if the data changes should be handled
+     *            temporary in this layer and update the model on save,
+     *            <code>false</code> if the data changes should be directly
+     *            applied to the underlying model and on save some additional
+     *            save operations should be performed.
+     * @param useDefaultConfiguration
+     *            <code>true</code> if the default configuration should be
+     *            applied, <code>false</code> if not.
+     */
+    public DataChangeLayer(IUniqueIndexLayer underlyingLayer, CellKeyHandler<?> keyHandler, boolean temporaryDataStorage, boolean useDefaultConfiguration) {
         super(underlyingLayer);
+        this.keyHandler = keyHandler;
         this.temporaryDataStorage = temporaryDataStorage;
         registerCommandHandlers();
+
+        if (useDefaultConfiguration) {
+            addConfiguration(new DefaultDataChangeConfiguration());
+        }
     }
 
     @Override
@@ -96,7 +151,7 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
     @Override
     public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
         LabelStack labels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
-        if (this.dataChanges.containsKey(new Point(columnPosition, rowPosition))) {
+        if (this.dataChanges.containsKey(this.keyHandler.getKey(columnPosition, rowPosition))) {
             labels.addLabel(DIRTY);
         }
         return labels;
@@ -104,13 +159,14 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
 
     @Override
     public Object getDataValueByPosition(int columnPosition, int rowPosition) {
-        Point point = new Point(columnPosition, rowPosition);
-        if (this.temporaryDataStorage && this.dataChanges.containsKey(point)) {
-            return this.dataChanges.get(point).getNewValue();
+        Object key = this.keyHandler.getKey(columnPosition, rowPosition);
+        if (this.temporaryDataStorage && this.dataChanges.containsKey(key)) {
+            return this.dataChanges.get(key).getNewValue();
         }
         return super.getDataValueByPosition(columnPosition, rowPosition);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void handleLayerEvent(ILayerEvent event) {
         // if temporaryDataStorage is disabled the underlying data model is
@@ -121,26 +177,30 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
             this.changedRows.add(updateEvent.getRowPosition());
             // store an UpdateDataCommand that can be used to revert the change
             this.dataChanges.put(
-                    new Point(updateEvent.getColumnPosition(), updateEvent.getRowPosition()),
+                    this.keyHandler.getKey(updateEvent.getColumnPosition(), updateEvent.getRowPosition()),
                     new UpdateDataCommand(this, updateEvent.getColumnPosition(), updateEvent.getRowPosition(), updateEvent.getOldValue()));
         } else if (event instanceof IStructuralChangeEvent) {
             IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
-            if (structuralChangeEvent.getColumnDiffs() == null && structuralChangeEvent.getRowDiffs() == null) {
+            if (structuralChangeEvent.getColumnDiffs() == null
+                    && structuralChangeEvent.getRowDiffs() == null
+                    && structuralChangeEvent.isHorizontalStructureChanged()
+                    && structuralChangeEvent.isVerticalStructureChanged()) {
                 // Assume everything changed
                 clearDataChanges();
-            } else if (structuralChangeEvent.isHorizontalStructureChanged()) {
+            } else if (structuralChangeEvent.isHorizontalStructureChanged()
+                    && structuralChangeEvent.getColumnDiffs() != null
+                    && this.keyHandler.updateOnHorizontalStructuralChange()) {
                 Collection<StructuralDiff> structuralDiffs = structuralChangeEvent.getColumnDiffs();
-                StructuralChangeEventHelper.handleColumnDelete(structuralDiffs, this.dataChanges);
-                StructuralChangeEventHelper.handleColumnInsert(structuralDiffs, this.dataChanges);
-
-                rebuildPositionCollections();
-            } else if (structuralChangeEvent.isVerticalStructureChanged()) {
+                StructuralChangeEventHelper.handleColumnDelete(structuralDiffs, this.dataChanges, this.keyHandler);
+                StructuralChangeEventHelper.handleColumnInsert(structuralDiffs, this.dataChanges, this.keyHandler);
+            } else if (structuralChangeEvent.isVerticalStructureChanged()
+                    && structuralChangeEvent.getRowDiffs() != null
+                    && this.keyHandler.updateOnVerticalStructuralChange()) {
                 Collection<StructuralDiff> structuralDiffs = structuralChangeEvent.getRowDiffs();
-                StructuralChangeEventHelper.handleRowDelete(structuralDiffs, this.dataChanges);
-                StructuralChangeEventHelper.handleRowInsert(structuralDiffs, this.dataChanges);
-
-                rebuildPositionCollections();
+                StructuralChangeEventHelper.handleRowDelete(structuralDiffs, this.dataChanges, this.keyHandler);
+                StructuralChangeEventHelper.handleRowInsert(structuralDiffs, this.dataChanges, this.keyHandler);
             }
+            rebuildPositionCollections();
         }
 
         super.handleLayerEvent(event);
@@ -150,13 +210,22 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
      * Rebuilds the {@link #changedColumns} and {@link #changedRows} collections
      * based on the updated {@link #dataChanges} map.
      */
+    @SuppressWarnings("unchecked")
     protected void rebuildPositionCollections() {
         this.changedColumns.clear();
         this.changedRows.clear();
-        // iterate over dataChanges and rebuild changed collections
-        for (Point point : this.dataChanges.keySet()) {
-            this.changedColumns.add(point.x);
-            this.changedRows.add(point.y);
+        for (Iterator<Object> it = this.dataChanges.keySet().iterator(); it.hasNext();) {
+            Object key = it.next();
+            int columnIndex = this.keyHandler.getColumnIndex(key);
+            int rowIndex = this.keyHandler.getRowIndex(key);
+            if (columnIndex >= 0 && rowIndex >= 0) {
+                this.changedColumns.add(columnIndex);
+                this.changedRows.add(rowIndex);
+            } else {
+                // remove the change as we noticed that the object does not
+                // exist anymore
+                it.remove();
+            }
         }
     }
 
@@ -166,7 +235,7 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
             UpdateDataCommand updateCommand = (UpdateDataCommand) command;
             this.changedColumns.add(updateCommand.getColumnPosition());
             this.changedRows.add(updateCommand.getRowPosition());
-            this.dataChanges.put(new Point(updateCommand.getColumnPosition(), updateCommand.getRowPosition()), updateCommand);
+            this.dataChanges.put(this.keyHandler.getKey(updateCommand.getColumnPosition(), updateCommand.getRowPosition()), updateCommand);
             fireLayerEvent(new CellVisualChangeEvent(this, updateCommand.getColumnPosition(), updateCommand.getRowPosition()));
             return true;
         }
@@ -197,8 +266,8 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
             // if temporary data storage is disabled, the previous state is
             // restored by executing the created UpdateDataCommands for the
             // old values
-            for (UpdateDataCommand cmd : this.dataChanges.values()) {
-                getUnderlyingLayer().doCommand(cmd);
+            for (Map.Entry<Object, UpdateDataCommand> entry : this.dataChanges.entrySet()) {
+                getUnderlyingLayer().doCommand(getUpdateDataCommand(entry.getKey(), entry.getValue()));
             }
             this.handleDataUpdateEvents = true;
         }
@@ -220,12 +289,33 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
      */
     public void saveDataChanges() {
         if (this.temporaryDataStorage) {
-            for (UpdateDataCommand cmd : this.dataChanges.values()) {
-                getUnderlyingLayer().doCommand(cmd);
+            for (Map.Entry<Object, UpdateDataCommand> entry : this.dataChanges.entrySet()) {
+                getUnderlyingLayer().doCommand(getUpdateDataCommand(entry.getKey(), entry.getValue()));
             }
         }
         clearDataChanges();
         fireLayerEvent(new VisualRefreshEvent(this));
+    }
+
+    /**
+     *
+     * @param key
+     *            The key of the cell that should be modified.
+     * @param cmd
+     *            The {@link UpdateDataCommand} that is stored for the given
+     *            key.
+     * @return A new {@link UpdateDataCommand} if the cell indexes for the given
+     *         key have changed, or the given {@link UpdateDataCommand} if the
+     *         indexes still match.
+     */
+    @SuppressWarnings("unchecked")
+    protected UpdateDataCommand getUpdateDataCommand(Object key, UpdateDataCommand cmd) {
+        int columnIndex = this.keyHandler.getColumnIndex(key);
+        int rowIndex = this.keyHandler.getRowIndex(key);
+        if (cmd.getColumnPosition() != columnIndex || cmd.getRowPosition() != rowIndex) {
+            return new UpdateDataCommand(this, columnIndex, rowIndex, cmd.getNewValue());
+        }
+        return cmd;
     }
 
     /**
@@ -279,19 +369,7 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
      *         saved yet), <code>false</code> if not.
      */
     public boolean isCellDirty(int columnPosition, int rowPosition) {
-        return isCellDirty(new Point(columnPosition, rowPosition));
+        return this.dataChanges.containsKey(this.keyHandler.getKey(columnPosition, rowPosition));
     }
 
-    /**
-     * Checks if the cell at the given position is dirty.
-     *
-     * @param cellPosition
-     *            The cell position represented as {@link Point} whose dirty
-     *            state should be checked.
-     * @return <code>true</code> if the cell is dirty (data has changed and not
-     *         saved yet), <code>false</code> if not.
-     */
-    public boolean isCellDirty(Point cellPosition) {
-        return this.dataChanges.containsKey(cellPosition);
-    }
 }

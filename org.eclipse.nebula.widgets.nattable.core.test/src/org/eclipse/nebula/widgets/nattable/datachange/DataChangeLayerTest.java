@@ -8,7 +8,7 @@
  * Contributors:
  *     Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  ******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.layer;
+package org.eclipse.nebula.widgets.nattable.datachange;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -21,12 +21,13 @@ import org.eclipse.nebula.widgets.nattable.command.StructuralRefreshCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.datachange.command.DiscardDataChangesCommand;
+import org.eclipse.nebula.widgets.nattable.datachange.command.SaveDataChangesCommand;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
-import org.eclipse.nebula.widgets.nattable.edit.command.DiscardDataChangesCommand;
-import org.eclipse.nebula.widgets.nattable.edit.command.SaveDataChangesCommand;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
+import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnDeleteEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnInsertEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowDeleteEvent;
@@ -53,7 +54,7 @@ public class DataChangeLayerTest {
                                 "gender",
                                 "married",
                                 "birthday" })));
-        this.dataChangeLayer = new DataChangeLayer(this.dataLayer, false);
+        this.dataChangeLayer = new DataChangeLayer(this.dataLayer, new PointKeyHandler(), false);
     }
 
     @Test
@@ -199,7 +200,7 @@ public class DataChangeLayerTest {
         assertEquals("Lovejoy", this.dataLayer.getDataValue(1, 3));
         assertEquals("Bart", this.dataLayer.getDataValue(0, 3));
 
-        // delete the row that has changes
+        // delete a row before the change
         this.dataModel.remove(2);
         this.dataLayer.fireLayerEvent(new RowDeleteEvent(this.dataLayer, 2));
 
@@ -315,7 +316,7 @@ public class DataChangeLayerTest {
         assertEquals("Lovejoy", this.dataLayer.getDataValue(1, 2));
 
         // input a new row
-        this.dataModel.add(2, new Person(4, "Nelson", "Muntz", Gender.MALE, false, new Date(), 100d));
+        this.dataModel.add(2, new Person(40, "Nelson", "Muntz", Gender.MALE, false, new Date(), 100d));
         this.dataLayer.fireLayerEvent(new RowInsertEvent(this.dataLayer, 2));
 
         assertEquals("Muntz", this.dataLayer.getDataValue(1, 2));
@@ -356,11 +357,11 @@ public class DataChangeLayerTest {
         assertEquals("Simpson", this.dataLayer.getDataValue(1, 8));
         assertEquals("Lovejoy", this.dataLayer.getDataValue(1, 9));
 
-        this.dataModel.add(9, new Person(4, "Nelson", "Muntz", Gender.MALE, false, new Date(), 100d));
-        this.dataModel.add(7, new Person(4, "Nelson", "Muntz", Gender.MALE, false, new Date(), 100d));
-        this.dataModel.add(5, new Person(4, "Nelson", "Muntz", Gender.MALE, false, new Date(), 100d));
-        this.dataModel.add(3, new Person(4, "Nelson", "Muntz", Gender.MALE, false, new Date(), 100d));
-        this.dataModel.add(1, new Person(4, "Nelson", "Muntz", Gender.MALE, false, new Date(), 100d));
+        this.dataModel.add(9, new Person(44, "Nelson", "Muntz", Gender.MALE, false, new Date(), 100d));
+        this.dataModel.add(7, new Person(43, "Nelson", "Muntz", Gender.MALE, false, new Date(), 100d));
+        this.dataModel.add(5, new Person(42, "Nelson", "Muntz", Gender.MALE, false, new Date(), 100d));
+        this.dataModel.add(3, new Person(41, "Nelson", "Muntz", Gender.MALE, false, new Date(), 100d));
+        this.dataModel.add(1, new Person(40, "Nelson", "Muntz", Gender.MALE, false, new Date(), 100d));
         this.dataLayer.fireLayerEvent(new RowInsertEvent(this.dataLayer,
                 new Range(1, 1),
                 new Range(3, 3),
@@ -521,5 +522,93 @@ public class DataChangeLayerTest {
         assertFalse("changed columns are empty", this.dataChangeLayer.changedColumns.isEmpty());
         assertFalse("changed rows are empty", this.dataChangeLayer.changedRows.isEmpty());
         assertFalse("changes are empty", this.dataChangeLayer.dataChanges.isEmpty());
+    }
+
+    @Test
+    public void shouldDiscardAfterDelete() {
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 9));
+        assertEquals("Flanders", this.dataLayer.getDataValue(1, 10));
+
+        this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 9, "Lovejoy"));
+
+        assertEquals("Lovejoy", this.dataLayer.getDataValue(1, 9));
+        assertEquals("Flanders", this.dataLayer.getDataValue(1, 10));
+
+        // delete a row before the change
+        this.dataModel.remove(2);
+        this.dataLayer.fireLayerEvent(new RowDeleteEvent(this.dataLayer, 2));
+
+        assertEquals("Lovejoy", this.dataLayer.getDataValue(1, 8));
+        assertEquals("Lovejoy", this.dataChangeLayer.getDataValueByPosition(1, 8));
+        assertEquals("Flanders", this.dataLayer.getDataValue(1, 9));
+        assertEquals("Flanders", this.dataChangeLayer.getDataValueByPosition(1, 9));
+        assertTrue("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(1, 8).hasLabel(DataChangeLayer.DIRTY));
+        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertTrue("Row 1 is not dirty", this.dataChangeLayer.isRowDirty(8));
+        assertTrue("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 8));
+
+        assertFalse("changed columns are empty", this.dataChangeLayer.changedColumns.isEmpty());
+        assertFalse("changed rows are empty", this.dataChangeLayer.changedRows.isEmpty());
+        assertFalse("changes are empty", this.dataChangeLayer.dataChanges.isEmpty());
+
+        // now discard and check that previous state is restored correctly
+        this.dataChangeLayer.doCommand(new DiscardDataChangesCommand());
+
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 8));
+        assertEquals("Simpson", this.dataChangeLayer.getDataValueByPosition(1, 8));
+        assertEquals("Flanders", this.dataLayer.getDataValue(1, 9));
+        assertEquals("Flanders", this.dataChangeLayer.getDataValueByPosition(1, 9));
+        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 8).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertFalse("Row 1 is dirty", this.dataChangeLayer.isRowDirty(8));
+        assertFalse("Cell is dirty", this.dataChangeLayer.isCellDirty(1, 8));
+
+        assertTrue("changed columns are not empty", this.dataChangeLayer.changedColumns.isEmpty());
+        assertTrue("changed rows are not empty", this.dataChangeLayer.changedRows.isEmpty());
+        assertTrue("changes are not empty", this.dataChangeLayer.dataChanges.isEmpty());
+    }
+
+    @Test
+    public void shouldSaveAfterDelete() {
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 9));
+        assertEquals("Flanders", this.dataLayer.getDataValue(1, 10));
+
+        this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 9, "Lovejoy"));
+
+        assertEquals("Lovejoy", this.dataLayer.getDataValue(1, 9));
+        assertEquals("Flanders", this.dataLayer.getDataValue(1, 10));
+
+        // delete a row before the change
+        this.dataModel.remove(2);
+        this.dataLayer.fireLayerEvent(new RowDeleteEvent(this.dataLayer, 2));
+
+        assertEquals("Lovejoy", this.dataLayer.getDataValue(1, 8));
+        assertEquals("Lovejoy", this.dataChangeLayer.getDataValueByPosition(1, 8));
+        assertEquals("Flanders", this.dataLayer.getDataValue(1, 9));
+        assertEquals("Flanders", this.dataChangeLayer.getDataValueByPosition(1, 9));
+        assertTrue("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(1, 8).hasLabel(DataChangeLayer.DIRTY));
+        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertTrue("Row 1 is not dirty", this.dataChangeLayer.isRowDirty(8));
+        assertTrue("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 8));
+
+        assertFalse("changed columns are empty", this.dataChangeLayer.changedColumns.isEmpty());
+        assertFalse("changed rows are empty", this.dataChangeLayer.changedRows.isEmpty());
+        assertFalse("changes are empty", this.dataChangeLayer.dataChanges.isEmpty());
+
+        // now discard and check that previous state is restored correctly
+        this.dataChangeLayer.doCommand(new SaveDataChangesCommand());
+
+        assertEquals("Lovejoy", this.dataLayer.getDataValue(1, 8));
+        assertEquals("Lovejoy", this.dataChangeLayer.getDataValueByPosition(1, 8));
+        assertEquals("Flanders", this.dataLayer.getDataValue(1, 9));
+        assertEquals("Flanders", this.dataChangeLayer.getDataValueByPosition(1, 9));
+        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 8).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertFalse("Row 1 is dirty", this.dataChangeLayer.isRowDirty(8));
+        assertFalse("Cell is dirty", this.dataChangeLayer.isCellDirty(1, 8));
+
+        assertTrue("changed columns are not empty", this.dataChangeLayer.changedColumns.isEmpty());
+        assertTrue("changed rows are not empty", this.dataChangeLayer.changedRows.isEmpty());
+        assertTrue("changes are not empty", this.dataChangeLayer.dataChanges.isEmpty());
     }
 }
