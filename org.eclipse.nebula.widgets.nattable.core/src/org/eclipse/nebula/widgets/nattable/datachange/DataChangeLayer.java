@@ -231,12 +231,30 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
 
     @Override
     public boolean doCommand(ILayerCommand command) {
-        if (this.temporaryDataStorage && command instanceof UpdateDataCommand && command.convertToTargetLayer(this)) {
+        if (this.temporaryDataStorage
+                && command instanceof UpdateDataCommand
+                && command.convertToTargetLayer(this)) {
+
             UpdateDataCommand updateCommand = (UpdateDataCommand) command;
-            this.changedColumns.add(updateCommand.getColumnPosition());
-            this.changedRows.add(updateCommand.getRowPosition());
-            this.dataChanges.put(this.keyHandler.getKey(updateCommand.getColumnPosition(), updateCommand.getRowPosition()), updateCommand);
-            fireLayerEvent(new CellVisualChangeEvent(this, updateCommand.getColumnPosition(), updateCommand.getRowPosition()));
+            int columnPosition = updateCommand.getColumnPosition();
+            int rowPosition = updateCommand.getRowPosition();
+            Object currentValue = getDataValueByPosition(columnPosition, rowPosition);
+            if (currentValue == null
+                    || updateCommand.getNewValue() == null
+                    || !currentValue.equals(updateCommand.getNewValue())) {
+
+                if (updateCommand.getNewValue().equals(getUnderlyingLayer().getDataValueByPosition(columnPosition, rowPosition))) {
+                    // the value was changed back to the original value in the underlying layer
+                    // simply remove the local storage to not showing the cell as dirty
+                    this.dataChanges.remove(this.keyHandler.getKey(updateCommand.getColumnPosition(), updateCommand.getRowPosition()));
+                    rebuildPositionCollections();
+                } else {
+                    this.changedColumns.add(updateCommand.getColumnPosition());
+                    this.changedRows.add(updateCommand.getRowPosition());
+                    this.dataChanges.put(this.keyHandler.getKey(updateCommand.getColumnPosition(), updateCommand.getRowPosition()), updateCommand);
+                }
+                fireLayerEvent(new CellVisualChangeEvent(this, updateCommand.getColumnPosition(), updateCommand.getRowPosition()));
+            }
             return true;
         }
         return super.doCommand(command);

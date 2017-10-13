@@ -258,4 +258,44 @@ public class DataChangeLayerTempStorageTest {
         assertTrue("changed rows are not empty", this.dataChangeLayer.changedRows.isEmpty());
         assertTrue("changes are not empty", this.dataChangeLayer.dataChanges.isEmpty());
     }
+
+    @Test
+    public void shouldNotBeDirtyForSameValue() {
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+
+        this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Simpson"));
+
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+        assertEquals("Simpson", this.dataChangeLayer.getDataValueByPosition(1, 1));
+        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 1).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertFalse("Row 1 is dirty", this.dataChangeLayer.isRowDirty(1));
+        assertFalse("Cell is dirty", this.dataChangeLayer.isCellDirty(1, 1));
+    }
+
+    @Test
+    public void shouldNotBeDirtyOnResettingSameValue() {
+        // this behavior is different to temporaryDataStorage=true
+        // without temporary data storage it is not possible to check for the
+        // pre-saved state
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+
+        this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));
+
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+        assertEquals("Lovejoy", this.dataChangeLayer.getDataValueByPosition(1, 1));
+        assertTrue("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(1, 1).hasLabel(DataChangeLayer.DIRTY));
+        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertTrue("Row 1 is not dirty", this.dataChangeLayer.isRowDirty(1));
+        assertTrue("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 1));
+
+        this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Simpson"));
+
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+        assertEquals("Simpson", this.dataChangeLayer.getDataValueByPosition(1, 1));
+        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 1).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertFalse("Row 1 is dirty", this.dataChangeLayer.isRowDirty(1));
+        assertFalse("Cell is dirty", this.dataChangeLayer.isCellDirty(1, 1));
+    }
 }
