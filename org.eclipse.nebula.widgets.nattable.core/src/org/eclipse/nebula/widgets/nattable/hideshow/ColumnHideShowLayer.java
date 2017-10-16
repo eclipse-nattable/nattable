@@ -125,6 +125,11 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer implements 
         return this.hiddenColumnIndexes;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @since 1.6
+     */
     @Override
     public void hideColumnPositions(Integer... columnPositions) {
         hideColumnPositions(Arrays.asList(columnPositions));
@@ -141,6 +146,11 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer implements 
         fireLayerEvent(new HideColumnPositionsEvent(this, columnPositions));
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @since 1.6
+     */
     @Override
     public void showColumnIndexes(Integer... columnIndexes) {
         showColumnIndexes(Arrays.asList(columnIndexes));
