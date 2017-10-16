@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2017 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -53,6 +53,14 @@ public class DateCellEditor extends AbstractCellEditor {
     private final boolean moveSelectionOnEnter;
 
     /**
+     * The current editor value, needed to avoid changes in time fields where
+     * only date fields should be edited.
+     *
+     * @since 1.6
+     */
+    private Calendar currentEditorValue;
+
+    /**
      * Creates the default DateCellEditor that does not move the selection on
      * committing the value by pressing enter.
      */
@@ -73,9 +81,8 @@ public class DateCellEditor extends AbstractCellEditor {
 
     @Override
     public Object getEditorValue() {
-        Calendar cal = Calendar.getInstance();
-        cal.set(this.dateTime.getYear(), this.dateTime.getMonth(), this.dateTime.getDay());
-        return cal;
+        this.currentEditorValue.set(this.dateTime.getYear(), this.dateTime.getMonth(), this.dateTime.getDay());
+        return this.currentEditorValue;
     }
 
     @Override
@@ -83,8 +90,11 @@ public class DateCellEditor extends AbstractCellEditor {
         // in setCanonicalValue() we ensure that the value is of type Calendar
         // but an additional check to ensure type safety doesn't hurt
         if (value instanceof Calendar) {
-            Calendar cal = (Calendar) value;
-            this.dateTime.setDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE));
+            this.currentEditorValue = (Calendar) value;
+            this.dateTime.setDate(
+                    this.currentEditorValue.get(Calendar.YEAR),
+                    this.currentEditorValue.get(Calendar.MONTH),
+                    this.currentEditorValue.get(Calendar.DATE));
         }
     }
 
@@ -146,8 +156,9 @@ public class DateCellEditor extends AbstractCellEditor {
                         }
                     }
 
-                    if (commit)
+                    if (commit) {
                         commit(move);
+                    }
 
                     if (DateCellEditor.this.editMode == EditModeEnum.DIALOG) {
                         parent.forceFocus();
@@ -176,4 +187,9 @@ public class DateCellEditor extends AbstractCellEditor {
         return this.dateTime;
     }
 
+    @Override
+    public void close() {
+        super.close();
+        this.currentEditorValue = null;
+    }
 }
