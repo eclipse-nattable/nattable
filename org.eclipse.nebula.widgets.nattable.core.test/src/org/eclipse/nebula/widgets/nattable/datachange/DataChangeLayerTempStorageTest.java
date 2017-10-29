@@ -12,6 +12,7 @@ package org.eclipse.nebula.widgets.nattable.datachange;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -293,6 +294,54 @@ public class DataChangeLayerTempStorageTest {
 
         assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
         assertEquals("Simpson", this.dataChangeLayer.getDataValueByPosition(1, 1));
+        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 1).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertFalse("Row 1 is dirty", this.dataChangeLayer.isRowDirty(1));
+        assertFalse("Cell is dirty", this.dataChangeLayer.isCellDirty(1, 1));
+    }
+
+    @Test
+    public void shouldUpdateToNullAndBackAgain() {
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+
+        this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, null));
+
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+        assertEquals(null, this.dataChangeLayer.getDataValueByPosition(1, 1));
+        assertTrue("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(1, 1).hasLabel(DataChangeLayer.DIRTY));
+        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertTrue("Row 1 is not dirty", this.dataChangeLayer.isRowDirty(1));
+        assertTrue("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 1));
+
+        this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Simpson"));
+
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+        assertEquals("Simpson", this.dataChangeLayer.getDataValueByPosition(1, 1));
+        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 1).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertFalse("Row 1 is dirty", this.dataChangeLayer.isRowDirty(1));
+        assertFalse("Cell is dirty", this.dataChangeLayer.isCellDirty(1, 1));
+    }
+
+    @Test
+    public void shouldUpdateNullValueAndBackAgain() {
+        this.dataLayer.setDataValue(1, 1, null);
+
+        assertNull(this.dataLayer.getDataValue(1, 1));
+
+        this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));
+
+        assertNull(this.dataLayer.getDataValue(1, 1));
+        assertEquals("Lovejoy", this.dataChangeLayer.getDataValueByPosition(1, 1));
+        assertTrue("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(1, 1).hasLabel(DataChangeLayer.DIRTY));
+        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertTrue("Row 1 is not dirty", this.dataChangeLayer.isRowDirty(1));
+        assertTrue("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 1));
+
+        this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, null));
+
+        assertNull(this.dataLayer.getDataValue(1, 1));
+        assertNull(this.dataChangeLayer.getDataValueByPosition(1, 1));
         assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 1).hasLabel(DataChangeLayer.DIRTY));
         assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
         assertFalse("Row 1 is dirty", this.dataChangeLayer.isRowDirty(1));

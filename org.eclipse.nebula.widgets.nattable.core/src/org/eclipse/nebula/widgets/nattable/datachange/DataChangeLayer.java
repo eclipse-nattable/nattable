@@ -243,9 +243,13 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
                     || updateCommand.getNewValue() == null
                     || !currentValue.equals(updateCommand.getNewValue())) {
 
-                if (updateCommand.getNewValue().equals(getUnderlyingLayer().getDataValueByPosition(columnPosition, rowPosition))) {
-                    // the value was changed back to the original value in the underlying layer
-                    // simply remove the local storage to not showing the cell as dirty
+                if ((updateCommand.getNewValue() == null
+                        && getUnderlyingLayer().getDataValueByPosition(columnPosition, rowPosition) == null)
+                        || (updateCommand.getNewValue() != null
+                                && updateCommand.getNewValue().equals(getUnderlyingLayer().getDataValueByPosition(columnPosition, rowPosition)))) {
+                    // the value was changed back to the original value in the
+                    // underlying layer simply remove the local storage to not
+                    // showing the cell as dirty
                     this.dataChanges.remove(this.keyHandler.getKey(updateCommand.getColumnPosition(), updateCommand.getRowPosition()));
                     rebuildPositionCollections();
                 } else {
