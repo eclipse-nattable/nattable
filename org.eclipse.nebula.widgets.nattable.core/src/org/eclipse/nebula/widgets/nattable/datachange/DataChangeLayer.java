@@ -188,22 +188,54 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
                 // Assume everything changed
                 clearDataChanges();
             } else if (structuralChangeEvent.isHorizontalStructureChanged()
-                    && structuralChangeEvent.getColumnDiffs() != null
-                    && this.keyHandler.updateOnHorizontalStructuralChange()) {
-                Collection<StructuralDiff> structuralDiffs = structuralChangeEvent.getColumnDiffs();
-                StructuralChangeEventHelper.handleColumnDelete(structuralDiffs, this.dataChanges, this.keyHandler);
-                StructuralChangeEventHelper.handleColumnInsert(structuralDiffs, this.dataChanges, this.keyHandler);
+                    && structuralChangeEvent.getColumnDiffs() != null) {
+
+                if (this.keyHandler.updateOnHorizontalStructuralChange()) {
+                    Collection<StructuralDiff> structuralDiffs = structuralChangeEvent.getColumnDiffs();
+                    StructuralChangeEventHelper.handleColumnDelete(structuralDiffs, this.dataChanges, this.keyHandler);
+                    StructuralChangeEventHelper.handleColumnInsert(structuralDiffs, this.dataChanges, this.keyHandler);
+                } else {
+                    removeChangesForDeletedObjects();
+                }
             } else if (structuralChangeEvent.isVerticalStructureChanged()
-                    && structuralChangeEvent.getRowDiffs() != null
-                    && this.keyHandler.updateOnVerticalStructuralChange()) {
-                Collection<StructuralDiff> structuralDiffs = structuralChangeEvent.getRowDiffs();
-                StructuralChangeEventHelper.handleRowDelete(structuralDiffs, this.dataChanges, this.keyHandler);
-                StructuralChangeEventHelper.handleRowInsert(structuralDiffs, this.dataChanges, this.keyHandler);
+                    && structuralChangeEvent.getRowDiffs() != null) {
+
+                if (this.keyHandler.updateOnVerticalStructuralChange()) {
+                    Collection<StructuralDiff> structuralDiffs = structuralChangeEvent.getRowDiffs();
+                    StructuralChangeEventHelper.handleRowDelete(structuralDiffs, this.dataChanges, this.keyHandler);
+                    StructuralChangeEventHelper.handleRowInsert(structuralDiffs, this.dataChanges, this.keyHandler);
+                } else {
+                    removeChangesForDeletedObjects();
+                }
             }
             rebuildPositionCollections();
         }
 
         super.handleLayerEvent(event);
+    }
+
+    /**
+     * Iterates over the locally stored data changes and checks if the
+     * referenced object does still exist. If not the data change is removed.
+     * <p>
+     * This method is intended to be used with {@link CellKeyHandler}
+     * implementations whose created keys do not need to be updated on
+     * structural changes as they update automatically, e.g. via unique
+     * identifier.
+     * </p>
+     */
+    @SuppressWarnings("unchecked")
+    protected void removeChangesForDeletedObjects() {
+        // we need to ensure that changes for deleted rows are
+        // removed from the data changes collection
+        for (Iterator<Object> it = this.dataChanges.keySet().iterator(); it.hasNext();) {
+            Object key = it.next();
+            int columnIndex = this.keyHandler.getColumnIndex(key);
+            int rowIndex = this.keyHandler.getRowIndex(key);
+            if (columnIndex < 0 || rowIndex < 0) {
+                it.remove();
+            }
+        }
     }
 
     /**
@@ -221,10 +253,6 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
             if (columnIndex >= 0 && rowIndex >= 0) {
                 this.changedColumns.add(columnIndex);
                 this.changedRows.add(rowIndex);
-            } else {
-                // remove the change as we noticed that the object does not
-                // exist anymore
-                it.remove();
             }
         }
     }
