@@ -152,7 +152,7 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
     public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
         LabelStack labels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
         if (this.dataChanges.containsKey(this.keyHandler.getKey(columnPosition, rowPosition))) {
-            labels.addLabel(DIRTY);
+            labels.addLabelOnTop(DIRTY);
         }
         return labels;
     }
