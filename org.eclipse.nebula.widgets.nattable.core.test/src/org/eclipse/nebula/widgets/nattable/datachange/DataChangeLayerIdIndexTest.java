@@ -591,8 +591,6 @@ public class DataChangeLayerIdIndexTest {
         assertTrue("changes are not empty", this.dataChangeLayer.dataChanges.isEmpty());
     }
 
-    // TODO save with temp
-
     @Test
     public void shouldUpdateChangeOnSortAndSaveWithTemp() {
         // enable temp data storage to test update on save

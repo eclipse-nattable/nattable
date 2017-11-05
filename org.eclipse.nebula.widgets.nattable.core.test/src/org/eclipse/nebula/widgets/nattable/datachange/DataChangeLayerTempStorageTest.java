@@ -276,9 +276,6 @@ public class DataChangeLayerTempStorageTest {
 
     @Test
     public void shouldNotBeDirtyOnResettingSameValue() {
-        // this behavior is different to temporaryDataStorage=true
-        // without temporary data storage it is not possible to check for the
-        // pre-saved state
         assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
 
         this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));

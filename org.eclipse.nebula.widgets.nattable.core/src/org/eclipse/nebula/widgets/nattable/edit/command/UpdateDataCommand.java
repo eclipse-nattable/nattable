@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -40,8 +40,7 @@ public class UpdateDataCommand extends AbstractPositionCommand {
      * @param newValue
      *            The value to update the data model value to.
      */
-    public UpdateDataCommand(ILayer layer, int columnPosition, int rowPosition,
-            Object newValue) {
+    public UpdateDataCommand(ILayer layer, int columnPosition, int rowPosition, Object newValue) {
         super(layer, columnPosition, rowPosition);
         this.newValue = newValue;
     }
@@ -68,6 +67,14 @@ public class UpdateDataCommand extends AbstractPositionCommand {
     @Override
     public UpdateDataCommand cloneCommand() {
         return new UpdateDataCommand(this);
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName()
+                + " columnPosition = " + getColumnPosition() //$NON-NLS-1$
+                + ", rowPosition = " + getRowPosition() //$NON-NLS-1$
+                + ", newValue = " + this.newValue; //$NON-NLS-1$
     }
 
 }

@@ -19,9 +19,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommand;
 import org.eclipse.nebula.widgets.nattable.config.AbstractLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -42,6 +44,7 @@ import org.eclipse.nebula.widgets.nattable.data.convert.DefaultIntegerDisplayCon
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.validate.DefaultDataValidator;
 import org.eclipse.nebula.widgets.nattable.datachange.DataChangeLayer;
+import org.eclipse.nebula.widgets.nattable.datachange.IdIndexIdentifier;
 import org.eclipse.nebula.widgets.nattable.datachange.IdIndexKeyHandler;
 import org.eclipse.nebula.widgets.nattable.datachange.command.DiscardDataChangesCommand;
 import org.eclipse.nebula.widgets.nattable.datachange.command.SaveDataChangesCommand;
@@ -106,12 +109,16 @@ import org.eclipse.nebula.widgets.nattable.style.theme.ThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
+import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
+import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.FontData;
@@ -189,7 +196,13 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
                                 return rowObject.getId();
                             }
                         },
-                        configRegistry);
+                        configRegistry,
+                        (rowObject, columnIndex) -> {
+                            System.out.println("Save person with ID " + rowObject.getId()
+                                    + " changing property "
+                                    + columnPropertyAccessor.getColumnProperty(columnIndex)
+                                    + " to " + columnPropertyAccessor.getDataValue(rowObject, columnIndex));
+                        });
 
         bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(new ColumnLabelAccumulator());
 
@@ -621,7 +634,8 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
         public BodyLayerStack(List<T> values,
                 IColumnPropertyAccessor<T> columnPropertyAccessor,
                 IRowIdAccessor<T> rowIdAccessor,
-                ConfigRegistry configRegistry) {
+                ConfigRegistry configRegistry,
+                BiConsumer<T, Integer> saveCallback) {
             // wrapping of the list to show into GlazedLists
             // see http://publicobject.com/glazedlists/ for further information
             this.eventList = GlazedLists.eventList(values);
@@ -657,7 +671,10 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
                     new DataChangeLayer(
                             glazedListsEventLayer,
                             new IdIndexKeyHandler<>(this.bodyDataProvider, rowIdAccessor),
+                            false,
                             false);
+
+            changeLayer.addConfiguration(new CustomDataChangeLayerConfiguration<>(saveCallback));
 
             ColumnReorderLayer columnReorderLayer =
                     new ColumnReorderLayer(changeLayer);
@@ -712,11 +729,97 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
     }
 
     /**
+     * Configuration of the {@link DataChangeLayer} to customize highlighting of
+     * changed cells and custom save/discard handling.
+     */
+    static class CustomDataChangeLayerConfiguration<T> extends AbstractLayerConfiguration<DataChangeLayer> {
+
+        private BiConsumer<T, Integer> saveCallback;
+
+        public CustomDataChangeLayerConfiguration(BiConsumer<T, Integer> saveCallback) {
+            this.saveCallback = saveCallback;
+        }
+
+        @Override
+        public void configureRegistry(IConfigRegistry configRegistry) {
+            Style style = new Style();
+            style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_YELLOW);
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_STYLE,
+                    style,
+                    DisplayMode.NORMAL,
+                    DataChangeLayer.DIRTY);
+        }
+
+        @Override
+        public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+            uiBindingRegistry.registerKeyBinding(
+                    new KeyEventMatcher(SWT.MOD1, 's'),
+                    new IKeyAction() {
+                        @Override
+                        public void run(NatTable natTable, KeyEvent event) {
+                            natTable.doCommand(new SaveDataChangesCommand());
+                        }
+                    });
+            uiBindingRegistry.registerKeyBinding(
+                    new KeyEventMatcher(SWT.MOD1, 'd'),
+                    new IKeyAction() {
+                        @Override
+                        public void run(NatTable natTable, KeyEvent event) {
+                            natTable.doCommand(new DiscardDataChangesCommand());
+                        }
+                    });
+
+        }
+
+        @Override
+        public void configureTypedLayer(DataChangeLayer layer) {
+            layer.registerCommandHandler(new ILayerCommandHandler<SaveDataChangesCommand>() {
+
+                @Override
+                public boolean doCommand(ILayer targetLayer, SaveDataChangesCommand command) {
+                    layer.getDataChanges().forEach((key, cmd) -> {
+                        // we know that the keys are created by using the
+                        // IdIndexKeyHandler, so casting is safe here
+                        @SuppressWarnings("unchecked")
+                        IdIndexIdentifier<T> identifier = ((IdIndexIdentifier<T>) key);
+                        CustomDataChangeLayerConfiguration.this.saveCallback.accept(
+                                identifier.rowObject,
+                                identifier.columnIndex);
+                    });
+                    layer.saveDataChanges();
+                    return true;
+                }
+
+                @Override
+                public Class<SaveDataChangesCommand> getCommandClass() {
+                    return SaveDataChangesCommand.class;
+                }
+            });
+
+            layer.registerCommandHandler(new ILayerCommandHandler<DiscardDataChangesCommand>() {
+
+                @Override
+                public boolean doCommand(ILayer targetLayer, DiscardDataChangesCommand command) {
+                    System.out.println("discard data changes");
+                    layer.discardDataChanges();
+                    return true;
+                }
+
+                @Override
+                public Class<DiscardDataChangesCommand> getCommandClass() {
+                    return DiscardDataChangesCommand.class;
+                }
+            });
+        }
+    }
+
+    /**
      * Example implementation for a typed IGroupBySummaryProvider that
      * calculates the average age of ExtendedPersonWithAddress objects in a
      * grouping.
      */
-    class AverageAgeGroupBySummaryProvider implements IGroupBySummaryProvider<ExtendedPersonWithAddress> {
+    static class AverageAgeGroupBySummaryProvider implements IGroupBySummaryProvider<ExtendedPersonWithAddress> {
 
         @Override
         public Object summarize(int columnIndex, List<ExtendedPersonWithAddress> children) {
@@ -734,7 +837,7 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
      * calculates the average money of ExtendedPersonWithAddress objects in a
      * grouping.
      */
-    class AverageMoneyGroupBySummaryProvider implements IGroupBySummaryProvider<ExtendedPersonWithAddress> {
+    static class AverageMoneyGroupBySummaryProvider implements IGroupBySummaryProvider<ExtendedPersonWithAddress> {
 
         @Override
         public Object summarize(int columnIndex, List<ExtendedPersonWithAddress> children) {

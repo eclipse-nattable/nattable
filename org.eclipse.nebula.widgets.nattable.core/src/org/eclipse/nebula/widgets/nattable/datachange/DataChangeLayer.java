@@ -13,9 +13,9 @@ package org.eclipse.nebula.widgets.nattable.datachange;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.datachange.command.DiscardDataChangesCommand;
@@ -62,14 +62,17 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
     protected final Set<Integer> changedRows = new HashSet<Integer>();
 
     /**
-     * Collection of modified cells and corresponding {@link UpdateDataCommand}s
-     * that are collected in this layer. Used to perform a model update if the
-     * {@link SaveDataChangesCommand} is executed, or cleared without data model
-     * changes if the {@link DiscardDataChangesCommand} is executed. Will only
-     * contain {@link UpdateDataCommand}s in case temporaryDataStorage is
-     * enabled.
+     * Collection of modified cell identifiers according to the used
+     * {@link CellKeyHandler} and corresponding {@link UpdateDataCommand}s that
+     * are collected in this layer. If temporaryDataStorage is enabled the
+     * {@link DataChangeLayer} catches the {@link UpdateDataCommand}s which will
+     * be executed on handling the {@link SaveDataChangesCommand} to finally
+     * update the underlying data model. If temporaryDataStorage is disabled the
+     * {@link UpdateDataCommand}s will carry the original data value before the
+     * first data change. This way the original value can be restored on
+     * executing the {@link DiscardDataChangesCommand}.
      */
-    protected Map<Object, UpdateDataCommand> dataChanges = new LinkedHashMap<Object, UpdateDataCommand>();;
+    protected Map<Object, UpdateDataCommand> dataChanges = new ConcurrentHashMap<Object, UpdateDataCommand>();
 
     /**
      * Flag that is used to configure whether the {@link UpdateDataCommand}
@@ -173,12 +176,28 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
         // updated and we remember the modifications via DataUpdateEvent
         if (!this.temporaryDataStorage && this.handleDataUpdateEvents && event instanceof DataUpdateEvent) {
             DataUpdateEvent updateEvent = (DataUpdateEvent) event;
-            this.changedColumns.add(updateEvent.getColumnPosition());
-            this.changedRows.add(updateEvent.getRowPosition());
-            // store an UpdateDataCommand that can be used to revert the change
-            this.dataChanges.put(
-                    this.keyHandler.getKey(updateEvent.getColumnPosition(), updateEvent.getRowPosition()),
-                    new UpdateDataCommand(this, updateEvent.getColumnPosition(), updateEvent.getRowPosition(), updateEvent.getOldValue()));
+            Object key = this.keyHandler.getKey(updateEvent.getColumnPosition(), updateEvent.getRowPosition());
+            synchronized (this.dataChanges) {
+                // only store a change if there is no change already stored
+                // this ensures that a discard really restores the original
+                if (!this.dataChanges.containsKey(key)) {
+                    this.changedColumns.add(updateEvent.getColumnPosition());
+                    this.changedRows.add(updateEvent.getRowPosition());
+                    // store an UpdateDataCommand that can be used to revert the
+                    // change
+                    this.dataChanges.put(
+                            key,
+                            new UpdateDataCommand(this, updateEvent.getColumnPosition(), updateEvent.getRowPosition(), updateEvent.getOldValue()));
+                } else if ((this.dataChanges.get(key).getNewValue() != null && this.dataChanges.get(key).getNewValue().equals(updateEvent.getNewValue())
+                        || (this.dataChanges.get(key).getNewValue() == null && updateEvent.getNewValue() == null))) {
+                    // the value was changed back to the original value in
+                    // the underlying layer simply remove the local storage
+                    // to not showing the cell as dirty
+                    this.dataChanges.remove(this.keyHandler.getKey(updateEvent.getColumnPosition(), updateEvent.getRowPosition()));
+                    rebuildPositionCollections();
+                }
+
+            }
         } else if (event instanceof IStructuralChangeEvent) {
             IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
             if (structuralChangeEvent.getColumnDiffs() == null
@@ -271,21 +290,20 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
                     || updateCommand.getNewValue() == null
                     || !currentValue.equals(updateCommand.getNewValue())) {
 
-                if ((updateCommand.getNewValue() == null
-                        && getUnderlyingLayer().getDataValueByPosition(columnPosition, rowPosition) == null)
-                        || (updateCommand.getNewValue() != null
-                                && updateCommand.getNewValue().equals(getUnderlyingLayer().getDataValueByPosition(columnPosition, rowPosition)))) {
-                    // the value was changed back to the original value in the
-                    // underlying layer simply remove the local storage to not
-                    // showing the cell as dirty
-                    this.dataChanges.remove(this.keyHandler.getKey(updateCommand.getColumnPosition(), updateCommand.getRowPosition()));
+                Object underlyingDataValue = getUnderlyingLayer().getDataValueByPosition(columnPosition, rowPosition);
+                if ((updateCommand.getNewValue() == null && underlyingDataValue == null)
+                        || (updateCommand.getNewValue() != null && updateCommand.getNewValue().equals(underlyingDataValue))) {
+                    // the value was changed back to the original value in
+                    // the underlying layer simply remove the local storage
+                    // to not showing the cell as dirty
+                    this.dataChanges.remove(this.keyHandler.getKey(columnPosition, rowPosition));
                     rebuildPositionCollections();
                 } else {
-                    this.changedColumns.add(updateCommand.getColumnPosition());
-                    this.changedRows.add(updateCommand.getRowPosition());
-                    this.dataChanges.put(this.keyHandler.getKey(updateCommand.getColumnPosition(), updateCommand.getRowPosition()), updateCommand);
+                    this.changedColumns.add(columnPosition);
+                    this.changedRows.add(rowPosition);
+                    this.dataChanges.put(this.keyHandler.getKey(columnPosition, rowPosition), updateCommand);
                 }
-                fireLayerEvent(new CellVisualChangeEvent(this, updateCommand.getColumnPosition(), updateCommand.getRowPosition()));
+                fireLayerEvent(new CellVisualChangeEvent(this, columnPosition, rowPosition));
             }
             return true;
         }
@@ -422,4 +440,22 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
         return this.dataChanges.containsKey(this.keyHandler.getKey(columnPosition, rowPosition));
     }
 
+    /**
+     * Get the locally stored data changes to perform updates on the persistence
+     * model only for applied changes.
+     * 
+     * @return Collection of modified cell identifiers according to the used
+     *         {@link CellKeyHandler} and corresponding
+     *         {@link UpdateDataCommand}s that are collected in this layer. If
+     *         temporaryDataStorage is enabled the {@link DataChangeLayer}
+     *         catches the {@link UpdateDataCommand}s which will be executed on
+     *         handling the {@link SaveDataChangesCommand} to finally update the
+     *         underlying data model. If temporaryDataStorage is disabled the
+     *         {@link UpdateDataCommand}s will carry the original data value
+     *         before the first data change. This way the original value can be
+     *         restored on executing the {@link DiscardDataChangesCommand}.
+     */
+    public Map<Object, UpdateDataCommand> getDataChanges() {
+        return this.dataChanges;
+    }
 }
