@@ -140,4 +140,33 @@ public class SizeConfigTest {
         assertEquals(50, sc.getSize(3));
         assertTrue(sc.isPositionResizable(2));
     }
+
+    @Test
+    public void testAggregateSizeWithScaling() {
+        SizeConfig sc = new SizeConfig(100);
+
+        // set some specific sizes to avoid that sc.isAllPositionsSameSize
+        // does not return true and aggregate values are not determined
+        sc.setSize(0, 50);
+        sc.setSize(1, 50);
+
+        int nCols = 20;
+
+        // cache the initial aggregate sizes of last and second last column.
+        // this is done when the DataLayer is initialized
+        int cachedAggregateSize = sc.getAggregateSize(nCols - 1);
+
+        // this is done when the NatTable itself is initialized
+        sc.setDpiConverter(new AbstractDpiConverter() {
+            @Override
+            protected void readDpiFromDisplay() {
+                // programatically set a dpi > 96
+                this.dpi = (int) (96 * 1.25);
+            }
+        });
+
+        int aggregateSize = sc.getAggregateSize(nCols - 1);
+
+        assertTrue("aggregate size of last column is same as cached aggregate size", aggregateSize != cachedAggregateSize);
+    }
 }

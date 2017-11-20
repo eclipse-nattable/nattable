@@ -1118,6 +1118,7 @@ public class SizeConfig implements IPersistable {
      */
     public void setDpiConverter(IDpiConverter dpiConverter) {
         this.dpiConverter = dpiConverter;
+        this.isAggregatedSizeCacheValid = false;
     }
 
     /**
