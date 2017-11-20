@@ -778,4 +778,486 @@ public class SizeConfigPercentageTest {
         assertEquals(127, sizeConfig.getSize(6));
     }
 
+    @Test
+    public void defaultMinSizeRespected() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        sizeConfig.setPercentageSizing(true);
+        sizeConfig.calculatePercentages(1000, 5);
+
+        assertEquals(200, sizeConfig.getAggregateSize(1));
+        assertEquals(400, sizeConfig.getAggregateSize(2));
+        assertEquals(600, sizeConfig.getAggregateSize(3));
+        assertEquals(800, sizeConfig.getAggregateSize(4));
+        assertEquals(1000, sizeConfig.getAggregateSize(5));
+
+        sizeConfig.calculatePercentages(250, 5);
+
+        assertEquals(50, sizeConfig.getAggregateSize(1));
+        assertEquals(100, sizeConfig.getAggregateSize(2));
+        assertEquals(150, sizeConfig.getAggregateSize(3));
+        assertEquals(200, sizeConfig.getAggregateSize(4));
+        assertEquals(250, sizeConfig.getAggregateSize(5));
+
+        sizeConfig.setDefaultMinSize(100);
+        sizeConfig.calculatePercentages(250, 5);
+
+        assertEquals(100, sizeConfig.getAggregateSize(1));
+        assertEquals(200, sizeConfig.getAggregateSize(2));
+        assertEquals(300, sizeConfig.getAggregateSize(3));
+        assertEquals(400, sizeConfig.getAggregateSize(4));
+        assertEquals(500, sizeConfig.getAggregateSize(5));
+    }
+
+    @Test
+    public void singleMinSizeRespected() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        sizeConfig.setPercentageSizing(true);
+
+        sizeConfig.calculatePercentages(250, 5);
+
+        assertEquals(50, sizeConfig.getAggregateSize(1));
+        assertEquals(100, sizeConfig.getAggregateSize(2));
+        assertEquals(150, sizeConfig.getAggregateSize(3));
+        assertEquals(200, sizeConfig.getAggregateSize(4));
+        assertEquals(250, sizeConfig.getAggregateSize(5));
+
+        sizeConfig.setMinSize(0, 100);
+        sizeConfig.calculatePercentages(250, 5);
+
+        assertEquals(100, sizeConfig.getAggregateSize(1));
+        assertEquals(138, sizeConfig.getAggregateSize(2));
+        assertEquals(176, sizeConfig.getAggregateSize(3));
+        assertEquals(213, sizeConfig.getAggregateSize(4));
+        assertEquals(250, sizeConfig.getAggregateSize(5));
+
+        sizeConfig.setMinSize(0, 0);
+        sizeConfig.setMinSize(4, 100);
+        sizeConfig.calculatePercentages(250, 5);
+
+        assertEquals(38, sizeConfig.getAggregateSize(1));
+        assertEquals(76, sizeConfig.getAggregateSize(2));
+        assertEquals(113, sizeConfig.getAggregateSize(3));
+        assertEquals(150, sizeConfig.getAggregateSize(4));
+        assertEquals(250, sizeConfig.getAggregateSize(5));
+    }
+
+    @Test
+    public void defaultMinSizeRespectedWithFixedPercentageSize() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        sizeConfig.setPercentage(0, 20);
+        sizeConfig.setPercentage(1, 20);
+        sizeConfig.setPercentage(2, 20);
+        sizeConfig.setPercentage(3, 20);
+        sizeConfig.setPercentage(4, 20);
+        sizeConfig.calculatePercentages(1000, 5);
+
+        assertEquals(200, sizeConfig.getAggregateSize(1));
+        assertEquals(400, sizeConfig.getAggregateSize(2));
+        assertEquals(600, sizeConfig.getAggregateSize(3));
+        assertEquals(800, sizeConfig.getAggregateSize(4));
+        assertEquals(1000, sizeConfig.getAggregateSize(5));
+
+        sizeConfig.calculatePercentages(250, 5);
+
+        assertEquals(50, sizeConfig.getAggregateSize(1));
+        assertEquals(100, sizeConfig.getAggregateSize(2));
+        assertEquals(150, sizeConfig.getAggregateSize(3));
+        assertEquals(200, sizeConfig.getAggregateSize(4));
+        assertEquals(250, sizeConfig.getAggregateSize(5));
+
+        sizeConfig.setDefaultMinSize(100);
+        sizeConfig.calculatePercentages(250, 5);
+
+        assertEquals(100, sizeConfig.getAggregateSize(1));
+        assertEquals(200, sizeConfig.getAggregateSize(2));
+        assertEquals(300, sizeConfig.getAggregateSize(3));
+        assertEquals(400, sizeConfig.getAggregateSize(4));
+        assertEquals(500, sizeConfig.getAggregateSize(5));
+    }
+
+    @Test
+    public void singleMinSizeRespectedWithFixedPercentageSize() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        sizeConfig.setPercentage(0, 20);
+        sizeConfig.setPercentage(1, 20);
+        sizeConfig.setPercentage(2, 20);
+        sizeConfig.setPercentage(3, 20);
+        sizeConfig.setPercentage(4, 20);
+
+        sizeConfig.calculatePercentages(250, 5);
+
+        assertEquals(50, sizeConfig.getAggregateSize(1));
+        assertEquals(100, sizeConfig.getAggregateSize(2));
+        assertEquals(150, sizeConfig.getAggregateSize(3));
+        assertEquals(200, sizeConfig.getAggregateSize(4));
+        assertEquals(250, sizeConfig.getAggregateSize(5));
+
+        sizeConfig.setMinSize(0, 100);
+        sizeConfig.calculatePercentages(250, 5);
+
+        assertEquals(100, sizeConfig.getAggregateSize(1));
+        assertEquals(138, sizeConfig.getAggregateSize(2));
+        assertEquals(176, sizeConfig.getAggregateSize(3));
+        assertEquals(213, sizeConfig.getAggregateSize(4));
+        assertEquals(250, sizeConfig.getAggregateSize(5));
+
+        sizeConfig.setMinSize(0, 0);
+        sizeConfig.setMinSize(4, 100);
+        sizeConfig.calculatePercentages(250, 5);
+
+        assertEquals(38, sizeConfig.getAggregateSize(1));
+        assertEquals(76, sizeConfig.getAggregateSize(2));
+        assertEquals(113, sizeConfig.getAggregateSize(3));
+        assertEquals(150, sizeConfig.getAggregateSize(4));
+        assertEquals(250, sizeConfig.getAggregateSize(5));
+    }
+
+    @Test
+    public void singleMinSizeRespectedWithFixedPercentageSizeDifferentRatio() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        sizeConfig.setPercentage(0, 50);
+        sizeConfig.setPercentage(1, 50);
+        sizeConfig.setPercentage(2, 50);
+        sizeConfig.setPercentage(3, 100);
+
+        sizeConfig.calculatePercentages(250, 4);
+
+        assertEquals(50, sizeConfig.getAggregateSize(1));
+        assertEquals(100, sizeConfig.getAggregateSize(2));
+        assertEquals(150, sizeConfig.getAggregateSize(3));
+        assertEquals(250, sizeConfig.getAggregateSize(4));
+
+        sizeConfig.setMinSize(0, 100);
+        sizeConfig.calculatePercentages(250, 4);
+
+        assertEquals(100, sizeConfig.getAggregateSize(1));
+        assertEquals(138, sizeConfig.getAggregateSize(2));
+        assertEquals(175, sizeConfig.getAggregateSize(3));
+        assertEquals(250, sizeConfig.getAggregateSize(4));
+
+        sizeConfig.setMinSize(0, 0);
+        sizeConfig.setMinSize(2, 100);
+        sizeConfig.calculatePercentages(250, 4);
+
+        assertEquals(38, sizeConfig.getAggregateSize(1));
+        assertEquals(75, sizeConfig.getAggregateSize(2));
+        assertEquals(175, sizeConfig.getAggregateSize(3));
+        assertEquals(250, sizeConfig.getAggregateSize(4));
+    }
+
+    @Test
+    public void mixedPercentageSizeWithMinSize_oneFixedPercentageWithMinSize() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        sizeConfig.setPercentageSizing(true);
+        sizeConfig.setPercentageSizing(1, false);
+        sizeConfig.setPercentageSizing(3, false);
+
+        sizeConfig.setPercentage(0, 50);
+        sizeConfig.setSize(1, 150);
+        sizeConfig.setSize(3, 150);
+
+        // check for 4 columns - one fixed percentage, one dynamic percentage
+        sizeConfig.calculatePercentages(400, 4);
+        assertEquals(50, sizeConfig.getAggregateSize(1));
+        assertEquals(200, sizeConfig.getAggregateSize(2));
+        assertEquals(250, sizeConfig.getAggregateSize(3));
+        assertEquals(400, sizeConfig.getAggregateSize(4));
+
+        // check for 5 columns - one fixed percentage, two dynamic percentage
+        sizeConfig.calculatePercentages(400, 5);
+        assertEquals(50, sizeConfig.getAggregateSize(1));
+        assertEquals(200, sizeConfig.getAggregateSize(2));
+        assertEquals(225, sizeConfig.getAggregateSize(3));
+        assertEquals(375, sizeConfig.getAggregateSize(4));
+        assertEquals(400, sizeConfig.getAggregateSize(5));
+
+        sizeConfig.setMinSize(0, 100);
+
+        // check for 4 columns - one fixed percentage, one dynamic percentage
+        sizeConfig.calculatePercentages(400, 4);
+        assertEquals(100, sizeConfig.getAggregateSize(1));
+        assertEquals(250, sizeConfig.getAggregateSize(2));
+        assertEquals(250, sizeConfig.getAggregateSize(3));
+        assertEquals(400, sizeConfig.getAggregateSize(4));
+
+        // check for 5 columns - one fixed percentage, two dynamic percentage
+        sizeConfig.calculatePercentages(400, 5);
+        assertEquals(100, sizeConfig.getAggregateSize(1));
+        assertEquals(250, sizeConfig.getAggregateSize(2));
+        assertEquals(250, sizeConfig.getAggregateSize(3));
+        assertEquals(400, sizeConfig.getAggregateSize(4));
+        assertEquals(400, sizeConfig.getAggregateSize(5));
+
+        // check for 4 columns - one fixed percentage, one dynamic percentage
+        sizeConfig.calculatePercentages(450, 4);
+        assertEquals(100, sizeConfig.getAggregateSize(1));
+        assertEquals(250, sizeConfig.getAggregateSize(2));
+        assertEquals(300, sizeConfig.getAggregateSize(3));
+        assertEquals(450, sizeConfig.getAggregateSize(4));
+
+        // check for 5 columns - one fixed percentage, two dynamic percentage
+        sizeConfig.calculatePercentages(450, 5);
+        assertEquals(100, sizeConfig.getAggregateSize(1));
+        assertEquals(250, sizeConfig.getAggregateSize(2));
+        assertEquals(275, sizeConfig.getAggregateSize(3));
+        assertEquals(425, sizeConfig.getAggregateSize(4));
+        assertEquals(450, sizeConfig.getAggregateSize(5));
+    }
+
+    @Test
+    public void mixedPercentageSizeWithMinSize_twoFixedPercentage() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        sizeConfig.setPercentageSizing(true);
+        sizeConfig.setPercentageSizing(1, false);
+        sizeConfig.setPercentageSizing(3, false);
+
+        sizeConfig.setPercentage(0, 50);
+        sizeConfig.setSize(1, 150);
+        sizeConfig.setPercentage(2, 50);
+        sizeConfig.setSize(3, 150);
+
+        // check for 4 columns - two fixed percentage
+        sizeConfig.calculatePercentages(400, 4);
+        assertEquals(50, sizeConfig.getAggregateSize(1));
+        assertEquals(200, sizeConfig.getAggregateSize(2));
+        assertEquals(250, sizeConfig.getAggregateSize(3));
+        assertEquals(400, sizeConfig.getAggregateSize(4));
+
+        // check for 5 columns - two fixed percentage, one dynamic percentage
+        sizeConfig.calculatePercentages(400, 5);
+        assertEquals(50, sizeConfig.getAggregateSize(1));
+        assertEquals(200, sizeConfig.getAggregateSize(2));
+        assertEquals(250, sizeConfig.getAggregateSize(3));
+        assertEquals(400, sizeConfig.getAggregateSize(4));
+        assertEquals(400, sizeConfig.getAggregateSize(5));
+
+        sizeConfig.setMinSize(0, 100);
+
+        // check for 4 columns - two fixed percentage
+        sizeConfig.calculatePercentages(400, 4);
+        assertEquals(100, sizeConfig.getAggregateSize(1));
+        assertEquals(250, sizeConfig.getAggregateSize(2));
+        assertEquals(250, sizeConfig.getAggregateSize(3));
+        assertEquals(400, sizeConfig.getAggregateSize(4));
+
+        // check for 5 columns - two fixed percentage, one dynamic percentage
+        sizeConfig.calculatePercentages(400, 5);
+        assertEquals(100, sizeConfig.getAggregateSize(1));
+        assertEquals(250, sizeConfig.getAggregateSize(2));
+        assertEquals(250, sizeConfig.getAggregateSize(3));
+        assertEquals(400, sizeConfig.getAggregateSize(4));
+        assertEquals(400, sizeConfig.getAggregateSize(5));
+
+        // reduce min size to have remaining space that can be taken by other
+        // columns
+        sizeConfig.setMinSize(0, 75);
+
+        // check for 4 columns - two fixed percentage
+        sizeConfig.calculatePercentages(400, 4);
+        assertEquals(75, sizeConfig.getAggregateSize(1));
+        assertEquals(225, sizeConfig.getAggregateSize(2));
+        assertEquals(250, sizeConfig.getAggregateSize(3));
+        assertEquals(400, sizeConfig.getAggregateSize(4));
+
+        // enable distribute remaining space
+        sizeConfig.setDistributeRemainingSpace(true);
+
+        // check for 4 columns - two fixed percentage
+        sizeConfig.calculatePercentages(400, 4);
+        assertEquals(75, sizeConfig.getAggregateSize(1));
+        assertEquals(225, sizeConfig.getAggregateSize(2));
+        assertEquals(250, sizeConfig.getAggregateSize(3));
+        assertEquals(400, sizeConfig.getAggregateSize(4));
+
+        // check for 5 columns - two fixed percentage, one dynamic percentage
+        sizeConfig.calculatePercentages(400, 5);
+        assertEquals(75, sizeConfig.getAggregateSize(1));
+        assertEquals(225, sizeConfig.getAggregateSize(2));
+        assertEquals(250, sizeConfig.getAggregateSize(3));
+        assertEquals(400, sizeConfig.getAggregateSize(4));
+        assertEquals(400, sizeConfig.getAggregateSize(5));
+    }
+
+    @Test
+    public void mixedPercentageSizeWithMinSize_twoFixedPercentage_not100percent() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        sizeConfig.setPercentageSizing(true);
+        sizeConfig.setPercentageSizing(1, false);
+        sizeConfig.setPercentageSizing(3, false);
+
+        sizeConfig.setPercentage(0, 40);
+        sizeConfig.setSize(1, 150);
+        sizeConfig.setPercentage(2, 40);
+        sizeConfig.setSize(3, 150);
+
+        // check for 4 columns - two fixed percentage
+        sizeConfig.calculatePercentages(400, 4);
+        assertEquals(40, sizeConfig.getAggregateSize(1));
+        assertEquals(190, sizeConfig.getAggregateSize(2));
+        assertEquals(230, sizeConfig.getAggregateSize(3));
+        assertEquals(380, sizeConfig.getAggregateSize(4));
+
+        // check for 5 columns - two fixed percentage, one dynamic percentage
+        sizeConfig.calculatePercentages(400, 5);
+        assertEquals(40, sizeConfig.getAggregateSize(1));
+        assertEquals(190, sizeConfig.getAggregateSize(2));
+        assertEquals(230, sizeConfig.getAggregateSize(3));
+        assertEquals(380, sizeConfig.getAggregateSize(4));
+        assertEquals(400, sizeConfig.getAggregateSize(5));
+
+        sizeConfig.setMinSize(0, 100);
+
+        // check for 4 columns - two fixed percentage
+        sizeConfig.calculatePercentages(400, 4);
+        assertEquals(100, sizeConfig.getAggregateSize(1));
+        assertEquals(250, sizeConfig.getAggregateSize(2));
+        assertEquals(250, sizeConfig.getAggregateSize(3));
+        assertEquals(400, sizeConfig.getAggregateSize(4));
+
+        // check for 5 columns - two fixed percentage, one dynamic percentage
+        sizeConfig.calculatePercentages(400, 5);
+        assertEquals(100, sizeConfig.getAggregateSize(1));
+        assertEquals(250, sizeConfig.getAggregateSize(2));
+        assertEquals(250, sizeConfig.getAggregateSize(3));
+        assertEquals(400, sizeConfig.getAggregateSize(4));
+        assertEquals(400, sizeConfig.getAggregateSize(5));
+
+        // reduce min size to have remaining space that can be taken by other
+        // columns
+        sizeConfig.setMinSize(0, 75);
+
+        // check for 4 columns - two fixed percentage
+        sizeConfig.calculatePercentages(400, 4);
+        assertEquals(75, sizeConfig.getAggregateSize(1));
+        assertEquals(225, sizeConfig.getAggregateSize(2));
+        assertEquals(230, sizeConfig.getAggregateSize(3));
+        assertEquals(380, sizeConfig.getAggregateSize(4));
+
+        // enable distribute remaining space
+        sizeConfig.setDistributeRemainingSpace(true);
+
+        // check for 4 columns - two fixed percentage
+        sizeConfig.calculatePercentages(400, 4);
+        assertEquals(75, sizeConfig.getAggregateSize(1));
+        assertEquals(225, sizeConfig.getAggregateSize(2));
+        assertEquals(250, sizeConfig.getAggregateSize(3));
+        assertEquals(400, sizeConfig.getAggregateSize(4));
+
+        // check for 5 columns - two fixed percentage, one dynamic percentage
+        sizeConfig.calculatePercentages(400, 5);
+        assertEquals(75, sizeConfig.getAggregateSize(1));
+        assertEquals(225, sizeConfig.getAggregateSize(2));
+        assertEquals(230, sizeConfig.getAggregateSize(3));
+        assertEquals(380, sizeConfig.getAggregateSize(4));
+        assertEquals(400, sizeConfig.getAggregateSize(5));
+    }
+
+    @Test
+    public void mixedPercentageSizeWithMinSize_multiFixedPercentage() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        sizeConfig.setPercentageSizing(true);
+        sizeConfig.setPercentageSizing(1, false);
+        sizeConfig.setPercentageSizing(2, false);
+
+        sizeConfig.setPercentage(0, 20);
+        sizeConfig.setSize(1, 100);
+        sizeConfig.setSize(2, 100);
+        sizeConfig.setPercentage(3, 25);
+        sizeConfig.setPercentage(4, 25);
+        sizeConfig.setPercentage(5, 10);
+
+        sizeConfig.calculatePercentages(600, 6);
+        assertEquals(80, sizeConfig.getAggregateSize(1));
+        assertEquals(180, sizeConfig.getAggregateSize(2));
+        assertEquals(280, sizeConfig.getAggregateSize(3));
+        assertEquals(380, sizeConfig.getAggregateSize(4));
+        assertEquals(480, sizeConfig.getAggregateSize(5));
+        assertEquals(520, sizeConfig.getAggregateSize(6));
+
+        sizeConfig.setMinSize(0, 150);
+
+        sizeConfig.calculatePercentages(600, 6);
+        assertEquals(150, sizeConfig.getAggregateSize(1));
+        assertEquals(250, sizeConfig.getAggregateSize(2));
+        assertEquals(350, sizeConfig.getAggregateSize(3));
+        assertEquals(450, sizeConfig.getAggregateSize(4));
+        assertEquals(550, sizeConfig.getAggregateSize(5));
+        assertEquals(590, sizeConfig.getAggregateSize(6));
+    }
+
+    @Test
+    public void shouldUpdateMinSizeOnResize() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        sizeConfig.setPercentage(0, 20);
+        sizeConfig.setPercentage(1, 20);
+        sizeConfig.setPercentage(2, 20);
+        sizeConfig.setPercentage(3, 20);
+        sizeConfig.setPercentage(4, 20);
+
+        // necessary because of rounding issues with percentage values
+        sizeConfig.setDistributeRemainingSpace(true);
+
+        sizeConfig.setMinSize(0, 100);
+
+        sizeConfig.calculatePercentages(600, 5);
+        assertEquals(120, sizeConfig.getAggregateSize(1));
+        assertEquals(240, sizeConfig.getAggregateSize(2));
+        assertEquals(360, sizeConfig.getAggregateSize(3));
+        assertEquals(480, sizeConfig.getAggregateSize(4));
+        assertEquals(600, sizeConfig.getAggregateSize(5));
+
+        sizeConfig.calculatePercentages(400, 5);
+        assertEquals(100, sizeConfig.getAggregateSize(1));
+        assertEquals(175, sizeConfig.getAggregateSize(2));
+        assertEquals(250, sizeConfig.getAggregateSize(3));
+        assertEquals(325, sizeConfig.getAggregateSize(4));
+        assertEquals(400, sizeConfig.getAggregateSize(5));
+
+        // simulate setting a size of a position with minimum to a lower value
+        // than the minimum, e.g. make a column smaller than the min
+        sizeConfig.setSize(0, 60);
+
+        sizeConfig.calculatePercentages(400, 5);
+        assertEquals(60, sizeConfig.getAggregateSize(1));
+        assertEquals(176, sizeConfig.getAggregateSize(2));
+        assertEquals(251, sizeConfig.getAggregateSize(3));
+        assertEquals(326, sizeConfig.getAggregateSize(4));
+        assertEquals(400, sizeConfig.getAggregateSize(5));
+    }
+
+    @Test
+    public void shouldUpdateMinSizeOnResizeWithNoFixedPercentage() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        sizeConfig.setPercentageSizing(true);
+
+        // necessary because of rounding issues with percentage values
+        sizeConfig.setDistributeRemainingSpace(true);
+
+        sizeConfig.setMinSize(0, 100);
+
+        sizeConfig.calculatePercentages(600, 5);
+        assertEquals(120, sizeConfig.getAggregateSize(1));
+        assertEquals(240, sizeConfig.getAggregateSize(2));
+        assertEquals(360, sizeConfig.getAggregateSize(3));
+        assertEquals(480, sizeConfig.getAggregateSize(4));
+        assertEquals(600, sizeConfig.getAggregateSize(5));
+
+        sizeConfig.calculatePercentages(400, 5);
+        assertEquals(100, sizeConfig.getAggregateSize(1));
+        assertEquals(175, sizeConfig.getAggregateSize(2));
+        assertEquals(250, sizeConfig.getAggregateSize(3));
+        assertEquals(325, sizeConfig.getAggregateSize(4));
+        assertEquals(400, sizeConfig.getAggregateSize(5));
+
+        // simulate setting a size of a position with minimum to a lower value
+        // than the minimum, e.g. make a column smaller than the min
+        sizeConfig.setSize(0, 60);
+
+        sizeConfig.calculatePercentages(400, 5);
+        assertEquals(60, sizeConfig.getAggregateSize(1));
+        assertEquals(145, sizeConfig.getAggregateSize(2));
+        assertEquals(230, sizeConfig.getAggregateSize(3));
+        assertEquals(315, sizeConfig.getAggregateSize(4));
+        assertEquals(400, sizeConfig.getAggregateSize(5));
+    }
 }

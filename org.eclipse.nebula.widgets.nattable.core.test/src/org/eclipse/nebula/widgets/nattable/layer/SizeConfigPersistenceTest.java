@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -46,17 +46,15 @@ public class SizeConfigPersistenceTest {
         Properties properties = new Properties();
         this.sizeConfig.saveState("prefix", properties);
 
-        assertEquals(6, properties.size());
+        assertEquals(8, properties.size());
         assertEquals("100", properties.getProperty("prefix.defaultSize"));
-        assertEquals("5:50,6:60,",
-                properties.getProperty("prefix.defaultSizes"));
+        assertEquals("5:50,6:60,", properties.getProperty("prefix.defaultSizes"));
         assertEquals("2:88,4:57,5:25,", properties.getProperty("prefix.sizes"));
-        assertFalse(Boolean.valueOf(properties
-                .getProperty("prefix.resizableByDefault")));
-        assertEquals("3:true,9:true,",
-                properties.getProperty("prefix.resizableIndexes"));
-        assertFalse(Boolean.valueOf(properties
-                .getProperty("prefix.percentageSizing")));
+        assertFalse(Boolean.valueOf(properties.getProperty("prefix.resizableByDefault")));
+        assertEquals("3:true,9:true,", properties.getProperty("prefix.resizableIndexes"));
+        assertFalse(Boolean.valueOf(properties.getProperty("prefix.percentageSizing")));
+        assertFalse(Boolean.valueOf(properties.getProperty("prefix.distributeRemainingSpace")));
+        assertEquals("0", properties.getProperty("prefix.defaultMinSize"));
     }
 
     @Test
@@ -140,23 +138,25 @@ public class SizeConfigPersistenceTest {
         Properties properties = new Properties();
         this.sizeConfig.saveState("prefix", properties);
 
-        assertEquals(7, properties.size());
+        assertEquals(9, properties.size());
         assertEquals("100", properties.getProperty("prefix.defaultSize"));
-        assertEquals("5:50,6:60,",
-                properties.getProperty("prefix.defaultSizes"));
+        assertEquals("5:50,6:60,", properties.getProperty("prefix.defaultSizes"));
         assertEquals("2:88,4:57,5:25,", properties.getProperty("prefix.sizes"));
-        assertFalse(Boolean.valueOf(properties
-                .getProperty("prefix.resizableByDefault")));
-        assertEquals("3:true,9:true,",
-                properties.getProperty("prefix.resizableIndexes"));
-        assertFalse(Boolean.valueOf(properties
-                .getProperty("prefix.percentageSizing")));
-        assertEquals("3:false,7:true,8:true,9:false,",
-                properties.getProperty("prefix.percentageSizingIndexes"));
+        assertFalse(Boolean.valueOf(properties.getProperty("prefix.resizableByDefault")));
+        assertEquals("3:true,9:true,", properties.getProperty("prefix.resizableIndexes"));
+        assertFalse(Boolean.valueOf(properties.getProperty("prefix.percentageSizing")));
+        assertEquals("3:false,7:true,8:true,9:false,", properties.getProperty("prefix.percentageSizingIndexes"));
+        assertFalse(Boolean.valueOf(properties.getProperty("prefix.distributeRemainingSpace")));
+        assertEquals("0", properties.getProperty("prefix.defaultMinSize"));
     }
 
     @Test
     public void testLoadEnhancedPercentageSizingState() {
+        // we set the initial value for column 2 to false
+        // this way we test if that value is reset so after load the value is
+        // true because of the default in the properties
+        this.sizeConfig.setPercentageSizing(2, false);
+
         Properties properties = new Properties();
         properties.setProperty("prefix.defaultSize", "40");
         properties.setProperty("prefix.defaultSizes", "1:10,2:20,3:30,");
@@ -164,8 +164,87 @@ public class SizeConfigPersistenceTest {
         properties.setProperty("prefix.resizableByDefault", "true");
         properties.setProperty("prefix.resizableIndexes", "1:false,6:false,");
         properties.setProperty("prefix.percentageSizing", "true");
-        properties.setProperty("prefix.percentageSizingIndexes",
-                "3:false,7:true,8:true,9:false,");
+        properties.setProperty("prefix.percentageSizingIndexes", "3:false,7:true,8:true,9:false,");
+
+        this.sizeConfig.loadState("prefix", properties);
+
+        // we have not specified a specific value in the properties
+        // therefore percentageSizing is true for column 2 as this is the
+        // default percentageSizing value
+        assertTrue(this.sizeConfig.isPercentageSizing(2));
+
+        assertTrue(this.sizeConfig.isResizableByDefault());
+        assertTrue(this.sizeConfig.isPercentageSizing());
+
+        assertFalse(this.sizeConfig.isPercentageSizing(3));
+        assertTrue(this.sizeConfig.isPercentageSizing(7));
+        assertTrue(this.sizeConfig.isPercentageSizing(8));
+        assertFalse(this.sizeConfig.isPercentageSizing(9));
+
+        assertTrue(this.sizeConfig.isPercentageSizing(2));
+        assertTrue(this.sizeConfig.isPercentageSizing(6));
+    }
+
+    @Test
+    public void testSaveEnhancedPercentageSizingWithMinSizeState() {
+        this.sizeConfig.setDefaultSize(5, 50);
+        this.sizeConfig.setDefaultSize(6, 60);
+
+        this.sizeConfig.setSize(5, 25);
+        this.sizeConfig.setSize(2, 88);
+        this.sizeConfig.setSize(4, 57);
+
+        this.sizeConfig.setResizableByDefault(false);
+
+        this.sizeConfig.setPositionResizable(3, true);
+        this.sizeConfig.setPositionResizable(9, true);
+
+        this.sizeConfig.setPercentageSizing(3, false);
+        this.sizeConfig.setPercentageSizing(9, false);
+        this.sizeConfig.setPercentageSizing(7, true);
+        this.sizeConfig.setPercentageSizing(8, true);
+
+        this.sizeConfig.setDistributeRemainingSpace(true);
+
+        this.sizeConfig.setDefaultMinSize(50);
+
+        this.sizeConfig.setMinSize(7, 100);
+        this.sizeConfig.setMinSize(8, 75);
+
+        Properties properties = new Properties();
+        this.sizeConfig.saveState("prefix", properties);
+
+        assertEquals(10, properties.size());
+        assertEquals("100", properties.getProperty("prefix.defaultSize"));
+        assertEquals("5:50,6:60,", properties.getProperty("prefix.defaultSizes"));
+        assertEquals("2:88,4:57,5:25,", properties.getProperty("prefix.sizes"));
+        assertFalse(Boolean.valueOf(properties.getProperty("prefix.resizableByDefault")));
+        assertEquals("3:true,9:true,", properties.getProperty("prefix.resizableIndexes"));
+        assertFalse(Boolean.valueOf(properties.getProperty("prefix.percentageSizing")));
+        assertEquals("3:false,7:true,8:true,9:false,", properties.getProperty("prefix.percentageSizingIndexes"));
+        assertTrue(Boolean.valueOf(properties.getProperty("prefix.distributeRemainingSpace")));
+        assertEquals("50", properties.getProperty("prefix.defaultMinSize"));
+        assertEquals("7:100,8:75,", properties.getProperty("prefix.minSizes"));
+    }
+
+    @Test
+    public void testLoadEnhancedPercentageSizingWithMinSizeState() {
+        // we set the initial value for column 2 to false
+        // this way we test if that value is reset so after load the value is
+        // true because of the default in the properties
+        this.sizeConfig.setMinSize(5, 50);
+
+        Properties properties = new Properties();
+        properties.setProperty("prefix.defaultSize", "40");
+        properties.setProperty("prefix.defaultSizes", "1:10,2:20,3:30,");
+        properties.setProperty("prefix.sizes", "1:100,4:400,5:500,");
+        properties.setProperty("prefix.resizableByDefault", "true");
+        properties.setProperty("prefix.resizableIndexes", "1:false,6:false,");
+        properties.setProperty("prefix.percentageSizing", "true");
+        properties.setProperty("prefix.percentageSizingIndexes", "3:false,7:true,8:true,9:false,");
+        properties.setProperty("prefix.distributeRemainingSpace", "true");
+        properties.setProperty("prefix.defaultMinSize", "25");
+        properties.setProperty("prefix.minSizes", "7:50,8:75,");
 
         this.sizeConfig.loadState("prefix", properties);
 
@@ -179,5 +258,16 @@ public class SizeConfigPersistenceTest {
 
         assertTrue(this.sizeConfig.isPercentageSizing(2));
         assertTrue(this.sizeConfig.isPercentageSizing(6));
+
+        // we have not specified a specific value in the properties
+        // therefore the min size is 25 which is the default min size
+        assertEquals(25, this.sizeConfig.getMinSize(5));
+        assertEquals(25, this.sizeConfig.getMinSize(6));
+        assertEquals(50, this.sizeConfig.getMinSize(7));
+        assertEquals(75, this.sizeConfig.getMinSize(8));
+
+        assertEquals(25, this.sizeConfig.getDefaultMinSize());
+
+        assertTrue(this.sizeConfig.isDistributeRemainingSpace());
     }
 }

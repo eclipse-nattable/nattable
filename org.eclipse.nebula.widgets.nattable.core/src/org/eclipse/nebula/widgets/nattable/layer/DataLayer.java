@@ -809,4 +809,175 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
         this.rowHeightConfig.setDistributeRemainingSpace(distributeRemaining);
     }
 
+    /**
+     *
+     * @return The default minimum column width. Default value is 0.
+     *
+     * @since 1.6
+     */
+    public int getDefaultMinColumnWidth() {
+        return this.columnWidthConfig.getDefaultMinSize();
+    }
+
+    /**
+     * Set the default minimum column width. Will affect percentage sizing to
+     * avoid column widths smaller than the given minimum value.
+     *
+     * @param defaultMinWidth
+     *            The default minimum column width to use, can not be less than
+     *            0.
+     * @throws IllegalArgumentException
+     *             if defaultMinWidth is less than 0.
+     *
+     * @since 1.6
+     */
+    public void setDefaultMinColumnWidth(int defaultMinWidth) {
+        this.columnWidthConfig.setDefaultMinSize(defaultMinWidth);
+    }
+
+    /**
+     * Returns the minimum column width for the given position. If no specific
+     * value is configured for the given position, the default minimum size is
+     * returned.
+     *
+     * @param position
+     *            The position for which the minimum column width is requested.
+     * @return The minimum column width for the given position.
+     * @see #getDefaultMinColumnWidth()
+     *
+     * @since 1.6
+     */
+    public int getMinColumnWidth(int position) {
+        return this.columnWidthConfig.getMinSize(position);
+    }
+
+    /**
+     * Set the minimum column width for the given position. Will affect
+     * percentage sizing to avoid column widths smaller than the given minimum
+     * value.
+     *
+     * @param position
+     *            The column position for which the minimum width should be set.
+     * @param minWidth
+     *            The minimum width for the given position.
+     * @throws IllegalArgumentException
+     *             if size is less than 0.
+     *
+     * @since 1.6
+     */
+    public void setMinColumnWidth(int position, int minWidth) {
+        this.columnWidthConfig.setMinSize(position, minWidth);
+    }
+
+    /**
+     *
+     * @return <code>true</code> if the default min column width or at least one
+     *         position has a min column width configured, <code>false</code> if
+     *         no min column width configuration is set.
+     *
+     * @since 1.6
+     */
+    public boolean isMinColumnWidthConfigured() {
+        return this.columnWidthConfig.isMinSizeConfigured();
+    }
+
+    /**
+     *
+     * @param position
+     *            The position for which it should be checked if a minimum
+     *            column width is configured.
+     * @return <code>true</code> if the given column has a minimum width
+     *         configured or a default minimum column width is configured,
+     *         <code>false</code> if not
+     *
+     * @since 1.6
+     */
+    public boolean isMinColumnWidthConfigured(int position) {
+        return this.columnWidthConfig.isMinSizeConfigured(position);
+    }
+
+    /**
+     *
+     * @return The default minimum row height. Default value is 0.
+     *
+     * @since 1.6
+     */
+    public int getDefaultMinRowHeight() {
+        return this.rowHeightConfig.getDefaultMinSize();
+    }
+
+    /**
+     * Set the default minimum row height. Will affect percentage sizing to
+     * avoid row heights smaller than the given minimum value.
+     *
+     * @param defaultMinHeight
+     *            The default minimum row height to use, can not be less than 0.
+     * @throws IllegalArgumentException
+     *             if defaultMinWidth is less than 0.
+     *
+     * @since 1.6
+     */
+    public void setDefaultMinRowHeight(int defaultMinHeight) {
+        this.rowHeightConfig.setDefaultMinSize(defaultMinHeight);
+    }
+
+    /**
+     * Returns the minimum row height for the given position. If no specific
+     * value is configured for the given position, the default minimum size is
+     * returned.
+     *
+     * @param position
+     *            The position for which the minimum row height is requested.
+     * @return The minimum row height for the given position.
+     * @see #getDefaultMinRowHeight()
+     *
+     * @since 1.6
+     */
+    public int getMinRowHeight(int position) {
+        return this.rowHeightConfig.getMinSize(position);
+    }
+
+    /**
+     * Set the minimum row height for the given position. Will affect percentage
+     * sizing to avoid row heights smaller than the given minimum value.
+     *
+     * @param position
+     *            The position for which the minimum height should be set.
+     * @param minHeight
+     *            The minimum height for the given position.
+     * @throws IllegalArgumentException
+     *             if size is less than 0.
+     *
+     * @since 1.6
+     */
+    public void setMinRowHeight(int position, int minHeight) {
+        this.rowHeightConfig.setMinSize(position, minHeight);
+    }
+
+    /**
+     *
+     * @return <code>true</code> if the default min row height or at least one
+     *         position has a min row height configured, <code>false</code> if
+     *         no min row height configuration is set.
+     *
+     * @since 1.6
+     */
+    public boolean isMinRowHeightConfigured() {
+        return this.rowHeightConfig.isMinSizeConfigured();
+    }
+
+    /**
+     *
+     * @param position
+     *            The position for which it should be checked if a minimum row
+     *            height is configured.
+     * @return <code>true</code> if the given row has a minimum height
+     *         configured or a default minimum row height is configured,
+     *         <code>false</code> if not
+     *
+     * @since 1.6
+     */
+    public boolean isMinRowHeightConfigured(int position) {
+        return this.rowHeightConfig.isMinSizeConfigured(position);
+    }
 }

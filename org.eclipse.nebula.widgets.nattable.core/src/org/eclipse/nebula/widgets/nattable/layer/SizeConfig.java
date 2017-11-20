@@ -15,6 +15,7 @@ package org.eclipse.nebula.widgets.nattable.layer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -39,6 +40,24 @@ public class SizeConfig implements IPersistable {
     public static final String PERSISTENCE_KEY_RESIZABLE_INDEXES = ".resizableIndexes"; //$NON-NLS-1$
     public static final String PERSISTENCE_KEY_PERCENTAGE_SIZING = ".percentageSizing"; //$NON-NLS-1$
     public static final String PERSISTENCE_KEY_PERCENTAGE_SIZING_INDEXES = ".percentageSizingIndexes"; //$NON-NLS-1$
+    /**
+     * Persistence key for distributeRemainingSpace property.
+     *
+     * @since 1.6
+     */
+    public static final String PERSISTENCE_KEY_DISTRIBUTE_REMAINING_SPACE = ".distributeRemainingSpace"; //$NON-NLS-1$
+    /**
+     * Persistence key for default min size property.
+     *
+     * @since 1.6
+     */
+    public static final String PERSISTENCE_KEY_DEFAULT_MIN_SIZE = ".defaultMinSize"; //$NON-NLS-1$
+    /**
+     * Persistence key for min size configuration map.
+     *
+     * @since 1.6
+     */
+    public static final String PERSISTENCE_KEY_MIN_SIZES = ".minSizes"; //$NON-NLS-1$
 
     /**
      * The global default size of this {@link SizeConfig}.
@@ -101,6 +120,20 @@ public class SizeConfig implements IPersistable {
      * @since 1.6
      */
     private boolean distributeRemainingSpace = false;
+    /**
+     * The default minimum size in pixels. Will be used on percentage sizing to
+     * avoid shrinking of columns/rows below a configured minimum.
+     *
+     * @since 1.6
+     */
+    private int defaultMinSize = 0;
+    /**
+     * Map that contains the minimum size in pixels. Will be used on percentage
+     * sizing to avoid shrinking of columns/rows below a configured minimum.
+     *
+     * @since 1.6
+     */
+    private final Map<Integer, Integer> minSizeMap = new TreeMap<Integer, Integer>();
 
     /**
      * Create a new {@link SizeConfig} with the given default size.
@@ -123,6 +156,9 @@ public class SizeConfig implements IPersistable {
         saveMap(this.resizablesMap, prefix + PERSISTENCE_KEY_RESIZABLE_INDEXES, properties);
         properties.put(prefix + PERSISTENCE_KEY_PERCENTAGE_SIZING, String.valueOf(this.percentageSizing));
         saveMap(this.percentageSizingMap, prefix + PERSISTENCE_KEY_PERCENTAGE_SIZING_INDEXES, properties);
+        properties.put(prefix + PERSISTENCE_KEY_DISTRIBUTE_REMAINING_SPACE, String.valueOf(this.distributeRemainingSpace));
+        properties.put(prefix + PERSISTENCE_KEY_DEFAULT_MIN_SIZE, String.valueOf(this.defaultMinSize));
+        saveMap(this.minSizeMap, prefix + PERSISTENCE_KEY_MIN_SIZES, properties);
     }
 
     private void saveMap(Map<Integer, ?> map, String key, Properties properties) {
@@ -143,28 +179,46 @@ public class SizeConfig implements IPersistable {
         // ensure to cleanup the current states prior loading new ones
         this.defaultSizeMap.clear();
         this.sizeMap.clear();
+        this.percentageSizingMap.clear();
         this.resizablesMap.clear();
         this.aggregatedSizeCacheMap.clear();
 
+        this.resizableByDefault = true;
+        this.percentageSizing = false;
+        this.distributeRemainingSpace = false;
+        this.isAggregatedSizeCacheValid = false;
+        this.defaultMinSize = 0;
+
         String persistedDefaultSize = properties.getProperty(prefix + PERSISTENCE_KEY_DEFAULT_SIZE);
         if (persistedDefaultSize != null && persistedDefaultSize.length() > 0) {
-            this.defaultSize = Integer.valueOf(persistedDefaultSize).intValue();
+            this.defaultSize = Integer.valueOf(persistedDefaultSize);
         }
 
         String persistedResizableDefault = properties.getProperty(prefix + PERSISTENCE_KEY_RESIZABLE_BY_DEFAULT);
         if (persistedResizableDefault != null && persistedResizableDefault.length() > 0) {
-            this.resizableByDefault = Boolean.valueOf(persistedResizableDefault).booleanValue();
+            this.resizableByDefault = Boolean.valueOf(persistedResizableDefault);
         }
 
         String persistedPercentageSizing = properties.getProperty(prefix + PERSISTENCE_KEY_PERCENTAGE_SIZING);
         if (persistedPercentageSizing != null && persistedPercentageSizing.length() > 0) {
-            setPercentageSizing(Boolean.valueOf(persistedPercentageSizing).booleanValue());
+            this.percentageSizing = Boolean.valueOf(persistedPercentageSizing);
+        }
+
+        String persistedDistributeRemainingSpace = properties.getProperty(prefix + PERSISTENCE_KEY_DISTRIBUTE_REMAINING_SPACE);
+        if (persistedDistributeRemainingSpace != null && persistedDistributeRemainingSpace.length() > 0) {
+            this.distributeRemainingSpace = Boolean.valueOf(persistedDistributeRemainingSpace);
+        }
+
+        String persistedDefaultMinSize = properties.getProperty(prefix + PERSISTENCE_KEY_DEFAULT_MIN_SIZE);
+        if (persistedDefaultMinSize != null && persistedDefaultMinSize.length() > 0) {
+            this.defaultMinSize = Integer.valueOf(persistedDefaultMinSize);
         }
 
         loadBooleanMap(prefix + PERSISTENCE_KEY_RESIZABLE_INDEXES, properties, this.resizablesMap);
         loadIntegerMap(prefix + PERSISTENCE_KEY_DEFAULT_SIZES, properties, this.defaultSizeMap);
         loadIntegerMap(prefix + PERSISTENCE_KEY_SIZES, properties, this.sizeMap);
         loadBooleanMap(prefix + PERSISTENCE_KEY_PERCENTAGE_SIZING_INDEXES, properties, this.percentageSizingMap);
+        loadIntegerMap(prefix + PERSISTENCE_KEY_MIN_SIZES, properties, this.minSizeMap);
     }
 
     private void loadIntegerMap(String key, Properties properties, Map<Integer, Integer> map) {
@@ -221,7 +275,7 @@ public class SizeConfig implements IPersistable {
     }
 
     public void setDefaultSize(int position, int size) {
-        if (this.defaultSize < 0) {
+        if (size < 0) {
             throw new IllegalArgumentException("size < 0"); //$NON-NLS-1$
         }
         this.defaultSizeMap.put(position, size);
@@ -281,6 +335,99 @@ public class SizeConfig implements IPersistable {
     }
 
     /**
+     * Returns the minimum size for the given position. If no specific value is
+     * configured for the given position, the default minimum size is returned.
+     *
+     * @param position
+     *            The position for which the minimum size is requested.
+     * @return The minimum size for the given position.
+     * @see #getDefaultMinSize()
+     *
+     * @since 1.6
+     */
+    public int getMinSize(int position) {
+        if (this.minSizeMap.containsKey(position)) {
+            return this.minSizeMap.get(position);
+        }
+        return getDefaultMinSize();
+    }
+
+    /**
+     * Set the minimum size for the given position. Will affect percentage
+     * sizing to avoid sizes smaller than the given minimum value.
+     *
+     * @param position
+     *            The position for which the minimum size should be set.
+     * @param size
+     *            The minimum size for the given position.
+     * @throws IllegalArgumentException
+     *             if size is less than 0.
+     *
+     * @since 1.6
+     */
+    public void setMinSize(int position, int size) {
+        if (size < 0) {
+            throw new IllegalArgumentException("size < 0"); //$NON-NLS-1$
+        }
+        this.minSizeMap.put(position, size);
+    }
+
+    /**
+     *
+     * @return The default minimum size. Default value is 0.
+     *
+     * @since 1.6
+     */
+    public int getDefaultMinSize() {
+        return this.defaultMinSize;
+    }
+
+    /**
+     * Set the default minimum size. Will affect percentage sizing to avoid
+     * sizes smaller than the given minimum value.
+     *
+     * @param defaultMinSize
+     *            The default minimum size to use, can not be less than 0.
+     * @throws IllegalArgumentException
+     *             if defaultMinSize is less than 0.
+     *
+     * @since 1.6
+     */
+    public void setDefaultMinSize(int defaultMinSize) {
+        if (defaultMinSize < 0) {
+            throw new IllegalArgumentException("defaultMinSize < 0"); //$NON-NLS-1$
+        }
+        this.defaultMinSize = defaultMinSize;
+    }
+
+    /**
+     *
+     * @return <code>true</code> if the default min size or at least one
+     *         position has a min size configured, <code>false</code> if no min
+     *         size configuration is set.
+     *
+     * @since 1.6
+     */
+    public boolean isMinSizeConfigured() {
+        return (this.defaultMinSize > 0 || !this.minSizeMap.isEmpty());
+    }
+
+    /**
+     *
+     * @param position
+     *            The position for which it should be checked if a minimum size
+     *            is configured.
+     * @return <code>true</code> if the given position has a minimum size
+     *         configured or a default minimum size is configured,
+     *         <code>false</code> if not
+     *
+     * @since 1.6
+     */
+    public boolean isMinSizeConfigured(int position) {
+        return (this.minSizeMap.containsKey(position) && this.minSizeMap.get(position) > 0) || this.defaultMinSize > 0;
+    }
+
+    /**
      * Sets the given size for the given position. This method can be called
      * manually for configuration via {@link DataLayer} and will be called on
      * resizing within the rendered UI. This is why there is a check for
@@ -307,54 +454,68 @@ public class SizeConfig implements IPersistable {
             // needs to be calculated
             if (!isPercentageSizing(position)) {
                 this.sizeMap.put(position, size);
-            } else {
-                if (this.availableSpace > 0) {
-                    Double percentage = ((double) size * 100) / this.availableSpace;
+            } else if (this.availableSpace > 0) {
+                Double percentage = ((double) size * 100) / this.availableSpace;
 
-                    Integer oldValue = this.sizeMap.get(position);
-                    int diff = percentage.intValue();
-                    if (oldValue != null) {
-                        diff = diff - oldValue;
-                    } else {
-                        // there was no percentage value before
-                        // we need to calculate the before value out of the
-                        // realSizeMap otherwise the resizing effect would
-                        // have strange effects
-                        if (this.realSizeMap.containsKey(position)) {
-                            Double calculated = ((double) this.realSizeMap.get(position) * 100) / this.availableSpace;
-                            diff = diff - calculated.intValue();
+                boolean minSizeUpdate = isMinSizeConfigured(position) && size < getMinSize(position);
+
+                Integer oldValue = this.sizeMap.get(position);
+                int diff = percentage.intValue();
+                if (oldValue != null && !minSizeUpdate) {
+                    diff = diff - oldValue;
+                } else {
+                    // there was no percentage value before
+                    // we need to calculate the before value out of the
+                    // realSizeMap otherwise the resizing effect would
+                    // have strange effects
+                    if (this.realSizeMap.containsKey(position)) {
+                        Double calculated = ((double) this.realSizeMap.get(position) * 100) / this.availableSpace;
+                        diff = diff - calculated.intValue();
+                    }
+
+                }
+
+                // if a min size is configured and the size is set to a lower
+                // value via resize, the min size needs to be adjusted
+                if (minSizeUpdate) {
+                    for (Map.Entry<Integer, Integer> entry : this.sizeMap.entrySet()) {
+                        if (entry.getKey() != position && isPercentageSizing(entry.getKey())) {
+                            Double calculated = ((double) this.realSizeMap.get(entry.getKey()) * 100) / this.availableSpace;
+                            if (calculated < entry.getValue()) {
+                                this.sizeMap.put(entry.getKey(), calculated.intValue());
+                            }
                         }
-
                     }
+                    setMinSize(position, size);
+                }
 
-                    this.sizeMap.put(position, percentage.intValue());
+                this.sizeMap.put(position, percentage.intValue());
 
-                    // check the adjacent positions for percentage corrections
-                    int nextPosition = position + 1;
-                    while (diff != 0 && this.realSizeMap.containsKey(nextPosition)) {
-                        if (isPositionResizable(nextPosition)) {
-                            diff = updateAdjacentPosition(nextPosition, diff);
-                        }
-                        nextPosition++;
+                // check the adjacent positions for percentage corrections
+                int nextPosition = position + 1;
+                while (diff != 0 && this.realSizeMap.containsKey(nextPosition)) {
+                    if (isPositionResizable(nextPosition)) {
+                        diff = updateAdjacentPosition(nextPosition, diff);
                     }
+                    nextPosition++;
+                }
 
-                    int previousPosition = position - 1;
-                    while (diff != 0 && this.realSizeMap.containsKey(previousPosition)) {
-                        if (isPositionResizable(previousPosition)) {
-                            diff = updateAdjacentPosition(previousPosition, diff);
-                        }
-                        previousPosition--;
+                int previousPosition = position - 1;
+                while (diff != 0 && this.realSizeMap.containsKey(previousPosition)) {
+                    if (isPositionResizable(previousPosition)) {
+                        diff = updateAdjacentPosition(previousPosition, diff);
                     }
+                    previousPosition--;
+                }
 
-                    if (diff != 0 && oldValue == null) {
-                        // if the diff is not 0 and there was no size value set
-                        // before we will remove the prior set value again
-                        // this is because the position was configured as the
-                        // only percentage sizing position with no specified
-                        // value, which technically means that it should always
-                        // take the remaining space
-                        this.sizeMap.remove(position);
-                    }
+                if (diff != 0 && oldValue == null) {
+                    // if the diff is not 0 and there was no size value set
+                    // before we will remove the prior set value again
+                    // this is because the position was configured as the
+                    // only percentage sizing position with no specified
+                    // value, which technically means that it should always
+                    // take the remaining space
+                    this.sizeMap.remove(position);
                 }
             }
 
@@ -376,6 +537,9 @@ public class SizeConfig implements IPersistable {
      *         to the position.
      */
     private int updateAdjacentPosition(int position, int diff) {
+        // TODO handling of min size
+        // if previous resized position was at min size before, the adjacent
+        // position needs to be increased more if the min size is reset
         if (this.sizeMap.containsKey(position) || this.realSizeMap.containsKey(position)) {
             if (isPercentageSizing(position)) {
                 if (this.sizeMap.containsKey(position)) {
@@ -494,8 +658,9 @@ public class SizeConfig implements IPersistable {
     public boolean isPercentageSizing() {
         if (!this.percentageSizingMap.isEmpty()) {
             for (Boolean pSize : this.percentageSizingMap.values()) {
-                if (pSize)
+                if (pSize) {
                     return true;
+                }
             }
         }
         return this.percentageSizing;
@@ -580,6 +745,7 @@ public class SizeConfig implements IPersistable {
             int real = 0;
             int realSum = 0;
             int fixedSum = 0;
+            int minSizeIncrease = 0;
             List<Integer> noInfoPositions = new ArrayList<Integer>();
             List<Integer> fixedPercentagePositions = new ArrayList<Integer>();
             Integer positionValue = null;
@@ -596,8 +762,17 @@ public class SizeConfig implements IPersistable {
 
                 if (positionValue != null) {
                     if (isPercentageSizing(i)) {
-                        sum += positionValue;
                         real = calculatePercentageValue(positionValue, percentageSpace);
+                        int minSize = getMinSize(i);
+                        if (real < minSize) {
+                            // remember the added pixels so they can be removed
+                            // from other fixed percentage sized positions
+                            minSizeIncrease += (minSize - real);
+                            // use the min size value
+                            real = minSize;
+                        } else {
+                            sum += positionValue;
+                        }
                         fixedPercentagePositions.add(i);
                     } else {
                         real = positionValue;
@@ -614,13 +789,62 @@ public class SizeConfig implements IPersistable {
                 realSum = correction[1] + fixedSum;
             }
 
+            // if percentage sizing and min size is configured and the used
+            // space is bigger than the available space, check if there is a
+            // percentage sized column without min size that needs to be reduced
+            if (!fixedPercentagePositions.isEmpty() && realSum > space) {
+                List<Integer> noMinWidth = new ArrayList<Integer>();
+                int sumMod = 0;
+                for (Iterator<Integer> it = fixedPercentagePositions.iterator(); it.hasNext();) {
+                    int pos = it.next();
+                    if (this.realSizeMap.get(pos) == getMinSize(pos)) {
+                        sumMod += this.sizeMap.get(pos);
+                        it.remove();
+                    } else {
+                        noMinWidth.add(pos);
+                    }
+                }
+                for (int pos : noMinWidth) {
+                    Integer percentage = this.sizeMap.get(pos);
+                    double ratio = Integer.valueOf(percentage).doubleValue() / Integer.valueOf(sum).doubleValue();
+                    int dist = (int) Math.round(Double.valueOf(minSizeIncrease * ratio));
+                    int newValue = this.realSizeMap.get(pos) - dist;
+                    newValue = (newValue > 0) ? newValue : 0;
+                    realSum -= (this.realSizeMap.get(pos) - newValue);
+                    this.realSizeMap.put(pos, newValue);
+                }
+                // update the sum to contain also the min size using position
+                // values
+                sum += sumMod;
+            }
+
+            // if min size configured, check noInfoPositions and update
+            // according to the min size that gets applied
+            if (!noInfoPositions.isEmpty() && isMinSizeConfigured()) {
+                double remaining = new Double(space) - realSum;
+                Double remainingColSpace = remaining / noInfoPositions.size();
+
+                for (Iterator<Integer> it = noInfoPositions.iterator(); it.hasNext();) {
+                    int position = it.next();
+                    int minSize = getMinSize(position);
+                    if (minSize > remainingColSpace) {
+                        // a configured min size is bigger than the remaining
+                        // space so treat the min size like a fixed value
+                        realSum += minSize;
+                        this.realSizeMap.put(position, minSize);
+                        it.remove();
+                    }
+                }
+            }
+
             if (!noInfoPositions.isEmpty()) {
                 // now calculate the size for the remaining columns
                 double remaining = new Double(space) - realSum;
                 Double remainingColSpace = remaining / noInfoPositions.size();
                 for (Integer position : noInfoPositions) {
                     sum += (remainingColSpace / space) * 100;
-                    this.realSizeMap.put(position, remainingColSpace.intValue());
+                    int minSize = getMinSize(position);
+                    this.realSizeMap.put(position, remainingColSpace < minSize ? minSize : remainingColSpace.intValue());
                 }
                 // If there are positions for which no size information exist,
                 // the size config will use 100 percent of the available space
@@ -638,13 +862,20 @@ public class SizeConfig implements IPersistable {
                     && this.distributeRemainingSpace) {
                 double remaining = new Double(space) - realSum;
                 if (remaining > 0) {
+                    // calculate sum of eligible fixed percentage positions
+                    int eligibleSum = 0;
+                    for (int pos : fixedPercentagePositions) {
+                        eligibleSum += this.sizeMap.get(pos);
+                    }
                     // calculate ratio
-                    for (int i = 0; i < fixedPercentagePositions.size(); i++) {
-                        Integer pos = fixedPercentagePositions.get(i);
-                        Integer percentage = this.sizeMap.get(pos);
-                        double ratio = Integer.valueOf(percentage).doubleValue() / Integer.valueOf(sum).doubleValue();
-                        int dist = Double.valueOf(remaining * ratio).intValue();
-                        this.realSizeMap.put(pos, this.realSizeMap.get(pos) + dist);
+                    for (int pos : fixedPercentagePositions) {
+                        // TODO do not distribute on min
+                        if (getMinSize(pos) != this.realSizeMap.get(pos)) {
+                            Integer percentage = this.sizeMap.get(pos);
+                            double ratio = Integer.valueOf(percentage).doubleValue() / Integer.valueOf(eligibleSum).doubleValue();
+                            int dist = Double.valueOf(remaining * ratio).intValue();
+                            this.realSizeMap.put(pos, this.realSizeMap.get(pos) + dist);
+                        }
                     }
                     sum = 100;
                 }
@@ -675,12 +906,16 @@ public class SizeConfig implements IPersistable {
 
                         // only increase columns that are not configured to
                         // be hidden or fixed size
-                        while (this.realSizeMap.get(pos) == 0 || !isPercentageSizing(pos)) {
+                        Integer posValue = this.realSizeMap.get(pos);
+                        while (posValue != null && (posValue == 0 || !isPercentageSizing(pos) || getMinSize(pos) == posValue)) {
+                            pos++;
+                            posValue = this.realSizeMap.get(pos);
+                        }
+
+                        if (posValue != null) {
+                            this.realSizeMap.put(pos, posValue + 1);
                             pos++;
                         }
-                        int posValue = this.realSizeMap.get(pos);
-                        this.realSizeMap.put(pos, posValue + 1);
-                        pos++;
                     }
                 }
             }
@@ -713,14 +948,10 @@ public class SizeConfig implements IPersistable {
      *         available space.
      */
     protected int calculateAvailableSpace(int space) {
-        if (!this.percentageSizingMap.isEmpty()) {
-            if (this.percentageSizing) {
-                for (Map.Entry<Integer, Boolean> entry : this.percentageSizingMap.entrySet()) {
-                    if (!entry.getValue()) {
-                        if (this.sizeMap.containsKey(entry.getKey())) {
-                            space -= this.sizeMap.get(entry.getKey());
-                        }
-                    }
+        if (!this.percentageSizingMap.isEmpty() && this.percentageSizing) {
+            for (Map.Entry<Integer, Boolean> entry : this.percentageSizingMap.entrySet()) {
+                if (!entry.getValue() && this.sizeMap.containsKey(entry.getKey())) {
+                    space -= this.sizeMap.get(entry.getKey());
                 }
             }
         }
@@ -743,10 +974,16 @@ public class SizeConfig implements IPersistable {
      */
     protected int[] correctPercentageValues(int sum, int positionCount) {
         Map<Integer, Integer> toModify = new TreeMap<Integer, Integer>();
+        int fixedSum = 0;
+        int modifySum = 0;
         for (int i = 0; i < positionCount; i++) {
             Integer positionValue = this.sizeMap.get(i);
-            if (positionValue != null && isPercentageSizing(i)) {
+            if (positionValue != null && isPercentageSizing(i)
+                    && (!isMinSizeConfigured(i) || (isMinSizeConfigured(i) && this.realSizeMap.get(i) != getMinSize(i)))) {
                 toModify.put(i, this.realSizeMap.get(i));
+                modifySum += positionValue;
+            } else if (!isPercentageSizing(i) && positionValue != null) {
+                fixedSum += positionValue;
             }
         }
 
@@ -755,15 +992,30 @@ public class SizeConfig implements IPersistable {
         if (sum > 100) {
             // calculate the factor which needs to be used to normalize the
             // values
-            double factor = Double.valueOf(100) / Double.valueOf(sum);
+            int excess = sum - 100;
+            double excessPixel = Double.valueOf(this.availableSpace - fixedSum) * Double.valueOf(excess) / 100;
 
-            // update the percentage size values by the calculated factor
+            double newPercentageSum = 0;
             int realSum = 0;
             for (Map.Entry<Integer, Integer> mod : toModify.entrySet()) {
-                int oldValue = mod.getValue();
-                int newValue = Double.valueOf(oldValue * factor).intValue();
+                double ratio = this.sizeMap.get(mod.getKey()).doubleValue() / Integer.valueOf(modifySum).doubleValue();
+                int exc = (int) Math.round(Double.valueOf(excessPixel * ratio));
+
+                int newValue = mod.getValue() - exc;
+
+                if (isMinSizeConfigured(mod.getKey()) && newValue < getMinSize(mod.getKey())) {
+                    newValue = getMinSize(mod.getKey());
+                }
+
+                double newPercentage = (Double.valueOf(newValue) / Double.valueOf(this.availableSpace - fixedSum)) * 100;
+                newPercentageSum += newPercentage;
+
                 realSum += newValue;
                 this.realSizeMap.put(mod.getKey(), newValue);
+            }
+
+            if (newPercentageSum > 100) {
+                return correctPercentageValues(Double.valueOf(newPercentageSum).intValue(), positionCount);
             }
 
             return new int[] { 100, realSum };

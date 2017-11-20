@@ -9,4 +9,24 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/org/eclipse/nebula/widgets/nattable/layer/SizeConfig.java" type="org.eclipse.nebula.widgets.nattable.layer.SizeConfig">
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.layer.SizeConfig"/>
+                <message_argument value="PERSISTENCE_KEY_DEFAULT_MIN_SIZE"/>
+            </message_arguments>
+        </filter>
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.layer.SizeConfig"/>
+                <message_argument value="PERSISTENCE_KEY_DISTRIBUTE_REMAINING_SPACE"/>
+            </message_arguments>
+        </filter>
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.layer.SizeConfig"/>
+                <message_argument value="PERSISTENCE_KEY_MIN_SIZES"/>
+            </message_arguments>
+        </filter>
+    </resource>
 </component>
