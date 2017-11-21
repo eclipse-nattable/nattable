@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,6 +36,8 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 
     private boolean skipProcessing = false;
 
+    private Runnable delayedSingleClickRunnable = null;
+
     public MouseModeEventHandler(
             ModeSupport modeSupport, NatTable natTable, MouseEvent initialMouseDownEvent,
             IMouseAction singleClickAction, IMouseAction doubleClickAction, IDragMode dragMode) {
@@ -54,7 +56,20 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
     @Override
     public void mouseUp(final MouseEvent event) {
         this.mouseDown = false;
-        this.doubleClick = false;
+        // if the mouse is slightly moved between two clicks, it is not
+        // recognized as double click by the system. But as we support a click
+        // radius for high sensitive mouse movements, we check here if a double
+        // click runnable is scheduled and perform a double click if the single
+        // click is not executed yet. The click radius is handled in mouseMove()
+        // where we execute the single click if the mouse moves out of the click
+        // radius after mouseUp()
+        if (this.delayedSingleClickRunnable == null) {
+            this.doubleClick = false;
+        } else {
+            // avoid execution of single click action and trigger double click
+            mouseDoubleClick(event);
+            return;
+        }
 
         if (this.singleClickAction != null) {
             // convert/validate/commit/close possible open editor needed in case
@@ -66,14 +81,16 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
                     // single click or the double click action is exclusive,
                     // wait to see if this mouseUp is part of a doubleClick or
                     // not.
-                    event.display.timerExec(event.display.getDoubleClickTime(), new Runnable() {
+                    this.delayedSingleClickRunnable = new Runnable() {
                         @Override
                         public void run() {
+                            MouseModeEventHandler.this.delayedSingleClickRunnable = null;
                             if (!MouseModeEventHandler.this.doubleClick && !MouseModeEventHandler.this.skipProcessing) {
                                 executeClickAction(MouseModeEventHandler.this.singleClickAction, event);
                             }
                         }
-                    });
+                    };
+                    event.display.timerExec(event.display.getDoubleClickTime(), this.delayedSingleClickRunnable);
                 } else {
                     executeClickAction(this.singleClickAction, event);
                 }
@@ -141,20 +158,17 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
             } else {
                 switchMode(Mode.NORMAL_MODE);
             }
-        } else {
-            if (!(this.mouseDown && MouseEventHelper.eventOnSameCell(this.natTable, this.initialMouseDownEvent, event))) {
-                // ensure the double click runnable is not executed and process
-                // single click immediately
-                this.skipProcessing = true;
-                executeClickAction(this.singleClickAction, this.initialMouseDownEvent);
+        } else if (!this.mouseDown && !MouseEventHelper.treatAsClick(this.initialMouseDownEvent, event)) {
+            // if mouseUp was called already and the mouse moves out of the
+            // click radius, ensure the double click runnable is not executed
+            // and process single click immediately as it can not become a
+            // double click
+            this.skipProcessing = true;
+            executeClickAction(this.singleClickAction, this.initialMouseDownEvent);
 
-                // Bug 436770
-                // do not switch back to normal mode in case a click is
-                // processed
-                // No drag mode registered when mouseMove detected. Switch back
-                // to normal mode.
-                switchMode(Mode.NORMAL_MODE);
-            }
+            // No drag mode registered when mouseMove detected. Switch back
+            // to normal mode.
+            switchMode(Mode.NORMAL_MODE);
         }
     }
 
@@ -199,5 +213,4 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
         }
         return false;
     }
-
 }

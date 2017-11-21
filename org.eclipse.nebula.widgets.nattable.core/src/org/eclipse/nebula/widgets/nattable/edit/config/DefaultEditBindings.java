@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.edit.config;
 
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
-import org.eclipse.nebula.widgets.nattable.edit.action.CellEditDragMode;
 import org.eclipse.nebula.widgets.nattable.edit.action.KeyEditAction;
 import org.eclipse.nebula.widgets.nattable.edit.action.MouseEditAction;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
@@ -69,18 +68,9 @@ public class DefaultEditBindings extends AbstractUiBindingConfiguration {
                 new CellEditorMouseEventMatcher(GridRegion.BODY),
                 new MouseEditAction());
 
-        uiBindingRegistry.registerMouseDragMode(
-                new CellEditorMouseEventMatcher(GridRegion.BODY),
-                new CellEditDragMode());
-
         uiBindingRegistry.registerFirstSingleClickBinding(
                 new CellPainterMouseEventMatcher(GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON, CheckBoxPainter.class),
                 new MouseEditAction());
-
-        uiBindingRegistry.registerFirstMouseDragMode(
-                new CellPainterMouseEventMatcher(GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON, CheckBoxPainter.class),
-                new CellEditDragMode());
-
     }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,8 @@
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 453882
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.action;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.ui.mode.AbstractModeEventHandler;
@@ -28,6 +30,8 @@ public class DragModeEventHandler extends AbstractModeEventHandler {
     private final MouseEvent mouseDownEvent;
 
     private boolean realDrag = false;
+
+    private AtomicBoolean mouseUpHandled = new AtomicBoolean(false);
 
     public DragModeEventHandler(
             ModeSupport modeSupport,
@@ -55,15 +59,26 @@ public class DragModeEventHandler extends AbstractModeEventHandler {
 
     @Override
     public void mouseUp(MouseEvent event) {
-        this.dragMode.mouseUp(this.natTable, event);
-        switchMode(Mode.NORMAL_MODE);
+        // avoid to handle mouseUp twice because of focusLost
+        if (this.mouseUpHandled.compareAndSet(false, true)) {
+            // mouse up needs to be handled to ensure that allocated resources
+            // are cleaned up correctly, e.g. overlay painters in reorder or
+            // resize drag modes.
+            this.dragMode.mouseUp(this.natTable, event);
 
-        // Bug 379884
-        // check if the drag operation started and ended within the same cell
-        // in that case the registered click operation is executed also
-        if (!this.realDrag
-                && MouseEventHelper.eventOnSameCell(this.natTable, this.mouseDownEvent, event)) {
-            this.parentModeEventHandler.mouseUp(event);
+            // Bug 379884
+            // check if the drag operation started and ended within the same
+            // cell and the mouse was not moved out of the click area. In that
+            // case the registered click operation is executed also.
+            if (!this.realDrag
+                    && MouseEventHelper.eventOnSameCell(this.natTable, this.mouseDownEvent, event)) {
+                this.parentModeEventHandler.mouseUp(event);
+                // switching back to the parent mode to correctly handle
+                // possible double clicks
+                switchMode(this.parentModeEventHandler);
+            } else {
+                switchMode(Mode.NORMAL_MODE);
+            }
         }
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,7 +26,11 @@ import org.eclipse.swt.events.MouseEvent;
  * bit. So between mouseDown and mouseUp there is a movement registered, so it
  * is not interpreted as a click anymore, but as a drag&amp;drop operation. With
  * this implementation registered the described behaviour is avoided.
+ *
+ * @deprecated since 1.6 the intention of this drag mode is obsolete. The correct
+ *             handling is done inside {@link org.eclipse.nebula.widgets.nattable.ui.action.DragModeEventHandler}
  */
+@Deprecated
 public class CellEditDragMode extends CellSelectionDragMode {
 
     private int originalColumnPosition;
@@ -64,9 +68,10 @@ public class CellEditDragMode extends CellSelectionDragMode {
 
         if (columnPosition == this.originalColumnPosition
                 && rowPosition == this.originalRowPosition) {
-            natTable.doCommand(new EditCellCommand(natTable, natTable
-                    .getConfigRegistry(), natTable.getCellByPosition(
-                    columnPosition, rowPosition)));
+            natTable.doCommand(new EditCellCommand(
+                    natTable, 
+                    natTable.getConfigRegistry(), 
+                    natTable.getCellByPosition(columnPosition, rowPosition)));
         }
     }
 
