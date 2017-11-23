@@ -485,9 +485,13 @@ public class NatCombo extends Composite {
                     showDropdownControl();
 
                     int selectionIndex = getDropdownTable().getSelectionIndex();
-                    if (selectionIndex < 0)
-                        selectionIndex = 0;
-                    getDropdownTable().select(selectionIndex);
+                    if (selectionIndex < 0) {
+                        select(0);
+                    } else {
+                        // only visualize the selection in the dropdown, do not
+                        // perform a selection
+                        getDropdownTable().select(selectionIndex);
+                    }
 
                     // ensure the arrow key events do not have any further
                     // effect
@@ -666,6 +670,20 @@ public class NatCombo extends Composite {
             @Override
             public Image getImage(Object element) {
                 return null;
+            }
+        });
+
+        this.dropdownTable.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent event) {
+                if (event.keyCode == SWT.ARROW_DOWN) {
+                    int selected = NatCombo.this.dropdownTable.getSelectionIndex();
+                    if (selected < 0) {
+                        // no selection before, select the first entry
+                        select(0);
+                        event.doit = false;
+                    }
+                }
             }
         });
 
