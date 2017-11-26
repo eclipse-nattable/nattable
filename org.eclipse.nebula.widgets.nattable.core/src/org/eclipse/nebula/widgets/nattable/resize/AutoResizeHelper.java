@@ -10,16 +10,25 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
+import org.eclipse.nebula.widgets.nattable.resize.command.MultiRowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
+import org.eclipse.nebula.widgets.nattable.util.GCFactory;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
+import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
+import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
@@ -54,7 +63,7 @@ public class AutoResizeHelper {
     /**
      * The total area of the previous in-memory rendering. Needed to reduce the
      * rendering area on consecutive calls.
-     * 
+     *
      * @since 1.5
      */
     protected Rectangle prevArea = null;
@@ -219,5 +228,65 @@ public class AutoResizeHelper {
         this.layer.removeLayerListener(this.resizeListener);
         this.layer.setClientAreaProvider(this.originalClientAreaProvider);
         this.layer.doCommand(new TurnViewportOnCommand());
+    }
+
+    /**
+     * Trigger auto-resizing of rows based on the content of the whole row.
+     *
+     * @param natTable
+     *            The NatTable on which the auto row resize should be performed.
+     *            Needed to create a temporary {@link GC} and retrieve the
+     *            {@link IConfigRegistry}.
+     * @param rowLayer
+     *            The {@link ILayer} that should be used to determine the rows
+     *            to auto-resize. Can be the {@link ViewportLayer} to ensure
+     *            that the auto row resize is only triggered for visible rows or
+     *            the {@link DataLayer} of the body region to auto-resize all
+     *            rows.
+     * @param bodyDataLayer
+     *            The {@link DataLayer} of the body region to inspect all
+     *            columns in a row, even if not visible in the viewport.
+     *
+     * @since 1.6
+     */
+    public static void autoResizeRows(final NatTable natTable, final ILayer rowLayer, final ILayer bodyDataLayer) {
+        natTable.getDisplay().asyncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                int[] rowPos = new int[rowLayer.getRowCount()];
+                int[] rowHeights = new int[rowLayer.getRowCount()];
+                for (int i = 0; i < rowLayer.getRowCount(); i++) {
+                    rowPos[i] = rowLayer.getRowIndexByPosition(i);
+                    rowHeights[i] = rowLayer.getRowHeightByPosition(i);
+                }
+
+                int[] calculatedRowHeights = MaxCellBoundsHelper.getPreferredRowHeights(
+                        natTable.getConfigRegistry(),
+                        new GCFactory(natTable),
+                        bodyDataLayer,
+                        rowPos);
+
+                // only perform row resize where necessary
+                // avoid unnecessary commands
+                final List<Integer> positions = new ArrayList<Integer>();
+                final List<Integer> heights = new ArrayList<Integer>();
+                for (int i = 0; i < rowPos.length; i++) {
+                    if (rowHeights[i] != calculatedRowHeights[i]) {
+                        positions.add(rowPos[i]);
+                        heights.add(calculatedRowHeights[i]);
+                    }
+                }
+
+                if (!positions.isEmpty()) {
+                    bodyDataLayer.doCommand(
+                            new MultiRowResizeCommand(
+                                    bodyDataLayer,
+                                    ObjectUtils.asIntArray(positions),
+                                    ObjectUtils.asIntArray(heights),
+                                    true));
+                }
+            }
+        });
     }
 }
