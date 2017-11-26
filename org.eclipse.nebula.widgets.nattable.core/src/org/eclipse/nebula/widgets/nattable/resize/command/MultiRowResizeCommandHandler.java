@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,8 +19,7 @@ import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
 
-public class MultiRowResizeCommandHandler extends
-        AbstractLayerCommandHandler<MultiRowResizeCommand> {
+public class MultiRowResizeCommandHandler extends AbstractLayerCommandHandler<MultiRowResizeCommand> {
 
     private final DataLayer dataLayer;
 
@@ -39,8 +38,11 @@ public class MultiRowResizeCommandHandler extends
 
         for (int rowPosition : command.getRowPositions()) {
             rowPositions.add(rowPosition);
-            this.dataLayer.setRowHeightByPosition(rowPosition,
-                    command.getRowHeight(rowPosition), false);
+            int newRowHeight = command.downScaleValue()
+                    ? this.dataLayer.downScaleRowHeight(command.getRowHeight(rowPosition))
+                    : command.getRowHeight(rowPosition);
+
+            this.dataLayer.setRowHeightByPosition(rowPosition, newRowHeight, false);
         }
 
         List<Range> ranges = PositionUtil.getRanges(rowPositions);

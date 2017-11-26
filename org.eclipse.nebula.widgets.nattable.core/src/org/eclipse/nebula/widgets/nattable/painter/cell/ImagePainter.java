@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -85,11 +85,9 @@ public class ImagePainter extends BackgroundPainter {
             Rectangle imageBounds = image.getBounds();
             IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
             int x0 = bounds.x
-                    + CellStyleUtil.getHorizontalAlignmentPadding(
-                            cellStyle, bounds, imageBounds.width);
+                    + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, bounds, imageBounds.width);
             int y0 = bounds.y
-                    + CellStyleUtil.getVerticalAlignmentPadding(
-                            cellStyle, bounds, imageBounds.height);
+                    + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, bounds, imageBounds.height);
             if (x >= x0 && x < x0 + imageBounds.width
                     && y >= y0 && y < y0 + imageBounds.height) {
                 return super.getCellPainterAt(x, y, cell, gc, bounds, configRegistry);
@@ -116,7 +114,8 @@ public class ImagePainter extends BackgroundPainter {
                 layer.doCommand(new RowResizeCommand(
                         layer,
                         cell.getRowPosition(),
-                        contentHeight + contentToCellDiff));
+                        contentHeight + contentToCellDiff,
+                        true));
             }
 
             int contentWidth = imageBounds.width;
@@ -126,7 +125,8 @@ public class ImagePainter extends BackgroundPainter {
                 layer.doCommand(new ColumnResizeCommand(
                         layer,
                         cell.getColumnPosition(),
-                        contentWidth + contentToCellDiff));
+                        contentWidth + contentToCellDiff,
+                        true));
             }
 
             gc.drawImage(
@@ -148,8 +148,9 @@ public class ImagePainter extends BackgroundPainter {
      *         {@link ImagePainter}.
      */
     protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
-        return this.image != null ? this.image : CellStyleUtil.getCellStyle(
-                cell, configRegistry).getAttributeValue(CellStyleAttributes.IMAGE);
+        return this.image != null
+                ? this.image
+                : CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(CellStyleAttributes.IMAGE);
     }
 
     /**

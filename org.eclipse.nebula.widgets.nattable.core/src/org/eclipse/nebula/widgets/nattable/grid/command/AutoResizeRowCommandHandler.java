@@ -91,7 +91,7 @@ public class AutoResizeRowCommandHandler implements ILayerCommandHandler<AutoRes
                 gridRowPositions);
 
         this.commandLayer.doCommand(
-                new MultiRowResizeCommand(this.commandLayer, gridRowPositions, gridRowHeights));
+                new MultiRowResizeCommand(this.commandLayer, gridRowPositions, gridRowHeights, true));
 
         targetLayer.doCommand(new TurnViewportOnCommand());
 

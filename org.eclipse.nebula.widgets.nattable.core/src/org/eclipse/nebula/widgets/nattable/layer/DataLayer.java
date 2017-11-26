@@ -980,4 +980,68 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     public boolean isMinRowHeightConfigured(int position) {
         return this.rowHeightConfig.isMinSizeConfigured(position);
     }
+
+    /**
+     * Calculates the column width value dependent on a possible configured
+     * scaling from pixel to DPI value.
+     *
+     * @param value
+     *            The value that should be up scaled.
+     * @return The scaled value if a {@link IDpiConverter} is configured, the
+     *         value itself if no {@link IDpiConverter} is set.
+     *
+     * @see IDpiConverter#convertPixelToDpi(int)
+     *
+     * @since 1.6
+     */
+    public int upScaleColumnWidth(int value) {
+        return this.columnWidthConfig.upScale(value);
+    }
+
+    /**
+     * Calculates the column width value dependent on a possible configured
+     * scaling from DPI to pixel value.
+     *
+     * @param value
+     *            The value that should be down scaled.
+     * @return The scaled value if a {@link IDpiConverter} is configured, the
+     *         value itself if no {@link IDpiConverter} is set.
+     *
+     * @since 1.6
+     */
+    public int downScaleColumnWidth(int value) {
+        return this.columnWidthConfig.downScale(value);
+    }
+
+    /**
+     * Calculates the row height value dependent on a possible configured
+     * scaling from pixel to DPI value.
+     *
+     * @param value
+     *            The value that should be up scaled.
+     * @return The scaled value if a {@link IDpiConverter} is configured, the
+     *         value itself if no {@link IDpiConverter} is set.
+     *
+     * @see IDpiConverter#convertPixelToDpi(int)
+     *
+     * @since 1.6
+     */
+    public int upScaleRowHeight(int value) {
+        return this.rowHeightConfig.upScale(value);
+    }
+
+    /**
+     * Calculates the row height value dependent on a possible configured
+     * scaling from DPI to pixel value.
+     *
+     * @param value
+     *            The value that should be down scaled.
+     * @return The scaled value if a {@link IDpiConverter} is configured, the
+     *         value itself if no {@link IDpiConverter} is set.
+     *
+     * @since 1.6
+     */
+    public int downScaleRowHeight(int value) {
+        return this.rowHeightConfig.downScale(value);
+    }
 }

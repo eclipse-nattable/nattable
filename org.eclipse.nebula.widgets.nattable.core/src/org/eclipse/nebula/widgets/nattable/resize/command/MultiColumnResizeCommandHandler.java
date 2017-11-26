@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,8 +19,7 @@ import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 
-public class MultiColumnResizeCommandHandler extends
-        AbstractLayerCommandHandler<MultiColumnResizeCommand> {
+public class MultiColumnResizeCommandHandler extends AbstractLayerCommandHandler<MultiColumnResizeCommand> {
 
     private final DataLayer dataLayer;
 
@@ -39,8 +38,11 @@ public class MultiColumnResizeCommandHandler extends
 
         for (int columnPosition : command.getColumnPositions()) {
             columnPositions.add(columnPosition);
-            this.dataLayer.setColumnWidthByPosition(columnPosition,
-                    command.getColumnWidth(columnPosition), false);
+            int newColumnWidth = command.downScaleValue()
+                    ? this.dataLayer.downScaleColumnWidth(command.getColumnWidth(columnPosition))
+                    : command.getColumnWidth(columnPosition);
+
+            this.dataLayer.setColumnWidthByPosition(columnPosition, newColumnWidth, false);
         }
 
         List<Range> ranges = PositionUtil.getRanges(columnPositions);

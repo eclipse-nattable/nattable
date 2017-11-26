@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2016 Dirk Fauth and others.
+ * Copyright (c) 2014, 2017 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -182,7 +182,7 @@ public class VerticalTextImagePainter extends AbstractTextPainter {
         if ((contentWidth > rectangle.width) && this.calculateByTextHeight) {
             ILayer layer = cell.getLayer();
             layer.doCommand(
-                    new ColumnResizeCommand(layer, cell.getColumnPosition(), contentWidth + contentToCellDiff));
+                    new ColumnResizeCommand(layer, cell.getColumnPosition(), contentWidth + contentToCellDiff, true));
         }
 
         if (text != null && text.length() > 0) {
@@ -233,7 +233,7 @@ public class VerticalTextImagePainter extends AbstractTextPainter {
         if (cellLength < contentHeight) {
 
             ILayer layer = cell.getLayer();
-            layer.doCommand(new RowResizeCommand(layer, cell.getRowPosition(), contentHeight));
+            layer.doCommand(new RowResizeCommand(layer, cell.getRowPosition(), contentHeight, true));
         }
     }
 

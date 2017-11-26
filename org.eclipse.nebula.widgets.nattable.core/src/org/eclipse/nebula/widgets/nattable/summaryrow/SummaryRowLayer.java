@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2015 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -119,8 +119,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
      *
      * @see DefaultSummaryRowConfiguration
      */
-    public SummaryRowLayer(IUniqueIndexLayer underlyingDataLayer,
-            IConfigRegistry configRegistry) {
+    public SummaryRowLayer(IUniqueIndexLayer underlyingDataLayer, IConfigRegistry configRegistry) {
         this(underlyingDataLayer, configRegistry, true, true);
     }
 
@@ -149,8 +148,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
      *
      * @see DefaultSummaryRowConfiguration
      */
-    public SummaryRowLayer(IUniqueIndexLayer underlyingDataLayer,
-            IConfigRegistry configRegistry, boolean autoConfigure) {
+    public SummaryRowLayer(IUniqueIndexLayer underlyingDataLayer, IConfigRegistry configRegistry, boolean autoConfigure) {
         this(underlyingDataLayer, configRegistry, true, autoConfigure);
     }
 
@@ -182,9 +180,8 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
      *
      * @see DefaultSummaryRowConfiguration
      */
-    public SummaryRowLayer(IUniqueIndexLayer underlyingDataLayer,
-            IConfigRegistry configRegistry, boolean smoothUpdates,
-            boolean autoConfigure) {
+    public SummaryRowLayer(IUniqueIndexLayer underlyingDataLayer, IConfigRegistry configRegistry,
+            boolean smoothUpdates, boolean autoConfigure) {
 
         super(underlyingDataLayer);
         this.configRegistry = configRegistry;
@@ -230,8 +227,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
      *         temporary value if the calculation process is started in a
      *         background thread.
      */
-    private Object calculateNewSummaryValue(final int columnPosition,
-            boolean calculateInBackground) {
+    private Object calculateNewSummaryValue(final int columnPosition, boolean calculateInBackground) {
 
         // as we only care about one row in the value cache, the real row
         // position doesn't matter in fact using the real summary row
@@ -244,19 +240,16 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 
                     @Override
                     public Object executeCalculation() {
-                        LabelStack labelStack = getConfigLabelsByPositionWithoutTransformation(
-                                columnPosition, getSummaryRowPosition());
-                        String[] configLabels = labelStack.getLabels().toArray(
-                                ArrayUtil.STRING_TYPE_ARRAY);
+                        LabelStack labelStack = getConfigLabelsByPositionWithoutTransformation(columnPosition, getSummaryRowPosition());
+                        String[] configLabels = labelStack.getLabels().toArray(ArrayUtil.STRING_TYPE_ARRAY);
 
-                        final ISummaryProvider summaryProvider = SummaryRowLayer.this.configRegistry
-                                .getConfigAttribute(
-                                        SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                                        DisplayMode.NORMAL, configLabels);
+                        final ISummaryProvider summaryProvider = SummaryRowLayer.this.configRegistry.getConfigAttribute(
+                                SummaryRowConfigAttributes.SUMMARY_PROVIDER,
+                                DisplayMode.NORMAL,
+                                configLabels);
 
                         // If there is no Summary provider - skip processing
-                        if (summaryProvider == ISummaryProvider.NONE
-                                || summaryProvider == null) {
+                        if (summaryProvider == ISummaryProvider.NONE || summaryProvider == null) {
                             return null;
                         }
 
@@ -288,7 +281,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
         if (command instanceof RowResizeCommand && command.convertToTargetLayer(this)) {
             RowResizeCommand rowResizeCommand = (RowResizeCommand) command;
             if (isSummaryRowPosition(rowResizeCommand.getRowPosition())) {
-                if (this.dpiConverter != null) {
+                if (rowResizeCommand.downScaleValue() && this.dpiConverter != null) {
                     this.summaryRowHeight = this.dpiConverter.convertDpiToPixel(rowResizeCommand.getNewHeight());
                 } else {
                     this.summaryRowHeight = rowResizeCommand.getNewHeight();
@@ -368,8 +361,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
      *            be already transformed.
      * @return The {@link LabelStack} for the cell at the given coordinates.
      */
-    protected LabelStack getConfigLabelsByPositionWithoutTransformation(
-            int columnPosition, int rowPosition) {
+    protected LabelStack getConfigLabelsByPositionWithoutTransformation(int columnPosition, int rowPosition) {
         return this.getConfigLabelsByPosition(columnPosition, rowPosition);
     }
 
@@ -379,8 +371,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
             // create a new LabelStack that takes the config labels into account
             LabelStack labelStack = new LabelStack();
             if (getConfigLabelAccumulator() != null) {
-                getConfigLabelAccumulator().accumulateConfigLabels(
-                        labelStack, columnPosition, rowPosition);
+                getConfigLabelAccumulator().accumulateConfigLabels(labelStack, columnPosition, rowPosition);
             }
             labelStack.addLabelOnTop(DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
             labelStack.addLabelOnTop(DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + columnPosition);
@@ -402,8 +393,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
         if (this.standalone) {
             return getRowHeightByPosition(getSummaryRowPosition());
         }
-        return super.getHeight()
-                + getRowHeightByPosition(getSummaryRowPosition());
+        return super.getHeight() + getRowHeightByPosition(getSummaryRowPosition());
     }
 
     @Override
@@ -411,8 +401,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
         if (this.standalone) {
             return getRowHeightByPosition(getSummaryRowPosition());
         }
-        return super.getPreferredHeight()
-                + getRowHeightByPosition(getSummaryRowPosition());
+        return super.getPreferredHeight() + getRowHeightByPosition(getSummaryRowPosition());
     }
 
     @Override

@@ -94,7 +94,7 @@ public class AutoResizeColumnCommandHandler implements ILayerCommandHandler<Auto
                 gridColumnPositions);
 
         this.commandLayer.doCommand(
-                new MultiColumnResizeCommand(this.commandLayer, gridColumnPositions, gridColumnWidths));
+                new MultiColumnResizeCommand(this.commandLayer, gridColumnPositions, gridColumnWidths, true));
         targetLayer.doCommand(new TurnViewportOnCommand());
 
         return true;

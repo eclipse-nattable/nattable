@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,8 +13,7 @@ package org.eclipse.nebula.widgets.nattable.resize.command;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 
-public class ColumnResizeCommandHandler extends
-        AbstractLayerCommandHandler<ColumnResizeCommand> {
+public class ColumnResizeCommandHandler extends AbstractLayerCommandHandler<ColumnResizeCommand> {
 
     private final DataLayer dataLayer;
 
@@ -29,9 +28,10 @@ public class ColumnResizeCommandHandler extends
 
     @Override
     protected boolean doCommand(ColumnResizeCommand command) {
-        final int newColumnWidth = command.getNewColumnWidth();
-        this.dataLayer.setColumnWidthByPosition(command.getColumnPosition(),
-                newColumnWidth);
+        int newColumnWidth = command.downScaleValue()
+                ? this.dataLayer.downScaleColumnWidth(command.getNewColumnWidth())
+                : command.getNewColumnWidth();
+        this.dataLayer.setColumnWidthByPosition(command.getColumnPosition(), newColumnWidth);
         return true;
     }
 

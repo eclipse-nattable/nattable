@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -48,8 +48,7 @@ public class ColumnResizeDragMode implements IDragMode {
     @Override
     public void mouseDown(NatTable natTable, MouseEvent event) {
         natTable.forceFocus();
-        this.columnPositionToResize =
-                CellEdgeDetectUtil.getColumnPositionToResize(natTable, new Point(event.x, event.y));
+        this.columnPositionToResize = CellEdgeDetectUtil.getColumnPositionToResize(natTable, new Point(event.x, event.y));
         if (this.columnPositionToResize >= 0) {
             this.gridColumnStartX = natTable.getStartXOfColumnPosition(this.columnPositionToResize);
             this.originalColumnWidth = natTable.getColumnWidthByPosition(this.columnPositionToResize);
@@ -103,11 +102,15 @@ public class ColumnResizeDragMode implements IDragMode {
         if (newColumnWidth < getColumnWidthMinimum()) {
             newColumnWidth = getColumnWidthMinimum();
         }
+        // trigger the ColumnResizeCommand with downScaling enabled
+        // as the user performed a drag operation the newColumnWidth is the
+        // value on the screen, which needs to be down scaled in the DataLayer
         natLayer.doCommand(
                 new ColumnResizeCommand(
                         natLayer,
                         this.columnPositionToResize,
-                        GUIHelper.convertVerticalDpiToPixel(newColumnWidth)));
+                        newColumnWidth,
+                        true));
     }
 
     // XXX: This method must ask the layer what it's minimum width is!

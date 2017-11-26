@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -47,8 +47,7 @@ public class RowResizeDragMode implements IDragMode {
     @Override
     public void mouseDown(NatTable natTable, MouseEvent event) {
         natTable.forceFocus();
-        this.gridRowPositionToResize =
-                CellEdgeDetectUtil.getRowPositionToResize(natTable, new Point(event.x, event.y));
+        this.gridRowPositionToResize = CellEdgeDetectUtil.getRowPositionToResize(natTable, new Point(event.x, event.y));
         if (this.gridRowPositionToResize > 0) {
             this.gridRowStartY = natTable.getStartYOfRowPosition(this.gridRowPositionToResize);
             this.originalRowHeight = natTable.getRowHeightByPosition(this.gridRowPositionToResize);
@@ -100,11 +99,15 @@ public class RowResizeDragMode implements IDragMode {
         if (newRowHeight < getRowHeightMinimum()) {
             newRowHeight = getRowHeightMinimum();
         }
+        // trigger the RowResizeCommand with downScaling enabled
+        // as the user performed a drag operation the newRowHeight is the value
+        // on the screen, which needs to be down scaled in the DataLayer
         natLayer.doCommand(
                 new RowResizeCommand(
                         natLayer,
                         this.gridRowPositionToResize,
-                        GUIHelper.convertHorizontalDpiToPixel(newRowHeight)));
+                        newRowHeight,
+                        true));
     }
 
     // XXX: should ask the layer for its minimum row height
@@ -120,8 +123,11 @@ public class RowResizeDragMode implements IDragMode {
         public void paintOverlay(GC gc, ILayer layer) {
             Color originalBackgroundColor = gc.getBackground();
             gc.setBackground(GUIHelper.COLOR_DARK_GRAY);
-            gc.fillRectangle(0, RowResizeDragMode.this.currentY - (ROW_RESIZE_OVERLAY_HEIGHT / 2),
-                    layer.getWidth(), ROW_RESIZE_OVERLAY_HEIGHT);
+            gc.fillRectangle(
+                    0,
+                    RowResizeDragMode.this.currentY - (ROW_RESIZE_OVERLAY_HEIGHT / 2),
+                    layer.getWidth(),
+                    ROW_RESIZE_OVERLAY_HEIGHT);
             gc.setBackground(originalBackgroundColor);
         }
     }

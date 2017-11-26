@@ -199,7 +199,7 @@ public class TableCellPainter extends BackgroundPainter {
                 if (isCalculateParentCellHeight()
                         && (neededHeight > cell.getBounds().height)) {
                     ILayer layer = cell.getLayer();
-                    layer.doCommand(new RowResizeCommand(layer, cell.getRowPosition(), neededHeight));
+                    layer.doCommand(new RowResizeCommand(layer, cell.getRowPosition(), neededHeight, true));
                 }
             }
         } else {

@@ -186,7 +186,7 @@ public class TextPainter extends AbstractTextPainter {
             if (performRowResize(contentHeight, rectangle)) {
                 ILayer layer = cell.getLayer();
                 layer.doCommand(
-                        new RowResizeCommand(layer, cell.getRowPosition(), contentHeight + contentToCellDiff));
+                        new RowResizeCommand(layer, cell.getRowPosition(), contentHeight + contentToCellDiff, true));
             }
 
             if (numberOfNewLines == 1) {
@@ -249,7 +249,7 @@ public class TextPainter extends AbstractTextPainter {
             // execute ColumnResizeCommand
             ILayer layer = cell.getLayer();
             layer.doCommand(
-                    new ColumnResizeCommand(layer, cell.getColumnPosition(), contentWidth));
+                    new ColumnResizeCommand(layer, cell.getColumnPosition(), contentWidth, true));
         }
     }
 

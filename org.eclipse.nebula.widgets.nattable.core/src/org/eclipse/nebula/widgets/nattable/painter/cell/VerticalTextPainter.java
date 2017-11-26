@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -188,7 +188,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
             if ((contentHeight > rectangle.width) && this.calculateByTextHeight) {
                 ILayer layer = cell.getLayer();
                 layer.doCommand(
-                        new ColumnResizeCommand(layer, cell.getColumnPosition(), contentHeight + contentToCellDiff));
+                        new ColumnResizeCommand(layer, cell.getColumnPosition(), contentHeight + contentToCellDiff, true));
             }
 
             if (text != null && text.length() > 0) {
@@ -327,7 +327,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
 
             ILayer layer = cell.getLayer();
             layer.doCommand(
-                    new RowResizeCommand(layer, cell.getRowPosition(), contentHeight));
+                    new RowResizeCommand(layer, cell.getRowPosition(), contentHeight, true));
         }
     }
 
