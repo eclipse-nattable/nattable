@@ -286,9 +286,9 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
             int columnPosition = updateCommand.getColumnPosition();
             int rowPosition = updateCommand.getRowPosition();
             Object currentValue = getDataValueByPosition(columnPosition, rowPosition);
-            if (currentValue == null
-                    || updateCommand.getNewValue() == null
-                    || !currentValue.equals(updateCommand.getNewValue())) {
+            if ((currentValue == null && updateCommand.getNewValue() != null)
+                    || (updateCommand.getNewValue() == null && currentValue != null)
+                    || (currentValue != null && updateCommand.getNewValue() != null && !currentValue.equals(updateCommand.getNewValue()))) {
 
                 Object underlyingDataValue = getUnderlyingLayer().getDataValueByPosition(columnPosition, rowPosition);
                 if ((updateCommand.getNewValue() == null && underlyingDataValue == null)
@@ -443,7 +443,7 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
     /**
      * Get the locally stored data changes to perform updates on the persistence
      * model only for applied changes.
-     * 
+     *
      * @return Collection of modified cell identifiers according to the used
      *         {@link CellKeyHandler} and corresponding
      *         {@link UpdateDataCommand}s that are collected in this layer. If

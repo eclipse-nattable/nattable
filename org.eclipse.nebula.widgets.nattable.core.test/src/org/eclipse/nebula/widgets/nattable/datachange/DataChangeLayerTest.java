@@ -716,7 +716,23 @@ public class DataChangeLayerTest {
 
         assertNull(this.dataLayer.getDataValue(1, 1));
         assertNull(this.dataChangeLayer.getDataValueByPosition(1, 1));
-        assertFalse("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(1, 1).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 1).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertFalse("Row 1 is dirty", this.dataChangeLayer.isRowDirty(1));
+        assertFalse("Cell is dirty", this.dataChangeLayer.isCellDirty(1, 1));
+    }
+
+    @Test
+    public void shouldNotDirtyNullToNull() {
+        this.dataLayer.setDataValue(1, 1, null);
+
+        assertNull(this.dataLayer.getDataValue(1, 1));
+
+        this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, null));
+
+        assertNull(this.dataLayer.getDataValue(1, 1));
+        assertNull(this.dataChangeLayer.getDataValueByPosition(1, 1));
+        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 1).hasLabel(DataChangeLayer.DIRTY));
         assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
         assertFalse("Row 1 is dirty", this.dataChangeLayer.isRowDirty(1));
         assertFalse("Cell is dirty", this.dataChangeLayer.isCellDirty(1, 1));

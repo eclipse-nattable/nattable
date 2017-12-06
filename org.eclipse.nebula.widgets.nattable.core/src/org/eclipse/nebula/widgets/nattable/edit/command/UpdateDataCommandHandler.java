@@ -52,9 +52,9 @@ public class UpdateDataCommandHandler extends AbstractLayerCommandHandler<Update
             int rowPosition = command.getRowPosition();
 
             Object currentValue = this.dataLayer.getDataValueByPosition(columnPosition, rowPosition);
-            if (currentValue == null
-                    || command.getNewValue() == null
-                    || !currentValue.equals(command.getNewValue())) {
+            if ((currentValue == null && command.getNewValue() != null)
+                    || (command.getNewValue() == null && currentValue != null)
+                    || (currentValue != null && command.getNewValue() != null && !currentValue.equals(command.getNewValue()))) {
                 this.dataLayer.setDataValueByPosition(columnPosition, rowPosition, command.getNewValue());
                 this.dataLayer.fireLayerEvent(
                         new DataUpdateEvent(this.dataLayer, columnPosition, rowPosition, currentValue, command.getNewValue()));
