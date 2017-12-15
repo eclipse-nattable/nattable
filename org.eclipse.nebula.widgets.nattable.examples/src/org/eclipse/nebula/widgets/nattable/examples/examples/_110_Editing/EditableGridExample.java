@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,6 +32,7 @@ import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.validate.DataValidator;
 import org.eclipse.nebula.widgets.nattable.data.validate.DefaultNumericDataValidator;
 import org.eclipse.nebula.widgets.nattable.data.validate.IDataValidator;
+import org.eclipse.nebula.widgets.nattable.data.validate.ValidationFailedException;
 import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.PricingTypeBean;
 import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
@@ -316,8 +317,6 @@ public class EditableGridExample extends AbstractNatExample {
 
         TextCellEditor textCellEditor = new TextCellEditor();
         textCellEditor.setErrorDecorationEnabled(true);
-        textCellEditor.setErrorDecorationText(
-                "Security Id must be 3 alpha characters optionally followed by numbers");
         textCellEditor.setDecorationPositionOverride(SWT.LEFT | SWT.TOP);
         configRegistry.registerConfigAttribute(
                 EditConfigAttributes.CELL_EDITOR, textCellEditor,
@@ -538,21 +537,27 @@ public class EditableGridExample extends AbstractNatExample {
         return new DataValidator() {
 
             @Override
-            public boolean validate(int columnIndex, int rowIndex,
-                    Object newValue) {
-                if (newValue == null) {
-                    return false;
+            public boolean validate(int columnIndex, int rowIndex, Object newValue) {
+                boolean valid = false;
+
+                if (newValue != null) {
+                    String value = (String) newValue;
+                    if (value.length() > 3) {
+                        String alphabeticPart = value.substring(0, 2);
+                        String numericPart = value.substring(3, value.length());
+                        valid = isAlpha(alphabeticPart)
+                                && isNumeric(numericPart);
+                    } else {
+                        String alphabeticPart = value.substring(0, value.length());
+                        valid = isAlpha(alphabeticPart);
+                    }
                 }
-                String value = (String) newValue;
-                if (value.length() > 3) {
-                    String alphabeticPart = value.substring(0, 2);
-                    String numericPart = value.substring(3, value.length());
-                    return isAlpha(alphabeticPart)
-                            && isNumeric(numericPart);
-                } else {
-                    String alphabeticPart = value.substring(0, value.length());
-                    return isAlpha(alphabeticPart);
+
+                if (!valid) {
+                    throw new ValidationFailedException("Security Id must be 3 alpha characters optionally followed by numbers");
                 }
+
+                return valid;
             }
 
             private boolean isAlpha(String str) {
@@ -572,5 +577,4 @@ public class EditableGridExample extends AbstractNatExample {
             }
         };
     }
-
 }
