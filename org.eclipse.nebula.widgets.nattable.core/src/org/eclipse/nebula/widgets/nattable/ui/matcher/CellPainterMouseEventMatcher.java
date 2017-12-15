@@ -12,6 +12,7 @@ package org.eclipse.nebula.widgets.nattable.ui.matcher;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
@@ -20,34 +21,68 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
- * Matches a mouse click on a given cell painter within a cell.
+ * Matches a mouse click on an {@link ICellPainter} within a cell in a specified
+ * region.
  */
 public class CellPainterMouseEventMatcher extends MouseEventMatcher {
 
     private ICellPainter targetCellPainter;
     private Class<? extends ICellPainter> targetCellPainterClass;
 
-    public CellPainterMouseEventMatcher(String regionName, int button,
-            ICellPainter targetCellPainter) {
+    /**
+     * Creates a {@link CellPainterMouseEventMatcher} for a given region name,
+     * mouse button and a specific target cellPainter instance. Can be used in
+     * case one single painter instance is registered that should be checked
+     * for.
+     *
+     * @param regionName
+     *            The name of the region where this matcher should react on.
+     *            Typically a {@link GridRegion} if a default grid is used. Can
+     *            also be another value in case a custom region label is defined
+     *            in a custom composition.
+     * @param button
+     *            The mouse button this matcher should react on, e.g.
+     *            {@link MouseEventMatcher#LEFT_BUTTON} and
+     *            {@link MouseEventMatcher#RIGHT_BUTTON}
+     * @param targetCellPainter
+     *            The {@link ICellPainter} instance that should be used for the
+     *            check.
+     */
+    public CellPainterMouseEventMatcher(String regionName, int button, ICellPainter targetCellPainter) {
         super(regionName, button);
         this.targetCellPainter = targetCellPainter;
     }
 
-    public CellPainterMouseEventMatcher(String regionName, int button,
-            Class<? extends ICellPainter> targetCellPainterClass) {
+    /**
+     * Creates a {@link CellPainterMouseEventMatcher} for a given region name,
+     * mouse button and a target cellPainter class. Can be used in case every
+     * instance of a painter should be treated the same way, e.g. checkboxes.
+     *
+     * @param regionName
+     *            The name of the region where this matcher should react on.
+     *            Typically a {@link GridRegion} if a default grid is used. Can
+     *            also be another value in case a custom region label is defined
+     *            in a custom composition.
+     * @param button
+     *            The mouse button this matcher should react on, e.g.
+     *            {@link MouseEventMatcher#LEFT_BUTTON} and
+     *            {@link MouseEventMatcher#RIGHT_BUTTON}
+     * @param targetCellPainterClass
+     *            The concrete type of the {@link ICellPainter} that should be
+     *            used for the check.
+     */
+    public CellPainterMouseEventMatcher(String regionName, int button, Class<? extends ICellPainter> targetCellPainterClass) {
         super(regionName, button);
         this.targetCellPainterClass = targetCellPainterClass;
     }
 
     @Override
-    public boolean matches(NatTable natTable, MouseEvent event,
-            LabelStack regionLabels) {
+    public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
         if (super.matches(natTable, event, regionLabels)) {
             int columnPosition = natTable.getColumnPositionByX(event.x);
             int rowPosition = natTable.getRowPositionByY(event.y);
 
-            ILayerCell cell = natTable.getCellByPosition(columnPosition,
-                    rowPosition);
+            ILayerCell cell = natTable.getCellByPosition(columnPosition, rowPosition);
 
             // Bug 407598: only perform a check if the click in the body region
             // was performed on a cell
@@ -56,21 +91,28 @@ public class CellPainterMouseEventMatcher extends MouseEventMatcher {
             if (cell != null) {
                 IConfigRegistry configRegistry = natTable.getConfigRegistry();
                 ICellPainter cellPainter = cell.getLayer().getCellPainter(
-                        columnPosition, rowPosition, cell, configRegistry);
+                        columnPosition,
+                        rowPosition,
+                        cell,
+                        configRegistry);
 
                 GC gc = new GC(natTable.getDisplay());
                 try {
-                    Rectangle adjustedCellBounds = natTable.getLayerPainter()
-                            .adjustCellBounds(columnPosition, rowPosition,
-                                    cell.getBounds());
+                    Rectangle adjustedCellBounds = natTable.getLayerPainter().adjustCellBounds(
+                            columnPosition,
+                            rowPosition,
+                            cell.getBounds());
 
-                    ICellPainter clickedCellPainter = cellPainter
-                            .getCellPainterAt(event.x, event.y, cell, gc,
-                                    adjustedCellBounds, configRegistry);
+                    ICellPainter clickedCellPainter = cellPainter.getCellPainterAt(
+                            event.x,
+                            event.y,
+                            cell,
+                            gc,
+                            adjustedCellBounds,
+                            configRegistry);
                     if (clickedCellPainter != null) {
                         if ((this.targetCellPainter != null && this.targetCellPainter == clickedCellPainter)
-                                || (this.targetCellPainterClass != null && this.targetCellPainterClass
-                                        .isInstance(clickedCellPainter))) {
+                                || (this.targetCellPainterClass != null && this.targetCellPainterClass.isInstance(clickedCellPainter))) {
                             return true;
                         }
                     }

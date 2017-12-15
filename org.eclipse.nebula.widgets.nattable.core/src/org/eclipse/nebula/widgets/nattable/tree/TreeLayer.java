@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,7 +43,7 @@ import org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter
 
 public class TreeLayer extends AbstractRowHideShowLayer {
 
-    private static final Log log = LogFactory.getLog(TreeLayer.class);
+    private static final Log LOG = LogFactory.getLog(TreeLayer.class);
 
     public static final String TREE_COLUMN_CELL = "TREE_COLUMN_CELL"; //$NON-NLS-1$
 
@@ -190,16 +190,19 @@ public class TreeLayer extends AbstractRowHideShowLayer {
         if (isTreeColumn(columnPosition)) {
             configLabels.addLabelOnTop(TREE_COLUMN_CELL);
 
-            int rowIndex = getRowIndexByPosition(rowPosition);
-            configLabels.addLabelOnTop(
-                    DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + this.treeRowModel.depth(rowIndex));
-            if (!this.treeRowModel.hasChildren(rowIndex)) {
-                configLabels.addLabelOnTop(DefaultTreeLayerConfiguration.TREE_LEAF_CONFIG_TYPE);
-            } else {
-                if (this.treeRowModel.isCollapsed(rowIndex)) {
-                    configLabels.addLabelOnTop(DefaultTreeLayerConfiguration.TREE_COLLAPSED_CONFIG_TYPE);
+            ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
+            if (cell != null) {
+                int rowIndex = cell.getOriginRowPosition();
+                configLabels.addLabelOnTop(
+                        DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + this.treeRowModel.depth(rowIndex));
+                if (!this.treeRowModel.hasChildren(rowIndex)) {
+                    configLabels.addLabelOnTop(DefaultTreeLayerConfiguration.TREE_LEAF_CONFIG_TYPE);
                 } else {
-                    configLabels.addLabelOnTop(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE);
+                    if (this.treeRowModel.isCollapsed(rowIndex)) {
+                        configLabels.addLabelOnTop(DefaultTreeLayerConfiguration.TREE_COLLAPSED_CONFIG_TYPE);
+                    } else {
+                        configLabels.addLabelOnTop(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE);
+                    }
                 }
             }
         }
@@ -249,8 +252,9 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      *            The column position to check.
      * @return <code>true</code> if the given column position is the tree
      *         column, <code>false</code> if not.
+     * @since 1.6
      */
-    private boolean isTreeColumn(int columnPosition) {
+    protected boolean isTreeColumn(int columnPosition) {
         if (this.useTreeColumnIndex)
             return getColumnIndexByPosition(columnPosition) == TREE_COLUMN_NUMBER;
 
@@ -279,7 +283,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
                     cellPainter = treeCellPainter;
                 } else {
                     // log error
-                    log.warn("There is no IndentedTreeImagePainter found for TREE_STRUCTURE_PAINTER, " //$NON-NLS-1$
+                    LOG.warn("There is no IndentedTreeImagePainter found for TREE_STRUCTURE_PAINTER, " //$NON-NLS-1$
                             + "using local configured IndentedTreeImagePainter as fallback"); //$NON-NLS-1$
                     // fallback
                     this.indentedTreeImagePainter.setBaseCellPainter(cellPainter);
