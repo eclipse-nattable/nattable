@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Roman Flueckiger.
+ * Copyright (c) 2014, 2017 Roman Flueckiger.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -48,8 +48,9 @@ public class TreeExpandCollapseKeyAction implements IKeyAction {
 
         if (anchorPosition.rowPosition != SelectionLayer.NO_SELECTION && anchorPosition.columnPosition != SelectionLayer.NO_SELECTION) {
             int rowIndex = this.selectionLayer.getRowIndexByPosition(anchorPosition.rowPosition);
+            int columnIndex = this.selectionLayer.getColumnIndexByPosition(anchorPosition.columnPosition);
 
-            TreeExpandCollapseCommand command = new TreeExpandCollapseCommand(rowIndex);
+            TreeExpandCollapseCommand command = new TreeExpandCollapseCommand(rowIndex, columnIndex);
             natTable.doCommand(command);
         }
     }

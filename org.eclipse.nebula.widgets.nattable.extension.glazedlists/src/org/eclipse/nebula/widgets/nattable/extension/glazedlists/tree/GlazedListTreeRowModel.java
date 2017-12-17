@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -253,8 +253,13 @@ public class GlazedListTreeRowModel<T> extends AbstractTreeRowModel<T> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @since 1.6
+     */
     @Override
-    protected GlazedListTreeData<T> getTreeData() {
+    public GlazedListTreeData<T> getTreeData() {
         return (GlazedListTreeData<T>) super.getTreeData();
     }
 }

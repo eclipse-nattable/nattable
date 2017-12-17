@@ -104,8 +104,30 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
     }
 
     private PropertyDescriptor getPropertyDescriptor(R rowObj, int columnIndex) throws IntrospectionException {
+        String propertyName = this.propertyNames.get(columnIndex);
+        return getPropertyDescriptor(rowObj, propertyName);
+    }
+
+    /**
+     *
+     * @param rowObj
+     *            The Java Bean for which the {@link PropertyDescriptor} is
+     *            requested.
+     * @param propertyName
+     *            The name of the property for which the {@link PropertyDescriptor}
+     *            is requested.
+     * @return The {@link PropertyDescriptor} that describes the property with the
+     *         given name in the given Java Bean object that exports it via a pair
+     *         of accessor methods.
+     * @throws IntrospectionException
+     *             if an exception occurs during introspection
+     * @since 1.6
+     */
+    protected PropertyDescriptor getPropertyDescriptor(Object rowObj, String propertyName) throws IntrospectionException {
         synchronized (rowObj) {
-            if (!this.propertyDescriptorMap.containsKey(rowObj.getClass())) {
+            Map<String, PropertyDescriptor> descriptorMap = this.propertyDescriptorMap.get(rowObj.getClass());
+
+            if (descriptorMap == null) {
                 PropertyDescriptor[] propertyDescriptors =
                         Introspector.getBeanInfo(rowObj.getClass()).getPropertyDescriptors();
 
@@ -113,12 +135,12 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
                 for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
                     propertiesByAttribute.put(propertyDescriptor.getName(), propertyDescriptor);
                 }
+                descriptorMap = propertiesByAttribute;
                 this.propertyDescriptorMap.put(rowObj.getClass(), propertiesByAttribute);
             }
-        }
 
-        final String propertyName = this.propertyNames.get(columnIndex);
-        return this.propertyDescriptorMap.get(rowObj.getClass()).get(propertyName);
+            return descriptorMap.get(propertyName);
+        }
     }
 
 }

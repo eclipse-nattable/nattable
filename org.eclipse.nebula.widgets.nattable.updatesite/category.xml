@@ -24,10 +24,10 @@
    <feature url="features/org.eclipse.nebula.widgets.nattable.core.source.feature_1.6.0.qualifier.jar" id="org.eclipse.nebula.widgets.nattable.core.source.feature" version="1.6.0.qualifier">
       <category name="nattable-core"/>
    </feature>
-   <feature url="features/org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature_1.5.1.qualifier.jar" id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature" version="1.5.1.qualifier">
+   <feature url="features/org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature_1.6.0.qualifier.jar" id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature" version="1.6.0.qualifier">
       <category name="nattable-extensions"/>
    </feature>
-   <feature url="features/org.eclipse.nebula.widgets.nattable.extension.glazedlists.source.feature_1.5.1.qualifier.jar" id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.source.feature" version="1.5.1.qualifier">
+   <feature url="features/org.eclipse.nebula.widgets.nattable.extension.glazedlists.source.feature_1.6.0.qualifier.jar" id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.source.feature" version="1.6.0.qualifier">
       <category name="nattable-extensions"/>
    </feature>
    <category-def name="nattable-core" label="NatTable Core">

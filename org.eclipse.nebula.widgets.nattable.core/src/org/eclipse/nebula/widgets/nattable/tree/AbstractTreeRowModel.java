@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -143,7 +143,13 @@ public abstract class AbstractTreeRowModel<T> implements ITreeRowModel<T> {
         return this.treeData.getChildren(parent);
     }
 
-    protected ITreeData<T> getTreeData() {
+    /**
+     * Returns the {@link ITreeData} that is backed by this tree row model.
+     *
+     * @return The {@link ITreeData} that is backed by this tree row model.
+     * @since 1.6
+     */
+    public ITreeData<T> getTreeData() {
         return this.treeData;
     }
 }

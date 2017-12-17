@@ -31,8 +31,9 @@ public class TreeExpandCollapseAction implements IMouseAction {
         int c = natTable.getColumnPositionByX(event.x);
         int r = natTable.getRowPositionByY(event.y);
         ILayerCell cell = natTable.getCellByPosition(c, r);
-        int index = cell.getLayer().getRowIndexByPosition(cell.getOriginRowPosition());
-        TreeExpandCollapseCommand command = new TreeExpandCollapseCommand(index);
+        int rowIndex = cell.getLayer().getRowIndexByPosition(cell.getOriginRowPosition());
+        int columnIndex = cell.getLayer().getColumnIndexByPosition(cell.getOriginColumnPosition());
+        TreeExpandCollapseCommand command = new TreeExpandCollapseCommand(rowIndex, columnIndex);
         natTable.doCommand(command);
     }
 }
