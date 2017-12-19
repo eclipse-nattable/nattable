@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2017 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -330,17 +330,29 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
 
     @Override
     public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+        LabelStack configLabels = null;
+
         int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
         int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
-        LabelStack configLabels = this.underlyingLayer.getConfigLabelsByPosition(underlyingColumnPosition, underlyingRowPosition);
-        IConfigLabelAccumulator configLabelAccumulator = getConfigLabelAccumulator();
-        if (configLabelAccumulator != null) {
-            configLabelAccumulator.accumulateConfigLabels(configLabels, columnPosition, rowPosition);
+        if (underlyingColumnPosition != -1 && underlyingRowPosition != -1) {
+            configLabels = this.underlyingLayer.getConfigLabelsByPosition(underlyingColumnPosition, underlyingRowPosition);
+
+            IConfigLabelAccumulator configLabelAccumulator = getConfigLabelAccumulator();
+            if (configLabelAccumulator != null) {
+                configLabelAccumulator.accumulateConfigLabels(configLabels, columnPosition, rowPosition);
+            }
+        } else {
+            // the the layer-position-transformation returned -1 for the underlying
+            // position, it is not possible the get the LabelStack from the underlying
+            // layer. In this case we simply create a new LabelStack.
+            configLabels = new LabelStack();
         }
+
         String regionName = getRegionName();
         if (regionName != null) {
             configLabels.addLabel(regionName);
         }
+
         return configLabels;
     }
 
