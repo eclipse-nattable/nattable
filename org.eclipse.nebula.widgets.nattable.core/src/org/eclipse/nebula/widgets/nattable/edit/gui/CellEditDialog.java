@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2017 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.gui;
 
@@ -39,9 +39,6 @@ import org.eclipse.swt.widgets.Shell;
 /**
  * Dialog that supports editing of cells in NatTable. Is used for multi cell
  * editing and for dialog only editors.
- *
- * @author Dirk Fauth
- *
  */
 public class CellEditDialog extends Dialog implements ICellEditDialog {
 
@@ -112,8 +109,10 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
      *            editors.
      */
     public CellEditDialog(Shell parentShell,
-            final Object originalCanonicalValue, final ILayerCell cell,
-            final ICellEditor cellEditor, final IConfigRegistry configRegistry) {
+            Object originalCanonicalValue,
+            ILayerCell cell,
+            ICellEditor cellEditor,
+            IConfigRegistry configRegistry) {
 
         super(parentShell);
         this.originalCanonicalValue = originalCanonicalValue;
@@ -130,14 +129,12 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
         Image shellIcon = GUIHelper.getImage("editor"); //$NON-NLS-1$
         if (this.editDialogSettings != null) {
             if (this.editDialogSettings.containsKey(DIALOG_SHELL_TITLE)) {
-                String settingsShellTitle = this.editDialogSettings.get(
-                        DIALOG_SHELL_TITLE).toString();
+                String settingsShellTitle = this.editDialogSettings.get(DIALOG_SHELL_TITLE).toString();
                 shellTitle = settingsShellTitle;
             }
             Object settingsShellImage = this.editDialogSettings
                     .get(DIALOG_SHELL_ICON);
-            if (settingsShellImage != null
-                    && settingsShellImage instanceof Image) {
+            if (settingsShellImage != null && settingsShellImage instanceof Image) {
                 shellIcon = (Image) settingsShellImage;
             }
         }
@@ -153,8 +150,7 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
     @Override
     protected Point getInitialLocation(Point initialSize) {
         if (this.editDialogSettings != null) {
-            Object settingsLocation = this.editDialogSettings
-                    .get(DIALOG_SHELL_LOCATION);
+            Object settingsLocation = this.editDialogSettings.get(DIALOG_SHELL_LOCATION);
             if (settingsLocation != null && settingsLocation instanceof Point) {
                 return (Point) settingsLocation;
             }
@@ -165,8 +161,7 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
     @Override
     protected Point getInitialSize() {
         if (this.editDialogSettings != null) {
-            Object settingsSize = this.editDialogSettings
-                    .get(DIALOG_SHELL_SIZE);
+            Object settingsSize = this.editDialogSettings.get(DIALOG_SHELL_SIZE);
             if (settingsSize != null && settingsSize instanceof Point) {
                 return (Point) settingsSize;
             }
@@ -177,8 +172,8 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
     @Override
     protected void okPressed() {
         // if the editor could not be committed, we should not proceed with
-        // closing the editor, as the
-        // entered value is not valid in terms of conversion/validation
+        // closing the editor, as the entered value is not valid in terms of
+        // conversion/validation
         if (this.cellEditor.commit(MoveDirectionEnum.NONE, true)) {
             super.okPressed();
         }
@@ -201,19 +196,21 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
 
         // add a custom message if there is one configured in the edit dialog
         // settings
-        if (this.editDialogSettings != null
-                && this.editDialogSettings.containsKey(DIALOG_MESSAGE)) {
-            String customMessage = this.editDialogSettings.get(DIALOG_MESSAGE)
-                    .toString();
+        if (this.editDialogSettings != null && this.editDialogSettings.containsKey(DIALOG_MESSAGE)) {
+            String customMessage = this.editDialogSettings.get(DIALOG_MESSAGE).toString();
             Label customMessageLabel = new Label(panel, SWT.NONE);
             customMessageLabel.setText(customMessage);
-            GridDataFactory.fillDefaults().grab(true, false).hint(100, 20)
+            GridDataFactory.fillDefaults()
+                    .grab(true, false)
                     .applyTo(customMessageLabel);
         }
 
         // activate the new editor
-        this.cellEditor.activateCell(panel, this.originalCanonicalValue,
-                EditModeEnum.DIALOG, this.cellEditHandler, this.cell,
+        this.cellEditor.activateCell(panel,
+                this.originalCanonicalValue,
+                EditModeEnum.DIALOG,
+                this.cellEditHandler,
+                this.cell,
                 this.configRegistry);
 
         Control editorControl = this.cellEditor.getEditorControl();
@@ -221,13 +218,13 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
         // propagate the ESC event from the editor to the dialog
         editorControl.addKeyListener(getEscKeyListener());
 
-        // if the editor control already has no layout data set already, apply
-        // the default one
-        // this check allows to specify a custom layout data while creating the
-        // editor control
-        // in the ICellEditor
+        // If the editor control already has no layout data set already, apply
+        // a default one.
+        // This check ensures that a custom layout data that was specified while
+        // creating the editor control in the ICellEditor is not overridden.
         if (editorControl.getLayoutData() == null) {
-            GridDataFactory.fillDefaults().grab(true, false).hint(100, 20)
+            GridDataFactory.fillDefaults()
+                    .grab(true, false)
                     .applyTo(editorControl);
         }
 
@@ -298,16 +295,12 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
         // we need to override the shellStyle bits before the shell is created
         // otherwise this configuration wouldn't have any effect.
         if (this.editDialogSettings != null) {
-            Object settingsResizable = this.editDialogSettings
-                    .get(DIALOG_SHELL_RESIZABLE);
-            if (settingsResizable != null
-                    && settingsResizable instanceof Boolean) {
+            Object settingsResizable = this.editDialogSettings.get(DIALOG_SHELL_RESIZABLE);
+            if (settingsResizable != null && settingsResizable instanceof Boolean) {
                 if ((Boolean) settingsResizable) {
-                    setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL
-                            | SWT.MAX | SWT.RESIZE | getDefaultOrientation());
+                    setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.MAX | SWT.RESIZE | getDefaultOrientation());
                 } else {
-                    setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL
-                            | getDefaultOrientation());
+                    setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | getDefaultOrientation());
                 }
             }
         }
