@@ -29,4 +29,18 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/org/eclipse/nebula/widgets/nattable/tree/painter/IndentedTreeImagePainter.java" type="org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter">
+        <filter comment="Constructor parameter got more general, so there is no API breakage" id="338722907">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter"/>
+                <message_argument value="IndentedTreeImagePainter(int, CellEdgeEnum, TreeImagePainter)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Constructor parameter got more general, so there is no API breakage" id="338722907">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter"/>
+                <message_argument value="IndentedTreeImagePainter(int, TreeImagePainter)"/>
+            </message_arguments>
+        </filter>
+    </resource>
 </component>

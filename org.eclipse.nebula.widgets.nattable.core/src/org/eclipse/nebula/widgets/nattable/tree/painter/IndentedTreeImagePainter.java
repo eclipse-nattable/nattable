@@ -107,8 +107,8 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
 
     /**
      * Creates an IndentedTreeImagePainter. Will use the given number of pixels
-     * for indentation per depth and a default TreeImagePainter for rendering
-     * the icons in the tree.
+     * for indentation per depth and a default {@link TreeImagePainter} for
+     * rendering the icons in the tree.
      *
      * @param treeIndent
      *            The number of pixels to indent per depth.
@@ -119,25 +119,28 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
 
     /**
      * Creates an IndentedTreeImagePainter using the given indentation per depth
-     * and ICellPainter for painting the icons in the tree.
+     * and {@link ICellPainter} for painting the icons in the tree.
      *
      * @param treeIndent
      *            The number of pixels to indent per depth.
      * @param treeImagePainter
-     *            The ICellPainter that should be used to paint the images in
-     *            the tree. It needs to be of type of TreeImagePainter that
-     *            paints expand/collapse/leaf icons regarding the node state,
-     *            because the ui bindings for expand/collapse are registered
-     *            against that type.
+     *            The {@link ICellPainter} that should be used to paint the
+     *            images in the tree. When using the
+     *            DefaultTreeLayerConfiguration the content painter needs to be
+     *            of type of {@link TreeImagePainter} that paints
+     *            expand/collapse/leaf icons regarding the node state, because
+     *            the ui bindings for expand/collapse are registered against
+     *            that type.
+     * @since 1.6
      */
-    public IndentedTreeImagePainter(int treeIndent, TreeImagePainter treeImagePainter) {
+    public IndentedTreeImagePainter(int treeIndent, ICellPainter treeImagePainter) {
         this(treeIndent, CellEdgeEnum.LEFT, treeImagePainter);
     }
 
     /**
      * Creates an IndentedTreeImagePainter using the given indentation per depth
-     * and ICellPainter for painting the icons in the tree to the specified cell
-     * edge.
+     * and {@link ICellPainter} for painting the icons in the tree to the
+     * specified cell edge.
      *
      * @param treeIndent
      *            The number of pixels to indent per depth.
@@ -145,16 +148,19 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      *            the edge of the cell on which the tree state indicator
      *            decoration should be applied
      * @param treeImagePainter
-     *            The ICellPainter that should be used to paint the images in
-     *            the tree. It needs to be of type of TreeImagePainter that
-     *            paints expand/collapse/leaf icons regarding the node state,
-     *            because the ui bindings for expand/collapse are registered
-     *            against that type.
+     *            The {@link ICellPainter} that should be used to paint the
+     *            images in the tree. When using the
+     *            DefaultTreeLayerConfiguration the content painter needs to be
+     *            of type of {@link TreeImagePainter} that paints
+     *            expand/collapse/leaf icons regarding the node state, because
+     *            the ui bindings for expand/collapse are registered against
+     *            that type.
+     * @since 1.6
      */
     public IndentedTreeImagePainter(
             int treeIndent,
             CellEdgeEnum cellEdge,
-            TreeImagePainter treeImagePainter) {
+            ICellPainter treeImagePainter) {
 
         this.treeIndent = treeIndent;
         this.internalPainter =
@@ -340,6 +346,18 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      */
     public void setBaseCellPainter(ICellPainter cellPainter) {
         this.internalPainter.setBaseCellPainter(cellPainter);
+    }
+
+    /**
+     *
+     * @return The {@link CellPainterDecorator} that is wrapped by this
+     *         {@link IndentedTreeImagePainter}. Can be used to perform specific
+     *         decoration configurations, e.g. set the decoration dependent
+     *         rendering option.
+     * @since 1.6
+     */
+    public CellPainterDecorator getInternalPainter() {
+        return this.internalPainter;
     }
 
     @Override
