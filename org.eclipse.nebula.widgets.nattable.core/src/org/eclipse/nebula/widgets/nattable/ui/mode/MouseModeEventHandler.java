@@ -158,7 +158,9 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
             } else {
                 switchMode(Mode.NORMAL_MODE);
             }
-        } else if (!this.mouseDown && !MouseEventHelper.treatAsClick(this.initialMouseDownEvent, event)) {
+        } else if (!this.mouseDown
+                && this.doubleClickAction != null
+                && !MouseEventHelper.treatAsClick(this.initialMouseDownEvent, event)) {
             // if mouseUp was called already and the mouse moves out of the
             // click radius, ensure the double click runnable is not executed
             // and process single click immediately as it can not become a
