@@ -70,6 +70,9 @@ public class ResizeColumnHideShowLayerTest {
         assertEquals(300, this.hideShowLayer.getWidth());
         assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(1));
         assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(4));
+        assertEquals(2, this.hideShowLayer.getHiddenColumnIndexes().size());
+        assertTrue("1 is not contained in hidden column indexes", this.hideShowLayer.getHiddenColumnIndexes().contains(Integer.valueOf(1)));
+        assertTrue("4 is not contained in hidden column indexes", this.hideShowLayer.getHiddenColumnIndexes().contains(Integer.valueOf(4)));
 
         assertFalse(this.bodyDataLayer.isColumnPositionResizable(1));
         assertFalse(this.bodyDataLayer.isColumnPositionResizable(4));
@@ -83,6 +86,7 @@ public class ResizeColumnHideShowLayerTest {
         assertEquals(500, this.hideShowLayer.getWidth());
         assertEquals(100, this.hideShowLayer.getColumnWidthByPosition(1));
         assertEquals(100, this.hideShowLayer.getColumnWidthByPosition(4));
+        assertTrue("hidden column indexes are not empty", this.hideShowLayer.getHiddenColumnIndexes().isEmpty());
 
         assertTrue(this.bodyDataLayer.isColumnPositionResizable(1));
         assertTrue(this.bodyDataLayer.isColumnPositionResizable(4));
@@ -208,6 +212,7 @@ public class ResizeColumnHideShowLayerTest {
         assertEquals(450, this.hideShowLayer.getWidth());
         assertEquals(50, this.hideShowLayer.getColumnWidthByPosition(1));
         assertEquals(100, this.hideShowLayer.getColumnWidthByPosition(4));
+        assertTrue("hidden column indexes are not empty", this.hideShowLayer.getHiddenColumnIndexes().isEmpty());
 
         assertTrue(this.bodyDataLayer.isColumnPositionResizable(1));
         assertFalse(this.bodyDataLayer.isColumnPositionResizable(4));
@@ -218,6 +223,9 @@ public class ResizeColumnHideShowLayerTest {
         assertEquals(300, this.hideShowLayer.getWidth());
         assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(1));
         assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(4));
+        assertEquals(2, this.hideShowLayer.getHiddenColumnIndexes().size());
+        assertTrue("1 is not contained in hidden column indexes", this.hideShowLayer.getHiddenColumnIndexes().contains(Integer.valueOf(1)));
+        assertTrue("4 is not contained in hidden column indexes", this.hideShowLayer.getHiddenColumnIndexes().contains(Integer.valueOf(4)));
 
         assertFalse(this.bodyDataLayer.isColumnPositionResizable(1));
         assertFalse(this.bodyDataLayer.isColumnPositionResizable(4));
@@ -229,6 +237,7 @@ public class ResizeColumnHideShowLayerTest {
         assertEquals(450, this.hideShowLayer.getWidth());
         assertEquals(50, this.hideShowLayer.getColumnWidthByPosition(1));
         assertEquals(100, this.hideShowLayer.getColumnWidthByPosition(4));
+        assertTrue("hidden column indexes are not empty", this.hideShowLayer.getHiddenColumnIndexes().isEmpty());
 
         assertTrue(this.bodyDataLayer.isColumnPositionResizable(1));
         assertFalse(this.bodyDataLayer.isColumnPositionResizable(4));

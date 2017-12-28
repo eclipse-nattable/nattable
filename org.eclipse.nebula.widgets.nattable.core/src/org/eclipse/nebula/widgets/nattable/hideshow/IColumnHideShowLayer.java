@@ -67,4 +67,16 @@ public interface IColumnHideShowLayer {
      * Show all hidden columns again.
      */
     void showAllColumns();
+
+    /**
+     * Returns all indexes of the columns that are hidden in this layer.
+     * <p>
+     * <b>Note:</b> It does not include the column indexes of hidden columns
+     * from underlying layers. This would cause issues on calculating positions
+     * as every layer is responsible for those calculations itself.
+     * </p>
+     *
+     * @return The indexes of the columns that are hidden in this layer.
+     */
+    Collection<Integer> getHiddenColumnIndexes();
 }

@@ -121,6 +121,11 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
     }
 
     @Override
+    public Collection<Integer> getHiddenColumnIndexes() {
+        return this.hiddenColumns.keySet();
+    }
+
+    @Override
     public void hideColumnPositions(Integer... columnPositions) {
         hideColumnPositions(Arrays.asList(columnPositions));
     }
