@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.command;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
@@ -34,10 +34,9 @@ public class MultiColumnResizeCommandHandler extends AbstractLayerCommandHandler
 
     @Override
     protected boolean doCommand(MultiColumnResizeCommand command) {
-        List<Integer> columnPositions = new ArrayList<Integer>();
+        Collection<Integer> columnPositions = command.getColumnPositions();
 
-        for (int columnPosition : command.getColumnPositions()) {
-            columnPositions.add(columnPosition);
+        for (int columnPosition : columnPositions) {
             int newColumnWidth = command.downScaleValue()
                     ? this.dataLayer.downScaleColumnWidth(command.getColumnWidth(columnPosition))
                     : command.getColumnWidth(columnPosition);

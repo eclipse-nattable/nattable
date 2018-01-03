@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,8 +22,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
 
 public class HideColumnPositionsEvent extends ColumnStructuralChangeEvent {
 
-    public HideColumnPositionsEvent(ILayer layer,
-            Collection<Integer> columnPositions) {
+    public HideColumnPositionsEvent(ILayer layer, Collection<Integer> columnPositions) {
         super(layer, PositionUtil.getRanges(columnPositions));
     }
 
@@ -39,11 +38,14 @@ public class HideColumnPositionsEvent extends ColumnStructuralChangeEvent {
 
     @Override
     public Collection<StructuralDiff> getColumnDiffs() {
-        Collection<StructuralDiff> columnDiffs = new ArrayList<StructuralDiff>();
+        Collection<StructuralDiff> columnDiffs =
+                new ArrayList<StructuralDiff>(getColumnPositionRanges().size());
 
         for (Range range : getColumnPositionRanges()) {
-            StructuralDiff diff = new StructuralDiff(DiffTypeEnum.DELETE,
-                    range, new Range(range.start, range.start));
+            StructuralDiff diff = new StructuralDiff(
+                    DiffTypeEnum.DELETE,
+                    range,
+                    new Range(range.start, range.start));
             columnDiffs.add(diff);
         }
 

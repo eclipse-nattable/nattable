@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -312,10 +312,11 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 
             // as we are in multiselection mode, we always return a Collection
             // and never null
-            List<Object> result = new ArrayList<Object>();
+            List<Object> result = null;
 
             // Item selected from list
             if (selectionIndices.length > 0) {
+                result = new ArrayList<Object>(selectionIndices.length);
                 for (int i : selectionIndices) {
                     result.add(this.currentCanonicalValues.get(i));
                 }
@@ -324,6 +325,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
                 // there is a free edit in the NatCombo control
                 String[] comboSelection = this.combo.getSelection();
                 if (comboSelection.length > 0) {
+                    result = new ArrayList<Object>(comboSelection.length);
                     for (String selection : comboSelection) {
                         result.add(handleConversion(selection, this.conversionEditErrorHandler));
                     }
@@ -332,7 +334,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 
             // if nothing is selected and there is no free edit, we return an
             // empty Collection
-            return result;
+            return result != null ? result : new ArrayList<Object>();
         }
 
         return null;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2018 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,9 +20,6 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 /**
  * Command for reordering rows.
- *
- * @author Dirk Fauth
- *
  */
 public class MultiRowReorderCommand implements ILayerCommand {
 
@@ -51,12 +48,11 @@ public class MultiRowReorderCommand implements ILayerCommand {
      *            The position of the row to which the dragged row should be
      *            dropped
      */
-    public MultiRowReorderCommand(ILayer layer, List<Integer> fromRowPositions,
-            int toRowPosition) {
-        this(layer, fromRowPositions,
-                toRowPosition < layer.getRowCount() ? toRowPosition
-                        : toRowPosition - 1, toRowPosition < layer
-                        .getRowCount());
+    public MultiRowReorderCommand(ILayer layer, List<Integer> fromRowPositions, int toRowPosition) {
+        this(layer,
+                fromRowPositions,
+                toRowPosition < layer.getRowCount() ? toRowPosition : toRowPosition - 1,
+                toRowPosition < layer.getRowCount());
     }
 
     /**
@@ -72,12 +68,14 @@ public class MultiRowReorderCommand implements ILayerCommand {
      *            Flag to indicate if the row is dragged to the top edge of the
      *            layer
      */
-    public MultiRowReorderCommand(ILayer layer, List<Integer> fromRowPositions,
-            int toRowPosition, boolean reorderToTopEdge) {
-        this.fromRowPositionCoordinates = new ArrayList<RowPositionCoordinate>();
+    public MultiRowReorderCommand(ILayer layer,
+            List<Integer> fromRowPositions,
+            int toRowPosition,
+            boolean reorderToTopEdge) {
+
+        this.fromRowPositionCoordinates = new ArrayList<RowPositionCoordinate>(fromRowPositions.size());
         for (Integer fromRowPosition : fromRowPositions) {
-            this.fromRowPositionCoordinates.add(new RowPositionCoordinate(layer,
-                    fromRowPosition));
+            this.fromRowPositionCoordinates.add(new RowPositionCoordinate(layer, fromRowPosition));
         }
 
         this.toRowPositionCoordinate = new RowPositionCoordinate(layer,
@@ -93,8 +91,7 @@ public class MultiRowReorderCommand implements ILayerCommand {
      *            The command which is base for the new one
      */
     protected MultiRowReorderCommand(MultiRowReorderCommand command) {
-        this.fromRowPositionCoordinates = new ArrayList<RowPositionCoordinate>(
-                command.fromRowPositionCoordinates);
+        this.fromRowPositionCoordinates = new ArrayList<RowPositionCoordinate>(command.fromRowPositionCoordinates);
         this.toRowPositionCoordinate = command.toRowPositionCoordinate;
         this.reorderToTopEdge = command.reorderToTopEdge;
     }
@@ -103,7 +100,7 @@ public class MultiRowReorderCommand implements ILayerCommand {
      * @return The positions of the rows that should be reordered
      */
     public List<Integer> getFromRowPositions() {
-        List<Integer> fromRowPositions = new ArrayList<Integer>();
+        List<Integer> fromRowPositions = new ArrayList<Integer>(this.fromRowPositionCoordinates.size());
         for (RowPositionCoordinate fromRowPositionCoordinate : this.fromRowPositionCoordinates) {
             fromRowPositions.add(fromRowPositionCoordinate.getRowPosition());
         }
@@ -128,21 +125,19 @@ public class MultiRowReorderCommand implements ILayerCommand {
 
     @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
-        List<RowPositionCoordinate> convertedFromRowPositionCoordinates = new ArrayList<RowPositionCoordinate>();
+        List<RowPositionCoordinate> convertedFromRowPositionCoordinates =
+                new ArrayList<RowPositionCoordinate>(this.fromRowPositionCoordinates.size());
 
         for (RowPositionCoordinate fromRowPositionCoordinate : this.fromRowPositionCoordinates) {
-            RowPositionCoordinate convertedFromRowPositionCoordinate = LayerCommandUtil
-                    .convertRowPositionToTargetContext(
-                            fromRowPositionCoordinate, targetLayer);
+            RowPositionCoordinate convertedFromRowPositionCoordinate =
+                    LayerCommandUtil.convertRowPositionToTargetContext(fromRowPositionCoordinate, targetLayer);
             if (convertedFromRowPositionCoordinate != null) {
-                convertedFromRowPositionCoordinates
-                        .add(convertedFromRowPositionCoordinate);
+                convertedFromRowPositionCoordinates.add(convertedFromRowPositionCoordinate);
             }
         }
 
-        RowPositionCoordinate targetToRowPositionCoordinate = LayerCommandUtil
-                .convertRowPositionToTargetContext(this.toRowPositionCoordinate,
-                        targetLayer);
+        RowPositionCoordinate targetToRowPositionCoordinate =
+                LayerCommandUtil.convertRowPositionToTargetContext(this.toRowPositionCoordinate, targetLayer);
 
         if (convertedFromRowPositionCoordinates.size() > 0
                 && targetToRowPositionCoordinate != null) {

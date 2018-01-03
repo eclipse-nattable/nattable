@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -243,8 +243,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      */
     @Deprecated
     public ICellPainter getTreeImagePainter() {
-        return this.indentedTreeImagePainter != null ? this.indentedTreeImagePainter
-                .getTreeImagePainter() : null;
+        return this.indentedTreeImagePainter != null ? this.indentedTreeImagePainter.getTreeImagePainter() : null;
     }
 
     /**
@@ -255,8 +254,9 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      * @since 1.6
      */
     protected boolean isTreeColumn(int columnPosition) {
-        if (this.useTreeColumnIndex)
+        if (this.useTreeColumnIndex) {
             return getColumnIndexByPosition(columnPosition) == TREE_COLUMN_NUMBER;
+        }
 
         return columnPosition == TREE_COLUMN_NUMBER;
     }
@@ -353,7 +353,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      */
     public void collapseTreeRow(int parentIndex) {
         List<Integer> rowIndexes = this.treeRowModel.collapse(parentIndex);
-        List<Integer> rowPositions = new ArrayList<Integer>();
+        List<Integer> rowPositions = new ArrayList<Integer>(rowIndexes.size());
         for (Integer rowIndex : rowIndexes) {
             int rowPos = getRowPositionByIndex(rowIndex);
             // if the rowPos is negative, it is not visible because of hidden
@@ -372,7 +372,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      */
     public void collapseAll() {
         List<Integer> rowIndexes = this.treeRowModel.collapseAll();
-        List<Integer> rowPositions = new ArrayList<Integer>();
+        List<Integer> rowPositions = new ArrayList<Integer>(rowIndexes.size());
         for (Integer rowIndex : rowIndexes) {
             int rowPos = getRowPositionByIndex(rowIndex);
             // if the rowPos is negative, it is not visible because of hidden

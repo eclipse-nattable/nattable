@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -103,8 +103,9 @@ public class SelectionModel implements ISelectionModel {
                         Rectangle intersection = selection.intersection(r);
                         if (intersection.equals(r)) {
                             // r is a subset of intersection
-                            if (itemsToRemove == null)
+                            if (itemsToRemove == null) {
                                 itemsToRemove = new ArrayList<Rectangle>();
+                            }
 
                             itemsToRemove.add(r);
                         } else if (intersection.equals(selection)) {
@@ -302,7 +303,7 @@ public class SelectionModel implements ISelectionModel {
 
         ArrayList<Range> ranges = new ArrayList<Range>(selectedColumnsRange);
         Range.sortByStart(ranges);
-        List<Range> uniqueRanges = new ArrayList<Range>();
+        List<Range> uniqueRanges = new ArrayList<Range>(ranges.size());
 
         // Adjust for overlaps - between consecutive selections
         for (int i = 0; i < ranges.size(); i++) {
@@ -369,7 +370,7 @@ public class SelectionModel implements ISelectionModel {
         try {
             // Aggregate all rectangles in the column which are in the selection
             // model
-            List<Rectangle> selectedRectanglesInColumn = new ArrayList<Rectangle>();
+            List<Rectangle> selectedRectanglesInColumn = new ArrayList<Rectangle>(this.selections.size());
 
             // If X is same add up the height of the selected area
             for (Rectangle r : this.selections) {
@@ -448,7 +449,7 @@ public class SelectionModel implements ISelectionModel {
 
         ArrayList<Range> ranges = new ArrayList<Range>(selectedRowsRange);
         Range.sortByStart(ranges);
-        List<Range> uniqueRanges = new ArrayList<Range>();
+        List<Range> uniqueRanges = new ArrayList<Range>(ranges.size());
 
         // Adjust for overlaps - between consecutive selections
         for (int i = 0; i < ranges.size(); i++) {
@@ -511,7 +512,7 @@ public class SelectionModel implements ISelectionModel {
         try {
             // Aggregate all rectangles in the row which are in the selection
             // model
-            List<Rectangle> selectedRectanglesInRow = new ArrayList<Rectangle>();
+            List<Rectangle> selectedRectanglesInRow = new ArrayList<Rectangle>(this.selections.size());
 
             // If X is same add up the width of the selected area
             for (Rectangle r : this.selections) {

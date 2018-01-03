@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -152,7 +152,7 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
     @Override
     public Collection<Range> underlyingToLocalColumnPositions(
             ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges) {
-        Collection<Range> localColumnPositionRanges = new ArrayList<Range>();
+        Collection<Range> localColumnPositionRanges = new ArrayList<Range>(underlyingColumnPositionRanges.size());
 
         for (Range underlyingColumnPositionRange : underlyingColumnPositionRanges) {
             localColumnPositionRanges.add(new Range(
@@ -245,7 +245,7 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
     public Collection<Range> underlyingToLocalRowPositions(
             ILayer sourceUnderlyingLayer,
             Collection<Range> underlyingRowPositionRanges) {
-        Collection<Range> localRowPositionRanges = new ArrayList<Range>();
+        Collection<Range> localRowPositionRanges = new ArrayList<Range>(underlyingRowPositionRanges.size());
 
         for (Range underlyingRowPositionRange : underlyingRowPositionRanges) {
             localRowPositionRanges.add(new Range(
@@ -342,9 +342,10 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
                 configLabelAccumulator.accumulateConfigLabels(configLabels, columnPosition, rowPosition);
             }
         } else {
-            // the the layer-position-transformation returned -1 for the underlying
-            // position, it is not possible the get the LabelStack from the underlying
-            // layer. In this case we simply create a new LabelStack.
+            // the the layer-position-transformation returned -1 for the
+            // underlying position, it is not possible the get the LabelStack
+            // from the underlying layer. In this case we simply create a new
+            // LabelStack.
             configLabels = new LabelStack();
         }
 

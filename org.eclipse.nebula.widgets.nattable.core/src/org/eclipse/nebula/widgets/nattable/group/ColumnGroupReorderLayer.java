@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -129,7 +129,7 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
     public List<Integer> getColumnGroupPositions(int fromColumnIndex) {
         List<Integer> fromColumnIndexes =
                 this.model.getColumnGroupByIndex(fromColumnIndex).getMembers();
-        List<Integer> fromColumnPositions = new ArrayList<Integer>();
+        List<Integer> fromColumnPositions = new ArrayList<Integer>(fromColumnIndexes.size());
 
         for (Integer columnIndex : fromColumnIndexes) {
             fromColumnPositions.add(
@@ -190,8 +190,7 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
             // Moving from left to right
             int rightMostPosition = fromColumnPositions.get(fromColumnPositionsCount - 1);
             consumeCommand = updateColumnGroupModel(rightMostPosition, toColumnPosition, reorderToLeftEdge, fromColumnPositions);
-        }
-        else if (toColumnPosition < fromColumnPositions.get(fromColumnPositionsCount - 1)) {
+        } else if (toColumnPosition < fromColumnPositions.get(fromColumnPositionsCount - 1)) {
             // Moving from right to left
             int leftMostPosition = fromColumnPositions.get(0);
             consumeCommand = updateColumnGroupModel(leftMostPosition, toColumnPosition, reorderToLeftEdge, fromColumnPositions);
@@ -307,24 +306,20 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
                     int collectionPos = fromColumnPositions.indexOf(Integer.valueOf(fromColumnPosition));
                     if (collectionPos > 0) {
                         this.model.insertColumnIndexes(toColumnGroup.getName(), fromColumnIndexes);
-                    }
-                    else {
+                    } else {
                         this.model.removeColumnIndexes(fromColumnGroup.getName(), fromColumnIndexes);
                     }
-                }
-                else if (MoveDirectionEnum.LEFT == moveDirection) {
+                } else if (MoveDirectionEnum.LEFT == moveDirection) {
                     // check if there are columns to the right that are
                     // reordered too
                     int collectionPos = fromColumnPositions.indexOf(Integer.valueOf(fromColumnPosition));
                     if (collectionPos == 0) {
                         this.model.insertColumnIndexes(toColumnGroup.getName(), fromColumnIndexes);
-                    }
-                    else {
+                    } else {
                         this.model.removeColumnIndexes(fromColumnGroup.getName(), fromColumnIndexes);
                     }
                 }
-            }
-            else {
+            } else {
                 // only remove if we are at the edge of a column group
                 if (ColumnGroupUtils.isLeftEdgeOfAColumnGroup(this, fromColumnPosition, fromColumnIndex, this.model)
                         || ColumnGroupUtils.isRightEdgeOfAColumnGroup(this, fromColumnPosition, fromColumnIndex, this.model)) {
@@ -333,19 +328,16 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
             }
 
             consumeCommand = true;
-        }
-        else if (fromColumnGroup == null && toColumnGroup != null) {
+        } else if (fromColumnGroup == null && toColumnGroup != null) {
             // special case
             // add the column to the column group if we step instead of jumping
             consumeCommand = this.model.insertColumnIndexes(toColumnGroup.getName(), fromColumnIndexes);
             if (jump) {
                 consumeCommand = false;
             }
-        }
-        else if (fromColumnGroup != null && toColumnGroup == null) {
+        } else if (fromColumnGroup != null && toColumnGroup == null) {
             this.model.removeColumnIndexes(fromColumnGroup.getName(), fromColumnIndexes);
-        }
-        else if (fromColumnGroup == null && toColumnGroup == null && fromColumnPosition == toColumnPosition) {
+        } else if (fromColumnGroup == null && toColumnGroup == null && fromColumnPosition == toColumnPosition) {
             // this might happen on drag and drop operations when trying to add
             // a column back into an adjacent column group
             int adjacentPos = (moveDirection == MoveDirectionEnum.RIGHT) ? fromColumnPosition + 1 : fromColumnPosition - 1;
@@ -356,8 +348,7 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
                 this.model.insertColumnIndexes(adjacentColumnGroup.getName(), fromColumnIndexes);
                 consumeCommand = false;
             }
-        }
-        else if (fromColumnGroup != null
+        } else if (fromColumnGroup != null
                 && toColumnGroup != null
                 && !fromColumnGroup.getName().equals(toColumnGroup.getName())) {
             // the target location would be the first position in another column
@@ -382,13 +373,11 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
                         if (jump) {
                             consumeCommand = !jump;
                         }
-                    }
-                    else {
+                    } else {
                         consumeCommand = !jump;
                     }
                 }
-            }
-            else if (MoveDirectionEnum.LEFT == moveDirection) {
+            } else if (MoveDirectionEnum.LEFT == moveDirection) {
                 if (toColumnGroup != null) {
                     // check if reorder is started from left edge of a group
                     boolean fromLeftEdge = ColumnGroupUtils.isLeftEdgeOfAColumnGroup(
@@ -407,8 +396,7 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
                         if (jump) {
                             consumeCommand = !jump;
                         }
-                    }
-                    else {
+                    } else {
                         consumeCommand = !jump;
                     }
                 }

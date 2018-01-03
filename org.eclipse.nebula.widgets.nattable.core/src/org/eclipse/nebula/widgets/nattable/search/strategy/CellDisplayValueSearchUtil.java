@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,7 +34,7 @@ public class CellDisplayValueSearchUtil {
             int startingRowPosition,
             int width,
             int height) {
-        List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>();
+        List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>(width * height);
         for (int columnPosition = 0; columnPosition < width; columnPosition++) {
             for (int rowPosition = 0; rowPosition < height; rowPosition++) {
                 PositionCoordinate coordinate = new PositionCoordinate(
@@ -54,7 +54,7 @@ public class CellDisplayValueSearchUtil {
             int startingRowPosition,
             int width,
             int height) {
-        List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>();
+        List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>(width * height);
         for (int columnPosition = width; columnPosition >= 0 && startingColumnPosition >= 0; columnPosition--) {
             for (int rowPosition = height; rowPosition >= 0 && startingRowPosition >= 0; rowPosition--) {
                 PositionCoordinate coordinate = new PositionCoordinate(
@@ -74,7 +74,7 @@ public class CellDisplayValueSearchUtil {
             int startingRowPosition,
             int width,
             int height) {
-        List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>();
+        List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>(width * height);
         for (int rowPosition = 0; rowPosition < height; rowPosition++) {
             for (int columnPosition = 0; columnPosition < width; columnPosition++) {
                 PositionCoordinate coordinate = new PositionCoordinate(
@@ -94,7 +94,7 @@ public class CellDisplayValueSearchUtil {
             int startingRowPosition,
             int width,
             int height) {
-        List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>();
+        List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>(width * height);
         for (int rowPosition = height; rowPosition >= 0 && startingRowPosition >= 0; rowPosition--) {
             for (int columnPosition = width; columnPosition >= 0 && startingColumnPosition >= 0; columnPosition--) {
                 PositionCoordinate coordinate = new PositionCoordinate(

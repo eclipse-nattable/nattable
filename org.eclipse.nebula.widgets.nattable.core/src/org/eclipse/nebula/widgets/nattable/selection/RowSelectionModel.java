@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014, 2015 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -193,7 +193,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 
     @Override
     public List<Rectangle> getSelections() {
-        List<Rectangle> selectionRectangles = new ArrayList<Rectangle>();
+        List<Rectangle> selectionRectangles = new ArrayList<Rectangle>(this.selectedRows.size());
 
         this.selectionsLock.readLock().lock();
 
@@ -298,7 +298,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 
     @Override
     public List<R> getSelectedRowObjects() {
-        final List<R> rowObjects = new ArrayList<R>();
+        final List<R> rowObjects = new ArrayList<R>(this.selectedRows.size());
 
         this.selectionsLock.readLock().lock();
         try {

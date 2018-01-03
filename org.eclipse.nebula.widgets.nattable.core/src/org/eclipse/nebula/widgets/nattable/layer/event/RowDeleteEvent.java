@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -95,7 +95,7 @@ public class RowDeleteEvent extends RowStructuralChangeEvent {
 
     @Override
     public Collection<StructuralDiff> getRowDiffs() {
-        Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
+        Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>(getRowPositionRanges().size());
 
         for (Range range : getRowPositionRanges()) {
             rowDiffs.add(new StructuralDiff(

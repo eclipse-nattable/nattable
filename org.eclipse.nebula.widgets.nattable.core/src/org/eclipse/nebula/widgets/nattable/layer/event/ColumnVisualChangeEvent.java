@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -66,8 +66,7 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
      * @param columnPositionRanges
      *            The column position ranges for the columns that have changed.
      */
-    public ColumnVisualChangeEvent(ILayer layer,
-            Collection<Range> columnPositionRanges) {
+    public ColumnVisualChangeEvent(ILayer layer, Collection<Range> columnPositionRanges) {
         this.layer = layer;
         this.columnPositionRanges = columnPositionRanges;
     }
@@ -105,15 +104,14 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
      * @param columnPositionRanges
      *            The column position ranges for the columns that have changed.
      */
-    protected void setColumnPositionRanges(
-            Collection<Range> columnPositionRanges) {
+    protected void setColumnPositionRanges(Collection<Range> columnPositionRanges) {
         this.columnPositionRanges = columnPositionRanges;
     }
 
     @Override
     public boolean convertToLocal(ILayer localLayer) {
-        this.columnPositionRanges = localLayer.underlyingToLocalColumnPositions(
-                this.layer, this.columnPositionRanges);
+        this.columnPositionRanges =
+                localLayer.underlyingToLocalColumnPositions(this.layer, this.columnPositionRanges);
         this.layer = localLayer;
 
         return this.columnPositionRanges != null && this.columnPositionRanges.size() > 0;
@@ -121,12 +119,13 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
 
     @Override
     public Collection<Rectangle> getChangedPositionRectangles() {
-        Collection<Rectangle> changedPositionRectangles = new ArrayList<Rectangle>();
+        Collection<Rectangle> changedPositionRectangles =
+                new ArrayList<Rectangle>(this.columnPositionRanges.size());
 
         int rowCount = this.layer.getRowCount();
         for (Range range : this.columnPositionRanges) {
-            changedPositionRectangles.add(new Rectangle(range.start, 0,
-                    range.end - range.start, rowCount));
+            changedPositionRectangles.add(
+                    new Rectangle(range.start, 0, range.end - range.start, rowCount));
         }
 
         return changedPositionRectangles;

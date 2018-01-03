@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.command;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
@@ -34,10 +34,9 @@ public class MultiRowResizeCommandHandler extends AbstractLayerCommandHandler<Mu
 
     @Override
     protected boolean doCommand(MultiRowResizeCommand command) {
-        List<Integer> rowPositions = new ArrayList<Integer>();
+        Collection<Integer> rowPositions = command.getRowPositions();
 
-        for (int rowPosition : command.getRowPositions()) {
-            rowPositions.add(rowPosition);
+        for (int rowPosition : rowPositions) {
             int newRowHeight = command.downScaleValue()
                     ? this.dataLayer.downScaleRowHeight(command.getRowHeight(rowPosition))
                     : command.getRowHeight(rowPosition);

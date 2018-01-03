@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,8 +32,7 @@ public abstract class RowVisualChangeEvent implements IVisualChangeEvent {
         this(layer, Arrays.asList(rowPositionRanges));
     }
 
-    public RowVisualChangeEvent(ILayer layer,
-            Collection<Range> rowPositionRanges) {
+    public RowVisualChangeEvent(ILayer layer, Collection<Range> rowPositionRanges) {
         this.layer = layer;
         this.rowPositionRanges = rowPositionRanges;
     }
@@ -59,8 +58,8 @@ public abstract class RowVisualChangeEvent implements IVisualChangeEvent {
 
     @Override
     public boolean convertToLocal(ILayer localLayer) {
-        this.rowPositionRanges = localLayer.underlyingToLocalRowPositions(this.layer,
-                this.rowPositionRanges);
+        this.rowPositionRanges =
+                localLayer.underlyingToLocalRowPositions(this.layer, this.rowPositionRanges);
         this.layer = localLayer;
 
         return this.rowPositionRanges != null && this.rowPositionRanges.size() > 0;
@@ -68,12 +67,13 @@ public abstract class RowVisualChangeEvent implements IVisualChangeEvent {
 
     @Override
     public Collection<Rectangle> getChangedPositionRectangles() {
-        Collection<Rectangle> changedPositionRectangles = new ArrayList<Rectangle>();
+        Collection<Rectangle> changedPositionRectangles =
+                new ArrayList<Rectangle>(this.rowPositionRanges.size());
 
         int columnCount = this.layer.getColumnCount();
         for (Range range : this.rowPositionRanges) {
-            changedPositionRectangles.add(new Rectangle(0, range.start,
-                    columnCount, range.end - range.start));
+            changedPositionRectangles.add(
+                    new Rectangle(0, range.start, columnCount, range.end - range.start));
         }
 
         return changedPositionRectangles;

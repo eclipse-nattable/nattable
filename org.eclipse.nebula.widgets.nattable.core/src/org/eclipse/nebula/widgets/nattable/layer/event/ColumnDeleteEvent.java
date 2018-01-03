@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2016 Dirk Fauth and others.
+ * Copyright (c) 2013, 2018 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -72,7 +72,8 @@ public class ColumnDeleteEvent extends ColumnStructuralChangeEvent {
 
     @Override
     public Collection<StructuralDiff> getColumnDiffs() {
-        Collection<StructuralDiff> columnDiffs = new ArrayList<StructuralDiff>();
+        Collection<StructuralDiff> columnDiffs =
+                new ArrayList<StructuralDiff>(getColumnPositionRanges().size());
 
         for (Range range : getColumnPositionRanges()) {
             columnDiffs.add(new StructuralDiff(

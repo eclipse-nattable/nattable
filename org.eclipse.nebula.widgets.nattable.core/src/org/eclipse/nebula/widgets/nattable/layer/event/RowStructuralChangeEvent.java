@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,15 +21,13 @@ import org.eclipse.swt.graphics.Rectangle;
 /**
  * @see ColumnStructuralChangeEvent
  */
-public abstract class RowStructuralChangeEvent extends RowVisualChangeEvent
-        implements IStructuralChangeEvent {
+public abstract class RowStructuralChangeEvent extends RowVisualChangeEvent implements IStructuralChangeEvent {
 
     public RowStructuralChangeEvent(ILayer layer, Range... rowPositionRanges) {
         this(layer, Arrays.asList(rowPositionRanges));
     }
 
-    public RowStructuralChangeEvent(ILayer layer,
-            Collection<Range> rowPositionRanges) {
+    public RowStructuralChangeEvent(ILayer layer, Collection<Range> rowPositionRanges) {
         super(layer, rowPositionRanges);
     }
 
@@ -39,13 +37,14 @@ public abstract class RowStructuralChangeEvent extends RowVisualChangeEvent
 
     @Override
     public Collection<Rectangle> getChangedPositionRectangles() {
-        Collection<Rectangle> changedPositionRectangles = new ArrayList<Rectangle>();
+        Collection<Rectangle> changedPositionRectangles =
+                new ArrayList<Rectangle>(getRowPositionRanges().size());
 
         int columnCount = getLayer().getColumnCount();
         int rowCount = getLayer().getRowCount();
         for (Range range : getRowPositionRanges()) {
-            changedPositionRectangles.add(new Rectangle(0, range.start,
-                    columnCount, rowCount - range.start));
+            changedPositionRectangles.add(
+                    new Rectangle(0, range.start, columnCount, rowCount - range.start));
         }
 
         return changedPositionRectangles;

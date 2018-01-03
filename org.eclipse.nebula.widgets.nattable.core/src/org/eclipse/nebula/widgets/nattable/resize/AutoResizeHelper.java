@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 Dirk Fauth.
+ * Copyright (c) 2015, 2018 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -269,8 +269,8 @@ public class AutoResizeHelper {
 
                 // only perform row resize where necessary
                 // avoid unnecessary commands
-                final List<Integer> positions = new ArrayList<Integer>();
-                final List<Integer> heights = new ArrayList<Integer>();
+                final List<Integer> positions = new ArrayList<Integer>(rowPos.length);
+                final List<Integer> heights = new ArrayList<Integer>(rowPos.length);
                 for (int i = 0; i < rowPos.length; i++) {
                     if (rowHeights[i] != calculatedRowHeights[i]) {
                         positions.add(rowPos[i]);

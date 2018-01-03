@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -42,8 +42,6 @@ import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
  * is invoked.
  *
  * Internally uses the {@link IRowGroupModel} to track the row groups.
- * <p>
- * See RowGroupGridExample
  */
 public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 
@@ -347,7 +345,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
     }
 
     private List<Integer> convertToRowIndexes(final int[] rowPositions) {
-        final List<Integer> rowIndexes = new ArrayList<Integer>();
+        final List<Integer> rowIndexes = new ArrayList<Integer>(rowPositions.length);
         for (final Integer rowPosition : rowPositions) {
             rowIndexes.add(this.selectionLayer.getRowIndexByPosition(rowPosition));
         }

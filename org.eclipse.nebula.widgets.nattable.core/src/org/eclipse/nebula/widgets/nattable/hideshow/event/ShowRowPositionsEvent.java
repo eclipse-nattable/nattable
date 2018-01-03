@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,12 +33,15 @@ public class ShowRowPositionsEvent extends RowStructuralChangeEvent {
 
     @Override
     public Collection<StructuralDiff> getRowDiffs() {
-        Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
+        Collection<StructuralDiff> rowDiffs =
+                new ArrayList<StructuralDiff>(getRowPositionRanges().size());
 
         int offset = 0;
         for (Range range : getRowPositionRanges()) {
-            rowDiffs.add(new StructuralDiff(DiffTypeEnum.ADD, new Range(
-                    range.start - offset, range.start - offset), range));
+            rowDiffs.add(new StructuralDiff(
+                    DiffTypeEnum.ADD,
+                    new Range(range.start - offset, range.start - offset),
+                    range));
             offset += range.size();
         }
 

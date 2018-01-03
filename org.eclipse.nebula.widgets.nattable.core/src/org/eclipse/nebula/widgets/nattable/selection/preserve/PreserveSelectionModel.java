@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2016 Jonas Hugo, Markus Wahl, Dirk Fauth.
+ * Copyright (c) 2014, 2018 Jonas Hugo, Markus Wahl, Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -271,11 +271,13 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
 
     @Override
     public List<Rectangle> getSelections() {
-        ArrayList<Rectangle> selectedCells = new ArrayList<Rectangle>();
+        ArrayList<Rectangle> selectedCells = null;
 
         this.selectionsLock.readLock().lock();
         try {
-            for (CellPosition<T> cellPosition : this.selections.getSelections()) {
+            Collection<CellPosition<T>> selectedPositions = this.selections.getSelections();
+            selectedCells = new ArrayList<Rectangle>(selectedPositions.size());
+            for (CellPosition<T> cellPosition : selectedPositions) {
                 int rowPosition = getRowPositionByRowObject(cellPosition.getRowObject());
                 if (isRowVisible(rowPosition)) {
                     Integer columnPosition = cellPosition.getColumnPosition();
@@ -286,7 +288,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
         } finally {
             this.selectionsLock.readLock().unlock();
         }
-        return selectedCells;
+        return selectedCells != null ? selectedCells : new ArrayList<Rectangle>();
     }
 
     /**

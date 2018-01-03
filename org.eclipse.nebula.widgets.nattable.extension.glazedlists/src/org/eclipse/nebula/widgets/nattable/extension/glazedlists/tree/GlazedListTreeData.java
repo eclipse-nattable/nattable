@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -124,17 +124,18 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
             return null;
         }
 
-        List<T> children = new ArrayList<T>();
+        List<T> children = null;
         if (index >= 0) {
             Node<T> treeNode = this.treeList.getTreeNode(index);
             if (treeNode != null) {
                 List<Node<T>> childrenNodes = treeNode.getChildren();
+                children = new ArrayList<T>(childrenNodes.size());
                 for (Node<T> node : childrenNodes) {
                     children.add(node.getElement());
                 }
             }
         }
-        return children;
+        return children != null ? children : new ArrayList<T>();
     }
 
     @Override

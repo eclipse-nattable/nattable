@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,7 +24,7 @@ public class ArrayUtil {
     }
 
     public static <T> Collection<T> asCollection(T[] array) {
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<T>(array.length);
         for (int i = 0; i < array.length; i++) {
             list.add(array[i]);
         }
@@ -36,7 +36,7 @@ public class ArrayUtil {
     }
 
     public static List<Integer> asIntegerList(int... ints) {
-        ArrayList<Integer> list = new ArrayList<Integer>();
+        ArrayList<Integer> list = new ArrayList<Integer>(ints.length);
         for (Integer integer : ints) {
             list.add(integer);
         }
