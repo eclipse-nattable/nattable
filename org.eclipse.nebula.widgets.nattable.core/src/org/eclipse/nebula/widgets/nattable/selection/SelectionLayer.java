@@ -195,6 +195,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 
         if (this.selectionModel.isEmpty()) {
             setLastSelectedCell(NO_SELECTION, NO_SELECTION);
+            setLastSelectedRegion(new Rectangle(0, 0, 0, 0));
         }
     }
 
@@ -212,6 +213,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 
         if (this.selectionModel.isEmpty()) {
             setLastSelectedCell(NO_SELECTION, NO_SELECTION);
+            setLastSelectedRegion(new Rectangle(0, 0, 0, 0));
         }
     }
 

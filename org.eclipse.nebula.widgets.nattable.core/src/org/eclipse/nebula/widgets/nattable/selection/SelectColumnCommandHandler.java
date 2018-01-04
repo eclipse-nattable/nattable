@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -80,18 +80,34 @@ public class SelectColumnCommandHandler implements ILayerCommandHandler<SelectCo
 
         if (this.selectionLayer.isColumnPositionFullySelected(columnPosition)) {
             this.selectionLayer.clearSelection(selectedColumnRectangle);
-            if (this.selectionLayer.getLastSelectedRegion() != null
-                    && this.selectionLayer.getLastSelectedRegion().equals(selectedColumnRectangle)) {
-                this.selectionLayer.setLastSelectedRegion(null);
+            this.selectionLayer.setLastSelectedRegion(null);
+
+            // if there is still a column selected but no selection anchor, we
+            // need to set one for a consistent state
+            int[] selectedColumns = this.selectionLayer.getFullySelectedColumnPositions();
+            if (selectedColumns.length > 0
+                    && this.selectionLayer.getSelectionAnchor().columnPosition == SelectionLayer.NO_SELECTION) {
+
+                // determine column to move the anchor to
+                int toPos = selectedColumns[0];
+                for (int i = 0; i < selectedColumns.length; i++) {
+                    if (selectedColumns[i] < columnPosition) {
+                        toPos = selectedColumns[i];
+                    } else {
+                        break;
+                    }
+                }
+                this.selectionLayer.moveSelectionAnchor(toPos, rowPosition);
             }
+
         } else {
             if (this.selectionLayer.getLastSelectedRegion() != null) {
-                this.selectionLayer.selectionModel.addSelection(
-                        new Rectangle(
-                                this.selectionLayer.getLastSelectedRegion().x,
-                                this.selectionLayer.getLastSelectedRegion().y,
-                                this.selectionLayer.getLastSelectedRegion().width,
-                                this.selectionLayer.getLastSelectedRegion().height));
+                // Preserve last selected region
+                this.selectionLayer.selectRegion(
+                        this.selectionLayer.getLastSelectedRegion().x,
+                        this.selectionLayer.getLastSelectedRegion().y,
+                        this.selectionLayer.getLastSelectedRegion().width,
+                        this.selectionLayer.getLastSelectedRegion().height);
             }
             this.selectionLayer.selectRegion(columnPosition, 0, 1, Integer.MAX_VALUE);
             this.selectionLayer.moveSelectionAnchor(columnPosition, rowPosition);
@@ -99,31 +115,33 @@ public class SelectColumnCommandHandler implements ILayerCommandHandler<SelectCo
     }
 
     private void selectColumnWithShiftKey(int columnPosition) {
-        int numOfColumnsToIncludeInRegion = 1;
+        int numOfColumnsToInclude = 1;
         int startColumnPosition = columnPosition;
 
-        // if multiple selection is disabled, we need to ensure to only select
-        // the current columnPosition
-        // modifying the selection anchor here ensures that the anchor also
-        // moves
-        if (!this.selectionLayer.getSelectionModel().isMultipleSelectionAllowed()) {
-            this.selectionLayer.getSelectionAnchor().columnPosition = columnPosition;
+        // This method selects the range based on the selection anchor and the
+        // clicked position. Therefore the selection prior adding the newly
+        // calculated selection needs to be cleared in advance.
+        Rectangle lastSelectedRegion = this.selectionLayer.getLastSelectedRegion();
+        if (lastSelectedRegion != null) {
+            this.selectionLayer.getSelectionModel().clearSelection(lastSelectedRegion);
+        } else {
+            this.selectionLayer.getSelectionModel().clearSelection();
         }
 
-        if (this.selectionLayer.getLastSelectedRegion() != null) {
+        // move the selection anchor if multiple selection is disabled or there
+        // is no selection anchor active already
+        if (!this.selectionLayer.getSelectionModel().isMultipleSelectionAllowed()
+                || this.selectionLayer.getSelectionAnchor().columnPosition == SelectionLayer.NO_SELECTION) {
+            this.selectionLayer.moveSelectionAnchor(columnPosition, 0);
+        }
 
-            // Negative when we move left, but we are only concerned with the
-            // num. of columns
-            numOfColumnsToIncludeInRegion = Math.abs(this.selectionLayer.getSelectionAnchor().columnPosition - columnPosition) + 1;
-
-            // Select to the Left
-            if (columnPosition < this.selectionLayer.getSelectionAnchor().columnPosition) {
-                startColumnPosition = columnPosition;
-            } else {
+        if (this.selectionLayer.getSelectionAnchor().columnPosition != SelectionLayer.NO_SELECTION) {
+            numOfColumnsToInclude = Math.abs(this.selectionLayer.getSelectionAnchor().columnPosition - columnPosition) + 1;
+            if (this.selectionLayer.getSelectionAnchor().columnPosition < columnPosition) {
                 startColumnPosition = this.selectionLayer.getSelectionAnchor().columnPosition;
             }
         }
-        this.selectionLayer.selectRegion(startColumnPosition, 0, numOfColumnsToIncludeInRegion, Integer.MAX_VALUE);
+        this.selectionLayer.selectRegion(startColumnPosition, 0, numOfColumnsToInclude, Integer.MAX_VALUE);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -148,8 +148,7 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
      * @return The changed selection.
      */
     private Range selectRowWithCtrlKey(int columnPosition, int rowPosition) {
-        Rectangle selectedRowRectangle =
-                new Rectangle(0, rowPosition, Integer.MAX_VALUE, 1);
+        Rectangle selectedRowRectangle = new Rectangle(0, rowPosition, Integer.MAX_VALUE, 1);
 
         if (this.selectionLayer.isRowPositionFullySelected(rowPosition)) {
             this.selectionLayer.clearSelection(selectedRowRectangle);
@@ -173,8 +172,8 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
                 this.selectionLayer.moveSelectionAnchor(columnPosition, toPos);
             }
         } else {
-            // Preserve last selected region
             if (this.selectionLayer.getLastSelectedRegion() != null) {
+                // Preserve last selected region
                 this.selectionLayer.selectRegion(
                         this.selectionLayer.getLastSelectedRegion().x,
                         this.selectionLayer.getLastSelectedRegion().y,
@@ -199,12 +198,12 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
      * @return The changed selection.
      */
     private Range selectRowWithShiftKey(int columnPosition, int rowPosition) {
-        int numOfRowsToIncludeInRegion = 1;
+        int numOfRowsToInclude = 1;
         int startRowPosition = rowPosition;
 
-        // as this method will return the whole range based on the selection
-        // anchor and the clicked position, we clear the selection prior adding
-        // the newly calculated selection.
+        // This method selects the range based on the selection anchor and the
+        // clicked position. Therefore the selection prior adding the newly
+        // calculated selection needs to be cleared in advance.
         Rectangle lastSelectedRegion = this.selectionLayer.getLastSelectedRegion();
         if (lastSelectedRegion != null) {
             this.selectionLayer.getSelectionModel().clearSelection(lastSelectedRegion);
@@ -212,27 +211,22 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
             this.selectionLayer.getSelectionModel().clearSelection();
         }
 
-        // if multiple selection is disabled, we need to ensure to only moving
-        // the selection anchor
-        if (!this.selectionLayer.getSelectionModel().isMultipleSelectionAllowed()) {
+        // move the selection anchor if multiple selection is disabled or there
+        // is no selection anchor active already
+        if (!this.selectionLayer.getSelectionModel().isMultipleSelectionAllowed()
+                || this.selectionLayer.getSelectionAnchor().rowPosition == SelectionLayer.NO_SELECTION) {
             this.selectionLayer.moveSelectionAnchor(columnPosition, rowPosition);
         }
 
-        if (this.selectionLayer.getLastSelectedRegion() != null) {
-            numOfRowsToIncludeInRegion =
-                    Math.abs(this.selectionLayer.getSelectionAnchor().rowPosition - rowPosition) + 1;
-            if (startRowPosition < this.selectionLayer.getSelectionAnchor().rowPosition) {
-                // Selecting above
-                startRowPosition = rowPosition;
-            } else {
-                // Selecting below
+        if (this.selectionLayer.getSelectionAnchor().rowPosition != SelectionLayer.NO_SELECTION) {
+            numOfRowsToInclude = Math.abs(this.selectionLayer.getSelectionAnchor().rowPosition - rowPosition) + 1;
+            if (this.selectionLayer.getSelectionAnchor().rowPosition < startRowPosition) {
                 startRowPosition = this.selectionLayer.getSelectionAnchor().rowPosition;
             }
         }
-        this.selectionLayer.selectRegion(
-                0, startRowPosition, Integer.MAX_VALUE, numOfRowsToIncludeInRegion);
+        this.selectionLayer.selectRegion(0, startRowPosition, Integer.MAX_VALUE, numOfRowsToInclude);
 
-        return new Range(startRowPosition, startRowPosition + numOfRowsToIncludeInRegion);
+        return new Range(startRowPosition, startRowPosition + numOfRowsToInclude);
     }
 
     @Override
