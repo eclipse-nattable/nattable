@@ -32,6 +32,7 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ResizeColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
@@ -153,16 +154,20 @@ public class _5074_ResizeColumnHideShowExample extends AbstractNatExample {
             @Override
             protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
                 return super.createColumnHeaderMenu(natTable)
-                        .withHideColumnMenuItem().withShowAllColumnsMenuItem();
+                        .withHideColumnMenuItem()
+                        .withShowAllColumnsMenuItem();
             }
 
             @Override
             protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
                 return super.createCornerMenu(natTable)
-                        .withShowAllColumnsMenuItem();
+                        .withShowAllColumnsMenuItem()
+                        .withStateManagerMenuItemProvider();
             }
         });
         natTable.configure();
+
+        gridLayer.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(natTable));
 
         return natTable;
     }

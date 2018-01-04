@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2017 Dirk Fauth.
+ * Copyright (c) 2017, 2018 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -241,6 +241,68 @@ public class ResizeColumnHideShowLayerTest {
 
         assertTrue(this.bodyDataLayer.isColumnPositionResizable(1));
         assertFalse(this.bodyDataLayer.isColumnPositionResizable(4));
+    }
+
+    @Test
+    public void testHideShowLoadStatePercentageSizing() {
+        // enable percentage sizing
+        this.bodyDataLayer.setColumnPercentageSizing(true);
+
+        // trigger percentage calculation
+        ClientAreaResizeCommand resizeCommand = new ClientAreaResizeCommand(null);
+        resizeCommand.setCalcArea(new Rectangle(0, 0, 600, 600));
+        this.hideShowLayer.doCommand(resizeCommand);
+
+        assertEquals(600, this.hideShowLayer.getWidth());
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(3));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(4));
+
+        Properties defaultState = new Properties();
+        this.hideShowLayer.saveState("default", defaultState);
+
+        this.hideShowLayer.hideColumnPositions(1, 4);
+
+        assertEquals(600, this.hideShowLayer.getWidth());
+        assertEquals(200, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(200, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertEquals(200, this.hideShowLayer.getColumnWidthByPosition(3));
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(4));
+
+        assertEquals(2, this.hideShowLayer.getHiddenColumnIndexes().size());
+        assertTrue("1 is not contained in hidden column indexes", this.hideShowLayer.getHiddenColumnIndexes().contains(Integer.valueOf(1)));
+        assertTrue("4 is not contained in hidden column indexes", this.hideShowLayer.getHiddenColumnIndexes().contains(Integer.valueOf(4)));
+
+        // save the state
+        Properties hiddenState = new Properties();
+        this.hideShowLayer.saveState("hidden", hiddenState);
+
+        // load default state again
+        this.hideShowLayer.loadState("default", defaultState);
+
+        assertEquals(600, this.hideShowLayer.getWidth());
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(3));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(4));
+        assertTrue("hidden column indexes are not empty", this.hideShowLayer.getHiddenColumnIndexes().isEmpty());
+
+        this.hideShowLayer.loadState("hidden", hiddenState);
+
+        assertEquals(600, this.hideShowLayer.getWidth());
+        assertEquals(200, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(200, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertEquals(200, this.hideShowLayer.getColumnWidthByPosition(3));
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(4));
+
+        assertEquals(2, this.hideShowLayer.getHiddenColumnIndexes().size());
+        assertTrue("1 is not contained in hidden column indexes", this.hideShowLayer.getHiddenColumnIndexes().contains(Integer.valueOf(1)));
+        assertTrue("4 is not contained in hidden column indexes", this.hideShowLayer.getHiddenColumnIndexes().contains(Integer.valueOf(4)));
     }
 
     // test hide with mixed sized where last column
