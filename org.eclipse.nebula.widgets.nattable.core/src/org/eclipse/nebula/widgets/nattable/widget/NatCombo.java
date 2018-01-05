@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1419,11 +1419,13 @@ public class NatCombo extends Composite {
                         }
                     }
                     transform = transform.substring(prefixLength, transform.length() - suffixLength);
+
+                    // if the transform value length is still > 0, try to split
+                    if (transform.length() > 0) {
+                        return transform.split(this.multiselectValueSeparator);
+                    }
                 }
-                // if the transform value length is still > 0, then try to split
-                if (transform.length() > 0) {
-                    return transform.split(this.multiselectValueSeparator);
-                }
+                return new String[] { transform };
             }
         }
         return new String[] {};
