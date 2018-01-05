@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth.
+ * Copyright (c) 2014, 2018 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -73,7 +73,9 @@ public class EditTraversalStrategyLeftRightTest {
         this.selectionLayer.clear();
         // since we are not interested in commit operations it is sufficient to
         // close the editor
-        this.natTable.getActiveCellEditor().close();
+        if (this.natTable.getActiveCellEditor() != null) {
+            this.natTable.getActiveCellEditor().close();
+        }
     }
 
     // move right

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth.
+ * Copyright (c) 2014, 2018 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -59,7 +59,7 @@ public class EditTraversalStrategyUpDownTest {
         // only use 10 columns to make the test cases easier
         String[] propertyNames = Arrays.copyOfRange(RowDataListFixture.getPropertyNames(), 0, 10);
 
-        IRowDataProvider<RowDataFixture> bodyDataProvider = new ListDataProvider<RowDataFixture>(
+        IRowDataProvider<RowDataFixture> bodyDataProvider = new ListDataProvider<>(
                 RowDataListFixture.getList(10),
                 new ReflectiveColumnPropertyAccessor<RowDataFixture>(propertyNames));
 
@@ -93,7 +93,7 @@ public class EditTraversalStrategyUpDownTest {
                 Boolean.TRUE);
 
         // register non editable rows
-        this.overrider = new RowOverrideLabelAccumulator<RowDataFixture>(bodyDataProvider, new IRowIdAccessor<RowDataFixture>() {
+        this.overrider = new RowOverrideLabelAccumulator<>(bodyDataProvider, new IRowIdAccessor<RowDataFixture>() {
 
             @Override
             public Serializable getRowId(RowDataFixture rowObject) {
@@ -116,7 +116,9 @@ public class EditTraversalStrategyUpDownTest {
         this.selectionLayer.clear();
         // since we are not interested in commit operations it is sufficient to
         // close the editor
-        this.natTable.getActiveCellEditor().close();
+        if (this.natTable.getActiveCellEditor() != null) {
+            this.natTable.getActiveCellEditor().close();
+        }
     }
 
     // move down
