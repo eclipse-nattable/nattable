@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Dirk Fauth and others.
+ * Copyright (c) 2017, 2018 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -87,6 +87,7 @@ public class _5074_ResizeColumnHideShowExample extends AbstractNatExample {
                 propertyNames);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         bodyDataLayer.setColumnPercentageSizing(true);
+        bodyDataLayer.setDefaultMinColumnWidth(20);
 
         ResizeColumnHideShowLayer columnHideShowLayer =
                 new ResizeColumnHideShowLayer(bodyDataLayer, bodyDataLayer);

@@ -193,7 +193,46 @@ public class ResizeColumnHideShowLayerTest {
 
         String hidden = props.getProperty("hidden" + ResizeColumnHideShowLayer.PERSISTENCE_KEY_HIDDEN_COLUMNS);
         assertNotNull(hidden);
-        assertEquals("1:[50|true|false],4:[-1|false|false],", hidden);
+        assertEquals("1:[50|-1|true|false],4:[-1|-1|false|false],", hidden);
+    }
+
+    @Test
+    public void testHideShowSaveStatePercentageSizing() {
+        // enable percentage sizing
+        this.bodyDataLayer.setColumnPercentageSizing(true);
+        this.bodyDataLayer.setDefaultMinColumnWidth(10);
+        this.bodyDataLayer.setMinColumnWidth(4, 20);
+
+        // trigger percentage calculation
+        ClientAreaResizeCommand resizeCommand = new ClientAreaResizeCommand(null);
+        resizeCommand.setCalcArea(new Rectangle(0, 0, 500, 500));
+        this.hideShowLayer.doCommand(resizeCommand);
+
+        assertEquals(500, this.hideShowLayer.getWidth());
+
+        // this results in 10 percent
+        this.bodyDataLayer.setColumnWidthByPosition(1, 50);
+        this.bodyDataLayer.setColumnPositionResizable(4, false);
+
+        assertTrue(this.bodyDataLayer.isColumnPositionResizable(1));
+        assertFalse(this.bodyDataLayer.isColumnPositionResizable(4));
+
+        this.hideShowLayer.hideColumnPositions(1, 4);
+
+        assertEquals(500, this.hideShowLayer.getWidth());
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(4));
+
+        assertFalse(this.bodyDataLayer.isColumnPositionResizable(1));
+        assertFalse(this.bodyDataLayer.isColumnPositionResizable(4));
+
+        // test save state
+        Properties props = new Properties();
+        this.hideShowLayer.saveState("hidden", props);
+
+        String hidden = props.getProperty("hidden" + ResizeColumnHideShowLayer.PERSISTENCE_KEY_HIDDEN_COLUMNS);
+        assertNotNull(hidden);
+        assertEquals("1:[10|-1|true|true],4:[-1|20|false|true],", hidden);
     }
 
     @Test
@@ -499,4 +538,75 @@ public class ResizeColumnHideShowLayerTest {
         assertEquals(375, this.hideShowLayer.getColumnWidthByPosition(3));
         assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(4));
     }
+
+    @Test
+    public void testHideShowPercentageSizedColumnsAndDefaultMinWidth() {
+        this.bodyDataLayer.setColumnPercentageSizing(true);
+        this.bodyDataLayer.setDefaultMinColumnWidth(10);
+
+        ClientAreaResizeCommand cmd = new ClientAreaResizeCommand(null);
+        cmd.setCalcArea(new Rectangle(0, 0, 600, 100));
+        this.hideShowLayer.doCommand(cmd);
+
+        assertEquals(600, this.hideShowLayer.getWidth());
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(3));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(4));
+
+        this.hideShowLayer.hideColumnPositions(2);
+
+        assertEquals(600, this.hideShowLayer.getWidth());
+        assertEquals(150, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertEquals(150, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertEquals(150, this.hideShowLayer.getColumnWidthByPosition(3));
+        assertEquals(150, this.hideShowLayer.getColumnWidthByPosition(4));
+
+        this.hideShowLayer.showAllColumns();
+
+        assertEquals(600, this.hideShowLayer.getWidth());
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(3));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(4));
+    }
+
+    @Test
+    public void testHideShowPercentageSizedColumnsAndSpecificMinWidth() {
+        this.bodyDataLayer.setColumnPercentageSizing(true);
+        this.bodyDataLayer.setMinColumnWidth(2, 20);
+
+        ClientAreaResizeCommand cmd = new ClientAreaResizeCommand(null);
+        cmd.setCalcArea(new Rectangle(0, 0, 600, 100));
+        this.hideShowLayer.doCommand(cmd);
+
+        assertEquals(600, this.hideShowLayer.getWidth());
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(3));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(4));
+
+        this.hideShowLayer.hideColumnPositions(2);
+
+        assertEquals(600, this.hideShowLayer.getWidth());
+        assertEquals(150, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertEquals(150, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertEquals(150, this.hideShowLayer.getColumnWidthByPosition(3));
+        assertEquals(150, this.hideShowLayer.getColumnWidthByPosition(4));
+
+        this.hideShowLayer.showAllColumns();
+
+        assertEquals(600, this.hideShowLayer.getWidth());
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(3));
+        assertEquals(120, this.hideShowLayer.getColumnWidthByPosition(4));
+    }
+
 }

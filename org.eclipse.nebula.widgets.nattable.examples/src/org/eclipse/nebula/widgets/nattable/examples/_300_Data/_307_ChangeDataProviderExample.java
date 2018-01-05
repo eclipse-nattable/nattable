@@ -42,8 +42,8 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
-import org.eclipse.nebula.widgets.nattable.resize.command.ColumnSizeResetCommand;
-import org.eclipse.nebula.widgets.nattable.resize.command.RowSizeResetCommand;
+import org.eclipse.nebula.widgets.nattable.resize.command.ColumnWidthResetCommand;
+import org.eclipse.nebula.widgets.nattable.resize.command.RowHeightResetCommand;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
@@ -231,8 +231,8 @@ public class _307_ChangeDataProviderExample extends AbstractNatExample {
 
                 bodyDataLayer.setConfigLabelAccumulator(_307_ChangeDataProviderExample.this.personAccumulator);
 
-                natTable.doCommand(new RowSizeResetCommand(false));
-                natTable.doCommand(new ColumnSizeResetCommand(false));
+                natTable.doCommand(new RowHeightResetCommand(false));
+                natTable.doCommand(new ColumnWidthResetCommand(false));
 
                 natTable.refresh();
 
@@ -252,8 +252,8 @@ public class _307_ChangeDataProviderExample extends AbstractNatExample {
 
                 bodyDataLayer.setConfigLabelAccumulator(null);
 
-                natTable.doCommand(new RowSizeResetCommand(false));
-                natTable.doCommand(new ColumnSizeResetCommand(false));
+                natTable.doCommand(new RowHeightResetCommand(false));
+                natTable.doCommand(new ColumnWidthResetCommand(false));
 
                 natTable.refresh();
             }

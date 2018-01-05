@@ -540,7 +540,6 @@ public class SizeConfig implements IPersistable {
      *         to the position.
      */
     private int updateAdjacentPosition(int position, int diff) {
-        // TODO handling of min size
         // if previous resized position was at min size before, the adjacent
         // position needs to be increased more if the min size is reset
         if (this.sizeMap.containsKey(position) || this.realSizeMap.containsKey(position)) {
@@ -872,7 +871,6 @@ public class SizeConfig implements IPersistable {
                     }
                     // calculate ratio
                     for (int pos : fixedPercentagePositions) {
-                        // TODO do not distribute on min
                         if (getMinSize(pos) != this.realSizeMap.get(pos)) {
                             Integer percentage = this.sizeMap.get(pos);
                             double ratio = Integer.valueOf(percentage).doubleValue() / Integer.valueOf(eligibleSum).doubleValue();
@@ -1154,6 +1152,22 @@ public class SizeConfig implements IPersistable {
     }
 
     /**
+     * Resets the custom configured min size of the given position. This way the
+     * default min size will be applied for that position afterwards.
+     *
+     * @param position
+     *            The position for which the min size configuration should be
+     *            reset.
+     *
+     * @since 1.6
+     */
+    public void resetConfiguredMinSize(int position) {
+        this.minSizeMap.remove(position);
+        this.isAggregatedSizeCacheValid = false;
+        calculatePercentages(this.availableSpace, this.realSizeMap.size());
+    }
+
+    /**
      * Returns the configured size value for the given position or -1 if no
      * custom size was configured and therefore the default size is used for
      * that position.
@@ -1168,6 +1182,24 @@ public class SizeConfig implements IPersistable {
     public int getConfiguredSize(int position) {
         Integer configuredSize = this.sizeMap.get(position);
         return (configuredSize != null) ? configuredSize : -1;
+    }
+
+    /**
+     * Returns the configured minimum size value for the given position or -1 if
+     * no custom minimum size was configured and therefore the default minimum
+     * size is used for that position.
+     *
+     * @param position
+     *            The position for which the configured minimum size should be
+     *            returned.
+     * @return The configured minimum size or -1 in case the default minimum
+     *         size is used for that position.
+     *
+     * @since 1.6
+     */
+    public int getConfiguredMinSize(int position) {
+        Integer configuredMinSize = this.minSizeMap.get(position);
+        return (configuredMinSize != null) ? configuredMinSize : -1;
     }
 
     /**

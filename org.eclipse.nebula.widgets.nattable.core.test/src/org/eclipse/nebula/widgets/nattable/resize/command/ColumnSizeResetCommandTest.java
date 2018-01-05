@@ -45,7 +45,7 @@ public class ColumnSizeResetCommandTest {
         assertEquals(50, this.dataLayer.getColumnWidthByPosition(3));
         assertEquals(1, this.listener.getEventsCount());
 
-        this.dataLayer.doCommand(new ColumnSizeResetCommand());
+        this.dataLayer.doCommand(new ColumnWidthResetCommand());
 
         assertEquals(100, this.dataLayer.getColumnWidthByPosition(3));
         assertEquals(2, this.listener.getEventsCount());
@@ -59,7 +59,7 @@ public class ColumnSizeResetCommandTest {
         assertEquals(50, this.dataLayer.getColumnWidthByPosition(3));
         assertEquals(1, this.listener.getEventsCount());
 
-        this.dataLayer.doCommand(new ColumnSizeResetCommand(false));
+        this.dataLayer.doCommand(new ColumnWidthResetCommand(false));
 
         assertEquals(100, this.dataLayer.getColumnWidthByPosition(3));
         assertEquals(1, this.listener.getEventsCount());
@@ -80,7 +80,7 @@ public class ColumnSizeResetCommandTest {
         assertEquals(100, dummyGridLayerStack.getRowHeaderDataLayer().getColumnWidthByPosition(0));
         assertEquals(50, dummyGridLayerStack.getBodyDataLayer().getColumnWidthByPosition(2));
 
-        natTable.doCommand(new ColumnSizeResetCommand());
+        natTable.doCommand(new ColumnWidthResetCommand());
 
         assertEquals(40, dummyGridLayerStack.getRowHeaderDataLayer().getColumnWidthByPosition(0));
         assertEquals(100, dummyGridLayerStack.getBodyDataLayer().getColumnWidthByPosition(2));
@@ -100,7 +100,7 @@ public class ColumnSizeResetCommandTest {
         assertEquals(100, dummyGridLayerStack.getRowHeaderDataLayer().getColumnWidthByPosition(0));
         assertEquals(50, dummyGridLayerStack.getBodyDataLayer().getColumnWidthByPosition(2));
 
-        natTable.doCommand(new ColumnSizeResetCommand(GridRegion.BODY));
+        natTable.doCommand(new ColumnWidthResetCommand(GridRegion.BODY));
 
         assertEquals(100, dummyGridLayerStack.getRowHeaderDataLayer().getColumnWidthByPosition(0));
         assertEquals(100, dummyGridLayerStack.getBodyDataLayer().getColumnWidthByPosition(2));

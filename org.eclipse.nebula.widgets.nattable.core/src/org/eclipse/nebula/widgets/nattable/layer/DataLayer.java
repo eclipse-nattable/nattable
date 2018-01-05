@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,12 +33,12 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnSizeConfigurationCommandHandler;
-import org.eclipse.nebula.widgets.nattable.resize.command.ColumnSizeResetCommandHandler;
+import org.eclipse.nebula.widgets.nattable.resize.command.ColumnWidthResetCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiColumnResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiRowResizeCommandHandler;
+import org.eclipse.nebula.widgets.nattable.resize.command.RowHeightResetCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowSizeConfigurationCommandHandler;
-import org.eclipse.nebula.widgets.nattable.resize.command.RowSizeResetCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
 
@@ -123,10 +123,9 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
         registerCommandHandler(new UpdateDataCommandHandler(this));
         registerCommandHandler(new StructuralRefreshCommandHandler());
         registerCommandHandler(new VisualRefreshCommandHandler());
-        registerCommandHandler(new ConfigureScalingCommandHandler(
-                this.columnWidthConfig, this.rowHeightConfig));
-        registerCommandHandler(new ColumnSizeResetCommandHandler(this));
-        registerCommandHandler(new RowSizeResetCommandHandler(this));
+        registerCommandHandler(new ConfigureScalingCommandHandler(this.columnWidthConfig, this.rowHeightConfig));
+        registerCommandHandler(new ColumnWidthResetCommandHandler(this));
+        registerCommandHandler(new RowHeightResetCommandHandler(this));
     }
 
     /**
@@ -640,7 +639,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     }
 
     /**
-     * This method will reset all column size customizations, e.g. set column
+     * This method will reset all column width customizations, e.g. set column
      * widths and whether columns can be resizable.
      *
      * @param fireEvent
@@ -649,7 +648,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
      *            actions should be executed before the refresh should be done.
      * @since 1.6
      */
-    public void resetColumnSizeConfiguration(boolean fireEvent) {
+    public void resetColumnWidthConfiguration(boolean fireEvent) {
         this.columnWidthConfig.reset();
         if (fireEvent) {
             fireLayerEvent(new ColumnStructuralRefreshEvent(this));
@@ -657,8 +656,8 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     }
 
     /**
-     * This method will reset all row size customizations, e.g. set row heights
-     * and whether rows can be resizable.
+     * This method will reset all row height customizations, e.g. set row
+     * heights and whether rows can be resizable.
      *
      * @param fireEvent
      *            flag to indicate whether a refresh event should be triggered
@@ -666,7 +665,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
      *            actions should be executed before the refresh should be done.
      * @since 1.6
      */
-    public void resetRowSizeConfiguration(boolean fireEvent) {
+    public void resetRowHeightConfiguration(boolean fireEvent) {
         this.rowHeightConfig.reset();
         if (fireEvent) {
             fireLayerEvent(new RowStructuralRefreshEvent(this));
@@ -674,7 +673,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     }
 
     /**
-     * This method will reset a custom set column size to the default size.
+     * This method will reset a custom set column width to the default size.
      *
      * @param position
      *            The column position that should be reset.
@@ -684,7 +683,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
      *            actions should be executed before the refresh should be done.
      * @since 1.6
      */
-    public void resetColumnSize(int position, boolean fireEvent) {
+    public void resetColumnWidth(int position, boolean fireEvent) {
         this.columnWidthConfig.resetConfiguredSize(position);
         if (fireEvent) {
             fireLayerEvent(new ColumnStructuralRefreshEvent(this));
@@ -692,7 +691,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     }
 
     /**
-     * This method will reset a custom set row size to the default size.
+     * This method will reset a custom set row height to the default size.
      *
      * @param position
      *            The row position that should be reset.
@@ -702,8 +701,46 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
      *            actions should be executed before the refresh should be done.
      * @since 1.6
      */
-    public void resetRowSize(int position, boolean fireEvent) {
+    public void resetRowHeight(int position, boolean fireEvent) {
         this.rowHeightConfig.resetConfiguredSize(position);
+        if (fireEvent) {
+            fireLayerEvent(new RowStructuralRefreshEvent(this));
+        }
+    }
+
+    /**
+     * This method will reset a custom set minimum column width to the default
+     * minimum size.
+     *
+     * @param position
+     *            The column position that should be reset.
+     * @param fireEvent
+     *            flag to indicate whether a refresh event should be triggered
+     *            or not. Should be set to <code>false</code> in case additional
+     *            actions should be executed before the refresh should be done.
+     * @since 1.6
+     */
+    public void resetMinColumnWidth(int position, boolean fireEvent) {
+        this.columnWidthConfig.resetConfiguredMinSize(position);
+        if (fireEvent) {
+            fireLayerEvent(new ColumnStructuralRefreshEvent(this));
+        }
+    }
+
+    /**
+     * This method will reset a custom set minimum row height to the default
+     * minimum size.
+     *
+     * @param position
+     *            The row position that should be reset.
+     * @param fireEvent
+     *            flag to indicate whether a refresh event should be triggered
+     *            or not. Should be set to <code>false</code> in case additional
+     *            actions should be executed before the refresh should be done.
+     * @since 1.6
+     */
+    public void resetMinRowHeight(int position, boolean fireEvent) {
+        this.rowHeightConfig.resetConfiguredMinSize(position);
         if (fireEvent) {
             fireLayerEvent(new RowStructuralRefreshEvent(this));
         }
@@ -745,6 +782,44 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
      */
     public int getConfiguredRowHeightByPosition(int rowPosition) {
         return this.rowHeightConfig.getConfiguredSize(rowPosition);
+    }
+
+    /**
+     * Returns the configured minimum width of the given column position without
+     * any transformation. If no explicit minimum width is set for the column
+     * position it returns -1 instead of the default minimum width.
+     *
+     * @param columnPosition
+     *            The column position for which the configured minimum width
+     *            should be returned.
+     * @return The minimum width that is configured for the given column
+     *         position without transformation or -1 if no explicit minimum
+     *         width is set for that column position.
+     * @see #getMinColumnWidth(int)
+     *
+     * @since 1.6
+     */
+    public int getConfiguredMinColumnWidthByPosition(int columnPosition) {
+        return this.columnWidthConfig.getConfiguredMinSize(columnPosition);
+    }
+
+    /**
+     * Returns the configured minimum height of the given row position without
+     * any transformation. If no explicit minimum height is set for the row
+     * position it returns -1 instead of the default minimum height.
+     *
+     * @param rowPosition
+     *            The row position for which the configured minimum height
+     *            should be returned.
+     * @return The minimum height that is configured for the given row position
+     *         without transformation or -1 if no explicit minimum height is set
+     *         for that row position.
+     * @see #getMinRowHeight(int)
+     *
+     * @since 1.6
+     */
+    public int getConfiguredMinRowHeightByPosition(int rowPosition) {
+        return this.rowHeightConfig.getConfiguredMinSize(rowPosition);
     }
 
     /**

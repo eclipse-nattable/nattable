@@ -45,7 +45,7 @@ public class RowSizeResetCommandTest {
         assertEquals(50, this.dataLayer.getRowHeightByPosition(3));
         assertEquals(1, this.listener.getEventsCount());
 
-        this.dataLayer.doCommand(new RowSizeResetCommand());
+        this.dataLayer.doCommand(new RowHeightResetCommand());
 
         assertEquals(20, this.dataLayer.getRowHeightByPosition(3));
         assertEquals(2, this.listener.getEventsCount());
@@ -59,7 +59,7 @@ public class RowSizeResetCommandTest {
         assertEquals(50, this.dataLayer.getRowHeightByPosition(3));
         assertEquals(1, this.listener.getEventsCount());
 
-        this.dataLayer.doCommand(new RowSizeResetCommand(false));
+        this.dataLayer.doCommand(new RowHeightResetCommand(false));
 
         assertEquals(20, this.dataLayer.getRowHeightByPosition(3));
         assertEquals(1, this.listener.getEventsCount());
@@ -80,7 +80,7 @@ public class RowSizeResetCommandTest {
         assertEquals(50, dummyGridLayerStack.getColumnHeaderDataLayer().getRowHeightByPosition(0));
         assertEquals(50, dummyGridLayerStack.getBodyDataLayer().getRowHeightByPosition(2));
 
-        natTable.doCommand(new RowSizeResetCommand());
+        natTable.doCommand(new RowHeightResetCommand());
 
         assertEquals(20, dummyGridLayerStack.getColumnHeaderDataLayer().getRowHeightByPosition(0));
         assertEquals(20, dummyGridLayerStack.getBodyDataLayer().getRowHeightByPosition(2));
@@ -100,7 +100,7 @@ public class RowSizeResetCommandTest {
         assertEquals(50, dummyGridLayerStack.getColumnHeaderDataLayer().getRowHeightByPosition(0));
         assertEquals(50, dummyGridLayerStack.getBodyDataLayer().getRowHeightByPosition(2));
 
-        natTable.doCommand(new RowSizeResetCommand(GridRegion.BODY));
+        natTable.doCommand(new RowHeightResetCommand(GridRegion.BODY));
 
         assertEquals(50, dummyGridLayerStack.getColumnHeaderDataLayer().getRowHeightByPosition(0));
         assertEquals(20, dummyGridLayerStack.getBodyDataLayer().getRowHeightByPosition(2));

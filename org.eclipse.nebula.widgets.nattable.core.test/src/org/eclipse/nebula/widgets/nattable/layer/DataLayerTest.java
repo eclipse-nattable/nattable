@@ -489,7 +489,7 @@ public class DataLayerTest {
         assertEquals(35, this.dataLayer.getColumnWidthByPosition(2));
         assertFalse(this.dataLayer.isColumnPositionResizable(1));
 
-        this.dataLayer.resetColumnSizeConfiguration(false);
+        this.dataLayer.resetColumnWidthConfiguration(false);
 
         assertEquals(100, this.dataLayer.getColumnWidthByPosition(0));
         assertEquals(100, this.dataLayer.getColumnWidthByPosition(1));
@@ -508,7 +508,7 @@ public class DataLayerTest {
         assertEquals(25, this.dataLayer.getRowHeightByPosition(2));
         assertFalse(this.dataLayer.isRowPositionResizable(1));
 
-        this.dataLayer.resetRowSizeConfiguration(false);
+        this.dataLayer.resetRowHeightConfiguration(false);
 
         assertEquals(40, this.dataLayer.getRowHeightByPosition(0));
         assertEquals(40, this.dataLayer.getRowHeightByPosition(1));

@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2017 Dirk Fauth.
+ * Copyright (c) 2017, 2018 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -139,13 +139,15 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
             int columnIndex = getColumnIndexByPosition(columnPosition);
             // get the currently applied width of the column
             int configuredWidth = this.bodyDataLayer.getConfiguredColumnWidthByPosition(columnIndex);
+            // get the currently applied min width of the column
+            int configuredMinWidth = this.bodyDataLayer.getConfiguredMinColumnWidthByPosition(columnIndex);
             // get the currently applied resizable info
             boolean configuredResizable = this.bodyDataLayer.isColumnPositionResizable(columnIndex);
             // get the information if the column is configured for percentage
             // sizing
             boolean configuredPercentage = this.bodyDataLayer.isColumnPercentageSizing(columnIndex);
 
-            positionsToHide.put(columnIndex, new ColumnSizeInfo(configuredWidth, configuredResizable, configuredPercentage));
+            positionsToHide.put(columnIndex, new ColumnSizeInfo(configuredWidth, configuredMinWidth, configuredResizable, configuredPercentage));
         }
 
         for (Integer columnIndex : positionsToHide.keySet()) {
@@ -153,6 +155,10 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
             // moment to make hiding work
             if (!this.bodyDataLayer.isColumnPositionResizable(columnIndex)) {
                 this.bodyDataLayer.setColumnPositionResizable(columnIndex, true);
+            }
+            // if a min width is configured, set it to 0 to make hiding work
+            if (this.bodyDataLayer.isMinColumnWidthConfigured()) {
+                this.bodyDataLayer.setMinColumnWidth(columnIndex, 0);
             }
             // set the column width to 0
             if (positionsToHide.get(columnIndex).configuredPercentage) {
@@ -190,7 +196,7 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
                 this.bodyDataLayer.setColumnPositionResizable(index, true);
                 // set the previous configured width
                 if (info.configuredSize < 0) {
-                    this.bodyDataLayer.resetColumnSize(index, false);
+                    this.bodyDataLayer.resetColumnWidth(index, false);
                 } else if (info.configuredPercentage) {
                     this.bodyDataLayer.setColumnWidthPercentageByPosition(index, info.configuredSize);
                 } else {
@@ -198,6 +204,12 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
                 }
                 // set the configured resizable value
                 this.bodyDataLayer.setColumnPositionResizable(index, info.configuredResizable);
+                // set the previous configured min width
+                if (info.configuredMinWidth < 0) {
+                    this.bodyDataLayer.resetMinColumnWidth(index, false);
+                } else {
+                    this.bodyDataLayer.setMinColumnWidth(index, info.configuredMinWidth);
+                }
             }
         }
 
@@ -218,7 +230,7 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
             this.bodyDataLayer.setColumnPositionResizable(entry.getKey(), true);
             // set the previous configured width
             if (entry.getValue().configuredSize < 0) {
-                this.bodyDataLayer.resetColumnSize(entry.getKey(), false);
+                this.bodyDataLayer.resetColumnWidth(entry.getKey(), false);
             } else if (entry.getValue().configuredPercentage) {
                 this.bodyDataLayer.setColumnWidthPercentageByPosition(entry.getKey(), entry.getValue().configuredSize);
             } else {
@@ -226,6 +238,12 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
             }
             // set the configured resizable value
             this.bodyDataLayer.setColumnPositionResizable(entry.getKey(), entry.getValue().configuredResizable);
+            // set the previous configured min width
+            if (entry.getValue().configuredMinWidth < 0) {
+                this.bodyDataLayer.resetMinColumnWidth(entry.getKey(), false);
+            } else {
+                this.bodyDataLayer.setMinColumnWidth(entry.getKey(), entry.getValue().configuredMinWidth);
+            }
         }
 
         List<Range> ranges = PositionUtil.getRanges(this.hiddenColumns.keySet());
@@ -241,11 +259,13 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
 
     protected static class ColumnSizeInfo {
         public final int configuredSize;
+        public final int configuredMinWidth;
         public final boolean configuredResizable;
         public final boolean configuredPercentage;
 
-        public ColumnSizeInfo(int configuredSize, boolean configuredResizable, boolean configuredPercentage) {
+        public ColumnSizeInfo(int configuredSize, int configuredMinWidth, boolean configuredResizable, boolean configuredPercentage) {
             this.configuredSize = configuredSize;
+            this.configuredMinWidth = configuredMinWidth;
             this.configuredResizable = configuredResizable;
             this.configuredPercentage = configuredPercentage;
         }
@@ -253,14 +273,15 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
         public static ColumnSizeInfo valueOf(String s) {
             String[] token = s.substring(1, s.length() - 1).split("\\|"); //$NON-NLS-1$
             Integer size = Integer.valueOf(token[0]);
-            Boolean resizable = Boolean.valueOf(token[1]);
-            Boolean percentage = Boolean.valueOf(token[2]);
-            return new ColumnSizeInfo(size, resizable, percentage);
+            Integer minWidth = Integer.valueOf(token[1]);
+            Boolean resizable = Boolean.valueOf(token[2]);
+            Boolean percentage = Boolean.valueOf(token[3]);
+            return new ColumnSizeInfo(size, minWidth, resizable, percentage);
         }
 
         @Override
         public String toString() {
-            return "[" + this.configuredSize + "|" + this.configuredResizable + "|" + this.configuredPercentage + "]"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            return "[" + this.configuredSize + "|" + this.configuredMinWidth + "|" + this.configuredResizable + "|" + this.configuredPercentage + "]"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         }
     }
 }

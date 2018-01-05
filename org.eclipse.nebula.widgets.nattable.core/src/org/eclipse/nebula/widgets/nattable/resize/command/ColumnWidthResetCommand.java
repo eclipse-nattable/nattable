@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Dirk Fauth.
+ * Copyright (c) 2017, 2018 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,14 +13,14 @@ package org.eclipse.nebula.widgets.nattable.resize.command;
 import org.eclipse.nebula.widgets.nattable.command.AbstractRegionCommand;
 
 /**
- * Command to reset the row size configurations. It will cause a reset of all
- * customizations done with regards to row sizing, e.g. resized rows will be
- * reset to the initial default size and all rows are share the same default
- * resizable behavior.
+ * Command to reset the column width configurations. It will cause a reset of
+ * all customizations done with regards to column width sizing, e.g. resized
+ * columns will be reset to the initial default size and all columns are share
+ * the same default resizable behavior.
  *
  * @since 1.6
  */
-public class RowSizeResetCommand extends AbstractRegionCommand {
+public class ColumnWidthResetCommand extends AbstractRegionCommand {
 
     /**
      * Flag to indicate whether a refresh event should be triggered or not.
@@ -30,16 +30,17 @@ public class RowSizeResetCommand extends AbstractRegionCommand {
     public final boolean fireEvent;
 
     /**
-     * Creates a {@link RowSizeResetCommand} to reset the size configuration of
-     * all regions, that triggers a refresh after the command is handled.
+     * Creates a {@link ColumnWidthResetCommand} to reset the column width
+     * configuration of all regions, that triggers a refresh after the command
+     * is handled.
      */
-    public RowSizeResetCommand() {
+    public ColumnWidthResetCommand() {
         this(null, true);
     }
 
     /**
-     * Creates a {@link RowSizeResetCommand} to reset the size configuration of
-     * all regions.
+     * Creates a {@link ColumnWidthResetCommand} to reset the column width
+     * configuration of all regions.
      *
      * @param fireEvent
      *            Flag to indicate whether a refresh event should be triggered
@@ -47,14 +48,14 @@ public class RowSizeResetCommand extends AbstractRegionCommand {
      *            actions should be executed before the repainting of the table
      *            should be triggered.
      */
-    public RowSizeResetCommand(boolean fireEvent) {
+    public ColumnWidthResetCommand(boolean fireEvent) {
         this(null, fireEvent);
     }
 
     /**
-     * Creates a {@link RowSizeResetCommand} to reset the size configuration of
-     * the region with the given label. Triggers a refresh after the command is
-     * handled.
+     * Creates a {@link ColumnWidthResetCommand} to reset the column width
+     * configuration of the region with the given label. Triggers a refresh
+     * after the command is handled.
      *
      * @param label
      *            The region label of the region on which the command should be
@@ -62,13 +63,13 @@ public class RowSizeResetCommand extends AbstractRegionCommand {
      *            be processed by all regions or until the first layer in the
      *            composition consumes the command.
      */
-    public RowSizeResetCommand(String label) {
+    public ColumnWidthResetCommand(String label) {
         this(label, true);
     }
 
     /**
-     * Creates a {@link RowSizeResetCommand} to reset the size configuration of
-     * the region with the given label.
+     * Creates a {@link ColumnWidthResetCommand} to reset the column width
+     * configuration of the region with the given label.
      *
      * @param label
      *            The region label of the region on which the command should be
@@ -81,13 +82,14 @@ public class RowSizeResetCommand extends AbstractRegionCommand {
      *            actions should be executed before the repainting of the table
      *            should be triggered.
      */
-    public RowSizeResetCommand(String label, boolean fireEvent) {
+    public ColumnWidthResetCommand(String label, boolean fireEvent) {
         super(label);
         this.fireEvent = fireEvent;
     }
 
     @Override
-    public RowSizeResetCommand cloneForRegion() {
-        return new RowSizeResetCommand(null, this.fireEvent);
+    public ColumnWidthResetCommand cloneForRegion() {
+        return new ColumnWidthResetCommand(null, this.fireEvent);
     }
+
 }

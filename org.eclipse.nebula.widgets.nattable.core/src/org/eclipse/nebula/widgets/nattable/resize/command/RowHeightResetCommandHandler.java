@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Dirk Fauth.
+ * Copyright (c) 2017, 2018 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,26 +14,26 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 
 /**
- * Command handler to handle the {@link RowSizeResetCommand}.
+ * Command handler to handle the {@link RowHeightResetCommand}.
  *
  * @since 1.6
  */
-public class RowSizeResetCommandHandler extends AbstractLayerCommandHandler<RowSizeResetCommand> {
+public class RowHeightResetCommandHandler extends AbstractLayerCommandHandler<RowHeightResetCommand> {
 
     private final DataLayer dataLayer;
 
-    public RowSizeResetCommandHandler(DataLayer dataLayer) {
+    public RowHeightResetCommandHandler(DataLayer dataLayer) {
         this.dataLayer = dataLayer;
     }
 
     @Override
-    public Class<RowSizeResetCommand> getCommandClass() {
-        return RowSizeResetCommand.class;
+    public Class<RowHeightResetCommand> getCommandClass() {
+        return RowHeightResetCommand.class;
     }
 
     @Override
-    protected boolean doCommand(RowSizeResetCommand command) {
-        this.dataLayer.resetRowSizeConfiguration(command.fireEvent);
+    protected boolean doCommand(RowHeightResetCommand command) {
+        this.dataLayer.resetRowHeightConfiguration(command.fireEvent);
         return false;
     }
 
