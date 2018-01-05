@@ -16,12 +16,14 @@ import static org.junit.Assert.assertNotNull;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.validate.DefaultDataValidator;
 import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
@@ -32,6 +34,8 @@ import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditConfiguration;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.RowOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
@@ -78,6 +82,11 @@ public class EditTraversalStrategyUpDownTest {
                 configRegistry.registerConfigAttribute(
                         EditConfigAttributes.DATA_VALIDATOR,
                         new DefaultDataValidator());
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        new DefaultBooleanDisplayConverter(),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 9);
             }
 
         });
@@ -87,7 +96,9 @@ public class EditTraversalStrategyUpDownTest {
         this.natTable.enableEditingOnAllCells();
         this.natTable.getConfigRegistry().registerConfigAttribute(
                 EditConfigAttributes.CELL_EDITABLE_RULE,
-                IEditableRule.NEVER_EDITABLE, DisplayMode.EDIT, NOT_EDITABLE);
+                IEditableRule.NEVER_EDITABLE,
+                DisplayMode.EDIT,
+                NOT_EDITABLE);
         this.natTable.getConfigRegistry().registerConfigAttribute(
                 EditConfigAttributes.OPEN_ADJACENT_EDITOR,
                 Boolean.TRUE);
@@ -108,7 +119,10 @@ public class EditTraversalStrategyUpDownTest {
         this.overrider.registerRowOverrides(8, NOT_EDITABLE);
         this.overrider.registerRowOverrides(9, NOT_EDITABLE);
 
-        this.dataLayer.setConfigLabelAccumulator(this.overrider);
+        AggregateConfigLabelAccumulator accumulator = new AggregateConfigLabelAccumulator();
+        accumulator.add(this.overrider);
+        accumulator.add(new ColumnLabelAccumulator());
+        this.dataLayer.setConfigLabelAccumulator(accumulator);
     }
 
     @After
