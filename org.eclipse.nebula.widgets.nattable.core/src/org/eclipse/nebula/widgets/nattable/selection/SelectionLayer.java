@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -402,6 +402,28 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
                 && coordinate.rowPosition != NO_SELECTION;
     }
 
+    /**
+     * Test if all cells in a given region are selected.
+     *
+     * @param region
+     *            The region that should be checked.
+     * @return <code>true</code> if all cells in a region are selected,
+     *         <code>false</code> if at least one cell in the region is not
+     *         selected.
+     *
+     * @since 1.6
+     */
+    public boolean allCellsSelectedInRegion(Rectangle region) {
+        for (int col = region.x; col < (region.x + region.width); col++) {
+            for (int row = region.y; row < (region.y + region.height); row++) {
+                if (!isCellPositionSelected(col, row)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public void setLastSelectedCell(int columnPosition, int rowPosition) {
         if (this.selectionModel instanceof IMarkerSelectionModel) {
             ((IMarkerSelectionModel) this.selectionModel).setLastSelectedCell(
@@ -536,11 +558,10 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 
     @Override
     protected void registerCommandHandlers() {
-        // Command handlers also registered by the
-        // DefaultSelectionLayerConfiguration
         registerCommandHandler(this.selectCellCommandHandler);
         registerCommandHandler(this.selectRowCommandHandler);
         registerCommandHandler(this.selectColumnCommandHandler);
+        registerCommandHandler(new SelectRegionCommandHandler(this));
 
         registerCommandHandler(new EditSelectionCommandHandler(this));
         registerCommandHandler(new InitializeAutoResizeColumnsCommandHandler(this));

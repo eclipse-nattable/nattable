@@ -271,8 +271,6 @@ public class RowSelectionTest {
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
     }
 
-    // TODO
-
     @Test
     public void shouldUpdateAnchorIfDeselected() {
         // start from a clear selection state
