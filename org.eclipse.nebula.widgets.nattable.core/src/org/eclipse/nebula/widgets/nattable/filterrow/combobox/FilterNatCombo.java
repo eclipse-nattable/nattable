@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2017 Dirk Fauth and others.
+ * Copyright (c) 2013, 2018 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -355,10 +355,6 @@ public class FilterNatCombo extends NatCombo {
 
             @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
-                // if the select all item is clicked directly, the
-                // grayed state needs to be set to false
-                FilterNatCombo.this.selectAllItemViewer.setGrayed(selectAllLabel, false);
-
                 if (event.getChecked()) {
                     // select all
                     FilterNatCombo.this.dropdownTable.selectAll();
@@ -395,18 +391,12 @@ public class FilterNatCombo extends NatCombo {
 
             @Override
             public boolean isGrayed(Object element) {
-                if (FilterNatCombo.this.dropdownTable.getSelectionCount() == FilterNatCombo.this.dropdownTable.getItemCount()) {
-                    return false;
-                }
-                return true;
+                return getSelectionCount() < FilterNatCombo.this.itemList.size();
             }
 
             @Override
             public boolean isChecked(Object element) {
-                if (FilterNatCombo.this.dropdownTable.getSelectionCount() == 0) {
-                    return false;
-                }
-                return true;
+                return getSelectionCount() > 0;
             }
         });
 

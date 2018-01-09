@@ -14,7 +14,7 @@ package org.eclipse.nebula.widgets.nattable.widget;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -448,7 +448,7 @@ public class NatCombo extends Composite {
     public void setItems(String[] items) {
         if (items != null) {
             this.itemList = Arrays.asList(items);
-            this.selectionStateMap = new HashMap<String, Boolean>();
+            this.selectionStateMap = new LinkedHashMap<String, Boolean>();
             for (String item : items) {
                 this.selectionStateMap.put(item, Boolean.FALSE);
             }
@@ -477,7 +477,6 @@ public class NatCombo extends Composite {
         this.text.setLayoutData(gridData);
 
         this.text.addKeyListener(new KeyAdapter() {
-
             @Override
             public void keyPressed(KeyEvent event) {
                 if (event.keyCode == SWT.ARROW_DOWN
@@ -680,7 +679,11 @@ public class NatCombo extends Composite {
                     int selected = NatCombo.this.dropdownTable.getSelectionIndex();
                     if (selected < 0) {
                         // no selection before, select the first entry
-                        select(0);
+                        if (!NatCombo.this.useCheckbox) {
+                            select(0);
+                        } else {
+                            getDropdownTable().select(0);
+                        }
                         event.doit = false;
                     }
                 }
@@ -701,13 +704,11 @@ public class NatCombo extends Composite {
                 // This case handles check actions
                 if (!selected) {
                     if (!chosenItem.getChecked()) {
-                        NatCombo.this.dropdownTable.deselect(itemTableIndex);
                         NatCombo.this.selectionStateMap.put(chosenItem.getText(), Boolean.FALSE);
                     } else {
-                        NatCombo.this.dropdownTable.select(itemTableIndex);
                         NatCombo.this.selectionStateMap.put(chosenItem.getText(), Boolean.TRUE);
                     }
-                } else {
+                } else if (!NatCombo.this.useCheckbox) {
                     if (NatCombo.this.multiselect && isCtrlPressed) {
                         boolean isSelected = NatCombo.this.dropdownTable.isSelected(itemTableIndex);
                         NatCombo.this.selectionStateMap.put(chosenItem.getText(), isSelected);
@@ -719,17 +720,9 @@ public class NatCombo extends Composite {
                         for (String item : NatCombo.this.itemList) {
                             NatCombo.this.selectionStateMap.put(item, Boolean.FALSE);
                         }
-                        if (NatCombo.this.useCheckbox) {
-                            for (TableItem tableItem : NatCombo.this.dropdownTable.getItems()) {
-                                tableItem.setChecked(Boolean.FALSE);
-                            }
-                        }
 
                         // Set the state for the selected item
                         NatCombo.this.selectionStateMap.put(chosenItem.getText(), Boolean.TRUE);
-                        if (NatCombo.this.useCheckbox) {
-                            chosenItem.setChecked(Boolean.TRUE);
-                        }
                     }
                 }
 
@@ -1374,10 +1367,11 @@ public class NatCombo extends Composite {
         for (TableItem item : getDropdownTable().getItems()) {
             if (selectionList.contains(EditConstants.SELECT_ALL_ITEMS_VALUE)
                     || selectionList.contains(item.getText())) {
-                selectedItems.add(item);
                 this.selectionStateMap.put(item.getText(), Boolean.TRUE);
                 if (this.useCheckbox) {
                     item.setChecked(true);
+                } else {
+                    selectedItems.add(item);
                 }
             } else {
                 this.selectionStateMap.put(item.getText(), Boolean.FALSE);
