@@ -182,6 +182,7 @@ public class SizeConfig implements IPersistable {
         this.percentageSizingMap.clear();
         this.resizablesMap.clear();
         this.aggregatedSizeCacheMap.clear();
+        this.minSizeMap.clear();
 
         this.resizableByDefault = true;
         this.percentageSizing = false;
@@ -1134,6 +1135,7 @@ public class SizeConfig implements IPersistable {
         this.percentageSizingMap.clear();
         this.realSizeMap.clear();
         this.aggregatedSizeCacheMap.clear();
+        this.minSizeMap.clear();
     }
 
     /**

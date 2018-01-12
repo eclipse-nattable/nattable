@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -269,5 +269,71 @@ public class SizeConfigPersistenceTest {
         assertEquals(25, this.sizeConfig.getDefaultMinSize());
 
         assertTrue(this.sizeConfig.isDistributeRemainingSpace());
+    }
+
+    @Test
+    public void testResetStatesOnLoad() {
+        SizeConfig sizeConfig = new SizeConfig(100);
+
+        // save the default
+        Properties properties = new Properties();
+        sizeConfig.saveState("prefix", properties);
+
+        // apply some changes
+        sizeConfig.setMinSize(2, 20);
+        sizeConfig.setSize(3, 30);
+        sizeConfig.setPositionResizable(4, false);
+        sizeConfig.setPercentage(5, 15);
+
+        // as one column is percentage sized, we need to trigger calculation
+        // first
+        sizeConfig.calculatePercentages(100, 10);
+
+        // verify all values are applied
+        assertEquals(20, sizeConfig.getMinSize(2));
+        assertEquals(30, sizeConfig.getSize(3));
+        assertFalse(sizeConfig.isPositionResizable(4));
+        assertEquals(15, sizeConfig.getSize(5));
+        assertTrue(sizeConfig.isPercentageSizing(5));
+
+        // load default state and verify that all settings are reset
+        sizeConfig.loadState("prefix", properties);
+
+        assertEquals(0, sizeConfig.getMinSize(2));
+        assertEquals(100, sizeConfig.getSize(3));
+        assertTrue(sizeConfig.isPositionResizable(4));
+        assertEquals(100, sizeConfig.getSize(5));
+        assertFalse(sizeConfig.isPercentageSizing(5));
+    }
+
+    @Test
+    public void testResetStatesOnReset() {
+        SizeConfig sizeConfig = new SizeConfig(100);
+
+        // apply some changes
+        sizeConfig.setMinSize(2, 20);
+        sizeConfig.setSize(3, 30);
+        sizeConfig.setPositionResizable(4, false);
+        sizeConfig.setPercentage(5, 15);
+
+        // as one column is percentage sized, we need to trigger calculation
+        // first
+        sizeConfig.calculatePercentages(100, 10);
+
+        // verify all values are applied
+        assertEquals(20, sizeConfig.getMinSize(2));
+        assertEquals(30, sizeConfig.getSize(3));
+        assertFalse(sizeConfig.isPositionResizable(4));
+        assertEquals(15, sizeConfig.getSize(5));
+        assertTrue(sizeConfig.isPercentageSizing(5));
+
+        // reset and test that everything is reset
+        sizeConfig.reset();
+
+        assertEquals(0, sizeConfig.getMinSize(2));
+        assertEquals(100, sizeConfig.getSize(3));
+        assertTrue(sizeConfig.isPositionResizable(4));
+        assertEquals(100, sizeConfig.getSize(5));
+        assertFalse(sizeConfig.isPercentageSizing(5));
     }
 }
