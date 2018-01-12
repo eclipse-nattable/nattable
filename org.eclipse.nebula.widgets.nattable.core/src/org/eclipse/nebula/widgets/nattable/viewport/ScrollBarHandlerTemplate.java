@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -121,11 +121,12 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
             this.scroller.setMaximum(max);
         }
 
+        adjustScrollBar();
+
         int viewportWindowSpan = getViewportWindowSpan();
 
-        int thumbSize;
         if (viewportWindowSpan < max && viewportWindowSpan != 0) {
-            thumbSize = viewportWindowSpan;
+            this.scroller.setThumb(viewportWindowSpan);
             this.scroller.setEnabled(true);
             this.scroller.setVisible(true);
 
@@ -133,13 +134,10 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 
             this.scroller.setPageIncrement(viewportWindowSpan);
         } else {
-            thumbSize = max;
+            this.scroller.setThumb(max);
             this.scroller.setEnabled(false);
             this.scroller.setVisible(false);
         }
-        this.scroller.setThumb(thumbSize);
-
-        adjustScrollBar();
     }
 
     void setScrollIncrement() {
