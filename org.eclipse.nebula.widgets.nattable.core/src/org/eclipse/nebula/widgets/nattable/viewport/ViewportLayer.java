@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -997,7 +997,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
             int widthDiff = clientArea.width - calcArea.width;
             int heightDiff = clientArea.height - calcArea.height;
 
+            boolean initialClientAreaResize = false;
             if (this.hBarListener == null && this.horizontalScrollbarEnabled) {
+                initialClientAreaResize = true;
+
                 ScrollBar hBar = scrollable.getHorizontalBar();
 
                 if (hBar != null) {
@@ -1017,6 +1020,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
             }
 
             if (this.vBarListener == null && this.verticalScrollbarEnabled) {
+                initialClientAreaResize = true;
+
                 ScrollBar vBar = scrollable.getVerticalBar();
 
                 if (vBar != null) {
@@ -1035,20 +1040,26 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
                 }
             }
 
-            handleGridResize();
+            if (initialClientAreaResize) {
+                handleGridResize();
 
-            // after handling the scrollbars recalculate the area to use for
-            // percentage calculation
-            Rectangle possibleArea = scrollable.getClientArea();
-            possibleArea.width = possibleArea.width - widthDiff;
-            possibleArea.height = possibleArea.height - heightDiff;
-            clientAreaResizeCommand.setCalcArea(possibleArea);
+                // after handling the scrollbars recalculate the area to use for
+                // percentage calculation
+                Rectangle possibleArea = scrollable.getClientArea();
+                possibleArea.width = possibleArea.width - widthDiff;
+                possibleArea.height = possibleArea.height - heightDiff;
+                clientAreaResizeCommand.setCalcArea(possibleArea);
+            }
 
             // we don't return true here because the ClientAreaResizeCommand
             // needs to be handled by the DataLayer in case percentage sizing is
             // enabled. if we would return true, the DataLayer wouldn't be able
             // to calculate the column/row sizes regarding the client area
             boolean result = super.doCommand(command);
+
+            if (!initialClientAreaResize) {
+                handleGridResize();
+            }
 
             // we need to first give underlying layers the chance to process the
             // command and afterwards set the processing flag to false
