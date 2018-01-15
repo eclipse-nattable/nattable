@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -159,14 +159,16 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
                 switchMode(Mode.NORMAL_MODE);
             }
         } else if (!this.mouseDown
-                && this.doubleClickAction != null
                 && !MouseEventHelper.treatAsClick(this.initialMouseDownEvent, event)) {
-            // if mouseUp was called already and the mouse moves out of the
-            // click radius, ensure the double click runnable is not executed
-            // and process single click immediately as it can not become a
-            // double click
-            this.skipProcessing = true;
-            executeClickAction(this.singleClickAction, this.initialMouseDownEvent);
+
+            if (this.doubleClickAction != null) {
+                // if mouseUp was called already and the mouse moves out of the
+                // click radius, ensure the double click runnable is not executed
+                // and process single click immediately as it can not become a
+                // double click
+                this.skipProcessing = true;
+                executeClickAction(this.singleClickAction, this.initialMouseDownEvent);
+            }
 
             // No drag mode registered when mouseMove detected. Switch back
             // to normal mode.
