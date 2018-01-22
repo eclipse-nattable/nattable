@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,8 +15,10 @@ import org.eclipse.nebula.widgets.nattable.copy.action.CopyDataAction;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.selection.action.CellSelectionDragMode;
 import org.eclipse.nebula.widgets.nattable.selection.action.MoveSelectionAction;
+import org.eclipse.nebula.widgets.nattable.selection.action.MoveToEndAction;
 import org.eclipse.nebula.widgets.nattable.selection.action.MoveToFirstColumnAction;
 import org.eclipse.nebula.widgets.nattable.selection.action.MoveToFirstRowAction;
+import org.eclipse.nebula.widgets.nattable.selection.action.MoveToHomeAction;
 import org.eclipse.nebula.widgets.nattable.selection.action.MoveToLastColumnAction;
 import org.eclipse.nebula.widgets.nattable.selection.action.MoveToLastRowAction;
 import org.eclipse.nebula.widgets.nattable.selection.action.PageDownAction;
@@ -54,11 +56,11 @@ public class DefaultSelectionBindings extends AbstractUiBindingConfiguration {
         // Page down
         configurePageDownButtonBindings(uiBindingRegistry, new PageDownAction());
 
-        // Home - Move to first column
-        configureHomeButtonBindings(uiBindingRegistry, new MoveToFirstColumnAction());
+        // Home
+        configureHomeButtonBindings(uiBindingRegistry, new MoveToHomeAction());
 
-        // End - Move to last column
-        configureEndButtonBindings(uiBindingRegistry, new MoveToLastColumnAction());
+        // End
+        configureEndButtonBindings(uiBindingRegistry, new MoveToEndAction());
 
         // Select all
         uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, 'a'), new SelectAllAction());
