@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2016 Dirk Fauth.
+ * Copyright (c) 2016, 2018 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -45,6 +45,9 @@ public class RegexMarkupValue implements MarkupProcessor {
 
     private XMLInputFactory factory = XMLInputFactory.newInstance();
 
+    private boolean caseInsensitive = true;
+    private boolean unicodeCase = false;
+
     /**
      *
      * @param value
@@ -85,7 +88,12 @@ public class RegexMarkupValue implements MarkupProcessor {
                         case XMLStreamConstants.CHARACTERS:
                             Characters characters = event.asCharacters();
                             String text = characters.getData();
-                            result += Pattern.compile(getOriginalRegexValue(), Pattern.CASE_INSENSITIVE).matcher(text).replaceAll(this.markupValue);
+                            if (this.caseInsensitive) {
+                                int flags = this.unicodeCase ? Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE : Pattern.CASE_INSENSITIVE;
+                                result += Pattern.compile(getOriginalRegexValue(), flags).matcher(text).replaceAll(this.markupValue);
+                            } else {
+                                result += Pattern.compile(getOriginalRegexValue()).matcher(text).replaceAll(this.markupValue);
+                            }
                             break;
                         default:
                             result += event.toString();
@@ -153,4 +161,83 @@ public class RegexMarkupValue implements MarkupProcessor {
     protected String getMarkupRegexValue() {
         return this.markupRegexValue;
     }
+
+    /**
+     * Return whether the {@link Pattern#CASE_INSENSITIVE} flag is applied to enable
+     * case insensitive matching.
+     * <p>
+     * <b>Note:</b> Case-insensitive matching can also be enabled via the embedded
+     * flag expression (?i) if the flag in this {@link RegexMarkupValue} is
+     * disabled.
+     * </p>
+     *
+     * @return <code>true</code> if case insensitive matching is enabled,
+     *         <code>false</code> if matching is case sensitive.
+     *
+     * @since 1.2
+     */
+    public boolean isCaseInsensitive() {
+        return this.caseInsensitive;
+    }
+
+    /**
+     * Configure whether the {@link Pattern#CASE_INSENSITIVE} flag should be applied
+     * to enable case insensitive matching.
+     * <p>
+     * <b>Note:</b> Case-insensitive matching can also be enabled via the embedded
+     * flag expression (?i) if the flag in this {@link RegexMarkupValue} is
+     * disabled.
+     * </p>
+     *
+     * @param caseInsensitive
+     *            <code>true</code> if case insensitive matching should be enabled,
+     *            <code>false</code> if matching should be case sensitive.
+     *
+     * @since 1.2
+     */
+    public void setCaseInsensitive(boolean caseInsensitive) {
+        this.caseInsensitive = caseInsensitive;
+    }
+
+    /**
+     * Return whether the {@link Pattern#UNICODE_CASE} flag is applied to enable
+     * Unicode aware case folding. Only works if case insensitive matching is
+     * enabled.
+     * <p>
+     * <b>Note:</b> Unicode-aware case folding can also be enabled via the embedded
+     * flag expression (?u) if the flag in this {@link RegexMarkupValue} is
+     * disabled.
+     * </p>
+     *
+     * @return <code>true</code> if Unicode aware case folding is enabled,
+     *         <code>false</code> if case-insensitive matching assumes that only
+     *         characters in the US-ASCII charset are being matched.
+     *
+     * @since 1.2
+     */
+    public boolean isUnicodeCase() {
+        return this.unicodeCase;
+    }
+
+    /**
+     * Configure whether the {@link Pattern#UNICODE_CASE} flag should be applied to
+     * enable Unicode aware case folding. Only works if case insensitive matching is
+     * enabled.
+     * <p>
+     * <b>Note:</b> Unicode-aware case folding can also be enabled via the embedded
+     * flag expression (?u) if the flag in this {@link RegexMarkupValue} is
+     * disabled.
+     * </p>
+     *
+     * @param unicodeCase
+     *            <code>true</code> if Unicode aware case folding should be enabled,
+     *            <code>false</code> if case-insensitive matching should only match
+     *            characters in the US-ASCII charset.
+     *
+     * @since 1.2
+     */
+    public void setUnicodeCase(boolean unicodeCase) {
+        this.unicodeCase = unicodeCase;
+    }
+
 }
