@@ -56,8 +56,7 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
      */
     private NatTable table;
 
-    public ScrollBarHandlerTemplate(ViewportLayer viewportLayer,
-            IScroller<?> scroller) {
+    public ScrollBarHandlerTemplate(ViewportLayer viewportLayer, IScroller<?> scroller) {
         this.viewportLayer = viewportLayer;
         this.scrollableLayer = viewportLayer.getScrollableLayer();
         this.scroller = scroller;
@@ -72,6 +71,9 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 
     @Override
     public void handleEvent(Event event) {
+        // ensure that the keep in viewport setting is reset if there is one active
+        this.viewportLayer.setKeepInViewportRowPosition(-1);
+
         if (!this.dragging) {
             // Only try to commit and close an possible open editor once
             // when starting the drag operation. Otherwise the conversion
@@ -92,8 +94,7 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
         }
 
         if (handle && event.widget == this.scroller.getUnderlying()) {
-            setViewportOrigin(getViewportMinimumOrigin()
-                    + this.scroller.getSelection());
+            setViewportOrigin(getViewportMinimumOrigin() + this.scroller.getSelection());
             setScrollIncrement();
             event.doit = false;
         } else {
@@ -102,7 +103,6 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
     }
 
     void adjustScrollBar() {
-
         if (this.scroller.isDisposed()) {
             return;
         }
@@ -141,8 +141,7 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
     }
 
     void setScrollIncrement() {
-        int scrollIncrement = Math.min(getScrollIncrement(),
-                getViewportWindowSpan() / 4);
+        int scrollIncrement = Math.min(getScrollIncrement(), getViewportWindowSpan() / 4);
         this.scroller.setIncrement(scrollIncrement);
     }
 

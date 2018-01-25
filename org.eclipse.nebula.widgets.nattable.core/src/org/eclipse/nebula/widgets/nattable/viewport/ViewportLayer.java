@@ -20,7 +20,6 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
-import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
@@ -110,11 +109,15 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     private int cachedWidth = -1;
     private int cachedHeight = -1;
 
+    /**
+     * Row position of the row in the underlying layer that should be kept visible
+     * inside the viewport or -1 if no special row should be kept.
+     */
+    private int keepInViewportRowPosition = -1;
+
     // Edge hover scrolling
 
     private MoveViewportRunnable edgeHoverRunnable;
-
-    private KeepRowInsideViewportEventHandler resizeEventHandler;
 
     public ViewportLayer(IUniqueIndexLayer underlyingLayer) {
         super(underlyingLayer);
@@ -853,6 +856,16 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
         if (checkedOriginY != this.origin.getY()) {
             this.origin = new PixelCoordinate(this.origin.getX(), checkedOriginY);
         }
+
+        if (this.keepInViewportRowPosition > -1) {
+            int idx = getUnderlyingLayer().getRowIndexByPosition(this.keepInViewportRowPosition);
+            int pos = getRowPositionByIndex(idx);
+            if (pos > -1) {
+                moveRowPositionIntoViewport(this.keepInViewportRowPosition);
+            } else {
+                this.keepInViewportRowPosition = -1;
+            }
+        }
     }
 
     /**
@@ -901,9 +914,6 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
                         setOriginX(Math.min(maxX - clientAreaWidth, maxX));
                     }
                 }
-
-                // TEE: adjust scrollbar to reflect new position
-                adjustHorizontalScrollBar();
             }
         }
     }
@@ -922,9 +932,16 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
             if (scrollableRowPosition >= getMinimumOriginRowPosition()) {
                 int originRowPosition = getOriginRowPosition();
 
+                boolean startKeepInViewport = false;
+
                 if (scrollableRowPosition <= originRowPosition) {
                     // Move up
+                    int oldOriginY = this.origin.getY();
                     setOriginY(this.scrollableLayer.getStartYOfRowPosition(scrollableRowPosition));
+                    // only start the keep in viewport task if necessary
+                    if (this.origin.getY() != oldOriginY) {
+                        startKeepInViewport = true;
+                    }
                 } else {
                     int scrollableRowStartY = underlyingLayer.getStartYOfRowPosition(scrollableRowPosition);
                     int scrollableRowEndY = scrollableRowStartY + underlyingLayer.getRowHeightByPosition(scrollableRowPosition);
@@ -936,35 +953,16 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
                     if (viewportEndY < maxY) {
                         // Move down
                         setOriginY(Math.min(maxY - clientAreaHeight, maxY));
+                        startKeepInViewport = true;
                     }
                 }
 
-                // TEE: at least adjust scrollbar to reflect new position
-                adjustVerticalScrollBar();
-
-                // add a listener that is ensuring to keep the selection in the
-                // viewport for 100ms
+                // remember the row position to keep in the viewport to ensure
+                // that the the selection is kept in the viewport
                 // this is necessary for keeping the cell in the viewport if
                 // automatically resize events are generated (see Bug 411670)
-                if (this.resizeEventHandler == null) {
-                    this.resizeEventHandler = new KeepRowInsideViewportEventHandler(scrollableRowPosition);
-                    registerEventHandler(this.resizeEventHandler);
-                    Display.getCurrent().timerExec(100, new Runnable() {
-                        @Override
-                        public void run() {
-                            // check if no resize events occurred and unregister
-                            // in that case
-                            if (!ViewportLayer.this.resizeEventHandler.handled) {
-                                unregisterEventHandler(ViewportLayer.this.resizeEventHandler);
-                                ViewportLayer.this.resizeEventHandler = null;
-                            } else {
-                                // reset the handled flag and wait for another
-                                // 100ms
-                                ViewportLayer.this.resizeEventHandler.handled = false;
-                                Display.getCurrent().timerExec(100, this);
-                            }
-                        }
-                    });
+                if (startKeepInViewport) {
+                    setKeepInViewportRowPosition(scrollableRowPosition);
                 }
             }
         }
@@ -985,6 +983,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
             }
 
             this.processingClientAreaResizeCommand = true;
+
+            // on client area resize we reset the keep in viewport row position
+            this.keepInViewportRowPosition = -1;
 
             ClientAreaResizeCommand clientAreaResizeCommand = (ClientAreaResizeCommand) command;
 
@@ -1693,8 +1694,33 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     }
 
     /**
-     * Runnable that incrementally scrolls the viewport when drag hovering over
-     * an edge.
+     * Set the row position related to the underlying layer that should be kept
+     * visible in the viewport. Mainly used for configurations with dynamic row
+     * heights that are calculated on rendering. If a row should become visible via
+     * {@link #moveCellPositionIntoViewport(int, int)} or
+     * {@link #moveRowPositionIntoViewport(int)}, but the rows above are resized,
+     * the row that should move into the viewport is moved out of it again. Setting
+     * the value here leads to keeping the row inside the viewport on
+     * {@link #recalculateAvailableHeightAndRowCount()}.
+     * <p>
+     * The value will be reset on {@link ClientAreaResizeCommand} handling and via
+     * {@link ScrollBarHandlerTemplate} if a manual scrolling is triggered.
+     * </p>
+     *
+     * @param rowPosition
+     *            the row position in the underlying layer of the row that should be
+     *            kept inside the viewport, or -1 to reset the keep row in viewport
+     *            handling.
+     *
+     * @since 1.6
+     */
+    public void setKeepInViewportRowPosition(int rowPosition) {
+        this.keepInViewportRowPosition = rowPosition;
+    }
+
+    /**
+     * Runnable that incrementally scrolls the viewport when drag hovering over an
+     * edge.
      */
     class MoveViewportRunnable implements Runnable {
 
@@ -1728,36 +1754,6 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
             this.display.timerExec(100, this);
         }
 
-    }
-
-    /**
-     * Event handler that ensures to keep a row inside the viewport. Necessary
-     * for dynamic row height calculations that occur after a row got moved into
-     * the viewport and is therefore moved out of it afterwards.
-     */
-    class KeepRowInsideViewportEventHandler implements ILayerEventHandler<RowResizeEvent> {
-
-        private final int rowPosition;
-
-        /**
-         * Flag to indicate that a {@link RowResizeEvent} was handled.
-         */
-        public boolean handled = false;
-
-        public KeepRowInsideViewportEventHandler(int rowPosition) {
-            this.rowPosition = rowPosition;
-        }
-
-        @Override
-        public void handleLayerEvent(RowResizeEvent event) {
-            moveRowPositionIntoViewport(this.rowPosition);
-            this.handled = true;
-        }
-
-        @Override
-        public Class<RowResizeEvent> getLayerEventClass() {
-            return RowResizeEvent.class;
-        }
     }
 
 }
