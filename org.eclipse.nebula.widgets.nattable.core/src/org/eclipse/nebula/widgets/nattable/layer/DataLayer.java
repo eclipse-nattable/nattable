@@ -1119,4 +1119,55 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     public int downScaleRowHeight(int value) {
         return this.rowHeightConfig.downScale(value);
     }
+
+    /**
+     * Configure whether dynamic percentage sized column positions should be
+     * fixed on any resize or not. This means, if column positions are
+     * configured for percentage sizing without a specific percentage value, the
+     * size is calculated based on the space that is still available. If this
+     * flag is set to <code>false</code> only the column position that is
+     * resized will get a fixed value. The other column positions will still be
+     * dynamic and therefore will also resize as the available space is changed.
+     * Setting this flag to <code>true</code> will cause that all column
+     * positions with dynamic percentage configuration will get a fixed
+     * percentage value to have a deterministic resize behavior for the user
+     * that triggers the resize. Default is <code>true</code>.
+     *
+     * @param enabled
+     *            <code>true</code> to calculate the fix percentage value for
+     *            dynamic percentage sized column positions on resize,
+     *            <code>false</code> if the dynamic percentage sized column
+     *            positions should stay dynamic on resize.
+     *
+     * @since 1.6
+     */
+    public void setFixDynamicColumnPercentageValues(boolean enabled) {
+        this.columnWidthConfig.setFixDynamicPercentageValues(enabled);
+    }
+
+    /**
+     * Configure whether dynamic percentage sized row positions should be fixed
+     * on any resize or not. This means, if row positions are configured for
+     * percentage sizing without a specific percentage value, the size is
+     * calculated based on the space that is still available. If this flag is
+     * set to <code>false</code> only the row position that is resized will get
+     * a fixed value. The other row positions will still be dynamic and
+     * therefore will also resize as the available space is changed. Setting
+     * this flag to <code>true</code> will cause that all row positions with
+     * dynamic percentage configuration will get a fixed percentage value to
+     * have a deterministic resize behavior for the user that triggers the
+     * resize. Default is <code>true</code>.
+     *
+     * @param enabled
+     *            <code>true</code> to calculate the fix percentage value for
+     *            dynamic percentage sized row positions on resize,
+     *            <code>false</code> if the dynamic percentage sized row
+     *            positions should stay dynamic on resize.
+     *
+     * @since 1.6
+     */
+    public void setFixDynamicRowPercentageValues(boolean enabled) {
+        this.rowHeightConfig.setFixDynamicPercentageValues(enabled);
+    }
+
 }

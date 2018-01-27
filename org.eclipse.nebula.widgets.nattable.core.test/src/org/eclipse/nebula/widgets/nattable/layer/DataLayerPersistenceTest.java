@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,12 +43,12 @@ public class DataLayerPersistenceTest {
         assertEquals("5:10,", properties.getProperty("prefix.columnWidth.sizes"));
         assertTrue(Boolean.valueOf(properties.getProperty("prefix.columnWidth.resizableByDefault")));
         assertTrue(Boolean.valueOf(properties.getProperty("prefix.columnWidth.percentageSizing")));
-        assertFalse(Boolean.valueOf(properties.getProperty("prefix.columnWidth.distributeRemainingSpace")));
+        assertTrue(Boolean.valueOf(properties.getProperty("prefix.columnWidth.distributeRemainingSpace")));
         assertEquals("0", properties.getProperty("prefix.columnWidth.defaultMinSize"));
         assertEquals("20", properties.getProperty("prefix.rowHeight.defaultSize"));
         assertTrue(Boolean.valueOf(properties.getProperty("prefix.rowHeight.resizableByDefault")));
         assertFalse(Boolean.valueOf(properties.getProperty("prefix.rowHeight.percentageSizing")));
-        assertFalse(Boolean.valueOf(properties.getProperty("prefix.rowHeight.distributeRemainingSpace")));
+        assertTrue(Boolean.valueOf(properties.getProperty("prefix.rowHeight.distributeRemainingSpace")));
         assertEquals("0", properties.getProperty("prefix.rowHeight.defaultMinSize"));
     }
 

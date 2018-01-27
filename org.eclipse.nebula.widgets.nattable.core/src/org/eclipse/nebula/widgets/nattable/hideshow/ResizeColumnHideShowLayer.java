@@ -40,6 +40,16 @@ import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
  * really hidden in the layer which leads to index-position-transformation
  * instead of basic column resizing.
  *
+ * <p>
+ * <b>Note:</b> It is suggested to set
+ * {@link DataLayer#setDistributeRemainingColumnSpace(boolean)} to
+ * <code>true</code> when using this layer, or set
+ * {@link DataLayer#setFixDynamicColumnPercentageValues(boolean)} to
+ * <code>false</code>. Otherwise a column resize triggers the percentage value
+ * calculation of dynamic sized columns, which then leads to gaps as the fixed
+ * percentage sized columns to not grow by default.
+ * </p>
+ *
  * @see ColumnHideShowLayer
  *
  * @since 1.6

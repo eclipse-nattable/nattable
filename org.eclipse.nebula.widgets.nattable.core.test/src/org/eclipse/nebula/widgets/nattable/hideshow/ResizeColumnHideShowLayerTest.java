@@ -210,6 +210,47 @@ public class ResizeColumnHideShowLayerTest {
 
         assertEquals(500, this.hideShowLayer.getWidth());
 
+        // this causes the calculation of percentage values for all columns
+        // (20%) then column 1 gets 10 percent and column 2 gets 30%
+        this.bodyDataLayer.setColumnWidthByPosition(1, 50);
+        this.bodyDataLayer.setColumnPositionResizable(4, false);
+
+        assertTrue(this.bodyDataLayer.isColumnPositionResizable(1));
+        assertFalse(this.bodyDataLayer.isColumnPositionResizable(4));
+
+        this.hideShowLayer.hideColumnPositions(1, 4);
+
+        assertEquals(500, this.hideShowLayer.getWidth());
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(4));
+
+        assertFalse(this.bodyDataLayer.isColumnPositionResizable(1));
+        assertFalse(this.bodyDataLayer.isColumnPositionResizable(4));
+
+        // test save state
+        Properties props = new Properties();
+        this.hideShowLayer.saveState("hidden", props);
+
+        String hidden = props.getProperty("hidden" + ResizeColumnHideShowLayer.PERSISTENCE_KEY_HIDDEN_COLUMNS);
+        assertNotNull(hidden);
+        assertEquals("1:[10|-1|true|true],4:[20|20|false|true],", hidden);
+    }
+
+    @Test
+    public void testHideShowSaveStatePercentageSizingWithoutFixOnResize() {
+        // enable percentage sizing
+        this.bodyDataLayer.setColumnPercentageSizing(true);
+        this.bodyDataLayer.setFixDynamicColumnPercentageValues(false);
+        this.bodyDataLayer.setDefaultMinColumnWidth(10);
+        this.bodyDataLayer.setMinColumnWidth(4, 20);
+
+        // trigger percentage calculation
+        ClientAreaResizeCommand resizeCommand = new ClientAreaResizeCommand(null);
+        resizeCommand.setCalcArea(new Rectangle(0, 0, 500, 500));
+        this.hideShowLayer.doCommand(resizeCommand);
+
+        assertEquals(500, this.hideShowLayer.getWidth());
+
         // this results in 10 percent
         this.bodyDataLayer.setColumnWidthByPosition(1, 50);
         this.bodyDataLayer.setColumnPositionResizable(4, false);
@@ -438,8 +479,6 @@ public class ResizeColumnHideShowLayerTest {
         this.bodyDataLayer.setColumnWidthPercentageByPosition(2, 15);
         this.bodyDataLayer.setColumnWidthPercentageByPosition(3, 15);
         this.bodyDataLayer.setColumnWidthPercentageByPosition(4, 40);
-
-        this.bodyDataLayer.setDistributeRemainingColumnSpace(true);
 
         ClientAreaResizeCommand cmd = new ClientAreaResizeCommand(null);
         cmd.setCalcArea(new Rectangle(0, 0, 600, 100));

@@ -119,7 +119,7 @@ public class SizeConfig implements IPersistable {
      *
      * @since 1.6
      */
-    private boolean distributeRemainingSpace = false;
+    private boolean distributeRemainingSpace = true;
     /**
      * The default minimum size in pixels. Will be used on percentage sizing to
      * avoid shrinking of columns/rows below a configured minimum.
@@ -134,6 +134,22 @@ public class SizeConfig implements IPersistable {
      * @since 1.6
      */
     private final Map<Integer, Integer> minSizeMap = new TreeMap<Integer, Integer>();
+    /**
+     * Flag to configure whether dynamic percentage sized positions should be
+     * fixed on any resize or not. This means, if positions are configured for
+     * percentage sizing without a specific percentage value, the size is
+     * calculated based on the space that is still available. If this flag is
+     * set to <code>false</code> only the position that is resized will get a
+     * fixed value. The other positions will still be dynamic and therefore will
+     * also resize as the available space is changed. Setting this flag to
+     * <code>true</code> will cause that all positions with dynamic percentage
+     * configuration will get a fixed percentage value to have a deterministic
+     * resize behavior for the user that triggers the resize. Default is
+     * <code>true</code>.
+     *
+     * @since 1.6
+     */
+    private boolean fixDynamicPercentageValues = true;
 
     /**
      * Create a new {@link SizeConfig} with the given default size.
@@ -467,16 +483,13 @@ public class SizeConfig implements IPersistable {
                 int diff = percentage.intValue();
                 if (oldValue != null && !minSizeUpdate) {
                     diff = diff - oldValue;
-                } else {
+                } else if (this.realSizeMap.containsKey(position)) {
                     // there was no percentage value before
                     // we need to calculate the before value out of the
                     // realSizeMap otherwise the resizing effect would
                     // have strange effects
-                    if (this.realSizeMap.containsKey(position)) {
-                        Double calculated = ((double) this.realSizeMap.get(position) * 100) / this.availableSpace;
-                        diff = diff - calculated.intValue();
-                    }
-
+                    Double calculated = ((double) this.realSizeMap.get(position) * 100) / this.availableSpace;
+                    diff = diff - calculated.intValue();
                 }
 
                 // if a min size is configured and the size is set to a lower
@@ -491,6 +504,19 @@ public class SizeConfig implements IPersistable {
                         }
                     }
                     setMinSize(position, size);
+                }
+
+                if (this.fixDynamicPercentageValues) {
+                    for (Map.Entry<Integer, Integer> entry : this.realSizeMap.entrySet()) {
+                        int pos = entry.getKey();
+                        if (isPercentageSizing(pos) && !this.sizeMap.containsKey(pos)) {
+                            // position is configured for percentage sizing but
+                            // has not fixed percentage
+                            // value
+                            Double calculatedPercentage = ((double) entry.getValue() * 100) / this.availableSpace;
+                            this.sizeMap.put(pos, calculatedPercentage.intValue());
+                        }
+                    }
                 }
 
                 this.sizeMap.put(position, percentage.intValue());
@@ -738,7 +764,7 @@ public class SizeConfig implements IPersistable {
      *            {@link SizeConfig}
      */
     public void calculatePercentages(int space, int positionCount) {
-        if (isPercentageSizing()) {
+        if (space > -1 && isPercentageSizing()) {
             this.isAggregatedSizeCacheValid = false;
             this.availableSpace = space;
 
@@ -849,6 +875,7 @@ public class SizeConfig implements IPersistable {
                     int minSize = getMinSize(position);
                     this.realSizeMap.put(position, remainingColSpace < minSize ? minSize : remainingColSpace.intValue());
                 }
+
                 // If there are positions for which no size information exist,
                 // the size config will use 100 percent of the available space
                 // on percentage sizing. To handle rounding issues just set the
@@ -1223,6 +1250,11 @@ public class SizeConfig implements IPersistable {
      * example that 25% of 100 pixels will be 25, regardless of the other
      * positions. When setting this flag to <code>true</code> the 25% will be
      * increased so the whole available space is filled.
+     * <p>
+     * <b>Note:</b> For dynamic percentage sized positions this flag should also
+     * be set to <code>true</code> to avoid sizing issues because of rounding
+     * issues after resizing.
+     * </p>
      *
      * @param distributeRemaining
      *            <code>true</code> if remaining space on fixed percentage
@@ -1233,5 +1265,30 @@ public class SizeConfig implements IPersistable {
      */
     public void setDistributeRemainingSpace(boolean distributeRemaining) {
         this.distributeRemainingSpace = distributeRemaining;
+    }
+
+    /**
+     * Configure whether dynamic percentage sized positions should be fixed on
+     * any resize or not. This means, if positions are configured for percentage
+     * sizing without a specific percentage value, the size is calculated based
+     * on the space that is still available. If this flag is set to
+     * <code>false</code> only the position that is resized will get a fixed
+     * value. The other positions will still be dynamic and therefore will also
+     * resize as the available space is changed. Setting this flag to
+     * <code>true</code> will cause that all positions with dynamic percentage
+     * configuration will get a fixed percentage value to have a deterministic
+     * resize behavior for the user that triggers the resize. Default is
+     * <code>true</code>.
+     *
+     * @param enabled
+     *            <code>true</code> to calculate the fix percentage value for
+     *            dynamic percentage sized positions on resize,
+     *            <code>false</code> if the dynamic percentage sized positions
+     *            should stay dynamic on resize.
+     *
+     * @since 1.6
+     */
+    public void setFixDynamicPercentageValues(boolean enabled) {
+        this.fixDynamicPercentageValues = enabled;
     }
 }

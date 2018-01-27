@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -66,6 +66,22 @@ public class SizeConfigPercentageTest {
 
     @Test
     public void sizeOverrideCalculationMode() {
+        // this.sizeConfigCalculationMode.setDistributeRemainingSpace(true);
+        this.sizeConfigCalculationMode.setSize(5, 200);
+
+        // - we increase position 5 to 200, which means 20%
+        // - this is an increase by 10%
+        // - the adjacent position 6 then needs to decrease by 10%
+        // as fixDynamicPercentageValues is enabled by default
+        // - as a reduction to 0 is not allowed, position 6 is set to 1%
+        // - the value of 1% (10 pixels) are afterwards reduced in the other
+        // positions
+        assertEquals(198, this.sizeConfigCalculationMode.getSize(5));
+    }
+
+    @Test
+    public void sizeOverrideCalculationModeWithoutFixDynamicPercentages() {
+        this.sizeConfigCalculationMode.setFixDynamicPercentageValues(false);
         this.sizeConfigCalculationMode.setSize(5, 200);
 
         assertEquals(201, this.sizeConfigCalculationMode.getSize(5));
@@ -188,6 +204,8 @@ public class SizeConfigPercentageTest {
 
     @Test
     public void percentageOverrideFixedMode() {
+        this.sizeConfigFixedMode.setDistributeRemainingSpace(false);
+
         this.sizeConfigFixedMode.setPercentage(1, 40);
 
         assertEquals(127, this.sizeConfigFixedMode.getSize(0));
@@ -196,6 +214,8 @@ public class SizeConfigPercentageTest {
 
     @Test
     public void getAggregateSizeWithSizeOverridesFixedMode() {
+        this.sizeConfigFixedMode.setDistributeRemainingSpace(false);
+
         this.sizeConfigFixedMode.setPercentage(1, 40);
 
         assertEquals(127, this.sizeConfigFixedMode.getAggregateSize(1));
@@ -277,6 +297,8 @@ public class SizeConfigPercentageTest {
 
     @Test
     public void getAggregateSizeFixedModeSizeChangeCacheCheck() {
+        this.sizeConfigFixedMode.setDistributeRemainingSpace(false);
+
         assertEquals(128, this.sizeConfigFixedMode.getAggregateSize(1));
         assertEquals(255, this.sizeConfigFixedMode.getAggregateSize(2));
 
@@ -550,6 +572,28 @@ public class SizeConfigPercentageTest {
 
         // the position itself needs to be 150
         assertEquals(150, this.sizeConfigCalculationMode.getSize(5));
+        // the other cells should not be modified as they are fixed by default
+        assertEquals(100, this.sizeConfigCalculationMode.getSize(4));
+        // despite the adjacent position to the right, which should be reduced
+        assertEquals(50, this.sizeConfigCalculationMode.getSize(6));
+
+        // as we're in percentage mode, the aggregate size shouldn't have
+        // changed
+        assertEquals(1000, this.sizeConfigCalculationMode.getAggregateSize(10));
+    }
+
+    @Test
+    public void setSizeCalculationWithoutFixPercentageValues() {
+        this.sizeConfigCalculationMode.setFixDynamicPercentageValues(false);
+
+        assertEquals(100, this.sizeConfigCalculationMode.getSize(5));
+        assertEquals(1000, this.sizeConfigCalculationMode.getAggregateSize(10));
+
+        // resize position 5 to 150
+        this.sizeConfigCalculationMode.setSize(5, 150);
+
+        // the position itself needs to be 150
+        assertEquals(150, this.sizeConfigCalculationMode.getSize(5));
         // the other cells need to be modified where all positions are adjusted
         // as they are
         // configured to take the remaining space
@@ -685,7 +729,6 @@ public class SizeConfigPercentageTest {
         sizeConfig.setPercentage(0, 25);
         sizeConfig.setPercentage(1, 25);
         sizeConfig.setPercentage(2, 50);
-        sizeConfig.setDistributeRemainingSpace(true);
 
         sizeConfig.calculatePercentages(500, 3);
 
@@ -709,7 +752,6 @@ public class SizeConfigPercentageTest {
         sizeConfig.setPercentage(0, 25);
         sizeConfig.setPercentage(1, 25);
         sizeConfig.setPercentage(2, 50);
-        sizeConfig.setDistributeRemainingSpace(true);
 
         sizeConfig.calculatePercentages(201, 3);
 
@@ -731,7 +773,6 @@ public class SizeConfigPercentageTest {
     public void mixedConfigurationShouldBeCorrectlyCalculatedWithGeneralPercentage() {
         SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
 
-        sizeConfig.setDistributeRemainingSpace(true);
         sizeConfig.setPercentageSizing(true);
         sizeConfig.setPercentage(0, 5);
         sizeConfig.setPercentageSizing(1, false);
@@ -757,7 +798,6 @@ public class SizeConfigPercentageTest {
     public void mixedConfigurationShouldBeCorrectlyCalculatedWithoutGeneralPercentage() {
         SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
 
-        sizeConfig.setDistributeRemainingSpace(true);
         sizeConfig.setPercentage(0, 5);
         sizeConfig.setSize(1, 130);
         sizeConfig.setPercentageSizing(2, true);
@@ -1059,9 +1099,6 @@ public class SizeConfigPercentageTest {
         assertEquals(250, sizeConfig.getAggregateSize(3));
         assertEquals(400, sizeConfig.getAggregateSize(4));
 
-        // enable distribute remaining space
-        sizeConfig.setDistributeRemainingSpace(true);
-
         // check for 4 columns - two fixed percentage
         sizeConfig.calculatePercentages(400, 4);
         assertEquals(75, sizeConfig.getAggregateSize(1));
@@ -1089,6 +1126,8 @@ public class SizeConfigPercentageTest {
         sizeConfig.setSize(1, 150);
         sizeConfig.setPercentage(2, 40);
         sizeConfig.setSize(3, 150);
+
+        sizeConfig.setDistributeRemainingSpace(false);
 
         // check for 4 columns - two fixed percentage
         sizeConfig.calculatePercentages(400, 4);
@@ -1158,6 +1197,7 @@ public class SizeConfigPercentageTest {
         sizeConfig.setPercentageSizing(true);
         sizeConfig.setPercentageSizing(1, false);
         sizeConfig.setPercentageSizing(2, false);
+        sizeConfig.setDistributeRemainingSpace(false);
 
         sizeConfig.setPercentage(0, 20);
         sizeConfig.setSize(1, 100);
@@ -1194,9 +1234,6 @@ public class SizeConfigPercentageTest {
         sizeConfig.setPercentage(3, 20);
         sizeConfig.setPercentage(4, 20);
 
-        // necessary because of rounding issues with percentage values
-        sizeConfig.setDistributeRemainingSpace(true);
-
         sizeConfig.setMinSize(0, 100);
 
         sizeConfig.calculatePercentages(600, 5);
@@ -1230,8 +1267,49 @@ public class SizeConfigPercentageTest {
         SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
         sizeConfig.setPercentageSizing(true);
 
-        // necessary because of rounding issues with percentage values
-        sizeConfig.setDistributeRemainingSpace(true);
+        sizeConfig.setMinSize(0, 100);
+
+        sizeConfig.calculatePercentages(600, 5);
+        assertEquals(120, sizeConfig.getAggregateSize(1));
+        assertEquals(240, sizeConfig.getAggregateSize(2));
+        assertEquals(360, sizeConfig.getAggregateSize(3));
+        assertEquals(480, sizeConfig.getAggregateSize(4));
+        assertEquals(600, sizeConfig.getAggregateSize(5));
+
+        sizeConfig.calculatePercentages(400, 5);
+        assertEquals(100, sizeConfig.getAggregateSize(1));
+        assertEquals(175, sizeConfig.getAggregateSize(2));
+        assertEquals(250, sizeConfig.getAggregateSize(3));
+        assertEquals(325, sizeConfig.getAggregateSize(4));
+        assertEquals(400, sizeConfig.getAggregateSize(5));
+
+        // simulate setting a size of a position with minimum to a lower value
+        // than the minimum, e.g. make a column smaller than the min
+        sizeConfig.setSize(0, 60);
+
+        sizeConfig.calculatePercentages(400, 5);
+        assertEquals(60, sizeConfig.getAggregateSize(1));
+        // as we reduce the width of the first position, only the second
+        // position should increase. therefore the aggregate sizes should stay
+        // almost the same as before. they only change slighty to deal with
+        // rounding issues
+        assertEquals(176, sizeConfig.getAggregateSize(2));
+        assertEquals(251, sizeConfig.getAggregateSize(3));
+        assertEquals(326, sizeConfig.getAggregateSize(4));
+        assertEquals(400, sizeConfig.getAggregateSize(5));
+
+        // min size was adjusted because of the resize
+        assertEquals(60, sizeConfig.getMinSize(0));
+    }
+
+    @Test
+    public void shouldUpdateMinSizeOnResizeWithNoFixedPercentageNoFixPercentageValues() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        sizeConfig.setPercentageSizing(true);
+
+        // disable fixing of dynamic percentage values so all positions get
+        // resized
+        sizeConfig.setFixDynamicPercentageValues(false);
 
         sizeConfig.setMinSize(0, 100);
 

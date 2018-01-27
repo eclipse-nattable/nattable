@@ -53,7 +53,7 @@ public class SizeConfigPersistenceTest {
         assertFalse(Boolean.valueOf(properties.getProperty("prefix.resizableByDefault")));
         assertEquals("3:true,9:true,", properties.getProperty("prefix.resizableIndexes"));
         assertFalse(Boolean.valueOf(properties.getProperty("prefix.percentageSizing")));
-        assertFalse(Boolean.valueOf(properties.getProperty("prefix.distributeRemainingSpace")));
+        assertTrue(Boolean.valueOf(properties.getProperty("prefix.distributeRemainingSpace")));
         assertEquals("0", properties.getProperty("prefix.defaultMinSize"));
     }
 
@@ -146,7 +146,7 @@ public class SizeConfigPersistenceTest {
         assertEquals("3:true,9:true,", properties.getProperty("prefix.resizableIndexes"));
         assertFalse(Boolean.valueOf(properties.getProperty("prefix.percentageSizing")));
         assertEquals("3:false,7:true,8:true,9:false,", properties.getProperty("prefix.percentageSizingIndexes"));
-        assertFalse(Boolean.valueOf(properties.getProperty("prefix.distributeRemainingSpace")));
+        assertTrue(Boolean.valueOf(properties.getProperty("prefix.distributeRemainingSpace")));
         assertEquals("0", properties.getProperty("prefix.defaultMinSize"));
     }
 
@@ -203,8 +203,6 @@ public class SizeConfigPersistenceTest {
         this.sizeConfig.setPercentageSizing(9, false);
         this.sizeConfig.setPercentageSizing(7, true);
         this.sizeConfig.setPercentageSizing(8, true);
-
-        this.sizeConfig.setDistributeRemainingSpace(true);
 
         this.sizeConfig.setDefaultMinSize(50);
 
