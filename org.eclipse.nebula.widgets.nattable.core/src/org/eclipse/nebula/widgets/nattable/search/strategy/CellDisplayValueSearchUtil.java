@@ -348,7 +348,7 @@ public class CellDisplayValueSearchUtil {
                 return true;
             } else if (wholeWord) {
                 // we also need to check single words in a multi word value
-                String[] split = dataValueString.split("\\s"); //$NON-NLS-1$
+                String[] split = dataValueString.split("\\b"); //$NON-NLS-1$
                 for (String word : split) {
                     if (comparator.compare(stringValue, word) == 0) {
                         return true;
