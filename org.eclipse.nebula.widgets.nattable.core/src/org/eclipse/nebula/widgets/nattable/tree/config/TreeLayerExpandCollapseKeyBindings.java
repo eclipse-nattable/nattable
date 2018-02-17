@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Roman Flueckiger.
+ * Copyright (c) 2014, 2018 Roman Flueckiger, Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,22 +15,23 @@ import static org.eclipse.nebula.widgets.nattable.tree.config.DefaultTreeLayerCo
 import static org.eclipse.nebula.widgets.nattable.ui.matcher.SelectionAnchorCellLabelKeyEventMatcher.anchorLabel;
 
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.action.TreeExpandCollapseKeyAction;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
 import org.eclipse.swt.SWT;
 
 /**
- * A default configuration that can be used as an addition for a nattable with
- * both a {@link TreeLayer} and a {@link SelectionLayer}. It adds the key
- * bindings that allows the space bar to be pressed to expand/collapse tree
- * nodes.
+ * A default configuration that can be used as an addition for a NatTable with
+ * both a {@link org.eclipse.nebula.widgets.nattable.tree.TreeLayer} and a
+ * {@link SelectionLayer}, where also an alternative tree layer implementation
+ * can be used. It adds the key bindings that allows the space bar to be pressed
+ * to expand/collapse tree nodes.
  */
 public class TreeLayerExpandCollapseKeyBindings extends AbstractUiBindingConfiguration {
 
-    protected final TreeLayer treeLayer;
+    protected final IUniqueIndexLayer treeLayer;
     protected final SelectionLayer selectionLayer;
 
     /**
@@ -40,8 +41,9 @@ public class TreeLayerExpandCollapseKeyBindings extends AbstractUiBindingConfigu
      * @param selectionLayer
      *            the {@link SelectionLayer} - provides the selection anchor
      *            (the context for the action).
+     * @since 1.6
      */
-    public TreeLayerExpandCollapseKeyBindings(TreeLayer treeLayer, SelectionLayer selectionLayer) {
+    public TreeLayerExpandCollapseKeyBindings(IUniqueIndexLayer treeLayer, SelectionLayer selectionLayer) {
         if (treeLayer == null) {
             throw new IllegalArgumentException("treeLayer must not be null."); //$NON-NLS-1$
         }
