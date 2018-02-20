@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,6 +19,7 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -172,12 +173,16 @@ public class PaddingDecorator extends CellPainterWrapper {
 
     @Override
     public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
-        return this.leftPadding + super.getPreferredWidth(cell, gc, configRegistry) + this.rightPadding;
+        return GUIHelper.convertHorizontalPixelToDpi(this.leftPadding)
+                + super.getPreferredWidth(cell, gc, configRegistry)
+                + GUIHelper.convertHorizontalPixelToDpi(this.rightPadding);
     }
 
     @Override
     public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
-        return this.topPadding + super.getPreferredHeight(cell, gc, configRegistry) + this.bottomPadding;
+        return GUIHelper.convertHorizontalPixelToDpi(this.topPadding)
+                + super.getPreferredHeight(cell, gc, configRegistry)
+                + GUIHelper.convertHorizontalPixelToDpi(this.bottomPadding);
     }
 
     @Override
@@ -208,10 +213,14 @@ public class PaddingDecorator extends CellPainterWrapper {
      */
     public Rectangle getInteriorBounds(Rectangle adjustedCellBounds) {
         return new Rectangle(
-                adjustedCellBounds.x + this.leftPadding,
-                adjustedCellBounds.y + this.topPadding,
-                adjustedCellBounds.width - this.leftPadding - this.rightPadding,
-                adjustedCellBounds.height - this.topPadding - this.bottomPadding);
+                adjustedCellBounds.x + GUIHelper.convertHorizontalPixelToDpi(this.leftPadding),
+                adjustedCellBounds.y + GUIHelper.convertHorizontalPixelToDpi(this.topPadding),
+                adjustedCellBounds.width
+                        - GUIHelper.convertHorizontalPixelToDpi(this.leftPadding)
+                        - GUIHelper.convertHorizontalPixelToDpi(this.rightPadding),
+                adjustedCellBounds.height
+                        - GUIHelper.convertHorizontalPixelToDpi(this.topPadding)
+                        - GUIHelper.convertHorizontalPixelToDpi(this.bottomPadding));
     }
 
     /**
@@ -243,10 +252,10 @@ public class PaddingDecorator extends CellPainterWrapper {
         int horizontalAlignmentPadding = 0;
         switch (horizontalAlignment) {
             case LEFT:
-                horizontalAlignmentPadding = this.leftPadding;
+                horizontalAlignmentPadding = GUIHelper.convertHorizontalPixelToDpi(this.leftPadding);
                 break;
             case CENTER:
-                horizontalAlignmentPadding = this.leftPadding / 2;
+                horizontalAlignmentPadding = GUIHelper.convertHorizontalPixelToDpi(this.leftPadding) / 2;
                 break;
         }
 
@@ -255,10 +264,10 @@ public class PaddingDecorator extends CellPainterWrapper {
         int verticalAlignmentPadding = 0;
         switch (verticalAlignment) {
             case TOP:
-                verticalAlignmentPadding = this.topPadding;
+                verticalAlignmentPadding = GUIHelper.convertHorizontalPixelToDpi(this.topPadding);
                 break;
             case MIDDLE:
-                verticalAlignmentPadding = this.topPadding / 2;
+                verticalAlignmentPadding = GUIHelper.convertHorizontalPixelToDpi(this.topPadding) / 2;
                 break;
         }
 

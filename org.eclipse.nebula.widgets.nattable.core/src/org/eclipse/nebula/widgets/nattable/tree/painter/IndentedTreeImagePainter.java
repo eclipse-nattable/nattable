@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,6 +18,7 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CellPainterDec
 import org.eclipse.nebula.widgets.nattable.tree.ITreeRowModel;
 import org.eclipse.nebula.widgets.nattable.tree.config.DefaultTreeLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
@@ -396,7 +397,7 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      * @return The number of pixels the content should be indented.
      */
     protected int getIndent(int depth) {
-        return this.treeIndent * depth;
+        return GUIHelper.convertHorizontalPixelToDpi(this.treeIndent * depth);
     }
 
     /**
