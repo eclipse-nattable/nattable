@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2017 Dirk Fauth and others.
+ * Copyright (c) 2013, 2018 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,7 +43,7 @@ public class RowReorderDragMode extends AutoScrollDragMode {
     protected MouseEvent currentEvent;
     protected int dragFromGridRowPosition;
 
-    protected RowReorderOverlayPainter targetOverlayPainter = new RowReorderOverlayPainter();
+    protected IOverlayPainter targetOverlayPainter = new RowReorderOverlayPainter();
 
     public RowReorderDragMode() {
         super(false, true);
@@ -144,8 +144,9 @@ public class RowReorderDragMode extends AutoScrollDragMode {
      * @param y
      *            The y coordinate of the drop location
      * @return The {@link ILayerCell} at the drop location
+     * @since 1.6
      */
-    private ILayerCell getRowCell(int y) {
+    protected ILayerCell getRowCell(int y) {
         int gridColumnPosition = this.natTable.getColumnPositionByX(this.initialEvent.x);
         int gridRowPosition = this.natTable.getRowPositionByY(y);
         return this.natTable.getCellByPosition(gridColumnPosition, gridRowPosition);
@@ -193,8 +194,10 @@ public class RowReorderDragMode extends AutoScrollDragMode {
 
     /**
      * The overlay painter for showing the drag operation.
+     *
+     * @since 1.6
      */
-    private class RowReorderOverlayPainter implements IOverlayPainter {
+    protected class RowReorderOverlayPainter implements IOverlayPainter {
 
         @Override
         public void paintOverlay(GC gc, ILayer layer) {

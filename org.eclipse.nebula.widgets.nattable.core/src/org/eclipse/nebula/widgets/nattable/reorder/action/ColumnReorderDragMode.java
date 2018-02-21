@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -44,7 +44,7 @@ public class ColumnReorderDragMode extends AutoScrollDragMode {
     protected MouseEvent currentEvent;
     protected int dragFromGridColumnPosition;
 
-    protected ColumnReorderOverlayPainter targetOverlayPainter = new ColumnReorderOverlayPainter();
+    protected IOverlayPainter targetOverlayPainter = new ColumnReorderOverlayPainter();
 
     public ColumnReorderDragMode() {
         super(true, false);
@@ -127,7 +127,15 @@ public class ColumnReorderDragMode extends AutoScrollDragMode {
         return null;
     }
 
-    private ILayerCell getColumnCell(int x) {
+    /**
+     *
+     * @param x
+     *            The x coordinate to determine the column of the NatTable.
+     * @return The cell at the given x coordinate and the y coordinate of the
+     *         initial event.
+     * @since 1.6
+     */
+    protected ILayerCell getColumnCell(int x) {
         int gridColumnPosition = this.natTable.getColumnPositionByX(x);
         int gridRowPosition = this.natTable.getRowPositionByY(this.initialEvent.y);
         return this.natTable.getCellByPosition(gridColumnPosition, gridRowPosition);
@@ -145,7 +153,13 @@ public class ColumnReorderDragMode extends AutoScrollDragMode {
         natTable.doCommand(new ColumnReorderEndCommand(natTable, dragToGridColumnPosition));
     }
 
-    private class ColumnReorderOverlayPainter implements IOverlayPainter {
+    /**
+     * {@link IOverlayPainter} that paints the black line on the target
+     * destination if valid.
+     *
+     * @since 1.6
+     */
+    protected class ColumnReorderOverlayPainter implements IOverlayPainter {
 
         @Override
         public void paintOverlay(GC gc, ILayer layer) {

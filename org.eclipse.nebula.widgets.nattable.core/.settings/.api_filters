@@ -29,6 +29,22 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/org/eclipse/nebula/widgets/nattable/reorder/action/ColumnReorderDragMode.java" type="org.eclipse.nebula.widgets.nattable.reorder.action.ColumnReorderDragMode">
+        <filter comment="made the targetOverlayPainter more general" id="388161617">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.reorder.action.ColumnReorderDragMode"/>
+                <message_argument value="targetOverlayPainter"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/nebula/widgets/nattable/reorder/action/RowReorderDragMode.java" type="org.eclipse.nebula.widgets.nattable.reorder.action.RowReorderDragMode">
+        <filter comment="made the targetOverlayPainter more general" id="388161617">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.reorder.action.RowReorderDragMode"/>
+                <message_argument value="targetOverlayPainter"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/org/eclipse/nebula/widgets/nattable/tree/config/TreeLayerExpandCollapseKeyBindings.java" type="org.eclipse.nebula.widgets.nattable.tree.config.TreeLayerExpandCollapseKeyBindings">
         <filter comment="made treeLayer field more general" id="338722907">
             <message_arguments>
