@@ -45,7 +45,7 @@ public class PercentageBarDecorator extends CellPainterWrapper {
     public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
         Pattern originalBackgroundPattern = gc.getBackgroundPattern();
 
-        double factor = Math.min(1.0, ((Double) cell.getDataValue()).doubleValue());
+        double factor = Math.min(1.0, ((Number) cell.getDataValue()).doubleValue());
         factor = Math.max(0.0, factor);
 
         Rectangle bar = new Rectangle(
