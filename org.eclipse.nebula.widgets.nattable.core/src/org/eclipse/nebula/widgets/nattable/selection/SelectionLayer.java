@@ -415,9 +415,17 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      */
     public boolean allCellsSelectedInRegion(Rectangle region) {
         for (int col = region.x; col < (region.x + region.width); col++) {
-            for (int row = region.y; row < (region.y + region.height); row++) {
-                if (!isCellPositionSelected(col, row)) {
+            // if the region is for a full column selection, simplify the check for better
+            // performance and correctness
+            if (region.height == Integer.MAX_VALUE) {
+                if (!isColumnPositionFullySelected(col)) {
                     return false;
+                }
+            } else {
+                for (int row = region.y; row < (region.y + region.height); row++) {
+                    if (!isCellPositionSelected(col, row)) {
+                        return false;
+                    }
                 }
             }
         }

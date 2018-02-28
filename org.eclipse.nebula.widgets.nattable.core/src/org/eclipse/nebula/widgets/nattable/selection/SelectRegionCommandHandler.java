@@ -10,12 +10,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRegionCommand;
 import org.eclipse.nebula.widgets.nattable.selection.event.RowSelectionEvent;
@@ -50,7 +47,7 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
     }
 
     protected void selectRegion(Rectangle region, boolean withShiftMask, boolean withControlMask) {
-        Set<Integer> changedRows = new HashSet<Integer>();
+        Range changedRows = null;
 
         if (SelectionUtils.noShiftOrControl(withShiftMask, withControlMask)) {
             // no modifier
@@ -59,17 +56,14 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
             this.selectionLayer.selectRegion(region.x, region.y, region.width, region.height);
             this.selectionLayer.moveSelectionAnchor(region.x, region.y);
 
-            // add rows that have changed
-            for (int i = region.y; i < (region.y + region.height); i++) {
-                changedRows.add(i);
-            }
+            changedRows = new Range(region.y, region.y + region.height);
         } else if (SelectionUtils.bothShiftAndControl(withShiftMask, withControlMask)
                 || SelectionUtils.isShiftOnly(withShiftMask, withControlMask)) {
             // SHIFT or CTRL + SHIFT modifier enabled
-            changedRows.addAll(selectRegionWithShiftKey(region));
+            changedRows = selectRegionWithShiftKey(region);
         } else if (SelectionUtils.isControlOnly(withShiftMask, withControlMask)) {
             // CTRL modifier enabled
-            changedRows.addAll(selectRegionWithCtrlKey(region));
+            changedRows = selectRegionWithCtrlKey(region);
         }
 
         // Set last selected position to the recently clicked cell
@@ -82,7 +76,6 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
                         this.selectionLayer.getSelectionAnchor().getRowPosition(),
                         withShiftMask,
                         withControlMask));
-
     }
 
     /**
@@ -94,7 +87,7 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
      *            The region to be selected.
      * @return The row positions that have gained selection.
      */
-    protected Collection<Integer> selectRegionWithShiftKey(Rectangle region) {
+    protected Range selectRegionWithShiftKey(Rectangle region) {
         int startCol = region.x;
         int startRow = region.y;
         int noCol = region.width;
@@ -135,12 +128,7 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
 
         this.selectionLayer.selectRegion(startCol, startRow, noCol, noRow);
 
-        // add rows that have changed
-        Set<Integer> changedRows = new HashSet<Integer>();
-        for (int i = startRow; i < (startRow + noRow); i++) {
-            changedRows.add(i);
-        }
-        return changedRows;
+        return new Range(startRow, startRow + noRow);
     }
 
     /**
@@ -151,7 +139,7 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
      *            The region to be selected.
      * @return The row positions that have gained selection.
      */
-    protected Collection<Integer> selectRegionWithCtrlKey(Rectangle region) {
+    protected Range selectRegionWithCtrlKey(Rectangle region) {
         if (this.selectionLayer.allCellsSelectedInRegion(region)) {
             // clear if all cells in the region are selected
             this.selectionLayer.clearSelection(region);
@@ -201,12 +189,7 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
             this.selectionLayer.moveSelectionAnchor(region.x, region.y);
         }
 
-        // add rows that have changed
-        Set<Integer> changedRows = new HashSet<Integer>();
-        for (int i = region.y; i < (region.y + region.height); i++) {
-            changedRows.add(i);
-        }
-        return changedRows;
+        return new Range(region.y, region.y + region.height);
     }
 
     @Override

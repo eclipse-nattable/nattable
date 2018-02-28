@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,6 +21,7 @@ import org.eclipse.nebula.widgets.nattable.group.action.ColumnGroupHeaderReorder
 import org.eclipse.nebula.widgets.nattable.group.action.ColumnHeaderReorderDragMode;
 import org.eclipse.nebula.widgets.nattable.group.action.CreateColumnGroupAction;
 import org.eclipse.nebula.widgets.nattable.group.action.UngroupColumnsAction;
+import org.eclipse.nebula.widgets.nattable.group.action.ViewportSelectColumnGroupAction;
 import org.eclipse.nebula.widgets.nattable.group.painter.ColumnGroupHeaderTextPainter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.BeveledBorderDecorator;
@@ -40,8 +41,32 @@ public class DefaultColumnGroupHeaderLayerConfiguration implements IConfiguratio
 
     private final ColumnGroupModel columnGroupModel;
 
-    public DefaultColumnGroupHeaderLayerConfiguration(final ColumnGroupModel columnGroupModel) {
+    private final boolean enableColumnGroupSelectionHandling;
+
+    /**
+     * Creates a configuration without selection on single click bindings.
+     *
+     * @param columnGroupModel
+     *            The {@link ColumnGroupModel} used to define the column groups.
+     */
+    public DefaultColumnGroupHeaderLayerConfiguration(ColumnGroupModel columnGroupModel) {
+        this(columnGroupModel, false);
+    }
+
+    /**
+     *
+     * @param columnGroupModel
+     *            The {@link ColumnGroupModel} used to define the column groups.
+     * @param enableGroupSelection
+     *            <code>true</code> if single click selection bindings on the
+     *            column group header should be enabled, <code>false</code> if
+     *            no operations should be triggered on single click.
+     *
+     * @since 1.6
+     */
+    public DefaultColumnGroupHeaderLayerConfiguration(ColumnGroupModel columnGroupModel, boolean enableGroupSelection) {
         this.columnGroupModel = columnGroupModel;
+        this.enableColumnGroupSelectionHandling = enableGroupSelection;
     }
 
     @Override
@@ -76,9 +101,34 @@ public class DefaultColumnGroupHeaderLayerConfiguration implements IConfiguratio
                 new ColumnHeaderReorderDragMode(this.columnGroupModel));
 
         // added NoOpMouseAction on single click because of Bug 428901
-        uiBindingRegistry.registerFirstSingleClickBinding(
-                MouseEventMatcher.columnGroupHeaderLeftClick(SWT.NONE),
-                new NoOpMouseAction());
+        if (!this.enableColumnGroupSelectionHandling) {
+            uiBindingRegistry.registerFirstSingleClickBinding(
+                    MouseEventMatcher.columnGroupHeaderLeftClick(SWT.NONE),
+                    new NoOpMouseAction());
+            uiBindingRegistry.registerFirstSingleClickBinding(
+                    MouseEventMatcher.columnGroupHeaderLeftClick(SWT.MOD1),
+                    new NoOpMouseAction());
+            uiBindingRegistry.registerFirstSingleClickBinding(
+                    MouseEventMatcher.columnGroupHeaderLeftClick(SWT.MOD2),
+                    new NoOpMouseAction());
+            uiBindingRegistry.registerFirstSingleClickBinding(
+                    MouseEventMatcher.columnGroupHeaderLeftClick(SWT.MOD1 | SWT.MOD2),
+                    new NoOpMouseAction());
+        } else {
+            uiBindingRegistry.registerFirstSingleClickBinding(
+                    MouseEventMatcher.columnGroupHeaderLeftClick(SWT.NONE),
+                    new ViewportSelectColumnGroupAction(false, false));
+            uiBindingRegistry.registerFirstSingleClickBinding(
+                    MouseEventMatcher.columnGroupHeaderLeftClick(SWT.MOD1),
+                    new ViewportSelectColumnGroupAction(false, true));
+            uiBindingRegistry.registerFirstSingleClickBinding(
+                    MouseEventMatcher.columnGroupHeaderLeftClick(SWT.MOD2),
+                    new ViewportSelectColumnGroupAction(true, false));
+            uiBindingRegistry.registerFirstSingleClickBinding(
+                    MouseEventMatcher.columnGroupHeaderLeftClick(SWT.MOD1 | SWT.MOD2),
+                    new ViewportSelectColumnGroupAction(true, true));
+        }
+
         uiBindingRegistry.registerDoubleClickBinding(
                 MouseEventMatcher.columnGroupHeaderLeftClick(SWT.NONE),
                 new ColumnGroupExpandCollapseAction());

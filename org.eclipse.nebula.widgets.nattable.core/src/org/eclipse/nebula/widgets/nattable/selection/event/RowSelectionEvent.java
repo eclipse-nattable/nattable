@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,9 +11,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.event;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -72,6 +74,31 @@ public class RowSelectionEvent extends RowVisualChangeEvent implements ISelectio
             Collection<Integer> rowPositions, int rowPositionToMoveIntoViewport,
             boolean withShiftMask, boolean withControlMask) {
         super(selectionLayer, PositionUtil.getRanges(rowPositions));
+        this.selectionLayer = selectionLayer;
+        this.rowPositionToMoveIntoViewport = rowPositionToMoveIntoViewport;
+        this.withShiftMask = withShiftMask;
+        this.withControlMask = withControlMask;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param selectionLayer
+     *            The selection layer.
+     * @param rowPositionRange
+     *            The range of row positions that where selected.
+     * @param rowPositionToMoveIntoViewport
+     *            The row position to move into the viewport.
+     * @param withShiftMask
+     *            Boolean to determinate if the shift mask is used.
+     * @param withControlMask
+     *            Boolean to determinate if the control mask is used.
+     * @since 1.6
+     */
+    public RowSelectionEvent(SelectionLayer selectionLayer,
+            Range rowPositionRange, int rowPositionToMoveIntoViewport,
+            boolean withShiftMask, boolean withControlMask) {
+        super(selectionLayer, Arrays.asList(rowPositionRange));
         this.selectionLayer = selectionLayer;
         this.rowPositionToMoveIntoViewport = rowPositionToMoveIntoViewport;
         this.withShiftMask = withShiftMask;

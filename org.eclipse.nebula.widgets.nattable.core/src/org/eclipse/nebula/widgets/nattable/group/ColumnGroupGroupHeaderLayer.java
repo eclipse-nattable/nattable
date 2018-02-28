@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -216,8 +216,10 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
      *
      * @param columnPosition
      *            position of any column belonging to the group
+     *
+     * @since 1.6
      */
-    protected int getColumnSpan(int columnPosition) {
+    public int getColumnSpan(int columnPosition) {
         int columnIndex = getColumnIndexByPosition(columnPosition);
         ColumnGroup columnGroup = this.model.getColumnGroupByIndex(columnIndex);
 
@@ -248,11 +250,13 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
     /**
      * Figures out the start position of the group.
      *
-     * @param selectionLayerColumnPosition
+     * @param columnPosition
      *            of any column belonging to the group
      * @return first position of the column group
+     *
+     * @since 1.6
      */
-    private int getStartPositionOfGroup(int columnPosition) {
+    public int getStartPositionOfGroup(int columnPosition) {
         int bodyColumnIndex = getColumnIndexByPosition(columnPosition);
         ColumnGroup columnGroup = this.model.getColumnGroupByIndex(bodyColumnIndex);
 
@@ -270,6 +274,8 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
     public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
         int columnIndex = getColumnIndexByPosition(columnPosition);
         if (rowPosition == 0 && this.model.isPartOfAGroup(columnIndex)) {
+            return DisplayMode.NORMAL;
+        } else if (rowPosition == 1 && this.columnGroupHeaderLayer.isColumnInGroup(columnIndex)) {
             return DisplayMode.NORMAL;
         } else {
             return this.columnGroupHeaderLayer.getDisplayModeByPosition(columnPosition, rowPosition);
