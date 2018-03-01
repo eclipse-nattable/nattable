@@ -218,12 +218,6 @@ public class TreeGridExample extends AbstractNatExample {
                         Integer o1Depth = depth(o1);
                         Integer o2Depth = depth(o2);
 
-                        // result = o1Depth.compareTo(o2Depth);
-                        // if (result == 0) {
-                        // result = dComp.compare(o1.getParent(),
-                        // o2.getParent());
-                        // }
-                        // else {
                         // FIXME correct order for different levels
                         if (o1Depth > o2Depth) {
                             result = dComp.compare(o1.getParent(), o2);
@@ -231,17 +225,17 @@ public class TreeGridExample extends AbstractNatExample {
                                 // we have a parent-child relationship
                                 return 1;
                             }
-                        }
-                        else {
+                        } else if (o1Depth < o2Depth) {
                             result = dComp.compare(o1, o2.getParent());
                             if (result == 0) {
                                 // we have a parent-child relationship
                                 return -1;
                             }
+                        } else {
+                            return dComp.compare(o1, o2);
                         }
                         // }
-                    }
-                    else if (!isRoot(o1) && isRoot(o2)) {
+                    } else if (!isRoot(o1) && isRoot(o2)) {
                         result = dComp.compare(getRoot(o1), o2);
                         if (result == 0) {
                             // the given root and the root of the child are
@@ -249,8 +243,7 @@ public class TreeGridExample extends AbstractNatExample {
                             // therefore the child is "lower" than the root
                             result = -1;
                         }
-                    }
-                    else if (isRoot(o1) && !isRoot(o2)) {
+                    } else if (isRoot(o1) && !isRoot(o2)) {
                         result = dComp.compare(o1, getRoot(o2));
                         if (result == 0) {
                             // the given root and the root of the child are
@@ -258,8 +251,7 @@ public class TreeGridExample extends AbstractNatExample {
                             // therefore the child is "bigger" than the root
                             result = 1;
                         }
-                    }
-                    else if (isRoot(o1) && isRoot(o2)) {
+                    } else if (isRoot(o1) && isRoot(o2)) {
                         return dComp.compare(o1, o2);
                     }
                     return result;
@@ -330,9 +322,7 @@ public class TreeGridExample extends AbstractNatExample {
     }
 
     public class Datum {
-        /**
-		 *
-		 */
+
         private final Datum parent;
         private String foo;
         private int bar;
