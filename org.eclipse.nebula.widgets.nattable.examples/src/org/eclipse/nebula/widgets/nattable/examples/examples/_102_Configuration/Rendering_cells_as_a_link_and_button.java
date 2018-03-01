@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -51,7 +51,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public class Rendereing_cells_as_a_link_and_button extends AbstractNatExample {
+public class Rendering_cells_as_a_link_and_button extends AbstractNatExample {
     public static final String LINK_CELL_LABEL = "LINK_CELL_LABEL";
     public static final String BUTTON_CELL_LABEL = "BUTTON_CELL_LABEL";
 
@@ -59,12 +59,12 @@ public class Rendereing_cells_as_a_link_and_button extends AbstractNatExample {
     private SelectionExampleGridLayer gridLayer;
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner.run(600, 400, new Rendereing_cells_as_a_link_and_button());
+        StandaloneNatExampleRunner.run(600, 400, new Rendering_cells_as_a_link_and_button());
     }
 
     @Override
     public String getDescription() {
-        return "Demonstrates rendering the cell as a button. Custom actions can be triggered on button click.\n"
+        return "Demonstrates rendering the cell as a button and as a link. Custom actions can be triggered on button/link click.\n"
                 + "\n"
                 + "Note: The button is 'drawn' using a custom painter. This is more efficient than using a Button widget.";
     }
@@ -178,7 +178,7 @@ public class Rendereing_cells_as_a_link_and_button extends AbstractNatExample {
             int columnIndex = natTable.getColumnIndexByPosition(eventData.getColumnPosition());
 
             ListDataProvider<RowDataFixture> dataProvider =
-                    Rendereing_cells_as_a_link_and_button.this.gridLayer.getBodyDataProvider();
+                    Rendering_cells_as_a_link_and_button.this.gridLayer.getBodyDataProvider();
 
             Object rowObject = dataProvider.getRowObject(rowIndex);
             Object cellData = dataProvider.getDataValue(columnIndex, rowIndex);
@@ -207,7 +207,7 @@ public class Rendereing_cells_as_a_link_and_button extends AbstractNatExample {
                     new CellLabelMouseEventMatcher(
                             GridRegion.BODY,
                             MouseEventMatcher.LEFT_BUTTON,
-                            Rendereing_cells_as_a_link_and_button.BUTTON_CELL_LABEL);
+                            Rendering_cells_as_a_link_and_button.BUTTON_CELL_LABEL);
 
             // Inform the button painter of the click.
             uiBindingRegistry.registerMouseDownBinding(mouseEventMatcher, this.buttonCellPainter);
@@ -217,7 +217,7 @@ public class Rendereing_cells_as_a_link_and_button extends AbstractNatExample {
 
     class LinkClickConfiguration<T> extends AbstractUiBindingConfiguration implements IMouseAction {
 
-        private final List<IMouseAction> clickLiseners = new ArrayList<IMouseAction>();
+        private final List<IMouseAction> clickListeners = new ArrayList<>();
 
         /**
          * Configure the UI bindings for the mouse click
@@ -230,37 +230,34 @@ public class Rendereing_cells_as_a_link_and_button extends AbstractNatExample {
                     new CellLabelMouseEventMatcher(
                             GridRegion.BODY,
                             MouseEventMatcher.LEFT_BUTTON,
-                            Rendereing_cells_as_a_link_and_button.LINK_CELL_LABEL);
+                            Rendering_cells_as_a_link_and_button.LINK_CELL_LABEL);
 
-            CellLabelMouseEventMatcher mouseHoverMatcher = new CellLabelMouseEventMatcher(GridRegion.BODY, 0, Rendereing_cells_as_a_link_and_button.LINK_CELL_LABEL);
+            CellLabelMouseEventMatcher mouseHoverMatcher =
+                    new CellLabelMouseEventMatcher(GridRegion.BODY, 0, Rendering_cells_as_a_link_and_button.LINK_CELL_LABEL);
 
             // Inform the button painter of the click.
             uiBindingRegistry.registerMouseDownBinding(mouseEventMatcher, this);
 
             // show hand cursor, which is usually used for links
-            uiBindingRegistry.registerMouseEnterBinding(mouseHoverMatcher, (natTable, event) -> {
+            uiBindingRegistry.registerFirstMouseMoveBinding(mouseHoverMatcher, (natTable, event) -> {
                 natTable.setCursor(natTable.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
             });
 
-            // change cursor to the default again
-            uiBindingRegistry.registerMouseExitBinding(mouseHoverMatcher, (natTable, event) -> {
-                natTable.setCursor(natTable.getDisplay().getSystemCursor(SWT.CURSOR_APPSTARTING));
-            });
         }
 
         @Override
         public void run(final NatTable natTable, MouseEvent event) {
-            for (IMouseAction listener : this.clickLiseners) {
+            for (IMouseAction listener : this.clickListeners) {
                 listener.run(natTable, event);
             }
         }
 
         public void addClickListener(IMouseAction mouseAction) {
-            this.clickLiseners.add(mouseAction);
+            this.clickListeners.add(mouseAction);
         }
 
         public void removeClickListener(IMouseAction mouseAction) {
-            this.clickLiseners.remove(mouseAction);
+            this.clickListeners.remove(mouseAction);
         }
     }
 
