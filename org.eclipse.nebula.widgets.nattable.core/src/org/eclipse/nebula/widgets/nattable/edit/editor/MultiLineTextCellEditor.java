@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2018 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -125,7 +125,19 @@ public class MultiLineTextCellEditor extends TextCellEditor {
 
     @Override
     public Rectangle calculateControlBounds(final Rectangle cellBounds) {
-        Point size = getEditorControl().computeSize(SWT.DEFAULT, SWT.DEFAULT);
+        int widthHintForCompute = this.lineWrap ? cellBounds.width : SWT.DEFAULT;
+        Point size = getEditorControl().computeSize(widthHintForCompute, SWT.DEFAULT);
+
+        int diff = 0;
+        if (this.lineWrap) {
+            // Because of computeTrim internally the computed width is bigger than the given
+            // width. We therefore need to calculate twice by removing the trim diff to get
+            // the correct size.
+            diff = size.x - cellBounds.width;
+            size = getEditorControl().computeSize(widthHintForCompute - diff, SWT.DEFAULT);
+        }
+
+        final int widthHint = widthHintForCompute - diff;
 
         // add a listener that increases/decreases the size of the control if
         // the text is modified as the calculateControlBounds method is only
@@ -134,12 +146,12 @@ public class MultiLineTextCellEditor extends TextCellEditor {
         getEditorControl().addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                Point p = getEditorControl().computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+                Point p = getEditorControl().computeSize(widthHint, SWT.DEFAULT, true);
                 Point loc = getEditorControl().getLocation();
                 getEditorControl().setBounds(
                         loc.x,
                         loc.y,
-                        Math.max(p.x, cellBounds.width),
+                        MultiLineTextCellEditor.this.lineWrap ? cellBounds.width : Math.max(p.x, cellBounds.width),
                         Math.max(p.y, cellBounds.height));
             }
         });
@@ -147,7 +159,7 @@ public class MultiLineTextCellEditor extends TextCellEditor {
         return new Rectangle(
                 cellBounds.x,
                 cellBounds.y,
-                Math.max(size.x, cellBounds.width),
+                this.lineWrap ? cellBounds.width : Math.max(size.x, cellBounds.width),
                 Math.max(size.y, cellBounds.height));
     }
 
