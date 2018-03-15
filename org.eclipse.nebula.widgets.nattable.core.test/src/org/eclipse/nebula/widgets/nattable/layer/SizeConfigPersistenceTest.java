@@ -194,15 +194,15 @@ public class SizeConfigPersistenceTest {
         this.sizeConfig.setSize(2, 88);
         this.sizeConfig.setSize(4, 57);
 
+        this.sizeConfig.setPercentageSizing(3, false);
+        this.sizeConfig.setPercentageSizing(9, false);
+        this.sizeConfig.setPercentageSizing(7, true);
+        this.sizeConfig.setPercentage(8, 20d);
+
         this.sizeConfig.setResizableByDefault(false);
 
         this.sizeConfig.setPositionResizable(3, true);
         this.sizeConfig.setPositionResizable(9, true);
-
-        this.sizeConfig.setPercentageSizing(3, false);
-        this.sizeConfig.setPercentageSizing(9, false);
-        this.sizeConfig.setPercentageSizing(7, true);
-        this.sizeConfig.setPercentageSizing(8, true);
 
         this.sizeConfig.setDefaultMinSize(50);
 
@@ -212,13 +212,14 @@ public class SizeConfigPersistenceTest {
         Properties properties = new Properties();
         this.sizeConfig.saveState("prefix", properties);
 
-        assertEquals(10, properties.size());
+        assertEquals(11, properties.size());
         assertEquals("100", properties.getProperty("prefix.defaultSize"));
         assertEquals("5:50,6:60,", properties.getProperty("prefix.defaultSizes"));
         assertEquals("2:88,4:57,5:25,", properties.getProperty("prefix.sizes"));
         assertFalse(Boolean.valueOf(properties.getProperty("prefix.resizableByDefault")));
         assertEquals("3:true,9:true,", properties.getProperty("prefix.resizableIndexes"));
         assertFalse(Boolean.valueOf(properties.getProperty("prefix.percentageSizing")));
+        assertEquals("8:20.0,", properties.getProperty("prefix.percentageSizes"));
         assertEquals("3:false,7:true,8:true,9:false,", properties.getProperty("prefix.percentageSizingIndexes"));
         assertTrue(Boolean.valueOf(properties.getProperty("prefix.distributeRemainingSpace")));
         assertEquals("50", properties.getProperty("prefix.defaultMinSize"));
@@ -240,6 +241,7 @@ public class SizeConfigPersistenceTest {
         properties.setProperty("prefix.resizableIndexes", "1:false,6:false,");
         properties.setProperty("prefix.percentageSizing", "true");
         properties.setProperty("prefix.percentageSizingIndexes", "3:false,7:true,8:true,9:false,");
+        properties.setProperty("prefix.percentageSizes", "8:20.0,");
         properties.setProperty("prefix.distributeRemainingSpace", "true");
         properties.setProperty("prefix.defaultMinSize", "25");
         properties.setProperty("prefix.minSizes", "7:50,8:75,");
@@ -267,6 +269,8 @@ public class SizeConfigPersistenceTest {
         assertEquals(25, this.sizeConfig.getDefaultMinSize());
 
         assertTrue(this.sizeConfig.isDistributeRemainingSpace());
+
+        assertEquals(20d, this.sizeConfig.getConfiguredPercentageSize(8), 0.1);
     }
 
     @Test
@@ -292,6 +296,8 @@ public class SizeConfigPersistenceTest {
         assertEquals(30, sizeConfig.getSize(3));
         assertFalse(sizeConfig.isPositionResizable(4));
         assertEquals(15, sizeConfig.getSize(5));
+        assertEquals(-1, sizeConfig.getConfiguredSize(5));
+        assertEquals(15d, sizeConfig.getConfiguredPercentageSize(5), 0.1);
         assertTrue(sizeConfig.isPercentageSizing(5));
 
         // load default state and verify that all settings are reset
@@ -301,6 +307,7 @@ public class SizeConfigPersistenceTest {
         assertEquals(100, sizeConfig.getSize(3));
         assertTrue(sizeConfig.isPositionResizable(4));
         assertEquals(100, sizeConfig.getSize(5));
+        assertEquals(-1d, sizeConfig.getConfiguredPercentageSize(5), 0.1);
         assertFalse(sizeConfig.isPercentageSizing(5));
     }
 
@@ -323,6 +330,8 @@ public class SizeConfigPersistenceTest {
         assertEquals(30, sizeConfig.getSize(3));
         assertFalse(sizeConfig.isPositionResizable(4));
         assertEquals(15, sizeConfig.getSize(5));
+        assertEquals(-1, sizeConfig.getConfiguredSize(5));
+        assertEquals(15d, sizeConfig.getConfiguredPercentageSize(5), 0.1);
         assertTrue(sizeConfig.isPercentageSizing(5));
 
         // reset and test that everything is reset
@@ -332,6 +341,7 @@ public class SizeConfigPersistenceTest {
         assertEquals(100, sizeConfig.getSize(3));
         assertTrue(sizeConfig.isPositionResizable(4));
         assertEquals(100, sizeConfig.getSize(5));
+        assertEquals(-1d, sizeConfig.getConfiguredPercentageSize(5), 0.1);
         assertFalse(sizeConfig.isPercentageSizing(5));
     }
 }

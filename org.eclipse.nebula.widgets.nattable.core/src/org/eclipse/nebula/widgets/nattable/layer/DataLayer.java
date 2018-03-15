@@ -284,6 +284,22 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
         fireLayerEvent(new ColumnResizeEvent(this, columnPosition));
     }
 
+    /**
+     * Set the width of the column at the given position to the given percentage
+     * value.
+     *
+     * @param columnPosition
+     *            The position of the column to change.
+     * @param width
+     *            The percentage value to set.
+     *
+     * @since 1.6
+     */
+    public void setColumnWidthPercentageByPosition(int columnPosition, double width) {
+        this.columnWidthConfig.setPercentage(columnPosition, width);
+        fireLayerEvent(new ColumnResizeEvent(this, columnPosition));
+    }
+
     public void setDefaultColumnWidth(int width) {
         this.columnWidthConfig.setDefaultSize(width);
     }
@@ -409,6 +425,22 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     }
 
     public void setRowHeightPercentageByPosition(int rowPosition, int height) {
+        this.rowHeightConfig.setPercentage(rowPosition, height);
+        fireLayerEvent(new RowResizeEvent(this, rowPosition));
+    }
+
+    /**
+     * Set the height of the row at the given position to the given percentage
+     * value.
+     *
+     * @param rowPosition
+     *            The position of the row to change.
+     * @param height
+     *            The percentage value to set.
+     *
+     * @since 1.6
+     */
+    public void setRowHeightPercentageByPosition(int rowPosition, double height) {
         this.rowHeightConfig.setPercentage(rowPosition, height);
         fireLayerEvent(new RowResizeEvent(this, rowPosition));
     }
@@ -749,15 +781,17 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     /**
      * Returns the width of the given column position without any
      * transformation. That means it returns the value that was set and not an
-     * upscaled value. For percentage sizing it also returns the percentage
-     * value and not the calculated pixel value.
+     * upscaled value.
      *
      * @param columnPosition
      *            The column position for which the configured width should be
      *            returned.
      * @return The width that is configured for the given column position
-     *         without transformation.
+     *         without transformation or -1 if no explicit value is configured
+     *         and the default size is used.
+     *
      * @see #getColumnWidthByPosition(int)
+     * @see #getConfiguredColumnWidthPercentageByPosition(int)
      *
      * @since 1.6
      */
@@ -766,22 +800,59 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     }
 
     /**
+     * Returns the configured width in percent of the given column position.
+     *
+     * @param columnPosition
+     *            The column position for which the configured width percentage
+     *            should be returned.
+     * @return The percentage that is configured for the given column position
+     *         or -1 if no specific percentage value is configured.
+     *
+     * @see #getColumnWidthByPosition(int)
+     * @see #getConfiguredColumnWidthByPosition(int)
+     *
+     * @since 1.6
+     */
+    public double getConfiguredColumnWidthPercentageByPosition(int columnPosition) {
+        return this.columnWidthConfig.getConfiguredPercentageSize(columnPosition);
+    }
+
+    /**
      * Returns the height of the given row position without any transformation.
      * That means it returns the value that was set and not an upscaled value.
-     * For percentage sizing it also returns the percentage value and not the
-     * calculated pixel value.
      *
      * @param rowPosition
      *            The row position for which the configured height should be
      *            returned.
      * @return The height that is configured for the given row position without
-     *         transformation.
+     *         transformation or -1 if no explicit value is configured and the
+     *         default size is used.
+     *
      * @see #getRowHeightByPosition(int)
+     * @see #getConfiguredColumnWidthPercentageByPosition(int)
      *
      * @since 1.6
      */
     public int getConfiguredRowHeightByPosition(int rowPosition) {
         return this.rowHeightConfig.getConfiguredSize(rowPosition);
+    }
+
+    /**
+     * Returns the configured height in percent of the given row position.
+     *
+     * @param rowPosition
+     *            The row position for which the configured height percentage
+     *            should be returned.
+     * @return The height that is configured for the given row position or -1 if
+     *         no specific percentage value is configured.
+     *
+     * @see #getRowHeightByPosition(int)
+     * @see #getConfiguredRowHeightByPosition(int)
+     *
+     * @since 1.6
+     */
+    public double getConfiguredRowHeightPercentageByPosition(int rowPosition) {
+        return this.rowHeightConfig.getConfiguredPercentageSize(rowPosition);
     }
 
     /**
@@ -1121,6 +1192,33 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     }
 
     /**
+     * Return whether dynamic percentage sized column positions should be fixed
+     * on any resize or not. This means, if column positions are configured for
+     * percentage sizing without a specific percentage value, the size is
+     * calculated based on the space that is still available. If this flag is
+     * set to <code>false</code> only the column position that is resized will
+     * get a fixed value. The other column positions will still be dynamic and
+     * therefore will also resize as the available space is changed. Setting
+     * this flag to <code>true</code> will cause that all column positions with
+     * dynamic percentage configuration will get a fixed percentage value to
+     * have a deterministic resize behavior for the user that triggers the
+     * resize. Also percentage sized columns with a minimum width, where the
+     * minimum is bigger than the calculated percentage value will be
+     * recalculated to set the percentage value that matches the current state.
+     * Default is <code>true</code>.
+     *
+     * @return <code>true</code> if calculating the fix percentage value for
+     *         dynamic percentage sized column positions and position with a
+     *         configured minimum on resize, <code>false</code> if the dynamic
+     *         percentage sized column positions stay dynamic on resize.
+     *
+     * @since 1.6
+     */
+    public boolean isFixColumnPercentageValuesOnResize() {
+        return this.columnWidthConfig.isFixPercentageValuesOnResize();
+    }
+
+    /**
      * Configure whether dynamic percentage sized column positions should be
      * fixed on any resize or not. This means, if column positions are
      * configured for percentage sizing without a specific percentage value, the
@@ -1131,18 +1229,49 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
      * Setting this flag to <code>true</code> will cause that all column
      * positions with dynamic percentage configuration will get a fixed
      * percentage value to have a deterministic resize behavior for the user
-     * that triggers the resize. Default is <code>true</code>.
+     * that triggers the resize. Also percentage sized columns with a minimum
+     * width, where the minimum is bigger than the calculated percentage value
+     * will be recalculated to set the percentage value that matches the current
+     * state. Default is <code>true</code>.
      *
      * @param enabled
      *            <code>true</code> to calculate the fix percentage value for
-     *            dynamic percentage sized column positions on resize,
-     *            <code>false</code> if the dynamic percentage sized column
-     *            positions should stay dynamic on resize.
+     *            dynamic percentage sized column positions and positions with a
+     *            configured minimum on resize, <code>false</code> if the
+     *            dynamic percentage sized column positions should stay dynamic
+     *            on resize.
      *
      * @since 1.6
      */
-    public void setFixDynamicColumnPercentageValues(boolean enabled) {
-        this.columnWidthConfig.setFixDynamicPercentageValues(enabled);
+    public void setFixColumnPercentageValuesOnResize(boolean enabled) {
+        this.columnWidthConfig.setFixPercentageValuesOnResize(enabled);
+    }
+
+    /**
+     * Return whether dynamic percentage sized row positions should be fixed on
+     * any resize or not. This means, if row positions are configured for
+     * percentage sizing without a specific percentage value, the size is
+     * calculated based on the space that is still available. If this flag is
+     * set to <code>false</code> only the row position that is resized will get
+     * a fixed value. The other row positions will still be dynamic and
+     * therefore will also resize as the available space is changed. Setting
+     * this flag to <code>true</code> will cause that all row positions with
+     * dynamic percentage configuration will get a fixed percentage value to
+     * have a deterministic resize behavior for the user that triggers the
+     * resize. Also percentage sized rows with a minimum height, where the
+     * minimum is bigger than the calculated percentage value will be
+     * recalculated to set the percentage value that matches the current state.
+     * Default is <code>true</code>.
+     *
+     * @return <code>true</code> if calculating the fix percentage value for
+     *         dynamic percentage sized row positions and position with a
+     *         configured minimum on resize, <code>false</code> if the dynamic
+     *         percentage sized row positions stay dynamic on resize.
+     *
+     * @since 1.6
+     */
+    public boolean isFixRowPercentageValuesOnResize() {
+        return this.rowHeightConfig.isFixPercentageValuesOnResize();
     }
 
     /**
@@ -1156,18 +1285,22 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
      * this flag to <code>true</code> will cause that all row positions with
      * dynamic percentage configuration will get a fixed percentage value to
      * have a deterministic resize behavior for the user that triggers the
-     * resize. Default is <code>true</code>.
+     * resize. Also percentage sized rows with a minimum height, where the
+     * minimum is bigger than the calculated percentage value will be
+     * recalculated to set the percentage value that matches the current state.
+     * Default is <code>true</code>.
      *
      * @param enabled
      *            <code>true</code> to calculate the fix percentage value for
-     *            dynamic percentage sized row positions on resize,
-     *            <code>false</code> if the dynamic percentage sized row
-     *            positions should stay dynamic on resize.
+     *            dynamic percentage sized row positions and positions with a
+     *            configured minimum on resize, <code>false</code> if the
+     *            dynamic percentage sized row positions should stay dynamic on
+     *            resize.
      *
      * @since 1.6
      */
-    public void setFixDynamicRowPercentageValues(boolean enabled) {
-        this.rowHeightConfig.setFixDynamicPercentageValues(enabled);
+    public void setFixRowPercentageValuesOnResize(boolean enabled) {
+        this.rowHeightConfig.setFixPercentageValuesOnResize(enabled);
     }
 
 }

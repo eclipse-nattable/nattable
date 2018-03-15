@@ -44,7 +44,7 @@ import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
  * <b>Note:</b> It is suggested to set
  * {@link DataLayer#setDistributeRemainingColumnSpace(boolean)} to
  * <code>true</code> when using this layer, or set
- * {@link DataLayer#setFixDynamicColumnPercentageValues(boolean)} to
+ * {@link DataLayer#setFixColumnPercentageValuesOnResize(boolean)} to
  * <code>false</code>. Otherwise a column resize triggers the percentage value
  * calculation of dynamic sized columns, which then leads to gaps as the fixed
  * percentage sized columns to not grow by default.
@@ -144,6 +144,13 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
     public void hideColumnPositions(Collection<Integer> columnPositions) {
         Map<Integer, ColumnSizeInfo> positionsToHide = new TreeMap<Integer, ColumnSizeInfo>();
 
+        // On hide we expect that all remaining visible columns share the free
+        // space. To avoid that only the adjacent column is increased, we
+        // disable fixColumnPercentageValuesOnResize in any case and restore it
+        // afterwards
+        boolean fix = this.bodyDataLayer.isFixColumnPercentageValuesOnResize();
+        this.bodyDataLayer.setFixColumnPercentageValuesOnResize(false);
+
         for (Integer columnPosition : columnPositions) {
             // transform the position to index
             int columnIndex = getColumnIndexByPosition(columnPosition);
@@ -156,8 +163,10 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
             // get the information if the column is configured for percentage
             // sizing
             boolean configuredPercentage = this.bodyDataLayer.isColumnPercentageSizing(columnIndex);
+            // get the currently applied percentage width of the column
+            double configuredPercentageValue = this.bodyDataLayer.getConfiguredColumnWidthPercentageByPosition(columnIndex);
 
-            positionsToHide.put(columnIndex, new ColumnSizeInfo(configuredWidth, configuredMinWidth, configuredResizable, configuredPercentage));
+            positionsToHide.put(columnIndex, new ColumnSizeInfo(configuredWidth, configuredMinWidth, configuredResizable, configuredPercentage, configuredPercentageValue));
         }
 
         for (Integer columnIndex : positionsToHide.keySet()) {
@@ -172,7 +181,7 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
             }
             // set the column width to 0
             if (positionsToHide.get(columnIndex).configuredPercentage) {
-                this.bodyDataLayer.setColumnWidthPercentageByPosition(columnIndex, 0);
+                this.bodyDataLayer.setColumnWidthPercentageByPosition(columnIndex, 0d);
             } else {
                 this.bodyDataLayer.setColumnWidthByPosition(columnIndex, 0, false);
             }
@@ -181,6 +190,9 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
         }
 
         this.hiddenColumns.putAll(positionsToHide);
+
+        // reset the fixColumnPercentageValuesOnResize flag
+        this.bodyDataLayer.setFixColumnPercentageValuesOnResize(fix);
 
         // fire events
         List<Range> ranges = PositionUtil.getRanges(positionsToHide.keySet());
@@ -196,6 +208,14 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
 
     @Override
     public void showColumnIndexes(Collection<Integer> columnIndexes) {
+
+        // On show we expect that all visible columns share the free
+        // space. To avoid that only the adjacent column is decreased, we
+        // disable fixColumnPercentageValuesOnResize in any case and restore it
+        // afterwards
+        boolean fix = this.bodyDataLayer.isFixColumnPercentageValuesOnResize();
+        this.bodyDataLayer.setFixColumnPercentageValuesOnResize(false);
+
         List<Integer> processed = new ArrayList<Integer>();
         for (Integer index : columnIndexes) {
             ColumnSizeInfo info = this.hiddenColumns.remove(index);
@@ -205,12 +225,12 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
                 // first make the column resizable
                 this.bodyDataLayer.setColumnPositionResizable(index, true);
                 // set the previous configured width
-                if (info.configuredSize < 0) {
-                    this.bodyDataLayer.resetColumnWidth(index, false);
-                } else if (info.configuredPercentage) {
-                    this.bodyDataLayer.setColumnWidthPercentageByPosition(index, info.configuredSize);
-                } else {
+                if (info.configuredPercentage && info.configuredPercentageValue >= 0) {
+                    this.bodyDataLayer.setColumnWidthPercentageByPosition(index, info.configuredPercentageValue);
+                } else if (!info.configuredPercentage && info.configuredSize >= 0) {
                     this.bodyDataLayer.setColumnWidthByPosition(index, info.configuredSize, false);
+                } else {
+                    this.bodyDataLayer.resetColumnWidth(index, false);
                 }
                 // set the configured resizable value
                 this.bodyDataLayer.setColumnPositionResizable(index, info.configuredResizable);
@@ -222,6 +242,9 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
                 }
             }
         }
+
+        // reset the fixColumnPercentageValuesOnResize flag
+        this.bodyDataLayer.setFixColumnPercentageValuesOnResize(fix);
 
         if (!processed.isEmpty()) {
             List<Range> ranges = PositionUtil.getRanges(processed);
@@ -235,30 +258,46 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
 
     @Override
     public void showAllColumns() {
+
+        // On show we expect that all visible columns share the free
+        // space. To avoid that only the adjacent column is decreased, we
+        // disable fixColumnPercentageValuesOnResize in any case and restore it
+        // afterwards
+        boolean fix = this.bodyDataLayer.isFixColumnPercentageValuesOnResize();
+        this.bodyDataLayer.setFixColumnPercentageValuesOnResize(false);
+
         for (Map.Entry<Integer, ColumnSizeInfo> entry : this.hiddenColumns.entrySet()) {
+            Integer index = entry.getKey();
+            ColumnSizeInfo info = entry.getValue();
             // first make the column resizable
-            this.bodyDataLayer.setColumnPositionResizable(entry.getKey(), true);
-            // set the previous configured width
-            if (entry.getValue().configuredSize < 0) {
-                this.bodyDataLayer.resetColumnWidth(entry.getKey(), false);
-            } else if (entry.getValue().configuredPercentage) {
-                this.bodyDataLayer.setColumnWidthPercentageByPosition(entry.getKey(), entry.getValue().configuredSize);
-            } else {
-                this.bodyDataLayer.setColumnWidthByPosition(entry.getKey(), entry.getValue().configuredSize, false);
-            }
-            // set the configured resizable value
-            this.bodyDataLayer.setColumnPositionResizable(entry.getKey(), entry.getValue().configuredResizable);
+            this.bodyDataLayer.setColumnPositionResizable(index, true);
+
             // set the previous configured min width
-            if (entry.getValue().configuredMinWidth < 0) {
-                this.bodyDataLayer.resetMinColumnWidth(entry.getKey(), false);
+            if (info.configuredMinWidth < 0) {
+                this.bodyDataLayer.resetMinColumnWidth(index, false);
             } else {
-                this.bodyDataLayer.setMinColumnWidth(entry.getKey(), entry.getValue().configuredMinWidth);
+                this.bodyDataLayer.setMinColumnWidth(index, info.configuredMinWidth);
             }
+
+            // set the previous configured width
+            if (info.configuredPercentage && info.configuredPercentageValue >= 0) {
+                this.bodyDataLayer.setColumnWidthPercentageByPosition(index, info.configuredPercentageValue);
+            } else if (!info.configuredPercentage && info.configuredSize >= 0) {
+                this.bodyDataLayer.setColumnWidthByPosition(index, info.configuredSize, false);
+            } else {
+                this.bodyDataLayer.resetColumnWidth(index, false);
+            }
+
+            // set the configured resizable value
+            this.bodyDataLayer.setColumnPositionResizable(index, info.configuredResizable);
         }
 
         List<Range> ranges = PositionUtil.getRanges(this.hiddenColumns.keySet());
 
         this.hiddenColumns.clear();
+
+        // reset the fixColumnPercentageValuesOnResize flag
+        this.bodyDataLayer.setFixColumnPercentageValuesOnResize(fix);
 
         // fire events
         for (Range range : ranges) {
@@ -272,12 +311,14 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
         public final int configuredMinWidth;
         public final boolean configuredResizable;
         public final boolean configuredPercentage;
+        public final double configuredPercentageValue;
 
-        public ColumnSizeInfo(int configuredSize, int configuredMinWidth, boolean configuredResizable, boolean configuredPercentage) {
+        public ColumnSizeInfo(int configuredSize, int configuredMinWidth, boolean configuredResizable, boolean configuredPercentage, double configuredPercentageValue) {
             this.configuredSize = configuredSize;
             this.configuredMinWidth = configuredMinWidth;
             this.configuredResizable = configuredResizable;
             this.configuredPercentage = configuredPercentage;
+            this.configuredPercentageValue = configuredPercentageValue;
         }
 
         public static ColumnSizeInfo valueOf(String s) {
@@ -286,12 +327,13 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
             Integer minWidth = Integer.valueOf(token[1]);
             Boolean resizable = Boolean.valueOf(token[2]);
             Boolean percentage = Boolean.valueOf(token[3]);
-            return new ColumnSizeInfo(size, minWidth, resizable, percentage);
+            Double percentageValue = Double.valueOf(token[4]);
+            return new ColumnSizeInfo(size, minWidth, resizable, percentage, percentageValue);
         }
 
         @Override
         public String toString() {
-            return "[" + this.configuredSize + "|" + this.configuredMinWidth + "|" + this.configuredResizable + "|" + this.configuredPercentage + "]"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            return "[" + this.configuredSize + "|" + this.configuredMinWidth + "|" + this.configuredResizable + "|" + this.configuredPercentage + "|" + this.configuredPercentageValue + "]"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         }
     }
 }

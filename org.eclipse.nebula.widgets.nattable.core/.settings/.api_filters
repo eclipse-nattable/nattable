@@ -28,6 +28,18 @@
                 <message_argument value="PERSISTENCE_KEY_MIN_SIZES"/>
             </message_arguments>
         </filter>
+        <filter comment="added new key for handling percentage values as double" id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.layer.SizeConfig"/>
+                <message_argument value="PERSISTENCE_KEY_PERCENTAGE_SIZES"/>
+            </message_arguments>
+        </filter>
+        <filter comment="added new map for handling percentage values as double" id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.layer.SizeConfig"/>
+                <message_argument value="percentageSizeMap"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="src/org/eclipse/nebula/widgets/nattable/reorder/action/ColumnReorderDragMode.java" type="org.eclipse.nebula.widgets.nattable.reorder.action.ColumnReorderDragMode">
         <filter comment="made the targetOverlayPainter more general" id="388161617">

@@ -81,7 +81,7 @@ public class SizeConfigPercentageTest {
 
     @Test
     public void sizeOverrideCalculationModeWithoutFixDynamicPercentages() {
-        this.sizeConfigCalculationMode.setFixDynamicPercentageValues(false);
+        this.sizeConfigCalculationMode.setFixPercentageValuesOnResize(false);
         this.sizeConfigCalculationMode.setSize(5, 200);
 
         assertEquals(201, this.sizeConfigCalculationMode.getSize(5));
@@ -584,7 +584,7 @@ public class SizeConfigPercentageTest {
 
     @Test
     public void setSizeCalculationWithoutFixPercentageValues() {
-        this.sizeConfigCalculationMode.setFixDynamicPercentageValues(false);
+        this.sizeConfigCalculationMode.setFixPercentageValuesOnResize(false);
 
         assertEquals(100, this.sizeConfigCalculationMode.getSize(5));
         assertEquals(1000, this.sizeConfigCalculationMode.getAggregateSize(10));
@@ -1256,9 +1256,9 @@ public class SizeConfigPercentageTest {
 
         sizeConfig.calculatePercentages(400, 5);
         assertEquals(60, sizeConfig.getAggregateSize(1));
-        assertEquals(176, sizeConfig.getAggregateSize(2));
-        assertEquals(251, sizeConfig.getAggregateSize(3));
-        assertEquals(326, sizeConfig.getAggregateSize(4));
+        assertEquals(175, sizeConfig.getAggregateSize(2));
+        assertEquals(250, sizeConfig.getAggregateSize(3));
+        assertEquals(325, sizeConfig.getAggregateSize(4));
         assertEquals(400, sizeConfig.getAggregateSize(5));
     }
 
@@ -1291,11 +1291,10 @@ public class SizeConfigPercentageTest {
         assertEquals(60, sizeConfig.getAggregateSize(1));
         // as we reduce the width of the first position, only the second
         // position should increase. therefore the aggregate sizes should stay
-        // almost the same as before. they only change slighty to deal with
-        // rounding issues
-        assertEquals(176, sizeConfig.getAggregateSize(2));
-        assertEquals(251, sizeConfig.getAggregateSize(3));
-        assertEquals(326, sizeConfig.getAggregateSize(4));
+        // the same as before
+        assertEquals(175, sizeConfig.getAggregateSize(2));
+        assertEquals(250, sizeConfig.getAggregateSize(3));
+        assertEquals(325, sizeConfig.getAggregateSize(4));
         assertEquals(400, sizeConfig.getAggregateSize(5));
 
         // min size was adjusted because of the resize
@@ -1309,7 +1308,7 @@ public class SizeConfigPercentageTest {
 
         // disable fixing of dynamic percentage values so all positions get
         // resized
-        sizeConfig.setFixDynamicPercentageValues(false);
+        sizeConfig.setFixPercentageValuesOnResize(false);
 
         sizeConfig.setMinSize(0, 100);
 

@@ -41,6 +41,12 @@ public class SizeConfig implements IPersistable {
     public static final String PERSISTENCE_KEY_PERCENTAGE_SIZING = ".percentageSizing"; //$NON-NLS-1$
     public static final String PERSISTENCE_KEY_PERCENTAGE_SIZING_INDEXES = ".percentageSizingIndexes"; //$NON-NLS-1$
     /**
+     * Persistence key for percentage size configuration map.
+     *
+     * @since 1.6
+     */
+    public static final String PERSISTENCE_KEY_PERCENTAGE_SIZES = ".percentageSizes"; //$NON-NLS-1$
+    /**
      * Persistence key for distributeRemainingSpace property.
      *
      * @since 1.6
@@ -79,6 +85,12 @@ public class SizeConfig implements IPersistable {
      * The global resizable information of this {@link SizeConfig}.
      */
     protected boolean resizableByDefault = true;
+    /**
+     * Map that contains percentage values per column for percentage sizing.
+     *
+     * @since 1.6
+     */
+    protected final Map<Integer, Double> percentageSizeMap = new TreeMap<Integer, Double>();
     /**
      * Map that contains the percentage sizing information per row/column.
      */
@@ -144,12 +156,14 @@ public class SizeConfig implements IPersistable {
      * also resize as the available space is changed. Setting this flag to
      * <code>true</code> will cause that all positions with dynamic percentage
      * configuration will get a fixed percentage value to have a deterministic
-     * resize behavior for the user that triggers the resize. Default is
-     * <code>true</code>.
+     * resize behavior for the user that triggers the resize. Also percentage
+     * sized positions with a minimum size, where the minimum is bigger than the
+     * calculated percentage value will be recalculated to set the percentage
+     * value that matches the current state. Default is <code>true</code>.
      *
      * @since 1.6
      */
-    private boolean fixDynamicPercentageValues = true;
+    private boolean fixPercentageValuesOnResize = true;
 
     /**
      * Create a new {@link SizeConfig} with the given default size.
@@ -171,6 +185,7 @@ public class SizeConfig implements IPersistable {
         properties.put(prefix + PERSISTENCE_KEY_RESIZABLE_BY_DEFAULT, String.valueOf(this.resizableByDefault));
         saveMap(this.resizablesMap, prefix + PERSISTENCE_KEY_RESIZABLE_INDEXES, properties);
         properties.put(prefix + PERSISTENCE_KEY_PERCENTAGE_SIZING, String.valueOf(this.percentageSizing));
+        saveMap(this.percentageSizeMap, prefix + PERSISTENCE_KEY_PERCENTAGE_SIZES, properties);
         saveMap(this.percentageSizingMap, prefix + PERSISTENCE_KEY_PERCENTAGE_SIZING_INDEXES, properties);
         properties.put(prefix + PERSISTENCE_KEY_DISTRIBUTE_REMAINING_SPACE, String.valueOf(this.distributeRemainingSpace));
         properties.put(prefix + PERSISTENCE_KEY_DEFAULT_MIN_SIZE, String.valueOf(this.defaultMinSize));
@@ -195,6 +210,7 @@ public class SizeConfig implements IPersistable {
         // ensure to cleanup the current states prior loading new ones
         this.defaultSizeMap.clear();
         this.sizeMap.clear();
+        this.percentageSizeMap.clear();
         this.percentageSizingMap.clear();
         this.resizablesMap.clear();
         this.aggregatedSizeCacheMap.clear();
@@ -234,6 +250,7 @@ public class SizeConfig implements IPersistable {
         loadBooleanMap(prefix + PERSISTENCE_KEY_RESIZABLE_INDEXES, properties, this.resizablesMap);
         loadIntegerMap(prefix + PERSISTENCE_KEY_DEFAULT_SIZES, properties, this.defaultSizeMap);
         loadIntegerMap(prefix + PERSISTENCE_KEY_SIZES, properties, this.sizeMap);
+        loadDoubleMap(prefix + PERSISTENCE_KEY_PERCENTAGE_SIZES, properties, this.percentageSizeMap);
         loadBooleanMap(prefix + PERSISTENCE_KEY_PERCENTAGE_SIZING_INDEXES, properties, this.percentageSizingMap);
         loadIntegerMap(prefix + PERSISTENCE_KEY_MIN_SIZES, properties, this.minSizeMap);
 
@@ -265,6 +282,21 @@ public class SizeConfig implements IPersistable {
                 int separatorIndex = token.indexOf(':');
                 map.put(Integer.valueOf(token.substring(0, separatorIndex)),
                         Boolean.valueOf(token.substring(separatorIndex + 1)));
+            }
+        }
+    }
+
+    private void loadDoubleMap(String key, Properties properties, Map<Integer, Double> map) {
+        String property = properties.getProperty(key);
+        if (property != null) {
+            map.clear();
+
+            StringTokenizer tok = new StringTokenizer(property, ","); //$NON-NLS-1$
+            while (tok.hasMoreTokens()) {
+                String token = tok.nextToken();
+                int separatorIndex = token.indexOf(':');
+                map.put(Integer.valueOf(token.substring(0, separatorIndex)),
+                        Double.valueOf(token.substring(separatorIndex + 1)));
             }
         }
     }
@@ -390,6 +422,8 @@ public class SizeConfig implements IPersistable {
             throw new IllegalArgumentException("size < 0"); //$NON-NLS-1$
         }
         this.minSizeMap.put(position, size);
+        // calculate the percentages if a position would be smaller than the min
+        calculatePercentages(this.availableSpace, this.realSizeMap.size());
     }
 
     /**
@@ -418,6 +452,8 @@ public class SizeConfig implements IPersistable {
             throw new IllegalArgumentException("defaultMinSize < 0"); //$NON-NLS-1$
         }
         this.defaultMinSize = defaultMinSize;
+        // calculate the percentages if a position would be smaller than the min
+        calculatePercentages(this.availableSpace, this.realSizeMap.size());
     }
 
     /**
@@ -473,14 +509,38 @@ public class SizeConfig implements IPersistable {
             // check whether the given value should be remembered as is or if it
             // needs to be calculated
             if (!isPercentageSizing(position)) {
+                Integer oldValue = this.sizeMap.get(position);
+                int diff = (oldValue != null) ? size - oldValue : size - getDefaultSize(position);
                 this.sizeMap.put(position, size);
+
+                // if percentage sizing is enabled and percentage values should
+                // be fixed on resize, we recalculate percentages to the left
+                // for the updated available space and update percentages of
+                // positions to the right to give a user a predictable behavior
+                if (isPercentageSizing() && this.fixPercentageValuesOnResize && this.availableSpace > 0) {
+                    int percentageSpace = calculateAvailableSpace(this.availableSpace);
+
+                    // first re-calculate the percentages based on the updated
+                    // available space
+                    fixPercentageValues(percentageSpace);
+
+                    // now update the adjacent positions
+                    double diffPercentage = ((double) diff * 100) / percentageSpace;
+                    updateAdjacent(position, diffPercentage, percentageSpace);
+                }
             } else if (this.availableSpace > 0) {
-                Double percentage = ((double) size * 100) / this.availableSpace;
+                int percentageSpace = calculateAvailableSpace(this.availableSpace);
+
+                double percentage = ((double) size * 100) / percentageSpace;
 
                 boolean minSizeUpdate = isMinSizeConfigured(position) && size < getMinSize(position);
 
-                Integer oldValue = this.sizeMap.get(position);
-                int diff = percentage.intValue();
+                if (this.fixPercentageValuesOnResize) {
+                    fixPercentageValues(percentageSpace);
+                }
+
+                Double oldValue = this.percentageSizeMap.get(position);
+                double diff = percentage;
                 if (oldValue != null && !minSizeUpdate) {
                     diff = diff - oldValue;
                 } else if (this.realSizeMap.containsKey(position)) {
@@ -488,55 +548,28 @@ public class SizeConfig implements IPersistable {
                     // we need to calculate the before value out of the
                     // realSizeMap otherwise the resizing effect would
                     // have strange effects
-                    Double calculated = ((double) this.realSizeMap.get(position) * 100) / this.availableSpace;
-                    diff = diff - calculated.intValue();
+                    double calculated = ((double) this.realSizeMap.get(position) * 100) / percentageSpace;
+                    diff = diff - calculated;
                 }
 
                 // if a min size is configured and the size is set to a lower
                 // value via resize, the min size needs to be adjusted
                 if (minSizeUpdate) {
-                    for (Map.Entry<Integer, Integer> entry : this.sizeMap.entrySet()) {
+                    for (Map.Entry<Integer, Double> entry : this.percentageSizeMap.entrySet()) {
                         if (entry.getKey() != position && isPercentageSizing(entry.getKey())) {
-                            Double calculated = ((double) this.realSizeMap.get(entry.getKey()) * 100) / this.availableSpace;
+                            double calculated = ((double) this.realSizeMap.get(entry.getKey()) * 100) / percentageSpace;
                             if (calculated < entry.getValue()) {
-                                this.sizeMap.put(entry.getKey(), calculated.intValue());
+                                this.percentageSizeMap.put(entry.getKey(), calculated);
                             }
                         }
                     }
                     setMinSize(position, size);
                 }
 
-                if (this.fixDynamicPercentageValues) {
-                    for (Map.Entry<Integer, Integer> entry : this.realSizeMap.entrySet()) {
-                        int pos = entry.getKey();
-                        if (isPercentageSizing(pos) && !this.sizeMap.containsKey(pos)) {
-                            // position is configured for percentage sizing but
-                            // has not fixed percentage
-                            // value
-                            Double calculatedPercentage = ((double) entry.getValue() * 100) / this.availableSpace;
-                            this.sizeMap.put(pos, calculatedPercentage.intValue());
-                        }
-                    }
-                }
-
-                this.sizeMap.put(position, percentage.intValue());
+                this.percentageSizeMap.put(position, percentage);
 
                 // check the adjacent positions for percentage corrections
-                int nextPosition = position + 1;
-                while (diff != 0 && this.realSizeMap.containsKey(nextPosition)) {
-                    if (isPositionResizable(nextPosition)) {
-                        diff = updateAdjacentPosition(nextPosition, diff);
-                    }
-                    nextPosition++;
-                }
-
-                int previousPosition = position - 1;
-                while (diff != 0 && this.realSizeMap.containsKey(previousPosition)) {
-                    if (isPositionResizable(previousPosition)) {
-                        diff = updateAdjacentPosition(previousPosition, diff);
-                    }
-                    previousPosition--;
-                }
+                diff = updateAdjacent(position, diff, percentageSpace);
 
                 if (diff != 0 && oldValue == null) {
                     // if the diff is not 0 and there was no size value set
@@ -545,13 +578,77 @@ public class SizeConfig implements IPersistable {
                     // only percentage sizing position with no specified
                     // value, which technically means that it should always
                     // take the remaining space
-                    this.sizeMap.remove(position);
+                    this.percentageSizeMap.remove(position);
                 }
             }
 
             calculatePercentages(this.availableSpace, this.realSizeMap.size());
             this.isAggregatedSizeCacheValid = false;
         }
+    }
+
+    private void fixPercentageValues(int percentageSpace) {
+        for (Map.Entry<Integer, Integer> entry : this.realSizeMap.entrySet()) {
+            int pos = entry.getKey();
+            if (isPercentageSizing(pos)) {
+                if (!this.percentageSizeMap.containsKey(pos)) {
+                    // position is configured for percentage sizing
+                    // but has no fixed percentage value
+                    double calculatedPercentage = ((double) entry.getValue() * 100) / percentageSpace;
+                    this.percentageSizeMap.put(pos, calculatedPercentage);
+                } else {
+                    // we have a fixed percentage value
+                    // check if there is a difference to a min size
+                    // or if pixels are distributed
+                    int calculated = calculatePercentageValue(this.percentageSizeMap.get(pos), percentageSpace);
+                    if (isMinSizeConfigured(pos) && calculated < getMinSize(pos)) {
+                        double minPercentageValue = ((double) getMinSize(pos) * 100) / percentageSpace;
+                        this.percentageSizeMap.put(pos, minPercentageValue);
+                    } else if (this.distributeRemainingSpace
+                            && this.realSizeMap.containsKey(pos)
+                            && calculated < this.realSizeMap.get(pos)) {
+                        double distributedPercentageValue = ((double) this.realSizeMap.get(pos) * 100) / percentageSpace;
+                        this.percentageSizeMap.put(pos, distributedPercentageValue);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Updates the adjacent positions of the given original position by applying
+     * the given diff. This way not all percentage sized position will change on
+     * updating one position value, but only the adjacent ones.
+     *
+     * @param originalPosition
+     *            The position whose size was changed.
+     * @param diff
+     *            The percentage difference that should be applied to an
+     *            adjacent position.
+     * @param percentageSpace
+     *            The space available for percentage calculations, needed for
+     *            min size percentage calculations.
+     * @return The remaining diff or 0 if the diff could be completely applied
+     *         to the position.
+     */
+    private double updateAdjacent(int originalPosition, double diff, int percentageSpace) {
+        int nextPosition = originalPosition + 1;
+        while (diff != 0 && this.realSizeMap.containsKey(nextPosition)) {
+            if (isPositionResizable(nextPosition)) {
+                diff = updateAdjacentPosition(nextPosition, diff, percentageSpace);
+            }
+            nextPosition++;
+        }
+
+        int previousPosition = originalPosition - 1;
+        while (diff != 0 && this.realSizeMap.containsKey(previousPosition)) {
+            if (isPositionResizable(previousPosition)) {
+                diff = updateAdjacentPosition(previousPosition, diff, percentageSpace);
+            }
+            previousPosition--;
+        }
+
+        return diff;
     }
 
     /**
@@ -562,33 +659,46 @@ public class SizeConfig implements IPersistable {
      * @param position
      *            The position to update.
      * @param diff
-     *            The diff that should be applied to the position
+     *            The diff that should be applied to the position.
+     * @param percentageSpace
+     *            The space available for percentage calculations, needed for
+     *            min size percentage calculations.
      * @return The remaining diff or 0 if the diff could be completely applied
      *         to the position.
      */
-    private int updateAdjacentPosition(int position, int diff) {
+    private double updateAdjacentPosition(int position, double diff, int percentageSpace) {
         // if previous resized position was at min size before, the adjacent
         // position needs to be increased more if the min size is reset
-        if (this.sizeMap.containsKey(position) || this.realSizeMap.containsKey(position)) {
-            if (isPercentageSizing(position)) {
-                if (this.sizeMap.containsKey(position)) {
-                    // there is a follow-up position that is configured for
-                    // percentage sizing
-                    // and there is value specified for that position
-                    int currentValue = this.sizeMap.get(position);
-                    if (diff < currentValue) {
-                        this.sizeMap.put(position, currentValue - diff);
-                        return 0;
+        boolean percentageConfigured = this.percentageSizeMap.containsKey(position);
+        if (percentageConfigured || this.realSizeMap.containsKey(position)) {
+            if (isPercentageSizing(position) && percentageConfigured) {
+                // there is a follow-up position that is configured for
+                // percentage sizing and there is value specified for that
+                // position
+                double currentValue = this.percentageSizeMap.get(position);
+                if (diff < currentValue) {
+                    double newPercentageValue = currentValue - diff;
+                    if (isMinSizeConfigured(position)
+                            && calculatePercentageValue(newPercentageValue, percentageSpace) < getMinSize(position)) {
+                        // calculate the new value to ensure we are not below
+                        // min width with this
+                        double minPercentageValue = ((double) getMinSize(position) * 100) / percentageSpace;
+                        double newDiff = diff - (currentValue - minPercentageValue);
+                        this.percentageSizeMap.put(position, minPercentageValue);
+                        return newDiff;
                     } else {
-                        diff = diff - (currentValue + 1);
-                        // never accept a percentage value < 1 as then the
-                        // position would disappear
-                        this.sizeMap.put(position, 1);
+                        this.percentageSizeMap.put(position, newPercentageValue);
+                        return 0;
                     }
+                } else {
+                    diff = diff - (currentValue + 1);
+                    // never accept a percentage value < 1 as then the
+                    // position would disappear
+                    this.percentageSizeMap.put(position, 1d);
                 }
-
-                return 0;
             }
+
+            return 0;
         }
 
         return diff;
@@ -608,12 +718,31 @@ public class SizeConfig implements IPersistable {
      *            configured for fixed size.
      */
     public void setPercentage(int position, int percentage) {
+        setPercentage(position, Integer.valueOf(percentage).doubleValue());
+    }
+
+    /**
+     * Will set the given percentage size information for the given position and
+     * will set the given position to be sized via percentage value.
+     *
+     * @param position
+     *            The positions whose percentage sizing information should be
+     *            set.
+     * @param percentage
+     *            The percentage value to set, always dependent on the available
+     *            space for percentage sizing, which can be less than the real
+     *            available space in case there are also positions that are
+     *            configured for fixed size.
+     *
+     * @since 1.6
+     */
+    public void setPercentage(int position, double percentage) {
         if (percentage < 0) {
             throw new IllegalArgumentException("percentage < 0"); //$NON-NLS-1$
         }
         if (isPositionResizable(position)) {
             this.percentageSizingMap.put(position, Boolean.TRUE);
-            this.sizeMap.put(position, percentage);
+            this.percentageSizeMap.put(position, percentage);
             this.realSizeMap.put(position, calculatePercentageValue(percentage, this.availableSpace));
             calculatePercentages(this.availableSpace, this.realSizeMap.size());
         }
@@ -676,7 +805,7 @@ public class SizeConfig implements IPersistable {
     // All positions same size
 
     public boolean isAllPositionsSameSize() {
-        return this.defaultSizeMap.size() == 0 && this.sizeMap.size() == 0;
+        return this.defaultSizeMap.size() == 0 && this.sizeMap.size() == 0 && this.percentageSizeMap.size() == 0;
     }
 
     /**
@@ -770,7 +899,7 @@ public class SizeConfig implements IPersistable {
 
             int percentageSpace = calculateAvailableSpace(space);
 
-            int sum = 0;
+            double sum = 0;
             int real = 0;
             int realSum = 0;
             int fixedSum = 0;
@@ -778,9 +907,11 @@ public class SizeConfig implements IPersistable {
             List<Integer> noInfoPositions = new ArrayList<Integer>();
             List<Integer> fixedPercentagePositions = new ArrayList<Integer>();
             Integer positionValue = null;
+            Double positionPercentageValue = null;
             for (int i = 0; i < positionCount; i++) {
                 positionValue = this.sizeMap.get(i);
-                if (positionValue == null && isPercentageSizing(i)) {
+                positionPercentageValue = this.percentageSizeMap.get(i);
+                if (positionPercentageValue == null && isPercentageSizing(i)) {
                     // remember the position for which no size information
                     // exists needed to calculate the size for those positions
                     // dependent on the remaining space
@@ -789,24 +920,24 @@ public class SizeConfig implements IPersistable {
                     positionValue = getDefaultSize(i);
                 }
 
-                if (positionValue != null) {
-                    if (isPercentageSizing(i)) {
-                        real = calculatePercentageValue(positionValue, percentageSpace);
-                        int minSize = getMinSize(i);
-                        if (real < minSize) {
-                            // remember the added pixels so they can be removed
-                            // from other fixed percentage sized positions
-                            minSizeIncrease += (minSize - real);
-                            // use the min size value
-                            real = minSize;
-                        } else {
-                            sum += positionValue;
-                        }
-                        fixedPercentagePositions.add(i);
+                if (positionPercentageValue != null && isPercentageSizing(i)) {
+                    real = calculatePercentageValue(positionPercentageValue, percentageSpace);
+                    int minSize = getMinSize(i);
+                    if (real < minSize) {
+                        // remember the added pixels so they can be removed
+                        // from other fixed percentage sized positions
+                        minSizeIncrease += (minSize - real);
+                        // use the min size value
+                        real = minSize;
                     } else {
-                        real = positionValue;
-                        fixedSum += real;
+                        sum += positionPercentageValue;
                     }
+                    fixedPercentagePositions.add(i);
+                    realSum += real;
+                    this.realSizeMap.put(i, real);
+                } else if (positionValue != null) {
+                    real = positionValue;
+                    fixedSum += real;
                     realSum += real;
                     this.realSizeMap.put(i, real);
                 }
@@ -827,15 +958,15 @@ public class SizeConfig implements IPersistable {
                 for (Iterator<Integer> it = fixedPercentagePositions.iterator(); it.hasNext();) {
                     int pos = it.next();
                     if (this.realSizeMap.get(pos) == getMinSize(pos)) {
-                        sumMod += this.sizeMap.get(pos);
+                        sumMod += this.percentageSizeMap.get(pos);
                         it.remove();
                     } else {
                         noMinWidth.add(pos);
                     }
                 }
                 for (int pos : noMinWidth) {
-                    Integer percentage = this.sizeMap.get(pos);
-                    double ratio = Integer.valueOf(percentage).doubleValue() / Integer.valueOf(sum).doubleValue();
+                    Double percentage = this.percentageSizeMap.get(pos);
+                    double ratio = percentage / sum;
                     int dist = (int) Math.round(Double.valueOf(minSizeIncrease * ratio));
                     int newValue = this.realSizeMap.get(pos) - dist;
                     newValue = (newValue > 0) ? newValue : 0;
@@ -862,6 +993,29 @@ public class SizeConfig implements IPersistable {
                         realSum += minSize;
                         this.realSizeMap.put(position, minSize);
                         it.remove();
+                    }
+                }
+
+                // if applying the min size to a non info position happened that
+                // caused an increase of the real sum, we need to correct the
+                // other positions
+                if (realSum > space && !fixedPercentagePositions.isEmpty()) {
+                    List<Integer> noMinWidth = new ArrayList<Integer>();
+                    for (Iterator<Integer> it = fixedPercentagePositions.iterator(); it.hasNext();) {
+                        int pos = it.next();
+                        if (this.realSizeMap.get(pos) != getMinSize(pos)) {
+                            noMinWidth.add(pos);
+                        }
+                    }
+                    int exceed = realSum - space;
+                    for (int pos : noMinWidth) {
+                        Double percentage = this.percentageSizeMap.get(pos);
+                        double ratio = percentage / sum;
+                        int dist = (int) Math.round(Double.valueOf(exceed * ratio));
+                        int newValue = this.realSizeMap.get(pos) - dist;
+                        newValue = (newValue > 0) ? newValue : 0;
+                        realSum -= (this.realSizeMap.get(pos) - newValue);
+                        this.realSizeMap.put(pos, newValue);
                     }
                 }
             }
@@ -895,13 +1049,13 @@ public class SizeConfig implements IPersistable {
                     // calculate sum of eligible fixed percentage positions
                     int eligibleSum = 0;
                     for (int pos : fixedPercentagePositions) {
-                        eligibleSum += this.sizeMap.get(pos);
+                        eligibleSum += this.percentageSizeMap.get(pos);
                     }
                     // calculate ratio
                     for (int pos : fixedPercentagePositions) {
                         if (getMinSize(pos) != this.realSizeMap.get(pos)) {
-                            Integer percentage = this.sizeMap.get(pos);
-                            double ratio = Integer.valueOf(percentage).doubleValue() / Integer.valueOf(eligibleSum).doubleValue();
+                            Double percentage = this.percentageSizeMap.get(pos);
+                            double ratio = percentage / eligibleSum;
                             int dist = Double.valueOf(remaining * ratio).intValue();
                             this.realSizeMap.put(pos, this.realSizeMap.get(pos) + dist);
                         }
@@ -958,8 +1112,8 @@ public class SizeConfig implements IPersistable {
      *            The available space
      * @return The percentage value of the given space.
      */
-    private int calculatePercentageValue(int percentage, int space) {
-        double factor = (double) percentage / 100;
+    private int calculatePercentageValue(double percentage, int space) {
+        double factor = percentage / 100;
         return new Double(space * factor).intValue();
     }
 
@@ -1000,17 +1154,41 @@ public class SizeConfig implements IPersistable {
      *         calculated real pixel sum at second position in case a
      *         corrections took place. Will return <code>null</code> in case no
      *         correction happened.
+     *
+     * @deprecated Use {@link #correctPercentageValues(double, int)}
      */
+    @Deprecated
     protected int[] correctPercentageValues(int sum, int positionCount) {
+        return correctPercentageValues(Integer.valueOf(sum).doubleValue(), positionCount);
+    }
+
+    /**
+     * This method is used to correct the calculated percentage values in case a
+     * user configured more than 100 percent. In that case the set percentage
+     * values are scaled down to not exceed 100 percent.
+     *
+     * @param sum
+     *            The sum of all configured percentage sized positions.
+     * @param positionCount
+     *            The number of positions to check.
+     * @return Integer array with the sum value at first position and the new
+     *         calculated real pixel sum at second position in case a
+     *         corrections took place. Will return <code>null</code> in case no
+     *         correction happened.
+     *
+     * @since 1.6
+     */
+    protected int[] correctPercentageValues(double sum, int positionCount) {
         Map<Integer, Integer> toModify = new TreeMap<Integer, Integer>();
         int fixedSum = 0;
-        int modifySum = 0;
+        double modifySum = 0;
         for (int i = 0; i < positionCount; i++) {
             Integer positionValue = this.sizeMap.get(i);
-            if (positionValue != null && isPercentageSizing(i)
+            Double positionPercentageValue = this.percentageSizeMap.get(i);
+            if (positionPercentageValue != null && isPercentageSizing(i)
                     && (!isMinSizeConfigured(i) || (isMinSizeConfigured(i) && this.realSizeMap.get(i) != getMinSize(i)))) {
                 toModify.put(i, this.realSizeMap.get(i));
-                modifySum += positionValue;
+                modifySum += positionPercentageValue;
             } else if (!isPercentageSizing(i) && positionValue != null) {
                 fixedSum += positionValue;
             }
@@ -1021,14 +1199,14 @@ public class SizeConfig implements IPersistable {
         if (sum > 100) {
             // calculate the factor which needs to be used to normalize the
             // values
-            int excess = sum - 100;
-            double excessPixel = Double.valueOf(this.availableSpace - fixedSum) * Double.valueOf(excess) / 100;
+            double excess = sum - 100;
+            int excessPixel = Double.valueOf(Double.valueOf(this.availableSpace - fixedSum) * excess / 100).intValue();
 
             double newPercentageSum = 0;
             int realSum = 0;
             for (Map.Entry<Integer, Integer> mod : toModify.entrySet()) {
-                double ratio = this.sizeMap.get(mod.getKey()).doubleValue() / Integer.valueOf(modifySum).doubleValue();
-                int exc = (int) Math.round(Double.valueOf(excessPixel * ratio));
+                double ratio = this.percentageSizeMap.get(mod.getKey()) / modifySum;
+                int exc = (int) Math.ceil(excessPixel * ratio);
 
                 int newValue = mod.getValue() - exc;
 
@@ -1044,7 +1222,7 @@ public class SizeConfig implements IPersistable {
             }
 
             if (newPercentageSum > 100) {
-                return correctPercentageValues(Double.valueOf(newPercentageSum).intValue(), positionCount);
+                return correctPercentageValues(newPercentageSum, positionCount);
             }
 
             return new int[] { 100, realSum };
@@ -1159,6 +1337,7 @@ public class SizeConfig implements IPersistable {
         this.defaultSizeMap.clear();
         this.sizeMap.clear();
         this.resizablesMap.clear();
+        this.percentageSizeMap.clear();
         this.percentageSizingMap.clear();
         this.realSizeMap.clear();
         this.aggregatedSizeCacheMap.clear();
@@ -1176,6 +1355,7 @@ public class SizeConfig implements IPersistable {
      */
     public void resetConfiguredSize(int position) {
         this.sizeMap.remove(position);
+        this.percentageSizeMap.remove(position);
         this.isAggregatedSizeCacheValid = false;
         calculatePercentages(this.availableSpace, this.realSizeMap.size());
     }
@@ -1210,6 +1390,23 @@ public class SizeConfig implements IPersistable {
      */
     public int getConfiguredSize(int position) {
         Integer configuredSize = this.sizeMap.get(position);
+        return (configuredSize != null) ? configuredSize : -1;
+    }
+
+    /**
+     * Returns the configured percentage size value for the given position or -1
+     * if no custom percentage value was configured and therefore the size is
+     * dynamic for that position.
+     *
+     * @param position
+     *            The position for which the configured size should be returned.
+     * @return The configured size or -1 in case the default size is used for
+     *         that position.
+     *
+     * @since 1.6
+     */
+    public double getConfiguredPercentageSize(int position) {
+        Double configuredSize = this.percentageSizeMap.get(position);
         return (configuredSize != null) ? configuredSize : -1;
     }
 
@@ -1268,8 +1465,34 @@ public class SizeConfig implements IPersistable {
     }
 
     /**
-     * Configure whether dynamic percentage sized positions should be fixed on
-     * any resize or not. This means, if positions are configured for percentage
+     * Return whether percentage sized positions should be fixed on any resize
+     * or not. This means, if positions are configured for percentage sizing
+     * without a specific percentage value, the size is calculated based on the
+     * space that is still available. If this flag is set to <code>false</code>
+     * only the position that is resized will get a fixed value. The other
+     * positions will still be dynamic and therefore will also resize as the
+     * available space is changed. Setting this flag to <code>true</code> will
+     * cause that all positions with dynamic percentage configuration will get a
+     * fixed percentage value to have a deterministic resize behavior for the
+     * user that triggers the resize. Also percentage sized positions with a
+     * minimum size, where the minimum is bigger than the calculated percentage
+     * value will be recalculated to set the percentage value that matches the
+     * current state. Default is <code>true</code>.
+     *
+     * @return <code>true</code> if calculating the fix percentage value for
+     *         dynamic percentage sized positions and position with a configured
+     *         minimum on resize, <code>false</code> if the dynamic percentage
+     *         sized positions stay dynamic on resize.
+     *
+     * @since 1.6
+     */
+    public boolean isFixPercentageValuesOnResize() {
+        return this.fixPercentageValuesOnResize;
+    }
+
+    /**
+     * Configure whether percentage sized positions should be fixed on any
+     * resize or not. This means, if positions are configured for percentage
      * sizing without a specific percentage value, the size is calculated based
      * on the space that is still available. If this flag is set to
      * <code>false</code> only the position that is resized will get a fixed
@@ -1277,18 +1500,21 @@ public class SizeConfig implements IPersistable {
      * resize as the available space is changed. Setting this flag to
      * <code>true</code> will cause that all positions with dynamic percentage
      * configuration will get a fixed percentage value to have a deterministic
-     * resize behavior for the user that triggers the resize. Default is
-     * <code>true</code>.
+     * resize behavior for the user that triggers the resize. Also percentage
+     * sized positions with a minimum size, where the minimum is bigger than the
+     * calculated percentage value will be recalculated to set the percentage
+     * value that matches the current state. Default is <code>true</code>.
      *
      * @param enabled
      *            <code>true</code> to calculate the fix percentage value for
-     *            dynamic percentage sized positions on resize,
-     *            <code>false</code> if the dynamic percentage sized positions
-     *            should stay dynamic on resize.
+     *            dynamic percentage sized positions and position with a
+     *            configured minimum on resize, <code>false</code> if the
+     *            dynamic percentage sized positions should stay dynamic on
+     *            resize.
      *
      * @since 1.6
      */
-    public void setFixDynamicPercentageValues(boolean enabled) {
-        this.fixDynamicPercentageValues = enabled;
+    public void setFixPercentageValuesOnResize(boolean enabled) {
+        this.fixPercentageValuesOnResize = enabled;
     }
 }
