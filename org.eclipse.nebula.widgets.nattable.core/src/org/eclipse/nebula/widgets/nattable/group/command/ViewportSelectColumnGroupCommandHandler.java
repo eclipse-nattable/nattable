@@ -11,9 +11,12 @@
 package org.eclipse.nebula.widgets.nattable.group.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.command.LayerCommandUtil;
+import org.eclipse.nebula.widgets.nattable.coordinate.ColumnPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRegionCommand;
 
 /**
@@ -62,9 +65,15 @@ public class ViewportSelectColumnGroupCommandHandler extends AbstractLayerComman
             span = this.columnGroupHeaderLayer.getColumnSpan(command.getColumnPosition());
         }
 
-        this.viewportLayer.doCommand(new SelectRegionCommand(
-                this.viewportLayer,
-                start,
+        // the SelectRegionCommand needs to be executed on the underlying layer
+        // this way the row range from 0 to MAX works, which otherwise breaks
+        // when selecting a column group on scrolled state
+        ILayer underlyingLayer = this.viewportLayer.getUnderlyingLayerByPosition(0, 0);
+        ColumnPositionCoordinate underlyingStart = LayerCommandUtil.convertColumnPositionToTargetContext(
+                new ColumnPositionCoordinate(this.viewportLayer, start), underlyingLayer);
+        underlyingLayer.doCommand(new SelectRegionCommand(
+                underlyingLayer,
+                underlyingStart.getColumnPosition(),
                 0,
                 span,
                 Integer.MAX_VALUE,

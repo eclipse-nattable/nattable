@@ -166,6 +166,18 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
                         }
                     }
                 }
+
+                if (toPos == null && this.selectionLayer.isRowPositionSelected(region.y)) {
+                    for (int i = 0; i < selectedCells.length; i++) {
+                        if (selectedCells[i].rowPosition == region.y
+                                && selectedCells[i].columnPosition < region.x) {
+                            toPos = selectedCells[i];
+                        } else {
+                            break;
+                        }
+                    }
+                }
+
                 // search for another selected cell as new anchor if there is
                 // none in the same column
                 if (toPos == null) {
