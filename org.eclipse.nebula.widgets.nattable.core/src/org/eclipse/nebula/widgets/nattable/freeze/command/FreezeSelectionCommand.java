@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,13 +23,19 @@ public class FreezeSelectionCommand implements IFreezeCommand {
      * Indicates whether this command should toggle the frozen state between
      * frozen and unfrozen, or if it should always result in a frozen state.
      */
-    private boolean toggle;
+    private final boolean toggle;
 
     /**
      * Indicates whether this command should override a current frozen state or
      * if it should be skipped if a frozen state is already applied.
      */
-    private boolean overrideFreeze;
+    private final boolean overrideFreeze;
+
+    /**
+     * Indicates whether this command should include the selected cell to the
+     * frozen region or not.
+     */
+    private final boolean include;
 
     /**
      * Creates a simple FreezeSelectionCommand that doesn't toggle or override a
@@ -66,8 +72,31 @@ public class FreezeSelectionCommand implements IFreezeCommand {
      *            if it should be skipped if a frozen state is already applied.
      */
     public FreezeSelectionCommand(boolean toggle, boolean overrideFreeze) {
+        this(toggle, overrideFreeze, false);
+    }
+
+    /**
+     * Creates a FreezeSelectionCommand. If it should toggle or override the
+     * current frozen state can be specified by parameter.
+     *
+     * @param toggle
+     *            whether this command should toggle the frozen state between
+     *            frozen and unfrozen, or if it should always result in a frozen
+     *            state.
+     * @param overrideFreeze
+     *            whether this command should override a current frozen state or
+     *            if it should be skipped if a frozen state is already applied.
+     * @param include
+     *            whether the selected cell should be included in the freeze
+     *            region or not. Include means the freeze borders will be to the
+     *            right and bottom, while exclude means the freeze borders are
+     *            to the left and top. Default is <code>false</code>.
+     * @since 1.6
+     */
+    public FreezeSelectionCommand(boolean toggle, boolean overrideFreeze, boolean include) {
         this.toggle = toggle;
         this.overrideFreeze = overrideFreeze;
+        this.include = include;
     }
 
     @Override
@@ -78,6 +107,19 @@ public class FreezeSelectionCommand implements IFreezeCommand {
     @Override
     public boolean isOverrideFreeze() {
         return this.overrideFreeze;
+    }
+
+    /**
+     *
+     * @return Whether the selected cell should be included to the frozen region
+     *         or not. Included means the freeze borders will be to the right
+     *         and bottom, exclude means the freeze borders are to the top and
+     *         left. Default is <code>false</code>.
+     *
+     * @since 1.6
+     */
+    public boolean isInclude() {
+        return this.include;
     }
 
     @Override

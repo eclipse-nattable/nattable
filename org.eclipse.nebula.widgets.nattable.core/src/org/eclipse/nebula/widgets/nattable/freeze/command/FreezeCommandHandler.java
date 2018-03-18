@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -68,9 +68,8 @@ public class FreezeCommandHandler extends AbstractLayerCommandHandler<IFreezeCom
         } else if (command instanceof FreezeSelectionCommand) {
             // freeze at the current selection anchor
             IFreezeCoordinatesProvider coordinatesProvider = new FreezeSelectionStrategy(
-                    this.freezeLayer, this.viewportLayer, this.selectionLayer);
-            handleFreezeCommand(coordinatesProvider, command.isToggle(),
-                    command.isOverrideFreeze());
+                    this.freezeLayer, this.viewportLayer, this.selectionLayer, ((FreezeSelectionCommand) command).isInclude());
+            handleFreezeCommand(coordinatesProvider, command.isToggle(), command.isOverrideFreeze());
             return true;
         } else if (command instanceof UnFreezeGridCommand) {
             // unfreeze
