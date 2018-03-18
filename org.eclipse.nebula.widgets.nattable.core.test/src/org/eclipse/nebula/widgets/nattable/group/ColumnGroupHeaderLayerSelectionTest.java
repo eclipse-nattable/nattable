@@ -10,14 +10,17 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.group.command.ViewportSelectColumnGroupCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.ViewportSelectColumnGroupCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.config.DefaultColumnGroupHeaderLayerConfiguration;
+import org.eclipse.nebula.widgets.nattable.test.fixture.data.DataProviderFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.GridLayerFixture;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.SWT;
@@ -39,7 +42,7 @@ public class ColumnGroupHeaderLayerSelectionTest {
 
     @Before
     public void setup() {
-        this.gridLayer = new GridLayerFixture();
+        this.gridLayer = new GridLayerFixture(new DataProviderFixture(10, 50));
         this.model = new ColumnGroupModel();
         // 10 columns in header
         this.columnGroupLayer = new ColumnGroupHeaderLayer(
@@ -60,7 +63,7 @@ public class ColumnGroupHeaderLayerSelectionTest {
 
             @Override
             public Rectangle getClientArea() {
-                return new Rectangle(0, 0, 1050, 250);
+                return new Rectangle(0, 0, 1050, 200);
             }
 
         });
@@ -112,4 +115,53 @@ public class ColumnGroupHeaderLayerSelectionTest {
         assertTrue(this.gridLayer.getBodyLayer().getSelectionLayer().isColumnPositionFullySelected(6));
     }
 
+    @Test
+    public void shouldMoveAnchorOnDeselectWithCtrl() {
+        this.gridLayer.doCommand(new ViewportSelectColumnGroupCommand(this.gridLayer, 2, 0, false, false));
+
+        this.gridLayer.doCommand(new ViewportSelectColumnGroupCommand(this.gridLayer, 6, 0, false, true));
+
+        assertTrue(this.gridLayer.getBodyLayer().getSelectionLayer().isColumnPositionFullySelected(0));
+        assertTrue(this.gridLayer.getBodyLayer().getSelectionLayer().isColumnPositionFullySelected(1));
+        assertTrue(this.gridLayer.getBodyLayer().getSelectionLayer().isColumnPositionFullySelected(2));
+
+        assertTrue(this.gridLayer.getBodyLayer().getSelectionLayer().isColumnPositionFullySelected(5));
+        assertTrue(this.gridLayer.getBodyLayer().getSelectionLayer().isColumnPositionFullySelected(6));
+
+        PositionCoordinate selectionAnchor = this.gridLayer.getBodyLayer().getSelectionLayer().getSelectionAnchor();
+        assertEquals(0, selectionAnchor.getRowPosition());
+        assertEquals(5, selectionAnchor.getColumnPosition());
+
+        this.gridLayer.doCommand(new ViewportSelectColumnGroupCommand(this.gridLayer, 6, 0, false, true));
+
+        assertTrue(this.gridLayer.getBodyLayer().getSelectionLayer().isColumnPositionFullySelected(0));
+        assertTrue(this.gridLayer.getBodyLayer().getSelectionLayer().isColumnPositionFullySelected(1));
+        assertTrue(this.gridLayer.getBodyLayer().getSelectionLayer().isColumnPositionFullySelected(2));
+
+        assertFalse(this.gridLayer.getBodyLayer().getSelectionLayer().isColumnPositionFullySelected(5));
+        assertFalse(this.gridLayer.getBodyLayer().getSelectionLayer().isColumnPositionFullySelected(6));
+
+        selectionAnchor = this.gridLayer.getBodyLayer().getSelectionLayer().getSelectionAnchor();
+        assertEquals(0, selectionAnchor.getRowPosition());
+        assertEquals(0, selectionAnchor.getColumnPosition());
+    }
+
+    @Test
+    public void shouldSelectInScrolledState() {
+        assertEquals(0, this.gridLayer.getBodyLayer().getViewportLayer().getRowIndexByPosition(0));
+
+        // scroll down
+        this.gridLayer.getBodyLayer().getViewportLayer().moveRowPositionIntoViewport(20);
+
+        assertEquals(12, this.gridLayer.getBodyLayer().getViewportLayer().getRowIndexByPosition(0));
+
+        // trigger column group selection
+        this.gridLayer.doCommand(new ViewportSelectColumnGroupCommand(this.gridLayer, 2, 0, false, false));
+
+        assertTrue(this.gridLayer.getBodyLayer().getSelectionLayer().isColumnPositionFullySelected(0));
+        assertTrue(this.gridLayer.getBodyLayer().getSelectionLayer().isColumnPositionFullySelected(1));
+        assertTrue(this.gridLayer.getBodyLayer().getSelectionLayer().isColumnPositionFullySelected(2));
+
+        assertEquals(0, this.gridLayer.getBodyLayer().getViewportLayer().getRowIndexByPosition(0));
+    }
 }
