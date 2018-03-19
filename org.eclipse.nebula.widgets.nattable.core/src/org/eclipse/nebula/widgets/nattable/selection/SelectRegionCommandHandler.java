@@ -10,6 +10,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -73,7 +76,9 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
                 new RowSelectionEvent(
                         this.selectionLayer,
                         changedRows,
-                        this.selectionLayer.getSelectionAnchor().getRowPosition(),
+                        // -1 to avoid scrolling to the selection anchor
+                        // position
+                        -1,
                         withShiftMask,
                         withControlMask));
     }
@@ -152,6 +157,8 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
                     && this.selectionLayer.getSelectionAnchor().rowPosition == SelectionLayer.NO_SELECTION) {
 
                 // determine column to move the anchor to
+                // for this we sort the coordinates in a deterministic way
+                Arrays.sort(selectedCells, new PositionCoordinateComparator());
 
                 // if another cell in the region.x column is selected, only
                 // search for a new anchor in that column
@@ -207,6 +214,17 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
     @Override
     public Class<SelectRegionCommand> getCommandClass() {
         return SelectRegionCommand.class;
+    }
+
+    private final class PositionCoordinateComparator implements Comparator<PositionCoordinate> {
+        @Override
+        public int compare(PositionCoordinate o1, PositionCoordinate o2) {
+            int result = o1.getColumnPosition() - o2.getColumnPosition();
+            if (result == 0) {
+                result = o1.getRowPosition() - o2.getRowPosition();
+            }
+            return result;
+        }
     }
 
 }
