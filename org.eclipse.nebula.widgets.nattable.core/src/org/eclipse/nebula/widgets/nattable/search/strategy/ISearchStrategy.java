@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,8 +22,16 @@ import org.eclipse.nebula.widgets.nattable.search.command.SearchGridCellsCommand
 public interface ISearchStrategy {
 
     /**
-     * Search for the given value and return the coordinates of the matching
-     * cell.
+     * Label that can be added to cells to avoid that they are included in the
+     * search result. Helpful for example if columns that show checkboxes should be
+     * excluded from searching.
+     *
+     * @since 1.6
+     */
+    String SKIP_SEARCH_RESULT_LABEL = "SKIP_SEARCH_RESULT"; //$NON-NLS-1$
+
+    /**
+     * Search for the given value and return the coordinates of the matching cell.
      *
      * @param valueToMatch
      *            The value to search for.

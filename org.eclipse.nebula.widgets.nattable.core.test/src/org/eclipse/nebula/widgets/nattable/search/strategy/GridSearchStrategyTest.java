@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.search.CellValueAsStringComparator;
 import org.eclipse.nebula.widgets.nattable.search.ISearchDirection;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -198,4 +199,31 @@ public class GridSearchStrategyTest {
         assertEquals(3, searchResult.columnPosition);
         assertEquals(3, searchResult.rowPosition);
     }
+
+    @Test
+    public void searchShouldNotFindWithSkipSearchLabel() {
+        GridSearchStrategy gridStrategy = new GridSearchStrategy(this.configRegistry, false, true);
+
+        // If we don't specify to wrap the search, it will not find it.
+        gridStrategy.setContextLayer(this.selectionLayer);
+        gridStrategy.setCaseSensitive(true);
+        gridStrategy.setComparator(new CellValueAsStringComparator<>());
+
+        PositionCoordinate searchResult = gridStrategy.executeSearch("body");
+        assertNotNull(searchResult);
+        assertEquals(2, searchResult.columnPosition);
+        assertEquals(2, searchResult.rowPosition);
+
+        // clear the selection
+        this.selectionLayer.clear();
+
+        // configure skip search label
+        ColumnOverrideLabelAccumulator accumulator = new ColumnOverrideLabelAccumulator(this.selectionLayer);
+        accumulator.registerColumnOverrides(2, ISearchStrategy.SKIP_SEARCH_RESULT_LABEL);
+        this.selectionLayer.setConfigLabelAccumulator(accumulator);
+
+        searchResult = gridStrategy.executeSearch("body");
+        assertNull(searchResult);
+    }
+
 }

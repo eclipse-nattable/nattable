@@ -27,7 +27,9 @@ import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
+import org.eclipse.nebula.widgets.nattable.search.strategy.ISearchStrategy;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.eclipse.swt.graphics.Rectangle;
 import org.junit.Before;
@@ -865,7 +867,6 @@ public class ResizeColumnHideShowLayerTest {
 
     @Test
     public void testHideResizeShowMixedPercentageSizedColumns() {
-        // TODO
         this.bodyDataLayer.setColumnPercentageSizing(true);
         this.bodyDataLayer.setColumnWidthPercentageByPosition(0, 15);
         this.bodyDataLayer.setColumnWidthPercentageByPosition(1, 15);
@@ -912,7 +913,22 @@ public class ResizeColumnHideShowLayerTest {
         assertEquals(287, this.hideShowLayer.getColumnWidthByPosition(2));
         assertEquals(78, this.hideShowLayer.getColumnWidthByPosition(3));
         assertEquals(78, this.hideShowLayer.getColumnWidthByPosition(4));
-
     }
 
+    @Test
+    public void testHiddenColumnsHaveSkipSearchLabel() {
+        LabelStack labels = this.hideShowLayer.getConfigLabelsByPosition(1, 0);
+        assertTrue("LabelStack not empty", labels.getLabels().isEmpty());
+
+        this.hideShowLayer.hideColumnPositions(1, 4);
+
+        labels = this.hideShowLayer.getConfigLabelsByPosition(1, 0);
+        assertFalse("LabelStack not empty", labels.getLabels().isEmpty());
+        assertTrue("skip search label not contained", labels.hasLabel(ISearchStrategy.SKIP_SEARCH_RESULT_LABEL));
+
+        this.hideShowLayer.showAllColumns();
+
+        labels = this.hideShowLayer.getConfigLabelsByPosition(1, 0);
+        assertTrue("LabelStack not empty", labels.getLabels().isEmpty());
+    }
 }

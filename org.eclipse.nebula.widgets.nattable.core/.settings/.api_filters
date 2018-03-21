@@ -57,6 +57,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/org/eclipse/nebula/widgets/nattable/search/strategy/ISearchStrategy.java" type="org.eclipse.nebula.widgets.nattable.search.strategy.ISearchStrategy">
+        <filter comment="added new constant for skip search" id="403767336">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.search.strategy.ISearchStrategy"/>
+                <message_argument value="SKIP_SEARCH_RESULT_LABEL"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/org/eclipse/nebula/widgets/nattable/tree/config/TreeLayerExpandCollapseKeyBindings.java" type="org.eclipse.nebula.widgets.nattable.tree.config.TreeLayerExpandCollapseKeyBindings">
         <filter comment="made treeLayer field more general" id="338722907">
             <message_arguments>

@@ -22,6 +22,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.search.strategy.GridSearchStrategy.GridRectangle;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -323,35 +324,38 @@ public class CellDisplayValueSearchUtil {
             int rowPosition) {
 
         // Convert cell's data
-        final IDisplayConverter displayConverter = configRegistry.getConfigAttribute(
-                CellConfigAttributes.DISPLAY_CONVERTER,
-                DisplayMode.NORMAL,
-                layer.getConfigLabelsByPosition(columnPosition, rowPosition).getLabels());
-        Object dataValue = null;
-        if (displayConverter != null) {
-            ILayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);
-            if (cell != null) {
-                dataValue = displayConverter.canonicalToDisplayValue(cell, configRegistry, cell.getDataValue());
-            }
-        }
-
-        // Compare with valueToMatch
-        if (dataValue instanceof Comparable<?>) {
-            String dataValueString = caseSensitive ? dataValue.toString() : dataValue.toString().toLowerCase();
-            if (regex) {
-                if (pattern.matcher(dataValueString).matches()) {
-                    return true;
+        LabelStack labels = layer.getConfigLabelsByPosition(columnPosition, rowPosition);
+        if (!labels.hasLabel(ISearchStrategy.SKIP_SEARCH_RESULT_LABEL)) {
+            final IDisplayConverter displayConverter = configRegistry.getConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    DisplayMode.NORMAL,
+                    labels.getLabels());
+            Object dataValue = null;
+            if (displayConverter != null) {
+                ILayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);
+                if (cell != null) {
+                    dataValue = displayConverter.canonicalToDisplayValue(cell, configRegistry, cell.getDataValue());
                 }
-            } else if (comparator.compare(stringValue, dataValueString) == 0) {
-                return true;
-            } else if (!wholeWord && dataValueString.contains(stringValue)) {
-                return true;
-            } else if (wholeWord) {
-                // we also need to check single words in a multi word value
-                String[] split = dataValueString.split("\\b"); //$NON-NLS-1$
-                for (String word : split) {
-                    if (comparator.compare(stringValue, word) == 0) {
+            }
+
+            // Compare with valueToMatch
+            if (dataValue instanceof Comparable<?>) {
+                String dataValueString = caseSensitive ? dataValue.toString() : dataValue.toString().toLowerCase();
+                if (regex) {
+                    if (pattern.matcher(dataValueString).matches()) {
                         return true;
+                    }
+                } else if (comparator.compare(stringValue, dataValueString) == 0) {
+                    return true;
+                } else if (!wholeWord && dataValueString.contains(stringValue)) {
+                    return true;
+                } else if (wholeWord) {
+                    // we also need to check single words in a multi word value
+                    String[] split = dataValueString.split("\\b"); //$NON-NLS-1$
+                    for (String word : split) {
+                        if (comparator.compare(stringValue, word) == 0) {
+                            return true;
+                        }
                     }
                 }
             }

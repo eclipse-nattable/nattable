@@ -30,7 +30,9 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsComman
 import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
+import org.eclipse.nebula.widgets.nattable.search.strategy.ISearchStrategy;
 
 /**
  * Layer to add support for column hide/show feature to a NatTable. Technically
@@ -128,6 +130,15 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
                         ColumnSizeInfo.valueOf(token.substring(separatorIndex + 1)));
             }
         }
+    }
+
+    @Override
+    public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+        LabelStack labels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
+        if (this.hiddenColumns.containsKey(getColumnIndexByPosition(columnPosition))) {
+            labels.addLabel(ISearchStrategy.SKIP_SEARCH_RESULT_LABEL);
+        }
+        return labels;
     }
 
     @Override
