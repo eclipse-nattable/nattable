@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2015 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,6 +36,8 @@ public class ColumnGroupModel implements IPersistable {
     private final List<ColumnGroup> columnGroups = new LinkedList<ColumnGroup>();
 
     private final Collection<IColumnGroupModelListener> listeners = new HashSet<IColumnGroupModelListener>();
+
+    private boolean defaultCollapseable = true;
 
     public void registerColumnGroupModelListener(IColumnGroupModelListener listener) {
         this.listeners.add(listener);
@@ -174,6 +176,7 @@ public class ColumnGroupModel implements IPersistable {
     public void addColumnsIndexesToGroup(String colGroupName, int... bodyColumnIndexs) {
         if (getColumnGroupByName(colGroupName) == null) {
             ColumnGroup group = new ColumnGroup(colGroupName);
+            group.setCollapseable(isDefaultCollapseable());
             this.columnGroups.add(group);
         }
         insertColumnIndexes(colGroupName, bodyColumnIndexs);
@@ -206,8 +209,7 @@ public class ColumnGroupModel implements IPersistable {
             ColumnGroup group = getColumnGroupByIndex(columnIndexToInsert);
             if (group != null && !group.getName().equals(colGroupName)) {
                 return false;
-            }
-            else if (group != null && group.getName().equals(colGroupName)) {
+            } else if (group != null && group.getName().equals(colGroupName)) {
                 // column is already part of the group
                 continue;
             }
@@ -266,6 +268,7 @@ public class ColumnGroupModel implements IPersistable {
     public void setStaticColumnIndexesByGroup(String colGroupName, int[] staticColumnIndexes) {
         if (getColumnGroupByName(colGroupName) == null) {
             ColumnGroup group = new ColumnGroup(colGroupName);
+            group.setCollapseable(isDefaultCollapseable());
             this.columnGroups.add(group);
         }
 
@@ -485,6 +488,31 @@ public class ColumnGroupModel implements IPersistable {
         if (isPartOfAGroup(columnIndex)) {
             getColumnGroupByIndex(columnIndex).setUnbreakable(unbreakable);
         }
+    }
+
+    /**
+     *
+     * @return The default value for the collapseable flag of newly created
+     *         {@link ColumnGroup} objects.
+     *
+     * @since 1.6
+     */
+    public boolean isDefaultCollapseable() {
+        return this.defaultCollapseable;
+    }
+
+    /**
+     * Sets the default value for the collapseable flag when creating
+     * {@link ColumnGroup} objects.
+     *
+     * @param defaultCollapseable
+     *            the default value for {@link ColumnGroup#collapseable} that
+     *            should be set on creating {@link ColumnGroup}.
+     *
+     * @since 1.6
+     */
+    public void setDefaultCollapseable(boolean defaultCollapseable) {
+        this.defaultCollapseable = defaultCollapseable;
     }
 
     // *** Column Group ***
