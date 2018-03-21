@@ -43,13 +43,13 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
     @Override
     public boolean doCommand(ILayer targetLayer, SelectRegionCommand command) {
         if (command.convertToTargetLayer(this.selectionLayer)) {
-            selectRegion(command.getRegion(), command.isShiftMask(), command.isControlMask());
+            selectRegion(command.getRegion(), command.isShiftMask(), command.isControlMask(), command.getAnchorColumnPosition(), command.getAnchorRowPosition());
             return true;
         }
         return false;
     }
 
-    protected void selectRegion(Rectangle region, boolean withShiftMask, boolean withControlMask) {
+    protected void selectRegion(Rectangle region, boolean withShiftMask, boolean withControlMask, int anchorColumn, int anchorRow) {
         Range changedRows = null;
 
         if (SelectionUtils.noShiftOrControl(withShiftMask, withControlMask)) {
@@ -57,16 +57,18 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
             this.selectionLayer.clear(false);
             this.selectionLayer.selectCell(region.x, region.y, false, false);
             this.selectionLayer.selectRegion(region.x, region.y, region.width, region.height);
-            this.selectionLayer.moveSelectionAnchor(region.x, region.y);
+            this.selectionLayer.moveSelectionAnchor(
+                    anchorColumn < 0 ? region.x : anchorColumn,
+                    anchorRow < 0 ? region.y : anchorRow);
 
             changedRows = new Range(region.y, region.y + region.height);
         } else if (SelectionUtils.bothShiftAndControl(withShiftMask, withControlMask)
                 || SelectionUtils.isShiftOnly(withShiftMask, withControlMask)) {
             // SHIFT or CTRL + SHIFT modifier enabled
-            changedRows = selectRegionWithShiftKey(region);
+            changedRows = selectRegionWithShiftKey(region, anchorColumn, anchorRow);
         } else if (SelectionUtils.isControlOnly(withShiftMask, withControlMask)) {
             // CTRL modifier enabled
-            changedRows = selectRegionWithCtrlKey(region);
+            changedRows = selectRegionWithCtrlKey(region, anchorColumn, anchorRow);
         }
 
         // Set last selected position to the recently clicked cell
@@ -90,9 +92,16 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
      *
      * @param region
      *            The region to be selected.
+     * @param anchorColumn
+     *            The column position to which the selection anchor should be
+     *            moved to or -1 if the calculated anchor column position should
+     *            be used.
+     * @param anchorRow
+     *            The row position to which the selection anchor should be moved
+     *            to or -1 if the calculated anchor row position should be used.
      * @return The row positions that have gained selection.
      */
-    protected Range selectRegionWithShiftKey(Rectangle region) {
+    protected Range selectRegionWithShiftKey(Rectangle region, int anchorColumn, int anchorRow) {
         int startCol = region.x;
         int startRow = region.y;
         int noCol = region.width;
@@ -112,23 +121,31 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
         if (anchor.columnPosition != SelectionLayer.NO_SELECTION
                 && anchor.rowPosition != SelectionLayer.NO_SELECTION) {
 
-            if (startCol < anchor.columnPosition) {
-                noCol = Math.abs(anchor.columnPosition - startCol) + 1;
-            } else {
-                startCol = anchor.columnPosition;
-                noCol = (region.x + region.width) - anchor.columnPosition;
+            // if the region.width is Integer.MAX_VALUE we do not calculate
+            if (region.width < Integer.MAX_VALUE) {
+                if (startCol < anchor.columnPosition) {
+                    noCol = Math.abs(anchor.columnPosition - startCol) + 1;
+                } else {
+                    startCol = anchor.columnPosition;
+                    noCol = (region.x + region.width) - anchor.columnPosition;
+                }
             }
 
-            if (startRow < anchor.rowPosition) {
-                noRow = Math.abs(anchor.rowPosition - startRow) + 1;
-            } else {
-                startRow = anchor.rowPosition;
-                noRow = (region.y + region.height) - anchor.rowPosition;
+            // if the region.height is Integer.MAX_VALUE we do not calculate
+            if (region.height < Integer.MAX_VALUE) {
+                if (startRow < anchor.rowPosition) {
+                    noRow = Math.abs(anchor.rowPosition - startRow) + 1;
+                } else {
+                    startRow = anchor.rowPosition;
+                    noRow = (region.y + region.height) - anchor.rowPosition;
+                }
             }
         } else {
             // if there is no last selected region we need to set the anchor
             // for correct behavior on further actions
-            this.selectionLayer.moveSelectionAnchor(startCol, startRow);
+            this.selectionLayer.moveSelectionAnchor(
+                    anchorColumn < 0 ? startCol : anchorColumn,
+                    anchorRow < 0 ? startRow : anchorRow);
         }
 
         this.selectionLayer.selectRegion(startCol, startRow, noCol, noRow);
@@ -142,9 +159,16 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
      *
      * @param region
      *            The region to be selected.
+     * @param anchorColumn
+     *            The column position to which the selection anchor should be
+     *            moved to or -1 if the calculated anchor column position should
+     *            be used.
+     * @param anchorRow
+     *            The row position to which the selection anchor should be moved
+     *            to or -1 if the calculated anchor row position should be used.
      * @return The row positions that have gained selection.
      */
-    protected Range selectRegionWithCtrlKey(Rectangle region) {
+    protected Range selectRegionWithCtrlKey(Rectangle region, int anchorColumn, int anchorRow) {
         if (this.selectionLayer.allCellsSelectedInRegion(region)) {
             // clear if all cells in the region are selected
             this.selectionLayer.clearSelection(region);
@@ -199,13 +223,17 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
                     }
                 }
 
-                this.selectionLayer.moveSelectionAnchor(toPos.columnPosition, toPos.rowPosition);
+                this.selectionLayer.moveSelectionAnchor(
+                        anchorColumn < 0 ? toPos.columnPosition : anchorColumn,
+                        anchorRow < 0 ? toPos.rowPosition : anchorRow);
             }
         } else {
             // if none or at least one cell in the region is already
             // selected, simply add
             this.selectionLayer.selectRegion(region.x, region.y, region.width, region.height);
-            this.selectionLayer.moveSelectionAnchor(region.x, region.y);
+            this.selectionLayer.moveSelectionAnchor(
+                    anchorColumn < 0 ? region.x : anchorColumn,
+                    anchorRow < 0 ? region.y : anchorRow);
         }
 
         return new Range(region.y, region.y + region.height);

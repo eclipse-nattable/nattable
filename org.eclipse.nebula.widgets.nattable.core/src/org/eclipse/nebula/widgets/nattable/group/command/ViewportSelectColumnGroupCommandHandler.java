@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.group.command;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.command.LayerCommandUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.ColumnPositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.coordinate.RowPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
@@ -71,14 +72,20 @@ public class ViewportSelectColumnGroupCommandHandler extends AbstractLayerComman
         ILayer underlyingLayer = this.viewportLayer.getUnderlyingLayerByPosition(0, 0);
         ColumnPositionCoordinate underlyingStart = LayerCommandUtil.convertColumnPositionToTargetContext(
                 new ColumnPositionCoordinate(this.viewportLayer, start), underlyingLayer);
-        underlyingLayer.doCommand(new SelectRegionCommand(
+        SelectRegionCommand regionCommand = new SelectRegionCommand(
                 underlyingLayer,
                 underlyingStart.getColumnPosition(),
                 0,
                 span,
                 Integer.MAX_VALUE,
                 command.isWithShiftMask(),
-                command.isWithControlMask()));
+                command.isWithControlMask());
+
+        // set the anchor row position to the first row in the viewport
+        RowPositionCoordinate underlyingRow = LayerCommandUtil.convertRowPositionToTargetContext(
+                new RowPositionCoordinate(this.viewportLayer, 0), underlyingLayer);
+        regionCommand.setAnchorRowPosition(underlyingRow.rowPosition);
+        underlyingLayer.doCommand(regionCommand);
 
         return true;
     }
