@@ -670,7 +670,7 @@ public class SizeConfig implements IPersistable {
         // if previous resized position was at min size before, the adjacent
         // position needs to be increased more if the min size is reset
         boolean percentageConfigured = this.percentageSizeMap.containsKey(position);
-        if (percentageConfigured || this.realSizeMap.containsKey(position)) {
+        if (percentageConfigured || (isPercentageSizing(position) && this.realSizeMap.containsKey(position))) {
             if (isPercentageSizing(position) && percentageConfigured) {
                 // there is a follow-up position that is configured for
                 // percentage sizing and there is value specified for that
@@ -1047,7 +1047,7 @@ public class SizeConfig implements IPersistable {
                 double remaining = new Double(space) - realSum;
                 if (remaining > 0) {
                     // calculate sum of eligible fixed percentage positions
-                    int eligibleSum = 0;
+                    double eligibleSum = 0;
                     for (int pos : fixedPercentagePositions) {
                         eligibleSum += this.percentageSizeMap.get(pos);
                     }
@@ -1067,7 +1067,7 @@ public class SizeConfig implements IPersistable {
             if (sum == 100) {
                 // check if the sum of the calculated values is the same as the
                 // given space if not distribute the missing pixels to some of
-                // the other columns this is needed because of rounding issues
+                // the other columns. this is needed because of rounding issues
                 // on 100% with odd-numbered pixel values
                 int valueSum = 0;
                 int lastPos = -1;
@@ -1099,6 +1099,22 @@ public class SizeConfig implements IPersistable {
                             this.realSizeMap.put(pos, posValue + 1);
                             pos++;
                         }
+                    }
+                }
+            }
+
+            // if the real sum is bigger than the available space we need to
+            // perform corrections. this can happen in mixed mode sometimes
+            if (realSum > this.availableSpace) {
+                int extend = realSum - this.availableSpace;
+                while (extend > 0) {
+                    int remainingExtend = correctExtend(extend, fixedPercentagePositions);
+                    // the correction caused nothing, so probably it is not
+                    // possible to correct because of min size configuration
+                    if (remainingExtend == extend) {
+                        extend = 0;
+                    } else {
+                        extend = remainingExtend;
                     }
                 }
             }
@@ -1265,6 +1281,36 @@ public class SizeConfig implements IPersistable {
         int result = (position - resizedColumns) * upScale(this.defaultSize);
         result += resizeAggregate;
         return result;
+    }
+
+    private int correctExtend(int extend, List<Integer> fixedPercentagePositions) {
+        int remainingExtend = extend;
+        double eligibleSum = 0;
+        for (int pos : fixedPercentagePositions) {
+            eligibleSum += this.percentageSizeMap.get(pos);
+        }
+        // calculate ratio
+        for (int pos : fixedPercentagePositions) {
+            if (remainingExtend > 0 && getMinSize(pos) != this.realSizeMap.get(pos)) {
+                Double percentage = this.percentageSizeMap.get(pos);
+                double ratio = percentage / eligibleSum;
+                int dist = extend == 1 ? 1 : Double.valueOf(extend * ratio).intValue();
+                int oldValue = this.realSizeMap.get(pos);
+                int newValue = oldValue - dist;
+                // ensure that we do not go below the minimum
+                if (isMinSizeConfigured(pos) && newValue < getMinSize(pos)) {
+                    newValue = getMinSize(pos);
+                    dist = oldValue - newValue;
+                } else if (newValue < 0) {
+                    // we can not be smaller than 0
+                    newValue = 0;
+                    dist = oldValue;
+                }
+                this.realSizeMap.put(pos, newValue);
+                remainingExtend -= dist;
+            }
+        }
+        return remainingExtend;
     }
 
     /**

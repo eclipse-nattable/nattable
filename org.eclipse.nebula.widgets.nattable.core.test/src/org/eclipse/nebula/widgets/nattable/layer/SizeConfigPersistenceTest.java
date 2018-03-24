@@ -295,7 +295,7 @@ public class SizeConfigPersistenceTest {
         assertEquals(20, sizeConfig.getMinSize(2));
         assertEquals(30, sizeConfig.getSize(3));
         assertFalse(sizeConfig.isPositionResizable(4));
-        assertEquals(15, sizeConfig.getSize(5));
+        assertEquals(0, sizeConfig.getSize(5));
         assertEquals(-1, sizeConfig.getConfiguredSize(5));
         assertEquals(15d, sizeConfig.getConfiguredPercentageSize(5), 0.1);
         assertTrue(sizeConfig.isPercentageSizing(5));
@@ -329,7 +329,7 @@ public class SizeConfigPersistenceTest {
         assertEquals(20, sizeConfig.getMinSize(2));
         assertEquals(30, sizeConfig.getSize(3));
         assertFalse(sizeConfig.isPositionResizable(4));
-        assertEquals(15, sizeConfig.getSize(5));
+        assertEquals(0, sizeConfig.getSize(5));
         assertEquals(-1, sizeConfig.getConfiguredSize(5));
         assertEquals(15d, sizeConfig.getConfiguredPercentageSize(5), 0.1);
         assertTrue(sizeConfig.isPercentageSizing(5));

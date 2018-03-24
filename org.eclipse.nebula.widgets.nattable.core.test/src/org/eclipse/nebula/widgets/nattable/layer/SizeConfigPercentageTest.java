@@ -1336,5 +1336,8 @@ public class SizeConfigPercentageTest {
         assertEquals(230, sizeConfig.getAggregateSize(3));
         assertEquals(315, sizeConfig.getAggregateSize(4));
         assertEquals(400, sizeConfig.getAggregateSize(5));
+
+        // min size was adjusted because of the resize
+        assertEquals(60, sizeConfig.getMinSize(0));
     }
 }

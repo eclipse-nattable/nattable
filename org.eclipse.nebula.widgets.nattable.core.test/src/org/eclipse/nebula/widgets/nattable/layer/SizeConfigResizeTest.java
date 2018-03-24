@@ -149,12 +149,14 @@ public class SizeConfigResizeTest {
     public void shouldIncreaseDynamicPercentageColumnSmallAmount() {
         assertEquals(165, this.sizeConfig.getSize(2));
         assertEquals(60, this.sizeConfig.getSize(3));
+        assertEquals(311, this.sizeConfig.getAggregateSize(3));
 
         this.sizeConfig.setSize(2, 170);
 
         // column 2 and 3 should have changed
         assertEquals(170, this.sizeConfig.getSize(2));
         assertEquals(55, this.sizeConfig.getSize(3));
+        assertEquals(316, this.sizeConfig.getAggregateSize(3));
 
         assertEquals(1500, this.sizeConfig.getAggregateSize(13));
     }
@@ -163,12 +165,14 @@ public class SizeConfigResizeTest {
     public void shouldDecreaseDynamicPercentageColumnSmallAmount() {
         assertEquals(165, this.sizeConfig.getSize(2));
         assertEquals(60, this.sizeConfig.getSize(3));
+        assertEquals(311, this.sizeConfig.getAggregateSize(3));
 
         this.sizeConfig.setSize(2, 160);
 
         // column 2 and 3 should have changed
         assertEquals(160, this.sizeConfig.getSize(2));
         assertEquals(65, this.sizeConfig.getSize(3));
+        assertEquals(306, this.sizeConfig.getAggregateSize(3));
 
         assertEquals(1500, this.sizeConfig.getAggregateSize(13));
     }
@@ -177,12 +181,14 @@ public class SizeConfigResizeTest {
     public void shouldIncreaseDynamicPercentageColumnHalfOfAdjacent() {
         assertEquals(165, this.sizeConfig.getSize(2));
         assertEquals(60, this.sizeConfig.getSize(3));
+        assertEquals(311, this.sizeConfig.getAggregateSize(3));
 
         this.sizeConfig.setSize(2, 195);
 
         // column 2 and 3 should have changed
         assertEquals(195, this.sizeConfig.getSize(2));
         assertEquals(30, this.sizeConfig.getSize(3));
+        assertEquals(341, this.sizeConfig.getAggregateSize(3));
 
         assertEquals(2.5, this.sizeConfig.getConfiguredPercentageSize(3), 0.1);
 
@@ -194,6 +200,7 @@ public class SizeConfigResizeTest {
         assertEquals(60, this.sizeConfig.getSize(3));
         assertEquals(97, this.sizeConfig.getSize(4));
         assertEquals(164, this.sizeConfig.getSize(5));
+        assertEquals(371, this.sizeConfig.getAggregateSize(4));
 
         assertEquals(13d, this.sizeConfig.getConfiguredPercentageSize(10), 0.1);
 
@@ -202,6 +209,7 @@ public class SizeConfigResizeTest {
 
         this.sizeConfig.setSize(3, 90);
 
+        assertEquals(401, this.sizeConfig.getAggregateSize(4));
         assertEquals(1500, this.sizeConfig.getAggregateSize(13));
 
         assertEquals(90, this.sizeConfig.getSize(3));
@@ -227,13 +235,15 @@ public class SizeConfigResizeTest {
     // 7=60, 8=135, 9=164, 10=200, 11=164, 12=60}
 
     @Test
-    public void shouldDecreaseColumn4WithMinWidthSmallAmount() {
+    public void shouldDecreaseColumn3WithMinWidthSmallAmount() {
         assertEquals(60, this.defaultMinSizeConfig.getSize(3));
         assertEquals(97, this.defaultMinSizeConfig.getSize(4));
+        assertEquals(371, this.defaultMinSizeConfig.getAggregateSize(4));
 
         this.defaultMinSizeConfig.setSize(3, 55);
 
         assertEquals(55, this.defaultMinSizeConfig.getSize(3));
+        assertEquals(366, this.defaultMinSizeConfig.getAggregateSize(4));
 
         // rounding issue when calculating the pixels for fixed percentage
         // 5% of 1219 is 60.95 which resolves to 60 pixels in simple integer
@@ -247,13 +257,15 @@ public class SizeConfigResizeTest {
     }
 
     @Test
-    public void shouldDecreaseColumn4WithMinWidthBigAmount() {
+    public void shouldDecreaseColumn3WithMinWidthBigAmount() {
         assertEquals(60, this.defaultMinSizeConfig.getSize(3));
         assertEquals(97, this.defaultMinSizeConfig.getSize(4));
+        assertEquals(371, this.defaultMinSizeConfig.getAggregateSize(4));
 
         this.defaultMinSizeConfig.setSize(3, 30);
 
         assertEquals(30, this.defaultMinSizeConfig.getSize(3));
+        assertEquals(341, this.defaultMinSizeConfig.getAggregateSize(4));
 
         // some rounding issue
         assertEquals(128, this.defaultMinSizeConfig.getSize(4));
@@ -263,13 +275,15 @@ public class SizeConfigResizeTest {
     }
 
     @Test
-    public void shouldIncreaseColumn4WithMinWidthSmallAmount() {
+    public void shouldIncreaseColumn3WithMinWidthSmallAmount() {
         assertEquals(60, this.defaultMinSizeConfig.getSize(3));
         assertEquals(97, this.defaultMinSizeConfig.getSize(4));
+        assertEquals(371, this.defaultMinSizeConfig.getAggregateSize(4));
 
         this.defaultMinSizeConfig.setSize(3, 65);
 
         assertEquals(65, this.defaultMinSizeConfig.getSize(3));
+        assertEquals(376, this.defaultMinSizeConfig.getAggregateSize(4));
 
         // some rounding issue
         assertEquals(93, this.defaultMinSizeConfig.getSize(4));
@@ -279,16 +293,17 @@ public class SizeConfigResizeTest {
     }
 
     @Test
-    public void shouldIncreaseColumn4WithMinWidthBigAmount() {
+    public void shouldIncreaseColumn3WithMinWidthBigAmount() {
         assertEquals(60, this.defaultMinSizeConfig.getSize(3));
         assertEquals(97, this.defaultMinSizeConfig.getSize(4));
         assertEquals(164, this.defaultMinSizeConfig.getSize(5));
+        assertEquals(371, this.defaultMinSizeConfig.getAggregateSize(4));
 
         this.defaultMinSizeConfig.setSize(3, 120);
 
         assertEquals(120, this.defaultMinSizeConfig.getSize(3));
-
         assertEquals(90, this.defaultMinSizeConfig.getSize(4));
+        assertEquals(431, this.defaultMinSizeConfig.getAggregateSize(4));
 
         // some rounding issue
         assertEquals(112, this.defaultMinSizeConfig.getSize(5));
@@ -300,9 +315,12 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldDecreaseColumn5WithMinWidthSmallAmount() {
         assertEquals(164, this.defaultMinSizeConfig.getSize(5));
+        assertEquals(632, this.defaultMinSizeConfig.getAggregateSize(6));
+
         this.defaultMinSizeConfig.setSize(5, 160);
 
         assertEquals(160, this.defaultMinSizeConfig.getSize(5));
+        assertEquals(628, this.defaultMinSizeConfig.getAggregateSize(6));
 
         assertEquals(1500, this.defaultMinSizeConfig.getAggregateSize(13));
     }
@@ -311,10 +329,13 @@ public class SizeConfigResizeTest {
     public void shouldDecreaseColumn5WithMinWidthBigAmount() {
         assertEquals(164, this.defaultMinSizeConfig.getSize(5));
         assertEquals(25, this.defaultMinSizeConfig.getMinSize(5));
+        assertEquals(632, this.defaultMinSizeConfig.getAggregateSize(6));
+
         this.defaultMinSizeConfig.setSize(5, 10);
 
         assertEquals(10, this.defaultMinSizeConfig.getSize(5));
         assertEquals(10, this.defaultMinSizeConfig.getMinSize(5));
+        assertEquals(478, this.defaultMinSizeConfig.getAggregateSize(6));
 
         assertEquals(1500, this.defaultMinSizeConfig.getAggregateSize(13));
     }
@@ -322,9 +343,12 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldIncreaseColumn5WithMinWidthSmallAmount() {
         assertEquals(164, this.defaultMinSizeConfig.getSize(5));
+        assertEquals(632, this.defaultMinSizeConfig.getAggregateSize(6));
+
         this.defaultMinSizeConfig.setSize(5, 170);
 
         assertEquals(170, this.defaultMinSizeConfig.getSize(5));
+        assertEquals(638, this.defaultMinSizeConfig.getAggregateSize(6));
 
         assertEquals(1500, this.defaultMinSizeConfig.getAggregateSize(13));
     }
@@ -332,9 +356,64 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldIncreaseColumn5WithMinWidthBigAmount() {
         assertEquals(164, this.defaultMinSizeConfig.getSize(5));
+        assertEquals(632, this.defaultMinSizeConfig.getAggregateSize(6));
+
         this.defaultMinSizeConfig.setSize(5, 180);
 
         assertEquals(180, this.defaultMinSizeConfig.getSize(5));
+        assertEquals(648, this.defaultMinSizeConfig.getAggregateSize(6));
+
+        assertEquals(1500, this.defaultMinSizeConfig.getAggregateSize(13));
+    }
+
+    @Test
+    public void shouldDecreaseColumn7WithMinWidthSmallAmount() {
+        assertEquals(60, this.defaultMinSizeConfig.getSize(7));
+        assertEquals(777, this.defaultMinSizeConfig.getAggregateSize(8));
+
+        this.defaultMinSizeConfig.setSize(7, 55);
+
+        assertEquals(55, this.defaultMinSizeConfig.getSize(7));
+        assertEquals(772, this.defaultMinSizeConfig.getAggregateSize(8));
+
+        assertEquals(1500, this.defaultMinSizeConfig.getAggregateSize(13));
+    }
+
+    @Test
+    public void shouldDecreaseColumn7WithMinWidthBigAmount() {
+        assertEquals(60, this.defaultMinSizeConfig.getSize(7));
+        assertEquals(777, this.defaultMinSizeConfig.getAggregateSize(8));
+
+        this.defaultMinSizeConfig.setSize(7, 30);
+
+        assertEquals(30, this.defaultMinSizeConfig.getSize(7));
+        assertEquals(747, this.defaultMinSizeConfig.getAggregateSize(8));
+
+        assertEquals(1500, this.defaultMinSizeConfig.getAggregateSize(13));
+    }
+
+    @Test
+    public void shouldIncreaseColumn7WithMinWidthSmallAmount() {
+        assertEquals(60, this.defaultMinSizeConfig.getSize(7));
+        assertEquals(777, this.defaultMinSizeConfig.getAggregateSize(8));
+
+        this.defaultMinSizeConfig.setSize(7, 65);
+
+        assertEquals(65, this.defaultMinSizeConfig.getSize(7));
+        assertEquals(782, this.defaultMinSizeConfig.getAggregateSize(8));
+
+        assertEquals(1500, this.defaultMinSizeConfig.getAggregateSize(13));
+    }
+
+    @Test
+    public void shouldIncreaseColumn7WithMinWidthBigAmount() {
+        assertEquals(60, this.defaultMinSizeConfig.getSize(7));
+        assertEquals(777, this.defaultMinSizeConfig.getAggregateSize(8));
+
+        this.defaultMinSizeConfig.setSize(7, 90);
+
+        assertEquals(90, this.defaultMinSizeConfig.getSize(7));
+        assertEquals(807, this.defaultMinSizeConfig.getAggregateSize(8));
 
         assertEquals(1500, this.defaultMinSizeConfig.getAggregateSize(13));
     }
@@ -342,9 +421,13 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldDecreaseColumn9WithMinWidthSmallAmount() {
         assertEquals(164, this.defaultMinSizeConfig.getSize(9));
+        assertEquals(1076, this.defaultMinSizeConfig.getAggregateSize(10));
+
         this.defaultMinSizeConfig.setSize(9, 160);
 
         assertEquals(160, this.defaultMinSizeConfig.getSize(9));
+        // rounding issue
+        assertEquals(1073, this.defaultMinSizeConfig.getAggregateSize(10));
 
         assertEquals(1500, this.defaultMinSizeConfig.getAggregateSize(13));
     }
@@ -352,9 +435,12 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldDecreaseColumn9WithMinWidthBigAmount() {
         assertEquals(164, this.defaultMinSizeConfig.getSize(9));
+        assertEquals(1076, this.defaultMinSizeConfig.getAggregateSize(10));
+
         this.defaultMinSizeConfig.setSize(9, 100);
 
         assertEquals(100, this.defaultMinSizeConfig.getSize(9));
+        assertEquals(1012, this.defaultMinSizeConfig.getAggregateSize(10));
 
         assertEquals(1500, this.defaultMinSizeConfig.getAggregateSize(13));
     }
@@ -362,9 +448,12 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldIncreaseColumn9WithMinWidthSmallAmount() {
         assertEquals(164, this.defaultMinSizeConfig.getSize(9));
+        assertEquals(1076, this.defaultMinSizeConfig.getAggregateSize(10));
+
         this.defaultMinSizeConfig.setSize(9, 170);
 
         assertEquals(170, this.defaultMinSizeConfig.getSize(9));
+        assertEquals(1082, this.defaultMinSizeConfig.getAggregateSize(10));
 
         assertEquals(1500, this.defaultMinSizeConfig.getAggregateSize(13));
     }
@@ -372,9 +461,12 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldIncreaseColumn9WithMinWidthBigAmount() {
         assertEquals(164, this.defaultMinSizeConfig.getSize(9));
+        assertEquals(1076, this.defaultMinSizeConfig.getAggregateSize(10));
+
         this.defaultMinSizeConfig.setSize(9, 180);
 
         assertEquals(180, this.defaultMinSizeConfig.getSize(9));
+        assertEquals(1092, this.defaultMinSizeConfig.getAggregateSize(10));
 
         assertEquals(1500, this.defaultMinSizeConfig.getAggregateSize(13));
     }
@@ -386,10 +478,13 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldDecreaseColumn2WithNoDynamicSmallAmount() {
         assertEquals(158, this.noDynamicPercentageSizeConfig.getSize(2));
+        assertEquals(304, this.noDynamicPercentageSizeConfig.getAggregateSize(3));
+
         this.noDynamicPercentageSizeConfig.setSize(2, 140);
 
         // 140 + 1 for distributing missing pixels because of rounding issues
         assertEquals(141, this.noDynamicPercentageSizeConfig.getSize(2));
+        assertEquals(287, this.noDynamicPercentageSizeConfig.getAggregateSize(3));
 
         // additionally some 1 pixel changes because of rounding issues on
         // double-int - int-double conversion
@@ -410,10 +505,13 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldIncreaseColumn2WithNoDynamicSmallAmount() {
         assertEquals(158, this.noDynamicPercentageSizeConfig.getSize(2));
+        assertEquals(304, this.noDynamicPercentageSizeConfig.getAggregateSize(3));
+
         this.noDynamicPercentageSizeConfig.setSize(2, 170);
 
         // 170 + 1 for distributing missing pixels because of rounding issues
         assertEquals(171, this.noDynamicPercentageSizeConfig.getSize(2));
+        assertEquals(317, this.noDynamicPercentageSizeConfig.getAggregateSize(3));
 
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
@@ -421,10 +519,13 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldIncreaseColumn2WithNoDynamicBigAmount() {
         assertEquals(158, this.noDynamicPercentageSizeConfig.getSize(2));
+        assertEquals(304, this.noDynamicPercentageSizeConfig.getAggregateSize(3));
+
         this.noDynamicPercentageSizeConfig.setSize(2, 190);
 
         // 190 + 1 for distributing missing pixels because of rounding issues
         assertEquals(191, this.noDynamicPercentageSizeConfig.getSize(2));
+        assertEquals(337, this.noDynamicPercentageSizeConfig.getAggregateSize(3));
 
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
@@ -432,9 +533,12 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldDecreaseColumn3WithNoDynamicSmallAmount() {
         assertEquals(72, this.noDynamicPercentageSizeConfig.getSize(3));
+        assertEquals(376, this.noDynamicPercentageSizeConfig.getAggregateSize(4));
+
         this.noDynamicPercentageSizeConfig.setSize(3, 65);
 
         assertEquals(65, this.noDynamicPercentageSizeConfig.getSize(3));
+        assertEquals(370, this.noDynamicPercentageSizeConfig.getAggregateSize(4));
 
         // additionally some 1 pixel changes because of rounding issues on
         // double-int - int-double conversion
@@ -454,9 +558,12 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldIncreaseColumn3WithNoDynamicSmallAmount() {
         assertEquals(72, this.noDynamicPercentageSizeConfig.getSize(3));
+        assertEquals(376, this.noDynamicPercentageSizeConfig.getAggregateSize(4));
+
         this.noDynamicPercentageSizeConfig.setSize(3, 80);
 
         assertEquals(80, this.noDynamicPercentageSizeConfig.getSize(3));
+        assertEquals(385, this.noDynamicPercentageSizeConfig.getAggregateSize(4));
 
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
@@ -464,9 +571,12 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldIncreaseColumn3WithNoDynamicBigAmount() {
         assertEquals(72, this.noDynamicPercentageSizeConfig.getSize(3));
+        assertEquals(376, this.noDynamicPercentageSizeConfig.getAggregateSize(4));
+
         this.noDynamicPercentageSizeConfig.setSize(3, 120);
 
         assertEquals(120, this.noDynamicPercentageSizeConfig.getSize(3));
+        assertEquals(425, this.noDynamicPercentageSizeConfig.getAggregateSize(4));
 
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
@@ -474,9 +584,12 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldDecreaseColumn4WithNoDynamicSmallAmount() {
         assertEquals(115, this.noDynamicPercentageSizeConfig.getSize(4));
+        assertEquals(491, this.noDynamicPercentageSizeConfig.getAggregateSize(5));
+
         this.noDynamicPercentageSizeConfig.setSize(4, 110);
 
         assertEquals(110, this.noDynamicPercentageSizeConfig.getSize(4));
+        assertEquals(487, this.noDynamicPercentageSizeConfig.getAggregateSize(5));
 
         // additionally some 1 pixel changes because of rounding issues on
         // double-int - int-double conversion
@@ -495,10 +608,13 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldDecreaseColumn4WithNoDynamicBigAmount1() {
         assertEquals(115, this.noDynamicPercentageSizeConfig.getSize(4));
+        assertEquals(491, this.noDynamicPercentageSizeConfig.getAggregateSize(5));
+
         this.noDynamicPercentageSizeConfig.setSize(4, 95);
 
         assertEquals(95, this.noDynamicPercentageSizeConfig.getSize(4));
         assertEquals(163, this.noDynamicPercentageSizeConfig.getSize(5));
+        assertEquals(472, this.noDynamicPercentageSizeConfig.getAggregateSize(5));
 
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
@@ -506,10 +622,13 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldDecreaseColumn4WithNoDynamicBigAmount2() {
         assertEquals(115, this.noDynamicPercentageSizeConfig.getSize(4));
+        assertEquals(491, this.noDynamicPercentageSizeConfig.getAggregateSize(5));
+
         this.noDynamicPercentageSizeConfig.setSize(4, 90);
 
         assertEquals(90, this.noDynamicPercentageSizeConfig.getSize(4));
         assertEquals(168, this.noDynamicPercentageSizeConfig.getSize(5));
+        assertEquals(467, this.noDynamicPercentageSizeConfig.getAggregateSize(5));
 
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
@@ -517,10 +636,13 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldDecreaseColumn4WithNoDynamicBigAmount3() {
         assertEquals(115, this.noDynamicPercentageSizeConfig.getSize(4));
+        assertEquals(491, this.noDynamicPercentageSizeConfig.getAggregateSize(5));
+
         this.noDynamicPercentageSizeConfig.setSize(4, 50);
 
         assertEquals(50, this.noDynamicPercentageSizeConfig.getSize(4));
         assertEquals(208, this.noDynamicPercentageSizeConfig.getSize(5));
+        assertEquals(427, this.noDynamicPercentageSizeConfig.getAggregateSize(5));
 
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
@@ -528,11 +650,13 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldIncreaseColumn4WithNoDynamicSmallAmount() {
         assertEquals(115, this.noDynamicPercentageSizeConfig.getSize(4));
+        assertEquals(491, this.noDynamicPercentageSizeConfig.getAggregateSize(5));
+
         this.noDynamicPercentageSizeConfig.setSize(4, 120);
 
         assertEquals(120, this.noDynamicPercentageSizeConfig.getSize(4));
-
         assertEquals(138, this.noDynamicPercentageSizeConfig.getSize(5));
+        assertEquals(497, this.noDynamicPercentageSizeConfig.getAggregateSize(5));
 
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
@@ -540,10 +664,13 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldIncreaseColumn4WithNoDynamicBigAmount1() {
         assertEquals(115, this.noDynamicPercentageSizeConfig.getSize(4));
+        assertEquals(491, this.noDynamicPercentageSizeConfig.getAggregateSize(5));
+
         this.noDynamicPercentageSizeConfig.setSize(4, 140);
 
         assertEquals(140, this.noDynamicPercentageSizeConfig.getSize(4));
         assertEquals(118, this.noDynamicPercentageSizeConfig.getSize(5));
+        assertEquals(517, this.noDynamicPercentageSizeConfig.getAggregateSize(5));
 
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
@@ -551,11 +678,13 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldDecreaseColumn5WithNoDynamicSmallAmount() {
         assertEquals(143, this.noDynamicPercentageSizeConfig.getSize(5));
+        assertEquals(634, this.noDynamicPercentageSizeConfig.getAggregateSize(6));
+
         this.noDynamicPercentageSizeConfig.setSize(5, 140);
 
         assertEquals(140, this.noDynamicPercentageSizeConfig.getSize(5));
-
         assertEquals(104, this.noDynamicPercentageSizeConfig.getSize(6));
+        assertEquals(631, this.noDynamicPercentageSizeConfig.getAggregateSize(6));
 
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
@@ -563,10 +692,13 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldDecreaseColumn5WithNoDynamicBigAmount1() {
         assertEquals(143, this.noDynamicPercentageSizeConfig.getSize(5));
+        assertEquals(634, this.noDynamicPercentageSizeConfig.getAggregateSize(6));
+
         this.noDynamicPercentageSizeConfig.setSize(5, 123);
 
         assertEquals(123, this.noDynamicPercentageSizeConfig.getSize(5));
         assertEquals(120, this.noDynamicPercentageSizeConfig.getSize(6));
+        assertEquals(615, this.noDynamicPercentageSizeConfig.getAggregateSize(6));
 
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
@@ -574,11 +706,13 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldIncreaseColumn5WithNoDynamicSmallAmount() {
         assertEquals(143, this.noDynamicPercentageSizeConfig.getSize(5));
+        assertEquals(634, this.noDynamicPercentageSizeConfig.getAggregateSize(6));
+
         this.noDynamicPercentageSizeConfig.setSize(5, 135);
 
         assertEquals(135, this.noDynamicPercentageSizeConfig.getSize(5));
-
         assertEquals(108, this.noDynamicPercentageSizeConfig.getSize(6));
+        assertEquals(627, this.noDynamicPercentageSizeConfig.getAggregateSize(6));
 
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
@@ -586,9 +720,12 @@ public class SizeConfigResizeTest {
     @Test
     public void shouldIncreaseColumn5WithNoDynamicBigAmount1() {
         assertEquals(143, this.noDynamicPercentageSizeConfig.getSize(5));
+        assertEquals(634, this.noDynamicPercentageSizeConfig.getAggregateSize(6));
+
         this.noDynamicPercentageSizeConfig.setSize(5, 180);
 
         assertEquals(180, this.noDynamicPercentageSizeConfig.getSize(5));
+        assertEquals(671, this.noDynamicPercentageSizeConfig.getAggregateSize(6));
         // simple calculation would say 64, but 70 is min size
         assertEquals(70, this.noDynamicPercentageSizeConfig.getSize(6));
         assertEquals(66, this.noDynamicPercentageSizeConfig.getSize(7));
@@ -605,9 +742,12 @@ public class SizeConfigResizeTest {
     public void shouldDecreaseColumn8WithNoDynamicSmallAmount() {
         // no percentage in the middle
         assertEquals(135, this.noDynamicPercentageSizeConfig.getSize(8));
+        assertEquals(942, this.noDynamicPercentageSizeConfig.getAggregateSize(9));
+
         this.noDynamicPercentageSizeConfig.setSize(8, 130);
 
         assertEquals(130, this.noDynamicPercentageSizeConfig.getSize(8));
+        assertEquals(938, this.noDynamicPercentageSizeConfig.getAggregateSize(9));
 
         // some rounding issues while due to double to int conversion while
         // updating the available percentage space
@@ -632,10 +772,13 @@ public class SizeConfigResizeTest {
     public void shouldDecreaseColumn8WithNoDynamicBigAmount() {
         // no percentage in the middle
         assertEquals(135, this.noDynamicPercentageSizeConfig.getSize(8));
+        assertEquals(942, this.noDynamicPercentageSizeConfig.getAggregateSize(9));
+
         this.noDynamicPercentageSizeConfig.setSize(8, 100);
 
         assertEquals(100, this.noDynamicPercentageSizeConfig.getSize(8));
         assertEquals(178, this.noDynamicPercentageSizeConfig.getSize(9));
+        assertEquals(908, this.noDynamicPercentageSizeConfig.getAggregateSize(9));
 
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
@@ -644,10 +787,13 @@ public class SizeConfigResizeTest {
     public void shouldIncreaseColumn8WithNoDynamicSmallAmount() {
         // no percentage in the middle
         assertEquals(135, this.noDynamicPercentageSizeConfig.getSize(8));
+        assertEquals(942, this.noDynamicPercentageSizeConfig.getAggregateSize(9));
+
         this.noDynamicPercentageSizeConfig.setSize(8, 140);
 
         assertEquals(140, this.noDynamicPercentageSizeConfig.getSize(8));
         assertEquals(138, this.noDynamicPercentageSizeConfig.getSize(9));
+        assertEquals(947, this.noDynamicPercentageSizeConfig.getAggregateSize(9));
 
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
@@ -656,10 +802,13 @@ public class SizeConfigResizeTest {
     public void shouldIncreaseColumn8WithNoDynamicBigAmount() {
         // no percentage in the middle
         assertEquals(135, this.noDynamicPercentageSizeConfig.getSize(8));
+        assertEquals(942, this.noDynamicPercentageSizeConfig.getAggregateSize(9));
+
         this.noDynamicPercentageSizeConfig.setSize(8, 170);
 
         assertEquals(170, this.noDynamicPercentageSizeConfig.getSize(8));
         assertEquals(108, this.noDynamicPercentageSizeConfig.getSize(9));
+        assertEquals(977, this.noDynamicPercentageSizeConfig.getAggregateSize(9));
 
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
@@ -668,9 +817,11 @@ public class SizeConfigResizeTest {
     public void shouldDecreaseColumn9WithNoDynamicSmallAmount() {
         assertEquals(143, this.noDynamicPercentageSizeConfig.getSize(9));
         assertEquals(1085, this.noDynamicPercentageSizeConfig.getAggregateSize(10));
+
         this.noDynamicPercentageSizeConfig.setSize(9, 135);
 
         assertEquals(135, this.noDynamicPercentageSizeConfig.getSize(9));
+        assertEquals(1077, this.noDynamicPercentageSizeConfig.getAggregateSize(10));
 
         // some rounding issues while due to double to int conversion while
         // updating the available percentage space
@@ -688,7 +839,6 @@ public class SizeConfigResizeTest {
         assertEquals(143, this.noDynamicPercentageSizeConfig.getSize(11));
         assertEquals(72, this.noDynamicPercentageSizeConfig.getSize(12));
 
-        assertEquals(1077, this.noDynamicPercentageSizeConfig.getAggregateSize(10));
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
 
@@ -696,13 +846,14 @@ public class SizeConfigResizeTest {
     public void shouldDecreaseColumn9WithNoDynamicBigAmount() {
         assertEquals(143, this.noDynamicPercentageSizeConfig.getSize(9));
         assertEquals(1085, this.noDynamicPercentageSizeConfig.getAggregateSize(10));
+
         this.noDynamicPercentageSizeConfig.setSize(9, 90);
 
         assertEquals(90, this.noDynamicPercentageSizeConfig.getSize(9));
+        assertEquals(1032, this.noDynamicPercentageSizeConfig.getAggregateSize(10));
 
         assertEquals(253, this.noDynamicPercentageSizeConfig.getSize(10));
 
-        assertEquals(1032, this.noDynamicPercentageSizeConfig.getAggregateSize(10));
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
 
@@ -710,14 +861,15 @@ public class SizeConfigResizeTest {
     public void shouldIncreaseColumn9WithNoDynamicSmallAmount() {
         assertEquals(143, this.noDynamicPercentageSizeConfig.getSize(9));
         assertEquals(1085, this.noDynamicPercentageSizeConfig.getAggregateSize(10));
+
         this.noDynamicPercentageSizeConfig.setSize(9, 145);
 
         assertEquals(145, this.noDynamicPercentageSizeConfig.getSize(9));
+        assertEquals(1087, this.noDynamicPercentageSizeConfig.getAggregateSize(10));
 
         assertEquals(200, this.noDynamicPercentageSizeConfig.getSize(10));
         assertEquals(141, this.noDynamicPercentageSizeConfig.getSize(11));
 
-        assertEquals(1087, this.noDynamicPercentageSizeConfig.getAggregateSize(10));
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
 
@@ -725,14 +877,15 @@ public class SizeConfigResizeTest {
     public void shouldIncreaseColumn9WithNoDynamicBigAmount() {
         assertEquals(143, this.noDynamicPercentageSizeConfig.getSize(9));
         assertEquals(1085, this.noDynamicPercentageSizeConfig.getAggregateSize(10));
+
         this.noDynamicPercentageSizeConfig.setSize(9, 160);
 
         assertEquals(160, this.noDynamicPercentageSizeConfig.getSize(9));
+        assertEquals(1103, this.noDynamicPercentageSizeConfig.getAggregateSize(10));
 
         assertEquals(200, this.noDynamicPercentageSizeConfig.getSize(10));
         assertEquals(125, this.noDynamicPercentageSizeConfig.getSize(11));
 
-        assertEquals(1103, this.noDynamicPercentageSizeConfig.getAggregateSize(10));
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
 
@@ -740,14 +893,15 @@ public class SizeConfigResizeTest {
     public void shouldDecreaseColumn10WithNoDynamicSmallAmount() {
         assertEquals(200, this.noDynamicPercentageSizeConfig.getSize(10));
         assertEquals(1285, this.noDynamicPercentageSizeConfig.getAggregateSize(11));
+
         this.noDynamicPercentageSizeConfig.setSize(10, 190);
 
         assertEquals(190, this.noDynamicPercentageSizeConfig.getSize(10));
         assertEquals(190, this.noDynamicPercentageSizeConfig.getMinSize(10));
+        assertEquals(1275, this.noDynamicPercentageSizeConfig.getAggregateSize(11));
 
         assertEquals(153, this.noDynamicPercentageSizeConfig.getSize(11));
 
-        assertEquals(1275, this.noDynamicPercentageSizeConfig.getAggregateSize(11));
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
 
@@ -755,14 +909,15 @@ public class SizeConfigResizeTest {
     public void shouldDecreaseColumn10WithNoDynamicBigAmount() {
         assertEquals(200, this.noDynamicPercentageSizeConfig.getSize(10));
         assertEquals(1285, this.noDynamicPercentageSizeConfig.getAggregateSize(11));
+
         this.noDynamicPercentageSizeConfig.setSize(10, 150);
 
         assertEquals(150, this.noDynamicPercentageSizeConfig.getSize(10));
         assertEquals(150, this.noDynamicPercentageSizeConfig.getMinSize(10));
+        assertEquals(1235, this.noDynamicPercentageSizeConfig.getAggregateSize(11));
 
         assertEquals(193, this.noDynamicPercentageSizeConfig.getSize(11));
 
-        assertEquals(1235, this.noDynamicPercentageSizeConfig.getAggregateSize(11));
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
 
@@ -770,15 +925,16 @@ public class SizeConfigResizeTest {
     public void shouldIncreaseColumn10WithNoDynamicSmallAmount() {
         assertEquals(200, this.noDynamicPercentageSizeConfig.getSize(10));
         assertEquals(1285, this.noDynamicPercentageSizeConfig.getAggregateSize(11));
+
         this.noDynamicPercentageSizeConfig.setSize(10, 205);
 
         // rounding issue in Java
         assertEquals(204, this.noDynamicPercentageSizeConfig.getSize(10));
         assertEquals(200, this.noDynamicPercentageSizeConfig.getMinSize(10));
+        assertEquals(1290, this.noDynamicPercentageSizeConfig.getAggregateSize(11));
 
         assertEquals(138, this.noDynamicPercentageSizeConfig.getSize(11));
 
-        assertEquals(1290, this.noDynamicPercentageSizeConfig.getAggregateSize(11));
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
 
@@ -786,15 +942,16 @@ public class SizeConfigResizeTest {
     public void shouldIncreaseColumn10WithNoDynamicBigAmount() {
         assertEquals(200, this.noDynamicPercentageSizeConfig.getSize(10));
         assertEquals(1285, this.noDynamicPercentageSizeConfig.getAggregateSize(11));
+
         this.noDynamicPercentageSizeConfig.setSize(10, 225);
 
         // rounding issue in Java
         assertEquals(224, this.noDynamicPercentageSizeConfig.getSize(10));
         assertEquals(200, this.noDynamicPercentageSizeConfig.getMinSize(10));
+        assertEquals(1310, this.noDynamicPercentageSizeConfig.getAggregateSize(11));
 
         assertEquals(118, this.noDynamicPercentageSizeConfig.getSize(11));
 
-        assertEquals(1310, this.noDynamicPercentageSizeConfig.getAggregateSize(11));
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
 
         // increase a second time
@@ -803,10 +960,10 @@ public class SizeConfigResizeTest {
         // rounding issue in Java
         assertEquals(249, this.noDynamicPercentageSizeConfig.getSize(10));
         assertEquals(200, this.noDynamicPercentageSizeConfig.getMinSize(10));
+        assertEquals(1335, this.noDynamicPercentageSizeConfig.getAggregateSize(11));
 
         assertEquals(93, this.noDynamicPercentageSizeConfig.getSize(11));
 
-        assertEquals(1335, this.noDynamicPercentageSizeConfig.getAggregateSize(11));
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
 
@@ -814,13 +971,14 @@ public class SizeConfigResizeTest {
     public void shouldDecreaseColumn11WithNoDynamicSmallAmount() {
         assertEquals(143, this.noDynamicPercentageSizeConfig.getSize(11));
         assertEquals(1428, this.noDynamicPercentageSizeConfig.getAggregateSize(12));
+
         this.noDynamicPercentageSizeConfig.setSize(11, 135);
 
         assertEquals(135, this.noDynamicPercentageSizeConfig.getSize(11));
+        assertEquals(1420, this.noDynamicPercentageSizeConfig.getAggregateSize(12));
 
         assertEquals(80, this.noDynamicPercentageSizeConfig.getSize(12));
 
-        assertEquals(1420, this.noDynamicPercentageSizeConfig.getAggregateSize(12));
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
 
@@ -828,13 +986,14 @@ public class SizeConfigResizeTest {
     public void shouldDecreaseColumn11WithNoDynamicBigAmount() {
         assertEquals(143, this.noDynamicPercentageSizeConfig.getSize(11));
         assertEquals(1428, this.noDynamicPercentageSizeConfig.getAggregateSize(12));
+
         this.noDynamicPercentageSizeConfig.setSize(11, 100);
 
         assertEquals(100, this.noDynamicPercentageSizeConfig.getSize(11));
+        assertEquals(1386, this.noDynamicPercentageSizeConfig.getAggregateSize(12));
 
         assertEquals(114, this.noDynamicPercentageSizeConfig.getSize(12));
 
-        assertEquals(1386, this.noDynamicPercentageSizeConfig.getAggregateSize(12));
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
 
@@ -842,13 +1001,14 @@ public class SizeConfigResizeTest {
     public void shouldIncreaseColumn11WithNoDynamicSmallAmount() {
         assertEquals(143, this.noDynamicPercentageSizeConfig.getSize(11));
         assertEquals(1428, this.noDynamicPercentageSizeConfig.getAggregateSize(12));
+
         this.noDynamicPercentageSizeConfig.setSize(11, 150);
 
         assertEquals(150, this.noDynamicPercentageSizeConfig.getSize(11));
+        assertEquals(1435, this.noDynamicPercentageSizeConfig.getAggregateSize(12));
 
         assertEquals(65, this.noDynamicPercentageSizeConfig.getSize(12));
 
-        assertEquals(1435, this.noDynamicPercentageSizeConfig.getAggregateSize(12));
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
 
@@ -856,13 +1016,14 @@ public class SizeConfigResizeTest {
     public void shouldIncreaseColumn11WithNoDynamicBigAmount() {
         assertEquals(143, this.noDynamicPercentageSizeConfig.getSize(11));
         assertEquals(1428, this.noDynamicPercentageSizeConfig.getAggregateSize(12));
+
         this.noDynamicPercentageSizeConfig.setSize(11, 180);
 
         assertEquals(180, this.noDynamicPercentageSizeConfig.getSize(11));
+        assertEquals(1465, this.noDynamicPercentageSizeConfig.getAggregateSize(12));
 
         assertEquals(35, this.noDynamicPercentageSizeConfig.getSize(12));
 
-        assertEquals(1465, this.noDynamicPercentageSizeConfig.getAggregateSize(12));
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }
 
