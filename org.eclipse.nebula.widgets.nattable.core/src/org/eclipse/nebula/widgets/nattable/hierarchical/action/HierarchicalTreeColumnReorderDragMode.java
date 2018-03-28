@@ -13,6 +13,8 @@
 package org.eclipse.nebula.widgets.nattable.hierarchical.action;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
+import org.eclipse.nebula.widgets.nattable.group.ColumnGroupUtils;
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalTreeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
@@ -40,13 +42,31 @@ public class HierarchicalTreeColumnReorderDragMode extends ColumnReorderDragMode
     private HierarchicalTreeLayer treeLayer;
     private Cursor currentCursor;
 
+    protected ColumnGroupModel columnGroupModel;
+
     /**
      * @param treeLayer
      *            The {@link HierarchicalTreeLayer} needed to determine the
      *            level column boundaries.
      */
     public HierarchicalTreeColumnReorderDragMode(HierarchicalTreeLayer treeLayer) {
+        this(treeLayer, null);
+    }
+
+    /**
+     * Creates a drag mode that validates the drag operation based on the given
+     * tree level structure and the given column group structure.
+     * 
+     * @param treeLayer
+     *            The {@link HierarchicalTreeLayer} needed to determine the
+     *            level column boundaries.
+     * @param model
+     *            The {@link ColumnGroupModel} to perform column group based
+     *            drag validation. Can be <code>null</code>.
+     */
+    public HierarchicalTreeColumnReorderDragMode(HierarchicalTreeLayer treeLayer, ColumnGroupModel model) {
         this.treeLayer = treeLayer;
+        this.columnGroupModel = model;
         this.targetOverlayPainter = new HierarchicalColumnReorderOverlayPainter();
     }
 
@@ -98,6 +118,24 @@ public class HierarchicalTreeColumnReorderDragMode extends ColumnReorderDragMode
                 return false;
             }
         }
+
+        // if column group is configured do the column group checks
+        if (this.columnGroupModel != null) {
+            // Allow moving within the unbreakable group
+            if (this.columnGroupModel.isPartOfAnUnbreakableGroup(fromIndex)) {
+                return ColumnGroupUtils.isInTheSameGroup(fromIndex, toIndex, this.columnGroupModel);
+            }
+
+            boolean betweenTwoGroups = false;
+            if (this.currentEvent != null) {
+                int minX = this.currentEvent.x - GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
+                int maxX = this.currentEvent.x + GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
+                betweenTwoGroups = ColumnGroupUtils.isBetweenTwoGroups(natLayer, minX, maxX, this.columnGroupModel);
+            }
+
+            return (!this.columnGroupModel.isPartOfAnUnbreakableGroup(toIndex)) || betweenTwoGroups;
+        }
+
         return super.isValidTargetColumnPosition(natLayer, dragFromGridColumnPosition, dragToGridColumnPosition);
     }
 

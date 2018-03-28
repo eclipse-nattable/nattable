@@ -98,7 +98,7 @@ public class DefaultColumnGroupHeaderLayerConfiguration implements IConfiguratio
 
         uiBindingRegistry.registerMouseDragMode(
                 MouseEventMatcher.columnHeaderLeftClick(SWT.NONE),
-                new ColumnHeaderReorderDragMode(this.columnGroupModel));
+                new AggregateDragMode(new CellDragMode(), new ColumnHeaderReorderDragMode(this.columnGroupModel)));
 
         // added NoOpMouseAction on single click because of Bug 428901
         if (!this.enableColumnGroupSelectionHandling) {
