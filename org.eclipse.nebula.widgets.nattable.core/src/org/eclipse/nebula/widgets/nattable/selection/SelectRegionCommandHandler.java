@@ -61,7 +61,7 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
                     anchorColumn < 0 ? region.x : anchorColumn,
                     anchorRow < 0 ? region.y : anchorRow);
 
-            changedRows = new Range(region.y, region.y + region.height);
+            changedRows = new Range(region.y, (region.height < Integer.MAX_VALUE) ? region.y + region.height : this.selectionLayer.getRowCount() - region.y);
         } else if (SelectionUtils.bothShiftAndControl(withShiftMask, withControlMask)
                 || SelectionUtils.isShiftOnly(withShiftMask, withControlMask)) {
             // SHIFT or CTRL + SHIFT modifier enabled
@@ -150,7 +150,7 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
 
         this.selectionLayer.selectRegion(startCol, startRow, noCol, noRow);
 
-        return new Range(startRow, startRow + noRow);
+        return new Range(startRow, (noRow < Integer.MAX_VALUE) ? startRow + noRow : this.selectionLayer.getRowCount() - startRow);
     }
 
     /**
@@ -236,7 +236,7 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
                     anchorRow < 0 ? region.y : anchorRow);
         }
 
-        return new Range(region.y, region.y + region.height);
+        return new Range(region.y, (region.height < Integer.MAX_VALUE) ? region.y + region.height : this.selectionLayer.getRowCount() - region.y);
     }
 
     @Override

@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -38,13 +37,11 @@ import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalTreeLayer.Hi
 import org.eclipse.nebula.widgets.nattable.layer.AbstractDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
-import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.SpanningDataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
-import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
@@ -55,6 +52,7 @@ import org.eclipse.nebula.widgets.nattable.search.strategy.GridSearchStrategy;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
@@ -1544,48 +1542,6 @@ public class HierarchicalTreeLayerTest {
         assertTrue(providedLabels.contains(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + "0"));
         assertTrue(providedLabels.contains(HierarchicalTreeLayer.COLLAPSED_CHILD));
         assertTrue(providedLabels.contains(HierarchicalTreeLayer.LEVEL_HEADER_CELL));
-    }
-
-    public class LayerListenerFixture implements ILayerListener {
-
-        // Received events are kept in order
-        private final List<ILayerEvent> receivedEvents = new LinkedList<>();
-
-        @Override
-        public void handleLayerEvent(ILayerEvent event) {
-            this.receivedEvents.add(event);
-        }
-
-        public List<ILayerEvent> getReceivedEvents() {
-            return this.receivedEvents;
-        }
-
-        public void clearReceivedEvents() {
-            this.receivedEvents.clear();
-        }
-
-        public int getEventsCount() {
-            return this.receivedEvents.size();
-        }
-
-        public boolean containsInstanceOf(Class<? extends ILayerEvent> class1) {
-            for (ILayerEvent inEvent : this.receivedEvents) {
-                if (inEvent.getClass().getName().equals(class1.getName())) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public ILayerEvent getReceivedEvent(Class<? extends ILayerEvent> class1) {
-            for (ILayerEvent inEvent : this.receivedEvents) {
-                if (inEvent.getClass().getName().equals(class1.getName())) {
-                    return inEvent;
-                }
-            }
-            return null;
-        }
-
     }
 
 }
