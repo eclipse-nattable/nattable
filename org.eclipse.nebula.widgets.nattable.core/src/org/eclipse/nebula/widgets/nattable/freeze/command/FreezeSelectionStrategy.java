@@ -124,15 +124,26 @@ public class FreezeSelectionStrategy implements IFreezeCoordinatesProvider {
                     if (columnPosition < 0) {
                         columnPosition = coord.columnPosition;
                     } else {
-                        columnPosition = Math.min(columnPosition, coord.columnPosition);
+                        if (!this.include) {
+                            columnPosition = Math.min(columnPosition, coord.columnPosition);
+                        } else {
+                            columnPosition = Math.max(columnPosition, coord.columnPosition);
+                        }
                     }
                     if (rowPosition < 0) {
                         rowPosition = coord.rowPosition;
                     } else {
-                        rowPosition = Math.min(rowPosition, coord.rowPosition);
+                        if (!this.include) {
+                            rowPosition = Math.min(rowPosition, coord.rowPosition);
+                        } else {
+                            rowPosition = Math.max(rowPosition, coord.rowPosition);
+                        }
                     }
                 }
-                return new PositionCoordinate(this.freezeLayer, columnPosition - 1, rowPosition - 1);
+                return new PositionCoordinate(
+                        this.freezeLayer,
+                        !this.include ? columnPosition - 1 : columnPosition,
+                        !this.include ? rowPosition - 1 : rowPosition);
             }
         } else {
             PositionCoordinate selectionAnchor = this.selectionLayer.getSelectionAnchor();
