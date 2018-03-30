@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,7 @@ package org.eclipse.nebula.widgets.nattable.sort;
 
 public enum SortDirectionEnum {
     ASC("Ascending"), //$NON-NLS-1$
-    DESC("Ascending"), //$NON-NLS-1$
+    DESC("Descending"), //$NON-NLS-1$
     NONE("Unsorted"); //$NON-NLS-1$
 
     private final String description;
