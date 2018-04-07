@@ -26,3 +26,4 @@ Import-Package: javax.annotation;version="1.0.0";resolution:=optional,
  org.eclipse.nebula.widgets.nattable.examples.runner,
  org.osgi.service.event
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: org.eclipse.nebula.widgets.nattable.examples.e4

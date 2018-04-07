@@ -63,3 +63,4 @@ Export-Package: org.eclipse.nebula.widgets.nattable.extension.builder,
  org.eclipse.nebula.widgets.nattable.extension.builder.model,
  org.eclipse.nebula.widgets.nattable.extension.builder.util
 Bundle-Vendor: Eclipse Nebula NatTable
+Automatic-Module-Name: org.eclipse.nebula.widgets.nattable.extension.builder

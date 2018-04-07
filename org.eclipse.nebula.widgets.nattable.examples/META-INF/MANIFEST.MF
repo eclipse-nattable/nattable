@@ -17,3 +17,4 @@ Bundle-Vendor: Eclipse Nebula NatTable
 Export-Package: org.eclipse.nebula.widgets.nattable.examples,
  org.eclipse.nebula.widgets.nattable.examples.runner
 Import-Package: org.eclipse.nebula.widgets.cdatetime
+Automatic-Module-Name: org.eclipse.nebula.widgets.nattable.examples

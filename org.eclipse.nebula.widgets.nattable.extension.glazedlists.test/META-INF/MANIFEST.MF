@@ -23,3 +23,4 @@ Import-Package: org.eclipse.jface.viewers,
  org.junit
 Bundle-Vendor: Eclipse Nebula NatTable
 Require-Bundle: ca.odell.glazedlists;bundle-version="1.9.0"
+Automatic-Module-Name: org.eclipse.nebula.widgets.nattable.extension.glazedlists.tests

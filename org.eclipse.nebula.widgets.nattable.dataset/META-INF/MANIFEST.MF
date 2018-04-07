@@ -13,4 +13,4 @@ Export-Package: org.eclipse.nebula.widgets.nattable.dataset;version="1.4.0",
  org.eclipse.nebula.widgets.nattable.dataset.pricing.valuegenerator;version="1.4.0",
  org.eclipse.nebula.widgets.nattable.dataset.valuegenerator;version="1.4.0"
 Bundle-Vendor: Eclipse Nebula NatTable
-
+Automatic-Module-Name: org.eclipse.nebula.widgets.nattable.dataset
