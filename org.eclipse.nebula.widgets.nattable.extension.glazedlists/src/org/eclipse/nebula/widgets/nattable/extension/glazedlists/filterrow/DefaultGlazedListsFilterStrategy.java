@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -341,15 +341,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
      *         as a {@link String}
      */
     protected TextFilterator<T> getTextFilterator(final Integer columnIndex, final IDisplayConverter converter) {
-        return new TextFilterator<T>() {
-            @Override
-            public void getFilterStrings(List<String> objectAsListOfStrings, T rowObject) {
-                Object cellData = DefaultGlazedListsFilterStrategy.this.columnAccessor.getDataValue(rowObject, columnIndex);
-                Object displayValue = converter.canonicalToDisplayValue(cellData);
-                displayValue = (displayValue != null) ? displayValue : ""; //$NON-NLS-1$
-                objectAsListOfStrings.add(displayValue.toString());
-            }
-        };
+        return new ColumnTextFilterator(converter, columnIndex);
     }
 
     /**
@@ -446,6 +438,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
                 TextMatcherEditor<T> secondText = (TextMatcherEditor<T>) second;
 
                 result = first.getMatcher().equals(second.getMatcher())
+                        && firstText.getFilterator().equals(secondText.getFilterator())
                         && firstText.getMode() == secondText.getMode()
                         && firstText.getStrategy().equals(secondText.getStrategy());
 
@@ -486,4 +479,62 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
     public CompositeMatcherEditor<T> getMatcherEditor() {
         return this.matcherEditor;
     }
+
+    /**
+     * {@link TextFilterator} implementation that extracts the cell value for a
+     * column as String by using an {@link IDisplayConverter}.
+     *
+     * @since 1.6
+     */
+    public class ColumnTextFilterator implements TextFilterator<T> {
+        private final IDisplayConverter converter;
+        private final Integer columnIndex;
+
+        public ColumnTextFilterator(IDisplayConverter converter, Integer columnIndex) {
+            this.converter = converter;
+            this.columnIndex = columnIndex;
+        }
+
+        @Override
+        public void getFilterStrings(List<String> objectAsListOfStrings, T rowObject) {
+            Object cellData = DefaultGlazedListsFilterStrategy.this.columnAccessor.getDataValue(rowObject, this.columnIndex);
+            Object displayValue = this.converter.canonicalToDisplayValue(cellData);
+            displayValue = (displayValue != null) ? displayValue : ""; //$NON-NLS-1$
+            objectAsListOfStrings.add(displayValue.toString());
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getOuterType().hashCode();
+            result = prime * result + ((this.columnIndex == null) ? 0 : this.columnIndex.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            @SuppressWarnings("unchecked")
+            ColumnTextFilterator other = (ColumnTextFilterator) obj;
+            if (!getOuterType().equals(other.getOuterType()))
+                return false;
+            if (this.columnIndex == null) {
+                if (other.columnIndex != null)
+                    return false;
+            } else if (!this.columnIndex.equals(other.columnIndex))
+                return false;
+            return true;
+        }
+
+        private DefaultGlazedListsFilterStrategy<T> getOuterType() {
+            return DefaultGlazedListsFilterStrategy.this;
+        }
+    }
+
 }

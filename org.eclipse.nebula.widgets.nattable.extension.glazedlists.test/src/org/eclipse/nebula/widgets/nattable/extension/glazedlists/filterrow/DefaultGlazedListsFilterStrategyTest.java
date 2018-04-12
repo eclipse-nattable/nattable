@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Dirk Fauth.
+ * Copyright (c) 2018 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,10 @@ import static org.junit.Assert.assertEquals;
 
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.DataLayerFixture;
@@ -24,6 +27,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
 
@@ -123,4 +127,33 @@ public class DefaultGlazedListsFilterStrategyTest {
         dataProvider.setDataValue(1, 1, null);
         assertEquals(18000, filterList.size());
     }
+
+    @Test
+    public void shouldFilterTwoBooleanColumns() {
+        EventList<RowDataFixture> eventList = GlazedLists.eventList(RowDataListFixture.getList());
+        FilterList<RowDataFixture> filterList = new FilterList<>(eventList);
+        IColumnPropertyAccessor<RowDataFixture> columnPropertyAccessor =
+                new ReflectiveColumnPropertyAccessor<>(RowDataListFixture.getPropertyNames());
+
+        ConfigRegistry configRegistry = new ConfigRegistry();
+
+        new DefaultNatTableStyleConfiguration().configureRegistry(configRegistry);
+        new DefaultFilterRowConfiguration().configureRegistry(configRegistry);
+
+        DataLayerFixture columnHeaderLayer = new DataLayerFixture(5, 2, 100, 50);
+        FilterRowDataProvider<RowDataFixture> dataProvider = new FilterRowDataProvider<>(
+                new DefaultGlazedListsFilterStrategy<>(
+                        filterList,
+                        columnPropertyAccessor,
+                        configRegistry),
+                columnHeaderLayer,
+                columnHeaderLayer.getDataProvider(), configRegistry);
+
+        assertEquals(13, filterList.size());
+        dataProvider.setDataValue(27, 1, "true");
+        assertEquals(13, filterList.size());
+        dataProvider.setDataValue(28, 1, "true");
+        assertEquals(0, filterList.size());
+    }
+
 }
