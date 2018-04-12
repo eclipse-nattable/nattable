@@ -456,6 +456,19 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
                         // only make the single row visible again
                         getHiddenRowIndexes().remove(foundIndex);
                     }
+                } else {
+                    int lvl = getLevelByColumnIndex(coord.getLayer().getColumnIndexByPosition(coord.columnPosition));
+                    for (int level = 0; level <= lvl; level++) {
+                        ILayerCell nodeCell = coord.getLayer().getCellByPosition(
+                                this.nodeColumnMapping.get(level),
+                                coord.rowPosition);
+
+                        int colIdx = coord.getLayer().getColumnIndexByPosition(nodeCell.getOriginColumnPosition());
+                        int rowIdx = coord.getLayer().getRowIndexByPosition(nodeCell.getOriginRowPosition());
+                        if (this.collapsedNodes.contains(new HierarchicalTreeNode(colIdx, rowIdx, null))) {
+                            expandOrCollapse(colIdx, rowIdx);
+                        }
+                    }
                 }
 
                 invalidateCache();
