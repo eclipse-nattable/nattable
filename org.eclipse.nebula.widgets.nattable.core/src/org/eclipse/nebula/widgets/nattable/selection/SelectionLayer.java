@@ -17,6 +17,7 @@ package org.eclipse.nebula.widgets.nattable.selection;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.Set;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinateComparator;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.edit.command.EditSelectionCommandHandler;
@@ -266,6 +268,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
                 }
             }
         }
+        Collections.sort(selectedCells, new PositionCoordinateComparator());
         return selectedCells.toArray(new PositionCoordinate[0]);
     }
 
@@ -415,8 +418,8 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      */
     public boolean allCellsSelectedInRegion(Rectangle region) {
         for (int col = region.x; col < (region.x + region.width); col++) {
-            // if the region is for a full column selection, simplify the check for better
-            // performance and correctness
+            // if the region is for a full column selection, simplify the check
+            // for better performance and correctness
             if (region.height == Integer.MAX_VALUE) {
                 if (!isColumnPositionFullySelected(col)) {
                     return false;

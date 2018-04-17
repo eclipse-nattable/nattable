@@ -11,10 +11,10 @@
 package org.eclipse.nebula.widgets.nattable.selection;
 
 import java.util.Arrays;
-import java.util.Comparator;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinateComparator;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRegionCommand;
@@ -242,17 +242,6 @@ public class SelectRegionCommandHandler implements ILayerCommandHandler<SelectRe
     @Override
     public Class<SelectRegionCommand> getCommandClass() {
         return SelectRegionCommand.class;
-    }
-
-    private final class PositionCoordinateComparator implements Comparator<PositionCoordinate> {
-        @Override
-        public int compare(PositionCoordinate o1, PositionCoordinate o2) {
-            int result = o1.getColumnPosition() - o2.getColumnPosition();
-            if (result == 0) {
-                result = o1.getRowPosition() - o2.getRowPosition();
-            }
-            return result;
-        }
     }
 
 }

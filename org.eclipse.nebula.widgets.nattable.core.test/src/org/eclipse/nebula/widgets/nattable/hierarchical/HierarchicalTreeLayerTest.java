@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,6 +28,7 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.dataset.car.CarService;
@@ -51,6 +53,7 @@ import org.eclipse.nebula.widgets.nattable.search.command.SearchCommand;
 import org.eclipse.nebula.widgets.nattable.search.strategy.GridSearchStrategy;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
+import org.eclipse.nebula.widgets.nattable.selection.preserve.PreserveSelectionModel;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
@@ -737,6 +740,38 @@ public class HierarchicalTreeLayerTest {
         // there is a region selection for third level in the second row
         // start column 4, start row 1, two columns and one row
         assertTrue(this.selectionLayer.allCellsSelectedInRegion(new Rectangle(4, 1, 2, 1)));
+    }
+
+    @Test
+    public void testSelectSpannedCellIsOrigin() {
+        // add the PreserveSelectionModel to avoid that the selection is cleared
+        // on expand collapse
+        this.selectionLayer.setSelectionModel(
+                new PreserveSelectionModel<>(this.selectionLayer,
+                        this.bodyDataProvider,
+                        new IRowIdAccessor<HierarchicalWrapper>() {
+
+                            @Override
+                            public Serializable getRowId(HierarchicalWrapper rowObject) {
+                                return rowObject.hashCode();
+                            }
+                        }));
+
+        assertTrue(this.selectionLayer.getSelectedCells().isEmpty());
+
+        // select a cell in first level
+        this.treeLayer.doCommand(new SelectCellCommand(
+                this.treeLayer,
+                1,
+                3,
+                false,
+                false));
+
+        assertEquals(1, this.selectionLayer.getSelectedCells().size());
+
+        ILayerCell cell = this.selectionLayer.getSelectedCells().iterator().next();
+        assertEquals(0, cell.getColumnPosition());
+        assertEquals(0, cell.getRowPosition());
     }
 
     @Test
