@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -111,17 +111,73 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
         super.paintLayer(natLayer, gc, xOffset, yOffset, pixelRectangle, configRegistry);
 
         Rectangle positionRectangle = getPositionRectangleFromPixelRectangle(natLayer, pixelRectangle);
-        int columnPositionOffset = positionRectangle.x;
-        int rowPositionOffset = positionRectangle.y;
 
         // nothing to draw, we exit
         if (positionRectangle.width <= 0 || positionRectangle.height <= 0) {
             return;
         }
 
+        BorderCell[][] borderCells = getBorderCells(natLayer, xOffset, yOffset, positionRectangle, new ApplyBorderFunction() {
+
+            @Override
+            public boolean applyBorder(ILayerCell cell) {
+                return (cell.getDisplayMode() == DisplayMode.SELECT
+                        || cell.getDisplayMode() == DisplayMode.SELECT_HOVER);
+            }
+        });
+
+        if (borderCells != null) {
+            // Save gc settings
+            int originalLineStyle = gc.getLineStyle();
+            int originalLineWidth = gc.getLineWidth();
+            Color originalForeground = gc.getForeground();
+
+            BorderStyle borderStyle = getBorderStyle(configRegistry);
+
+            // on a single cell update we only need to repaint the internal
+            // borders of the
+            // external cells
+            PaintModeEnum paintMode = (positionRectangle.width <= 2 && positionRectangle.height <= 2)
+                    ? PaintModeEnum.NO_EXTERNAL_BORDERS
+                    : PaintModeEnum.ALL;
+
+            BorderPainter borderPainter = new BorderPainter(borderCells, borderStyle, paintMode);
+            borderPainter.paintBorder(gc);
+
+            // Restore original gc settings
+            gc.setLineStyle(originalLineStyle);
+            gc.setLineWidth(originalLineWidth);
+            gc.setForeground(originalForeground);
+        }
+    }
+
+    /**
+     * Calculate the cells around which borders should be painted.
+     *
+     * @param natLayer
+     *            The layer that is painted.
+     * @param xOffset
+     *            of the layer from the origin of the table
+     * @param yOffset
+     *            of the layer from the origin of the table
+     * @param positionRectangle
+     *            The calculated position rectangle for the pixel rectangle that
+     *            should be painted.
+     * @param function
+     *            The function that is used to determine if a border should be
+     *            applied to a cell or not.
+     * @return The {@link BorderCell}s around which the border should be painted
+     *         or <code>null</code> if no border rendering is necessary.
+     *
+     * @since 1.6
+     */
+    protected BorderCell[][] getBorderCells(ILayer natLayer, int xOffset, int yOffset, Rectangle positionRectangle, ApplyBorderFunction function) {
+
         BorderCell[][] borderCells;
         boolean atLeastOne = false;
-        PaintModeEnum paintMode;
+
+        int columnPositionOffset = positionRectangle.x;
+        int rowPositionOffset = positionRectangle.y;
 
         // tentative way to know that this is a single cell update
         if (positionRectangle.width <= 2 && positionRectangle.height <= 2) {
@@ -134,10 +190,6 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
             // +2 because we are going to read also adjacent cells in the
             // extremities
             borderCells = new BorderCell[positionRectangle.height + 2][positionRectangle.width + 2];
-
-            // we need to repaint only the internal borders of the external
-            // cells
-            paintMode = PaintModeEnum.NO_EXTERNAL_BORDERS;
 
             // -1/+1 because we are going to read also adjacent cells in the
             // extremities
@@ -156,7 +208,7 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
                         // layer
                         boolean toBeConsidered = isInCurrentLayer(ix, iy, xOffset, yOffset, cellBounds, borderCells);
 
-                        if (toBeConsidered && isSelected(currentCell)) {
+                        if (toBeConsidered && function.applyBorder(currentCell)) {
                             insideBorder = true;
                             atLeastOne = true;
                         }
@@ -165,13 +217,11 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
                     Rectangle fixedBounds = fixBoundsInGridLines(cellBounds, xOffset, yOffset);
                     BorderCell borderCell = new BorderCell(fixedBounds, insideBorder);
                     borderCells[iy][ix] = borderCell;
-
                 }
             }
         } else {
 
             borderCells = new BorderCell[positionRectangle.height][positionRectangle.width];
-            paintMode = PaintModeEnum.ALL;
 
             for (int columnPosition = columnPositionOffset, ix = 0; columnPosition < columnPositionOffset + positionRectangle.width; columnPosition++, ix++) {
                 for (int rowPosition = rowPositionOffset, iy = 0; rowPosition < rowPositionOffset + positionRectangle.height; rowPosition++, iy++) {
@@ -189,7 +239,7 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 
                         cellBounds = currentCell.getBounds();
 
-                        if (isSelected(currentCell)) {
+                        if (function.applyBorder(currentCell)) {
                             insideBorder = true;
                             atLeastOne = true;
                         }
@@ -198,32 +248,11 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
                     Rectangle fixedBounds = fixBoundsInGridLines(cellBounds, xOffset, yOffset);
                     BorderCell borderCell = new BorderCell(fixedBounds, insideBorder);
                     borderCells[iy][ix] = borderCell;
-
                 }
             }
         }
 
-        if (atLeastOne) {
-            // Save gc settings
-            int originalLineStyle = gc.getLineStyle();
-            int originalLineWidth = gc.getLineWidth();
-            Color originalForeground = gc.getForeground();
-
-            BorderStyle borderStyle = getBorderStyle(configRegistry);
-
-            BorderPainter borderPainter = new BorderPainter(borderCells, borderStyle, paintMode);
-            borderPainter.paintBorder(gc);
-
-            // Restore original gc settings
-            gc.setLineStyle(originalLineStyle);
-            gc.setLineWidth(originalLineWidth);
-            gc.setForeground(originalForeground);
-        }
-    }
-
-    private boolean isSelected(ILayerCell cell) {
-        return (cell.getDisplayMode() == DisplayMode.SELECT
-                || cell.getDisplayMode() == DisplayMode.SELECT_HOVER);
+        return atLeastOne ? borderCells : null;
     }
 
     /**
@@ -414,4 +443,16 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
         return borderStyle;
     }
 
+    /**
+     * Functional interface whose implementations are used to determine if a
+     * border should be applied to a given cell or not.
+     *
+     * TODO replace with java.util.Function once BREE is updated to Java 1.8
+     *
+     * @since 1.6
+     */
+    protected interface ApplyBorderFunction {
+
+        boolean applyBorder(ILayerCell cell);
+    }
 }

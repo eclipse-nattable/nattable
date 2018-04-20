@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2018 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,6 +13,7 @@
 package org.eclipse.nebula.widgets.nattable.copy.command;
 
 import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
+import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionUtils;
 
@@ -71,5 +72,7 @@ public class InternalCopyDataCommandHandler extends CopyDataCommandHandler {
      * Perform actions after copying values to the internal clipboard. E.g.
      * enabling formula evaluation.
      */
-    protected void postInternalCopy() {}
+    protected void postInternalCopy() {
+        this.selectionLayer.fireLayerEvent(new VisualRefreshEvent(this.selectionLayer));
+    }
 }

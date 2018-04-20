@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.selection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -88,6 +89,7 @@ public class SelectionUtils {
      * @since 1.4
      */
     public static boolean isConsecutive(int[] pos) {
+        Arrays.sort(pos);
         for (int i = 1; i < pos.length; i++) {
             if (pos[i - 1] + 1 != pos[i]) {
                 return false;

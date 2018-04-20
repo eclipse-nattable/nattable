@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2018 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,9 +18,13 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.painter.cell.BorderPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.BorderPainter.BorderCell;
+import org.eclipse.nebula.widgets.nattable.painter.cell.BorderPainter.PaintModeEnum;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayerPainter;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle.BorderModeEnum;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -127,50 +131,51 @@ public class CopySelectionLayerPainter extends SelectionLayerPainter {
 
         if (this.clipboard.getCopiedCells() != null) {
             Rectangle positionRectangle = getPositionRectangleFromPixelRectangle(natLayer, pixelRectangle);
-            int columnPositionOffset = positionRectangle.x;
-            int rowPositionOffset = positionRectangle.y;
 
-            // Save gc settings
-            int originalLineStyle = gc.getLineStyle();
-            Color originalForeground = gc.getForeground();
-
-            applyCopyBorderStyle(gc, configRegistry);
-
-            int x0 = 0;
-            int x1 = 0;
-            int y0 = 0;
-            int y1 = 0;
-            boolean isFirst = true;
-            for (ILayerCell[] cells : this.clipboard.getCopiedCells()) {
-                for (ILayerCell cell : cells) {
-                    if (isFirst) {
-                        x0 = cell.getBounds().x;
-                        x1 = cell.getBounds().x + cell.getBounds().width;
-                        y0 = cell.getBounds().y;
-                        y1 = cell.getBounds().y + cell.getBounds().height;
-                        isFirst = false;
-                    } else {
-                        x0 = Math.min(x0, cell.getBounds().x);
-                        x1 = Math.max(x1, cell.getBounds().x + cell.getBounds().width);
-                        y0 = Math.min(y0, cell.getBounds().y);
-                        y1 = Math.max(y1, cell.getBounds().y + cell.getBounds().height);
-                    }
-                }
+            // nothing to draw, we exit
+            if (positionRectangle.width <= 0 || positionRectangle.height <= 0) {
+                return;
             }
 
-            x0 += xOffset - columnPositionOffset;
-            x1 += xOffset - columnPositionOffset;
-            y0 += yOffset - rowPositionOffset;
-            y1 += yOffset - rowPositionOffset;
+            BorderCell[][] borderCells = getBorderCells(natLayer, xOffset, yOffset, positionRectangle, new ApplyBorderFunction() {
 
-            gc.drawLine(x0, y0, x0, y1);
-            gc.drawLine(x0, y0, x1, y0);
-            gc.drawLine(x0, y1, x1, y1);
-            gc.drawLine(x1, y0, x1, y1);
+                @Override
+                public boolean applyBorder(ILayerCell cell) {
+                    for (ILayerCell[] cells : CopySelectionLayerPainter.this.clipboard.getCopiedCells()) {
+                        for (ILayerCell copyCell : cells) {
+                            if (copyCell.getColumnIndex() == cell.getColumnIndex()
+                                    && copyCell.getRowIndex() == cell.getRowIndex()) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+            });
 
-            // Restore original gc settings
-            gc.setLineStyle(originalLineStyle);
-            gc.setForeground(originalForeground);
+            if (borderCells != null) {
+                // Save gc settings
+                int originalLineStyle = gc.getLineStyle();
+                int originalLineWidth = gc.getLineWidth();
+                Color originalForeground = gc.getForeground();
+
+                BorderStyle borderStyle = getCopyBorderStyle(configRegistry);
+
+                // on a single cell update we only need to repaint the internal
+                // borders of the
+                // external cells
+                PaintModeEnum paintMode = (positionRectangle.width <= 2 && positionRectangle.height <= 2)
+                        ? PaintModeEnum.NO_EXTERNAL_BORDERS
+                        : PaintModeEnum.ALL;
+
+                BorderPainter borderPainter = new BorderPainter(borderCells, borderStyle, paintMode);
+                borderPainter.paintBorder(gc);
+
+                // Restore original gc settings
+                gc.setLineStyle(originalLineStyle);
+                gc.setLineWidth(originalLineWidth);
+                gc.setForeground(originalForeground);
+            }
         }
     }
 
@@ -187,6 +192,7 @@ public class CopySelectionLayerPainter extends SelectionLayerPainter {
      *            The {@link ConfigRegistry} to retrieve the style information
      *            from.
      */
+    @Deprecated
     protected void applyCopyBorderStyle(GC gc, IConfigRegistry configRegistry) {
         IStyle cellStyle = configRegistry.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE,
@@ -204,6 +210,33 @@ public class CopySelectionLayerPainter extends SelectionLayerPainter {
             gc.setLineWidth(borderStyle.getThickness());
             gc.setForeground(borderStyle.getColor());
         }
+    }
+
+    /**
+     * Get the border style that should be used to render the border for cells
+     * that are currently copied to the {@link InternalCellClipboard}. Checks
+     * the {@link ConfigRegistry} for a registered {@link IStyle} for the
+     * {@link SelectionStyleLabels#COPY_BORDER_STYLE} label. If none is
+     * registered, a default line style will be used to render the border.
+     *
+     * @param configRegistry
+     *            The {@link ConfigRegistry} to retrieve the style information
+     *            from.
+     * @since 1.6
+     */
+    protected BorderStyle getCopyBorderStyle(IConfigRegistry configRegistry) {
+        IStyle cellStyle = configRegistry.getConfigAttribute(
+                CellConfigAttributes.CELL_STYLE,
+                DisplayMode.NORMAL,
+                SelectionStyleLabels.COPY_BORDER_STYLE);
+        BorderStyle borderStyle = cellStyle != null ? cellStyle.getAttributeValue(CellStyleAttributes.BORDER_STYLE) : null;
+
+        // if there is no border style configured, use the default
+        if (borderStyle == null) {
+            borderStyle = new BorderStyle(1, GUIHelper.COLOR_BLACK, LineStyleEnum.DASHED, BorderModeEnum.CENTERED);
+        }
+
+        return borderStyle;
     }
 
 }

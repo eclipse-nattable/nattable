@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2018 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -63,7 +63,7 @@ public class FillHandleConfiguration extends AbstractLayerConfiguration<NatTable
         // configureUiBindings()
         this.clipboard = natTable.getInternalCellClipboard();
 
-        this.painter = new FillHandleLayerPainter();
+        this.painter = new FillHandleLayerPainter(this.clipboard);
         this.selectionLayer.setLayerPainter(this.painter);
 
         this.selectionLayer.addLayerListener(new FillHandleMarkupListener(this.selectionLayer));
