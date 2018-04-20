@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,7 +21,6 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.search.ISearchDirection;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 
@@ -76,26 +75,11 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
             firstDimCount = selectionLayer.getColumnCount();
             secondDimPosition = selectionAnchor.rowPosition;
             secondDimCount = selectionLayer.getRowCount();
-
-            if (direction < 0) {
-                // If we are searching backwards we must accommodate spanned
-                // cells by starting the search from the right of the cell.
-                ILayerCell cellByPosition = selectionLayer.getCellByPosition(selectionAnchor.columnPosition, selectionAnchor.rowPosition);
-                firstDimPosition = selectionAnchor.columnPosition + cellByPosition.getColumnSpan() - 1;
-            }
-
         } else {
             firstDimPosition = selectionAnchor.rowPosition;
             firstDimCount = selectionLayer.getRowCount();
             secondDimPosition = selectionAnchor.columnPosition;
             secondDimCount = selectionLayer.getColumnCount();
-
-            if (direction < 0) {
-                // If we are searching backwards we must accommodate spanned
-                // cells by starting the search from the bottom of the cell.
-                ILayerCell cellByPosition = selectionLayer.getCellByPosition(selectionAnchor.columnPosition, selectionAnchor.rowPosition);
-                firstDimPosition = selectionAnchor.rowPosition + cellByPosition.getRowSpan() - 1;
-            }
         }
 
         int firstDimStart;

@@ -259,26 +259,35 @@ public class CellDisplayValueSearchUtil {
 
         for (int i = secondDimStart; direction * (secondDimEnd - i) > 0; i += direction) {
             ILayerCell cellByPosition = layer.getCellByPosition(columnPosition, rowPosition);
-            PositionCoordinate searchAnchor = getSearchAnchor(cellByPosition, direction);
 
-            // If we do not hit the searchAnchor with our current position it
-            // means that we have hit a spanned cell somewhere else than in the
-            // top left (for direction == 1) or bottom right (for direction ==
-            // -1). That in turn means that we have already visited that cell.
-            // Thus we skip the compare and proceed to the next position.
-            if (searchAnchor.columnPosition == columnPosition && searchAnchor.rowPosition == rowPosition) {
-                if (compare(
-                        layer,
-                        configRegistry,
-                        pattern,
-                        stringValue,
-                        comparator,
-                        caseSensitive,
-                        wholeWord,
-                        regex,
-                        columnPosition,
-                        rowPosition)) {
-                    return new PositionCoordinate(layer, columnPosition, rowPosition);
+            // on backwards search we only consider the origin position for
+            // spanned cells, otherwise the find order is different from the
+            // forward search order
+            if (!(direction < 0 &&
+                    (cellByPosition.getOriginColumnPosition() != cellByPosition.getColumnPosition() ||
+                            cellByPosition.getOriginRowPosition() != cellByPosition.getRowPosition()))) {
+                PositionCoordinate searchAnchor = getSearchAnchor(cellByPosition, direction);
+
+                // If we do not hit the searchAnchor with our current position
+                // it means that we have hit a spanned cell somewhere else than
+                // in the top left (for direction == 1) or bottom right (for
+                // direction == -1). That in turn means that we have already
+                // visited that cell. Thus we skip the compare and proceed to
+                // the next position.
+                if (searchAnchor.columnPosition == columnPosition && searchAnchor.rowPosition == rowPosition) {
+                    if (compare(
+                            layer,
+                            configRegistry,
+                            pattern,
+                            stringValue,
+                            comparator,
+                            caseSensitive,
+                            wholeWord,
+                            regex,
+                            columnPosition,
+                            rowPosition)) {
+                        return new PositionCoordinate(layer, columnPosition, rowPosition);
+                    }
                 }
             }
 
@@ -299,16 +308,7 @@ public class CellDisplayValueSearchUtil {
      * @return
      */
     private static PositionCoordinate getSearchAnchor(ILayerCell cell, int direction) {
-        if (direction > 0) {
-            // Return the original position of the cell (upper left corner)
-            return new PositionCoordinate(cell.getLayer(), cell.getOriginColumnPosition(), cell.getOriginRowPosition());
-        }
-
-        // Return the lower right corner as we are approaching bottom up.
-        return new PositionCoordinate(
-                cell.getLayer(),
-                cell.getOriginColumnPosition() + cell.getColumnSpan() - 1,
-                cell.getOriginRowPosition() + cell.getRowSpan() - 1);
+        return new PositionCoordinate(cell.getLayer(), cell.getOriginColumnPosition(), cell.getOriginRowPosition());
     }
 
     private static boolean compare(
