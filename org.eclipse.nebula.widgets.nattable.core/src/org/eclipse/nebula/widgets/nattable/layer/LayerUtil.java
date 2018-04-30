@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,24 @@
 package org.eclipse.nebula.widgets.nattable.layer;
 
 public class LayerUtil {
+
+    /**
+     * Modifier that is used by layers if they add additional columns or rows.
+     * By using this modifier layers can mark an added position to tell the
+     * conversion that it can handle the negative index to position conversion.
+     * For example, the HierarchicalTreeLayer adds structural columns to
+     * separate levels, these columns do not have an index as they are added. As
+     * some layers need the local column position, a conversion is performed
+     * first getting the column index and then get back the local position by
+     * index. Each added column is multiplied with this modifier and an
+     * identifier so the returned index is greater than -1, to tell the
+     * index-position transformation that calculation back to position is
+     * possible, and via the identifier the concrete position in the
+     * HierarchicalTreeLayer can be retrieved.
+     *
+     * @since 1.6
+     */
+    public static final int ADDITIONAL_POSITION_MODIFIER = -13;
 
     public static final int getColumnPositionByX(ILayer layer, int x) {
         int width = layer.getWidth();
@@ -92,7 +110,11 @@ public class LayerUtil {
         }
         int columnIndex = sourceLayer.getColumnIndexByPosition(sourceColumnPosition);
         if (columnIndex < 0) {
-            return -1;
+            // if the negative index is multiplied with the additional position
+            // modifier we assume that the back conversion is possible
+            if (columnIndex % ADDITIONAL_POSITION_MODIFIER != 0) {
+                return -1;
+            }
         }
         return targetLayer.getColumnPositionByIndex(columnIndex);
     }
@@ -116,7 +138,11 @@ public class LayerUtil {
         }
         int rowIndex = sourceLayer.getRowIndexByPosition(sourceRowPosition);
         if (rowIndex < 0) {
-            return -1;
+            // if the negative index is multiplied with the additional position
+            // modifier we assume that the back conversion is possible
+            if (rowIndex % ADDITIONAL_POSITION_MODIFIER != 0) {
+                return -1;
+            }
         }
         return targetLayer.getRowPositionByIndex(rowIndex);
     }

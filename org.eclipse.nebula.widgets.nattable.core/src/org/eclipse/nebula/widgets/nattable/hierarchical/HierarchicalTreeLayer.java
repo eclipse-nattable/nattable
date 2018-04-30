@@ -1239,9 +1239,20 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
     @Override
     public int getColumnIndexByPosition(int columnPosition) {
         if (columnPosition < 0
-                || columnPosition >= getColumnCount()
-                || isLevelHeaderColumn(columnPosition)) {
+                || columnPosition >= getColumnCount()) {
             return -1;
+        } else if (isLevelHeaderColumn(columnPosition)) {
+            // return a special negative number for a level header column which
+            // can then be interpreted by LayerUtil and
+            // getColumnPositionByIndex()
+            int level = 0;
+            for (int pos : this.levelHeaderPositions) {
+                level++;
+                if (pos == columnPosition) {
+                    break;
+                }
+            }
+            return level * LayerUtil.ADDITIONAL_POSITION_MODIFIER;
         }
 
         return super.getColumnIndexByPosition(columnPosition);
@@ -1249,6 +1260,10 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
 
     @Override
     public int getColumnPositionByIndex(int columnIndex) {
+        if (columnIndex < 0 && columnIndex % LayerUtil.ADDITIONAL_POSITION_MODIFIER == 0) {
+            return this.levelHeaderPositions[(columnIndex / LayerUtil.ADDITIONAL_POSITION_MODIFIER) - 1];
+        }
+
         int columnPosition = super.getColumnPositionByIndex(columnIndex);
         if (isShowTreeLevelHeader()) {
             for (int pos : this.levelHeaderPositions) {
@@ -1333,14 +1348,14 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
 
         // it is not allowed to drag a level header column and the index of a
         // level header is -1
-        if (fromIndex == -1) {
+        if (fromIndex < 0) {
             return false;
         }
 
-        if (toIndex == -1 && fromColumnPosition < toColumnPosition) {
+        if (toIndex < 0 && fromColumnPosition < toColumnPosition) {
             // get the position to the left of the level header
             toIndex = getColumnIndexByPosition(toColumnPosition - 1);
-        } else if (toIndex == -1 && fromColumnPosition > toColumnPosition) {
+        } else if (toIndex < 0 && fromColumnPosition > toColumnPosition) {
             return false;
         }
 

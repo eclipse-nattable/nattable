@@ -12,6 +12,7 @@ package org.eclipse.nebula.widgets.nattable.freeze.command;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
+import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
@@ -65,27 +66,33 @@ public class FreezeSelectionStrategy implements IFreezeCoordinatesProvider {
             return null;
         }
 
+        // ensure that the selected column position is based on the same layer
+        // as the
+        // scrollable layer of the ViewportLayer
+        int selectedColumnPosition = getUnderlyingColumnPosition(lastSelectedCellPosition.columnPosition);
+        int selectedRowPosition = getUnderlyingRowPosition(lastSelectedCellPosition.rowPosition);
+
         ILayerCell lastSelectedCell =
                 this.selectionLayer.getCellByPosition(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition);
         int columnPosition = this.viewportLayer.getScrollableLayer().getColumnPositionByX(this.viewportLayer.getOrigin().getX());
         if (columnPosition > 0
-                && columnPosition >= lastSelectedCellPosition.columnPosition) {
+                && columnPosition >= selectedColumnPosition) {
 
             if (!this.include) {
-                columnPosition = lastSelectedCellPosition.columnPosition - 1;
+                columnPosition = selectedColumnPosition - 1;
             } else {
-                columnPosition = lastSelectedCellPosition.columnPosition + lastSelectedCell.getColumnSpan() - 1;
+                columnPosition = selectedColumnPosition + lastSelectedCell.getColumnSpan() - 1;
             }
         }
 
         int rowPosition = this.viewportLayer.getScrollableLayer().getRowPositionByY(this.viewportLayer.getOrigin().getY());
         if (rowPosition > 0
-                && rowPosition >= lastSelectedCellPosition.rowPosition) {
+                && rowPosition >= selectedRowPosition) {
 
             if (!this.include) {
-                rowPosition = lastSelectedCellPosition.rowPosition - 1;
+                rowPosition = selectedRowPosition - 1;
             } else {
-                rowPosition = lastSelectedCellPosition.rowPosition - lastSelectedCell.getRowSpan() - 1;
+                rowPosition = selectedRowPosition - lastSelectedCell.getRowSpan() - 1;
             }
         }
 
@@ -104,7 +111,7 @@ public class FreezeSelectionStrategy implements IFreezeCoordinatesProvider {
                 for (int col : selColPos) {
                     columnPosition = Math.max(columnPosition, col);
                 }
-                return new PositionCoordinate(this.freezeLayer, columnPosition, -1);
+                return new PositionCoordinate(this.freezeLayer, getUnderlyingColumnPosition(columnPosition), -1);
             } else if (this.selectionLayer.getFullySelectedRowPositions().length > 0) {
                 // if rows are fully selected we will freeze the rows to the top
                 // including the selected row with the greatest index
@@ -113,7 +120,7 @@ public class FreezeSelectionStrategy implements IFreezeCoordinatesProvider {
                 for (int row : selRowPos) {
                     rowPosition = Math.max(rowPosition, row);
                 }
-                return new PositionCoordinate(this.freezeLayer, -1, rowPosition);
+                return new PositionCoordinate(this.freezeLayer, -1, getUnderlyingRowPosition(rowPosition));
             } else {
                 // find the selected cell that is most to the left and to the
                 // top of the selection
@@ -140,28 +147,74 @@ public class FreezeSelectionStrategy implements IFreezeCoordinatesProvider {
                         }
                     }
                 }
+                int column = getUnderlyingColumnPosition(columnPosition);
+                int row = getUnderlyingRowPosition(rowPosition);
                 return new PositionCoordinate(
                         this.freezeLayer,
-                        !this.include ? columnPosition - 1 : columnPosition,
-                        !this.include ? rowPosition - 1 : rowPosition);
+                        !this.include ? column - 1 : column,
+                        !this.include ? row - 1 : row);
             }
         } else {
             PositionCoordinate selectionAnchor = this.selectionLayer.getSelectionAnchor();
             if (selectionAnchor != null) {
+                int column = getUnderlyingColumnPosition(selectionAnchor.columnPosition);
+                int row = getUnderlyingRowPosition(selectionAnchor.rowPosition);
                 if (!this.include) {
                     return new PositionCoordinate(this.freezeLayer,
-                            selectionAnchor.columnPosition - 1,
-                            selectionAnchor.rowPosition - 1);
+                            column - 1,
+                            row - 1);
                 } else {
                     ILayerCell selectionAnchorCell =
                             this.selectionLayer.getCellByPosition(selectionAnchor.columnPosition, selectionAnchor.rowPosition);
                     return new PositionCoordinate(this.freezeLayer,
-                            selectionAnchor.columnPosition + selectionAnchorCell.getColumnSpan() - 1,
-                            selectionAnchor.rowPosition + selectionAnchorCell.getRowSpan() - 1);
+                            column + selectionAnchorCell.getColumnSpan() - 1,
+                            row + selectionAnchorCell.getRowSpan() - 1);
                 }
             }
         }
         return null;
     }
 
+    /**
+     * Returns the column position to be used for the FreezeLayer position.
+     * Typically no conversion is needed when the FreezeLayer is build on top of
+     * the SelectionLayer. But if there is a layer in between that adds a
+     * transformation (e.g. adding a column like the HierarchicalTreeLayer) the
+     * SelectionLayer based position needs to be converted.
+     *
+     * @param columnPosition
+     *            The SelectionLayer based column position.
+     * @return The column position based on the scrollable layer below the
+     *         ViewportLayer.
+     *
+     * @since 1.6
+     */
+    protected int getUnderlyingColumnPosition(int columnPosition) {
+        if (this.viewportLayer.getScrollableLayer() == this.selectionLayer) {
+            // no transformation necessary
+            return columnPosition;
+        }
+        return LayerUtil.convertColumnPosition(this.selectionLayer, columnPosition, this.viewportLayer.getScrollableLayer());
+    }
+
+    /**
+     * Returns the row position to be used for the FreezeLayer position.
+     * Typically no conversion is needed when the FreezeLayer is build on top of
+     * the SelectionLayer. But if there is a layer in between that adds a
+     * transformation the SelectionLayer based position needs to be converted.
+     *
+     * @param rowPosition
+     *            The SelectionLayer based row position.
+     * @return The row position based on the scrollable layer below the
+     *         ViewportLayer.
+     *
+     * @since 1.6
+     */
+    protected int getUnderlyingRowPosition(int rowPosition) {
+        if (this.viewportLayer.getScrollableLayer() == this.selectionLayer) {
+            // no transformation necessary
+            return rowPosition;
+        }
+        return LayerUtil.convertRowPosition(this.selectionLayer, rowPosition, this.viewportLayer.getScrollableLayer());
+    }
 }

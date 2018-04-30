@@ -817,13 +817,13 @@ public class HierarchicalTreeLayerTest {
 
     @Test
     public void testGetColumnIndexByPosition() {
-        assertEquals(-1, this.treeLayer.getColumnIndexByPosition(0));
+        assertEquals(-13, this.treeLayer.getColumnIndexByPosition(0));
         assertEquals(0, this.treeLayer.getColumnIndexByPosition(1));
         assertEquals(1, this.treeLayer.getColumnIndexByPosition(2));
-        assertEquals(-1, this.treeLayer.getColumnIndexByPosition(3));
+        assertEquals(-26, this.treeLayer.getColumnIndexByPosition(3));
         assertEquals(2, this.treeLayer.getColumnIndexByPosition(4));
         assertEquals(3, this.treeLayer.getColumnIndexByPosition(5));
-        assertEquals(-1, this.treeLayer.getColumnIndexByPosition(6));
+        assertEquals(-39, this.treeLayer.getColumnIndexByPosition(6));
         assertEquals(4, this.treeLayer.getColumnIndexByPosition(7));
         assertEquals(5, this.treeLayer.getColumnIndexByPosition(8));
 
@@ -841,10 +841,13 @@ public class HierarchicalTreeLayerTest {
 
     @Test
     public void testGetColumnPositionByIndex() {
+        assertEquals(0, this.treeLayer.getColumnPositionByIndex(-13));
         assertEquals(1, this.treeLayer.getColumnPositionByIndex(0));
         assertEquals(2, this.treeLayer.getColumnPositionByIndex(1));
+        assertEquals(3, this.treeLayer.getColumnPositionByIndex(-26));
         assertEquals(4, this.treeLayer.getColumnPositionByIndex(2));
         assertEquals(5, this.treeLayer.getColumnPositionByIndex(3));
+        assertEquals(6, this.treeLayer.getColumnPositionByIndex(-39));
         assertEquals(7, this.treeLayer.getColumnPositionByIndex(4));
         assertEquals(8, this.treeLayer.getColumnPositionByIndex(5));
 
@@ -943,10 +946,10 @@ public class HierarchicalTreeLayerTest {
     public void testLevelHeaderCanNotBeReordered() {
         this.treeLayer.doCommand(new ColumnReorderCommand(this.treeLayer, 0, 2));
 
-        assertEquals(-1, this.treeLayer.getColumnIndexByPosition(0));
+        assertEquals(-13, this.treeLayer.getColumnIndexByPosition(0));
         assertEquals(0, this.treeLayer.getColumnIndexByPosition(1));
         assertEquals(1, this.treeLayer.getColumnIndexByPosition(2));
-        assertEquals(-1, this.treeLayer.getColumnIndexByPosition(3));
+        assertEquals(-26, this.treeLayer.getColumnIndexByPosition(3));
     }
 
     @Test
@@ -955,10 +958,10 @@ public class HierarchicalTreeLayerTest {
         this.treeLayer.doCommand(new MultiColumnReorderCommand(this.treeLayer, fromColumnPositions, 5));
 
         // nothing should have changed because that reorder is not allowed
-        assertEquals(-1, this.treeLayer.getColumnIndexByPosition(0));
+        assertEquals(-13, this.treeLayer.getColumnIndexByPosition(0));
         assertEquals(0, this.treeLayer.getColumnIndexByPosition(1));
         assertEquals(1, this.treeLayer.getColumnIndexByPosition(2));
-        assertEquals(-1, this.treeLayer.getColumnIndexByPosition(3));
+        assertEquals(-26, this.treeLayer.getColumnIndexByPosition(3));
     }
 
     @Test
