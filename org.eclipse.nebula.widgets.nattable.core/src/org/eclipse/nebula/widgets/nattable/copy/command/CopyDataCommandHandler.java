@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -49,12 +49,12 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
      * The column header layer of the grid, needed to also copy the column
      * header data.
      */
-    private final ILayer columnHeaderDataLayer;
+    private final ILayer columnHeaderLayer;
     /**
      * The row header layer of the grid, needed to also copy the row header
      * data.
      */
-    private final ILayer rowHeaderDataLayer;
+    private final ILayer rowHeaderLayer;
     /**
      * The layer in the body region that should be used to copy. Only necessary
      * in case there are layers on top of the {@link SelectionLayer} that
@@ -90,19 +90,19 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
      * @param selectionLayer
      *            The {@link SelectionLayer} within the NatTable. Can not be
      *            <code>null</code>.
-     * @param columnHeaderDataLayer
-     *            The column header data layer within the NatTable grid. Can be
+     * @param columnHeaderLayer
+     *            The column header layer within the NatTable grid. Can be
      *            <code>null</code>.
-     * @param rowHeaderDataLayer
-     *            The row header data layer within the NatTable grid. Can be
+     * @param rowHeaderLayer
+     *            The row header layer within the NatTable grid. Can be
      *            <code>null</code>.
      */
     public CopyDataCommandHandler(SelectionLayer selectionLayer,
-            ILayer columnHeaderDataLayer, ILayer rowHeaderDataLayer) {
+            ILayer columnHeaderLayer, ILayer rowHeaderLayer) {
         assert selectionLayer != null : "The SelectionLayer can not be null on creating a CopyDataCommandHandler"; //$NON-NLS-1$
         this.selectionLayer = selectionLayer;
-        this.columnHeaderDataLayer = columnHeaderDataLayer;
-        this.rowHeaderDataLayer = rowHeaderDataLayer;
+        this.columnHeaderLayer = columnHeaderLayer;
+        this.rowHeaderLayer = rowHeaderLayer;
     }
 
     /**
@@ -138,9 +138,9 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
     public boolean doCommand(CopyDataToClipboardCommand command) {
         ISerializer serializer = this.copyFormattedText
                 ? new CopyFormattedTextToClipboardSerializer(assembleCopiedDataStructure(), command)
-        : new CopyDataToClipboardSerializer(assembleCopiedDataStructure(), command);
-                serializer.serialize();
-                return true;
+                : new CopyDataToClipboardSerializer(assembleCopiedDataStructure(), command);
+        serializer.serialize();
+        return true;
     }
 
     @Override
@@ -175,7 +175,7 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
         // to paste the values in the same order we copied them.
         Collections.sort(selectedRowPositions);
 
-        final int rowOffset = this.columnHeaderDataLayer != null ? this.columnHeaderDataLayer.getRowCount() : 0;
+        final int rowOffset = this.columnHeaderLayer != null ? this.columnHeaderLayer.getRowCount() : 0;
         for (int i = 0; i < selectedRowPositions.size(); i++) {
             Integer rowPos = selectedRowPositions.get(i);
             copiedCells[i + rowOffset] = assembleBody(rowPos);
@@ -200,19 +200,19 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
     protected ILayerCell[][] assembleColumnHeaders() {
         // Add offset to rows, remember they need to include the column header
         // rows
-        final int rowOffset = this.columnHeaderDataLayer != null ? this.columnHeaderDataLayer.getRowCount() : 0;
-        final int columnOffset = this.rowHeaderDataLayer != null ? this.rowHeaderDataLayer.getColumnCount() : 0;
+        final int rowOffset = this.columnHeaderLayer != null ? this.columnHeaderLayer.getRowCount() : 0;
+        final int columnOffset = this.rowHeaderLayer != null ? this.rowHeaderLayer.getColumnCount() : 0;
 
         final ILayerCell[][] copiedCells = new ILayerCell[this.selectionLayer.getSelectedRowCount() + rowOffset][1];
 
-        if (this.columnHeaderDataLayer != null) {
+        if (this.columnHeaderLayer != null) {
             int[] selectedColumnPositions = this.selectionLayer.getSelectedColumnPositions();
             for (int i = 0; i < rowOffset; i++) {
                 final ILayerCell[] cells = new ILayerCell[selectedColumnPositions.length + columnOffset];
                 for (int columnPosition = 0; columnPosition < selectedColumnPositions.length; columnPosition++) {
                     // Pad the width of the vertical layer
                     cells[columnPosition + columnOffset] =
-                            this.columnHeaderDataLayer.getCellByPosition(selectedColumnPositions[columnPosition], i);
+                            this.columnHeaderLayer.getCellByPosition(selectedColumnPositions[columnPosition], i);
                 }
 
                 copiedCells[i] = cells;
@@ -236,12 +236,12 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
      */
     protected ILayerCell[] assembleBody(int currentRowPosition) {
         final int[] selectedColumns = this.selectionLayer.getSelectedColumnPositions();
-        final int columnOffset = this.rowHeaderDataLayer != null ? this.rowHeaderDataLayer.getColumnCount() : 0;
+        final int columnOffset = this.rowHeaderLayer != null ? this.rowHeaderLayer.getColumnCount() : 0;
         final ILayerCell[] bodyCells = new ILayerCell[selectedColumns.length + columnOffset];
 
-        if (this.rowHeaderDataLayer != null) {
-            for (int i = 0; i < this.rowHeaderDataLayer.getColumnCount(); i++) {
-                bodyCells[i] = this.rowHeaderDataLayer.getCellByPosition(i, currentRowPosition);
+        if (this.rowHeaderLayer != null) {
+            for (int i = 0; i < this.rowHeaderLayer.getColumnCount(); i++) {
+                bodyCells[i] = this.rowHeaderLayer.getCellByPosition(i, currentRowPosition);
             }
         }
 
@@ -251,8 +251,7 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
                 if (this.copyLayer == null) {
                     bodyCells[columnPosition + columnOffset] =
                             this.selectionLayer.getCellByPosition(selectedColumnPosition, currentRowPosition);
-                }
-                else {
+                } else {
                     int copyColPos = LayerUtil.convertColumnPosition(this.selectionLayer, selectedColumnPosition, this.copyLayer);
                     int copyRowPos = LayerUtil.convertRowPosition(this.selectionLayer, currentRowPosition, this.copyLayer);
 
