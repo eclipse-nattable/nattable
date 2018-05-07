@@ -226,10 +226,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
             setLastSelectedCell(0, 0);
         }
         addSelection(selection);
-        fireCellSelectionEvent(
-                getLastSelectedCell().columnPosition,
-                getLastSelectedCell().rowPosition,
-                false, false, false);
+        fireCellSelectionEvent(0, 0, false, false, false);
     }
 
     // Cell features
