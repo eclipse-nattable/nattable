@@ -431,6 +431,10 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
                 }
                 getHiddenRowIndexes().clear();
                 getHiddenRowIndexes().addAll(updatedHiddenRows);
+            } else if (structuralChangeEvent.isHorizontalStructureChanged()) {
+                // if the column structure was changed we need to recalculate
+                // the header positions, e.g. on column hide or show
+                calculateLevelColumnHeaderPositions();
             }
         } else if (event instanceof SearchEvent) {
             PositionCoordinate coord = ((SearchEvent) event).getCellCoordinate();
@@ -688,7 +692,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
                 List<Integer> levelColumns = getColumnIndexesForLevel(level);
                 for (int columnIndex : levelColumns) {
                     int column = this.selectionLayer.getColumnPositionByIndex(columnIndex);
-                    if (this.selectionLayer.isCellPositionSelected(column, selectionLayerRowPosition)) {
+                    if (column >= 0 && this.selectionLayer.isCellPositionSelected(column, selectionLayerRowPosition)) {
                         return true;
                     }
                 }
@@ -788,7 +792,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
      *         underlying layer <code>false</code> if not.
      */
     private boolean isHiddenInUnderlyingLayer(int rowIndex) {
-        IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
+        IUniqueIndexLayer underlyingLayer = getUnderlyingLayer();
         return (underlyingLayer.getRowPositionByIndex(rowIndex) == -1);
     }
 
@@ -1222,11 +1226,23 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
             this.levelHeaderPositions = new int[this.nodeColumnMapping.size()];
             int pos = 0;
             for (Map.Entry<Integer, Integer> entry : this.nodeColumnMapping.entrySet()) {
-                this.levelHeaderPositions[pos++] = entry.getValue() + entry.getKey();
+                int hiddenColumns = 0;
+                for (int i = (entry.getValue() - 1); i >= 0; i--) {
+                    if (getUnderlyingLayer().getColumnPositionByIndex(i) < 0) {
+                        hiddenColumns++;
+                    }
+                }
+
+                this.levelHeaderPositions[pos++] = entry.getValue() + entry.getKey() - hiddenColumns;
             }
         } else {
             this.levelHeaderPositions = new int[0];
         }
+    }
+
+    @Override
+    protected IUniqueIndexLayer getUnderlyingLayer() {
+        return (IUniqueIndexLayer) this.underlyingLayer;
     }
 
     // Columns

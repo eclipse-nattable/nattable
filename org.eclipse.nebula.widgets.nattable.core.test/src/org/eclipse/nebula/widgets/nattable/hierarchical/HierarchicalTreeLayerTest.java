@@ -33,6 +33,9 @@ import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.dataset.car.CarService;
 import org.eclipse.nebula.widgets.nattable.dataset.car.Classification;
+import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalTreeLayer.HierarchicalTreeNode;
@@ -72,6 +75,7 @@ public class HierarchicalTreeLayerTest {
     private IRowDataProvider<HierarchicalWrapper> bodyDataProvider;
     private DataLayer bodyDataLayer;
     private ColumnReorderLayer columnReorderLayer;
+    private ColumnHideShowLayer columnHideShowLayer;
     private SelectionLayer selectionLayer;
     private HierarchicalTreeLayer treeLayer;
 
@@ -92,7 +96,8 @@ public class HierarchicalTreeLayerTest {
         // simply apply labels for every column by index
         this.bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
         this.columnReorderLayer = new ColumnReorderLayer(this.bodyDataLayer);
-        this.selectionLayer = new SelectionLayer(this.columnReorderLayer);
+        this.columnHideShowLayer = new ColumnHideShowLayer(this.columnReorderLayer);
+        this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
         this.treeLayer = new HierarchicalTreeLayer(this.selectionLayer, this.data, CarService.PROPERTY_NAMES_COMPACT);
 
         this.layerListener = new LayerListenerFixture();
@@ -122,6 +127,33 @@ public class HierarchicalTreeLayerTest {
         assertFalse(this.treeLayer.isLevelHeaderColumn(6));
         assertFalse(this.treeLayer.isLevelHeaderColumn(7));
         assertFalse(this.treeLayer.isLevelHeaderColumn(8));
+    }
+
+    @Test
+    public void testIsLevelHeaderColumnOnHideShow() {
+        assertTrue(this.treeLayer.isLevelHeaderColumn(0));
+        assertTrue(this.treeLayer.isLevelHeaderColumn(3));
+        assertTrue(this.treeLayer.isLevelHeaderColumn(6));
+
+        this.treeLayer.doCommand(new ColumnHideCommand(this.treeLayer, 1));
+
+        assertTrue(this.treeLayer.isLevelHeaderColumn(0));
+        assertTrue(this.treeLayer.isLevelHeaderColumn(2));
+        assertTrue(this.treeLayer.isLevelHeaderColumn(5));
+
+        this.treeLayer.doCommand(new ShowAllColumnsCommand());
+
+        this.treeLayer.doCommand(new ColumnHideCommand(this.treeLayer, 4));
+
+        assertTrue(this.treeLayer.isLevelHeaderColumn(0));
+        assertTrue(this.treeLayer.isLevelHeaderColumn(3));
+        assertTrue(this.treeLayer.isLevelHeaderColumn(5));
+
+        this.treeLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertTrue(this.treeLayer.isLevelHeaderColumn(0));
+        assertTrue(this.treeLayer.isLevelHeaderColumn(3));
+        assertTrue(this.treeLayer.isLevelHeaderColumn(6));
     }
 
     @Test
