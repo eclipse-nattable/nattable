@@ -202,7 +202,10 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
                     ILayerCell currentCell = natLayer.getCellByPosition(columnPosition, rowPosition);
                     if (currentCell != null) {
 
-                        cellBounds = currentCell.getBounds();
+                        // we need to again adjust the cell bounds in case there
+                        // is another layer on top of the SelectionLayer, like
+                        // for example the CompositeFreezeLayer
+                        cellBounds = currentCell.getLayer().getLayerPainter().adjustCellBounds(columnPosition, rowPosition, currentCell.getBounds());
 
                         // the cell should be considered only if it is in our
                         // layer
@@ -237,7 +240,10 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
                         // not selected. This is the reason why we get the
                         // bounds also for non selected cells.
 
-                        cellBounds = currentCell.getBounds();
+                        // we need to again adjust the cell bounds in case there
+                        // is another layer on top of the SelectionLayer, like
+                        // for example the CompositeFreezeLayer
+                        cellBounds = currentCell.getLayer().getLayerPainter().adjustCellBounds(columnPosition, rowPosition, currentCell.getBounds());
 
                         if (function.applyBorder(currentCell)) {
                             insideBorder = true;
@@ -285,10 +291,14 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
         // cell
         if (this.renderGridLines && fixedBounds.x != 0 && fixedBounds.x != xOffset) {
             fixedBounds.x--;
+            fixedBounds.width += 2;
+        } else if (this.renderGridLines && fixedBounds.x != 0 && fixedBounds.x == xOffset) {
             fixedBounds.width++;
         }
         if (this.renderGridLines && fixedBounds.y != 0 && fixedBounds.y != yOffset) {
             fixedBounds.y--;
+            fixedBounds.height += 2;
+        } else if (this.renderGridLines && fixedBounds.y != 0 && fixedBounds.y == yOffset) {
             fixedBounds.height++;
         }
 

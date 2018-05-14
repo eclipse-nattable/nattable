@@ -997,6 +997,15 @@ public class CompositeLayer extends AbstractLayer {
         return this.layoutYCount;
     }
 
+    /**
+     *
+     * @return The internal data structure of the layer composition.
+     * @since 1.6
+     */
+    protected ILayer[][] getChildLayerLayout() {
+        return this.childLayerLayout;
+    }
+
     @Override
     public boolean isDynamicSizeLayer() {
         for (int layoutX = 0; layoutX < this.layoutXCount; layoutX++) {

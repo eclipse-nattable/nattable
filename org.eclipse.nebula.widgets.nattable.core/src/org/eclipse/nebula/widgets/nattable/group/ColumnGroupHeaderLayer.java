@@ -352,7 +352,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                 break;
             }
         }
-        return i;
+        return i < 0 ? columnPosition : i;
     }
 
     @Override

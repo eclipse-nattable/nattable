@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,6 +24,7 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentInde
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralChangeEvent;
@@ -38,6 +39,7 @@ import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectColumn
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectRowCommandHandler;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
 public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndexLayer {
@@ -63,10 +65,12 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
         setChildLayer("FROZEN_REGION", freezeLayer, 0, 0); //$NON-NLS-1$
         setChildLayer("FROZEN_ROW_REGION", //$NON-NLS-1$
                 new DimensionallyDependentIndexLayer(
-                        viewportLayer.getScrollableLayer(), viewportLayer, freezeLayer), 1, 0);
+                        viewportLayer.getScrollableLayer(), viewportLayer, freezeLayer),
+                1, 0);
         setChildLayer("FROZEN_COLUMN_REGION", //$NON-NLS-1$
                 new DimensionallyDependentIndexLayer(
-                        viewportLayer.getScrollableLayer(), freezeLayer, viewportLayer), 0, 1);
+                        viewportLayer.getScrollableLayer(), freezeLayer, viewportLayer),
+                0, 1);
         setChildLayer("NONFROZEN_REGION", viewportLayer, 1, 1); //$NON-NLS-1$
 
         registerCommandHandlers();
@@ -85,14 +89,14 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
         // possible inconsistent freeze-viewport states
         if (event instanceof RowStructuralChangeEvent
                 && (((RowStructuralChangeEvent) event).getRowDiffs() == null
-                || ((RowStructuralChangeEvent) event).getRowDiffs().isEmpty())) {
+                        || ((RowStructuralChangeEvent) event).getRowDiffs().isEmpty())) {
             if (this.viewportLayer.getMinimumOriginRowPosition() < this.freezeLayer.getRowCount()) {
                 this.viewportLayer.setMinimumOriginY(this.freezeLayer.getHeight());
             }
         }
         if (event instanceof ColumnStructuralChangeEvent
                 && (((ColumnStructuralChangeEvent) event).getColumnDiffs() == null
-                || ((ColumnStructuralChangeEvent) event).getColumnDiffs().isEmpty())) {
+                        || ((ColumnStructuralChangeEvent) event).getColumnDiffs().isEmpty())) {
             if (this.viewportLayer.getMinimumOriginColumnPosition() < this.freezeLayer.getColumnCount()) {
                 this.viewportLayer.setMinimumOriginX(this.freezeLayer.getWidth());
             }
@@ -166,6 +170,34 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
         }
         return this.freezeLayer.getRowCount()
                 + this.viewportLayer.getRowPositionByIndex(rowIndex);
+    }
+
+    @Override
+    protected int getLayoutXByColumnPosition(int compositeColumnPosition) {
+        if (compositeColumnPosition < 0 || compositeColumnPosition >= getColumnCount()) {
+            return 1;
+        }
+        return super.getLayoutXByColumnPosition(compositeColumnPosition);
+    }
+
+    @Override
+    protected int getLayoutYByRowPosition(int compositeRowPosition) {
+        if (compositeRowPosition < 0 || compositeRowPosition >= getRowCount()) {
+            return 1;
+        }
+        return super.getLayoutYByRowPosition(compositeRowPosition);
+    }
+
+    @Override
+    protected Point getLayoutXYByPosition(int compositeColumnPosition, int compositeRowPosition) {
+        int layoutX = getLayoutXByColumnPosition(compositeColumnPosition);
+        int layoutY = getLayoutYByRowPosition(compositeRowPosition);
+
+        if (layoutX < 0 || layoutY < 0) {
+            return null;
+        }
+
+        return new Point(layoutX, layoutY);
     }
 
     // Persistence
@@ -269,6 +301,40 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
             gc.setForeground(oldFg);
         }
 
+        @Override
+        public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle cellBounds) {
+            Rectangle adjustedBounds = super.adjustCellBounds(columnPosition, rowPosition, cellBounds);
+            if (isFrozen()) {
+                ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
+                if (cell.isSpannedCell()) {
+                    // handle column spanning
+                    int originXLayout = getLayoutXByColumnPosition(cell.getOriginColumnPosition());
+                    if (originXLayout == 0 && getLayoutXByColumnPosition(columnPosition) == 1) {
+                        // we noticed that the origin column is in the freeze
+                        // layer but the actual column is in the non-frozen
+                        // area, we therefore need to correct the start x of the
+                        // bounds
+                        int startViewport = getChildLayerByLayoutCoordinate(1, 1).getStartXOfColumnPosition(cell.getOriginColumnPosition());
+                        int startFrozen = getStartXOfColumnPosition(cell.getOriginColumnPosition());
+                        int diff = startFrozen - startViewport;
+                        adjustedBounds.y -= diff;
+                    }
+
+                    // handle row spanning
+                    int originYLayout = getLayoutYByRowPosition(cell.getOriginRowPosition());
+                    if (originYLayout == 0 && getLayoutYByRowPosition(rowPosition) == 1) {
+                        // we noticed that the origin row is in the freeze layer
+                        // but the actual row is in the non-frozen area, we
+                        // therefore need to correct the start y of the bounds
+                        int startViewport = getChildLayerByLayoutCoordinate(1, 1).getStartYOfRowPosition(cell.getOriginRowPosition());
+                        int startFrozen = getStartYOfRowPosition(cell.getOriginRowPosition());
+                        int diff = startFrozen - startViewport;
+                        adjustedBounds.y -= diff;
+                    }
+                }
+            }
+            return adjustedBounds;
+        }
     }
 
 }
