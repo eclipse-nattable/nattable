@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
@@ -25,6 +26,10 @@ import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.hierarchical.HierarchicalWrapperSortModel;
+import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
+import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
+import org.eclipse.nebula.widgets.nattable.freeze.action.FreezeGridAction;
+import org.eclipse.nebula.widgets.nattable.freeze.action.UnFreezeGridAction;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
@@ -52,7 +57,11 @@ import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfigurat
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.tree.config.TreeLayerExpandCollapseKeyBindings;
+import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -209,7 +218,33 @@ public class _6044_HierarchicalTreeLayerGridExample extends AbstractNatExample {
             this.treeLayer.setShowTreeLevelHeader(false);
             ViewportLayer viewportLayer = new ViewportLayer(this.treeLayer);
 
-            setUnderlyingLayer(viewportLayer);
+            FreezeLayer freezeLayer =
+                    new FreezeLayer(this.treeLayer);
+            CompositeFreezeLayer compositeFreezeLayer =
+                    new CompositeFreezeLayer(freezeLayer, viewportLayer, this.selectionLayer, false);
+            compositeFreezeLayer.addConfiguration(new AbstractUiBindingConfiguration() {
+
+                @Override
+                public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+                    uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1 | SWT.MOD2, 'f'),
+                            new FreezeGridAction(false, false, true));
+                    uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1 | SWT.MOD2, 'u'),
+                            new UnFreezeGridAction());
+                }
+            });
+
+            setUnderlyingLayer(compositeFreezeLayer);
+        }
+
+        /**
+         * We override this method to redirect to the underlying layer instead
+         * of the default implementation in AbstractLayer. Otherwise the
+         * rendering of spanned cells with a CompositeFreezeLayer is incorrect
+         * as the cell bound calculation is performed at the wrong layer.
+         */
+        @Override
+        public Rectangle getBoundsByPosition(int columnPosition, int rowPosition) {
+            return this.underlyingLayer.getBoundsByPosition(columnPosition, rowPosition);
         }
 
         public SelectionLayer getSelectionLayer() {

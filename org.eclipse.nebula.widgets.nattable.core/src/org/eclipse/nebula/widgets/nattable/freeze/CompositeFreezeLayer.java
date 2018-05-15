@@ -24,7 +24,6 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentInde
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralChangeEvent;
@@ -301,40 +300,6 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
             gc.setForeground(oldFg);
         }
 
-        @Override
-        public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle cellBounds) {
-            Rectangle adjustedBounds = super.adjustCellBounds(columnPosition, rowPosition, cellBounds);
-            if (isFrozen()) {
-                ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
-                if (cell.isSpannedCell()) {
-                    // handle column spanning
-                    int originXLayout = getLayoutXByColumnPosition(cell.getOriginColumnPosition());
-                    if (originXLayout == 0 && getLayoutXByColumnPosition(columnPosition) == 1) {
-                        // we noticed that the origin column is in the freeze
-                        // layer but the actual column is in the non-frozen
-                        // area, we therefore need to correct the start x of the
-                        // bounds
-                        int startViewport = getChildLayerByLayoutCoordinate(1, 1).getStartXOfColumnPosition(cell.getOriginColumnPosition());
-                        int startFrozen = getStartXOfColumnPosition(cell.getOriginColumnPosition());
-                        int diff = startFrozen - startViewport;
-                        adjustedBounds.y -= diff;
-                    }
-
-                    // handle row spanning
-                    int originYLayout = getLayoutYByRowPosition(cell.getOriginRowPosition());
-                    if (originYLayout == 0 && getLayoutYByRowPosition(rowPosition) == 1) {
-                        // we noticed that the origin row is in the freeze layer
-                        // but the actual row is in the non-frozen area, we
-                        // therefore need to correct the start y of the bounds
-                        int startViewport = getChildLayerByLayoutCoordinate(1, 1).getStartYOfRowPosition(cell.getOriginRowPosition());
-                        int startFrozen = getStartYOfRowPosition(cell.getOriginRowPosition());
-                        int diff = startFrozen - startViewport;
-                        adjustedBounds.y -= diff;
-                    }
-                }
-            }
-            return adjustedBounds;
-        }
     }
 
 }
