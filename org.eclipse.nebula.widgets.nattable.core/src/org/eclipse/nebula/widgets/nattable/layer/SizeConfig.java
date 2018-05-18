@@ -967,7 +967,7 @@ public class SizeConfig implements IPersistable {
                 for (int pos : noMinWidth) {
                     Double percentage = this.percentageSizeMap.get(pos);
                     double ratio = percentage / sum;
-                    int dist = (int) Math.round(Double.valueOf(minSizeIncrease * ratio));
+                    int dist = (int) Math.round(minSizeIncrease * ratio);
                     int newValue = this.realSizeMap.get(pos) - dist;
                     newValue = (newValue > 0) ? newValue : 0;
                     realSum -= (this.realSizeMap.get(pos) - newValue);
@@ -981,7 +981,7 @@ public class SizeConfig implements IPersistable {
             // if min size configured, check noInfoPositions and update
             // according to the min size that gets applied
             if (!noInfoPositions.isEmpty() && isMinSizeConfigured()) {
-                double remaining = new Double(space) - realSum;
+                double remaining = Double.valueOf(space - realSum);
                 Double remainingColSpace = remaining / noInfoPositions.size();
 
                 for (Iterator<Integer> it = noInfoPositions.iterator(); it.hasNext();) {
@@ -1011,7 +1011,7 @@ public class SizeConfig implements IPersistable {
                     for (int pos : noMinWidth) {
                         Double percentage = this.percentageSizeMap.get(pos);
                         double ratio = percentage / sum;
-                        int dist = (int) Math.round(Double.valueOf(exceed * ratio));
+                        int dist = (int) Math.round(exceed * ratio);
                         int newValue = this.realSizeMap.get(pos) - dist;
                         newValue = (newValue > 0) ? newValue : 0;
                         realSum -= (this.realSizeMap.get(pos) - newValue);
@@ -1022,7 +1022,7 @@ public class SizeConfig implements IPersistable {
 
             if (!noInfoPositions.isEmpty()) {
                 // now calculate the size for the remaining columns
-                double remaining = new Double(space) - realSum;
+                double remaining = Double.valueOf(space - realSum);
                 Double remainingColSpace = remaining / noInfoPositions.size();
                 for (Integer position : noInfoPositions) {
                     sum += (remainingColSpace / space) * 100;
@@ -1044,7 +1044,7 @@ public class SizeConfig implements IPersistable {
             if (sum < 100
                     && !fixedPercentagePositions.isEmpty()
                     && this.distributeRemainingSpace) {
-                double remaining = new Double(space) - realSum;
+                double remaining = Double.valueOf(space - realSum);
                 if (remaining > 0) {
                     // calculate sum of eligible fixed percentage positions
                     double eligibleSum = 0;
@@ -1056,7 +1056,7 @@ public class SizeConfig implements IPersistable {
                         if (getMinSize(pos) != this.realSizeMap.get(pos)) {
                             Double percentage = this.percentageSizeMap.get(pos);
                             double ratio = percentage / eligibleSum;
-                            int dist = Double.valueOf(remaining * ratio).intValue();
+                            int dist = (int) (remaining * ratio);
                             this.realSizeMap.put(pos, this.realSizeMap.get(pos) + dist);
                         }
                     }
@@ -1130,7 +1130,7 @@ public class SizeConfig implements IPersistable {
      */
     private int calculatePercentageValue(double percentage, int space) {
         double factor = percentage / 100;
-        return new Double(space * factor).intValue();
+        return (int) (space * factor);
     }
 
     /**
@@ -1216,10 +1216,11 @@ public class SizeConfig implements IPersistable {
             // calculate the factor which needs to be used to normalize the
             // values
             double excess = sum - 100;
-            int excessPixel = Double.valueOf(Double.valueOf(this.availableSpace - fixedSum) * excess / 100).intValue();
+            int excessPixel = (int) ((this.availableSpace - fixedSum) * excess / 100);
 
             double newPercentageSum = 0;
             int realSum = 0;
+
             for (Map.Entry<Integer, Integer> mod : toModify.entrySet()) {
                 double ratio = this.percentageSizeMap.get(mod.getKey()) / modifySum;
                 int exc = (int) Math.ceil(excessPixel * ratio);
@@ -1237,7 +1238,12 @@ public class SizeConfig implements IPersistable {
                 this.realSizeMap.put(mod.getKey(), newValue);
             }
 
-            if (newPercentageSum > 100) {
+            // if there are no excessPixels but the sum is greater than 100, we
+            // probably came across a double calculation issue
+            // as it is a recursive call, we do not check in advance and return
+            // the calculation result in case a previous iteration made some
+            // changes
+            if (newPercentageSum > 100 && excessPixel > 0) {
                 return correctPercentageValues(newPercentageSum, positionCount);
             }
 
@@ -1294,7 +1300,7 @@ public class SizeConfig implements IPersistable {
             if (remainingExtend > 0 && getMinSize(pos) != this.realSizeMap.get(pos)) {
                 Double percentage = this.percentageSizeMap.get(pos);
                 double ratio = percentage / eligibleSum;
-                int dist = extend == 1 ? 1 : Double.valueOf(extend * ratio).intValue();
+                int dist = extend == 1 ? 1 : (int) (extend * ratio);
                 int oldValue = this.realSizeMap.get(pos);
                 int newValue = oldValue - dist;
                 // ensure that we do not go below the minimum

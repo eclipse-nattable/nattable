@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Dirk Fauth and others.
+ * Copyright (c) 2012, 2018 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,8 +32,6 @@ import org.eclipse.swt.graphics.Rectangle;
  * layouts on scrolling.
  * </p>
  *
- * @author Dirk Fauth
- *
  * @see TextPainter
  * @see DataLayer#setColumnPercentageSizing(boolean)
  */
@@ -49,7 +47,13 @@ public class AutomaticRowHeightTextPainter extends TextPainter {
 
     @Override
     protected boolean performRowResize(int contentHeight, Rectangle rectangle) {
-        return ((contentHeight != rectangle.height) && this.calculateByTextHeight);
+        if (this.calculateByTextHeight) {
+            // on scaling there could be a difference of 1 pixel because of rounding issues.
+            // in that case we do not trigger a resize to avoid endless useless resizing
+            int diff = contentHeight - rectangle.height;
+            return diff < -1 || diff > 1;
+        }
+        return false;
     }
 
 }

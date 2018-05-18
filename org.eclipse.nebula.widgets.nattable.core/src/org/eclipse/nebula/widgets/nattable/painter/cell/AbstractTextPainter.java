@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -389,7 +389,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
                 output.append(text);
             }
 
-            setNewMinLength(cell, textLength + calculatePadding(cell, availableLength) + (2 * this.spacing));
+            setNewMinLength(cell, textLength + calculatePadding(cell, availableLength));
         } else if (this.calculateByTextLength && !this.wrapText) {
             output.append(modifyTextToDisplay(text, gc, textLength));
 
