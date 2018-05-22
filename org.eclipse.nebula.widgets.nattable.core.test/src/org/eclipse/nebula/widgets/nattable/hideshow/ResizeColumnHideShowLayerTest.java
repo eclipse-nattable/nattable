@@ -26,8 +26,11 @@ import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 import org.eclipse.nebula.widgets.nattable.search.strategy.ISearchStrategy;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
@@ -1041,4 +1044,59 @@ public class ResizeColumnHideShowLayerTest {
         labels = this.hideShowLayer.getConfigLabelsByPosition(1, 0);
         assertTrue("LabelStack not empty", labels.getLabels().isEmpty());
     }
+
+    @Test
+    public void testHideShowPercentageSizedColumnsAndSpecificMinWidthOnScaling() {
+        // column width configuration
+        this.bodyDataLayer.setColumnPercentageSizing(true);
+        this.bodyDataLayer.setMinColumnWidth(2, 20);
+
+        // enable scaling
+        IDpiConverter dpiConverter = new AbstractDpiConverter() {
+
+            @Override
+            protected void readDpiFromDisplay() {
+                this.dpi = 144;
+            }
+
+        };
+        this.hideShowLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+
+        // trigger client area calculations
+        ClientAreaResizeCommand cmd = new ClientAreaResizeCommand(null);
+        cmd.setCalcArea(new Rectangle(0, 0, 900, 100));
+        this.hideShowLayer.doCommand(cmd);
+
+        assertEquals(900, this.hideShowLayer.getWidth());
+        assertEquals(180, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertEquals(180, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(180, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertEquals(180, this.hideShowLayer.getColumnWidthByPosition(3));
+        assertEquals(180, this.hideShowLayer.getColumnWidthByPosition(4));
+
+        assertEquals(30, this.bodyDataLayer.getMinColumnWidth(2));
+
+        this.hideShowLayer.hideColumnPositions(2);
+
+        assertEquals(900, this.hideShowLayer.getWidth());
+        assertEquals(225, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertEquals(225, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertEquals(225, this.hideShowLayer.getColumnWidthByPosition(3));
+        assertEquals(225, this.hideShowLayer.getColumnWidthByPosition(4));
+
+        assertEquals(0, this.bodyDataLayer.getMinColumnWidth(2));
+
+        this.hideShowLayer.showAllColumns();
+
+        assertEquals(900, this.hideShowLayer.getWidth());
+        assertEquals(180, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertEquals(180, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(180, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertEquals(180, this.hideShowLayer.getColumnWidthByPosition(3));
+        assertEquals(180, this.hideShowLayer.getColumnWidthByPosition(4));
+
+        assertEquals(30, this.bodyDataLayer.getMinColumnWidth(2));
+    }
+
 }

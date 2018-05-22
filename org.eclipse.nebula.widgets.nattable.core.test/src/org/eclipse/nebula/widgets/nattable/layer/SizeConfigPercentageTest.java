@@ -1340,4 +1340,66 @@ public class SizeConfigPercentageTest {
         // min size was adjusted because of the resize
         assertEquals(60, sizeConfig.getMinSize(0));
     }
+
+    @Test
+    public void shouldNotExceedSpaceOnScaling() {
+        SizeConfig scaledSizeConfig = new SizeConfig(DEFAULT_SIZE);
+        scaledSizeConfig.setPercentageSizing(true);
+
+        scaledSizeConfig.calculatePercentages(134, 4);
+
+        assertEquals(34, scaledSizeConfig.getSize(0));
+        assertEquals(34, scaledSizeConfig.getSize(1));
+        assertEquals(33, scaledSizeConfig.getSize(2));
+        assertEquals(33, scaledSizeConfig.getSize(3));
+        assertEquals(134, scaledSizeConfig.getAggregateSize(4));
+
+        scaledSizeConfig.setDpiConverter(new AbstractDpiConverter() {
+
+            @Override
+            protected void readDpiFromDisplay() {
+                // use dpi of 144 which will result in a dpi factor of 1.5
+                this.dpi = 144;
+            }
+
+        });
+
+        scaledSizeConfig.calculatePercentages(201, 4);
+
+        assertEquals(51, scaledSizeConfig.getSize(0));
+        assertEquals(50, scaledSizeConfig.getSize(1));
+        assertEquals(50, scaledSizeConfig.getSize(2));
+        assertEquals(50, scaledSizeConfig.getSize(3));
+        assertEquals(201, scaledSizeConfig.getAggregateSize(4));
+    }
+
+    @Test
+    public void shouldNotExceedSpaceOnScaling2() {
+        SizeConfig scaledSizeConfig = new SizeConfig(DEFAULT_SIZE);
+        scaledSizeConfig.setPercentageSizing(true);
+
+        scaledSizeConfig.calculatePercentages(375, 3);
+
+        assertEquals(125, scaledSizeConfig.getSize(0));
+        assertEquals(125, scaledSizeConfig.getSize(1));
+        assertEquals(125, scaledSizeConfig.getSize(2));
+        assertEquals(375, scaledSizeConfig.getAggregateSize(3));
+
+        scaledSizeConfig.setDpiConverter(new AbstractDpiConverter() {
+
+            @Override
+            protected void readDpiFromDisplay() {
+                // use dpi of 144 which will result in a dpi factor of 1.5
+                this.dpi = 144;
+            }
+
+        });
+
+        scaledSizeConfig.calculatePercentages(563, 3);
+
+        assertEquals(188, scaledSizeConfig.getSize(0));
+        assertEquals(188, scaledSizeConfig.getSize(1));
+        assertEquals(187, scaledSizeConfig.getSize(2));
+        assertEquals(563, scaledSizeConfig.getAggregateSize(3));
+    }
 }

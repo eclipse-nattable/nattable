@@ -86,7 +86,7 @@ public class SizeConfig implements IPersistable {
      */
     protected boolean resizableByDefault = true;
     /**
-     * Map that contains percentage values per column for percentage sizing.
+     * Map that contains percentage values per position for percentage sizing.
      *
      * @since 1.6
      */
@@ -373,7 +373,10 @@ public class SizeConfig implements IPersistable {
     public int getSize(int position) {
         Integer size = null;
         if (isPercentageSizing()) {
-            size = this.realSizeMap.get(position);
+            Integer value = this.realSizeMap.get(position);
+            if (value != null) {
+                return value;
+            }
         } else {
             if (this.sizeMap.containsKey(position)) {
                 size = this.sizeMap.get(position);
@@ -399,9 +402,9 @@ public class SizeConfig implements IPersistable {
      */
     public int getMinSize(int position) {
         if (this.minSizeMap.containsKey(position)) {
-            return this.minSizeMap.get(position);
+            return upScale(this.minSizeMap.get(position));
         }
-        return getDefaultMinSize();
+        return upScale(getDefaultMinSize());
     }
 
     /**
@@ -926,7 +929,7 @@ public class SizeConfig implements IPersistable {
                     if (real < minSize) {
                         // remember the added pixels so they can be removed
                         // from other fixed percentage sized positions
-                        minSizeIncrease += (minSize - real);
+                        minSizeIncrease += upScale(minSize - real);
                         // use the min size value
                         real = minSize;
                     } else {
@@ -936,7 +939,7 @@ public class SizeConfig implements IPersistable {
                     realSum += real;
                     this.realSizeMap.put(i, real);
                 } else if (positionValue != null) {
-                    real = positionValue;
+                    real = upScale(positionValue);
                     fixedSum += real;
                     realSum += real;
                     this.realSizeMap.put(i, real);
@@ -1150,7 +1153,7 @@ public class SizeConfig implements IPersistable {
         if (!this.percentageSizingMap.isEmpty() && this.percentageSizing) {
             for (Map.Entry<Integer, Boolean> entry : this.percentageSizingMap.entrySet()) {
                 if (!entry.getValue() && this.sizeMap.containsKey(entry.getKey())) {
-                    space -= this.sizeMap.get(entry.getKey());
+                    space -= upScale(this.sizeMap.get(entry.getKey()));
                 }
             }
         }
@@ -1259,13 +1262,14 @@ public class SizeConfig implements IPersistable {
         int resizeAggregate = 0;
         int resizedColumns = 0;
 
-        Map<Integer, Integer> mapToUse = isPercentageSizing() ? this.realSizeMap : this.sizeMap;
+        boolean percentageSizing = isPercentageSizing();
+        Map<Integer, Integer> mapToUse = percentageSizing ? this.realSizeMap : this.sizeMap;
 
         for (Integer resizedPosition : mapToUse.keySet()) {
             if (resizedPosition.intValue() < position) {
                 resizedColumns++;
                 int size = mapToUse.get(resizedPosition);
-                resizeAggregate += upScale(size);
+                resizeAggregate += percentageSizing ? size : upScale(size);
             } else {
                 break;
             }
