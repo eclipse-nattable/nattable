@@ -20,6 +20,7 @@ import java.util.logging.LogRecord;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -45,6 +46,7 @@ import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -101,7 +103,7 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
         layer.setRegionName(GridRegion.BODY);
 
         NatTable natTable = new NatTable(panel, NatTable.DEFAULT_STYLE_OPTIONS | SWT.BORDER, layer, false);
-        natTable.addConfiguration(new ValidationMessageTableStyleConfiguration());
+        natTable.addConfiguration(new ValidationMessageTableStyleConfiguration(parent));
 
         natTable.configure();
 
@@ -140,21 +142,30 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
     }
 
     public class ValidationMessageTableStyleConfiguration extends DefaultNatTableStyleConfiguration {
-        private int IMAGE_SIZE = GUIHelper.convertHorizontalPixelToDpi(16);
 
-        {
-            JFaceResources.getImageRegistry().put("errorImage",
-                    ImageDescriptor.createFromImageData(
-                            DISPLAY.getSystemImage(SWT.ICON_ERROR).getImageData()
-                                    .scaledTo(this.IMAGE_SIZE, this.IMAGE_SIZE)));
-            JFaceResources.getImageRegistry().put("warningImage",
+        private LocalResourceManager resManager;
+        private Image errorImage;
+        private Image warningImage;
+        private Image infoImage;
+
+        public ValidationMessageTableStyleConfiguration(Composite composite) {
+            this.resManager = new LocalResourceManager(JFaceResources.getResources(), composite);
+
+            int IMAGE_SIZE = GUIHelper.convertHorizontalPixelToDpi(16);
+
+            this.errorImage = this.resManager.createImage(ImageDescriptor.createFromImageData(
+                    DISPLAY.getSystemImage(SWT.ICON_ERROR).getImageData()
+                            .scaledTo(IMAGE_SIZE, IMAGE_SIZE)));
+
+            this.warningImage = this.resManager.createImage(
                     ImageDescriptor.createFromImageData(
                             DISPLAY.getSystemImage(SWT.ICON_WARNING).getImageData()
-                                    .scaledTo(this.IMAGE_SIZE, this.IMAGE_SIZE)));
-            JFaceResources.getImageRegistry().put("infoImage",
+                                    .scaledTo(IMAGE_SIZE, IMAGE_SIZE)));
+
+            this.infoImage = this.resManager.createImage(
                     ImageDescriptor.createFromImageData(
                             DISPLAY.getSystemImage(SWT.ICON_INFORMATION).getImageData()
-                                    .scaledTo(this.IMAGE_SIZE, this.IMAGE_SIZE)));
+                                    .scaledTo(IMAGE_SIZE, IMAGE_SIZE)));
 
             this.hAlign = HorizontalAlignmentEnum.LEFT;
             this.cellPainter = new LineBorderDecorator(
@@ -172,7 +183,7 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
             Style errorStyle = new Style();
             errorStyle.setAttributeValue(
                     CellStyleAttributes.IMAGE,
-                    JFaceResources.getImageRegistry().get("errorImage"));
+                    this.errorImage);
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_STYLE,
                     errorStyle,
@@ -182,7 +193,7 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
             Style warningStyle = new Style();
             warningStyle.setAttributeValue(
                     CellStyleAttributes.IMAGE,
-                    JFaceResources.getImageRegistry().get("warningImage"));
+                    this.warningImage);
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_STYLE,
                     warningStyle,
@@ -192,7 +203,7 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
             Style informationStyle = new Style();
             informationStyle.setAttributeValue(
                     CellStyleAttributes.IMAGE,
-                    JFaceResources.getImageRegistry().get("infoImage"));
+                    this.infoImage);
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_STYLE,
                     informationStyle,
