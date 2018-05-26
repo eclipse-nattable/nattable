@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,8 +20,10 @@ import java.util.Arrays;
 
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
@@ -146,14 +148,16 @@ public class EditIntegrationTest {
                 AlternatingRowConfigLabelAccumulator.ODD_ROW_CONFIG_TYPE);
 
         this.natTable.doCommand(new EditCellCommand(this.natTable, this.natTable
-                .getConfigRegistry(), this.natTable.getCellByPosition(4,
-                COLUMN_HEADER_ROW_COUNT + 2)));
+                .getConfigRegistry(),
+                this.natTable.getCellByPosition(4,
+                        COLUMN_HEADER_ROW_COUNT + 2)));
         assertNotNull(this.natTable.getActiveCellEditor());
         assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
 
         this.natTable.doCommand(new EditCellCommand(this.natTable, this.natTable
-                .getConfigRegistry(), this.natTable.getCellByPosition(4,
-                COLUMN_HEADER_ROW_COUNT + 3)));
+                .getConfigRegistry(),
+                this.natTable.getCellByPosition(4,
+                        COLUMN_HEADER_ROW_COUNT + 3)));
         assertNotNull(this.natTable.getActiveCellEditor());
         assertFalse(this.natTable.getActiveCellEditor().isClosed());
         assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
@@ -566,6 +570,73 @@ public class EditIntegrationTest {
         assertEquals("C", dataProvider.getDataValue(0, 1));
         assertEquals("C", dataProvider.getDataValue(1, 0));
         assertEquals("C", dataProvider.getDataValue(1, 1));
+    }
+
+    @Test
+    public void moveOriginIntoViewportOnOpenSpannedCellInScrolledState() throws Exception {
+        CompositeLayer layer = new CompositeLayer(1, 2);
+        SelectionLayer selectionLayer =
+                new SelectionLayer(
+                        new SpanningDataLayer(
+                                new DummySpanningBodyDataProvider(100, 100)));
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+
+        layer.setChildLayer(GridRegion.COLUMN_HEADER, new DataLayer(new IDataProvider() {
+
+            @Override
+            public void setDataValue(int columnIndex, int rowIndex, Object newValue) {}
+
+            @Override
+            public int getRowCount() {
+                return 1;
+            }
+
+            @Override
+            public Object getDataValue(int columnIndex, int rowIndex) {
+                return "header_" + columnIndex;
+            }
+
+            @Override
+            public int getColumnCount() {
+                return selectionLayer.getColumnCount();
+            }
+        }), 0, 0);
+        layer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
+        this.natTable = new NatTableFixture(layer, 1200, 300, false);
+
+        layer.addConfiguration(new DefaultEditBindings());
+        layer.addConfiguration(new DefaultEditConfiguration());
+        this.natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        this.natTable.enableEditingOnAllCells();
+        this.natTable.configure();
+
+        // scroll down one row
+        viewportLayer.setOriginY(20);
+
+        // verify that the first row is not visible in the viewport
+        assertEquals(1, viewportLayer.getRowIndexByPosition(0));
+
+        // trigger cell selection via command
+        this.natTable.doCommand(new SelectCellCommand(this.natTable, 1, 1, false, false));
+
+        // verify that the first row is visible in the viewport
+        assertEquals(0, viewportLayer.getRowIndexByPosition(0));
+        assertEquals(0, viewportLayer.getOrigin().getY());
+
+        // try the same with a simulated click
+        viewportLayer.setOriginY(20);
+        assertEquals(1, viewportLayer.getRowIndexByPosition(0));
+
+        // trigger cell selection via command
+        SWTUtils.leftClick(120, 25, 0, this.natTable);
+
+        assertEquals(0, viewportLayer.getRowIndexByPosition(0));
+        assertEquals(0, viewportLayer.getOrigin().getY());
+
+        // test the editor borders to be inside the body
+        assertNotNull(this.natTable.getActiveCellEditor());
+        Control editorControl = this.natTable.getActiveCellEditor().getEditorControl();
+        assertEquals(new Rectangle(1, 20, 198, 39), editorControl.getBounds());
     }
 
     /**

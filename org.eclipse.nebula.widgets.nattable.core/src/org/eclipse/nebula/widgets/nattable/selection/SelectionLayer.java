@@ -614,10 +614,19 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
             boolean forcingEntireCellIntoViewport, boolean withShiftMask,
             boolean withControlMask) {
 
+        int column = columnPosition;
+        int row = rowPosition;
+        if (columnPosition >= 0 && rowPosition >= 0) {
+            ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
+            if (cell != null) {
+                column = cell.getOriginColumnPosition();
+                row = cell.getOriginRowPosition();
+            }
+        }
         final CellSelectionEvent selectionEvent =
                 new CellSelectionEvent(this,
-                        columnPosition,
-                        rowPosition,
+                        column,
+                        row,
                         withShiftMask,
                         withControlMask);
         fireLayerEvent(selectionEvent);
