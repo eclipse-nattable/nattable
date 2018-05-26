@@ -195,6 +195,13 @@ public class DefaultHierarchicalTreeLayerConfiguration implements IConfiguration
                 EditableRule.NEVER_EDITABLE,
                 DisplayMode.NORMAL,
                 HierarchicalTreeLayer.COLLAPSED_CHILD);
+
+        // disable editing always for empty childs
+        configRegistry.registerConfigAttribute(
+                EditConfigAttributes.CELL_EDITABLE_RULE,
+                EditableRule.NEVER_EDITABLE,
+                DisplayMode.NORMAL,
+                HierarchicalTreeLayer.NO_OBJECT_IN_LEVEL);
     }
 
     @Override
