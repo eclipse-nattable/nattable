@@ -31,6 +31,7 @@ import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.dataset.car.Car;
 import org.eclipse.nebula.widgets.nattable.dataset.car.CarService;
 import org.eclipse.nebula.widgets.nattable.dataset.car.Classification;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
@@ -1604,7 +1605,7 @@ public class HierarchicalTreeLayerTest {
     @Test
     public void testGetProvidedLabels() {
         Collection<String> providedLabels = this.treeLayer.getProvidedLabels();
-        assertEquals(14, providedLabels.size());
+        assertEquals(15, providedLabels.size());
         assertTrue(providedLabels.contains(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(providedLabels.contains(DefaultTreeLayerConfiguration.TREE_COLLAPSED_CONFIG_TYPE));
         assertTrue(providedLabels.contains(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE));
@@ -1612,6 +1613,34 @@ public class HierarchicalTreeLayerTest {
         assertTrue(providedLabels.contains(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + "0"));
         assertTrue(providedLabels.contains(HierarchicalTreeLayer.COLLAPSED_CHILD));
         assertTrue(providedLabels.contains(HierarchicalTreeLayer.LEVEL_HEADER_CELL));
+        assertTrue(providedLabels.contains(HierarchicalTreeLayer.NO_OBJECT_IN_LEVEL));
     }
 
+    @Test
+    public void testNoLevelObject() {
+        HierarchicalWrapper incomplete = new HierarchicalWrapper(3);
+        incomplete.setObject(0, new Car("Opel", "Insignia"));
+        this.data.add(incomplete);
+
+        assertEquals(12, this.treeLayer.getRowCount());
+
+        assertTrue(this.treeLayer.hasLevelObject(1, 11));
+        assertFalse(this.treeLayer.hasLevelObject(3, 11));
+        assertFalse(this.treeLayer.hasLevelObject(4, 11));
+        assertFalse(this.treeLayer.hasLevelObject(6, 11));
+        assertFalse(this.treeLayer.hasLevelObject(7, 11));
+
+        assertNull(this.treeLayer.getCellByPosition(4, 11).getDataValue());
+        assertNull(this.treeLayer.getCellByPosition(7, 11).getDataValue());
+
+        LabelStack stack = this.treeLayer.getConfigLabelsByPosition(4, 11);
+        assertTrue(stack.hasLabel(HierarchicalTreeLayer.NO_OBJECT_IN_LEVEL));
+        stack = this.treeLayer.getConfigLabelsByPosition(7, 11);
+        assertTrue(stack.hasLabel(HierarchicalTreeLayer.NO_OBJECT_IN_LEVEL));
+
+        this.treeLayer.setHandleNoObjectsInLevel(false);
+
+        stack = this.treeLayer.getConfigLabelsByPosition(4, 11);
+        assertFalse(stack.hasLabel(HierarchicalTreeLayer.NO_OBJECT_IN_LEVEL));
+    }
 }

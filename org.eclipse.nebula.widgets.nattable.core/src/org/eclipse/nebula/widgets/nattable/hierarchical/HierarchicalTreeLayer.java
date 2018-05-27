@@ -86,6 +86,11 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
      */
     public static final String COLLAPSED_CHILD = "COLLAPSED_CHILD"; //$NON-NLS-1$
     /**
+     * Label that gets applied to child level cells if the row object does not
+     * contain an object for that level.
+     */
+    public static final String NO_OBJECT_IN_LEVEL = "NO_OBJECT_IN_LEVEL"; //$NON-NLS-1$
+    /**
      * The underlying list needed for expand/collapse operations.
      */
     private List<HierarchicalWrapper> underlyingList;
@@ -154,6 +159,15 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
      * different background.
      */
     private boolean handleCollapsedChildren = true;
+    /**
+     * Flag to configure whether {@link #getConfigLabelsByPosition(int, int)}
+     * should add the {@link #NO_OBJECT_IN_LEVEL} label to the
+     * {@link LabelStack}. Enabling this configuration allows a different
+     * configuration for child cells of row objects that have no object for a
+     * child level, e.g. making those cells not editable and different styles
+     * like no content painter or different background.
+     */
+    private boolean handleNoObjectsInLevel = true;
     /**
      * Flag to configure if collapsed nodes should be kept in the
      * {@link #collapsedNodes} even if the row object is not contained in the
@@ -542,6 +556,11 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
             }
         }
 
+        // mark cells of empty level objects
+        if (this.handleNoObjectsInLevel && !hasLevelObject(columnPosition, rowPosition)) {
+            configLabels.addLabelOnTop(NO_OBJECT_IN_LEVEL);
+        }
+
         return configLabels;
     }
 
@@ -730,6 +749,42 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
         for (int pos : this.levelHeaderPositions) {
             if (pos == columnPosition) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Test if the cell at the given coordinates belongs to a cell with an
+     * object for the corresponding level or not.
+     *
+     * @param columnPosition
+     *            The column position to check.
+     * @param rowPosition
+     *            The row position to check.
+     * @return <code>true</code> if there is a level object for the
+     *         corresponding level, <code>false</code> if there is no level
+     *         object.
+     */
+    protected boolean hasLevelObject(int columnPosition, int rowPosition) {
+        int columnIndex = getColumnIndexByPosition(columnPosition);
+        int level = -1;
+        if (columnIndex >= 0) {
+            level = getLevelByColumnIndex(columnIndex);
+        } else {
+            int[] positions = this.levelHeaderPositions;
+            for (int i = 0; i < positions.length; i++) {
+                int pos = positions[i];
+                if (pos == columnPosition) {
+                    level = i;
+                }
+            }
+        }
+        if (level >= 0) {
+            int rowIndex = getRowIndexByPosition(rowPosition);
+            if (rowIndex >= 0) {
+                HierarchicalWrapper rowObject = this.underlyingList.get(rowIndex);
+                return rowObject.getObject(level) != null;
             }
         }
         return false;
@@ -1128,6 +1183,43 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
 
     /**
      *
+     * @return <code>true</code> if {@link #getConfigLabelsByPosition(int, int)}
+     *         adds the {@link #NO_OBJECT_IN_LEVEL} label to the
+     *         {@link LabelStack}, <code>false</code> if that processing is not
+     *         performed.
+     */
+    public boolean isHandleNoObjectsInLevel() {
+        return this.handleNoObjectsInLevel;
+    }
+
+    /**
+     * Configure whether {@link #getConfigLabelsByPosition(int, int)} should add
+     * the {@link #NO_OBJECT_IN_LEVEL} label to the {@link LabelStack}. Enabling
+     * this configuration allows a different configuration for child cells of
+     * row objects that have no object for a child level, e.g. making those
+     * cells not editable and different styles like no content painter or
+     * different background.
+     * <p>
+     * <b>Note:</b> To identify level cells without a level object a deep
+     * inspection needs to be performed, which might cause a negative effect on
+     * the rendering performance. The handling is enabled by default, but if the
+     * underlying data model does not support empty level objects or the table
+     * configuration supports editing of such cells by automatically adding
+     * level objects on edit, it is recommended to disable this feature.
+     * </p>
+     *
+     * @param handleNoObjectsInLevel
+     *            <code>true</code> if
+     *            {@link #getConfigLabelsByPosition(int, int)} should add the
+     *            {@link #NO_OBJECT_IN_LEVEL} label to the {@link LabelStack},
+     *            <code>false</code> if that processing should not be performed.
+     */
+    public void setHandleNoObjectsInLevel(boolean handleNoObjectsInLevel) {
+        this.handleNoObjectsInLevel = handleNoObjectsInLevel;
+    }
+
+    /**
+     *
      * @return <code>true</code> if collapsed nodes are retained even if the
      *         corresponding row object is removed from the underlying list.
      *         <code>false</code> if the collapsed nodes are removed if the
@@ -1479,6 +1571,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
         result.add(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + "0"); //$NON-NLS-1$
         result.add(LEVEL_HEADER_CELL);
         result.add(COLLAPSED_CHILD);
+        result.add(NO_OBJECT_IN_LEVEL);
 
         return result;
     }
