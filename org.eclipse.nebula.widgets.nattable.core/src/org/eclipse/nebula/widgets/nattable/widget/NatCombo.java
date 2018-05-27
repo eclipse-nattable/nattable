@@ -938,11 +938,22 @@ public class NatCombo extends Composite {
             // by default the dropdown shell will be created below the cell in
             // the table
             int dropdownShellStartingY = textPosition.y + this.text.getBounds().height;
-            int shellBottomY = textPosition.y + this.text.getBounds().height + listHeight;
+
+            int textBottomY = textPosition.y + this.text.getBounds().height + listHeight;
             // if the bottom of the drowdown is below the display, render it
             // above the cell
-            if (shellBottomY > Display.getCurrent().getBounds().height) {
+            if (textBottomY > Display.getCurrent().getBounds().height) {
                 dropdownShellStartingY = textPosition.y - listHeight;
+            }
+
+            Rectangle parentBounds = getParent().getBounds();
+            Point parentStart = getParent().toDisplay(parentBounds.x, parentBounds.y);
+            int parentBottomY = parentStart.y + parentBounds.height - parentBounds.y;
+            if (getParent().getHorizontalBar() != null && getParent().getHorizontalBar().isVisible()) {
+                parentBottomY -= getParent().getHorizontalBar().getSize().y;
+            }
+            if (dropdownShellStartingY > parentBottomY) {
+                dropdownShellStartingY = parentBottomY;
             }
 
             int filterTextBoxHeight = this.showDropdownFilter ? this.filterBox.computeSize(SWT.DEFAULT, SWT.DEFAULT).y : 0;
