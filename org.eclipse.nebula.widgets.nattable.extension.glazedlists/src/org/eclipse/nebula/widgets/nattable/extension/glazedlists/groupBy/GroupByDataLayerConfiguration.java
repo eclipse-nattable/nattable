@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Edwin Park, Dirk Fauth and others.
+ * Copyright (c) 2012, 2018 Edwin Park, Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,9 @@ package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.config.EditableRule;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 
@@ -43,6 +45,15 @@ public class GroupByDataLayerConfiguration<T> extends AbstractRegistryConfigurat
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.DISPLAY_CONVERTER,
                 new GroupByDisplayConverter<T>(this.groupByDataLayer),
+                DisplayMode.NORMAL,
+                GroupByDataLayer.GROUP_BY_OBJECT);
+
+        // make the GroupByObject cells always non-editable as editing such
+        // fields can have an effect since the value of thos cells can't be
+        // changed
+        configRegistry.registerConfigAttribute(
+                EditConfigAttributes.CELL_EDITABLE_RULE,
+                EditableRule.NEVER_EDITABLE,
                 DisplayMode.NORMAL,
                 GroupByDataLayer.GROUP_BY_OBJECT);
     }
