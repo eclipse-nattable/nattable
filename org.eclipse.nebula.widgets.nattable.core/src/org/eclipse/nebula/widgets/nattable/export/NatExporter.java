@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -485,25 +485,41 @@ public class NatExporter {
                     exporter.exportLayerBegin(outputStream, layerName);
                 }
 
+                int layerHeight = layer.getHeight();
+                int layerWidth = layer.getWidth();
+
                 for (int rowPosition = 0; rowPosition < layer.getRowCount(); rowPosition++) {
-                    exporter.exportRowBegin(outputStream, rowPosition);
-                    if (progressBar != null) {
-                        progressBar.setSelection(rowPosition);
+                    if (layer.getRowHeightByPosition(rowPosition) > 0
+                            && layer.getStartYOfRowPosition(rowPosition) < layerHeight) {
+                        exporter.exportRowBegin(outputStream, rowPosition);
+                        if (progressBar != null) {
+                            progressBar.setSelection(rowPosition);
+                        }
+
+                        for (int columnPosition = 0; columnPosition < layer.getColumnCount(); columnPosition++) {
+                            ILayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);
+
+                            // there needs to be a cell
+                            // its bounds should not be below the width (this
+                            // can happen because viewport is turned off and
+                            // first or last columns are hidden by setting the
+                            // width to 0)
+                            // check that the column width is bigger than 0
+                            if (cell != null
+                                    && cell.getBounds().x < layerWidth
+                                    && layer.getColumnWidthByPosition(columnPosition) > 0) {
+                                IExportFormatter exportFormatter = configRegistry.getConfigAttribute(
+                                        ExportConfigAttributes.EXPORT_FORMATTER,
+                                        cell.getDisplayMode(),
+                                        cell.getConfigLabels().getLabels());
+                                Object exportDisplayValue = exportFormatter.formatForExport(cell, configRegistry);
+
+                                exporter.exportCell(outputStream, exportDisplayValue, cell, configRegistry);
+                            }
+                        }
+
+                        exporter.exportRowEnd(outputStream, rowPosition);
                     }
-
-                    for (int columnPosition = 0; columnPosition < layer.getColumnCount(); columnPosition++) {
-                        ILayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);
-
-                        IExportFormatter exportFormatter = configRegistry.getConfigAttribute(
-                                ExportConfigAttributes.EXPORT_FORMATTER,
-                                cell.getDisplayMode(),
-                                cell.getConfigLabels().getLabels());
-                        Object exportDisplayValue = exportFormatter.formatForExport(cell, configRegistry);
-
-                        exporter.exportCell(outputStream, exportDisplayValue, cell, configRegistry);
-                    }
-
-                    exporter.exportRowEnd(outputStream, rowPosition);
                 }
 
                 if (initExportLayer) {
