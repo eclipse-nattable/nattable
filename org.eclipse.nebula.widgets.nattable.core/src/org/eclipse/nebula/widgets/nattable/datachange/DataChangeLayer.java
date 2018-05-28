@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Dirk Fauth.
+ * Copyright (c) 2017, 2018 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -154,7 +154,8 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
     @Override
     public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
         LabelStack labels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
-        if (this.dataChanges.containsKey(this.keyHandler.getKey(columnPosition, rowPosition))) {
+        Object key = this.keyHandler.getKey(columnPosition, rowPosition);
+        if (key != null && this.dataChanges.containsKey(key)) {
             labels.addLabelOnTop(DIRTY);
         }
         return labels;
@@ -163,7 +164,7 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
     @Override
     public Object getDataValueByPosition(int columnPosition, int rowPosition) {
         Object key = this.keyHandler.getKey(columnPosition, rowPosition);
-        if (this.temporaryDataStorage && this.dataChanges.containsKey(key)) {
+        if (this.temporaryDataStorage && key != null && this.dataChanges.containsKey(key)) {
             return this.dataChanges.get(key).getNewValue();
         }
         return super.getDataValueByPosition(columnPosition, rowPosition);
@@ -177,26 +178,27 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
         if (!this.temporaryDataStorage && this.handleDataUpdateEvents && event instanceof DataUpdateEvent) {
             DataUpdateEvent updateEvent = (DataUpdateEvent) event;
             Object key = this.keyHandler.getKey(updateEvent.getColumnPosition(), updateEvent.getRowPosition());
-            synchronized (this.dataChanges) {
-                // only store a change if there is no change already stored
-                // this ensures that a discard really restores the original
-                if (!this.dataChanges.containsKey(key)) {
-                    this.changedColumns.add(updateEvent.getColumnPosition());
-                    this.changedRows.add(updateEvent.getRowPosition());
-                    // store an UpdateDataCommand that can be used to revert the
-                    // change
-                    this.dataChanges.put(
-                            key,
-                            new UpdateDataCommand(this, updateEvent.getColumnPosition(), updateEvent.getRowPosition(), updateEvent.getOldValue()));
-                } else if ((this.dataChanges.get(key).getNewValue() != null && this.dataChanges.get(key).getNewValue().equals(updateEvent.getNewValue())
-                        || (this.dataChanges.get(key).getNewValue() == null && updateEvent.getNewValue() == null))) {
-                    // the value was changed back to the original value in
-                    // the underlying layer simply remove the local storage
-                    // to not showing the cell as dirty
-                    this.dataChanges.remove(this.keyHandler.getKey(updateEvent.getColumnPosition(), updateEvent.getRowPosition()));
-                    rebuildPositionCollections();
+            if (key != null) {
+                synchronized (this.dataChanges) {
+                    // only store a change if there is no change already stored
+                    // this ensures that a discard really restores the original
+                    if (!this.dataChanges.containsKey(key)) {
+                        this.changedColumns.add(updateEvent.getColumnPosition());
+                        this.changedRows.add(updateEvent.getRowPosition());
+                        // store an UpdateDataCommand that can be used to revert
+                        // the change
+                        this.dataChanges.put(
+                                key,
+                                new UpdateDataCommand(this, updateEvent.getColumnPosition(), updateEvent.getRowPosition(), updateEvent.getOldValue()));
+                    } else if ((this.dataChanges.get(key).getNewValue() != null && this.dataChanges.get(key).getNewValue().equals(updateEvent.getNewValue())
+                            || (this.dataChanges.get(key).getNewValue() == null && updateEvent.getNewValue() == null))) {
+                        // the value was changed back to the original value in
+                        // the underlying layer simply remove the local storage
+                        // to not showing the cell as dirty
+                        this.dataChanges.remove(key);
+                        rebuildPositionCollections();
+                    }
                 }
-
             }
         } else if (event instanceof IStructuralChangeEvent) {
             IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
@@ -285,25 +287,28 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
             UpdateDataCommand updateCommand = (UpdateDataCommand) command;
             int columnPosition = updateCommand.getColumnPosition();
             int rowPosition = updateCommand.getRowPosition();
-            Object currentValue = getDataValueByPosition(columnPosition, rowPosition);
-            if ((currentValue == null && updateCommand.getNewValue() != null)
-                    || (updateCommand.getNewValue() == null && currentValue != null)
-                    || (currentValue != null && updateCommand.getNewValue() != null && !currentValue.equals(updateCommand.getNewValue()))) {
+            Object key = this.keyHandler.getKey(columnPosition, rowPosition);
+            if (key != null) {
+                Object currentValue = getDataValueByPosition(columnPosition, rowPosition);
+                if ((currentValue == null && updateCommand.getNewValue() != null)
+                        || (updateCommand.getNewValue() == null && currentValue != null)
+                        || (currentValue != null && updateCommand.getNewValue() != null && !currentValue.equals(updateCommand.getNewValue()))) {
 
-                Object underlyingDataValue = getUnderlyingLayer().getDataValueByPosition(columnPosition, rowPosition);
-                if ((updateCommand.getNewValue() == null && underlyingDataValue == null)
-                        || (updateCommand.getNewValue() != null && updateCommand.getNewValue().equals(underlyingDataValue))) {
-                    // the value was changed back to the original value in
-                    // the underlying layer simply remove the local storage
-                    // to not showing the cell as dirty
-                    this.dataChanges.remove(this.keyHandler.getKey(columnPosition, rowPosition));
-                    rebuildPositionCollections();
-                } else {
-                    this.changedColumns.add(columnPosition);
-                    this.changedRows.add(rowPosition);
-                    this.dataChanges.put(this.keyHandler.getKey(columnPosition, rowPosition), updateCommand);
+                    Object underlyingDataValue = getUnderlyingLayer().getDataValueByPosition(columnPosition, rowPosition);
+                    if ((updateCommand.getNewValue() == null && underlyingDataValue == null)
+                            || (updateCommand.getNewValue() != null && updateCommand.getNewValue().equals(underlyingDataValue))) {
+                        // the value was changed back to the original value in
+                        // the underlying layer simply remove the local storage
+                        // to not showing the cell as dirty
+                        this.dataChanges.remove(key);
+                        rebuildPositionCollections();
+                    } else {
+                        this.changedColumns.add(columnPosition);
+                        this.changedRows.add(rowPosition);
+                        this.dataChanges.put(key, updateCommand);
+                    }
+                    fireLayerEvent(new CellVisualChangeEvent(this, columnPosition, rowPosition));
                 }
-                fireLayerEvent(new CellVisualChangeEvent(this, columnPosition, rowPosition));
             }
             return true;
         }
@@ -437,7 +442,11 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
      *         saved yet), <code>false</code> if not.
      */
     public boolean isCellDirty(int columnPosition, int rowPosition) {
-        return this.dataChanges.containsKey(this.keyHandler.getKey(columnPosition, rowPosition));
+        Object key = this.keyHandler.getKey(columnPosition, rowPosition);
+        if (key != null) {
+            return this.dataChanges.containsKey(key);
+        }
+        return false;
     }
 
     /**
