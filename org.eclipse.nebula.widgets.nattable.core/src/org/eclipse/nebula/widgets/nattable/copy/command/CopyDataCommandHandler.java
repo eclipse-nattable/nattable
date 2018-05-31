@@ -168,7 +168,9 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
         List<Integer> selectedRowPositions = new ArrayList<Integer>();
         for (Range range : selectedRows) {
             for (int rowPosition = range.start; rowPosition < range.end; rowPosition++) {
-                selectedRowPositions.add(rowPosition);
+                if (this.selectionLayer.getRowHeightByPosition(rowPosition) > 0) {
+                    selectedRowPositions.add(rowPosition);
+                }
             }
         }
         // ensure the correct order as a Set is not ordered at all and we want
@@ -206,7 +208,7 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
         final ILayerCell[][] copiedCells = new ILayerCell[this.selectionLayer.getSelectedRowCount() + rowOffset][1];
 
         if (this.columnHeaderLayer != null) {
-            int[] selectedColumnPositions = this.selectionLayer.getSelectedColumnPositions();
+            int[] selectedColumnPositions = getSelectedColumnPositions();
             for (int i = 0; i < rowOffset; i++) {
                 final ILayerCell[] cells = new ILayerCell[selectedColumnPositions.length + columnOffset];
                 for (int columnPosition = 0; columnPosition < selectedColumnPositions.length; columnPosition++) {
@@ -235,7 +237,7 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
      *         the clipboard.
      */
     protected ILayerCell[] assembleBody(int currentRowPosition) {
-        final int[] selectedColumns = this.selectionLayer.getSelectedColumnPositions();
+        final int[] selectedColumns = getSelectedColumnPositions();
         final int columnOffset = this.rowHeaderLayer != null ? this.rowHeaderLayer.getColumnCount() : 0;
         final ILayerCell[] bodyCells = new ILayerCell[selectedColumns.length + columnOffset];
 
@@ -263,4 +265,28 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
         return bodyCells;
     }
 
+    /**
+     * Returns the array of visible selected column positions. For this it gets
+     * all selected column positions, inspects the column width per position and
+     * only consider positions whose width is greater than 0.
+     *
+     * @return Array of visible selected column positions.
+     *
+     * @since 1.6
+     */
+    protected int[] getSelectedColumnPositions() {
+        List<Integer> selected = new ArrayList<Integer>();
+        for (int pos : this.selectionLayer.getSelectedColumnPositions()) {
+            if (this.selectionLayer.getColumnWidthByPosition(pos) > 0) {
+                selected.add(pos);
+            }
+        }
+        int[] selectedColumns = new int[selected.size()];
+        int index = 0;
+        for (int pos : selected) {
+            selectedColumns[index] = pos;
+            index++;
+        }
+        return selectedColumns;
+    }
 }
