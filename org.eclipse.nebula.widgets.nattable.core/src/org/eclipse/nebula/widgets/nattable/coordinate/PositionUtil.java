@@ -13,9 +13,12 @@ package org.eclipse.nebula.widgets.nattable.coordinate;
 import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNotEmpty;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class PositionUtil {
 
@@ -100,4 +103,48 @@ public class PositionUtil {
 
         return getRanges(numberCollection);
     }
+
+    /**
+     * Creates an array of positions from the given set of {@link Range}s.
+     *
+     * <p>
+     * Example: [[Range(0 - 3)][Range(4 - 7)]] will return [0, 1, 2, 4, 5, 6].
+     * </p>
+     * <p>
+     * The last number in the Range is not inclusive.
+     * </p>
+     *
+     * @param ranges
+     *            a set of ranges to retrieve positions
+     * @return an array of positions retrieved from ranges
+     *
+     * @since 1.6
+     */
+    public static int[] getPositions(Set<Range> ranges) {
+        if ((ranges == null) || (ranges.size() == 0)) {
+            return new int[0];
+        }
+        // TODO change to Java 8 streams
+        // return ranges
+        // .stream()
+        // .flatMapToInt(r -> IntStream.range(r.start, r.end))
+        // .sorted()
+        // .toArray();
+
+        Set<Integer> positions = new HashSet<Integer>();
+        for (Range r : ranges) {
+            for (int i = r.start; i < r.end; i++) {
+                positions.add(i);
+            }
+        }
+        int[] result = new int[positions.size()];
+        int index = 0;
+        for (int pos : positions) {
+            result[index] = pos;
+            index++;
+        }
+        Arrays.sort(result);
+        return result;
+    }
+
 }

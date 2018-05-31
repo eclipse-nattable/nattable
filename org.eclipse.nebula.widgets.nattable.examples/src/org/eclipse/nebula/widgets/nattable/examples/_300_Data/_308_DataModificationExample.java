@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Dirk Fauth and others.
+ * Copyright (c) 2016, 2018 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,12 +10,14 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._300_Data;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.command.AbstractMultiRowCommand;
 import org.eclipse.nebula.widgets.nattable.command.AbstractRowCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
@@ -25,6 +27,7 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
@@ -45,11 +48,13 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowDeleteEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowInsertEvent;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -242,8 +247,15 @@ public class _308_DataModificationExample extends AbstractNatExample {
                             deleteRow.addSelectionListener(new SelectionAdapter() {
                                 @Override
                                 public void widgetSelected(SelectionEvent event) {
-                                    int rowPosition = MenuItemProviders.getNatEventData(event).getRowPosition();
-                                    natTable.doCommand(new DeleteRowCommand(natTable, rowPosition));
+                                    SelectionLayer selectionLayer = bodyLayerStack.getSelectionLayer();
+                                    int[] selectedRowPositions = PositionUtil.getPositions(selectionLayer.getSelectedRowPositions());
+
+                                    if (selectedRowPositions.length > 0) {
+                                        selectionLayer.doCommand(new DeleteRowCommand(selectionLayer, selectedRowPositions));
+                                    } else {
+                                        int rowPosition = MenuItemProviders.getNatEventData(event).getRowPosition();
+                                        natTable.doCommand(new DeleteRowCommand(natTable, rowPosition));
+                                    }
                                 }
                             });
                         }
@@ -263,7 +275,12 @@ public class _308_DataModificationExample extends AbstractNatExample {
                                 int columnPosition = natTable.getColumnPositionByX(event.x);
                                 int rowPosition = natTable.getRowPositionByY(event.y);
 
-                                if (!bodyLayerStack.getSelectionLayer().isRowPositionFullySelected(rowPosition)) {
+                                SelectionLayer selectionLayer = bodyLayerStack.getSelectionLayer();
+
+                                int bodyRowPosition = LayerUtil.convertRowPosition(natTable, rowPosition, selectionLayer);
+
+                                if (!selectionLayer.isRowPositionFullySelected(bodyRowPosition)
+                                        && !selectionLayer.isRowPositionSelected(bodyRowPosition)) {
                                     natTable.doCommand(
                                             new SelectRowsCommand(
                                                     natTable,
@@ -350,12 +367,12 @@ public class _308_DataModificationExample extends AbstractNatExample {
     }
 
     /**
-     * Command to delete a row.
+     * Command to delete rows.
      */
-    class DeleteRowCommand extends AbstractRowCommand {
+    class DeleteRowCommand extends AbstractMultiRowCommand {
 
-        public DeleteRowCommand(ILayer layer, int rowPosition) {
-            super(layer, rowPosition);
+        public DeleteRowCommand(ILayer layer, int... rowPositions) {
+            super(layer, rowPositions);
         }
 
         protected DeleteRowCommand(DeleteRowCommand command) {
@@ -391,10 +408,15 @@ public class _308_DataModificationExample extends AbstractNatExample {
         public boolean doCommand(ILayer targetLayer, DeleteRowCommand command) {
             // convert the transported position to the target layer
             if (command.convertToTargetLayer(targetLayer)) {
-                // remove the element
-                this.bodyData.remove(command.getRowPosition());
+                int[] positions = command.getRowPositions().stream().mapToInt(i -> i).toArray();
+                Arrays.sort(positions);
+                for (int i = positions.length - 1; i >= 0; i--) {
+                    // remove the element
+                    int pos = positions[i];
+                    this.bodyData.remove(pos);
+                }
                 // fire the event to refresh
-                targetLayer.fireLayerEvent(new RowDeleteEvent(targetLayer, command.getRowPosition()));
+                targetLayer.fireLayerEvent(new RowDeleteEvent(targetLayer, PositionUtil.getRanges(positions)));
                 return true;
             }
             return false;
