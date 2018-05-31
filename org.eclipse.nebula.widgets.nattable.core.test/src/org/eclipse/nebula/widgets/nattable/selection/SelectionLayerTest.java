@@ -96,7 +96,9 @@ public class SelectionLayerTest {
 
         this.selectionLayer.clearSelection(new Rectangle(0, 0, 1, 1));
 
-        assertNotNull(this.selectionLayer.getLastSelectedCellPosition());
+        // if the cleared selection contains the last selected cell, it also
+        // needs to be cleared
+        assertNull(this.selectionLayer.getLastSelectedCellPosition());
         assertTrue(this.selectionLayer.getLastSelectedRegion().width > 0);
         assertTrue(this.selectionLayer.getLastSelectedRegion().height > 0);
 

@@ -199,6 +199,11 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
             setLastSelectedCell(NO_SELECTION, NO_SELECTION);
             setLastSelectedRegion(new Rectangle(0, 0, 0, 0));
         }
+
+        if (getLastSelectedCell().columnPosition == columnPosition
+                && getLastSelectedCell().rowPosition == rowPosition) {
+            setLastSelectedCell(NO_SELECTION, NO_SELECTION);
+        }
     }
 
     public void clearSelection(Rectangle selection) {
@@ -217,16 +222,48 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
             setLastSelectedCell(NO_SELECTION, NO_SELECTION);
             setLastSelectedRegion(new Rectangle(0, 0, 0, 0));
         }
+
+        // we need to clear the last selected cell in case the selection in that
+        // rectangle is cleared
+        Point lastSelectedPoint = new Point(
+                getLastSelectedCell().columnPosition,
+                getLastSelectedCell().rowPosition);
+        if (selection.contains(lastSelectedPoint)) {
+            setLastSelectedCell(NO_SELECTION, NO_SELECTION);
+        }
     }
 
     public void selectAll() {
         Rectangle selection = new Rectangle(0, 0, getColumnCount(), getRowCount());
-        if (getLastSelectedCell().columnPosition == SelectionLayer.NO_SELECTION
-                || getLastSelectedCell().rowPosition == SelectionLayer.NO_SELECTION) {
-            setLastSelectedCell(0, 0);
+        PositionCoordinate lastSelected = getLastSelectedCell();
+        if (lastSelected.columnPosition == SelectionLayer.NO_SELECTION
+                || lastSelected.columnPosition >= getColumnCount()
+                || lastSelected.rowPosition == SelectionLayer.NO_SELECTION
+                || lastSelected.rowPosition >= getRowCount()) {
+            // search for the first visible column
+            // typically this is 0/0 but when using 0 sized columns for hiding
+            // columns, this leads to missing repainting
+            int column = 0;
+            for (; column < getColumnCount(); column++) {
+                if (getColumnWidthByPosition(column) > 0) {
+                    break;
+                }
+            }
+            int row = 0;
+            for (; row < getRowCount(); row++) {
+                if (getRowHeightByPosition(row) > 0) {
+                    break;
+                }
+            }
+            setLastSelectedCell(column, row);
         }
         addSelection(selection);
-        fireCellSelectionEvent(0, 0, false, false, false);
+        fireCellSelectionEvent(
+                getLastSelectedCell().columnPosition,
+                getLastSelectedCell().rowPosition,
+                false,
+                false,
+                false);
     }
 
     // Cell features
