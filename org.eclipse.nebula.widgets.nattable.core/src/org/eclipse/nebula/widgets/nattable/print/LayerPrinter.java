@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -464,15 +464,32 @@ public class LayerPrinter {
                 ILayerCell cell = findColumnCellForBounds(target.layer, colPos);
                 if (cell != null) {
                     Rectangle cellBounds = cell.getBounds();
-                    if (cellBounds.x < endX) {
-                        endX -= (endX - cellBounds.x);
+                    if (cellBounds.x <= endX) {
+                        boolean fitsOnPage = pageWidth >= cellBounds.width;
+                        if (fitsOnPage) {
+                            endX -= (endX - cellBounds.x);
+                            numOfHorizontalPages++;
+                        } else {
+                            int endXForColumn = 0;
+                            while (endXForColumn < cellBounds.width) {
+                                endXForColumn += pageWidth;
+                                if (cellBounds.width < endXForColumn) {
+                                    endXForColumn -= (endXForColumn - cellBounds.width);
+                                    numOfHorizontalPages++;
+                                }
+                            }
+                            endX += endXForColumn - pageWidth;
+                            int nextColPos = target.layer.getColumnPositionByX(endX + pageWidth);
+                            if (nextColPos < 0 && target.layer.getWidth() <= numOfHorizontalPages * pageWidth) {
+                                break;
+                            }
+                        }
                     }
                 }
             } else {
                 endX = target.layer.getWidth();
+                numOfHorizontalPages++;
             }
-
-            numOfHorizontalPages++;
         }
 
         int numOfVerticalPages = 0;
@@ -499,8 +516,26 @@ public class LayerPrinter {
                 ILayerCell cell = findRowCellForBounds(target.layer, rowPos);
                 if (cell != null) {
                     Rectangle cellBounds = cell.getBounds();
-                    if (cellBounds.y < endY) {
-                        endY -= (endY - cellBounds.y);
+                    if (cellBounds.y <= endY) {
+                        boolean fitsOnPage = added >= cellBounds.height;
+                        if (fitsOnPage) {
+                            endY -= (endY - cellBounds.y);
+                            numOfVerticalPages++;
+                        } else {
+                            int endYForRow = 0;
+                            while (endYForRow < cellBounds.height) {
+                                endYForRow += added;
+                                if (cellBounds.height < endYForRow) {
+                                    endYForRow -= (endYForRow - cellBounds.height);
+                                    numOfVerticalPages++;
+                                }
+                            }
+                            endX += endYForRow - added;
+                            int nextRowPos = target.layer.getRowPositionByY(endY + pageWidth);
+                            if (nextRowPos < 0 && target.layer.getHeight() <= numOfVerticalPages * added) {
+                                break;
+                            }
+                        }
                     }
                 }
             } else {
@@ -510,9 +545,9 @@ public class LayerPrinter {
                     remaining = ((numOfVerticalPages == 0) ? firstPageHeight : pageHeight) - (target.layer.getHeight() - (endY - added));
                 }
                 endY = target.layer.getHeight();
+                numOfVerticalPages++;
             }
 
-            numOfVerticalPages++;
         }
 
         if (gridLineWidth[0] == null) {
@@ -897,7 +932,8 @@ public class LayerPrinter {
                                     ILayerCell cell = findRowCellForBounds(target.layer, rowPos);
                                     if (cell != null) {
                                         Rectangle cellBounds = cell.getBounds();
-                                        if (cellBounds.y < endY) {
+                                        boolean fitsOnPage = printBoundsHeight >= cellBounds.height;
+                                        if (cellBounds.y < endY && fitsOnPage) {
                                             pbh -= (endY - cellBounds.y);
                                         }
                                     }
@@ -919,7 +955,8 @@ public class LayerPrinter {
                                         ILayerCell cell = findColumnCellForBounds(target.layer, colPos);
                                         if (cell != null) {
                                             Rectangle cellBounds = cell.getBounds();
-                                            if (cellBounds.x < endX) {
+                                            boolean fitsOnPage = printBounds.width >= cellBounds.width;
+                                            if (cellBounds.x < endX && fitsOnPage) {
                                                 printBounds.width -= (endX - cellBounds.x);
                                             }
                                         }
