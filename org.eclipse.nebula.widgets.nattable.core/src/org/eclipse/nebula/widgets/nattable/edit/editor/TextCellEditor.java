@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -119,11 +119,27 @@ public class TextCellEditor extends AbstractCellEditor {
 
     /**
      * Flag to determine whether this editor should try to commit and close on
-     * pressing the enter key. The default is of course <code>true</code>, but
-     * for a multi line text editor, the enter key should be treated as
-     * inserting a new line instead of committing.
+     * pressing the ENTER key. The default is <code>true</code>. For a multi
+     * line text editor, the ENTER key might be used to insert a new line
+     * instead of committing the value when opened in a dialog. In that case the
+     * value should not be committed, as applying the dialog will trigger the
+     * commit. For inline editors setting {@link #commitWithCtrlKey} to
+     * <code>true</code> might be interesting in combination with setting this
+     * value to <code>true</code>, which means that the commit operation is only
+     * performed if CTRL + ENTER is pressed.
      */
     protected boolean commitOnEnter = true;
+
+    /**
+     * Flag to determine whether this editor should try to commit and close on
+     * pressing the enter key in combination with the CTRL key. It is only
+     * interpreted with {@link #commitOnEnter} set to <code>true</code>, and it
+     * is needed for a multi line text editor where a simple enter press should
+     * add a new line and a combination with CTRL should commit the value.
+     *
+     * @since 1.6
+     */
+    private boolean commitWithCtrlKey = false;
 
     /**
      * @see ContentProposalAdapter#ContentProposalAdapter(Control,
@@ -327,10 +343,13 @@ public class TextCellEditor extends AbstractCellEditor {
 
             @Override
             public void keyPressed(KeyEvent event) {
-                if (TextCellEditor.this.commitOnEnter
+                if (isCommitOnEnter()
                         && (event.keyCode == SWT.CR || event.keyCode == SWT.KEYPAD_CR)) {
 
                     boolean commit = (event.stateMask == SWT.MOD3) ? false : true;
+                    if (isCommitWithCtrlKey()) {
+                        commit = (event.stateMask == SWT.MOD1) ? true : false;
+                    }
                     MoveDirectionEnum move = MoveDirectionEnum.NONE;
                     if (TextCellEditor.this.moveSelectionOnEnter
                             && TextCellEditor.this.editMode == EditModeEnum.INLINE) {
@@ -693,5 +712,87 @@ public class TextCellEditor extends AbstractCellEditor {
             }
         });
 
+    }
+
+    /**
+     * Return whether this editor should try to commit and close on pressing the
+     * ENTER key. The default is <code>true</code>. For a multi line text
+     * editor, the ENTER key might be used to insert a new line instead of
+     * committing the value when opened in a dialog. In that case the value
+     * should not be committed, as applying the dialog will trigger the commit.
+     * For inline editors setting {@link #commitWithCtrlKey} to
+     * <code>true</code> might be interesting in combination with setting this
+     * value to <code>true</code>, which means that the commit operation is only
+     * performed if CTRL + ENTER is pressed.
+     *
+     * @return <code>true</code> if commit and close is performed on pressing
+     *         the ENTER key, <code>false</code> if pressing ENTER does not
+     *         perform a commit operation.
+     *
+     * @since 1.6
+     */
+    public boolean isCommitOnEnter() {
+        return this.commitOnEnter;
+    }
+
+    /**
+     * Configure whether this editor should try to commit and close on pressing
+     * the ENTER key. The default is <code>true</code>. For a multi line text
+     * editor, the ENTER key might be used to insert a new line instead of
+     * committing the value when opened in a dialog. In that case the value
+     * should not be committed, as applying the dialog will trigger the commit.
+     * For inline editors setting {@link #commitWithCtrlKey} to
+     * <code>true</code> might be interesting in combination with setting this
+     * value to <code>true</code>, which means that the commit operation is only
+     * performed if CTRL + ENTER is pressed.
+     *
+     * @param commitOnEnter
+     *            <code>true</code> to perform commit and close on pressing the
+     *            ENTER key, <code>false</code> if pressing ENTER should not
+     *            perform a commit operation.
+     *
+     * @since 1.6
+     */
+    public void setCommitOnEnter(boolean commitOnEnter) {
+        this.commitOnEnter = commitOnEnter;
+    }
+
+    /**
+     * Return whether this editor should try to commit and close on pressing the
+     * ENTER key in combination with the CTRL state mask key, or if pressing
+     * ENTER solely should work. It is only interpreted with
+     * {@link #commitOnEnter} set to <code>true</code>, and it is needed for a
+     * multi line text editor where a simple enter press should add a new line
+     * and a combination with CTRL should commit the value.
+     *
+     * @return <code>true</code> if committing via pressing the ENTER key is
+     *         only working with the CTRL state mask key pressed.
+     *         <code>false</code> if pressing the ENTER key solely is performing
+     *         the commit.
+     *
+     * @since 1.6
+     */
+    public boolean isCommitWithCtrlKey() {
+        return this.commitWithCtrlKey;
+    }
+
+    /**
+     * Configure whether this editor should try to commit and close on pressing
+     * the ENTER key in combination with the CTRL state mask key, or if pressing
+     * ENTER solely should work. It is only interpreted with
+     * {@link #commitOnEnter} set to <code>true</code>, and it is needed for a
+     * multi line text editor where a simple enter press should add a new line
+     * and a combination with CTRL should commit the value.
+     *
+     * @param commitWithCtrlKey
+     *            <code>true</code> if committing via pressing the ENTER key
+     *            should only work with the CTRL state mask key pressed.
+     *            <code>false</code> if pressing the ENTER key solely should
+     *            perform the commit.
+     *
+     * @since 1.6
+     */
+    public void setCommitWithCtrlKey(boolean commitWithCtrlKey) {
+        this.commitWithCtrlKey = commitWithCtrlKey;
     }
 }

@@ -96,11 +96,12 @@ public class MultiLineTextCellEditor extends TextCellEditor {
             GridDataFactory.fillDefaults().grab(true, true).hint(100, 50).applyTo(textControl);
         }
 
-        // on inline editing there need to be a different handling of the return
+        // On inline editing there need to be a different handling of the return
         // key as the Text control is performing a new line on return, it is not
         // possible to commit a value by pressing enter. So for inline editing
-        // we catch enter to perform the commit, while pressing Alt/Shift +
-        // enter will add a new line
+        // we catch enter to perform the commit, while pressing ALT + ENTER will
+        // add a new line. With setting commitWithCtrlKey to true the commit
+        // will only be performed if CTRL + ENTER is pressed.
         if (openInline) {
             this.commitOnEnter = true;
             textControl.addKeyListener(new KeyListener() {
@@ -130,9 +131,9 @@ public class MultiLineTextCellEditor extends TextCellEditor {
 
         int diff = 0;
         if (this.lineWrap) {
-            // Because of computeTrim internally the computed width is bigger than the given
-            // width. We therefore need to calculate twice by removing the trim diff to get
-            // the correct size.
+            // Because of computeTrim internally the computed width is bigger
+            // than the given width. We therefore need to calculate twice by
+            // removing the trim diff to get the correct size.
             diff = size.x - cellBounds.width;
             size = getEditorControl().computeSize(widthHintForCompute - diff, SWT.DEFAULT);
         }
