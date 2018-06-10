@@ -58,6 +58,7 @@ import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCom
 import org.eclipse.nebula.widgets.nattable.search.event.SearchEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
+import org.eclipse.nebula.widgets.nattable.selection.command.SelectColumnCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRegionCommand;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
@@ -186,6 +187,13 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
      * keeping the nodes collapsed.
      */
     private boolean expandOnSearch = true;
+
+    /**
+     * Flag to configure whether columns in sub levels should be selected when
+     * selecting a level header cell or if only the cells in the same level
+     * should be selected. Default is <code>false</code>.
+     */
+    private boolean selectSubLevels = false;
 
     /**
      *
@@ -332,71 +340,87 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
 
     @Override
     public boolean doCommand(ILayerCommand command) {
-        if (command instanceof SelectCellCommand && command.convertToTargetLayer(this)) {
-            // perform selection of level on level header click
-            SelectCellCommand selection = (SelectCellCommand) command;
+        if (command.convertToTargetLayer(this)) {
+            if (command instanceof SelectCellCommand) {
+                // perform selection of level on level header click
+                SelectCellCommand selection = (SelectCellCommand) command;
 
-            if (isLevelHeaderColumn(selection.getColumnPosition())) {
-                ILayerCell clickedCell = getCellByPosition(selection.getColumnPosition(), selection.getRowPosition());
+                if (isLevelHeaderColumn(selection.getColumnPosition())) {
+                    ILayerCell clickedCell = getCellByPosition(selection.getColumnPosition(), selection.getRowPosition());
 
-                // calculate number of header columns to the right
-                int levelHeaderCount = 0;
-                for (int i = this.levelHeaderPositions.length - 1; i >= 0; i--) {
-                    if (this.levelHeaderPositions[i] >= selection.getColumnPosition()) {
-                        levelHeaderCount++;
-                    }
+                    // calculate number of header columns to the right
+
+                    SelectRegionCommand selectRegion = new SelectRegionCommand(this,
+                            clickedCell.getColumnPosition() + 1,
+                            clickedCell.getOriginRowPosition(),
+                            getNumberOfColumnsToSelect(selection.getColumnPosition()),
+                            clickedCell.getRowSpan(),
+                            selection.isShiftMask(),
+                            selection.isControlMask());
+                    return this.underlyingLayer.doCommand(selectRegion);
                 }
-                SelectRegionCommand selectRegion = new SelectRegionCommand(this,
-                        clickedCell.getColumnPosition() + 1,
-                        clickedCell.getOriginRowPosition(),
-                        getColumnCount() - levelHeaderCount - (clickedCell.getColumnPosition()),
-                        clickedCell.getRowSpan(),
-                        selection.isShiftMask(),
-                        selection.isControlMask());
-                this.underlyingLayer.doCommand(selectRegion);
+            } else if (command instanceof SelectColumnCommand) {
+                SelectColumnCommand selection = (SelectColumnCommand) command;
+                if (isLevelHeaderColumn(selection.getColumnPosition())) {
+                    int level = 0;
+                    for (; level < this.levelHeaderPositions.length; level++) {
+                        int pos = this.levelHeaderPositions[level];
+                        if (pos == selection.getColumnPosition()) {
+                            break;
+                        }
+                    }
 
-                return true;
-            }
-        } else if (command instanceof ConfigureScalingCommand) {
-            this.dpiConverter = ((ConfigureScalingCommand) command).getHorizontalDpiConverter();
-        } else if (command instanceof ClientAreaResizeCommand && command.convertToTargetLayer(this)) {
-            ClientAreaResizeCommand clientAreaResizeCommand = (ClientAreaResizeCommand) command;
-            Rectangle possibleArea = clientAreaResizeCommand.getScrollable().getClientArea();
+                    SelectRegionCommand selectRegion = new SelectRegionCommand(this,
+                            selection.getColumnPosition() + 1,
+                            0,
+                            getNumberOfColumnsToSelect(selection.getColumnPosition()),
+                            Integer.MAX_VALUE,
+                            selection.isWithShiftMask(),
+                            selection.isWithControlMask());
+                    return this.underlyingLayer.doCommand(selectRegion);
+                }
+            } else if (command instanceof ConfigureScalingCommand) {
+                this.dpiConverter = ((ConfigureScalingCommand) command).getHorizontalDpiConverter();
+            } else if (command instanceof ClientAreaResizeCommand && command.convertToTargetLayer(this)) {
+                ClientAreaResizeCommand clientAreaResizeCommand = (ClientAreaResizeCommand) command;
+                Rectangle possibleArea = clientAreaResizeCommand.getScrollable().getClientArea();
 
-            // remove the tree level header width from the client area to
-            // ensure that the percentage calculation is correct
-            possibleArea.width = possibleArea.width - (this.levelHeaderPositions.length * getScaledLevelHeaderWidth());
+                // remove the tree level header width from the client area to
+                // ensure that the percentage calculation is correct
+                possibleArea.width = possibleArea.width - (this.levelHeaderPositions.length * getScaledLevelHeaderWidth());
 
-            clientAreaResizeCommand.setCalcArea(possibleArea);
-        } else if (command instanceof ColumnReorderCommand) {
-            ColumnReorderCommand crCommand = ((ColumnReorderCommand) command);
-            if (!isValidTargetColumnPosition(crCommand.getFromColumnPosition(), crCommand.getToColumnPosition())) {
-                // in case the target position is not valid we consume the
-                // command without doing anything
-                return true;
-            }
-
-            if (isLevelHeaderColumn(crCommand.getToColumnPosition())) {
-                // we need to increase the column position by 1 to handle the
-                // tree level header
-                return super.doCommand(
-                        new ColumnReorderCommand(this, crCommand.getFromColumnPosition(), crCommand.getToColumnPosition() + 1));
-            }
-        } else if (command instanceof MultiColumnReorderCommand) {
-            MultiColumnReorderCommand crCommand = ((MultiColumnReorderCommand) command);
-            for (int fromColumnPosition : crCommand.getFromColumnPositions()) {
-                if (!isValidTargetColumnPosition(fromColumnPosition, crCommand.getToColumnPosition())) {
-                    // if any position would be invalid for the reorder, the
-                    // command would be skipped
+                clientAreaResizeCommand.setCalcArea(possibleArea);
+            } else if (command instanceof ColumnReorderCommand) {
+                ColumnReorderCommand crCommand = ((ColumnReorderCommand) command);
+                if (!isValidTargetColumnPosition(crCommand.getFromColumnPosition(), crCommand.getToColumnPosition())) {
+                    // in case the target position is not valid we consume the
+                    // command without doing anything
                     return true;
                 }
-            }
 
-            if (isLevelHeaderColumn(crCommand.getToColumnPosition())) {
-                // we need to increase the column position by 1 to handle the
-                // tree level header
-                return super.doCommand(
-                        new MultiColumnReorderCommand(this, crCommand.getFromColumnPositions(), crCommand.getToColumnPosition() + 1));
+                if (isLevelHeaderColumn(crCommand.getToColumnPosition())) {
+                    // we need to increase the column position by 1 to handle
+                    // the
+                    // tree level header
+                    return super.doCommand(
+                            new ColumnReorderCommand(this, crCommand.getFromColumnPosition(), crCommand.getToColumnPosition() + 1));
+                }
+            } else if (command instanceof MultiColumnReorderCommand) {
+                MultiColumnReorderCommand crCommand = ((MultiColumnReorderCommand) command);
+                for (int fromColumnPosition : crCommand.getFromColumnPositions()) {
+                    if (!isValidTargetColumnPosition(fromColumnPosition, crCommand.getToColumnPosition())) {
+                        // if any position would be invalid for the reorder, the
+                        // command would be skipped
+                        return true;
+                    }
+                }
+
+                if (isLevelHeaderColumn(crCommand.getToColumnPosition())) {
+                    // we need to increase the column position by 1 to handle
+                    // the tree level header
+                    return super.doCommand(
+                            new MultiColumnReorderCommand(this, crCommand.getFromColumnPositions(), crCommand.getToColumnPosition() + 1));
+                }
             }
         }
 
@@ -718,6 +742,36 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
             }
         }
         return false;
+    }
+
+    /**
+     * Calculates the number of header columns to the right of a given level
+     * header column position.
+     *
+     * @param levelHeaderPosition
+     *            The column position of a level header column.
+     * @return The number of columns to select when a level header column is
+     *         selected.
+     */
+    protected int getNumberOfColumnsToSelect(int levelHeaderPosition) {
+        int columnsToSelect = 0;
+        if (isSelectSubLevels()) {
+            int levelHeaderCount = 0;
+            for (int i = this.levelHeaderPositions.length - 1; i >= 0; i--) {
+                if (this.levelHeaderPositions[i] >= levelHeaderPosition) {
+                    levelHeaderCount++;
+                }
+            }
+            columnsToSelect = getColumnCount() - levelHeaderCount - (levelHeaderPosition);
+        } else {
+            for (int i = 0; i < this.levelHeaderPositions.length; i++) {
+                int pos = this.levelHeaderPositions[i];
+                if (pos == levelHeaderPosition) {
+                    columnsToSelect = getLevelIndexMapping().get(i).size();
+                }
+            }
+        }
+        return columnsToSelect;
     }
 
     /**
@@ -1311,6 +1365,33 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
      */
     public void setExpandOnSearch(boolean expandOnSearch) {
         this.expandOnSearch = expandOnSearch;
+    }
+
+    /**
+     * Return whether columns in sub levels should be selected when selecting a
+     * level header cell or if only the cells in the same level should be
+     * selected. Default is <code>false</code>.
+     *
+     * @return <code>true</code> if columns in sub levels are selected when
+     *         selecting a level header cell, <code>false</code> if only the
+     *         cells in the same level are selected.
+     */
+    public boolean isSelectSubLevels() {
+        return this.selectSubLevels;
+    }
+
+    /**
+     * Configure whether columns in sub levels should be selected when selecting
+     * a level header cell or if only the cells in the same level should be
+     * selected. Default is <code>false</code>.
+     *
+     * @param selectSubLevels
+     *            <code>true</code> if columns in sub levels should be selected
+     *            when selecting a level header cell, <code>false</code> if only
+     *            the cells in the same level should be selected.
+     */
+    public void setSelectSubLevels(boolean selectSubLevels) {
+        this.selectSubLevels = selectSubLevels;
     }
 
     private void calculateLevelColumnHeaderPositions() {

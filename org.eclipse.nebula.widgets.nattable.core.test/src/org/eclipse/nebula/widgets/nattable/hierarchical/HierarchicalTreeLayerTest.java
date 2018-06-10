@@ -57,6 +57,7 @@ import org.eclipse.nebula.widgets.nattable.search.command.SearchCommand;
 import org.eclipse.nebula.widgets.nattable.search.strategy.GridSearchStrategy;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
+import org.eclipse.nebula.widgets.nattable.selection.command.SelectColumnCommand;
 import org.eclipse.nebula.widgets.nattable.selection.preserve.PreserveSelectionModel;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
@@ -706,6 +707,119 @@ public class HierarchicalTreeLayerTest {
                 false,
                 false));
 
+        // there is no row fully selected
+        assertFalse(this.selectionLayer.isRowPositionFullySelected(0));
+        assertFalse(this.selectionLayer.isRowPositionFullySelected(1));
+        assertFalse(this.selectionLayer.isRowPositionFullySelected(2));
+        assertFalse(this.selectionLayer.isRowPositionFullySelected(3));
+        assertFalse(this.selectionLayer.isRowPositionFullySelected(4));
+        assertFalse(this.selectionLayer.isRowPositionFullySelected(5));
+
+        // only the first 5 rows have a selection
+        assertTrue(this.selectionLayer.isRowPositionSelected(0));
+        assertTrue(this.selectionLayer.isRowPositionSelected(1));
+        assertTrue(this.selectionLayer.isRowPositionSelected(2));
+        assertTrue(this.selectionLayer.isRowPositionSelected(3));
+        assertTrue(this.selectionLayer.isRowPositionSelected(4));
+        assertFalse(this.selectionLayer.isRowPositionSelected(5));
+
+        // only the first two columns have a selection
+        assertTrue(this.selectionLayer.isColumnPositionSelected(0));
+        assertTrue(this.selectionLayer.isColumnPositionSelected(1));
+        assertFalse(this.selectionLayer.isColumnPositionSelected(2));
+        assertFalse(this.selectionLayer.isColumnPositionSelected(3));
+        assertFalse(this.selectionLayer.isColumnPositionSelected(4));
+        assertFalse(this.selectionLayer.isColumnPositionSelected(5));
+
+        // there is a region selection for first level in the first five rows
+        // start column 0, start row 0, two columns and five rows
+        assertTrue(this.selectionLayer.allCellsSelectedInRegion(new Rectangle(0, 0, 2, 5)));
+
+        // select second level header in first row
+        this.treeLayer.doCommand(new SelectCellCommand(
+                this.treeLayer,
+                3,
+                0,
+                false,
+                false));
+
+        // there is no row fully selected
+        assertFalse(this.selectionLayer.isRowPositionFullySelected(0));
+        assertFalse(this.selectionLayer.isRowPositionFullySelected(1));
+        assertFalse(this.selectionLayer.isRowPositionFullySelected(2));
+        assertFalse(this.selectionLayer.isRowPositionFullySelected(3));
+        assertFalse(this.selectionLayer.isRowPositionFullySelected(4));
+        assertFalse(this.selectionLayer.isRowPositionFullySelected(5));
+
+        // there is no selection in row 2 and 3
+        assertTrue(this.selectionLayer.isRowPositionSelected(0));
+        assertTrue(this.selectionLayer.isRowPositionSelected(1));
+        assertFalse(this.selectionLayer.isRowPositionSelected(2));
+        assertFalse(this.selectionLayer.isRowPositionSelected(3));
+        assertFalse(this.selectionLayer.isRowPositionSelected(4));
+        assertFalse(this.selectionLayer.isRowPositionSelected(5));
+
+        // there is no selection in the first level
+        assertFalse(this.selectionLayer.isColumnPositionSelected(0));
+        assertFalse(this.selectionLayer.isColumnPositionSelected(1));
+        assertTrue(this.selectionLayer.isColumnPositionSelected(2));
+        assertTrue(this.selectionLayer.isColumnPositionSelected(3));
+        assertFalse(this.selectionLayer.isColumnPositionSelected(4));
+        assertFalse(this.selectionLayer.isColumnPositionSelected(5));
+
+        // there is a region selection for second level in the first two rows
+        // start column 2, start row 0, two columns and two rows
+        assertTrue(this.selectionLayer.allCellsSelectedInRegion(new Rectangle(2, 0, 2, 2)));
+
+        // select third level header in second row
+        this.treeLayer.doCommand(new SelectCellCommand(
+                this.treeLayer,
+                6,
+                1,
+                false,
+                false));
+
+        // there is no row fully selected
+        assertFalse(this.selectionLayer.isRowPositionFullySelected(0));
+        assertFalse(this.selectionLayer.isRowPositionFullySelected(1));
+        assertFalse(this.selectionLayer.isRowPositionFullySelected(2));
+        assertFalse(this.selectionLayer.isRowPositionFullySelected(3));
+        assertFalse(this.selectionLayer.isRowPositionFullySelected(4));
+        assertFalse(this.selectionLayer.isRowPositionFullySelected(5));
+
+        // there is no selection in row 0, 2 and 3
+        assertFalse(this.selectionLayer.isRowPositionSelected(0));
+        assertTrue(this.selectionLayer.isRowPositionSelected(1));
+        assertFalse(this.selectionLayer.isRowPositionSelected(2));
+        assertFalse(this.selectionLayer.isRowPositionSelected(3));
+        assertFalse(this.selectionLayer.isRowPositionSelected(4));
+        assertFalse(this.selectionLayer.isRowPositionSelected(5));
+
+        // there is no selection in the first and second level
+        assertFalse(this.selectionLayer.isColumnPositionSelected(0));
+        assertFalse(this.selectionLayer.isColumnPositionSelected(1));
+        assertFalse(this.selectionLayer.isColumnPositionSelected(2));
+        assertFalse(this.selectionLayer.isColumnPositionSelected(3));
+        assertTrue(this.selectionLayer.isColumnPositionSelected(4));
+        assertTrue(this.selectionLayer.isColumnPositionSelected(5));
+
+        // there is a region selection for third level in the second row
+        // start column 4, start row 1, two columns and one row
+        assertTrue(this.selectionLayer.allCellsSelectedInRegion(new Rectangle(4, 1, 2, 1)));
+    }
+
+    @Test
+    public void testSelectLevelHeaderWithSublevel() {
+        this.treeLayer.setSelectSubLevels(true);
+
+        // select first level header in first row
+        this.treeLayer.doCommand(new SelectCellCommand(
+                this.treeLayer,
+                0,
+                0,
+                false,
+                false));
+
         // all cells in the first 5 rows should be selected
         assertTrue(this.selectionLayer.isRowPositionFullySelected(0));
         assertTrue(this.selectionLayer.isRowPositionFullySelected(1));
@@ -773,6 +887,216 @@ public class HierarchicalTreeLayerTest {
         // there is a region selection for third level in the second row
         // start column 4, start row 1, two columns and one row
         assertTrue(this.selectionLayer.allCellsSelectedInRegion(new Rectangle(4, 1, 2, 1)));
+    }
+
+    @Test
+    public void testSelectLevelHeaderColumn() {
+        // select first level header column
+        this.treeLayer.doCommand(new SelectColumnCommand(
+                this.treeLayer,
+                0,
+                0,
+                false,
+                false));
+
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(0));
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(1));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(2));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(3));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(4));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(5));
+
+        // deselect first level header column
+        this.treeLayer.doCommand(new SelectColumnCommand(
+                this.treeLayer,
+                0,
+                0,
+                false,
+                true));
+
+        assertTrue(this.selectionLayer.getSelectionModel().isEmpty());
+
+        // select second level header column
+        this.treeLayer.doCommand(new SelectColumnCommand(
+                this.treeLayer,
+                3,
+                0,
+                false,
+                false));
+
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(0));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(1));
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(2));
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(3));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(4));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(5));
+
+        // deselect second level header column
+        this.treeLayer.doCommand(new SelectColumnCommand(
+                this.treeLayer,
+                3,
+                0,
+                false,
+                true));
+
+        assertTrue(this.selectionLayer.getSelectionModel().isEmpty());
+
+        // select third level header column
+        this.treeLayer.doCommand(new SelectColumnCommand(
+                this.treeLayer,
+                6,
+                0,
+                false,
+                false));
+
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(0));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(1));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(2));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(3));
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(4));
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(5));
+
+        // deselect third level header column
+        this.treeLayer.doCommand(new SelectColumnCommand(
+                this.treeLayer,
+                6,
+                0,
+                false,
+                true));
+
+        assertTrue(this.selectionLayer.getSelectionModel().isEmpty());
+
+        // select first level header column
+        this.treeLayer.doCommand(new SelectColumnCommand(
+                this.treeLayer,
+                0,
+                0,
+                false,
+                true));
+        this.treeLayer.doCommand(new SelectColumnCommand(
+                this.treeLayer,
+                3,
+                0,
+                false,
+                true));
+        this.treeLayer.doCommand(new SelectColumnCommand(
+                this.treeLayer,
+                6,
+                0,
+                false,
+                true));
+        // deselect second level header column
+        this.treeLayer.doCommand(new SelectColumnCommand(
+                this.treeLayer,
+                3,
+                0,
+                false,
+                true));
+
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(0));
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(1));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(2));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(3));
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(4));
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(5));
+    }
+
+    @Test
+    public void testSelectLevelHeaderColumnWithSublevel() {
+        this.treeLayer.setSelectSubLevels(true);
+
+        // select first level header column
+        this.treeLayer.doCommand(new SelectColumnCommand(
+                this.treeLayer,
+                0,
+                0,
+                false,
+                false));
+
+        assertEquals(6, this.selectionLayer.getFullySelectedColumnPositions().length);
+        assertEquals(11, this.selectionLayer.getFullySelectedRowPositions().length);
+
+        // deselect first level header column
+        this.treeLayer.doCommand(new SelectColumnCommand(
+                this.treeLayer,
+                0,
+                0,
+                false,
+                true));
+
+        assertTrue(this.selectionLayer.getSelectionModel().isEmpty());
+
+        // select second level header column
+        this.treeLayer.doCommand(new SelectColumnCommand(
+                this.treeLayer,
+                3,
+                0,
+                false,
+                false));
+
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(0));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(1));
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(2));
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(3));
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(4));
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(5));
+
+        // deselect second level header column
+        this.treeLayer.doCommand(new SelectColumnCommand(
+                this.treeLayer,
+                3,
+                0,
+                false,
+                true));
+
+        assertTrue(this.selectionLayer.getSelectionModel().isEmpty());
+
+        // select third level header column
+        this.treeLayer.doCommand(new SelectColumnCommand(
+                this.treeLayer,
+                6,
+                0,
+                false,
+                false));
+
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(0));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(1));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(2));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(3));
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(4));
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(5));
+
+        // deselect third level header column
+        this.treeLayer.doCommand(new SelectColumnCommand(
+                this.treeLayer,
+                6,
+                0,
+                false,
+                true));
+
+        assertTrue(this.selectionLayer.getSelectionModel().isEmpty());
+
+        // select first level header column
+        this.treeLayer.doCommand(new SelectColumnCommand(
+                this.treeLayer,
+                0,
+                0,
+                false,
+                false));
+        // deselect second level header column
+        this.treeLayer.doCommand(new SelectColumnCommand(
+                this.treeLayer,
+                3,
+                0,
+                false,
+                true));
+
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(0));
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(1));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(2));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(3));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(4));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(5));
     }
 
     @Test

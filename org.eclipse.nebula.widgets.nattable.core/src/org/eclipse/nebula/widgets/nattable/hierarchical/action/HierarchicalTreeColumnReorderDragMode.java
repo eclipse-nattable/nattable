@@ -56,7 +56,7 @@ public class HierarchicalTreeColumnReorderDragMode extends ColumnReorderDragMode
     /**
      * Creates a drag mode that validates the drag operation based on the given
      * tree level structure and the given column group structure.
-     * 
+     *
      * @param treeLayer
      *            The {@link HierarchicalTreeLayer} needed to determine the
      *            level column boundaries.
@@ -81,7 +81,7 @@ public class HierarchicalTreeColumnReorderDragMode extends ColumnReorderDragMode
     protected void fireMoveEndCommand(NatTable natTable, int dragToGridColumnPosition) {
         if (dragToGridColumnPosition < natTable.getColumnCount()) {
             int toIndex = natTable.getColumnIndexByPosition(dragToGridColumnPosition);
-            if (toIndex == -1 && this.dragFromGridColumnPosition < dragToGridColumnPosition) {
+            if (toIndex < 0 && this.dragFromGridColumnPosition < dragToGridColumnPosition) {
                 dragToGridColumnPosition++;
             }
         }
@@ -94,15 +94,15 @@ public class HierarchicalTreeColumnReorderDragMode extends ColumnReorderDragMode
         int toIndex = natLayer.getColumnIndexByPosition(dragToGridColumnPosition);
 
         // it is not allowed to drag a level header column and the index of a
-        // level header is -1
-        if (fromIndex == -1) {
+        // level header is < 0
+        if (fromIndex < 0) {
             return false;
         }
 
-        if (toIndex == -1 && dragFromGridColumnPosition < dragToGridColumnPosition) {
+        if (toIndex < 0 && dragFromGridColumnPosition < dragToGridColumnPosition) {
             // get the position to the left of the level header
             toIndex = natLayer.getColumnIndexByPosition(dragToGridColumnPosition - 1);
-        } else if (toIndex == -1 && dragFromGridColumnPosition > dragToGridColumnPosition) {
+        } else if (toIndex < 0 && dragFromGridColumnPosition > dragToGridColumnPosition) {
             return false;
         }
 
