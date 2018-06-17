@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -107,6 +107,25 @@ public class PopupMenuBuilder {
     /**
      * Creates a {@link PopupMenuBuilder} that builds up a new {@link Menu}
      * using the given {@link MenuManager}.
+     * <p>
+     * <b>Note:</b> If this constructor is used a {@link Menu} can only be
+     * created by using {@link #build(NatTable)}, otherwise it will fail with an
+     * exception.
+     * </p>
+     *
+     * @param manager
+     *            The {@link MenuManager} that should be used to create the
+     *            {@link Menu}.
+     *
+     * @since 1.6
+     */
+    public PopupMenuBuilder(MenuManager manager) {
+        this(null, manager);
+    }
+
+    /**
+     * Creates a {@link PopupMenuBuilder} that builds up a new {@link Menu}
+     * using the given {@link MenuManager}.
      *
      * @param parent
      *            The active NatTable instance the context menu should be added
@@ -118,7 +137,9 @@ public class PopupMenuBuilder {
     public PopupMenuBuilder(NatTable parent, MenuManager manager) {
         this.natTable = parent;
         this.menuManager = manager;
-        this.popupMenu = manager.createContextMenu(this.natTable);
+        if (this.natTable != null) {
+            this.popupMenu = manager.createContextMenu(this.natTable);
+        }
     }
 
     /**
@@ -664,6 +685,29 @@ public class PopupMenuBuilder {
     }
 
     /**
+     * Sets the given NatTable to this builder and returns the
+     * {@link MenuManager} that is used to create the context menu.
+     * <p>
+     * <b>Note:</b> Calling this method only brings the builder to a working
+     * state. The creation of the {@link Menu} needs to be done using the
+     * {@link MenuManager}. In this case the caller is also responsible for the
+     * {@link Menu} disposal.
+     * </p>
+     *
+     * @param natTable
+     *            The NatTable instance for which the {@link Menu} should be
+     *            created by using the returned {@link MenuManager}. Needed to
+     *            make the {@link IMenuItemProvider} work.
+     * @return The {@link MenuManager} that is used by this builder.
+     *
+     * @since 1.6
+     */
+    public MenuManager build(NatTable natTable) {
+        this.natTable = natTable;
+        return this.menuManager;
+    }
+
+    /**
      * Builds and returns the created {@link Menu}.
      * <p>
      * <b>Note:</b> Calling this method will also add a {@link DisposeListener}
@@ -782,7 +826,9 @@ public class PopupMenuBuilder {
         @Override
         public boolean isEnabled() {
             if (getId() != null) {
-                Object eventData = PopupMenuBuilder.this.popupMenu.getData(MenuItemProviders.NAT_EVENT_DATA_KEY);
+                Object eventData = PopupMenuBuilder.this.popupMenu != null
+                        ? PopupMenuBuilder.this.popupMenu.getData(MenuItemProviders.NAT_EVENT_DATA_KEY)
+                        : PopupMenuBuilder.this.menuManager.getMenu().getData(MenuItemProviders.NAT_EVENT_DATA_KEY);
                 if (eventData != null && eventData instanceof NatEventData) {
                     return PopupMenuBuilder.this.enablement.isActive(getId(), (NatEventData) eventData);
                 }
@@ -793,7 +839,9 @@ public class PopupMenuBuilder {
         @Override
         public boolean isVisible() {
             if (getId() != null) {
-                Object eventData = PopupMenuBuilder.this.popupMenu.getData(MenuItemProviders.NAT_EVENT_DATA_KEY);
+                Object eventData = PopupMenuBuilder.this.popupMenu != null
+                        ? PopupMenuBuilder.this.popupMenu.getData(MenuItemProviders.NAT_EVENT_DATA_KEY)
+                        : PopupMenuBuilder.this.menuManager.getMenu().getData(MenuItemProviders.NAT_EVENT_DATA_KEY);
                 if (eventData != null && eventData instanceof NatEventData) {
                     return PopupMenuBuilder.this.visibility.isActive(getId(), (NatEventData) eventData);
                 }
