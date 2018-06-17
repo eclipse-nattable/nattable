@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -53,20 +53,18 @@ public abstract class AbstractNatExample implements INatExample {
     public void onStop() {}
 
     private String getResourceAsString(String resource) {
-        InputStream inStream = getClass().getResourceAsStream(resource);
-
-        if (inStream != null) {
-            StringBuffer strBuf = new StringBuffer();
-            try {
+        try (InputStream inStream = getClass().getResourceAsStream(resource)) {
+            if (inStream != null) {
+                StringBuilder strBuf = new StringBuilder();
                 int i = -1;
                 while ((i = inStream.read()) != -1) {
                     strBuf.append((char) i);
                 }
 
                 return strBuf.toString();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return null;

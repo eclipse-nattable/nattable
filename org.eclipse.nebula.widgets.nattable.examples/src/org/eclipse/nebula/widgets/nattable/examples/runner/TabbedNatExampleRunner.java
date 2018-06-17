@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -242,22 +242,20 @@ public class TabbedNatExampleRunner {
     }
 
     private static String getResourceAsString(String resource) {
-        InputStream inStream = TabbedNatExampleRunner.class.getResourceAsStream(resource);
-
-        if (inStream != null) {
-            StringBuffer strBuf = new StringBuffer();
-            try {
+        try (InputStream inStream = TabbedNatExampleRunner.class.getResourceAsStream(resource)) {
+            if (inStream != null) {
+                StringBuilder strBuf = new StringBuilder();
                 int i = -1;
                 while ((i = inStream.read()) != -1) {
                     strBuf.append((char) i);
                 }
 
                 return strBuf.toString();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } else {
+                System.out.println("null stream for resource " + resource);
             }
-        } else {
-            System.out.println("null stream for resource " + resource);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return null;

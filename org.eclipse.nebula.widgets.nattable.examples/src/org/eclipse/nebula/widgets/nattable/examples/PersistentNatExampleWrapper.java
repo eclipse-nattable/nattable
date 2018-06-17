@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
@@ -78,10 +80,9 @@ public class PersistentNatExampleWrapper extends AbstractNatExample {
     public void onStart() {
         Properties properties = new Properties();
 
-        try {
-            System.out
-                    .println("Loading NatTable state from " + PROPERTIES_FILE);
-            properties.load(new FileInputStream(new File(PROPERTIES_FILE)));
+        try (InputStream in = new FileInputStream(new File(PROPERTIES_FILE))) {
+            System.out.println("Loading NatTable state from " + PROPERTIES_FILE);
+            properties.load(in);
             this.natTable.loadState("", properties);
         } catch (FileNotFoundException e) {
             // No file found, oh well, move along
@@ -98,13 +99,11 @@ public class PersistentNatExampleWrapper extends AbstractNatExample {
         this.example.onStop();
 
         Properties properties = new Properties();
-
         this.natTable.saveState("", properties);
 
-        try {
+        try (OutputStream out = new FileOutputStream(new File(PROPERTIES_FILE))) {
             System.out.println("Saving NatTable state to " + PROPERTIES_FILE);
-            properties.store(new FileOutputStream(new File(PROPERTIES_FILE)),
-                    "NatTable state");
+            properties.store(out, "NatTable state");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

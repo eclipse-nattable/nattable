@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2016 Dirk Fauth.
+ * Copyright (c) 2016, 2018 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -96,22 +96,20 @@ public class NatExamplePart {
     }
 
     private String getResourceAsString(String resource) {
-        InputStream inStream = NatTableExamples.class.getResourceAsStream(resource);
-
-        if (inStream != null) {
-            StringBuilder builder = new StringBuilder();
-            try {
+        try (InputStream inStream = NatTableExamples.class.getResourceAsStream(resource)) {
+            if (inStream != null) {
+                StringBuilder builder = new StringBuilder();
                 int i = -1;
                 while ((i = inStream.read()) != -1) {
                     builder.append((char) i);
                 }
 
                 return builder.toString();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } else {
+                MessageDialog.openError(null, "Error", "null stream for resource " + resource);
             }
-        } else {
-            MessageDialog.openError(null, "Error", "null stream for resource " + resource);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return null;

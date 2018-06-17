@@ -259,30 +259,28 @@ public class NatExporter {
      */
     private <T extends IExporter> void exportSingle(final T exporter, final BiConsumer<T, OutputStream> executable) {
 
-        final OutputStream outputStream = getOutputStream(exporter);
-        if (outputStream == null) {
-            return;
-        }
-
         Runnable exportRunnable = new Runnable() {
             @Override
             public void run() {
-                try {
-                    executable.apply(exporter, outputStream);
-
-                    NatExporter.this.exportSucceeded = true;
-                } catch (Exception e) {
-                    NatExporter.this.exportSucceeded = false;
-                    handleExportException(e);
-                } finally {
+                final OutputStream outputStream = getOutputStream(exporter);
+                if (outputStream != null) {
                     try {
-                        outputStream.close();
-                    } catch (IOException e) {
-                        LOG.error("Failed to close the output stream", e); //$NON-NLS-1$
-                    }
-                }
+                        executable.apply(exporter, outputStream);
 
-                openExport(exporter);
+                        NatExporter.this.exportSucceeded = true;
+                    } catch (Exception e) {
+                        NatExporter.this.exportSucceeded = false;
+                        handleExportException(e);
+                    } finally {
+                        try {
+                            outputStream.close();
+                        } catch (IOException e) {
+                            LOG.error("Failed to close the output stream", e); //$NON-NLS-1$
+                        }
+                    }
+
+                    openExport(exporter);
+                }
             }
         };
 
@@ -340,41 +338,39 @@ public class NatExporter {
             final boolean exportOnSameSheet,
             final String sheetName) {
 
-        final OutputStream outputStream = getOutputStream(exporter);
-        if (outputStream == null) {
-            return;
-        }
-
         Runnable exportRunnable = new Runnable() {
             @Override
             public void run() {
-                try {
-                    exporter.exportBegin(outputStream);
-
-                    if (exportOnSameSheet) {
-                        exporter.exportLayerBegin(outputStream, sheetName);
-                    }
-
-                    for (String name : natTablesMap.keySet()) {
-                        NatTable natTable = natTablesMap.get(name);
-                        exportLayer(exporter, outputStream, name, natTable, natTable.getConfigRegistry(), !exportOnSameSheet);
-                    }
-
-                    if (exportOnSameSheet) {
-                        exporter.exportLayerEnd(outputStream, sheetName);
-                    }
-
-                    exporter.exportEnd(outputStream);
-
-                    NatExporter.this.exportSucceeded = true;
-                } catch (Exception e) {
-                    NatExporter.this.exportSucceeded = false;
-                    handleExportException(e);
-                } finally {
+                final OutputStream outputStream = getOutputStream(exporter);
+                if (outputStream != null) {
                     try {
-                        outputStream.close();
-                    } catch (IOException e) {
-                        LOG.error("Failed to close the output stream", e); //$NON-NLS-1$
+                        exporter.exportBegin(outputStream);
+
+                        if (exportOnSameSheet) {
+                            exporter.exportLayerBegin(outputStream, sheetName);
+                        }
+
+                        for (String name : natTablesMap.keySet()) {
+                            NatTable natTable = natTablesMap.get(name);
+                            exportLayer(exporter, outputStream, name, natTable, natTable.getConfigRegistry(), !exportOnSameSheet);
+                        }
+
+                        if (exportOnSameSheet) {
+                            exporter.exportLayerEnd(outputStream, sheetName);
+                        }
+
+                        exporter.exportEnd(outputStream);
+
+                        NatExporter.this.exportSucceeded = true;
+                    } catch (Exception e) {
+                        NatExporter.this.exportSucceeded = false;
+                        handleExportException(e);
+                    } finally {
+                        try {
+                            outputStream.close();
+                        } catch (IOException e) {
+                            LOG.error("Failed to close the output stream", e); //$NON-NLS-1$
+                        }
                     }
                 }
 
