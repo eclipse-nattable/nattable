@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2016 Dirk Fauth and others.
+ * Copyright (c) 2013, 2018 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -47,6 +47,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
  *            access the data columnwise.
  */
 public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, ILayerListener {
+
     /**
      * The base collection used to collect the unique values from. This need to
      * be a collection that is not filtered, otherwise after modifications the
@@ -84,6 +85,16 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      * @since 1.4
      */
     protected boolean cachingEnabled = true;
+
+    /**
+     * Flag for enabling/disabling firing a {@link FilterRowComboUpdateEvent} if
+     * the filter value cache is updated. Important for use cases where the
+     * cache is not build up yet and the filter is restored from properties,
+     * e.g. on opening a table with stored properties.
+     *
+     * @since 1.6
+     */
+    private boolean updateEventsEnabled = true;
 
     /**
      * @param bodyLayer
@@ -148,7 +159,9 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
             if (result == null) {
                 result = collectValues(columnIndex);
                 this.valueCache.put(columnIndex, result);
-                fireCacheUpdateEvent(buildUpdateEvent(columnIndex, null, result));
+                if (isUpdateEventsEnabled()) {
+                    fireCacheUpdateEvent(buildUpdateEvent(columnIndex, null, result));
+                }
             }
             return result;
         } else {
@@ -224,8 +237,10 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
 
                 this.valueCache.put(column, collectValues(column));
 
-                // get the diff and fire the event
-                fireCacheUpdateEvent(buildUpdateEvent(column, cacheBefore, this.valueCache.get(column)));
+                if (isUpdateEventsEnabled()) {
+                    // get the diff and fire the event
+                    fireCacheUpdateEvent(buildUpdateEvent(column, cacheBefore, this.valueCache.get(column)));
+                }
             } else if (event instanceof IStructuralChangeEvent
                     && ((IStructuralChangeEvent) event).isVerticalStructureChanged()) {
                 // a new row was added or a row was deleted
@@ -239,9 +254,11 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
                     buildValueCache();
                 }
 
-                // fire events for every column
-                for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
-                    fireCacheUpdateEvent(buildUpdateEvent(entry.getKey(), entry.getValue(), this.valueCache.get(entry.getKey())));
+                if (isUpdateEventsEnabled()) {
+                    // fire events for every column
+                    for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
+                        fireCacheUpdateEvent(buildUpdateEvent(entry.getKey(), entry.getValue(), this.valueCache.get(entry.getKey())));
+                    }
                 }
             }
         }
@@ -381,5 +398,58 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      */
     public void dispose() {
         // nothing to do here
+    }
+
+    /**
+     *
+     * @return <code>true</code> if a {@link FilterRowComboUpdateEvent} is fired
+     *         in case of filter value cache updates, <code>false</code> if not.
+     *
+     * @since 1.6
+     */
+    public boolean isUpdateEventsEnabled() {
+        return this.updateEventsEnabled;
+    }
+
+    /**
+     * Enable firing of {@link FilterRowComboUpdateEvent} if the filter value
+     * cache is updated.
+     *
+     * <p>
+     * By default it should be enabled to automatically update applied filters
+     * in case new values are added, otherwise the row containing the new value
+     * will be filtered directly.
+     * </p>
+     * <p>
+     * <b>Note:</b> It is important to disable firing the events in use cases
+     * where the cache is not build up yet and the filter is restored from
+     * properties, e.g. on opening a table with stored properties.
+     * </p>
+     *
+     * @since 1.6
+     */
+    public void enableUpdateEvents() {
+        this.updateEventsEnabled = true;
+    }
+
+    /**
+     * Disable firing of {@link FilterRowComboUpdateEvent} if the filter value
+     * cache is updated.
+     *
+     * <p>
+     * By default it should be enabled to automatically update applied filters
+     * in case new values are added, otherwise the row containing the new value
+     * will be filtered directly.
+     * </p>
+     * <p>
+     * <b>Note:</b> It is important to disable firing the events in use cases
+     * where the cache is not build up yet and the filter is restored from
+     * properties, e.g. on opening a table with stored properties.
+     * </p>
+     *
+     * @since 1.6
+     */
+    public void disableUpdateEvents() {
+        this.updateEventsEnabled = false;
     }
 }

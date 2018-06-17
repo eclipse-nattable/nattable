@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2016 Dirk Fauth and others.
+ * Copyright (c) 2013, 2018 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
@@ -606,6 +607,13 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
         if (useDefaultConfiguration) {
             addConfiguration(new ComboBoxFilterRowConfiguration(this.comboBoxDataProvider));
         }
+    }
+
+    @Override
+    public void loadState(String prefix, Properties properties) {
+        this.comboBoxDataProvider.disableUpdateEvents();
+        super.loadState(prefix, properties);
+        this.comboBoxDataProvider.enableUpdateEvents();
     }
 
     /**
