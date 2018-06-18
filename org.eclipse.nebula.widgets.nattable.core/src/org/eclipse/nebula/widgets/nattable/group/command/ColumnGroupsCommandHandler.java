@@ -12,11 +12,14 @@ package org.eclipse.nebula.widgets.nattable.group.command;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.columnRename.ColumnRenameDialog;
@@ -121,18 +124,37 @@ public class ColumnGroupsCommandHandler extends
     }
 
     public void handleGroupColumnsCommand(String columnGroupName) {
-
         try {
-            List<Integer> selectedPositions = new ArrayList<Integer>(this.columnIndexesToPositionsMap.size());
+            Set<Integer> positions = new HashSet<Integer>();
+            List<Integer> selectedPositions = null;
+
+            ColumnGroup group = this.model.getColumnGroupByName(columnGroupName);
+            if (group != null) {
+                // a group with the same name already exists so we update the
+                // existing group as this command handler does not support
+                // multiple groups with the same name
+                for (Integer pos : group.getMembers()) {
+                    positions.add(this.selectionLayer.getColumnPositionByIndex(pos));
+                }
+                positions.addAll(this.columnIndexesToPositionsMap.values());
+                selectedPositions = new ArrayList<Integer>(positions);
+            } else {
+                selectedPositions = new ArrayList<Integer>(this.columnIndexesToPositionsMap.values());
+            }
+
+            Collections.sort(selectedPositions);
+
             int[] fullySelectedColumns = new int[this.columnIndexesToPositionsMap.size()];
             int count = 0;
             for (Integer columnIndex : this.columnIndexesToPositionsMap.keySet()) {
                 fullySelectedColumns[count++] = columnIndex.intValue();
-                selectedPositions.add(this.columnIndexesToPositionsMap.get(columnIndex));
             }
-            this.model.addColumnsIndexesToGroup(columnGroupName, fullySelectedColumns);
+            // we first need to reorder and then process the group creation,
+            // otherwise the group reordering will be processed before the
+            // column reordering which breaks the rendering
             this.selectionLayer.doCommand(
                     new MultiColumnReorderCommand(this.selectionLayer, selectedPositions, selectedPositions.get(0)));
+            this.model.addColumnsIndexesToGroup(columnGroupName, fullySelectedColumns);
             this.selectionLayer.clear();
         } catch (Throwable t) {}
         this.contextLayer.fireLayerEvent(new GroupColumnsEvent(this.contextLayer));

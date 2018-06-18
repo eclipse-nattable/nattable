@@ -37,7 +37,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
  */
 public class ColumnGroupReorderLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
 
-    private static final Log log = LogFactory.getLog(ColumnGroupReorderLayer.class);
+    private static final Log LOG = LogFactory.getLog(ColumnGroupReorderLayer.class);
 
     private final ColumnGroupModel model;
 
@@ -273,7 +273,7 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
         }
 
         if (fromColumnPosition == -1 || toColumnPosition == -1) {
-            log.error("Invalid reorder positions, fromPosition: " + fromColumnPosition //$NON-NLS-1$
+            LOG.error("Invalid reorder positions, fromPosition: " + fromColumnPosition //$NON-NLS-1$
                     + ", toPosition: " + toColumnPosition); //$NON-NLS-1$
         }
 
@@ -309,6 +309,7 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
                     } else {
                         this.model.removeColumnIndexes(fromColumnGroup.getName(), fromColumnIndexes);
                     }
+                    consumeCommand = true;
                 } else if (MoveDirectionEnum.LEFT == moveDirection) {
                     // check if there are columns to the right that are
                     // reordered too
@@ -318,6 +319,12 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
                     } else {
                         this.model.removeColumnIndexes(fromColumnGroup.getName(), fromColumnIndexes);
                     }
+                    consumeCommand = true;
+                } else {
+                    // if there are multiple columns to reorder but no move
+                    // direction, we probably perform a reorder to add new
+                    // columns to an existing group
+                    consumeCommand = false;
                 }
             } else {
                 // only remove if we are at the edge of a column group
@@ -325,9 +332,8 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
                         || ColumnGroupUtils.isRightEdgeOfAColumnGroup(this, fromColumnPosition, fromColumnIndex, this.model)) {
                     this.model.removeColumnIndexes(fromColumnGroup.getName(), fromColumnIndexes);
                 }
+                consumeCommand = true;
             }
-
-            consumeCommand = true;
         } else if (fromColumnGroup == null && toColumnGroup != null) {
             // special case
             // add the column to the column group if we step instead of jumping

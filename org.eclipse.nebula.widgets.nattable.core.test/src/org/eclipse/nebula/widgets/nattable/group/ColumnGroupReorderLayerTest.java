@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -271,7 +271,6 @@ public class ColumnGroupReorderLayerTest {
      * ------------------------------------------------------------------ |<- G1
      * ->| |<-- G2 -->| |<--- G3 --->|
      */
-    @SuppressWarnings("boxing")
     @Test
     public void handleReorderColumnsAndGroupsCommand() {
         ReorderColumnsAndGroupsCommand command =
@@ -332,6 +331,31 @@ public class ColumnGroupReorderLayerTest {
         this.layer.doCommand(reorderCommand);
 
         assertEquals(4, getColumnIndexesInGroup(12).size());
+    }
+
+    @Test
+    public void shouldReorderToConsecutive() {
+        // first ungroup group 2
+        this.modelFixture.removeColumnGroup(this.modelFixture.getColumnGroupByIndex(3));
+
+        assertEquals(0, this.layer.getColumnIndexByPosition(0));
+        assertEquals(1, this.layer.getColumnIndexByPosition(1));
+        assertEquals(2, this.layer.getColumnIndexByPosition(2));
+        assertEquals(3, this.layer.getColumnIndexByPosition(3));
+
+        // the first two columns are a group already, column 3 should be added
+        // so we need to reorder to be consecutive
+        MultiColumnReorderCommand reorderCommand =
+                new MultiColumnReorderCommand(this.layer, Arrays.asList(0, 1, 3), 0);
+        this.layer.doCommand(reorderCommand);
+
+        // we only reordered, we did not change the group
+        assertEquals(2, getColumnIndexesInGroup(0).size());
+
+        assertEquals(0, this.layer.getColumnIndexByPosition(0));
+        assertEquals(1, this.layer.getColumnIndexByPosition(1));
+        assertEquals(3, this.layer.getColumnIndexByPosition(2));
+        assertEquals(2, this.layer.getColumnIndexByPosition(3));
     }
 
     @Test
