@@ -400,8 +400,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
 
                 if (isLevelHeaderColumn(crCommand.getToColumnPosition())) {
                     // we need to increase the column position by 1 to handle
-                    // the
-                    // tree level header
+                    // the tree level header
                     return super.doCommand(
                             new ColumnReorderCommand(this, crCommand.getFromColumnPosition(), crCommand.getToColumnPosition() + 1));
                 }
@@ -423,9 +422,6 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
                 }
             }
         }
-
-        // TODO add support for row hide - hide child rows if node row is
-        // collapsed
 
         return super.doCommand(command);
     }
@@ -598,7 +594,10 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
         ICellPainter cellPainter = super.getCellPainter(
                 columnPosition, rowPosition, cell, configRegistry);
 
-        if (cell.getConfigLabels().hasLabel(TreeLayer.TREE_COLUMN_CELL)) {
+        // if the cell is a tree column and is not marked to contain no object,
+        // the registered painter is wrapped by the tree painter
+        if (cell.getConfigLabels().hasLabel(TreeLayer.TREE_COLUMN_CELL)
+                && !cell.getConfigLabels().hasLabel(NO_OBJECT_IN_LEVEL)) {
 
             ICellPainter treeCellPainter = configRegistry.getConfigAttribute(
                     TreeConfigAttributes.TREE_STRUCTURE_PAINTER,

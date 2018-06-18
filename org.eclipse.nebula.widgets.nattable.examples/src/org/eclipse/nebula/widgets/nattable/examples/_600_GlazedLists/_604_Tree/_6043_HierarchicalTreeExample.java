@@ -167,13 +167,12 @@ public class _6043_HierarchicalTreeExample extends AbstractNatExample {
 
             this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
 
-            // TODO create new layer to support expand/collapse on additional
-            // level on same row object
-            // TreeLayer does only support expand/collapse on row object level
             this.treeLayer = new TreeLayer(this.selectionLayer, treeRowModel) {
                 @Override
                 protected boolean isTreeColumn(int columnPosition) {
-                    // FIXME make this work with the levels dynamically
+                    // for this example we know where we show a tree node, for a
+                    // more dynamic implementation check the
+                    // HierarchicalTreeLayer
                     return columnPosition == 0 || columnPosition == 2;
                 }
 
@@ -197,12 +196,14 @@ public class _6043_HierarchicalTreeExample extends AbstractNatExample {
                 @Override
                 public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
                     LabelStack configLabels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
-                    // TODO make this a nicer implementation
+                    // remove the labels that might be added by the super
+                    // implementation
                     configLabels.removeLabel(TREE_COLUMN_CELL);
                     configLabels.removeLabel(DefaultTreeLayerConfiguration.TREE_LEAF_CONFIG_TYPE);
                     configLabels.removeLabel(DefaultTreeLayerConfiguration.TREE_COLLAPSED_CONFIG_TYPE);
                     configLabels.removeLabel(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE);
 
+                    // now add the labels from this layer
                     if (isTreeColumn(columnPosition) && getDataValueByPosition(columnPosition, rowPosition) != null) {
                         configLabels.addLabelOnTop(TREE_COLUMN_CELL);
 
