@@ -9,6 +9,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/org/eclipse/nebula/widgets/nattable/freeze/IFreezeConfigAttributes.java" type="org.eclipse.nebula.widgets.nattable.freeze.IFreezeConfigAttributes">
+        <filter comment="Added new configuration attribute for freeze separator width" id="403767336">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.freeze.IFreezeConfigAttributes"/>
+                <message_argument value="SEPARATOR_WIDTH"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/org/eclipse/nebula/widgets/nattable/layer/LayerUtil.java" type="org.eclipse.nebula.widgets.nattable.layer.LayerUtil">
         <filter comment="Added modifier constant to support transformation of additional positions" id="336658481">
             <message_arguments>

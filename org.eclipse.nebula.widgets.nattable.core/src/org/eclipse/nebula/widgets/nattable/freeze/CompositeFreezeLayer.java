@@ -278,9 +278,18 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
                 separatorColor = GUIHelper.COLOR_BLUE;
             }
 
+            Integer separatorWidth = configRegistry.getConfigAttribute(
+                    IFreezeConfigAttributes.SEPARATOR_WIDTH,
+                    DisplayMode.NORMAL);
+            if (separatorWidth == null) {
+                separatorWidth = 1;
+            }
+
             gc.setClipping(rectangle);
             Color oldFg = gc.getForeground();
+            int oldWidth = gc.getLineWidth();
             gc.setForeground(separatorColor);
+            gc.setLineWidth(separatorWidth);
             final int freezeWidth = CompositeFreezeLayer.this.freezeLayer.getWidth() - 1;
             if (freezeWidth > 0) {
                 gc.drawLine(
@@ -298,6 +307,7 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
                         yOffset + freezeHeight);
             }
             gc.setForeground(oldFg);
+            gc.setLineWidth(oldWidth);
         }
 
     }

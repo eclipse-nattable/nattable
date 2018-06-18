@@ -28,6 +28,9 @@
                name="freeze-separator-color">
          </property-name>
          <property-name
+               name="freeze-separator-width">
+         </property-name>
+         <property-name
                name="tree-structure-painter">
          </property-name>
          <property-name

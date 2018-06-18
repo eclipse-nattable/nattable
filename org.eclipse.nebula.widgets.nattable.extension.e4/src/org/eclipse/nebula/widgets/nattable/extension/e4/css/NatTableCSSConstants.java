@@ -180,6 +180,12 @@ public interface NatTableCSSConstants {
      */
     String FREEZE_SEPARATOR_COLOR = "freeze-separator-color";
     /**
+     * CSS property for the width of the freeze separator.
+     *
+     * @since 1.2
+     */
+    String FREEZE_SEPARATOR_WIDTH = "freeze-separator-width";
+    /**
      * CSS property for the color of the grid lines.
      */
     String GRID_LINE_COLOR = "grid-line-color";

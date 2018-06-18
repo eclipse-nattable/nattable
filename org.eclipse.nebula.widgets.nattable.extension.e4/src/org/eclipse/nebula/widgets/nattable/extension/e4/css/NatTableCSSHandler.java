@@ -389,6 +389,13 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                         (Color) engine.convert(value, Color.class, natTable.getDisplay()),
                         displayMode,
                         label);
+            } else if (NatTableCSSConstants.FREEZE_SEPARATOR_WIDTH.equalsIgnoreCase(property)
+                    && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
+                natTable.getConfigRegistry().registerConfigAttribute(
+                        IFreezeConfigAttributes.SEPARATOR_WIDTH,
+                        (int) ((CSSPrimitiveValue) value).getFloatValue(CSSPrimitiveValue.CSS_PT),
+                        displayMode,
+                        label);
             } else if (NatTableCSSConstants.GRID_LINE_COLOR.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 natTable.getConfigRegistry().registerConfigAttribute(
@@ -1075,6 +1082,16 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                                 label),
                         engine,
                         null);
+            } else if (NatTableCSSConstants.FREEZE_SEPARATOR_WIDTH.equalsIgnoreCase(property)) {
+                Integer width = natTable.getConfigRegistry().getConfigAttribute(
+                        IFreezeConfigAttributes.SEPARATOR_WIDTH,
+                        displayMode,
+                        label);
+                if (width == null) {
+                    return "0";
+                } else {
+                    return width.toString();
+                }
             } else if (NatTableCSSConstants.GRID_LINE_COLOR.equalsIgnoreCase(property)) {
                 ICSSValueConverter cssValueConverter = engine.getCSSValueConverter(String.class);
                 return cssValueConverter.convert(
