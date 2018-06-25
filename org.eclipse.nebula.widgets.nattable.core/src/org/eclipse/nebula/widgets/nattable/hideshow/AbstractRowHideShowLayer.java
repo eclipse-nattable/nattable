@@ -21,6 +21,8 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.SpanningLayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
@@ -247,6 +249,29 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
      * @return Collection of all row indexes that are hidden in this layer.
      */
     public abstract Collection<Integer> getHiddenRowIndexes();
+
+    @Override
+    public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
+        ILayerCell cell = super.getCellByPosition(columnPosition, rowPosition);
+        if (cell.isSpannedCell()) {
+            // the spanning needs to be updated to reflect the
+            // hiding accordingly
+            boolean rowSpanUpdated = false;
+            int rowSpan = cell.getRowSpan();
+            for (int row = 0; row < cell.getRowSpan(); row++) {
+                int rowIndex = this.getRowIndexByPosition(cell.getOriginRowPosition() + row);
+                if (isRowIndexHidden(rowIndex)) {
+                    rowSpan--;
+                    rowSpanUpdated = true;
+                }
+            }
+
+            if (rowSpanUpdated) {
+                cell = new SpanningLayerCell(cell, cell.getColumnSpan(), rowSpan);
+            }
+        }
+        return cell;
+    }
 
     // Cache
 

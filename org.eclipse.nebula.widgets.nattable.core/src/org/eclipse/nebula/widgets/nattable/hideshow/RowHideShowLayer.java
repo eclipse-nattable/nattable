@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,6 +21,7 @@ import java.util.TreeSet;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowShowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommandHandler;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.RowPositionHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
@@ -46,6 +47,7 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements
         registerCommandHandler(new RowHideCommandHandler(this));
         registerCommandHandler(new ShowAllRowsCommandHandler(this));
         registerCommandHandler(new MultiRowShowCommandHandler(this));
+        registerCommandHandler(new RowPositionHideCommandHandler(this));
     }
 
     @Override

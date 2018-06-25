@@ -23,6 +23,7 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.export.command.ExportTableCommandHandler;
 import org.eclipse.nebula.widgets.nattable.export.image.ImageExporter;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.RowPositionHideCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.swt.events.DisposeEvent;
@@ -406,6 +407,38 @@ public class PopupMenuBuilder {
         return withMenuItemProvider(
                 HIDE_ROW_MENU_ITEM_ID,
                 MenuItemProviders.hideRowMenuItemProvider(menuLabel));
+    }
+
+    /**
+     * Adds the menu item for hiding a row to the popup menu by using the
+     * {@link RowPositionHideCommand}. Uses the default text localized in
+     * NatTable core resource bundles.
+     *
+     * @return The {@link PopupMenuBuilder} with the hide row menu item added.
+     * @see MenuItemProviders#hideRowPositionMenuItemProvider()
+     * @since 1.6
+     */
+    public PopupMenuBuilder withHideRowPositionMenuItem() {
+        return withMenuItemProvider(
+                HIDE_ROW_MENU_ITEM_ID,
+                MenuItemProviders.hideRowPositionMenuItemProvider());
+    }
+
+    /**
+     * Adds the menu item for hiding a row to the popup menu by using the
+     * {@link RowPositionHideCommand}. Uses the given String as label for the
+     * menu item.
+     *
+     * @param menuLabel
+     *            The label to use for showing the item in the popup menu.
+     * @return The {@link PopupMenuBuilder} with the hide row menu item added.
+     * @see MenuItemProviders#hideRowPositionMenuItemProvider(String)
+     * @since 1.6
+     */
+    public PopupMenuBuilder withHideRowPositionMenuItem(String menuLabel) {
+        return withMenuItemProvider(
+                HIDE_ROW_MENU_ITEM_ID,
+                MenuItemProviders.hideRowPositionMenuItemProvider(menuLabel));
     }
 
     /**

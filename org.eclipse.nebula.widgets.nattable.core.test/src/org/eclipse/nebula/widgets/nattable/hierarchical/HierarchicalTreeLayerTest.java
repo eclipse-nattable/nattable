@@ -35,8 +35,12 @@ import org.eclipse.nebula.widgets.nattable.dataset.car.Car;
 import org.eclipse.nebula.widgets.nattable.dataset.car.CarService;
 import org.eclipse.nebula.widgets.nattable.dataset.car.Classification;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.RowPositionHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalTreeLayer.HierarchicalTreeNode;
@@ -78,6 +82,7 @@ public class HierarchicalTreeLayerTest {
     private DataLayer bodyDataLayer;
     private ColumnReorderLayer columnReorderLayer;
     private ColumnHideShowLayer columnHideShowLayer;
+    private RowHideShowLayer rowHideShowLayer;
     private SelectionLayer selectionLayer;
     private HierarchicalTreeLayer treeLayer;
 
@@ -99,7 +104,8 @@ public class HierarchicalTreeLayerTest {
         this.bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
         this.columnReorderLayer = new ColumnReorderLayer(this.bodyDataLayer);
         this.columnHideShowLayer = new ColumnHideShowLayer(this.columnReorderLayer);
-        this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
+        this.rowHideShowLayer = new RowHideShowLayer(this.columnHideShowLayer);
+        this.selectionLayer = new SelectionLayer(this.rowHideShowLayer);
         this.treeLayer = new HierarchicalTreeLayer(this.selectionLayer, this.data, CarService.PROPERTY_NAMES_COMPACT);
 
         this.layerListener = new LayerListenerFixture();
@@ -1966,5 +1972,69 @@ public class HierarchicalTreeLayerTest {
 
         stack = this.treeLayer.getConfigLabelsByPosition(4, 11);
         assertFalse(stack.hasLabel(HierarchicalTreeLayer.NO_OBJECT_IN_LEVEL));
+    }
+
+    @Test
+    public void testColumnHide() {
+        assertEquals(9, this.treeLayer.getColumnCount());
+        assertTrue(this.treeLayer.doCommand(new ColumnHideCommand(this.treeLayer, 4)));
+        assertEquals(8, this.treeLayer.getColumnCount());
+        assertTrue(this.treeLayer.doCommand(new ColumnHideCommand(this.treeLayer, 3)));
+        assertEquals(8, this.treeLayer.getColumnCount());
+    }
+
+    @Test
+    public void testMultiColumnHide() {
+        assertEquals(9, this.treeLayer.getColumnCount());
+        assertTrue(this.treeLayer.doCommand(new MultiColumnHideCommand(this.treeLayer, 4, 5)));
+        assertEquals(7, this.treeLayer.getColumnCount());
+        assertTrue(this.treeLayer.isLevelHeaderColumn(4));
+
+        this.treeLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertTrue(this.treeLayer.doCommand(new MultiColumnHideCommand(this.treeLayer, 2, 3, 4)));
+        assertEquals(7, this.treeLayer.getColumnCount());
+        assertTrue(this.treeLayer.isLevelHeaderColumn(0));
+        assertTrue(this.treeLayer.isLevelHeaderColumn(2));
+        assertTrue(this.treeLayer.isLevelHeaderColumn(4));
+
+        this.treeLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertTrue(this.treeLayer.doCommand(
+                new MultiColumnHideCommand(this.treeLayer, 0, 1, 2, 3, 4, 5, 6, 7, 8)));
+        assertEquals(3, this.treeLayer.getColumnCount());
+        assertTrue(this.treeLayer.isLevelHeaderColumn(0));
+        assertTrue(this.treeLayer.isLevelHeaderColumn(1));
+        assertTrue(this.treeLayer.isLevelHeaderColumn(2));
+    }
+
+    @Test
+    public void testRowPositionHide() {
+        assertEquals(11, this.treeLayer.getRowCount());
+
+        // first level first item spans 5 rows
+        assertTrue(this.treeLayer.doCommand(new RowPositionHideCommand(this.treeLayer, 0, 0)));
+        assertEquals(6, this.treeLayer.getRowCount());
+
+        this.treeLayer.doCommand(new ShowAllRowsCommand());
+
+        // second level third item spans 2 rows
+        assertTrue(this.treeLayer.doCommand(new RowPositionHideCommand(this.treeLayer, 3, 3)));
+        assertEquals(9, this.treeLayer.getRowCount());
+        ILayerCell cell = this.treeLayer.getCellByPosition(1, 0);
+        assertEquals(3, cell.getRowSpan());
+
+        this.treeLayer.doCommand(new ShowAllRowsCommand());
+
+        // if we do not provide a level header column position, we do a simple
+        // row hide
+        assertTrue(this.treeLayer.doCommand(new RowPositionHideCommand(this.treeLayer, 1, 1)));
+        assertEquals(10, this.treeLayer.getRowCount());
+
+        cell = this.treeLayer.getCellByPosition(1, 0);
+        assertEquals(4, cell.getRowSpan());
+
+        cell = this.treeLayer.getCellByPosition(4, 1);
+        assertEquals(1, cell.getRowSpan());
     }
 }

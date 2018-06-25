@@ -29,6 +29,7 @@ import org.eclipse.nebula.widgets.nattable.group.command.RemoveColumnGroupComman
 import org.eclipse.nebula.widgets.nattable.group.command.UngroupColumnCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.RowPositionHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -229,6 +230,71 @@ public class MenuItemProviders {
                         int rowPosition = getNatEventData(event).getRowPosition();
                         natTable.doCommand(
                                 new RowHideCommand(natTable, rowPosition));
+                    }
+                });
+            }
+        };
+    }
+
+    /**
+     * Will create and return the {@link IMenuItemProvider} that adds the action
+     * for executing the {@link RowPositionHideCommand} to a popup menu. This
+     * command is intended to hide the current selected row immediately.
+     * <p>
+     * With the additional column position information this command is intended
+     * to be used with the HierarchicalTreeLayer to support hiding of multiple
+     * rows on a spanned level header column.
+     * </p>
+     *
+     * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
+     *         executes the {@link RowPositionHideCommand}. The {@link MenuItem}
+     *         will be shown with the localized default text configured in
+     *         NatTable core.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider hideRowPositionMenuItemProvider() {
+        return hideRowPositionMenuItemProvider("%MenuItemProviders.hideRow"); //$NON-NLS-1$
+    }
+
+    /**
+     * Will create and return the {@link IMenuItemProvider} that adds the action
+     * for executing the {@link RowPositionHideCommand} to a popup menu. This
+     * command is intended to hide the current selected row immediately.
+     * <p>
+     * With the additional column position information this command is intended
+     * to be used with the HierarchicalTreeLayer to support hiding of multiple
+     * rows on a spanned level header column.
+     * </p>
+     * <p>
+     * The {@link MenuItem} will be shown with the given menu label.
+     *
+     * @param menuLabel
+     *            The text that will be showed for the generated
+     *            {@link MenuItem}
+     * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
+     *         executes the {@link RowPositionHideCommand}.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider hideRowPositionMenuItemProvider(final String menuLabel) {
+        return new IMenuItemProvider() {
+
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
+                MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+                menuItem.setText(Messages.getLocalizedMessage(menuLabel));
+                menuItem.setImage(GUIHelper.getImage("hide_row")); //$NON-NLS-1$
+                menuItem.setEnabled(true);
+
+                menuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent event) {
+                        NatEventData data = MenuItemProviders.getNatEventData(event);
+                        int rowPosition = data.getRowPosition();
+                        int columnPosition = data.getColumnPosition();
+                        natTable.doCommand(
+                                new RowPositionHideCommand(natTable, columnPosition, rowPosition));
                     }
                 });
             }

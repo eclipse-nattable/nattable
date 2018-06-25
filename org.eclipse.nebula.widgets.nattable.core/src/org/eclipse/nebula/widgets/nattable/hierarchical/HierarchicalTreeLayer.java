@@ -31,6 +31,11 @@ import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.AbstractRowHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.RowPositionHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hierarchical.command.HierarchicalTreeCollapseAllCommandHandler;
@@ -420,6 +425,48 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
                     return super.doCommand(
                             new MultiColumnReorderCommand(this, crCommand.getFromColumnPositions(), crCommand.getToColumnPosition() + 1));
                 }
+            } else if (command instanceof ColumnHideCommand) {
+                if (isLevelHeaderColumn(((ColumnHideCommand) command).getColumnPosition())) {
+                    // it is not supported to hide a level header column
+                    // we therefore consume the command without an action
+                    return true;
+                }
+            } else if (command instanceof MultiColumnHideCommand) {
+                Collection<Integer> positions = ((MultiColumnHideCommand) command).getColumnPositions();
+                boolean modified = false;
+                for (Iterator<Integer> it = positions.iterator(); it.hasNext();) {
+                    Integer pos = it.next();
+                    if (isLevelHeaderColumn(pos)) {
+                        modified = true;
+                        it.remove();
+                    }
+                }
+                if (modified && !positions.isEmpty()) {
+                    // if a level header column position was contained we
+                    // need to fire a new command that does not contain that
+                    // position
+                    int[] newPositions = new int[positions.size()];
+                    int i = 0;
+                    for (int p : positions) {
+                        newPositions[i] = p;
+                        i++;
+                    }
+                    return doCommand(new MultiColumnHideCommand(this, newPositions));
+                }
+            } else if (command instanceof RowPositionHideCommand) {
+                RowPositionHideCommand cmd = (RowPositionHideCommand) command;
+                if (isLevelHeaderColumn(cmd.getColumnPosition())) {
+                    ILayerCell cell = getCellByPosition(cmd.getColumnPosition(), cmd.getRowPosition());
+                    int[] positions = new int[cell.getRowSpan()];
+                    int i = 0;
+                    for (int p = cell.getOriginRowPosition(); p < (cell.getOriginRowPosition() + cell.getRowSpan()); p++) {
+                        positions[i] = p;
+                        i++;
+                    }
+                    return doCommand(new MultiRowHideCommand(this, positions));
+                } else {
+                    return doCommand(new RowHideCommand(this, cmd.getRowPosition()));
+                }
             }
         }
 
@@ -666,15 +713,22 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
                 // hide/show mechanism
                 // therefore the spanning needs to be updated to reflect the
                 // hiding accordingly
+                boolean rowSpanUpdated = false;
                 int rowSpan = cell.getRowSpan();
+                int rowIndex = this.underlyingLayer.getRowIndexByPosition(cell.getOriginRowPosition());
                 for (int row = 0; row < cell.getRowSpan(); row++) {
-                    int rowIndex = this.underlyingLayer.getRowIndexByPosition(cell.getOriginRowPosition() + row);
                     if (isRowIndexHidden(rowIndex)) {
                         rowSpan--;
+                        rowSpanUpdated = true;
                     }
+                    rowIndex++;
                 }
 
-                cell = new SpanningLayerCell(localCell, localCell.getColumnSpan(), rowSpan);
+                if (rowSpanUpdated) {
+                    cell = new SpanningLayerCell(localCell, localCell.getColumnSpan(), rowSpan);
+                } else {
+                    cell = localCell;
+                }
             } else {
                 cell = localCell;
             }

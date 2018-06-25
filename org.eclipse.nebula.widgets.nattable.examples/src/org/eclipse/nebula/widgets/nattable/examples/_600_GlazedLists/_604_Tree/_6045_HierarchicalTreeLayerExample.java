@@ -19,6 +19,7 @@ import java.util.Map;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -41,6 +42,8 @@ import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.config.DefaultGridLayerConfiguration;
+import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalHelper;
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalSpanningDataProvider;
@@ -77,8 +80,13 @@ import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandToLevelCommand;
 import org.eclipse.nebula.widgets.nattable.tree.config.TreeLayerExpandCollapseKeyBindings;
 import org.eclipse.nebula.widgets.nattable.tree.painter.TreeImagePainter;
+import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.CellLabelMouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.CellPainterMouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
+import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
@@ -267,6 +275,21 @@ public class _6045_HierarchicalTreeLayerExample extends AbstractNatExample {
             }
         });
 
+        natTable.addConfiguration(new HeaderMenuConfiguration(natTable));
+        natTable.addConfiguration(new AbstractUiBindingConfiguration() {
+
+            @Override
+            public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+                uiBindingRegistry.registerMouseDownBinding(
+                        new CellLabelMouseEventMatcher(GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON, HierarchicalTreeLayer.LEVEL_HEADER_CELL),
+                        new PopupMenuAction(new PopupMenuBuilder(natTable)
+                                .withHideRowPositionMenuItem()
+                                .withShowAllRowsMenuItem()
+                                .build()));
+            }
+
+        });
+
         natTable.configure();
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
@@ -413,8 +436,10 @@ public class _6045_HierarchicalTreeLayerExample extends AbstractNatExample {
             GlazedListsEventLayer<HierarchicalWrapper> glazedListsEventLayer = new GlazedListsEventLayer<>(this.bodyDataLayer, this.filterList);
 
             ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(glazedListsEventLayer, false);
+            ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
+            RowHideShowLayer rowHideShowLayer = new RowHideShowLayer(columnHideShowLayer);
 
-            this.selectionLayer = new SelectionLayer(columnReorderLayer);
+            this.selectionLayer = new SelectionLayer(rowHideShowLayer);
 
             // add the PreserveSelectionModel to avoid that the selection is
             // cleared on expand collapse
