@@ -289,7 +289,7 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
             Color oldFg = gc.getForeground();
             int oldWidth = gc.getLineWidth();
             gc.setForeground(separatorColor);
-            gc.setLineWidth(separatorWidth);
+            gc.setLineWidth(GUIHelper.convertHorizontalPixelToDpi(separatorWidth));
             final int freezeWidth = CompositeFreezeLayer.this.freezeLayer.getWidth() - 1;
             if (freezeWidth > 0) {
                 gc.drawLine(
