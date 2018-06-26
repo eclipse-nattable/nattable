@@ -224,8 +224,8 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
         ColumnGroup columnGroup = this.model.getColumnGroupByIndex(columnIndex);
 
         if (columnGroup == null) {
-            // this can happen in case the column group in the lower level is not
-            // part of a group in this level
+            // this can happen in case the column group in the lower level is
+            // not part of a group in this level
             return this.columnGroupHeaderLayer.getColumnSpan(columnPosition);
         }
 
@@ -267,19 +267,24 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
         ColumnGroup columnGroup = this.model.getColumnGroupByIndex(bodyColumnIndex);
 
         if (columnGroup == null) {
-            // this can happen in case the column group in the lower level is not
-            // part of a group in this level
+            // this can happen in case the column group in the lower level is
+            // not part of a group in this level
             return this.columnGroupHeaderLayer.getStartPositionOfGroup(columnPosition);
         }
 
         int leastPossibleStartPositionOfGroup = columnPosition - columnGroup.getSize();
         int i = 0;
-        for (i = leastPossibleStartPositionOfGroup; i < columnPosition; i++) {
-            if (ColumnGroupUtils.isInTheSameGroup(getColumnIndexByPosition(i), bodyColumnIndex, this.model)) {
+        for (i = columnPosition; i >= leastPossibleStartPositionOfGroup; i--) {
+            if (!ColumnGroupUtils.isInTheSameGroup(
+                    getColumnIndexByPosition(i),
+                    bodyColumnIndex,
+                    this.model)) {
+                // the previous position was the last index in the group
+                i++;
                 break;
             }
         }
-        return i < 0 ? columnPosition : i;
+        return i;
     }
 
     @Override
