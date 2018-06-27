@@ -74,20 +74,33 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
 
     @Override
     public int getRowCount() {
-        return this.columnGroupHeaderLayer.getRowCount() + 1;
+        return this.columnGroupHeaderLayer.getRowCount() + getGroupRowCount();
+    }
+
+    private int getGroupRowCount() {
+        return isGroupRowIncluded() ? 1 : 0;
     }
 
     @Override
     public int getPreferredRowCount() {
-        return this.columnGroupHeaderLayer.getPreferredRowCount() + 1;
+        return this.columnGroupHeaderLayer.getPreferredRowCount() + getGroupRowCount();
     }
 
     @Override
     public int getRowIndexByPosition(int rowPosition) {
-        if (rowPosition == 0) {
+        if (rowPosition == 0 && isGroupRowIncluded()) {
             return rowPosition;
         } else {
-            return this.columnGroupHeaderLayer.getRowIndexByPosition(rowPosition - 1);
+            return this.columnGroupHeaderLayer.getRowIndexByPosition(rowPosition - getGroupRowCount());
+        }
+    }
+
+    @Override
+    public int localToUnderlyingRowPosition(int localRowPosition) {
+        if (localRowPosition == 0 && isGroupRowIncluded()) {
+            return localRowPosition;
+        } else {
+            return localRowPosition - getGroupRowCount();
         }
     }
 
@@ -99,6 +112,11 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
                 + this.columnGroupHeaderLayer.getHeight();
     }
 
+    private boolean isGroupRowIncluded() {
+        return (this.model.getAllIndexesInGroups() != null
+                && !this.model.getAllIndexesInGroups().isEmpty());
+    }
+
     @Override
     public int getPreferredHeight() {
         return this.rowHeightConfig.getAggregateSize(1)
@@ -107,10 +125,10 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
 
     @Override
     public int getRowHeightByPosition(int rowPosition) {
-        if (rowPosition == 0) {
+        if (rowPosition == 0 && isGroupRowIncluded()) {
             return this.rowHeightConfig.getSize(rowPosition);
         } else {
-            return this.columnGroupHeaderLayer.getRowHeightByPosition(rowPosition - 1);
+            return this.columnGroupHeaderLayer.getRowHeightByPosition(rowPosition - getGroupRowCount());
         }
     }
 
@@ -122,10 +140,10 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
 
     @Override
     public boolean isRowPositionResizable(int rowPosition) {
-        if (rowPosition == 0) {
+        if (rowPosition == 0 && isGroupRowIncluded()) {
             return this.rowHeightConfig.isPositionResizable(rowPosition);
         } else {
-            return this.columnGroupHeaderLayer.isRowPositionResizable(rowPosition - 1);
+            return this.columnGroupHeaderLayer.isRowPositionResizable(rowPosition - getGroupRowCount());
         }
     }
 
@@ -133,21 +151,29 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
 
     @Override
     public int getRowPositionByY(int y) {
-        int row0Height = getRowHeightByPosition(0);
-        if (y < row0Height) {
-            return 0;
+        if (this.isGroupRowIncluded()) {
+            int row0Height = getRowHeightByPosition(0);
+            if (y < row0Height) {
+                return 0;
+            } else {
+                return 1 + this.columnGroupHeaderLayer.getRowPositionByY(y - row0Height);
+            }
         } else {
-            return 1 + this.columnGroupHeaderLayer.getRowPositionByY(y - row0Height);
+            return this.columnGroupHeaderLayer.getRowPositionByY(y);
         }
     }
 
     @Override
     public int getStartYOfRowPosition(int rowPosition) {
-        if (rowPosition == 0) {
-            return this.rowHeightConfig.getAggregateSize(rowPosition);
+        if (this.isGroupRowIncluded()) {
+            if (rowPosition == 0) {
+                return this.rowHeightConfig.getAggregateSize(rowPosition);
+            } else {
+                return getRowHeightByPosition(0)
+                        + this.columnGroupHeaderLayer.getStartYOfRowPosition(rowPosition - 1);
+            }
         } else {
-            return getRowHeightByPosition(0)
-                    + this.columnGroupHeaderLayer.getStartYOfRowPosition(rowPosition - 1);
+            return this.columnGroupHeaderLayer.getStartYOfRowPosition(rowPosition);
         }
     }
 

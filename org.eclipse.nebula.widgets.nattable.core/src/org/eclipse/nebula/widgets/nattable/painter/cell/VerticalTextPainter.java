@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -187,8 +187,18 @@ public class VerticalTextPainter extends AbstractTextPainter {
 
             if ((contentHeight > rectangle.width) && this.calculateByTextHeight) {
                 ILayer layer = cell.getLayer();
+                int columnPosition = cell.getColumnPosition();
+                if (cell.isSpannedCell()) {
+                    // if spanned only resize rightmost column and reduce width
+                    // by left column widths to resize to only the necessary
+                    // width
+                    columnPosition = cell.getOriginColumnPosition() + cell.getColumnSpan() - 1;
+                    for (int i = cell.getOriginColumnPosition(); i < columnPosition; i++) {
+                        contentHeight -= layer.getColumnWidthByPosition(i);
+                    }
+                }
                 layer.doCommand(
-                        new ColumnResizeCommand(layer, cell.getColumnPosition(), contentHeight + contentToCellDiff, true));
+                        new ColumnResizeCommand(layer, columnPosition, contentHeight + contentToCellDiff, true));
             }
 
             if (text != null && text.length() > 0) {
@@ -324,10 +334,18 @@ public class VerticalTextPainter extends AbstractTextPainter {
     protected void setNewMinLength(ILayerCell cell, int contentHeight) {
         int cellLength = cell.getBounds().height;
         if (cellLength < contentHeight) {
-
             ILayer layer = cell.getLayer();
+            int rowPosition = cell.getRowPosition();
+            if (cell.isSpannedCell()) {
+                // if spanned only resize bottom row and reduce height by upper
+                // row heights to resize to only the necessary height
+                rowPosition = cell.getOriginRowPosition() + cell.getRowSpan() - 1;
+                for (int i = cell.getOriginRowPosition(); i < rowPosition; i++) {
+                    contentHeight -= layer.getRowHeightByPosition(i);
+                }
+            }
             layer.doCommand(
-                    new RowResizeCommand(layer, cell.getRowPosition(), contentHeight, true));
+                    new RowResizeCommand(layer, rowPosition, contentHeight, true));
         }
     }
 

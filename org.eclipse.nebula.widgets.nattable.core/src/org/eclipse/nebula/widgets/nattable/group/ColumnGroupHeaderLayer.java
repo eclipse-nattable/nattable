@@ -154,7 +154,6 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         } else {
             return localRowPosition - getGroupRowCount();
         }
-
     }
 
     // Height
