@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2018 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -308,6 +308,11 @@ public class FormulaParser {
         int parts = 0;
         do {
             parts = values.size();
+            values = processPower(values);
+        } while (parts != values.size());
+
+        do {
+            parts = values.size();
             values = processMultiplicationAndDivision(values);
         } while (parts != values.size());
 
@@ -476,6 +481,50 @@ public class FormulaParser {
     }
 
     /**
+     * Process power {@link FunctionValue}s first.
+     *
+     * @param values
+     *            The list of parsed {@link FunctionValue}s.
+     * @return The list of {@link FunctionValue}s where power is already
+     *         combined.
+     *
+     * @since 1.6
+     */
+    protected List<FunctionValue> processPower(List<FunctionValue> values) {
+        List<FunctionValue> result = new ArrayList<FunctionValue>();
+
+        // we only process one power operation at once
+        boolean operatorFound = false;
+
+        for (Iterator<FunctionValue> it = values.iterator(); it.hasNext();) {
+            FunctionValue v = it.next();
+            if (!operatorFound
+                    && it.hasNext()
+                    && result.size() > 0
+                    && v instanceof PowerFunction
+                    && ((AbstractFunction) v).isEmpty()) {
+
+                // remove the last value that was added
+                FunctionValue previous = result.remove(result.size() - 1);
+                ((OperatorFunctionValue) v).addFunctionValue(previous);
+
+                FunctionValue next = it.next();
+                if (next instanceof NegateFunction) {
+                    ((NegateFunction) next).addFunctionValue(it.next());
+                }
+                ((OperatorFunctionValue) v).addFunctionValue(next);
+
+                operatorFound = true;
+                result.add(v);
+            } else {
+                result.add(v);
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Process multiplication and division {@link FunctionValue}s first.
      *
      * @param values
@@ -494,7 +543,7 @@ public class FormulaParser {
             if (!operatorFound
                     && it.hasNext()
                     && result.size() > 0
-                    && (v instanceof ProductFunction || v instanceof QuotientFunction || v instanceof PowerFunction)
+                    && (v instanceof ProductFunction || v instanceof QuotientFunction)
                     && ((AbstractFunction) v).isEmpty()) {
 
                 // remove the last value that was added
