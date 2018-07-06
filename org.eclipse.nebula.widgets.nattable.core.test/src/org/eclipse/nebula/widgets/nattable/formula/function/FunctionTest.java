@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2018 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -31,7 +31,7 @@ public class FunctionTest {
 
     @Test
     public void shouldSumSingleValue() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(42));
         FunctionValue function = new SumFunction(values);
         assertEquals(new BigDecimal(42), function.getValue());
@@ -39,7 +39,7 @@ public class FunctionTest {
 
     @Test
     public void shouldSumTwoValues() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(42));
         values.add(new BigDecimalFunctionValue(23));
         FunctionValue function = new SumFunction(values);
@@ -48,7 +48,7 @@ public class FunctionTest {
 
     @Test
     public void shouldSumMultipleValues() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(5));
         values.add(new BigDecimalFunctionValue(3));
         values.add(new BigDecimalFunctionValue(12));
@@ -65,7 +65,7 @@ public class FunctionTest {
 
     @Test
     public void shouldAvgSingleValue() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(42));
         FunctionValue function = new AverageFunction(values);
         assertEquals(new BigDecimal(42), function.getValue());
@@ -73,7 +73,7 @@ public class FunctionTest {
 
     @Test
     public void shouldAvgTwoValues() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(42));
         values.add(new BigDecimalFunctionValue(23));
         FunctionValue function = new AverageFunction(values);
@@ -82,13 +82,23 @@ public class FunctionTest {
 
     @Test
     public void shouldAvgMultipleValues() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(5));
         values.add(new BigDecimalFunctionValue(3));
         values.add(new BigDecimalFunctionValue(12));
         values.add(new BigDecimalFunctionValue(40));
         FunctionValue function = new AverageFunction(values);
         assertEquals(new BigDecimal((5 + 3 + 12 + 40) / 4), function.getValue());
+    }
+
+    @Test
+    public void shouldAvgNonTerminal() {
+        List<FunctionValue> values = new ArrayList<>();
+        values.add(new BigDecimalFunctionValue(5));
+        values.add(new BigDecimalFunctionValue(3));
+        values.add(new BigDecimalFunctionValue(2));
+        FunctionValue function = new AverageFunction(values);
+        assertEquals(new BigDecimal("3.333333333"), function.getValue());
     }
 
     @Test
@@ -99,7 +109,7 @@ public class FunctionTest {
 
     @Test
     public void shouldMultiplySingleValue() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(42));
         FunctionValue fFunction = new ProductFunction(values);
         assertEquals(new BigDecimal(42), fFunction.getValue());
@@ -107,7 +117,7 @@ public class FunctionTest {
 
     @Test
     public void shouldMultiplyTwoValues() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(4));
         values.add(new BigDecimalFunctionValue(2));
         FunctionValue function = new ProductFunction(values);
@@ -116,7 +126,7 @@ public class FunctionTest {
 
     @Test
     public void shouldMultiplyMultipleValues() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(5));
         values.add(new BigDecimalFunctionValue(3));
         values.add(new BigDecimalFunctionValue(2));
@@ -132,7 +142,7 @@ public class FunctionTest {
 
     @Test
     public void shouldDivideSingleValue() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(42));
         FunctionValue fFunction = new QuotientFunction(values);
         assertEquals(new BigDecimal(42), fFunction.getValue());
@@ -140,7 +150,7 @@ public class FunctionTest {
 
     @Test
     public void shouldDivideTwoValues() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(4));
         values.add(new BigDecimalFunctionValue(2));
         FunctionValue function = new QuotientFunction(values);
@@ -149,7 +159,7 @@ public class FunctionTest {
 
     @Test
     public void shouldDivideMultipleValues() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(20));
         values.add(new BigDecimalFunctionValue(4));
         values.add(new BigDecimalFunctionValue(2));
@@ -159,7 +169,7 @@ public class FunctionTest {
 
     @Test
     public void shouldDivideNonTerminating() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(5));
         values.add(new BigDecimalFunctionValue(-3));
         FunctionValue function = new QuotientFunction(values);
@@ -168,7 +178,7 @@ public class FunctionTest {
 
     @Test(expected = FunctionException.class)
     public void shouldThrowExceptionOnDivisionByZero() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(5));
         values.add(new BigDecimalFunctionValue(0));
         FunctionValue function = new QuotientFunction(values);
@@ -183,7 +193,7 @@ public class FunctionTest {
 
     @Test
     public void shouldNegateSingleValue() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(42));
         FunctionValue function = new NegateFunction(values);
         assertEquals(new BigDecimal(-42), function.getValue());
@@ -191,7 +201,7 @@ public class FunctionTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldNegateTwoValues() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(4));
         values.add(new BigDecimalFunctionValue(2));
         FunctionValue function = new NegateFunction(values);
@@ -200,17 +210,17 @@ public class FunctionTest {
 
     @Test
     public void shouldCalculateNestedFunctions() {
-        List<FunctionValue> productValues = new ArrayList<FunctionValue>();
+        List<FunctionValue> productValues = new ArrayList<>();
         productValues.add(new BigDecimalFunctionValue(4));
         productValues.add(new BigDecimalFunctionValue(5));
         FunctionValue productFunction = new ProductFunction(productValues);
 
-        List<FunctionValue> sumValues = new ArrayList<FunctionValue>();
+        List<FunctionValue> sumValues = new ArrayList<>();
         sumValues.add(productFunction);
         sumValues.add(new BigDecimalFunctionValue(5));
         FunctionValue sumFunction = new SumFunction(sumValues);
 
-        List<FunctionValue> divValues = new ArrayList<FunctionValue>();
+        List<FunctionValue> divValues = new ArrayList<>();
         divValues.add(sumFunction);
         divValues.add(new BigDecimalFunctionValue(5));
         FunctionValue divFunction = new QuotientFunction(divValues);
@@ -228,7 +238,7 @@ public class FunctionTest {
 
     @Test
     public void shouldPowerSingleValue() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(42));
         FunctionValue function = new PowerFunction(values);
         assertEquals(new BigDecimal(42), function.getValue());
@@ -236,7 +246,7 @@ public class FunctionTest {
 
     @Test
     public void shouldPowerTwoValues() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(5));
         values.add(new BigDecimalFunctionValue(2));
         FunctionValue function = new PowerFunction(values);
@@ -245,7 +255,7 @@ public class FunctionTest {
 
     @Test
     public void shouldPowerMultipleValues() {
-        List<FunctionValue> values = new ArrayList<FunctionValue>();
+        List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(5));
         values.add(new BigDecimalFunctionValue(3));
         values.add(new BigDecimalFunctionValue(2));
