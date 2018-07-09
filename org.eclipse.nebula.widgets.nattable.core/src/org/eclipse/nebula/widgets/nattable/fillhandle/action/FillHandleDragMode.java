@@ -350,6 +350,8 @@ public class FillHandleDragMode extends AutoScrollDragMode {
         this.direction = null;
         this.selectionLayer.setFillHandleRegion(null);
         this.clipboard.clear();
-        natTable.redraw();
+        if (!natTable.isDisposed()) {
+            natTable.redraw();
+        }
     }
 }
