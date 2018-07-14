@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2016 Jonas Hugo, Markus Wahl.
+ * Copyright (c) 2014, 2018 Jonas Hugo, Markus Wahl, Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -47,12 +47,9 @@ public class PreserveSelectionModelTest {
      */
     private PreserveSelectionModel<String[]> testee;
 
-    private static String[] indexRow4 = new String[] { "row 4 hallo0",
-            "hallo2", "hallo3" };
-    private static String[] indexRow5 = new String[] { "row 5 hallo0",
-            "hallo2", "hallo3" };
-    private static String[] indexRow6 = new String[] { "row 6 hallo0",
-            "hallo2", "hallo3" };
+    private static String[] indexRow4 = new String[] { "row 4 hallo0", "hallo2", "hallo3" };
+    private static String[] indexRow5 = new String[] { "row 5 hallo0", "hallo2", "hallo3" };
+    private static String[] indexRow6 = new String[] { "row 6 hallo0", "hallo2", "hallo3" };
 
     private int rowCount = 7, columnCount = 3;
 
@@ -76,8 +73,8 @@ public class PreserveSelectionModelTest {
          */
         mockCells();
 
-        this.testee = new PreserveSelectionModel<String[]>(this.selectionLayer,
-                this.rowDataProvider, this.rowIdAccessor);
+        this.testee = new PreserveSelectionModel<>(
+                this.selectionLayer, this.rowDataProvider, this.rowIdAccessor);
     }
 
     /**
@@ -139,8 +136,7 @@ public class PreserveSelectionModelTest {
     }
 
     private boolean isCellSelected(int columnPosition, int rowPosition) {
-        boolean singularVersion = this.testee.isCellPositionSelected(columnPosition,
-                rowPosition);
+        boolean singularVersion = this.testee.isCellPositionSelected(columnPosition, rowPosition);
         boolean rectangleVersion = false;
         for (Rectangle selection : this.testee.getSelections()) {
             if (selection.intersects(columnPosition, rowPosition, 1, 1)) {
@@ -162,8 +158,7 @@ public class PreserveSelectionModelTest {
         this.selectionLayer.scrollOffset = 5;
 
         assertEquals(1, this.testee.getSelections().size());
-        assertEquals(new Rectangle(1, 0, 1, 1), this.testee.getSelections()
-                .iterator().next());
+        assertEquals(new Rectangle(1, 0, 1, 1), this.testee.getSelections().iterator().next());
     }
 
     @Test
@@ -344,7 +339,7 @@ public class PreserveSelectionModelTest {
     }
 
     @Test
-    public void isColumnFullySelected() throws Exception {
+    public void isColumnFullySelected() {
         this.testee.addSelection(new Rectangle(1, 0, 2, 2));
 
         assertFalse(this.testee.isColumnPositionFullySelected(1, 3));
@@ -352,7 +347,7 @@ public class PreserveSelectionModelTest {
     }
 
     @Test
-    public void isColumnFullySelected_Copes_With_Clear() throws Exception {
+    public void isColumnFullySelected_Copes_With_Clear() {
         this.testee.addSelection(new Rectangle(1, 0, 2, 2));
         this.testee.clearSelection(1, 0);
 
@@ -361,7 +356,7 @@ public class PreserveSelectionModelTest {
     }
 
     @Test
-    public void isColumnFullySelected_Copes_With_Gap() throws Exception {
+    public void isColumnFullySelected_Copes_With_Gap() {
         this.testee.addSelection(2, 0);
         this.testee.addSelection(2, 2);
 
@@ -369,8 +364,7 @@ public class PreserveSelectionModelTest {
     }
 
     @Test
-    public void isColumnFullySelected_Copes_With_Overlapping_Regions()
-            throws Exception {
+    public void isColumnFullySelected_Copes_With_Overlapping_Regions() {
         this.testee.addSelection(new Rectangle(1, 0, 2, 2));
         this.testee.addSelection(new Rectangle(2, 1, 1, 2));
 
@@ -378,8 +372,7 @@ public class PreserveSelectionModelTest {
     }
 
     @Test
-    public void isColumnFullySelected_Copes_With_Combining_Adjacent_Individually_Selected_Cells()
-            throws Exception {
+    public void isColumnFullySelected_Copes_With_Combining_Adjacent_Individually_Selected_Cells() {
         this.testee.addSelection(1, 0);
         this.testee.addSelection(1, 1);
 
@@ -425,10 +418,9 @@ public class PreserveSelectionModelTest {
         this.testee.addSelection(0, 0);
         this.testee.addSelection(2, 2);
 
-        HashSet<Range> actualSelectedRowPositions = new HashSet<Range>(
-                this.testee.getSelectedRowPositions());
+        HashSet<Range> actualSelectedRowPositions = new HashSet<>(this.testee.getSelectedRowPositions());
 
-        HashSet<Range> expectedSelectedRowPositions = new HashSet<Range>();
+        HashSet<Range> expectedSelectedRowPositions = new HashSet<>();
         expectedSelectedRowPositions.add(new Range(0, 1));
         expectedSelectedRowPositions.add(new Range(1, 2));
         expectedSelectedRowPositions.add(new Range(2, 3));
@@ -446,7 +438,7 @@ public class PreserveSelectionModelTest {
     }
 
     @Test
-    public void isRowPositionFullySelected() throws Exception {
+    public void isRowPositionFullySelected() {
         this.testee.addSelection(new Rectangle(1, 0, 2, 2));
 
         assertFalse(this.testee.isRowPositionFullySelected(0, 3));
@@ -454,7 +446,7 @@ public class PreserveSelectionModelTest {
     }
 
     @Test
-    public void isRowPositionFullySelected_Copes_With_Clear() throws Exception {
+    public void isRowPositionFullySelected_Copes_With_Clear() {
         this.testee.addSelection(new Rectangle(1, 0, 2, 2));
         this.testee.clearSelection(1, 0);
 
@@ -463,7 +455,7 @@ public class PreserveSelectionModelTest {
     }
 
     @Test
-    public void isRowPositionFullySelected_Copes_With_Gap() throws Exception {
+    public void isRowPositionFullySelected_Copes_With_Gap() {
         this.testee.addSelection(2, 0);
         this.testee.addSelection(0, 0);
 
@@ -471,8 +463,7 @@ public class PreserveSelectionModelTest {
     }
 
     @Test
-    public void isRowPositionFullySelected_Copes_With_Overlapping_Regions()
-            throws Exception {
+    public void isRowPositionFullySelected_Copes_With_Overlapping_Regions() {
         this.testee.addSelection(new Rectangle(1, 0, 2, 2));
         this.testee.addSelection(new Rectangle(0, 0, 3, 1));
 
@@ -480,8 +471,7 @@ public class PreserveSelectionModelTest {
     }
 
     @Test
-    public void isRowPositionFullySelected_Copes_With_Combining_Adjacent_Individually_Selected_Cells()
-            throws Exception {
+    public void isRowPositionFullySelected_Copes_With_Combining_Adjacent_Individually_Selected_Cells() {
         this.testee.addSelection(1, 0);
         this.testee.addSelection(2, 0);
 
@@ -515,20 +505,20 @@ public class PreserveSelectionModelTest {
     // Anchor
 
     @Test
-    public void getSelectionAnchor_Copes_With_Missing_Marker() throws Exception {
+    public void getSelectionAnchor_Copes_With_Missing_Marker() {
         assertEquals(SelectionLayer.NO_SELECTION, this.testee.getSelectionAnchor().x);
         assertEquals(SelectionLayer.NO_SELECTION, this.testee.getSelectionAnchor().y);
     }
 
     @Test
-    public void getSelectionAnchor() throws Exception {
-        this.testee.selectionAnchor = new CellPosition<String[]>(indexRow4, 0);
+    public void getSelectionAnchor() {
+        this.testee.selectionAnchor = new CellPosition<>(indexRow4, 0);
         assertEquals(0, this.testee.getSelectionAnchor().x);
         assertEquals(0, this.testee.getSelectionAnchor().y);
     }
 
     @Test
-    public void setSelectionAnchor() throws Exception {
+    public void setSelectionAnchor() {
         this.testee.setSelectionAnchor(new Point(0, 0));
         assertSame(indexRow4, this.testee.selectionAnchor.getRowObject());
     }
@@ -536,23 +526,20 @@ public class PreserveSelectionModelTest {
     // Last selected cell
 
     @Test
-    public void getLastSelectedCell_Copes_With_Missing_Marker()
-            throws Exception {
-        assertEquals(SelectionLayer.NO_SELECTION,
-                this.testee.getLastSelectedCell().x);
-        assertEquals(SelectionLayer.NO_SELECTION,
-                this.testee.getLastSelectedCell().y);
+    public void getLastSelectedCell_Copes_With_Missing_Marker() {
+        assertEquals(SelectionLayer.NO_SELECTION, this.testee.getLastSelectedCell().x);
+        assertEquals(SelectionLayer.NO_SELECTION, this.testee.getLastSelectedCell().y);
     }
 
     @Test
-    public void getLastSelectedCell() throws Exception {
-        this.testee.lastSelectedCell = new CellPosition<String[]>(indexRow4, 0);
+    public void getLastSelectedCell() {
+        this.testee.lastSelectedCell = new CellPosition<>(indexRow4, 0);
         assertEquals(0, this.testee.getLastSelectedCell().x);
         assertEquals(0, this.testee.getLastSelectedCell().y);
     }
 
     @Test
-    public void setLastSelectedCell() throws Exception {
+    public void setLastSelectedCell() {
         this.testee.setLastSelectedCell(new Point(0, 0));
         assertSame(indexRow4, this.testee.lastSelectedCell.getRowObject());
     }
@@ -560,20 +547,19 @@ public class PreserveSelectionModelTest {
     // Last selected region
 
     @Test
-    public void getLastSelectedRegion_Copes_With_Missing_Marker()
-            throws Exception {
+    public void getLastSelectedRegion_Copes_With_Missing_Marker() {
         assertNull(this.testee.getLastSelectedRegion());
     }
 
     @Test
-    public void getLastSelectedRegion() throws Exception {
+    public void getLastSelectedRegion() {
         this.testee.lastSelectedRegion = new Rectangle(0, 0, 1, 1);
         this.testee.lastSelectedRegionOriginRowObject = indexRow6;
         assertEquals(2, this.testee.getLastSelectedRegion().y);
     }
 
     @Test
-    public void setLastSelectedRegion_Overrides_Reference() throws Exception {
+    public void setLastSelectedRegion_Overrides_Reference() {
         Rectangle oldReference = new Rectangle(0, 0, 1, 1);
         this.testee.lastSelectedRegion = oldReference;
         Rectangle newReference = new Rectangle(0, 0, 1, 1);
@@ -584,7 +570,7 @@ public class PreserveSelectionModelTest {
     }
 
     @Test
-    public void setLastSelectedRegion_Clears_Region_On_NULL() throws Exception {
+    public void setLastSelectedRegion_Clears_Region_On_NULL() {
         this.testee.lastSelectedRegion = new Rectangle(0, 0, 1, 1);
         this.testee.setLastSelectedRegion(null);
 
@@ -592,8 +578,7 @@ public class PreserveSelectionModelTest {
     }
 
     @Test
-    public void setLastSelectedRegion_On_Parameters_Copys_Data()
-            throws Exception {
+    public void setLastSelectedRegion_On_Parameters_Copys_Data() {
         Rectangle oldReference = new Rectangle(0, 0, 1, 1);
         this.testee.lastSelectedRegion = oldReference;
         this.testee.setLastSelectedRegion(1, 1, 2, 2);
@@ -629,7 +614,6 @@ public class PreserveSelectionModelTest {
 
         @Override
         public String[] getRowObject(int rowIndex) {
-
             if (rowIndex == this.indexOfRow4) {
                 return indexRow4;
             } else if (rowIndex == this.indexOfRow5) {
@@ -665,10 +649,8 @@ public class PreserveSelectionModelTest {
             if (rowObject == indexRow4) {
                 return "rowA";
             } else if (rowObject == indexRow5) {
-
                 return "rowB";
             } else if (rowObject == indexRow6) {
-
                 return "rowC";
             } else {
                 throw new UnsupportedOperationException();

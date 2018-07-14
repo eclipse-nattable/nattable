@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Jonas Hugo, Markus Wahl.
+ * Copyright (c) 2014, 2018 Jonas Hugo, Markus Wahl.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,7 +24,7 @@ import org.junit.Test;
 
 public class SelectionsTest {
 
-    private Selections<String[]> testee = new Selections<String[]>();
+    private Selections<String[]> testee = new Selections<>();
 
     private Serializable rowA = "rowA";
 
@@ -126,14 +126,11 @@ public class SelectionsTest {
         this.testee.select(this.rowA, this.rowObjectA, this.columnPosition2);
         this.testee.select(this.rowB, this.rowObjectB, this.columnPosition2);
 
-        HashSet<CellPosition<String[]>> actualCells = new HashSet<CellPosition<String[]>>(
-                this.testee.getSelections());
+        HashSet<CellPosition<String[]>> actualCells = new HashSet<>(this.testee.getSelections());
 
-        HashSet<CellPosition<String[]>> expectedCells = new HashSet<CellPosition<String[]>>();
-        expectedCells.add(new CellPosition<String[]>(this.rowObjectA,
-                this.columnPosition2));
-        expectedCells.add(new CellPosition<String[]>(this.rowObjectB,
-                this.columnPosition2));
+        HashSet<CellPosition<String[]>> expectedCells = new HashSet<>();
+        expectedCells.add(new CellPosition<>(this.rowObjectA, this.columnPosition2));
+        expectedCells.add(new CellPosition<>(this.rowObjectB, this.columnPosition2));
 
         assertEquals(expectedCells, actualCells);
     }
@@ -143,12 +140,12 @@ public class SelectionsTest {
         this.testee.select(this.rowA, this.rowObjectA, this.columnPosition2);
         this.testee.select(this.rowB, this.rowObjectB, this.columnPosition2);
 
-        HashSet<Serializable> actualRowIds = new HashSet<Serializable>();
+        HashSet<Serializable> actualRowIds = new HashSet<>();
         for (Selections.Row<String[]> row : this.testee.getRows()) {
             actualRowIds.add(row.getId());
         }
 
-        HashSet<Serializable> expectedRowIds = new HashSet<Serializable>();
+        HashSet<Serializable> expectedRowIds = new HashSet<>();
         expectedRowIds.add(this.rowA);
         expectedRowIds.add(this.rowB);
 
@@ -161,10 +158,9 @@ public class SelectionsTest {
         this.testee.select(this.rowA, this.rowObjectA, this.columnPosition3);
         this.testee.select(this.rowB, this.rowObjectB, this.columnPosition1);
 
-        HashSet<Integer> actualColumns = new HashSet<Integer>(
-                this.testee.getColumnPositions());
+        HashSet<Integer> actualColumns = new HashSet<>(this.testee.getColumnPositions());
 
-        HashSet<Integer> expectedColumns = new HashSet<Integer>();
+        HashSet<Integer> expectedColumns = new HashSet<>();
         expectedColumns.add(this.columnPosition2);
         expectedColumns.add(this.columnPosition1);
         expectedColumns.add(this.columnPosition3);

@@ -31,8 +31,10 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
+import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
 import org.eclipse.nebula.widgets.nattable.selection.IMarkerSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionUtils;
 import org.eclipse.nebula.widgets.nattable.selection.preserve.Selections.CellPosition;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.swt.graphics.Point;
@@ -372,7 +374,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
 
     @Override
     public boolean isColumnPositionFullySelected(int columnPosition, int columnHeight) {
-        TreeSet<Integer> selectedRowIndices = new TreeSet<Integer>();
+        TreeSet<Integer> selectedRowPositions = new TreeSet<Integer>();
         this.selectionsLock.readLock().lock();
         try {
             Selections.Column selectedRowsInColumn = this.selections.getSelectedRows(columnPosition);
@@ -381,13 +383,16 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
                     Selections.Row<T> row = this.selections.getSelectedColumns(rowId);
                     T rowObject = row.getRowObject();
                     int rowIndex = this.rowDataProvider.indexOfRowObject(rowObject);
-                    selectedRowIndices.add(rowIndex);
+                    selectedRowPositions.add(this.selectionLayer.getRowPositionByIndex(rowIndex));
                 }
             }
-            return hasContinuousSection(selectedRowIndices, columnHeight);
         } finally {
             this.selectionsLock.readLock().unlock();
         }
+
+        return (selectedRowPositions.size() < columnHeight)
+                ? false
+                : SelectionUtils.isConsecutive(ArrayUtil.asIntArray(selectedRowPositions));
     }
 
     /**
@@ -399,38 +404,6 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
      */
     private boolean hasColumnsSelectedRows(Selections.Column column) {
         return column != null;
-    }
-
-    /**
-     * Determines if there is a long enough continuous section of integers in
-     * the sequence. The continuous section must be at least sectionSize long.
-     *
-     * @param sequence
-     *            sequence of integers to inspect
-     * @param minimumLength
-     *            minimum length of continuous section
-     * @return whether there is a long enough continuous section of integers in
-     *         sequence
-     */
-    private boolean hasContinuousSection(TreeSet<Integer> sequence, int minimumLength) {
-        int counter = 0;
-        Integer previousValue = null;
-        for (Integer index : sequence) {
-            if (previousValue != null) {
-                // Not first measurement.
-                if (index != previousValue + 1) {
-                    // Restart measurement:
-                    counter = 0;
-                }
-            }
-            // Continuous measurement:
-            previousValue = index;
-            counter += 1;
-            if (counter == minimumLength) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
@@ -511,7 +484,10 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
         } finally {
             this.selectionsLock.readLock().unlock();
         }
-        return hasContinuousSection(selectedColumnPositions, rowWidth);
+
+        return (selectedColumnPositions.size() < rowWidth)
+                ? false
+                : SelectionUtils.isConsecutive(ArrayUtil.asIntArray(selectedColumnPositions));
     }
 
     /**
@@ -720,7 +696,11 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
                             && columnDiff.getDiffType().equals(DiffTypeEnum.DELETE)) {
                         Range beforePositionRange = columnDiff.getBeforePositionRange();
                         for (int i = beforePositionRange.start; i < beforePositionRange.end; i++) {
-                            this.selections.deselectColumn(i);
+                            if (!(event instanceof ColumnReorderEvent)) {
+                                // in case the column was reordered we don't
+                                // want to deselect the column
+                                this.selections.deselectColumn(i);
+                            }
                             // ask for further column selections that need to be
                             // modified
                             this.selections.updateColumnsForRemoval(i);
