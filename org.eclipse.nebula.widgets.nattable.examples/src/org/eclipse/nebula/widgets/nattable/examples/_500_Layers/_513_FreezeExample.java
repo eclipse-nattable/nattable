@@ -159,15 +159,15 @@ public class _513_FreezeExample extends AbstractNatExample {
             protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
                 return super.createColumnHeaderMenu(natTable)
                         .withHideColumnMenuItem()
-                            .withShowAllColumnsMenuItem()
-                            .withColumnChooserMenuItem();
+                        .withShowAllColumnsMenuItem()
+                        .withColumnChooserMenuItem();
             }
 
             @Override
             protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
                 return super.createCornerMenu(natTable)
                         .withShowAllColumnsMenuItem()
-                            .withStateManagerMenuItemProvider();
+                        .withStateManagerMenuItemProvider();
             }
         });
         natTable.configure();

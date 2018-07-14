@@ -1042,7 +1042,12 @@ public class CompositeLayer extends AbstractLayer {
         return labels;
     }
 
-    protected class CompositeLayerPainter implements ILayerPainter {
+    /**
+     * The {@link ILayerPainter} that is used to render compositions.
+     *
+     * @since 1.6
+     */
+    public class CompositeLayerPainter implements ILayerPainter {
 
         @Override
         public void paintLayer(ILayer natLayer, GC gc, int xOffset,

@@ -15,38 +15,32 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
-import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.freeze.config.DefaultFreezeGridBindings;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
-import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.painter.layer.CompositeFreezeLayerPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectColumnCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectRowCommandHandler;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 
 public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndexLayer {
 
     private final FreezeLayer freezeLayer;
     private final ViewportLayer viewportLayer;
     private final SelectionLayer selectionLayer;
-    private final ILayerPainter layerPainter = new FreezableLayerPainter();
+    private final ILayerPainter layerPainter;
 
     public CompositeFreezeLayer(FreezeLayer freezeLayer,
             ViewportLayer viewportLayer, SelectionLayer selectionLayer) {
@@ -71,6 +65,8 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
                         viewportLayer.getScrollableLayer(), freezeLayer, viewportLayer),
                 0, 1);
         setChildLayer("NONFROZEN_REGION", viewportLayer, 1, 1); //$NON-NLS-1$
+
+        this.layerPainter = new CompositeFreezeLayerPainter(this);
 
         registerCommandHandlers();
 
@@ -260,56 +256,6 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
         }
 
         super.loadState(prefix, properties);
-    }
-
-    class FreezableLayerPainter extends CompositeLayerPainter {
-
-        public FreezableLayerPainter() {}
-
-        @Override
-        public void paintLayer(ILayer natLayer, GC gc, int xOffset,
-                int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
-            super.paintLayer(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
-
-            Color separatorColor = configRegistry.getConfigAttribute(
-                    IFreezeConfigAttributes.SEPARATOR_COLOR,
-                    DisplayMode.NORMAL);
-            if (separatorColor == null) {
-                separatorColor = GUIHelper.COLOR_BLUE;
-            }
-
-            Integer separatorWidth = configRegistry.getConfigAttribute(
-                    IFreezeConfigAttributes.SEPARATOR_WIDTH,
-                    DisplayMode.NORMAL);
-            if (separatorWidth == null) {
-                separatorWidth = 1;
-            }
-
-            gc.setClipping(rectangle);
-            Color oldFg = gc.getForeground();
-            int oldWidth = gc.getLineWidth();
-            gc.setForeground(separatorColor);
-            gc.setLineWidth(GUIHelper.convertHorizontalPixelToDpi(separatorWidth));
-            final int freezeWidth = CompositeFreezeLayer.this.freezeLayer.getWidth() - 1;
-            if (freezeWidth > 0) {
-                gc.drawLine(
-                        xOffset + freezeWidth,
-                        yOffset,
-                        xOffset + freezeWidth,
-                        yOffset + getHeight() - 1);
-            }
-            final int freezeHeight = CompositeFreezeLayer.this.freezeLayer.getHeight() - 1;
-            if (freezeHeight > 0) {
-                gc.drawLine(
-                        xOffset,
-                        yOffset + freezeHeight,
-                        xOffset + getWidth() - 1,
-                        yOffset + freezeHeight);
-            }
-            gc.setForeground(oldFg);
-            gc.setLineWidth(oldWidth);
-        }
-
     }
 
 }
