@@ -21,12 +21,15 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 public class ViewportSelectColumnGroupCommand extends AbstractColumnCommand {
 
     /**
-     * The row position in the NatTable. Needed to determine the column group header
-     * level, e.g. with two column group headers row 0 is the
-     * ColumnGroupGroupHeaderLayer and row 1 is the ColumnGroupHeaderLayer. Will not
-     * be transformed in processing as the position in the table is needed.
+     * The origin column position which is the starting position of the column
+     * group that is selected.
      */
-    private final int natTableRowPosition;
+    private int originColumnPosition;
+
+    /**
+     * The spanning of the column group needed for region selection.
+     */
+    private final int columnSpan;
 
     private final boolean withShiftMask;
     private final boolean withControlMask;
@@ -36,28 +39,30 @@ public class ViewportSelectColumnGroupCommand extends AbstractColumnCommand {
      * @param layer
      *            The {@link ILayer} for the column position reference.
      * @param columnPosition
-     *            The column position according to the given layer, that should be
-     *            used to determine the column group whose columns should be
-     *            selected.
-     * @param rowPosition
-     *            The row position according to the given layer, that should be used
-     *            to determine the column group level. Especially needed in a layer
-     *            composition with multiple column groups.
+     *            The column position of the first column in a group according
+     *            to the given layer.
+     * @param originColumnPosition
+     *            The origin column position which is the starting position of
+     *            the column group that is selected.
+     * @param columnSpan
+     *            The spanning of the column group needed for region selection.
      * @param withShiftMask
-     *            <code>true</code> if the selection should be processed as if the
-     *            shift modifier is active.
+     *            <code>true</code> if the selection should be processed as if
+     *            the shift modifier is active.
      * @param withControlMask
-     *            <code>true</code> if the selection should be processed as if the
-     *            control modifier is active.
+     *            <code>true</code> if the selection should be processed as if
+     *            the control modifier is active.
      */
     public ViewportSelectColumnGroupCommand(
             ILayer layer,
             int columnPosition,
-            int rowPosition,
+            int originColumnPosition,
+            int columnSpan,
             boolean withShiftMask,
             boolean withControlMask) {
         super(layer, columnPosition);
-        this.natTableRowPosition = rowPosition;
+        this.originColumnPosition = originColumnPosition;
+        this.columnSpan = columnSpan;
         this.withShiftMask = withShiftMask;
         this.withControlMask = withControlMask;
     }
@@ -70,17 +75,39 @@ public class ViewportSelectColumnGroupCommand extends AbstractColumnCommand {
      */
     protected ViewportSelectColumnGroupCommand(ViewportSelectColumnGroupCommand command) {
         super(command);
-        this.natTableRowPosition = command.natTableRowPosition;
+        this.originColumnPosition = command.originColumnPosition;
+        this.columnSpan = command.columnSpan;
         this.withShiftMask = command.withShiftMask;
         this.withControlMask = command.withControlMask;
     }
 
+    @Override
+    public boolean convertToTargetLayer(ILayer targetLayer) {
+        int prev = getColumnPosition();
+        if (super.convertToTargetLayer(targetLayer)) {
+            // update the origin column position this way
+            // needed to correctly select a column group in a scrolled state
+            this.originColumnPosition -= (prev - getColumnPosition());
+            return true;
+        }
+        return false;
+    }
+
     /**
      *
-     * @return The row position of the cell that was clicked in the NatTable.
+     * @return The origin column position which is the starting position of the
+     *         column group that is selected.
      */
-    public int getNatTableRowPosition() {
-        return this.natTableRowPosition;
+    public int getOriginColumnPosition() {
+        return this.originColumnPosition;
+    }
+
+    /**
+     *
+     * @return The spanning of the column group needed for region selection.
+     */
+    public int getColumnSpan() {
+        return this.columnSpan;
     }
 
     /**

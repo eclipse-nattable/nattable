@@ -16,6 +16,7 @@ import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.PixelCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
+import org.eclipse.nebula.widgets.nattable.group.command.ViewportSelectColumnGroupCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
@@ -529,6 +530,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
         registerCommandHandler(new ShowColumnInViewportCommandHandler(this));
         registerCommandHandler(new ShowRowInViewportCommandHandler(this));
         registerCommandHandler(new ViewportSelectColumnCommandHandler(this));
+        registerCommandHandler(new ViewportSelectColumnGroupCommandHandler(this));
         registerCommandHandler(new ViewportSelectRowCommandHandler(this));
         registerCommandHandler(new ViewportDragCommandHandler(this));
     }

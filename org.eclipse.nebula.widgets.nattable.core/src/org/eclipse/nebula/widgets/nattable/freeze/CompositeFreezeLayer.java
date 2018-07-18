@@ -20,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.freeze.config.DefaultFreezeGridBindings;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentIndexLayer;
+import org.eclipse.nebula.widgets.nattable.group.command.ViewportSelectColumnGroupCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralChangeEvent;
@@ -121,18 +122,16 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
 
     @Override
     protected void registerCommandHandlers() {
-        registerCommandHandler(new FreezeCommandHandler(this.freezeLayer,
-                this.viewportLayer, this.selectionLayer));
+        registerCommandHandler(new FreezeCommandHandler(this.freezeLayer, this.viewportLayer, this.selectionLayer));
 
         final DimensionallyDependentIndexLayer frozenRowLayer =
                 (DimensionallyDependentIndexLayer) getChildLayerByLayoutCoordinate(1, 0);
-        frozenRowLayer.registerCommandHandler(
-                new ViewportSelectRowCommandHandler(frozenRowLayer));
+        frozenRowLayer.registerCommandHandler(new ViewportSelectRowCommandHandler(frozenRowLayer));
 
         final DimensionallyDependentIndexLayer frozenColumnLayer =
                 (DimensionallyDependentIndexLayer) getChildLayerByLayoutCoordinate(0, 1);
-        frozenColumnLayer.registerCommandHandler(
-                new ViewportSelectColumnCommandHandler(frozenColumnLayer));
+        frozenColumnLayer.registerCommandHandler(new ViewportSelectColumnCommandHandler(frozenColumnLayer));
+        frozenColumnLayer.registerCommandHandler(new ViewportSelectColumnGroupCommandHandler(frozenColumnLayer));
     }
 
     @Override

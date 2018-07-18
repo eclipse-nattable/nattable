@@ -12,6 +12,7 @@ package org.eclipse.nebula.widgets.nattable.group.action;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.group.command.ViewportSelectColumnGroupCommand;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.swt.events.MouseEvent;
 
@@ -34,14 +35,19 @@ public class ViewportSelectColumnGroupAction implements IMouseAction {
     @Override
     public void run(NatTable natTable, MouseEvent event) {
         // only perform the selection if the cursor is null
-        if (natTable.getCursor() == null)
-            natTable.doCommand(
-                    new ViewportSelectColumnGroupCommand(
-                            natTable,
-                            natTable.getColumnPositionByX(event.x),
-                            natTable.getRowPositionByY(event.y),
-                            this.withShiftMask,
-                            this.withControlMask));
+        if (natTable.getCursor() == null) {
+            ILayerCell cell = natTable.getCellByPosition(
+                    natTable.getColumnPositionByX(event.x),
+                    natTable.getRowPositionByY(event.y));
+            ViewportSelectColumnGroupCommand command = new ViewportSelectColumnGroupCommand(
+                    natTable,
+                    cell.getColumnPosition(),
+                    cell.getOriginColumnPosition(),
+                    cell.getColumnSpan(),
+                    this.withShiftMask,
+                    this.withControlMask);
+            natTable.doCommand(command);
+        }
     }
 
 }
