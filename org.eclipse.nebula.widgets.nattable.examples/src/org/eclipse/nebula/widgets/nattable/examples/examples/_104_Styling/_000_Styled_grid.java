@@ -83,8 +83,6 @@ public class _000_Styled_grid extends AbstractNatExample {
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         addColumnHighlight(natTable.getConfigRegistry());
 
-        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-
         natTable.addConfiguration(new DebugMenuConfiguration(natTable));
         natTable.configure();
         return natTable;
@@ -133,9 +131,8 @@ public class _000_Styled_grid extends AbstractNatExample {
     }
 
     /**
-     * Register an attribute to be applied to all cells with the highlight
-     * label. A similar approach can be used to bind styling to an arbitrary
-     * group of cells
+     * Register an attribute to be applied to all cells with the highlight label. A
+     * similar approach can be used to bind styling to an arbitrary group of cells
      */
     private void addColumnHighlight(IConfigRegistry configRegistry) {
         Style style = new Style();
