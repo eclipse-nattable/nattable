@@ -12,8 +12,6 @@ package org.eclipse.nebula.widgets.nattable.freeze;
 
 import java.util.Arrays;
 
-import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
-import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeColumnCommand;
 import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeSelectionCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
@@ -382,10 +380,10 @@ public class CompositeFreezeLayerTest {
                 4,
                 "0:0;100 | 2:1;100 | 3:0;100",
                 "0:0;40  | 1:1;40  | 2:2;40  | 3:3;40",
-                "A0~:FROZEN_COLUMN_REGION | C0~:FROZEN_COLUMN_REGION | D0~:NONFROZEN_REGION \n"
-                        + "A1~:FROZEN_COLUMN_REGION | C1~:FROZEN_COLUMN_REGION | D1~:NONFROZEN_REGION \n"
-                        + "A2~:FROZEN_COLUMN_REGION | C2~:FROZEN_COLUMN_REGION | D2~:NONFROZEN_REGION \n"
-                        + "A3~:FROZEN_COLUMN_REGION | C3~:FROZEN_COLUMN_REGION | D3~:NONFROZEN_REGION \n");
+                "A0~:COLUMN_RIGHT_HIDDEN,FROZEN_COLUMN_REGION | C0~:COLUMN_LEFT_HIDDEN,FROZEN_COLUMN_REGION | D0~:NONFROZEN_REGION \n"
+                        + "A1~:COLUMN_RIGHT_HIDDEN,FROZEN_COLUMN_REGION | C1~:COLUMN_LEFT_HIDDEN,FROZEN_COLUMN_REGION | D1~:NONFROZEN_REGION \n"
+                        + "A2~:COLUMN_RIGHT_HIDDEN,FROZEN_COLUMN_REGION | C2~:COLUMN_LEFT_HIDDEN,FROZEN_COLUMN_REGION | D2~:NONFROZEN_REGION \n"
+                        + "A3~:COLUMN_RIGHT_HIDDEN,FROZEN_COLUMN_REGION | C3~:COLUMN_LEFT_HIDDEN,FROZEN_COLUMN_REGION | D3~:NONFROZEN_REGION \n");
 
         LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
@@ -402,10 +400,10 @@ public class CompositeFreezeLayerTest {
                 4,
                 "1:0;100 | 2:1;100 | 3:0;100",
                 "0:0;40  | 1:1;40  | 2:2;40  | 3:3;40",
-                "B0~:FROZEN_COLUMN_REGION | C0~:FROZEN_COLUMN_REGION | D0~:NONFROZEN_REGION \n"
-                        + "B1~:FROZEN_COLUMN_REGION | C1~:FROZEN_COLUMN_REGION | D1~:NONFROZEN_REGION \n"
-                        + "B2~:FROZEN_COLUMN_REGION | C2~:FROZEN_COLUMN_REGION | D2~:NONFROZEN_REGION \n"
-                        + "B3~:FROZEN_COLUMN_REGION | C3~:FROZEN_COLUMN_REGION | D3~:NONFROZEN_REGION \n");
+                "B0~:COLUMN_LEFT_HIDDEN,FROZEN_COLUMN_REGION | C0~:FROZEN_COLUMN_REGION | D0~:NONFROZEN_REGION \n"
+                        + "B1~:COLUMN_LEFT_HIDDEN,FROZEN_COLUMN_REGION | C1~:FROZEN_COLUMN_REGION | D1~:NONFROZEN_REGION \n"
+                        + "B2~:COLUMN_LEFT_HIDDEN,FROZEN_COLUMN_REGION | C2~:FROZEN_COLUMN_REGION | D2~:NONFROZEN_REGION \n"
+                        + "B3~:COLUMN_LEFT_HIDDEN,FROZEN_COLUMN_REGION | C3~:FROZEN_COLUMN_REGION | D3~:NONFROZEN_REGION \n");
 
         LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
@@ -422,10 +420,10 @@ public class CompositeFreezeLayerTest {
                 4,
                 "0:0;100 | 1:1;100 | 3:0;100",
                 "0:0;40  | 1:1;40  | 2:2;40  | 3:3;40",
-                "A0~:FROZEN_COLUMN_REGION | B0~:FROZEN_COLUMN_REGION | D0~:NONFROZEN_REGION \n"
-                        + "A1~:FROZEN_COLUMN_REGION | B1~:FROZEN_COLUMN_REGION | D1~:NONFROZEN_REGION \n"
-                        + "A2~:FROZEN_COLUMN_REGION | B2~:FROZEN_COLUMN_REGION | D2~:NONFROZEN_REGION \n"
-                        + "A3~:FROZEN_COLUMN_REGION | B3~:FROZEN_COLUMN_REGION | D3~:NONFROZEN_REGION \n");
+                "A0~:FROZEN_COLUMN_REGION | B0~:COLUMN_RIGHT_HIDDEN,FROZEN_COLUMN_REGION | D0~:COLUMN_LEFT_HIDDEN,NONFROZEN_REGION \n"
+                        + "A1~:FROZEN_COLUMN_REGION | B1~:COLUMN_RIGHT_HIDDEN,FROZEN_COLUMN_REGION | D1~:COLUMN_LEFT_HIDDEN,NONFROZEN_REGION \n"
+                        + "A2~:FROZEN_COLUMN_REGION | B2~:COLUMN_RIGHT_HIDDEN,FROZEN_COLUMN_REGION | D2~:COLUMN_LEFT_HIDDEN,NONFROZEN_REGION \n"
+                        + "A3~:FROZEN_COLUMN_REGION | B3~:COLUMN_RIGHT_HIDDEN,FROZEN_COLUMN_REGION | D3~:COLUMN_LEFT_HIDDEN,NONFROZEN_REGION \n");
 
         LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }

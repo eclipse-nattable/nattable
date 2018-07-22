@@ -1935,7 +1935,7 @@ public class HierarchicalTreeLayerTest {
     @Test
     public void testGetProvidedLabels() {
         Collection<String> providedLabels = this.treeLayer.getProvidedLabels();
-        assertEquals(15, providedLabels.size());
+        assertEquals(19, providedLabels.size());
         assertTrue(providedLabels.contains(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(providedLabels.contains(DefaultTreeLayerConfiguration.TREE_COLLAPSED_CONFIG_TYPE));
         assertTrue(providedLabels.contains(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE));

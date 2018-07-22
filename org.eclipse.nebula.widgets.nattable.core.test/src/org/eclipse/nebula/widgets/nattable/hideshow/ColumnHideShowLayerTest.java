@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,17 +11,19 @@
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorConstants;
+import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ColumnHideShowLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.junit.Before;
 import org.junit.Test;
 
-@SuppressWarnings("boxing")
 public class ColumnHideShowLayerTest {
 
     private ColumnHideShowLayer columnHideShowLayer;
@@ -82,9 +84,11 @@ public class ColumnHideShowLayerTest {
         assertEquals(3, this.columnHideShowLayer.getColumnCount());
 
         List<Integer> columnPositions = Arrays.asList(2);
-        this.columnHideShowLayer.hideColumnPositions(columnPositions); // index = 2
+        this.columnHideShowLayer.hideColumnPositions(columnPositions); // index
+                                                                       // = 2
         columnPositions = Arrays.asList(0);
-        this.columnHideShowLayer.hideColumnPositions(columnPositions); // index = 4
+        this.columnHideShowLayer.hideColumnPositions(columnPositions); // index
+                                                                       // = 4
         assertEquals(1, this.columnHideShowLayer.getColumnCount());
         assertEquals(1, this.columnHideShowLayer.getColumnIndexByPosition(0));
         assertEquals(-1, this.columnHideShowLayer.getColumnIndexByPosition(1));
@@ -139,6 +143,29 @@ public class ColumnHideShowLayerTest {
         assertEquals(9, this.columnHideShowLayer.getColumnCount());
         assertEquals(3, this.columnHideShowLayer.getColumnPositionByIndex(3));
         assertEquals(4, this.columnHideShowLayer.getColumnPositionByIndex(4));
+    }
 
+    @Test
+    public void shouldContainHideIndicatorLabels() {
+        this.columnHideShowLayer = new ColumnHideShowLayer(new DataLayerFixture());
+        assertEquals(5, this.columnHideShowLayer.getColumnCount());
+
+        this.columnHideShowLayer.hideColumnPositions(0);
+
+        LabelStack configLabels = this.columnHideShowLayer.getConfigLabelsByPosition(0, 0);
+        assertTrue(configLabels.hasLabel(HideIndicatorConstants.COLUMN_LEFT_HIDDEN));
+        assertFalse(configLabels.hasLabel(HideIndicatorConstants.COLUMN_RIGHT_HIDDEN));
+
+        this.columnHideShowLayer.hideColumnPositions(1);
+
+        configLabels = this.columnHideShowLayer.getConfigLabelsByPosition(0, 0);
+        assertTrue(configLabels.hasLabel(HideIndicatorConstants.COLUMN_LEFT_HIDDEN));
+        assertTrue(configLabels.hasLabel(HideIndicatorConstants.COLUMN_RIGHT_HIDDEN));
+
+        this.columnHideShowLayer.showColumnIndexes(0);
+
+        configLabels = this.columnHideShowLayer.getConfigLabelsByPosition(1, 0);
+        assertFalse(configLabels.hasLabel(HideIndicatorConstants.COLUMN_LEFT_HIDDEN));
+        assertTrue(configLabels.hasLabel(HideIndicatorConstants.COLUMN_RIGHT_HIDDEN));
     }
 }

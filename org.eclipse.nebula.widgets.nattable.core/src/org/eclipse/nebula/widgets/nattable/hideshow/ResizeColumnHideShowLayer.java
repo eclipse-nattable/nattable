@@ -27,6 +27,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommandHan
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnShowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommandHandler;
+import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorConstants;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
@@ -138,6 +139,12 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
         if (this.hiddenColumns.containsKey(getColumnIndexByPosition(columnPosition))) {
             labels.addLabel(ISearchStrategy.SKIP_SEARCH_RESULT_LABEL);
         }
+        if (this.hiddenColumns.containsKey(getColumnIndexByPosition(columnPosition - 1))) {
+            labels.addLabel(HideIndicatorConstants.COLUMN_LEFT_HIDDEN);
+        }
+        if (this.hiddenColumns.containsKey(getColumnIndexByPosition(columnPosition + 1))) {
+            labels.addLabel(HideIndicatorConstants.COLUMN_RIGHT_HIDDEN);
+        }
         return labels;
     }
 
@@ -219,7 +226,6 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
 
     @Override
     public void showColumnIndexes(Collection<Integer> columnIndexes) {
-
         // On show we expect that all visible columns share the free
         // space. To avoid that only the adjacent column is decreased, we
         // disable fixColumnPercentageValuesOnResize in any case and restore it
@@ -269,7 +275,6 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
 
     @Override
     public void showAllColumns() {
-
         // On show we expect that all visible columns share the free
         // space. To avoid that only the adjacent column is decreased, we
         // disable fixColumnPercentageValuesOnResize in any case and restore it
@@ -314,7 +319,14 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
         for (Range range : ranges) {
             this.bodyDataLayer.fireLayerEvent(new ColumnResizeEvent(this.bodyDataLayer, range));
         }
+    }
 
+    @Override
+    public Collection<String> getProvidedLabels() {
+        Collection<String> result = super.getProvidedLabels();
+        result.add(HideIndicatorConstants.COLUMN_LEFT_HIDDEN);
+        result.add(HideIndicatorConstants.COLUMN_RIGHT_HIDDEN);
+        return result;
     }
 
     protected static class ColumnSizeInfo {
