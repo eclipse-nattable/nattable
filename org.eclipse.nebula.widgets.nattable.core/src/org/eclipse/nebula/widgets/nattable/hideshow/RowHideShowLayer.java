@@ -25,15 +25,16 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.RowPositionHideComma
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
+import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorConstants;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralChangeEventHelper;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
-public class RowHideShowLayer extends AbstractRowHideShowLayer implements
-        IRowHideShowCommandLayer {
+public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHideShowCommandLayer {
 
     public static final String PERSISTENCE_KEY_HIDDEN_ROW_INDEXES = ".hiddenRowIndexes"; //$NON-NLS-1$
 
@@ -55,14 +56,19 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements
         if (event instanceof IStructuralChangeEvent) {
             IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
             if (structuralChangeEvent.isVerticalStructureChanged()) {
-                Collection<StructuralDiff> rowDiffs = structuralChangeEvent
-                        .getRowDiffs();
+                Collection<StructuralDiff> rowDiffs = structuralChangeEvent.getRowDiffs();
                 if (rowDiffs != null && !rowDiffs.isEmpty()
                         && !StructuralChangeEventHelper.isReorder(rowDiffs)) {
-                    StructuralChangeEventHelper.handleRowDelete(rowDiffs,
-                            this.underlyingLayer, this.hiddenRowIndexes, false);
-                    StructuralChangeEventHelper.handleRowInsert(rowDiffs,
-                            this.underlyingLayer, this.hiddenRowIndexes, false);
+                    StructuralChangeEventHelper.handleRowDelete(
+                            rowDiffs,
+                            this.underlyingLayer,
+                            this.hiddenRowIndexes,
+                            false);
+                    StructuralChangeEventHelper.handleRowInsert(
+                            rowDiffs,
+                            this.underlyingLayer,
+                            this.hiddenRowIndexes,
+                            false);
                 }
             }
         }
@@ -79,8 +85,7 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements
                 strBuilder.append(index);
                 strBuilder.append(IPersistable.VALUE_SEPARATOR);
             }
-            properties.setProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_INDEXES,
-                    strBuilder.toString());
+            properties.setProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_INDEXES, strBuilder.toString());
         }
 
         super.saveState(prefix, properties);
@@ -89,11 +94,9 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements
     @Override
     public void loadState(String prefix, Properties properties) {
         this.hiddenRowIndexes.clear();
-        String property = properties.getProperty(prefix
-                + PERSISTENCE_KEY_HIDDEN_ROW_INDEXES);
+        String property = properties.getProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_INDEXES);
         if (property != null) {
-            StringTokenizer tok = new StringTokenizer(property,
-                    IPersistable.VALUE_SEPARATOR);
+            StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
             while (tok.hasMoreTokens()) {
                 String index = tok.nextToken();
                 this.hiddenRowIndexes.add(Integer.valueOf(index));
@@ -101,6 +104,27 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements
         }
 
         super.loadState(prefix, properties);
+    }
+
+    @Override
+    public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+        LabelStack configLabels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
+
+        // we need to check the hidden state of an adjacent position via the
+        // underlying layer as in the hide layer the position might be
+        // hidden
+        int underlyingPosition = localToUnderlyingRowPosition(rowPosition);
+        int upRowIndex = this.underlyingLayer.getRowIndexByPosition(underlyingPosition - 1);
+        if (isRowIndexHidden(upRowIndex)) {
+            configLabels.addLabel(HideIndicatorConstants.ROW_TOP_HIDDEN);
+        }
+
+        int downRowIndex = this.underlyingLayer.getRowIndexByPosition(underlyingPosition + 1);
+        if (isRowIndexHidden(downRowIndex)) {
+            configLabels.addLabel(HideIndicatorConstants.ROW_BOTTOM_HIDDEN);
+        }
+
+        return configLabels;
     }
 
     // Hide/show
@@ -141,16 +165,22 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements
     public void showRowIndexes(Collection<Integer> rowIndexes) {
         this.hiddenRowIndexes.removeAll(rowIndexes);
         invalidateCache();
-        fireLayerEvent(new ShowRowPositionsEvent(this,
-                getRowPositionsByIndexes(rowIndexes)));
+        fireLayerEvent(new ShowRowPositionsEvent(this, getRowPositionsByIndexes(rowIndexes)));
     }
 
     @Override
     public void showAllRows() {
-        Collection<Integer> hiddenRows = new ArrayList<Integer>(
-                this.hiddenRowIndexes);
+        Collection<Integer> hiddenRows = new ArrayList<Integer>(this.hiddenRowIndexes);
         this.hiddenRowIndexes.clear();
         invalidateCache();
         fireLayerEvent(new ShowRowPositionsEvent(this, hiddenRows));
+    }
+
+    @Override
+    public Collection<String> getProvidedLabels() {
+        Collection<String> result = super.getProvidedLabels();
+        result.add(HideIndicatorConstants.ROW_TOP_HIDDEN);
+        result.add(HideIndicatorConstants.ROW_BOTTOM_HIDDEN);
+        return result;
     }
 }

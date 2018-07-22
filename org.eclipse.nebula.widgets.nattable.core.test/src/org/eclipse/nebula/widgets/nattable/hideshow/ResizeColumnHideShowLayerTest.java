@@ -26,6 +26,7 @@ import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorConstants;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
@@ -1097,6 +1098,29 @@ public class ResizeColumnHideShowLayerTest {
         assertEquals(180, this.hideShowLayer.getColumnWidthByPosition(4));
 
         assertEquals(30, this.bodyDataLayer.getMinColumnWidth(2));
+    }
+
+    @Test
+    public void shouldContainHideIndicatorLabels() {
+        assertEquals(5, this.hideShowLayer.getColumnCount());
+
+        this.hideShowLayer.hideColumnPositions(0);
+
+        LabelStack configLabels = this.hideShowLayer.getConfigLabelsByPosition(1, 0);
+        assertTrue(configLabels.hasLabel(HideIndicatorConstants.COLUMN_LEFT_HIDDEN));
+        assertFalse(configLabels.hasLabel(HideIndicatorConstants.COLUMN_RIGHT_HIDDEN));
+
+        this.hideShowLayer.hideColumnPositions(2);
+
+        configLabels = this.hideShowLayer.getConfigLabelsByPosition(1, 0);
+        assertTrue(configLabels.hasLabel(HideIndicatorConstants.COLUMN_LEFT_HIDDEN));
+        assertTrue(configLabels.hasLabel(HideIndicatorConstants.COLUMN_RIGHT_HIDDEN));
+
+        this.hideShowLayer.showColumnIndexes(0);
+
+        configLabels = this.hideShowLayer.getConfigLabelsByPosition(1, 0);
+        assertFalse(configLabels.hasLabel(HideIndicatorConstants.COLUMN_LEFT_HIDDEN));
+        assertTrue(configLabels.hasLabel(HideIndicatorConstants.COLUMN_RIGHT_HIDDEN));
     }
 
 }

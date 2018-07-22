@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,7 +25,9 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnShowComma
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideColumnPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowColumnPositionsEvent;
+import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorConstants;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralChangeEventHelper;
@@ -113,6 +115,27 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer implements 
         super.loadState(prefix, properties);
     }
 
+    @Override
+    public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+        LabelStack configLabels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
+
+        // we need to check the hidden state of an adjacent position via the
+        // underlying layer as in the hide layer the position might be
+        // hidden
+        int underlyingPosition = localToUnderlyingColumnPosition(columnPosition);
+        int leftColumnIndex = this.underlyingLayer.getColumnIndexByPosition(underlyingPosition - 1);
+        if (isColumnIndexHidden(leftColumnIndex)) {
+            configLabels.addLabel(HideIndicatorConstants.COLUMN_LEFT_HIDDEN);
+        }
+
+        int rightColumnIndex = this.underlyingLayer.getColumnIndexByPosition(underlyingPosition + 1);
+        if (isColumnIndexHidden(rightColumnIndex)) {
+            configLabels.addLabel(HideIndicatorConstants.COLUMN_RIGHT_HIDDEN);
+        }
+
+        return configLabels;
+    }
+
     // Hide/show
 
     @Override
@@ -127,7 +150,7 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer implements 
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @since 1.6
      */
     @Override
@@ -148,7 +171,7 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer implements 
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @since 1.6
      */
     @Override
@@ -171,4 +194,11 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer implements 
         fireLayerEvent(new ShowColumnPositionsEvent(this, hiddenColumns));
     }
 
+    @Override
+    public Collection<String> getProvidedLabels() {
+        Collection<String> result = super.getProvidedLabels();
+        result.add(HideIndicatorConstants.COLUMN_LEFT_HIDDEN);
+        result.add(HideIndicatorConstants.COLUMN_RIGHT_HIDDEN);
+        return result;
+    }
 }

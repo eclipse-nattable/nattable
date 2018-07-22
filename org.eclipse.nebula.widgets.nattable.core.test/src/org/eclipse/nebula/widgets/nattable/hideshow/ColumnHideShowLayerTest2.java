@@ -17,7 +17,6 @@ import java.util.Arrays;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
-import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideColumnPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
@@ -49,8 +48,11 @@ public class ColumnHideShowLayerTest2 {
                 .hideColumnPositions(Arrays.asList(new Integer[] { 0, 2 }));
 
         TestLayer expectedLayer = new TestLayer(2, 4, "1:1;100 | 3:3;100",
-                "0:0;40  | 1:1;40  | 2:2;40  | 3:3;40", "B0 | D0 \n"
-                        + "B1 | D1 \n" + "B2 | D2 \n" + "B3 | D3 \n");
+                "0:0;40  | 1:1;40  | 2:2;40  | 3:3;40",
+                "B0~:COLUMN_LEFT_HIDDEN,COLUMN_RIGHT_HIDDEN | D0~:COLUMN_LEFT_HIDDEN \n"
+                        + "B1~:COLUMN_LEFT_HIDDEN,COLUMN_RIGHT_HIDDEN | D1~:COLUMN_LEFT_HIDDEN \n"
+                        + "B2~:COLUMN_LEFT_HIDDEN,COLUMN_RIGHT_HIDDEN | D2~:COLUMN_LEFT_HIDDEN \n"
+                        + "B3~:COLUMN_LEFT_HIDDEN,COLUMN_RIGHT_HIDDEN | D3~:COLUMN_LEFT_HIDDEN \n");
 
         LayerAssert.assertLayerEquals(expectedLayer, this.hideShowLayer);
     }
@@ -61,9 +63,11 @@ public class ColumnHideShowLayerTest2 {
 
         TestLayer expectedLayer = new TestLayer(3, 4,
                 "0:0;100 | 1:1;100 | 2:2;100",
-                "0:0;40  | 1:1;40  | 2:2;40 | 3:3;40", "A0 | B0 | C0 \n"
-                        + "A1 | B1 | C1 \n" + "A2 | B2 | C2 \n"
-                        + "A3 | B3 | C3 \n");
+                "0:0;40  | 1:1;40  | 2:2;40 | 3:3;40",
+                "A0 | B0 | C0~:COLUMN_RIGHT_HIDDEN \n"
+                        + "A1 | B1 | C1~:COLUMN_RIGHT_HIDDEN \n"
+                        + "A2 | B2 | C2~:COLUMN_RIGHT_HIDDEN \n"
+                        + "A3 | B3 | C3~:COLUMN_RIGHT_HIDDEN \n");
 
         LayerAssert.assertLayerEquals(expectedLayer, this.hideShowLayer);
     }

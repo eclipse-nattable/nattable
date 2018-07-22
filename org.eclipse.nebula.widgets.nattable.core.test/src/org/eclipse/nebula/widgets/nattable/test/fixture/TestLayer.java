@@ -519,6 +519,9 @@ public class TestLayer implements IUniqueIndexLayer {
 
     @Override
     public int getColumnIndexByPosition(int columnPosition) {
+        if (columnPosition >= this.columnIndexes.length || columnPosition < 0) {
+            return -1;
+        }
         return this.columnIndexes[columnPosition];
     }
 
