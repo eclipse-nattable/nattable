@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.grid.layer;
 
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.RowPositionHideCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
@@ -175,6 +178,21 @@ public class RowHeaderLayer extends DimensionallyDependentLayer {
         if (useDefaultConfiguration) {
             addConfiguration(new DefaultRowHeaderLayerConfiguration());
         }
+    }
+
+    @Override
+    public boolean doCommand(ILayerCommand command) {
+        if (command instanceof RowPositionHideCommand) {
+            // If the RowHeaderLayer receives a RowPositionHideCommand it needs
+            // to be further processed on the vertical layer dependency as
+            // RowHideCommand. Reason is that the column position corresponds to
+            // the RowHeaderLayer and will therefore never reach the
+            // RowHideShowLayer that processes the command
+            RowPositionHideCommand cmd = (RowPositionHideCommand) command;
+            return getVerticalLayerDependency().doCommand(
+                    new RowHideCommand(cmd.getLayer(), cmd.getRowPosition()));
+        }
+        return super.doCommand(command);
     }
 
     @Override

@@ -23,6 +23,7 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.export.command.ExportTableCommandHandler;
 import org.eclipse.nebula.widgets.nattable.export.image.ImageExporter;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowPositionHideCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
@@ -382,8 +383,9 @@ public class PopupMenuBuilder {
     }
 
     /**
-     * Adds the menu item for hiding a row to the popup menu. Uses the default
-     * text localized in NatTable core resource bundles.
+     * Adds the menu item for hiding a row to the popup menu by using the
+     * {@link RowHideCommand}. Uses the default text localized in NatTable core
+     * resource bundles.
      *
      * @return The {@link PopupMenuBuilder} with the hide row menu item added.
      * @see MenuItemProviders#hideRowMenuItemProvider()
@@ -395,8 +397,8 @@ public class PopupMenuBuilder {
     }
 
     /**
-     * Adds the menu item for hiding a row to the popup menu. Uses the given
-     * String as label for the menu item.
+     * Adds the menu item for hiding a row to the popup menu by using the
+     * {@link RowHideCommand}. Uses the given String as label for the menu item.
      *
      * @param menuLabel
      *            The label to use for showing the item in the popup menu.
