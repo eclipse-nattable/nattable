@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,23 +38,25 @@ public class SortCommandHandler<T> extends AbstractLayerCommandHandler<SortColum
 
     @Override
     public boolean doCommand(final SortColumnCommand command) {
-
         final int columnIndex = command.getLayer().getColumnIndexByPosition(command.getColumnPosition());
-        final SortDirectionEnum newSortDirection =
-                (command.getSortDirection()) != null ? command.getSortDirection() : this.sortModel.getSortDirection(columnIndex).getNextSortDirection();
+        if (columnIndex >= 0) {
+            final SortDirectionEnum newSortDirection = (command.getSortDirection() != null)
+                    ? command.getSortDirection()
+                    : this.sortModel.getSortDirection(columnIndex).getNextSortDirection();
 
-        // Fire command - with busy indicator
-        Runnable sortRunner = new Runnable() {
-            @Override
-            public void run() {
-                SortCommandHandler.this.sortModel.sort(columnIndex, newSortDirection, command.isAccumulate());
-            }
-        };
-        BusyIndicator.showWhile(null, sortRunner);
+            // Fire command - with busy indicator
+            Runnable sortRunner = new Runnable() {
+                @Override
+                public void run() {
+                    SortCommandHandler.this.sortModel.sort(columnIndex, newSortDirection, command.isAccumulate());
+                }
+            };
+            BusyIndicator.showWhile(null, sortRunner);
 
-        // Fire event
-        SortColumnEvent sortEvent = new SortColumnEvent(this.sortHeaderLayer, command.getColumnPosition());
-        this.sortHeaderLayer.fireLayerEvent(sortEvent);
+            // Fire event
+            SortColumnEvent sortEvent = new SortColumnEvent(this.sortHeaderLayer, command.getColumnPosition());
+            this.sortHeaderLayer.fireLayerEvent(sortEvent);
+        }
 
         return true;
     }
