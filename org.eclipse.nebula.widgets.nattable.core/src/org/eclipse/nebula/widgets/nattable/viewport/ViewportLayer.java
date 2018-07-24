@@ -111,8 +111,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     private int cachedHeight = -1;
 
     /**
-     * Row position of the row in the underlying layer that should be kept visible
-     * inside the viewport or -1 if no special row should be kept.
+     * Row position of the row in the underlying layer that should be kept
+     * visible inside the viewport or -1 if no special row should be kept.
      */
     private int keepInViewportRowPosition = -1;
 
@@ -265,7 +265,16 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
             if (newMinimumOriginX != this.minimumOrigin.getX()) {
                 this.minimumOrigin = new PixelCoordinate(newMinimumOriginX, this.minimumOrigin.getY());
-                this.minimumOriginColumnPosition = this.scrollableLayer.getColumnPositionByX(this.minimumOrigin.getX());
+                int minimumColumn = this.scrollableLayer.getColumnPositionByX(this.minimumOrigin.getX());
+                // special handling for column resizing to 0
+                // used e.g. with the ResizeColumnHideShowLayer in combination
+                // with percentage sizing
+                int start = this.scrollableLayer.getStartXOfColumnPosition(minimumColumn);
+                while ((minimumColumn > this.minimumOriginColumnPosition)
+                        && (this.scrollableLayer.getStartXOfColumnPosition(minimumColumn - 1) == start)) {
+                    minimumColumn--;
+                }
+                this.minimumOriginColumnPosition = minimumColumn;
             }
 
             int delta = this.minimumOrigin.getX() - previousMinimumOrigin.getX();
@@ -329,7 +338,17 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * @return The origin column position
      */
     private int getOriginColumnPosition() {
-        return this.scrollableLayer.getColumnPositionByX(getOrigin().getX());
+        // special handling for column resizing to 0
+        // used e.g. with the ResizeColumnHideShowLayer in combination
+        // with percentage sizing
+        int originColumnPosition = this.scrollableLayer.getColumnPositionByX(getOrigin().getX());
+        int startX = this.scrollableLayer.getStartXOfColumnPosition(originColumnPosition);
+        while (originColumnPosition > this.minimumOriginColumnPosition
+                && this.scrollableLayer.getStartXOfColumnPosition(originColumnPosition - 1) == startX) {
+            originColumnPosition--;
+        }
+
+        return originColumnPosition;
     }
 
     /**
@@ -1698,21 +1717,21 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     /**
      * Set the row position related to the underlying layer that should be kept
      * visible in the viewport. Mainly used for configurations with dynamic row
-     * heights that are calculated on rendering. If a row should become visible via
-     * {@link #moveCellPositionIntoViewport(int, int)} or
-     * {@link #moveRowPositionIntoViewport(int)}, but the rows above are resized,
-     * the row that should move into the viewport is moved out of it again. Setting
-     * the value here leads to keeping the row inside the viewport on
-     * {@link #recalculateAvailableHeightAndRowCount()}.
+     * heights that are calculated on rendering. If a row should become visible
+     * via {@link #moveCellPositionIntoViewport(int, int)} or
+     * {@link #moveRowPositionIntoViewport(int)}, but the rows above are
+     * resized, the row that should move into the viewport is moved out of it
+     * again. Setting the value here leads to keeping the row inside the
+     * viewport on {@link #recalculateAvailableHeightAndRowCount()}.
      * <p>
-     * The value will be reset on {@link ClientAreaResizeCommand} handling and via
-     * {@link ScrollBarHandlerTemplate} if a manual scrolling is triggered.
+     * The value will be reset on {@link ClientAreaResizeCommand} handling and
+     * via {@link ScrollBarHandlerTemplate} if a manual scrolling is triggered.
      * </p>
      *
      * @param rowPosition
-     *            the row position in the underlying layer of the row that should be
-     *            kept inside the viewport, or -1 to reset the keep row in viewport
-     *            handling.
+     *            the row position in the underlying layer of the row that
+     *            should be kept inside the viewport, or -1 to reset the keep
+     *            row in viewport handling.
      *
      * @since 1.6
      */
@@ -1721,8 +1740,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     }
 
     /**
-     * Runnable that incrementally scrolls the viewport when drag hovering over an
-     * edge.
+     * Runnable that incrementally scrolls the viewport when drag hovering over
+     * an edge.
      */
     class MoveViewportRunnable implements Runnable {
 
