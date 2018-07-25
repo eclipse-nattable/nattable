@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2015 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,8 @@ import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
+import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearAllFiltersCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearFilterCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.DefaultFilterRowConfiguration;
@@ -59,6 +61,12 @@ public class FilterRowDataLayer<T> extends DataLayer {
         this.columnHeaderLayer = columnHeaderLayer;
 
         addConfiguration(new DefaultFilterRowConfiguration());
+
+        // register an UpdateDataCommandHandler that does not check for equality
+        // and always performs an update so the filtering can be triggered by
+        // simply applying the same value again
+        unregisterCommandHandler(UpdateDataCommand.class);
+        registerCommandHandler(new UpdateDataCommandHandler(this, false));
     }
 
     @SuppressWarnings("unchecked")

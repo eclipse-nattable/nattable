@@ -156,4 +156,57 @@ public class DefaultGlazedListsFilterStrategyTest {
         assertEquals(0, filterList.size());
     }
 
+    @Test
+    public void shouldReEvaluateWithoutChange() {
+        assertEquals(18000, filterList.size());
+
+        dataProvider.setDataValue(1, 1, "Simpson");
+
+        assertEquals(10000, filterList.size());
+
+        // trigger again, get an event, no changes
+        dataProvider.setDataValue(1, 1, "Simpson");
+
+        assertEquals(10000, filterList.size());
+
+        // trigger again, get an event, no changes
+        dataProvider.setDataValue(1, 1, "Simpson");
+
+        assertEquals(10000, filterList.size());
+    }
+
+    @Test
+    public void shouldReEvaluateWithChange() {
+        FilterList<Person> persons = new FilterList<>(GlazedLists.eventList(PersonService.getFixedPersons()));
+        DataLayerFixture columnHeaderLayer = new DataLayerFixture(5, 2, 100, 50);
+        FilterRowDataProvider<Person> dataProvider = new FilterRowDataProvider<>(
+                new DefaultGlazedListsFilterStrategy<>(
+                        persons,
+                        new ReflectiveColumnPropertyAccessor<Person>(personPropertyNames),
+                        configRegistry),
+                columnHeaderLayer,
+                columnHeaderLayer.getDataProvider(), configRegistry);
+
+        assertEquals(18, persons.size());
+
+        dataProvider.setDataValue(1, 1, "Simpson");
+
+        assertEquals(10, persons.size());
+
+        persons.get(0).setLastName("Flanders");
+        assertEquals(10, persons.size());
+
+        // trigger again, get an event, list updated
+        dataProvider.setDataValue(1, 1, "Simpson");
+
+        assertEquals(9, persons.size());
+
+        persons.get(0).setLastName("Flanders");
+
+        // trigger again, get an event, list updated
+        dataProvider.setDataValue(1, 1, "Simpson");
+
+        assertEquals(8, persons.size());
+    }
+
 }

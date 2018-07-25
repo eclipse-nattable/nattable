@@ -205,4 +205,62 @@ public class DefaultGlazedListsStaticFilterStrategyTest {
         filterStrategy.removeStaticFilter(homerFilter);
         assertEquals(18000, filterList.size());
     }
+
+    @Test
+    public void shouldReEvaluateWithoutChange() {
+        assertEquals(18000, filterList.size());
+        filterStrategy.addStaticFilter(homerFilter);
+        assertEquals(15000, filterList.size());
+
+        dataProvider.setDataValue(1, 1, "Simpson");
+
+        assertEquals(7000, filterList.size());
+
+        // trigger again, get an event, no changes
+        dataProvider.setDataValue(1, 1, "Simpson");
+
+        assertEquals(7000, filterList.size());
+
+        // trigger again, get an event, no changes
+        dataProvider.setDataValue(1, 1, "Simpson");
+
+        assertEquals(7000, filterList.size());
+    }
+
+    @Test
+    public void shouldReEvaluateWithChange() {
+        FilterList<Person> persons = new FilterList<>(GlazedLists.eventList(PersonService.getFixedPersons()));
+        DataLayerFixture columnHeaderLayer = new DataLayerFixture(5, 2, 100, 50);
+        DefaultGlazedListsStaticFilterStrategy<Person> strategy = new DefaultGlazedListsStaticFilterStrategy<>(
+                persons,
+                new ReflectiveColumnPropertyAccessor<Person>(personPropertyNames),
+                configRegistry);
+        FilterRowDataProvider<Person> dataProvider = new FilterRowDataProvider<>(
+                strategy,
+                columnHeaderLayer,
+                columnHeaderLayer.getDataProvider(), configRegistry);
+
+        assertEquals(18, persons.size());
+        strategy.addStaticFilter(homerFilter);
+        assertEquals(15, persons.size());
+
+        dataProvider.setDataValue(1, 1, "Simpson");
+
+        assertEquals(7, persons.size());
+
+        persons.get(0).setLastName("Flanders");
+        assertEquals(7, persons.size());
+
+        // trigger again, get an event, list updated
+        dataProvider.setDataValue(1, 1, "Simpson");
+
+        assertEquals(6, persons.size());
+
+        persons.get(0).setLastName("Flanders");
+
+        // trigger again, get an event, list updated
+        dataProvider.setDataValue(1, 1, "Simpson");
+
+        assertEquals(5, persons.size());
+    }
 }

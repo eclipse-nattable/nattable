@@ -37,6 +37,7 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.FunctionList;
 import ca.odell.glazedlists.FunctionList.Function;
 import ca.odell.glazedlists.TextFilterator;
+import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
 import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
@@ -53,6 +54,20 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 
     protected FilterList<T> filterList;
     protected ReadWriteLock filterLock;
+
+    /**
+     * Special {@link MatcherEditor} that is used to force a re-evaluation of
+     * the local {@link CompositeMatcherEditor} in case the
+     * {@link CompositeMatcherEditor} was not changed but maybe the collection
+     * content might have been changed.
+     *
+     * @since 1.6
+     */
+    private MatcherEditor<T> matchAll = new AbstractMatcherEditor<T>() {
+        {
+            fireMatchAll();
+        }
+    };
 
     /**
      * Create a new DefaultGlazedListsFilterStrategy on top of the given
@@ -206,6 +221,8 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
             try {
                 this.filterLock.writeLock().lock();
 
+                boolean changed = false;
+
                 // Remove the existing matchers that are removed from
                 // 'filterIndexToObjectMap'
                 final Iterator<MatcherEditor<T>> existingMatcherEditors =
@@ -214,6 +231,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
                     final MatcherEditor<T> existingMatcherEditor = existingMatcherEditors.next();
                     if (!containsMatcherEditor(matcherEditors, existingMatcherEditor)) {
                         existingMatcherEditors.remove();
+                        changed = true;
                     }
                 }
 
@@ -222,7 +240,17 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
                 for (final MatcherEditor<T> matcherEditor : matcherEditors) {
                     if (!containsMatcherEditor(this.matcherEditor.getMatcherEditors(), matcherEditor)) {
                         this.matcherEditor.getMatcherEditors().add(matcherEditor);
+                        changed = true;
                     }
+                }
+
+                // If there was no change to the MatcherEditors but
+                // applyFilter() was called, probably the re-evaluation of the
+                // filter was requested. To trigger the re-evaluation we need to
+                // add a MatcherEditor that matches all.
+                if (!changed) {
+                    this.matcherEditor.getMatcherEditors().add(this.matchAll);
+                    this.matcherEditor.getMatcherEditors().remove(this.matchAll);
                 }
 
             } finally {

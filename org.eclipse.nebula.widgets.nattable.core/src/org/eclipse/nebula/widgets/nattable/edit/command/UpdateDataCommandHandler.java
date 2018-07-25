@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,12 +32,42 @@ public class UpdateDataCommandHandler extends AbstractLayerCommandHandler<Update
     private final DataLayer dataLayer;
 
     /**
+     * Flag to configure if the new value should be checked for equality with
+     * the existing value. If set to <code>true</code> the check is performed
+     * and the update operation will be skipped if the two values are equal. If
+     * set to <code>false</code> the update is performed always.
+     */
+    private final boolean performEqualsCheck;
+
+    /**
+     * Creates an {@link UpdateDataCommandHandler} that performs an equals check
+     * before performing a data update and does not perform an update if the
+     * data value is equal to the one currently set.
+     * 
      * @param dataLayer
      *            The {@link DataLayer} on which the data model updates should
      *            be executed.
      */
     public UpdateDataCommandHandler(DataLayer dataLayer) {
+        this(dataLayer, true);
+    }
+
+    /**
+     * @param dataLayer
+     *            The {@link DataLayer} on which the data model updates should
+     *            be executed.
+     * @param performEqualsCheck
+     *            Flag to configure if the new value should be checked for
+     *            equality with the existing value. If set to <code>true</code>
+     *            the check is performed and the update operation will be
+     *            skipped if the two values are equal. If set to
+     *            <code>false</code> the update is performed always.
+     *
+     * @since 1.6
+     */
+    public UpdateDataCommandHandler(DataLayer dataLayer, boolean performEqualsCheck) {
         this.dataLayer = dataLayer;
+        this.performEqualsCheck = performEqualsCheck;
     }
 
     @Override
@@ -52,9 +82,10 @@ public class UpdateDataCommandHandler extends AbstractLayerCommandHandler<Update
             int rowPosition = command.getRowPosition();
 
             Object currentValue = this.dataLayer.getDataValueByPosition(columnPosition, rowPosition);
-            if ((currentValue == null && command.getNewValue() != null)
-                    || (command.getNewValue() == null && currentValue != null)
-                    || (currentValue != null && command.getNewValue() != null && !currentValue.equals(command.getNewValue()))) {
+            if ((!this.performEqualsCheck) ||
+                    ((currentValue == null && command.getNewValue() != null)
+                            || (command.getNewValue() == null && currentValue != null)
+                            || (currentValue != null && command.getNewValue() != null && !currentValue.equals(command.getNewValue())))) {
                 this.dataLayer.setDataValueByPosition(columnPosition, rowPosition, command.getNewValue());
                 this.dataLayer.fireLayerEvent(
                         new DataUpdateEvent(this.dataLayer, columnPosition, rowPosition, currentValue, command.getNewValue()));

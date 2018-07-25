@@ -253,7 +253,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
     @Override
     public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
         ILayerCell cell = super.getCellByPosition(columnPosition, rowPosition);
-        if (cell.isSpannedCell()) {
+        if (cell != null && cell.isSpannedCell()) {
             // the spanning needs to be updated to reflect the
             // hiding accordingly
             boolean rowSpanUpdated = false;
