@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,7 +19,7 @@ public class MultiRowHideCommand extends AbstractMultiRowCommand {
         this(layer, new int[] { rowPosition });
     }
 
-    public MultiRowHideCommand(ILayer layer, int[] rowPositions) {
+    public MultiRowHideCommand(ILayer layer, int... rowPositions) {
         super(layer, rowPositions);
     }
 

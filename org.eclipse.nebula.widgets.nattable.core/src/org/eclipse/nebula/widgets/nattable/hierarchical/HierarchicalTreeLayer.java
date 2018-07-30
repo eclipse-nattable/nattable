@@ -33,7 +33,6 @@ import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.AbstractRowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommand;
-import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowPositionHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
@@ -456,14 +455,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
             } else if (command instanceof RowPositionHideCommand) {
                 RowPositionHideCommand cmd = (RowPositionHideCommand) command;
                 if (isLevelHeaderColumn(cmd.getColumnPosition())) {
-                    ILayerCell cell = getCellByPosition(cmd.getColumnPosition(), cmd.getRowPosition());
-                    int[] positions = new int[cell.getRowSpan()];
-                    int i = 0;
-                    for (int p = cell.getOriginRowPosition(); p < (cell.getOriginRowPosition() + cell.getRowSpan()); p++) {
-                        positions[i] = p;
-                        i++;
-                    }
-                    return doCommand(new MultiRowHideCommand(this, positions));
+                    return super.doCommand(new RowPositionHideCommand(this, cmd.getColumnPosition() + 1, cmd.getRowPosition()));
                 } else {
                     return doCommand(new RowHideCommand(this, cmd.getRowPosition()));
                 }

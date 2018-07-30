@@ -37,6 +37,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.RowPositionHideCommand;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
@@ -53,6 +54,7 @@ import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionLaye
 import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
@@ -637,6 +639,9 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
         } else if (command instanceof MultiRowHideCommand
                 && command.convertToTargetLayer(this)) {
             return handleMultiRowHideCommand((MultiRowHideCommand) command);
+        } else if (command instanceof RowPositionHideCommand
+                && command.convertToTargetLayer(this)) {
+            return handleRowPositionHideCommand((RowPositionHideCommand) command);
         } else if (command instanceof ColumnResizeCommand
                 && command.convertToTargetLayer(this)) {
             return handleColumnResizeCommand((ColumnResizeCommand) command);
@@ -774,6 +779,44 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
             }
         }
         return super.doCommand(command);
+    }
+
+    /**
+     * First inspects the cell at the position contained in the
+     * {@link RowPositionHideCommand} and calculates all rows for that cell,
+     * taking the spanning into account. If the cell itself is selected, than
+     * also all other selected cells in the column position will be handled for
+     * hiding.
+     *
+     * @param command
+     *            The {@link RowPositionHideCommand} to process.
+     * @return <code>true</code> if the command has been handled,
+     *         <code>false</code> otherwise
+     *
+     * @since 1.6
+     */
+    protected boolean handleRowPositionHideCommand(RowPositionHideCommand command) {
+        ILayerCell cell = getCellByPosition(command.getColumnPosition(), command.getRowPosition());
+        // first consider spanning
+        Set<Integer> positions = new HashSet<Integer>();
+        for (int p = cell.getOriginRowPosition(); p < (cell.getOriginRowPosition() + cell.getRowSpan()); p++) {
+            positions.add(p);
+        }
+
+        // then consider selection
+        if (isCellPositionSelected(cell.getColumnPosition(), cell.getOriginRowPosition())) {
+            // if the cell for which the command was triggered is selected, then
+            // also take other selected cells into account
+            PositionCoordinate[] selectedCellPositions = getSelectedCellPositions();
+            for (PositionCoordinate coord : selectedCellPositions) {
+                // only consider selections in the same column
+                if (coord.getColumnPosition() == command.getColumnPosition()) {
+                    positions.add(coord.getRowPosition());
+                }
+            }
+        }
+
+        return doCommand(new MultiRowHideCommand(this, ArrayUtil.asIntArray(positions)));
     }
 
     /**

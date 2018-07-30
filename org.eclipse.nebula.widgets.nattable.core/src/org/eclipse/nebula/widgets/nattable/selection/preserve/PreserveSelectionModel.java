@@ -738,7 +738,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
             Collection<Serializable> keysToRemove = new ArrayList<Serializable>();
             for (Selections.Row<T> row : this.selections.getRows()) {
                 int rowIndex = this.rowDataProvider.indexOfRowObject(row.getRowObject());
-                if (rowIndex == -1) {
+                if (rowIndex == -1 || this.selectionLayer.getRowPositionByIndex(rowIndex) == -1) {
                     keysToRemove.add(row.getId());
                 }
             }

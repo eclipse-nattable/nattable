@@ -28,6 +28,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.ResizeColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommand;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -47,6 +48,7 @@ public class PreserveSelectionModelIntegrationTest {
     private IRowDataProvider<Person> dataProvider;
     private DataLayer dataLayer;
     private ColumnHideShowLayer columnHideShowLayer;
+    private RowHideShowLayer rowHideShowLayer;
     private SelectionLayer selectionLayer;
 
     private SelectionLayer selectionLayerWithResizeHideShow;
@@ -67,9 +69,9 @@ public class PreserveSelectionModelIntegrationTest {
 
         ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(this.dataLayer);
         this.columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
-        RowHideShowLayer rowHideShowLayer = new RowHideShowLayer(this.columnHideShowLayer);
+        this.rowHideShowLayer = new RowHideShowLayer(this.columnHideShowLayer);
 
-        this.selectionLayer = new SelectionLayer(rowHideShowLayer);
+        this.selectionLayer = new SelectionLayer(this.rowHideShowLayer);
 
         this.selectionLayer.setSelectionModel(
                 new PreserveSelectionModel<>(
@@ -443,4 +445,21 @@ public class PreserveSelectionModelIntegrationTest {
         assertTrue("column 4 is not selected", this.selectionLayer.isColumnPositionFullySelected(4));
         assertEquals(18, this.selectionLayer.getSelectedRowPositions().size());
     }
+
+    @Test
+    public void shouldClearRowSelectionOnMultiHideRowCommand() {
+        this.selectionLayer.doCommand(new SelectRowsCommand(this.selectionLayer, 0, 2, false, false));
+        this.selectionLayer.doCommand(new SelectRowsCommand(this.selectionLayer, 0, 3, false, true));
+
+        assertTrue("row 2 is not selected", this.selectionLayer.isRowPositionFullySelected(2));
+        assertTrue("row 3 is not selected", this.selectionLayer.isRowPositionFullySelected(3));
+
+        this.rowHideShowLayer.doCommand(new MultiRowHideCommand(this.selectionLayer, 2, 3));
+
+        assertEquals(16, this.selectionLayer.getRowCount());
+        assertEquals(0, this.selectionLayer.getFullySelectedColumnPositions().length);
+        assertEquals(0, this.selectionLayer.getSelectedColumnPositions().length);
+        assertEquals(0, this.selectionLayer.getSelectedRowPositions().size());
+    }
+
 }

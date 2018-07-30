@@ -2037,4 +2037,29 @@ public class HierarchicalTreeLayerTest {
         cell = this.treeLayer.getCellByPosition(4, 1);
         assertEquals(1, cell.getRowSpan());
     }
+
+    @Test
+    public void testHideAllSelectedRowPositions() {
+        assertEquals(11, this.treeLayer.getRowCount());
+
+        // select first 5 items and last 5 items
+        this.treeLayer.doCommand(new SelectCellCommand(
+                this.treeLayer,
+                0,
+                0,
+                false,
+                false));
+        this.treeLayer.doCommand(new SelectCellCommand(
+                this.treeLayer,
+                0,
+                7,
+                false,
+                true));
+
+        assertEquals(10, this.selectionLayer.getSelectedRowCount());
+
+        // all selected rows should be hidden
+        assertTrue(this.treeLayer.doCommand(new RowPositionHideCommand(this.treeLayer, 0, 0)));
+        assertEquals(1, this.treeLayer.getRowCount());
+    }
 }
