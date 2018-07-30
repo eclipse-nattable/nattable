@@ -691,21 +691,30 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
                 // first handle deletion, then handle insert
                 // this is to avoid mixed operations that might lead to
                 // confusing indexes
+                List<Integer> removed = new ArrayList<Integer>();
                 for (StructuralDiff columnDiff : diffs) {
                     if (columnDiff.getDiffType() != null
                             && columnDiff.getDiffType().equals(DiffTypeEnum.DELETE)) {
                         Range beforePositionRange = columnDiff.getBeforePositionRange();
+                        // first de-select removed columns
                         for (int i = beforePositionRange.start; i < beforePositionRange.end; i++) {
                             if (!(event instanceof ColumnReorderEvent)) {
                                 // in case the column was reordered we don't
                                 // want to deselect the column
                                 this.selections.deselectColumn(i);
                             }
-                            // ask for further column selections that need to be
-                            // modified
-                            this.selections.updateColumnsForRemoval(i);
+                            removed.add(i);
                         }
                     }
+                }
+                // now update still visible column selections
+                Collections.sort(removed);
+                int mod = 0;
+                for (int i : removed) {
+                    // ask for further column selections that need to be
+                    // modified
+                    this.selections.updateColumnsForRemoval(i - mod);
+                    mod++;
                 }
 
                 for (StructuralDiff columnDiff : diffs) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Jonas Hugo, Markus Wahl.
+ * Copyright (c) 2014, 2018 Jonas Hugo, Markus Wahl.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -141,7 +141,7 @@ class Selections<T> {
         for (int i = columnPosition + 1; i <= maxColumn; i++) {
             Column column = this.selectedColumns.get(i);
             if (column != null) {
-                this.selectedColumns.put(i - 1, new Column(i - 1));
+                this.selectedColumns.put(i - 1, new Column(i - 1, column.getItems()));
                 this.selectedColumns.remove(i);
 
                 // also update the row references
@@ -171,7 +171,7 @@ class Selections<T> {
         for (int i = maxColumn; i >= columnPosition; i--) {
             Column column = this.selectedColumns.get(i);
             if (column != null) {
-                this.selectedColumns.put(i + 1, new Column(i + 1));
+                this.selectedColumns.put(i + 1, new Column(i + 1, column.getItems()));
                 this.selectedColumns.remove(i);
 
                 // also update the row references
@@ -384,6 +384,19 @@ class Selections<T> {
         Column(Integer columnPosition) {
             super(columnPosition);
         }
+
+        /**
+         * Creates a column with the specified column and the given content.
+         * Needed on selection update.
+         *
+         * @param columnPosition
+         *            position of the column
+         * @param content
+         *            the content to set initially
+         */
+        Column(Integer columnPosition, Collection<Serializable> content) {
+            super(columnPosition, content);
+        }
     }
 
     /**
@@ -413,6 +426,20 @@ class Selections<T> {
          */
         Line(I lineId) {
             this.lineId = lineId;
+        }
+
+        /**
+         * Creates a line with the specified ID and the given content. Needed on
+         * selection update.
+         *
+         * @param lineId
+         *            identifying the line
+         * @param content
+         *            the content to set initially
+         */
+        Line(I lineId, Collection<S> content) {
+            this.lineId = lineId;
+            this.content.addAll(content);
         }
 
         /**
