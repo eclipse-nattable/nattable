@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Uwe Peuker and others.
+ * Copyright (c) 2016, 2018 Uwe Peuker and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -130,6 +130,11 @@ public class CsvExporter implements ILayerExporter {
             final Object exportDisplayValue,
             final ILayerCell cell,
             final IConfigRegistry configRegistry) throws IOException {
+
+        if (cell.getBounds().width == 0 || cell.getBounds().height == 0) {
+            // if the cell is not visible to the user, it should not be exported
+            return;
+        }
 
         if (this.rowCellInserted) {
             this.currentRow.append(this.delimiter);

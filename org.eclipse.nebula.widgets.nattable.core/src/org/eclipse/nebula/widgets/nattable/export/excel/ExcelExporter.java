@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -151,6 +151,12 @@ public class ExcelExporter implements ILayerExporter {
     public void exportCell(OutputStream outputStream,
             Object exportDisplayValue, ILayerCell cell,
             IConfigRegistry configRegistry) throws IOException {
+
+        if (cell.getBounds().width == 0 || cell.getBounds().height == 0) {
+            // if the cell is not visible to the user, it should not be exported
+            return;
+        }
+
         CellStyleProxy cellStyle = new CellStyleProxy(
                 configRegistry,
                 DisplayMode.NORMAL,

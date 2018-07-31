@@ -482,7 +482,6 @@ public class NatExporter {
                 }
 
                 int layerHeight = layer.getHeight();
-                int layerWidth = layer.getWidth();
 
                 for (int rowPosition = 0; rowPosition < layer.getRowCount(); rowPosition++) {
                     if (layer.getRowHeightByPosition(rowPosition) > 0
@@ -494,16 +493,7 @@ public class NatExporter {
 
                         for (int columnPosition = 0; columnPosition < layer.getColumnCount(); columnPosition++) {
                             ILayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);
-
-                            // there needs to be a cell
-                            // its bounds should not be below the width (this
-                            // can happen because viewport is turned off and
-                            // first or last columns are hidden by setting the
-                            // width to 0)
-                            // check that the column width is bigger than 0
-                            if (cell != null
-                                    && cell.getBounds().x < layerWidth
-                                    && layer.getColumnWidthByPosition(columnPosition) > 0) {
+                            if (cell != null) {
                                 IExportFormatter exportFormatter = configRegistry.getConfigAttribute(
                                         ExportConfigAttributes.EXPORT_FORMATTER,
                                         cell.getDisplayMode(),

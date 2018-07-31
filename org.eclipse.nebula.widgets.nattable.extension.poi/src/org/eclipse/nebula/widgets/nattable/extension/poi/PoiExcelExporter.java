@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,7 +19,9 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -88,6 +90,8 @@ public abstract class PoiExcelExporter implements ILayerExporter {
     protected boolean exportOnSameSheet = false;
     protected int currentRow = 0;
 
+    private Set<Integer> hiddenColumnPositions = new HashSet<Integer>();
+
     public PoiExcelExporter(IOutputStreamProvider outputStreamProvider) {
         this.outputStreamProvider = outputStreamProvider;
     }
@@ -101,6 +105,9 @@ public abstract class PoiExcelExporter implements ILayerExporter {
     public void exportBegin(OutputStream outputStream) throws IOException {
         this.xlCellStyles = new HashMap<ExcelCellStyleAttributes, CellStyle>();
         this.xlWorkbook = createWorkbook();
+        // the hidden column positions are determined by inspection so
+        // it needs to be cleared at the beginning
+        this.hiddenColumnPositions.clear();
     }
 
     @Override
@@ -155,13 +162,22 @@ public abstract class PoiExcelExporter implements ILayerExporter {
             ILayerCell cell,
             IConfigRegistry configRegistry) throws IOException {
 
-        int columnPosition = cell.getColumnPosition();
-        int rowPosition = cell.getRowPosition();
-
-        if (columnPosition != cell.getOriginColumnPosition()
-                || rowPosition != cell.getOriginRowPosition()) {
+        // if the width is 0 we do not export the cell as it is not visible to
+        // the user
+        if (cell.getLayer().getColumnWidthByPosition(cell.getColumnPosition()) == 0) {
+            this.hiddenColumnPositions.add(cell.getColumnPosition());
             return;
         }
+
+        int columnPosition = cell.getColumnPosition();
+        if (!this.hiddenColumnPositions.isEmpty()) {
+            for (int hidden : this.hiddenColumnPositions) {
+                if (hidden < cell.getColumnPosition()) {
+                    columnPosition--;
+                }
+            }
+        }
+        int rowPosition = cell.getRowPosition();
 
         if (this.applyColumnWidths && cell.getColumnSpan() == 1) {
             this.xlSheet.setColumnWidth(columnPosition, getPoiColumnWidth(cell.getBounds().width) + getPoiColumnWidth(5));
@@ -204,6 +220,16 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         xlCell.setCellStyle(xlCellStyle);
 
         int columnSpan = cell.getColumnSpan();
+        if (columnSpan > 1) {
+            // check if a column width in the spanned region is 0
+            // as we do not export columns with a width of 0 we need to adjust
+            // the spanning
+            for (int col = cell.getOriginColumnPosition(); col < (cell.getOriginColumnPosition() + cell.getColumnSpan()); col++) {
+                if (cell.getLayer().getColumnWidthByPosition(col) == 0) {
+                    columnSpan--;
+                }
+            }
+        }
         int rowSpan = cell.getRowSpan();
         if (columnSpan > 1 || rowSpan > 1) {
             int lastRow = rowPosition + rowSpan - 1;
