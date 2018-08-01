@@ -190,6 +190,10 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         Cell xlCell = this.xlRow.getCell(columnPosition);
         if (xlCell == null) {
             xlCell = this.xlRow.createCell(columnPosition);
+        } else {
+            // if the cell was created before because of spanning, there is no
+            // need to perform further tasks
+            return;
         }
 
         CellStyleProxy cellStyle = new CellStyleProxy(
