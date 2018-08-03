@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,8 +28,10 @@ import org.eclipse.nebula.widgets.nattable.group.command.OpenCreateColumnGroupDi
 import org.eclipse.nebula.widgets.nattable.group.command.RemoveColumnGroupCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.UngroupColumnCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnShowCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowPositionHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.RowShowCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -43,6 +45,7 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
@@ -168,19 +171,133 @@ public class MenuItemProviders {
      *         executes the {@link ShowAllColumnsCommand}.
      */
     public static IMenuItemProvider showAllColumnsMenuItemProvider(final String menuLabel) {
+        return showAllColumnsMenuItemProvider(menuLabel, GUIHelper.getImage("show_column")); //$NON-NLS-1$
+    }
+
+    /**
+     * Will create and return the {@link IMenuItemProvider} that adds the action
+     * for executing the {@link ShowAllColumnsCommand} to a popup menu. This
+     * command is intended to show all columns of the NatTable and is used to
+     * unhide previous hidden columns.
+     * <p>
+     * The {@link MenuItem} will be shown with the given menu label and the
+     * given image.
+     *
+     * @param menuLabel
+     *            The text that will be showed for the generated
+     *            {@link MenuItem}
+     * @param image
+     *            The image that will be showed with the generated
+     *            {@link MenuItem}. Can be <code>null</code> to not showing an
+     *            image.
+     * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
+     *         executes the {@link ShowAllColumnsCommand}.
+     * @since 1.6
+     */
+    public static IMenuItemProvider showAllColumnsMenuItemProvider(final String menuLabel, final Image image) {
         return new IMenuItemProvider() {
 
             @Override
             public void addMenuItem(final NatTable natTable, Menu popupMenu) {
                 MenuItem showAllColumns = new MenuItem(popupMenu, SWT.PUSH);
                 showAllColumns.setText(Messages.getLocalizedMessage(menuLabel));
-                showAllColumns.setImage(GUIHelper.getImage("show_column")); //$NON-NLS-1$
+                showAllColumns.setImage(image);
                 showAllColumns.setEnabled(true);
 
                 showAllColumns.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
                         natTable.doCommand(new ShowAllColumnsCommand());
+                    }
+                });
+            }
+        };
+    }
+
+    /**
+     * Will create and return the {@link IMenuItemProvider} that adds the action
+     * for executing the {@link ColumnShowCommand} to a popup menu. This command
+     * is intended to show the column(s) at the clicked position of the NatTable
+     * and is used to unhide previous hidden columns.
+     *
+     * @param showAll
+     *            Whether all hidden adjacent columns should be shown again or
+     *            only the single direct adjacent column.
+     * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
+     *         executes the {@link ColumnShowCommand}.
+     * @since 1.6
+     */
+    public static IMenuItemProvider showColumnMenuItemProvider(final boolean showAll) {
+        return showColumnMenuItemProvider(showAll, "%MenuItemProviders.showColumns"); //$NON-NLS-1$
+    }
+
+    /**
+     * Will create and return the {@link IMenuItemProvider} that adds the action
+     * for executing the {@link ColumnShowCommand} to a popup menu. This command
+     * is intended to show the column(s) at the clicked position of the NatTable
+     * and is used to unhide previous hidden columns.
+     * <p>
+     * The {@link MenuItem} will be shown with the given menu label.
+     *
+     * @param showAll
+     *            Whether all hidden adjacent columns should be shown again or
+     *            only the single direct adjacent column.
+     * @param menuLabel
+     *            The text that will be showed for the generated
+     *            {@link MenuItem}
+     * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
+     *         executes the {@link ColumnShowCommand}.
+     * @since 1.6
+     */
+    public static IMenuItemProvider showColumnMenuItemProvider(final boolean showAll, final String menuLabel) {
+        return showColumnMenuItemProvider(showAll, menuLabel, GUIHelper.getImage("show_column")); //$NON-NLS-1$
+    }
+
+    /**
+     * Will create and return the {@link IMenuItemProvider} that adds the action
+     * for executing the {@link ColumnShowCommand} to a popup menu. This command
+     * is intended to show the column(s) at the clicked position of the NatTable
+     * and is used to unhide previous hidden columns.
+     * <p>
+     * The {@link MenuItem} will be shown with the given menu label and the
+     * given image.
+     *
+     * @param showAll
+     *            Whether all hidden adjacent columns should be shown again or
+     *            only the single direct adjacent column.
+     * @param menuLabel
+     *            The text that will be showed for the generated
+     *            {@link MenuItem}
+     * @param image
+     *            The image that will be showed with the generated
+     *            {@link MenuItem}. Can be <code>null</code> to not showing an
+     *            image.
+     * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
+     *         executes the {@link ColumnShowCommand}.
+     * @since 1.6
+     */
+    public static IMenuItemProvider showColumnMenuItemProvider(final boolean showAll, final String menuLabel, final Image image) {
+        return new IMenuItemProvider() {
+
+            @Override
+            public void addMenuItem(final NatTable natTable, Menu popupMenu) {
+                MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+                menuItem.setText(Messages.getLocalizedMessage(menuLabel));
+                menuItem.setImage(image);
+                menuItem.setEnabled(true);
+
+                menuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent event) {
+                        NatEventData natEventData = MenuItemProviders.getNatEventData(event);
+                        int columnPosition = natEventData.getColumnPosition();
+                        int diffToCellStart = natEventData.getOriginalEvent().x
+                                - natTable.getStartXOfColumnPosition(columnPosition);
+                        int diffToCellEnd = natTable.getStartXOfColumnPosition(columnPosition)
+                                + natTable.getColumnWidthByPosition(columnPosition)
+                                - natEventData.getOriginalEvent().x;
+                        natTable.doCommand(
+                                new ColumnShowCommand(natTable, columnPosition, diffToCellStart < diffToCellEnd, showAll));
                     }
                 });
             }
@@ -331,19 +448,133 @@ public class MenuItemProviders {
      *         executes the {@link ShowAllRowsCommand}.
      */
     public static IMenuItemProvider showAllRowsMenuItemProvider(final String menuLabel) {
+        return showAllRowsMenuItemProvider(menuLabel, GUIHelper.getImage("show_row")); //$NON-NLS-1$
+    }
+
+    /**
+     * Will create and return the {@link IMenuItemProvider} that adds the action
+     * for executing the {@link ShowAllRowsCommand} to a popup menu. This
+     * command is intended to show all rows of the NatTable and is used to
+     * unhide previous hidden rows.
+     * <p>
+     * The {@link MenuItem} will be shown with the given menu label and given
+     * image.
+     *
+     * @param menuLabel
+     *            The text that will be showed for the generated
+     *            {@link MenuItem}
+     * @param image
+     *            The image that will be showed with the generated
+     *            {@link MenuItem}. Can be <code>null</code> to not showing an
+     *            image.
+     * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
+     *         executes the {@link ShowAllRowsCommand}.
+     * @since 1.6
+     */
+    public static IMenuItemProvider showAllRowsMenuItemProvider(final String menuLabel, final Image image) {
         return new IMenuItemProvider() {
 
             @Override
             public void addMenuItem(final NatTable natTable, Menu popupMenu) {
                 MenuItem showAllRows = new MenuItem(popupMenu, SWT.PUSH);
                 showAllRows.setText(Messages.getLocalizedMessage(menuLabel));
-                showAllRows.setImage(GUIHelper.getImage("show_row")); //$NON-NLS-1$
+                showAllRows.setImage(image);
                 showAllRows.setEnabled(true);
 
                 showAllRows.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
                         natTable.doCommand(new ShowAllRowsCommand());
+                    }
+                });
+            }
+        };
+    }
+
+    /**
+     * Will create and return the {@link IMenuItemProvider} that adds the action
+     * for executing the {@link RowShowCommand} to a popup menu. This command is
+     * intended to show the row(s) at the clicked position of the NatTable and
+     * is used to unhide previous hidden rows.
+     *
+     * @param showAll
+     *            Whether all hidden adjacent rows should be shown again or only
+     *            the single direct adjacent row.
+     * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
+     *         executes the {@link RowShowCommand}.
+     * @since 1.6
+     */
+    public static IMenuItemProvider showRowMenuItemProvider(final boolean showAll) {
+        return showRowMenuItemProvider(showAll, "%MenuItemProviders.showRow"); //$NON-NLS-1$
+    }
+
+    /**
+     * Will create and return the {@link IMenuItemProvider} that adds the action
+     * for executing the {@link RowShowCommand} to a popup menu. This command is
+     * intended to show the row(s) at the clicked position of the NatTable and
+     * is used to unhide previous hidden rows.
+     * <p>
+     * The {@link MenuItem} will be shown with the given menu label.
+     *
+     * @param showAll
+     *            Whether all hidden adjacent rows should be shown again or only
+     *            the single direct adjacent row.
+     * @param menuLabel
+     *            The text that will be showed for the generated
+     *            {@link MenuItem}
+     * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
+     *         executes the {@link RowShowCommand}.
+     * @since 1.6
+     */
+    public static IMenuItemProvider showRowMenuItemProvider(final boolean showAll, final String menuLabel) {
+        return showRowMenuItemProvider(showAll, menuLabel, GUIHelper.getImage("show_row")); //$NON-NLS-1$
+    }
+
+    /**
+     * Will create and return the {@link IMenuItemProvider} that adds the action
+     * for executing the {@link RowShowCommand} to a popup menu. This command is
+     * intended to show the row(s) at the clicked position of the NatTable and
+     * is used to unhide previous hidden rows.
+     * <p>
+     * The {@link MenuItem} will be shown with the given menu label and given
+     * image.
+     *
+     * @param showAll
+     *            Whether all hidden adjacent rows should be shown again or only
+     *            the single direct adjacent row.
+     * @param menuLabel
+     *            The text that will be showed for the generated
+     *            {@link MenuItem}
+     * @param image
+     *            The image that will be showed with the generated
+     *            {@link MenuItem}. Can be <code>null</code> to not showing an
+     *            image.
+     * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
+     *         executes the {@link RowShowCommand}.
+     * @since 1.6
+     */
+    public static IMenuItemProvider showRowMenuItemProvider(final boolean showAll, final String menuLabel, final Image image) {
+        return new IMenuItemProvider() {
+
+            @Override
+            public void addMenuItem(final NatTable natTable, Menu popupMenu) {
+                MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+                menuItem.setText(Messages.getLocalizedMessage(menuLabel));
+                menuItem.setImage(image);
+                menuItem.setEnabled(true);
+
+                menuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent event) {
+                        NatEventData natEventData = MenuItemProviders.getNatEventData(event);
+                        int rowPosition = natEventData.getRowPosition();
+                        int diffToCellStart = natEventData.getOriginalEvent().y
+                                - natTable.getStartYOfRowPosition(rowPosition);
+                        int diffToCellEnd = natTable.getStartYOfRowPosition(rowPosition)
+                                + natTable.getRowHeightByPosition(rowPosition)
+                                - natEventData.getOriginalEvent().y;
+                        natTable.doCommand(
+                                new RowShowCommand(natTable, rowPosition, diffToCellStart < diffToCellEnd, showAll));
                     }
                 });
             }

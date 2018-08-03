@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2017 Dirk Fauth.
+ * Copyright (c) 2017, 2018 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -62,6 +62,20 @@ public interface IColumnHideShowLayer {
      *            The column indexes to show again.
      */
     void showColumnIndexes(Collection<Integer> columnIndexes);
+
+    /**
+     * Show the column(s) that are hidden next to the given column position.
+     * 
+     * @param columnPosition
+     *            The column position whose neighbors should be shown again.
+     * @param showToLeft
+     *            Whether the column positions to the left or the right of the
+     *            given column position should be shown again.
+     * @param showAll
+     *            Whether all hidden adjacent columns should be shown again or
+     *            only the single direct adjacent column.
+     */
+    void showColumnPosition(int columnPosition, boolean showToLeft, boolean showAll);
 
     /**
      * Show all hidden columns again.

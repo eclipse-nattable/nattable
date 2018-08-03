@@ -31,6 +31,7 @@ import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorConstants;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 import org.eclipse.nebula.widgets.nattable.sort.command.SortColumnCommand;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,12 +44,14 @@ public class RowIdHideShowLayerTest {
                     new ReflectiveColumnPropertyAccessor<Person>(
                             new String[] { "firstName", "lastName", "gender", "married", "birthday" }));
     private DataLayer bodyDataLayer;
+    private RowReorderLayer reorderLayer;
     private RowIdHideShowLayer<Person> rowHideShowLayer;
 
     @Before
     public void setup() {
         this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
-        this.rowHideShowLayer = new RowIdHideShowLayer<>(this.bodyDataLayer, this.bodyDataProvider, new IRowIdAccessor<Person>() {
+        this.reorderLayer = new RowReorderLayer(this.bodyDataLayer);
+        this.rowHideShowLayer = new RowIdHideShowLayer<>(this.reorderLayer, this.bodyDataProvider, new IRowIdAccessor<Person>() {
             @Override
             public Serializable getRowId(Person rowObject) {
                 return rowObject.getId();
@@ -98,7 +101,7 @@ public class RowIdHideShowLayerTest {
     }
 
     @Test
-    public void showARow() {
+    public void showARowByIndex() {
         assertEquals(5, this.rowHideShowLayer.getRowCount());
 
         List<Integer> rowPositions = Arrays.asList(2);
@@ -143,7 +146,7 @@ public class RowIdHideShowLayerTest {
     }
 
     @Test
-    public void showRowPositions() {
+    public void showRowIndexes() {
         this.bodyDataProvider =
                 new ListDataProvider<>(
                         PersonService.getPersons(10),
@@ -168,7 +171,134 @@ public class RowIdHideShowLayerTest {
         assertEquals(9, this.rowHideShowLayer.getRowCount());
         assertEquals(3, this.rowHideShowLayer.getRowPositionByIndex(3));
         assertEquals(4, this.rowHideShowLayer.getRowPositionByIndex(4));
+    }
 
+    @Test
+    public void showRowPositions() {
+        prepareReorderAndHide();
+
+        // Row reorder fixture index positions: 4 1 0 2 3
+        // Row positions hidden: 2 4 (index 0 3)
+
+        this.rowHideShowLayer.showRowPosition(2, true, false);
+
+        assertEquals(4, this.rowHideShowLayer.getRowCount());
+        assertEquals(4, this.rowHideShowLayer.getRowIndexByPosition(0));
+        assertEquals(1, this.rowHideShowLayer.getRowIndexByPosition(1));
+        assertEquals(0, this.rowHideShowLayer.getRowIndexByPosition(2));
+        assertEquals(2, this.rowHideShowLayer.getRowIndexByPosition(3));
+        assertEquals(-1, this.rowHideShowLayer.getRowIndexByPosition(4));
+
+        this.rowHideShowLayer.showRowPosition(3, false, false);
+
+        assertEquals(5, this.rowHideShowLayer.getRowCount());
+        assertEquals(4, this.rowHideShowLayer.getRowIndexByPosition(0));
+        assertEquals(1, this.rowHideShowLayer.getRowIndexByPosition(1));
+        assertEquals(0, this.rowHideShowLayer.getRowIndexByPosition(2));
+        assertEquals(2, this.rowHideShowLayer.getRowIndexByPosition(3));
+        assertEquals(3, this.rowHideShowLayer.getRowIndexByPosition(4));
+    }
+
+    @Test
+    public void showAllRowPositionsOnTopSide() {
+        prepareReorderAndHide();
+
+        // Row reorder fixture index positions: 4 1 0 2 3
+        // Row positions hidden: 2 4 (index 0 3)
+
+        // hide additional row
+        this.rowHideShowLayer.hideRowPositions(Arrays.asList(1));
+
+        this.rowHideShowLayer.showRowPosition(1, true, false);
+
+        assertEquals(3, this.rowHideShowLayer.getRowCount());
+        assertEquals(4, this.rowHideShowLayer.getRowIndexByPosition(0));
+        assertEquals(0, this.rowHideShowLayer.getRowIndexByPosition(1));
+        assertEquals(2, this.rowHideShowLayer.getRowIndexByPosition(2));
+        assertEquals(-1, this.rowHideShowLayer.getRowIndexByPosition(3));
+
+        // hide again
+        this.rowHideShowLayer.hideRowPositions(Arrays.asList(1));
+
+        // now show all rows to the top
+        this.rowHideShowLayer.showRowPosition(1, true, true);
+
+        assertEquals(4, this.rowHideShowLayer.getRowCount());
+        assertEquals(4, this.rowHideShowLayer.getRowIndexByPosition(0));
+        assertEquals(1, this.rowHideShowLayer.getRowIndexByPosition(1));
+        assertEquals(0, this.rowHideShowLayer.getRowIndexByPosition(2));
+        assertEquals(2, this.rowHideShowLayer.getRowIndexByPosition(3));
+        assertEquals(-1, this.rowHideShowLayer.getRowIndexByPosition(4));
+    }
+
+    @Test
+    public void showAllRowPositionsOnBottomSide() {
+        prepareReorderAndHide();
+
+        // Row reorder fixture index positions: 4 1 0 2 3
+        // Row positions hidden: 2 4 (index 0 3)
+
+        // hide additional row
+        this.rowHideShowLayer.hideRowPositions(Arrays.asList(1));
+
+        this.rowHideShowLayer.showRowPosition(0, false, false);
+
+        assertEquals(3, this.rowHideShowLayer.getRowCount());
+        assertEquals(4, this.rowHideShowLayer.getRowIndexByPosition(0));
+        assertEquals(1, this.rowHideShowLayer.getRowIndexByPosition(1));
+        assertEquals(2, this.rowHideShowLayer.getRowIndexByPosition(2));
+        assertEquals(-1, this.rowHideShowLayer.getRowIndexByPosition(3));
+
+        // hide again
+        this.rowHideShowLayer.hideRowPositions(Arrays.asList(1));
+
+        // now show all columns to the left
+        this.rowHideShowLayer.showRowPosition(0, false, true);
+
+        assertEquals(4, this.rowHideShowLayer.getRowCount());
+        assertEquals(4, this.rowHideShowLayer.getRowIndexByPosition(0));
+        assertEquals(1, this.rowHideShowLayer.getRowIndexByPosition(1));
+        assertEquals(0, this.rowHideShowLayer.getRowIndexByPosition(2));
+        assertEquals(2, this.rowHideShowLayer.getRowIndexByPosition(3));
+        assertEquals(-1, this.rowHideShowLayer.getRowIndexByPosition(4));
+    }
+
+    @Test
+    public void doNotShowIfNoDirectRowHiddenToTop() {
+        prepareReorderAndHide();
+
+        // Row reorder fixture index positions: 4 1 0 2 3
+        // Row positions hidden: 2 4 (index 0 3)
+
+        // hide additional row
+        this.rowHideShowLayer.hideRowPositions(Arrays.asList(1));
+
+        // Row reorder fixture index positions: 4 2 5 6
+
+        this.rowHideShowLayer.showRowPosition(3, true, false);
+
+        assertEquals(2, this.rowHideShowLayer.getRowCount());
+        assertEquals(4, this.rowHideShowLayer.getRowIndexByPosition(0));
+        assertEquals(2, this.rowHideShowLayer.getRowIndexByPosition(1));
+        assertEquals(-1, this.rowHideShowLayer.getRowIndexByPosition(2));
+    }
+
+    @Test
+    public void doNotShowIfNoDirectRowHiddenToBottom() {
+        prepareReorderAndHide();
+
+        // Row reorder fixture index positions: 4 1 0 2 3
+        // Row positions hidden: 2 4 (index 0 3)
+
+        // hide additional row
+        this.rowHideShowLayer.hideRowPositions(Arrays.asList(2));
+
+        this.rowHideShowLayer.showRowPosition(0, false, false);
+
+        assertEquals(2, this.rowHideShowLayer.getRowCount());
+        assertEquals(4, this.rowHideShowLayer.getRowIndexByPosition(0));
+        assertEquals(1, this.rowHideShowLayer.getRowIndexByPosition(1));
+        assertEquals(-1, this.rowHideShowLayer.getRowIndexByPosition(2));
     }
 
     @Test
@@ -260,7 +390,6 @@ public class RowIdHideShowLayerTest {
         assertEquals(
                 "2,4,",
                 properties.getProperty("prefix" + RowIdHideShowLayer.PERSISTENCE_KEY_HIDDEN_ROW_IDS));
-
     }
 
     @Test
@@ -285,5 +414,22 @@ public class RowIdHideShowLayerTest {
         assertEquals(-1, this.rowHideShowLayer.getRowPositionByIndex(2));
         assertEquals(2, this.rowHideShowLayer.getRowPositionByIndex(3));
         assertEquals(-1, this.rowHideShowLayer.getRowPositionByIndex(4));
+    }
+
+    private void prepareReorderAndHide() {
+        // trigger reordering
+        this.reorderLayer.reorderRowPosition(4, 0); // 4 0 1 2 3
+        this.reorderLayer.reorderRowPosition(1, 4); // 4 1 2 0 3
+        this.reorderLayer.reorderRowPosition(3, 2); // 4 1 0 2 3
+
+        // initial hide
+        this.rowHideShowLayer.hideRowPositions(Arrays.asList(2, 4));
+
+        assertEquals(3, this.rowHideShowLayer.getRowCount());
+        assertEquals(4, this.rowHideShowLayer.getRowIndexByPosition(0));
+        assertEquals(1, this.rowHideShowLayer.getRowIndexByPosition(1));
+        assertEquals(2, this.rowHideShowLayer.getRowIndexByPosition(2));
+        assertEquals(-1, this.rowHideShowLayer.getRowIndexByPosition(3));
+        assertEquals(-1, this.rowHideShowLayer.getRowIndexByPosition(4));
     }
 }

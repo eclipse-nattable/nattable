@@ -34,7 +34,7 @@ public class ColumnHideShowLayerTest {
     }
 
     @Test
-    public void getColumnIndexByPosition() throws Exception {
+    public void getColumnIndexByPosition() {
         assertEquals(4, this.columnHideShowLayer.getColumnIndexByPosition(0));
         assertEquals(1, this.columnHideShowLayer.getColumnIndexByPosition(1));
         assertEquals(2, this.columnHideShowLayer.getColumnIndexByPosition(2));
@@ -43,7 +43,7 @@ public class ColumnHideShowLayerTest {
     }
 
     @Test
-    public void getColumnIndexHideAdditionalColumn() throws Exception {
+    public void getColumnIndexHideAdditionalColumn() {
         getColumnIndexByPosition();
 
         this.columnHideShowLayer.hideColumnPositions(Arrays.asList(1));
@@ -55,7 +55,7 @@ public class ColumnHideShowLayerTest {
     }
 
     @Test
-    public void getColumnPositionForASingleHiddenColumn() throws Exception {
+    public void getColumnPositionForASingleHiddenColumn() {
         assertEquals(-1, this.columnHideShowLayer.getColumnPositionByIndex(0));
         assertEquals(1, this.columnHideShowLayer.getColumnPositionByIndex(1));
         assertEquals(2, this.columnHideShowLayer.getColumnPositionByIndex(2));
@@ -64,14 +64,14 @@ public class ColumnHideShowLayerTest {
     }
 
     @Test
-    public void hideAllColumns() throws Exception {
+    public void hideAllColumns() {
         this.columnHideShowLayer.hideColumnPositions(Arrays.asList(0, 1, 2));
 
         assertEquals(0, this.columnHideShowLayer.getColumnCount());
     }
 
     @Test
-    public void hideAllColumns2() throws Exception {
+    public void hideAllColumns2() {
         List<Integer> columnPositions = Arrays.asList(0);
         this.columnHideShowLayer.hideColumnPositions(columnPositions);
         this.columnHideShowLayer.hideColumnPositions(columnPositions);
@@ -80,15 +80,17 @@ public class ColumnHideShowLayerTest {
     }
 
     @Test
-    public void showAColumn() throws Exception {
+    public void showAColumnByIndex() {
         assertEquals(3, this.columnHideShowLayer.getColumnCount());
 
+        // index == 2
         List<Integer> columnPositions = Arrays.asList(2);
-        this.columnHideShowLayer.hideColumnPositions(columnPositions); // index
-                                                                       // = 2
+        this.columnHideShowLayer.hideColumnPositions(columnPositions);
+
+        // index == 4
         columnPositions = Arrays.asList(0);
-        this.columnHideShowLayer.hideColumnPositions(columnPositions); // index
-                                                                       // = 4
+        this.columnHideShowLayer.hideColumnPositions(columnPositions);
+
         assertEquals(1, this.columnHideShowLayer.getColumnCount());
         assertEquals(1, this.columnHideShowLayer.getColumnIndexByPosition(0));
         assertEquals(-1, this.columnHideShowLayer.getColumnIndexByPosition(1));
@@ -108,7 +110,7 @@ public class ColumnHideShowLayerTest {
     }
 
     @Test
-    public void showAllColumns() throws Exception {
+    public void showAllColumns() {
         assertEquals(3, this.columnHideShowLayer.getColumnCount());
 
         this.columnHideShowLayer.hideColumnPositions(Arrays.asList(0));
@@ -128,7 +130,7 @@ public class ColumnHideShowLayerTest {
     }
 
     @Test
-    public void showColumnPositions() throws Exception {
+    public void showColumnIndexes() {
         this.columnHideShowLayer = new ColumnHideShowLayerFixture(
                 new DataLayerFixture(10, 2, 100, 20));
 
@@ -143,6 +145,122 @@ public class ColumnHideShowLayerTest {
         assertEquals(9, this.columnHideShowLayer.getColumnCount());
         assertEquals(3, this.columnHideShowLayer.getColumnPositionByIndex(3));
         assertEquals(4, this.columnHideShowLayer.getColumnPositionByIndex(4));
+    }
+
+    @Test
+    public void showColumnPositions() {
+        // Column reorder fixture index positions: 4 1 0 2 3
+        // Columns positions hidden: 2 4 (index 0 3)
+
+        this.columnHideShowLayer.showColumnPosition(2, true, false);
+
+        assertEquals(4, this.columnHideShowLayer.getColumnCount());
+        assertEquals(4, this.columnHideShowLayer.getColumnIndexByPosition(0));
+        assertEquals(1, this.columnHideShowLayer.getColumnIndexByPosition(1));
+        assertEquals(0, this.columnHideShowLayer.getColumnIndexByPosition(2));
+        assertEquals(2, this.columnHideShowLayer.getColumnIndexByPosition(3));
+        assertEquals(-1, this.columnHideShowLayer.getColumnIndexByPosition(4));
+
+        this.columnHideShowLayer.showColumnPosition(3, false, false);
+
+        assertEquals(5, this.columnHideShowLayer.getColumnCount());
+        assertEquals(4, this.columnHideShowLayer.getColumnIndexByPosition(0));
+        assertEquals(1, this.columnHideShowLayer.getColumnIndexByPosition(1));
+        assertEquals(0, this.columnHideShowLayer.getColumnIndexByPosition(2));
+        assertEquals(2, this.columnHideShowLayer.getColumnIndexByPosition(3));
+        assertEquals(3, this.columnHideShowLayer.getColumnIndexByPosition(4));
+    }
+
+    @Test
+    public void showAllColumnPositionsOnLeftSide() {
+        // Column reorder fixture index positions: 4 1 0 2 3
+        // Columns positions hidden: 2 4 (index 0 3)
+
+        // hide additional column
+        this.columnHideShowLayer.hideColumnPositions(1);
+
+        this.columnHideShowLayer.showColumnPosition(1, true, false);
+
+        assertEquals(3, this.columnHideShowLayer.getColumnCount());
+        assertEquals(4, this.columnHideShowLayer.getColumnIndexByPosition(0));
+        assertEquals(0, this.columnHideShowLayer.getColumnIndexByPosition(1));
+        assertEquals(2, this.columnHideShowLayer.getColumnIndexByPosition(2));
+        assertEquals(-1, this.columnHideShowLayer.getColumnIndexByPosition(3));
+
+        // hide again
+        this.columnHideShowLayer.hideColumnPositions(1);
+
+        // now show all columns to the left
+        this.columnHideShowLayer.showColumnPosition(1, true, true);
+
+        assertEquals(4, this.columnHideShowLayer.getColumnCount());
+        assertEquals(4, this.columnHideShowLayer.getColumnIndexByPosition(0));
+        assertEquals(1, this.columnHideShowLayer.getColumnIndexByPosition(1));
+        assertEquals(0, this.columnHideShowLayer.getColumnIndexByPosition(2));
+        assertEquals(2, this.columnHideShowLayer.getColumnIndexByPosition(3));
+        assertEquals(-1, this.columnHideShowLayer.getColumnIndexByPosition(4));
+    }
+
+    @Test
+    public void showAllColumnPositionsOnRightSide() {
+        // Column reorder fixture index positions: 4 1 0 2 3
+        // Columns positions hidden: 2 4 (index 0 3)
+
+        // hide additional column
+        this.columnHideShowLayer.hideColumnPositions(1);
+
+        this.columnHideShowLayer.showColumnPosition(0, false, false);
+
+        assertEquals(3, this.columnHideShowLayer.getColumnCount());
+        assertEquals(4, this.columnHideShowLayer.getColumnIndexByPosition(0));
+        assertEquals(1, this.columnHideShowLayer.getColumnIndexByPosition(1));
+        assertEquals(2, this.columnHideShowLayer.getColumnIndexByPosition(2));
+        assertEquals(-1, this.columnHideShowLayer.getColumnIndexByPosition(3));
+
+        // hide again
+        this.columnHideShowLayer.hideColumnPositions(1);
+
+        // now show all columns to the right
+        this.columnHideShowLayer.showColumnPosition(0, false, true);
+
+        assertEquals(4, this.columnHideShowLayer.getColumnCount());
+        assertEquals(4, this.columnHideShowLayer.getColumnIndexByPosition(0));
+        assertEquals(1, this.columnHideShowLayer.getColumnIndexByPosition(1));
+        assertEquals(0, this.columnHideShowLayer.getColumnIndexByPosition(2));
+        assertEquals(2, this.columnHideShowLayer.getColumnIndexByPosition(3));
+        assertEquals(-1, this.columnHideShowLayer.getColumnIndexByPosition(4));
+    }
+
+    @Test
+    public void doNotShowIfNoDirectColumnHiddenToLeft() {
+        // Column reorder fixture index positions: 4 1 0 2 3
+        // Columns positions hidden: 2 4 (index 0 3)
+
+        // hide additional column
+        this.columnHideShowLayer.hideColumnPositions(1);
+
+        this.columnHideShowLayer.showColumnPosition(2, true, false);
+
+        assertEquals(2, this.columnHideShowLayer.getColumnCount());
+        assertEquals(4, this.columnHideShowLayer.getColumnIndexByPosition(0));
+        assertEquals(2, this.columnHideShowLayer.getColumnIndexByPosition(1));
+        assertEquals(-1, this.columnHideShowLayer.getColumnIndexByPosition(2));
+    }
+
+    @Test
+    public void doNotShowIfNoDirectColumnHiddenToRight() {
+        // Column reorder fixture index positions: 4 1 0 2 3
+        // Columns positions hidden: 2 4 (index 0 3)
+
+        // hide additional column
+        this.columnHideShowLayer.hideColumnPositions(2);
+
+        this.columnHideShowLayer.showColumnPosition(0, false, false);
+
+        assertEquals(2, this.columnHideShowLayer.getColumnCount());
+        assertEquals(4, this.columnHideShowLayer.getColumnIndexByPosition(0));
+        assertEquals(1, this.columnHideShowLayer.getColumnIndexByPosition(1));
+        assertEquals(-1, this.columnHideShowLayer.getColumnIndexByPosition(2));
     }
 
     @Test

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2015 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,9 +25,44 @@ import org.eclipse.swt.graphics.Rectangle;
 public class CellEdgeDetectUtil {
 
     /**
+     * Calculate the column position depending on the cursor's position on the
+     * left/right edges of the cell.
+     *
+     * @param layer
+     *            The layer that should be used to calculate the column
+     *            position. Typically the NatTable itself.
+     * @param clickPoint
+     *            The coordinate on which an action happened.
+     * @return the column position according to the cell edge.
+     *
+     * @since 1.6
+     */
+    public static int getColumnPosition(ILayer layer, Point clickPoint) {
+        int columnPosition = layer.getColumnPositionByX(clickPoint.x);
+        if (columnPosition >= 0) {
+            switch (getHorizontalCellEdge(layer, clickPoint, DEFAULT_RESIZE_HANDLE_SIZE)) {
+                case LEFT:
+                    return columnPosition - 1;
+                case RIGHT:
+                    return columnPosition;
+            }
+        }
+        return -1;
+    }
+
+    /**
      * Calculate the column position to resize depending on the cursor's
      * position on the left/right edges of the cell. Does <i>not</i> take into
      * account columns which are not allowed to be resized.
+     *
+     * @param layer
+     *            The layer that should be used to calculate the column
+     *            position. Typically the NatTable itself.
+     * @param clickPoint
+     *            The coordinate on which an action happened.
+     * @return the column position according to the cell edge or -1 for an
+     *         invalid column, e.g. the left edge of the first column, as a
+     *         resize is not possible here.
      */
     public static int getColumnPositionToResize(ILayer layer, Point clickPoint) {
         int columnPosition = layer.getColumnPositionByX(clickPoint.x);
@@ -48,13 +83,48 @@ public class CellEdgeDetectUtil {
 
     /**
      * Calculate the row position to resize depending on the cursor's position
+     * on the top/bottom edges of the cell.
+     *
+     * @param layer
+     *            The layer that should be used to calculate the row position.
+     *            Typically the NatTable itself.
+     * @param clickPoint
+     *            The coordinate on which an action happened.
+     * @return the row position according to the cell edge.
+     *
+     * @since 1.6
+     */
+    public static int getRowPosition(ILayer layer, Point clickPoint) {
+        int rowPosition = layer.getRowPositionByY(clickPoint.y);
+        if (rowPosition >= 0) {
+            switch (getVerticalCellEdge(layer, clickPoint, DEFAULT_RESIZE_HANDLE_SIZE)) {
+                case TOP:
+                    return rowPosition - 1;
+                case BOTTOM:
+                    return rowPosition;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Calculate the row position to resize depending on the cursor's position
      * on the top/bottom edges of the cell. Does not take into account rows
      * which are not allowed to be resized.
+     *
+     * @param layer
+     *            The layer that should be used to calculate the row position.
+     *            Typically the NatTable itself.
+     * @param clickPoint
+     *            The coordinate on which an action happened.
+     * @return the row position according to the cell edge or -1 for an invalid
+     *         row, e.g. the top edge of the first row, as a resize is not
+     *         possible here.
      */
-    public static int getRowPositionToResize(ILayer layer, Point clickPt) {
-        int rowPosition = layer.getRowPositionByY(clickPt.y);
+    public static int getRowPositionToResize(ILayer layer, Point clickPoint) {
+        int rowPosition = layer.getRowPositionByY(clickPoint.y);
         if (rowPosition >= 0) {
-            switch (getVerticalCellEdge(layer, clickPt, DEFAULT_RESIZE_HANDLE_SIZE)) {
+            switch (getVerticalCellEdge(layer, clickPoint, DEFAULT_RESIZE_HANDLE_SIZE)) {
                 case TOP:
                     if (rowPosition == 1) {
                         // can't resize top edge of first row

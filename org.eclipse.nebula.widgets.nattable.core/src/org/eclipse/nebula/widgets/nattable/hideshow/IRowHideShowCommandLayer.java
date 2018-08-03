@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
@@ -17,9 +17,6 @@ import java.util.Collection;
  * behind it is that a layer that implements this interface is intended to
  * handle the row hide/show commands, so it isn't necessary to create new
  * commands for every layer.
- *
- * @author Dirk Fauth
- *
  */
 public interface IRowHideShowCommandLayer {
 

@@ -22,6 +22,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommandH
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowShowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowPositionHideCommandHandler;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.RowShowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
@@ -34,7 +35,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralChangeEventHelp
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
-public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHideShowCommandLayer {
+public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHideShowCommandLayer, IRowHideShowLayer {
 
     public static final String PERSISTENCE_KEY_HIDDEN_ROW_INDEXES = ".hiddenRowIndexes"; //$NON-NLS-1$
 
@@ -49,6 +50,7 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
         registerCommandHandler(new ShowAllRowsCommandHandler(this));
         registerCommandHandler(new MultiRowShowCommandHandler(this));
         registerCommandHandler(new RowPositionHideCommandHandler(this));
+        registerCommandHandler(new RowShowCommandHandler(this));
     }
 
     @Override
@@ -166,6 +168,41 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
         this.hiddenRowIndexes.removeAll(rowIndexes);
         invalidateCache();
         fireLayerEvent(new ShowRowPositionsEvent(this, getRowPositionsByIndexes(rowIndexes)));
+    }
+
+    @Override
+    public void showRowPosition(int rowPosition, boolean showToTop, boolean showAll) {
+        Set<Integer> rowIndexes = new HashSet<Integer>();
+        int underlyingPosition = localToUnderlyingRowPosition(rowPosition);
+        if (showToTop) {
+            int topRowIndex = this.underlyingLayer.getRowIndexByPosition(underlyingPosition - 1);
+            if (showAll) {
+                int move = 1;
+                while (isRowIndexHidden(topRowIndex)) {
+                    rowIndexes.add(topRowIndex);
+                    move++;
+                    topRowIndex = this.underlyingLayer.getRowIndexByPosition(underlyingPosition - move);
+                }
+            } else if (isRowIndexHidden(topRowIndex)) {
+                rowIndexes.add(topRowIndex);
+            }
+        } else {
+            int bottomRowIndex = this.underlyingLayer.getRowIndexByPosition(underlyingPosition + 1);
+            if (showAll) {
+                int move = 1;
+                while (isRowIndexHidden(bottomRowIndex)) {
+                    rowIndexes.add(bottomRowIndex);
+                    move++;
+                    bottomRowIndex = this.underlyingLayer.getRowIndexByPosition(underlyingPosition + move);
+                }
+            } else if (isRowIndexHidden(bottomRowIndex)) {
+                rowIndexes.add(bottomRowIndex);
+            }
+        }
+
+        if (!rowIndexes.isEmpty()) {
+            showRowIndexes(rowIndexes);
+        }
     }
 
     @Override

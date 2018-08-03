@@ -15,15 +15,18 @@ package org.eclipse.nebula.widgets.nattable.hideshow;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommandHandler;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnShowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnShowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommandHandler;
@@ -83,6 +86,7 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
         registerCommandHandler(new MultiColumnHideCommandHandler(this));
         registerCommandHandler(new ShowAllColumnsCommandHandler(this));
         registerCommandHandler(new MultiColumnShowCommandHandler(this));
+        registerCommandHandler(new ColumnShowCommandHandler(this));
     }
 
     // Persistence
@@ -270,6 +274,40 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
             for (Range range : ranges) {
                 this.bodyDataLayer.fireLayerEvent(new ColumnResizeEvent(this.bodyDataLayer, range));
             }
+        }
+    }
+
+    @Override
+    public void showColumnPosition(int columnPosition, boolean showToLeft, boolean showAll) {
+        Set<Integer> columnIndexes = new HashSet<Integer>();
+        if (showToLeft) {
+            int leftColumnIndex = getColumnIndexByPosition(columnPosition - 1);
+            if (showAll) {
+                int move = 1;
+                while (this.hiddenColumns.containsKey(leftColumnIndex)) {
+                    columnIndexes.add(leftColumnIndex);
+                    move++;
+                    leftColumnIndex = getColumnIndexByPosition(columnPosition - move);
+                }
+            } else if (this.hiddenColumns.containsKey(leftColumnIndex)) {
+                columnIndexes.add(leftColumnIndex);
+            }
+        } else {
+            int rightColumnIndex = getColumnIndexByPosition(columnPosition + 1);
+            if (showAll) {
+                int move = 1;
+                while (this.hiddenColumns.containsKey(rightColumnIndex)) {
+                    columnIndexes.add(rightColumnIndex);
+                    move++;
+                    rightColumnIndex = getColumnIndexByPosition(columnPosition + move);
+                }
+            } else if (this.hiddenColumns.containsKey(rightColumnIndex)) {
+                columnIndexes.add(rightColumnIndex);
+            }
+        }
+
+        if (!columnIndexes.isEmpty()) {
+            showColumnIndexes(columnIndexes);
         }
     }
 

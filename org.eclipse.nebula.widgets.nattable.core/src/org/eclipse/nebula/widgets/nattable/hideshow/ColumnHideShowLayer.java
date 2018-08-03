@@ -20,6 +20,7 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommandHandler;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnShowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnShowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommandHandler;
@@ -57,6 +58,7 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer implements 
         registerCommandHandler(new ColumnHideCommandHandler(this));
         registerCommandHandler(new ShowAllColumnsCommandHandler(this));
         registerCommandHandler(new MultiColumnShowCommandHandler(this));
+        registerCommandHandler(new ColumnShowCommandHandler(this));
     }
 
     @Override
@@ -184,6 +186,41 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer implements 
         this.hiddenColumnIndexes.removeAll(columnIndexes);
         invalidateCache();
         fireLayerEvent(new ShowColumnPositionsEvent(this, getColumnPositionsByIndexes(columnIndexes)));
+    }
+
+    @Override
+    public void showColumnPosition(int columnPosition, boolean showToLeft, boolean showAll) {
+        Set<Integer> columnIndexes = new HashSet<Integer>();
+        int underlyingPosition = localToUnderlyingColumnPosition(columnPosition);
+        if (showToLeft) {
+            int leftColumnIndex = this.underlyingLayer.getColumnIndexByPosition(underlyingPosition - 1);
+            if (showAll) {
+                int move = 1;
+                while (isColumnIndexHidden(leftColumnIndex)) {
+                    columnIndexes.add(leftColumnIndex);
+                    move++;
+                    leftColumnIndex = this.underlyingLayer.getColumnIndexByPosition(underlyingPosition - move);
+                }
+            } else if (isColumnIndexHidden(leftColumnIndex)) {
+                columnIndexes.add(leftColumnIndex);
+            }
+        } else {
+            int rightColumnIndex = this.underlyingLayer.getColumnIndexByPosition(underlyingPosition + 1);
+            if (showAll) {
+                int move = 1;
+                while (isColumnIndexHidden(rightColumnIndex)) {
+                    columnIndexes.add(rightColumnIndex);
+                    move++;
+                    rightColumnIndex = this.underlyingLayer.getColumnIndexByPosition(underlyingPosition + move);
+                }
+            } else if (isColumnIndexHidden(rightColumnIndex)) {
+                columnIndexes.add(rightColumnIndex);
+            }
+        }
+
+        if (!columnIndexes.isEmpty()) {
+            showColumnIndexes(columnIndexes);
+        }
     }
 
     @Override
