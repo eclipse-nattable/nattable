@@ -140,7 +140,9 @@ public class HideIndicatorOverlayPainter implements IOverlayPainter2 {
                         int start = rectangle.y;
                         for (int i = 0; i < this.columnHeaderLayer.getRowCount(); i++) {
                             ILayerCell cell = layer.getCellByPosition(col + 1, i);
-                            if (cell != null && cell.getOriginColumnPosition() < cell.getColumnPosition()) {
+                            if (cell != null
+                                    && cell.getOriginColumnPosition() < cell.getColumnPosition()
+                                    && x < (cell.getBounds().x + cell.getBounds().width)) {
                                 start += layer.getRowHeightByPosition(i);
                             }
                         }

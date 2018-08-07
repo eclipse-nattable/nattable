@@ -15,6 +15,7 @@ package org.eclipse.nebula.widgets.nattable.hideshow.indicator;
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalTreeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -29,6 +30,8 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public class HierarchicalHideIndicatorOverlayPainter extends HideIndicatorOverlayPainter {
 
+    protected HierarchicalTreeLayer treeLayer;
+
     /**
      * Creates a {@link HierarchicalHideIndicatorOverlayPainter} that renders
      * the hide indicator in the given given column header layer and the
@@ -42,8 +45,8 @@ public class HierarchicalHideIndicatorOverlayPainter extends HideIndicatorOverla
      *            <code>null</code> to avoid rendering of hidden column
      *            indicators.
      */
-    public HierarchicalHideIndicatorOverlayPainter(ILayer columnHeaderLayer) {
-        super(columnHeaderLayer, null);
+    public HierarchicalHideIndicatorOverlayPainter(ILayer columnHeaderLayer, HierarchicalTreeLayer treeLayer) {
+        this(columnHeaderLayer, null, treeLayer);
     }
 
     /**
@@ -64,8 +67,74 @@ public class HierarchicalHideIndicatorOverlayPainter extends HideIndicatorOverla
      *            layer in the row header region. Can be <code>null</code> to
      *            avoid rendering of hidden row indicators.
      */
-    public HierarchicalHideIndicatorOverlayPainter(ILayer columnHeaderLayer, ILayer rowHeaderLayer) {
+    public HierarchicalHideIndicatorOverlayPainter(ILayer columnHeaderLayer, ILayer rowHeaderLayer, HierarchicalTreeLayer treeLayer) {
         super(columnHeaderLayer, rowHeaderLayer);
+        this.treeLayer = treeLayer;
+    }
+
+    @Override
+    protected void paintHiddenColumnIndicator(ILayer layer, GC gc, int xOffset, int yOffset, Rectangle rectangle) {
+        if (this.columnHeaderLayer != null) {
+            int lineAdjustment = gc.getLineWidth() % 2;
+            int height = this.columnHeaderLayer.getHeight();
+
+            for (int col = 0; col < layer.getColumnCount(); col++) {
+                LabelStack configLabels = layer.getConfigLabelsByPosition(col, this.columnHeaderLayer.getRowCount());
+                if (configLabels.hasLabel(HideIndicatorConstants.COLUMN_LEFT_HIDDEN)) {
+                    // ensure that the current column and the left column belong
+                    // to the same level
+                    int currentLevel = this.treeLayer.getLevelByColumnIndex(layer.getColumnIndexByPosition(col));
+                    int leftLevel = this.treeLayer.getLevelByColumnIndex(layer.getColumnIndexByPosition(col - 1));
+                    if (currentLevel == leftLevel) {
+                        int x = layer.getStartXOfColumnPosition(col);
+                        if (this.rowHeaderLayer == null || x >= this.rowHeaderLayer.getWidth()) {
+                            int start = rectangle.y;
+                            for (int i = 0; i < this.columnHeaderLayer.getRowCount(); i++) {
+                                ILayerCell cell = layer.getCellByPosition(col, i);
+                                int cellStart = layer.getStartXOfColumnPosition(cell.getOriginColumnPosition());
+                                if (cellStart < x
+                                        && ((this.rowHeaderLayer != null && x > this.rowHeaderLayer.getWidth())
+                                                || (this.rowHeaderLayer == null && x > 0))) {
+                                    start += layer.getRowHeightByPosition(i);
+                                }
+                            }
+                            gc.drawLine(x - lineAdjustment, start, x - lineAdjustment, height);
+                        }
+                    }
+                }
+
+                if (configLabels.hasLabel(HideIndicatorConstants.COLUMN_RIGHT_HIDDEN)) {
+                    // ensure that the current column and the right column
+                    // belong to the same level
+                    int currentLevel = this.treeLayer.getLevelByColumnIndex(layer.getColumnIndexByPosition(col));
+                    int rightPos = LayerUtil.convertColumnPosition(layer, col + 1, this.treeLayer);
+                    int rightIndex = layer.getColumnIndexByPosition(rightPos);
+
+                    int rightLevel = this.treeLayer.getLevelByColumnIndex(rightIndex);
+                    if (currentLevel == rightLevel || (rightIndex < 0 && !this.treeLayer.isLevelHeaderColumn(rightPos))) {
+                        // render the line on the right side of the last column
+                        int x = layer.getStartXOfColumnPosition(col) + layer.getColumnWidthByPosition(col);
+                        // adjust the rendering for the whole line width to
+                        // avoid overlapping
+                        if (col == layer.getColumnCount() - 1) {
+                            lineAdjustment = (gc.getLineWidth() / 2) + lineAdjustment;
+                        }
+                        if (this.rowHeaderLayer == null || x >= this.rowHeaderLayer.getWidth()) {
+                            int start = rectangle.y;
+                            for (int i = 0; i < this.columnHeaderLayer.getRowCount(); i++) {
+                                ILayerCell cell = layer.getCellByPosition(col + 1, i);
+                                if (cell != null
+                                        && cell.getOriginColumnPosition() < cell.getColumnPosition()
+                                        && x < (cell.getBounds().x + cell.getBounds().width)) {
+                                    start += layer.getRowHeightByPosition(i);
+                                }
+                            }
+                            gc.drawLine(x - lineAdjustment, start, x - lineAdjustment, height - 1);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
