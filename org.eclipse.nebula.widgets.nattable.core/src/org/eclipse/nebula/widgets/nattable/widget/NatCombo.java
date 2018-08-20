@@ -1074,7 +1074,7 @@ public class NatCombo extends Composite {
     public String[] getSelection() {
         String[] result = getTransformedSelection();
         if (result == null
-                || (result.length == 0 && this.text.getText().length() > 0)) {
+                || (result.length == 0 && !this.text.isDisposed() && this.text.getText().length() > 0)) {
             result = getTextAsArray();
         }
         return result;
