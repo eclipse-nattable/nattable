@@ -21,7 +21,8 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
-import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
 
 /**
  * Specialization of the {@link AlternatingRowConfigLabelAccumulator} that
@@ -29,7 +30,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
  * row spanning of the first level node. For better performance the calculation
  * results are cached. As the cache needs to be cleared on structural changes,
  * this class also implements the {@link ILayerListener} to clear the cache
- * automatically on {@link IStructuralChangeEvent}s if registered on the given
+ * automatically on {@link RowStructuralChangeEvent}s if registered on the given
  * layer via {@link ILayer#addLayerListener(ILayerListener)}.
  *
  * @since 1.6
@@ -99,7 +100,9 @@ public class HierarchicalTreeAlternatingRowConfigLabelAccumulator extends Altern
 
     @Override
     public void handleLayerEvent(ILayerEvent event) {
-        if (event instanceof IStructuralChangeEvent) {
+        // if there are structural changes to rows that are not related to
+        // resizing, we need to clear the cache
+        if (event instanceof RowStructuralChangeEvent && !(event instanceof RowResizeEvent)) {
             clearCache();
         }
     }
