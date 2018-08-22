@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2017 Dirk Fauth and others.
+ * Copyright (c) 2013, 2018 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -372,31 +372,32 @@ public class StructuralChangeEventHelper {
             }
         }
 
-        // modify row indexes regarding the deleted rows
-        Map<K, T> modifiedRows = new HashMap<K, T>();
-        for (Map.Entry<K, T> entry : dataChanges.entrySet()) {
-            int columnIndex = keyHandler.getColumnIndex(entry.getKey());
-            int rowIndex = keyHandler.getRowIndex(entry.getKey());
-            if (!toRemove.contains(rowIndex)) {
-                // check number of removed indexes that are lower than the
-                // current one
-                int deletedBefore = 0;
-                for (Integer removed : toRemove) {
-                    if (removed < rowIndex) {
-                        deletedBefore++;
+        if (!toRemove.isEmpty()) {
+            // modify row indexes regarding the deleted rows
+            Map<K, T> modifiedRows = new HashMap<K, T>();
+            for (Map.Entry<K, T> entry : dataChanges.entrySet()) {
+                int rowIndex = keyHandler.getRowIndex(entry.getKey());
+                if (!toRemove.contains(rowIndex)) {
+                    // check number of removed indexes that are lower than the
+                    // current one
+                    int deletedBefore = 0;
+                    for (Integer removed : toRemove) {
+                        if (removed < rowIndex) {
+                            deletedBefore++;
+                        }
+                    }
+                    int modRow = rowIndex - deletedBefore;
+                    if (modRow >= 0) {
+                        modifiedRows.put(
+                                keyHandler.getKeyWithRowUpdate(entry.getKey(), modRow),
+                                entry.getValue());
                     }
                 }
-                int modRow = rowIndex - deletedBefore;
-                if (modRow >= 0) {
-                    modifiedRows.put(
-                            keyHandler.getKey(columnIndex, modRow),
-                            entry.getValue());
-                }
             }
-        }
 
-        dataChanges.clear();
-        dataChanges.putAll(modifiedRows);
+            dataChanges.clear();
+            dataChanges.putAll(modifiedRows);
+        }
     }
 
     /**
@@ -437,15 +438,14 @@ public class StructuralChangeEventHelper {
                 // modify row indexes regarding the inserted rows
                 Map<K, T> modifiedRows = new HashMap<K, T>();
                 for (Map.Entry<K, T> entry : dataChanges.entrySet()) {
-                    int columnIndex = keyHandler.getColumnIndex(entry.getKey());
                     int rowIndex = keyHandler.getRowIndex(entry.getKey());
                     if (rowIndex >= beforePositionRange.start) {
                         modifiedRows.put(
-                                keyHandler.getKey(columnIndex, rowIndex + 1),
+                                keyHandler.getKeyWithRowUpdate(entry.getKey(), rowIndex + 1),
                                 entry.getValue());
                     } else {
                         modifiedRows.put(
-                                keyHandler.getKey(columnIndex, rowIndex),
+                                keyHandler.getKeyWithRowUpdate(entry.getKey(), rowIndex),
                                 entry.getValue());
                     }
                 }
@@ -502,31 +502,33 @@ public class StructuralChangeEventHelper {
             }
         }
 
-        // modify column indexes regarding the deleted column
-        Map<K, T> modifiedColumns = new HashMap<K, T>();
-        for (Map.Entry<K, T> entry : dataChanges.entrySet()) {
-            int columnIndex = keyHandler.getColumnIndex(entry.getKey());
-            int rowIndex = keyHandler.getRowIndex(entry.getKey());
-            if (!toRemove.contains(columnIndex)) {
-                // check number of removed indexes that are lower than the
-                // current one
-                int deletedBefore = 0;
-                for (Integer removed : toRemove) {
-                    if (removed < columnIndex) {
-                        deletedBefore++;
+        // only perform modifications if items where deleted
+        if (!toRemove.isEmpty()) {
+            // modify column indexes regarding the deleted column
+            Map<K, T> modifiedColumns = new HashMap<K, T>();
+            for (Map.Entry<K, T> entry : dataChanges.entrySet()) {
+                int columnIndex = keyHandler.getColumnIndex(entry.getKey());
+                if (!toRemove.contains(columnIndex)) {
+                    // check number of removed indexes that are lower than the
+                    // current one
+                    int deletedBefore = 0;
+                    for (Integer removed : toRemove) {
+                        if (removed < columnIndex) {
+                            deletedBefore++;
+                        }
+                    }
+                    int modColumn = columnIndex - deletedBefore;
+                    if (modColumn >= 0) {
+                        modifiedColumns.put(
+                                keyHandler.getKeyWithColumnUpdate(entry.getKey(), modColumn),
+                                entry.getValue());
                     }
                 }
-                int modColumn = columnIndex - deletedBefore;
-                if (modColumn >= 0) {
-                    modifiedColumns.put(
-                            keyHandler.getKey(modColumn, rowIndex),
-                            entry.getValue());
-                }
             }
-        }
 
-        dataChanges.clear();
-        dataChanges.putAll(modifiedColumns);
+            dataChanges.clear();
+            dataChanges.putAll(modifiedColumns);
+        }
     }
 
     /**
@@ -568,14 +570,13 @@ public class StructuralChangeEventHelper {
                 Map<K, T> modifiedColumns = new HashMap<K, T>();
                 for (Map.Entry<K, T> entry : dataChanges.entrySet()) {
                     int columnIndex = keyHandler.getColumnIndex(entry.getKey());
-                    int rowIndex = keyHandler.getRowIndex(entry.getKey());
                     if (columnIndex >= beforePositionRange.start) {
                         modifiedColumns.put(
-                                keyHandler.getKey(columnIndex + 1, rowIndex),
+                                keyHandler.getKeyWithColumnUpdate(entry.getKey(), columnIndex + 1),
                                 entry.getValue());
                     } else {
                         modifiedColumns.put(
-                                keyHandler.getKey(columnIndex, rowIndex),
+                                keyHandler.getKeyWithColumnUpdate(entry.getKey(), columnIndex),
                                 entry.getValue());
                     }
                 }

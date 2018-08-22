@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Dirk Fauth and others.
+ * Copyright (c) 2017, 2018 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -59,6 +59,16 @@ public class IdIndexKeyHandler<T> implements CellKeyHandler<IdIndexIdentifier<T>
             return new IdIndexIdentifier<T>(columnIndex, rowId, rowObject);
         }
         return null;
+    }
+
+    @Override
+    public IdIndexIdentifier<T> getKeyWithColumnUpdate(IdIndexIdentifier<T> oldKey, int columnIndex) {
+        return new IdIndexIdentifier<T>(columnIndex, oldKey.rowId, oldKey.rowObject);
+    }
+
+    @Override
+    public IdIndexIdentifier<T> getKeyWithRowUpdate(IdIndexIdentifier<T> oldKey, int rowIndex) {
+        return getKey(oldKey.columnIndex, rowIndex);
     }
 
     @Override

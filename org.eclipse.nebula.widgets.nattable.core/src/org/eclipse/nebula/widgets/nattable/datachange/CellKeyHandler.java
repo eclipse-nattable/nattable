@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Dirk Fauth and others.
+ * Copyright (c) 2017, 2018 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,6 +32,31 @@ public interface CellKeyHandler<K> {
      * @return The key of the cell with the given indexes.
      */
     K getKey(int columnIndex, int rowIndex);
+
+    /**
+     * Creates a new cell key based on the given key with an updated column
+     * index.
+     *
+     * @param oldKey
+     *            The key that should be copied.
+     * @param columnIndex
+     *            The column index that should be updated in the existing key.
+     * @return The key of the cell with the previous row identifier and the
+     *         updated column identifier.
+     */
+    K getKeyWithColumnUpdate(K oldKey, int columnIndex);
+
+    /**
+     * Creates a new cell key based on the given key with an updated row index.
+     *
+     * @param oldKey
+     *            The key that should be copied.
+     * @param rowIndex
+     *            The row index that should be updated in the existing key.
+     * @return The key of the cell with the previous column identifier and the
+     *         updated row identifier.
+     */
+    K getKeyWithRowUpdate(K oldKey, int rowIndex);
 
     /**
      *

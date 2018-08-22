@@ -6,6 +6,8 @@ Bundle-Version: 1.6.0.qualifier
 Fragment-Host: org.eclipse.nebula.widgets.nattable.extension.glazedlists
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.eclipse.jface.viewers,
+ org.eclipse.nebula.widgets.nattable.datachange;version="1.6.0",
+ org.eclipse.nebula.widgets.nattable.datachange.command;version="1.6.0",
  org.eclipse.nebula.widgets.nattable.dataset.car;version="1.5.0",
  org.eclipse.nebula.widgets.nattable.dataset.fixture.data;version="1.4.0",
  org.eclipse.nebula.widgets.nattable.dataset.person;version="1.4.0",
