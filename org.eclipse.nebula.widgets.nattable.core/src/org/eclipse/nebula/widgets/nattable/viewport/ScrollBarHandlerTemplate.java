@@ -71,7 +71,8 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 
     @Override
     public void handleEvent(Event event) {
-        // ensure that the keep in viewport setting is reset if there is one active
+        // ensure that the keep in viewport setting is reset if there is one
+        // active
         this.viewportLayer.setKeepInViewportRowPosition(-1);
 
         if (!this.dragging) {
@@ -136,7 +137,7 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
         } else {
             this.scroller.setThumb(max);
             this.scroller.setEnabled(false);
-            this.scroller.setVisible(false);
+            this.scroller.setVisible(viewportWindowSpan == 0);
         }
     }
 
