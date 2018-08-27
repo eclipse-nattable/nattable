@@ -23,6 +23,8 @@ import org.eclipse.nebula.widgets.nattable.datachange.command.DiscardDataChanges
 import org.eclipse.nebula.widgets.nattable.datachange.command.SaveDataChangesCommand;
 import org.eclipse.nebula.widgets.nattable.datachange.command.SaveDataChangesCommandHandler;
 import org.eclipse.nebula.widgets.nattable.datachange.config.DefaultDataChangeConfiguration;
+import org.eclipse.nebula.widgets.nattable.datachange.event.DiscardDataChangesCompletedEvent;
+import org.eclipse.nebula.widgets.nattable.datachange.event.SaveDataChangesCompletedEvent;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
 import org.eclipse.nebula.widgets.nattable.edit.event.DataUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
@@ -35,7 +37,6 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralChangeEventHelper;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
-import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 
 /**
  * {@link ILayer} that can be used to add a mechanism that highlights cells
@@ -345,7 +346,7 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
             this.handleDataUpdateEvents = true;
         }
         clearDataChanges();
-        fireLayerEvent(new VisualRefreshEvent(this));
+        fireLayerEvent(new DiscardDataChangesCompletedEvent(this));
     }
 
     /**
@@ -367,7 +368,7 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
             }
         }
         clearDataChanges();
-        fireLayerEvent(new VisualRefreshEvent(this));
+        fireLayerEvent(new SaveDataChangesCompletedEvent(this));
     }
 
     /**

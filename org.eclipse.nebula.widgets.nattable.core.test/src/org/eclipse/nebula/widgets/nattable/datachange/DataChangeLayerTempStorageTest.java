@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Dirk Fauth.
+ * Copyright (c) 2017, 2018 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,11 +22,14 @@ import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.datachange.command.DiscardDataChangesCommand;
 import org.eclipse.nebula.widgets.nattable.datachange.command.SaveDataChangesCommand;
+import org.eclipse.nebula.widgets.nattable.datachange.event.DiscardDataChangesCompletedEvent;
+import org.eclipse.nebula.widgets.nattable.datachange.event.SaveDataChangesCompletedEvent;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
 import org.eclipse.nebula.widgets.nattable.edit.event.DataUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowDeleteEvent;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.junit.Before;
@@ -38,8 +41,6 @@ public class DataChangeLayerTempStorageTest {
 
     private DataLayer dataLayer;
     private DataChangeLayer dataChangeLayer;
-
-    private LayerListenerFixture listener;
 
     @Before
     public void setup() {
@@ -54,9 +55,6 @@ public class DataChangeLayerTempStorageTest {
                                 "married",
                                 "birthday" })));
         this.dataChangeLayer = new DataChangeLayer(this.dataLayer, new PointKeyHandler(), true);
-
-        this.listener = new LayerListenerFixture();
-        this.dataLayer.addLayerListener(this.listener);
     }
 
     @Test
@@ -99,6 +97,9 @@ public class DataChangeLayerTempStorageTest {
 
     @Test
     public void shouldDiscardChanges() {
+        LayerListenerFixture listener = new LayerListenerFixture();
+        this.dataChangeLayer.addLayerListener(listener);
+
         assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
 
         this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));
@@ -118,10 +119,20 @@ public class DataChangeLayerTempStorageTest {
         assertTrue("changed columns are not empty", this.dataChangeLayer.changedColumns.isEmpty());
         assertTrue("changed rows are not empty", this.dataChangeLayer.changedRows.isEmpty());
         assertTrue("changes are not empty", this.dataChangeLayer.dataChanges.isEmpty());
+
+        // initial CellVisualChangeEvent
+        // final DiscardDataChangesCompletedEvent
+        assertEquals(2, listener.getEventsCount());
+        assertTrue(listener.containsInstanceOf(CellVisualChangeEvent.class));
+        assertTrue(listener.getReceivedEvents().get(0) instanceof CellVisualChangeEvent);
+        assertTrue(listener.getReceivedEvents().get(1) instanceof DiscardDataChangesCompletedEvent);
     }
 
     @Test
     public void shouldSaveChanges() {
+        LayerListenerFixture listener = new LayerListenerFixture();
+        this.dataChangeLayer.addLayerListener(listener);
+
         assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
 
         this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));
@@ -142,8 +153,14 @@ public class DataChangeLayerTempStorageTest {
         assertTrue("changed rows are not empty", this.dataChangeLayer.changedRows.isEmpty());
         assertTrue("changes are not empty", this.dataChangeLayer.dataChanges.isEmpty());
 
-        assertEquals(1, this.listener.getReceivedEvents().size());
-        assertTrue(this.listener.getReceivedEvents().get(0) instanceof DataUpdateEvent);
+        // initial CellVisualChangeEvent
+        // update DataUpdateEvent
+        // final SaveDataChangesCompletedEvent
+        assertEquals(3, listener.getEventsCount());
+        assertTrue(listener.containsInstanceOf(SaveDataChangesCompletedEvent.class));
+        assertTrue(listener.getReceivedEvents().get(0) instanceof CellVisualChangeEvent);
+        assertTrue(listener.getReceivedEvents().get(1) instanceof DataUpdateEvent);
+        assertTrue(listener.getReceivedEvents().get(2) instanceof SaveDataChangesCompletedEvent);
     }
 
     @Test

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Dirk Fauth.
+ * Copyright (c) 2017, 2018 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,15 +24,19 @@ import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.datachange.command.DiscardDataChangesCommand;
 import org.eclipse.nebula.widgets.nattable.datachange.command.SaveDataChangesCommand;
+import org.eclipse.nebula.widgets.nattable.datachange.event.DiscardDataChangesCompletedEvent;
+import org.eclipse.nebula.widgets.nattable.datachange.event.SaveDataChangesCompletedEvent;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
+import org.eclipse.nebula.widgets.nattable.edit.event.DataUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnDeleteEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnInsertEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowDeleteEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowInsertEvent;
+import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -97,6 +101,9 @@ public class DataChangeLayerTest {
 
     @Test
     public void shouldDiscardChanges() {
+        LayerListenerFixture listener = new LayerListenerFixture();
+        this.dataChangeLayer.addLayerListener(listener);
+
         assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
 
         this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));
@@ -115,6 +122,15 @@ public class DataChangeLayerTest {
         assertTrue("changed columns are not empty", this.dataChangeLayer.changedColumns.isEmpty());
         assertTrue("changed rows are not empty", this.dataChangeLayer.changedRows.isEmpty());
         assertTrue("changes are not empty", this.dataChangeLayer.dataChanges.isEmpty());
+
+        // initial DataUpdateEvent
+        // discard DataUpdateEvent
+        // final DiscardDataChangesCompletedEvent
+        assertEquals(3, listener.getEventsCount());
+        assertTrue(listener.containsInstanceOf(DiscardDataChangesCompletedEvent.class));
+        assertTrue(listener.getReceivedEvents().get(0) instanceof DataUpdateEvent);
+        assertTrue(listener.getReceivedEvents().get(1) instanceof DataUpdateEvent);
+        assertTrue(listener.getReceivedEvents().get(2) instanceof DiscardDataChangesCompletedEvent);
     }
 
     @Test
@@ -143,6 +159,9 @@ public class DataChangeLayerTest {
 
     @Test
     public void shouldSaveChanges() {
+        LayerListenerFixture listener = new LayerListenerFixture();
+        this.dataChangeLayer.addLayerListener(listener);
+
         assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
 
         this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));
@@ -161,6 +180,13 @@ public class DataChangeLayerTest {
         assertTrue("changed columns are not empty", this.dataChangeLayer.changedColumns.isEmpty());
         assertTrue("changed rows are not empty", this.dataChangeLayer.changedRows.isEmpty());
         assertTrue("changes are not empty", this.dataChangeLayer.dataChanges.isEmpty());
+
+        // initial DataUpdateEvent
+        // final SaveDataChangesCompletedEvent
+        assertEquals(2, listener.getEventsCount());
+        assertTrue(listener.containsInstanceOf(SaveDataChangesCompletedEvent.class));
+        assertTrue(listener.getReceivedEvents().get(0) instanceof DataUpdateEvent);
+        assertTrue(listener.getReceivedEvents().get(1) instanceof SaveDataChangesCompletedEvent);
     }
 
     @Test
