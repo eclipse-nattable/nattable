@@ -581,7 +581,8 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
      * @return cellPosition expressed in row position and column position
      */
     private Point createMarkerPoint(CellPosition<T> cellPosition) {
-        if (cellPosition == null) {
+        if (cellPosition == null
+                || (cellPosition.getColumnPosition() == SelectionLayer.NO_SELECTION && cellPosition.getRowObject() == null)) {
             return createUndefinedPoint();
         }
         int rowPosition = getRowPositionByRowObject(cellPosition.getRowObject());
@@ -626,8 +627,13 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public void setSelectionAnchor(Point coordinate) {
         this.selectionsLock.writeLock().lock();
         try {
-            this.selectionAnchor =
-                    new CellPosition<T>(getRowObjectByPosition(coordinate.y), coordinate.x);
+            if (coordinate.x == SelectionLayer.NO_SELECTION
+                    && coordinate.y == SelectionLayer.NO_SELECTION) {
+                this.selectionAnchor = null;
+            } else {
+                this.selectionAnchor =
+                        new CellPosition<T>(getRowObjectByPosition(coordinate.y), coordinate.x);
+            }
         } finally {
             this.selectionsLock.writeLock().unlock();
         }
@@ -637,8 +643,13 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public void setLastSelectedCell(Point coordinate) {
         this.selectionsLock.writeLock().lock();
         try {
-            this.lastSelectedCell =
-                    new CellPosition<T>(getRowObjectByPosition(coordinate.y), coordinate.x);
+            if (coordinate.x == SelectionLayer.NO_SELECTION
+                    && coordinate.y == SelectionLayer.NO_SELECTION) {
+                this.lastSelectedCell = null;
+            } else {
+                this.lastSelectedCell =
+                        new CellPosition<T>(getRowObjectByPosition(coordinate.y), coordinate.x);
+            }
         } finally {
             this.selectionsLock.writeLock().unlock();
         }
