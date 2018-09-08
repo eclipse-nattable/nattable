@@ -881,7 +881,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
         }
         if (level >= 0) {
             int rowIndex = getRowIndexByPosition(rowPosition);
-            if (rowIndex >= 0) {
+            if (rowIndex >= 0 && rowIndex < this.underlyingList.size()) {
                 HierarchicalWrapper rowObject = this.underlyingList.get(rowIndex);
                 return rowObject.getObject(level) != null;
             }
