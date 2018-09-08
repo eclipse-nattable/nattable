@@ -359,8 +359,12 @@ public class PreserveSelectionModelTest {
     public void isColumnFullySelected_Copes_With_Gap() {
         this.testee.addSelection(2, 0);
         this.testee.addSelection(2, 2);
+        this.testee.addSelection(2, 3);
+        this.testee.addSelection(2, 4);
+        this.testee.addSelection(2, 5);
+        this.testee.addSelection(2, 6);
 
-        assertFalse(this.testee.isColumnPositionFullySelected(2, 2));
+        assertFalse(this.testee.isColumnPositionFullySelected(2, this.rowCount));
     }
 
     @Test

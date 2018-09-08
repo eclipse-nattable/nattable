@@ -31,6 +31,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideComma
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommand;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
@@ -160,6 +161,26 @@ public class PreserveSelectionModelIntegrationTest {
         // deselect a cell that was selected before
         this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 1, 3, false, true));
         assertFalse("cell 1/3 is selected", this.selectionLayer.isCellPositionSelected(1, 3));
+        assertFalse("column 1 is fully selected", this.selectionLayer.isColumnPositionFullySelected(1));
+    }
+
+    @Test
+    public void shouldNotShowFullySelectedColumnOnColumnSelectionAfterHideAndShowAll() {
+        assertFalse("column 1 is fully selected", this.selectionLayer.isColumnPositionFullySelected(1));
+        this.selectionLayer.doCommand(new SelectColumnCommand(this.selectionLayer, 1, 0, false, false));
+        assertTrue("column 1 is not fully selected", this.selectionLayer.isColumnPositionFullySelected(1));
+
+        // hide a row
+        assertEquals(18, this.selectionLayer.getRowCount());
+        this.selectionLayer.doCommand(new RowHideCommand(this.selectionLayer, 5));
+        assertEquals(17, this.selectionLayer.getRowCount());
+
+        assertTrue("column 1 is not fully selected", this.selectionLayer.isColumnPositionFullySelected(1));
+
+        // show all again
+        this.selectionLayer.doCommand(new ShowAllRowsCommand());
+        assertEquals(18, this.selectionLayer.getRowCount());
+
         assertFalse("column 1 is fully selected", this.selectionLayer.isColumnPositionFullySelected(1));
     }
 

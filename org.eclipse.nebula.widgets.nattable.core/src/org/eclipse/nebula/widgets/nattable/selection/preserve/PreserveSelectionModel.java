@@ -374,25 +374,16 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
 
     @Override
     public boolean isColumnPositionFullySelected(int columnPosition, int columnHeight) {
-        TreeSet<Integer> selectedRowPositions = new TreeSet<Integer>();
         this.selectionsLock.readLock().lock();
         try {
             Selections.Column selectedRowsInColumn = this.selections.getSelectedRows(columnPosition);
             if (hasColumnsSelectedRows(selectedRowsInColumn)) {
-                for (Serializable rowId : selectedRowsInColumn.getItems()) {
-                    Selections.Row<T> row = this.selections.getSelectedColumns(rowId);
-                    T rowObject = row.getRowObject();
-                    int rowIndex = this.rowDataProvider.indexOfRowObject(rowObject);
-                    selectedRowPositions.add(this.selectionLayer.getRowPositionByIndex(rowIndex));
-                }
+                return selectedRowsInColumn.getItems().size() >= columnHeight;
             }
+            return false;
         } finally {
             this.selectionsLock.readLock().unlock();
         }
-
-        return (selectedRowPositions.size() < columnHeight)
-                ? false
-                : SelectionUtils.isConsecutive(ArrayUtil.asIntArray(selectedRowPositions));
     }
 
     /**
