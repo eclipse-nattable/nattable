@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.freeze.command;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.freeze.FreezeHelper;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -67,14 +68,13 @@ public class FreezeSelectionStrategy implements IFreezeCoordinatesProvider {
         }
 
         // ensure that the selected column position is based on the same layer
-        // as the
-        // scrollable layer of the ViewportLayer
+        // as the scrollable layer of the ViewportLayer
         int selectedColumnPosition = getUnderlyingColumnPosition(lastSelectedCellPosition.columnPosition);
         int selectedRowPosition = getUnderlyingRowPosition(lastSelectedCellPosition.rowPosition);
 
         ILayerCell lastSelectedCell =
                 this.selectionLayer.getCellByPosition(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition);
-        int columnPosition = this.viewportLayer.getScrollableLayer().getColumnPositionByX(this.viewportLayer.getOrigin().getX());
+        int columnPosition = FreezeHelper.getTopLeftColumnPosition(this.viewportLayer);
         if (columnPosition > 0
                 && columnPosition >= selectedColumnPosition) {
 

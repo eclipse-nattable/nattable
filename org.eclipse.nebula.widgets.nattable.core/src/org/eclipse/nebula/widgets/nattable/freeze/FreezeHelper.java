@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Dirk Fauth and others.
+ * Copyright (c) 2012, 2018 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -75,9 +75,11 @@ public class FreezeHelper {
 
             IUniqueIndexLayer scrollableLayer = viewportLayer.getScrollableLayer();
             int originX = (bottomRightPosition.columnPosition == scrollableLayer.getColumnCount() - 1)
-                    ? scrollableLayer.getWidth() : scrollableLayer.getStartXOfColumnPosition(bottomRightPosition.columnPosition + 1);
+                    ? scrollableLayer.getWidth()
+                    : scrollableLayer.getStartXOfColumnPosition(bottomRightPosition.columnPosition + 1);
             int originY = (bottomRightPosition.rowPosition == scrollableLayer.getRowCount() - 1)
-                    ? scrollableLayer.getHeight() : scrollableLayer.getStartYOfRowPosition(bottomRightPosition.rowPosition + 1);
+                    ? scrollableLayer.getHeight()
+                    : scrollableLayer.getStartYOfRowPosition(bottomRightPosition.rowPosition + 1);
             viewportLayer.setMinimumOrigin(originX, originY);
             viewportLayer.setOriginX(0);
             viewportLayer.setOriginY(0);
@@ -124,5 +126,40 @@ public class FreezeHelper {
         viewportLayer.resetOrigin(
                 viewportLayer.getScrollableLayer().getStartXOfColumnPosition(Math.max(0, topLeftPosition.columnPosition)),
                 viewportLayer.getScrollableLayer().getStartYOfRowPosition(Math.max(0, topLeftPosition.rowPosition)));
+    }
+
+    /**
+     * Helper method to retrieve the top left column position on freezing a
+     * column. Will get the column position on the underlying layer of the
+     * ViewportLayer based on the origin x coordinate. For the
+     * ResizeColumnHideShowLayer a special handling is performed to get the left
+     * most column position in case columns to the left are hidden.
+     *
+     * @param viewportLayer
+     *            The ViewportLayer needed for calculating the top left column
+     *            position.
+     * @return The column position that should be used for the top left
+     *         coordinate.
+     *
+     * @since 1.6
+     */
+    public static int getTopLeftColumnPosition(ViewportLayer viewportLayer) {
+        int columnPosition = viewportLayer.getScrollableLayer().getColumnPositionByX(viewportLayer.getOrigin().getX());
+
+        // special handling for ResizeColumnHideShowLayer
+        // hidden columns have a width of 0, therefore we need to check if there
+        // are hidden columns to the left by checking the start x position of
+        // adjacent columns to the left
+        int startX = viewportLayer.getScrollableLayer().getStartXOfColumnPosition(columnPosition);
+        int originStartX = startX;
+        while (columnPosition > 0) {
+            startX = viewportLayer.getScrollableLayer().getStartXOfColumnPosition(columnPosition - 1);
+            if (startX == originStartX) {
+                columnPosition--;
+            } else {
+                break;
+            }
+        }
+        return columnPosition;
     }
 }
