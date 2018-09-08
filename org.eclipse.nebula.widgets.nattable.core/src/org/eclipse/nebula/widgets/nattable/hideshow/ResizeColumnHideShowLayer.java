@@ -174,21 +174,30 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
         this.bodyDataLayer.setFixColumnPercentageValuesOnResize(false);
 
         for (Integer columnPosition : columnPositions) {
-            // transform the position to index
-            int columnIndex = getColumnIndexByPosition(columnPosition);
-            // get the currently applied width of the column
-            int configuredWidth = this.bodyDataLayer.getConfiguredColumnWidthByPosition(columnIndex);
-            // get the currently applied min width of the column
-            int configuredMinWidth = this.bodyDataLayer.getConfiguredMinColumnWidthByPosition(columnIndex);
-            // get the currently applied resizable info
-            boolean configuredResizable = this.bodyDataLayer.isColumnPositionResizable(columnIndex);
-            // get the information if the column is configured for percentage
-            // sizing
-            boolean configuredPercentage = this.bodyDataLayer.isColumnPercentageSizing(columnIndex);
-            // get the currently applied percentage width of the column
-            double configuredPercentageValue = this.bodyDataLayer.getConfiguredColumnWidthPercentageByPosition(columnIndex);
+            if (!this.hiddenColumns.containsKey(columnPosition)) {
+                // transform the position to index
+                int columnIndex = getColumnIndexByPosition(columnPosition);
+                // get the currently applied width of the column
+                int configuredWidth = this.bodyDataLayer.getConfiguredColumnWidthByPosition(columnIndex);
+                // get the currently applied min width of the column
+                int configuredMinWidth = this.bodyDataLayer.getConfiguredMinColumnWidthByPosition(columnIndex);
+                // get the currently applied resizable info
+                boolean configuredResizable = this.bodyDataLayer.isColumnPositionResizable(columnIndex);
+                // get the information if the column is configured for
+                // percentage sizing
+                boolean configuredPercentage = this.bodyDataLayer.isColumnPercentageSizing(columnIndex);
+                // get the currently applied percentage width of the column
+                double configuredPercentageValue = this.bodyDataLayer.getConfiguredColumnWidthPercentageByPosition(columnIndex);
 
-            positionsToHide.put(columnIndex, new ColumnSizeInfo(configuredWidth, configuredMinWidth, configuredResizable, configuredPercentage, configuredPercentageValue));
+                positionsToHide.put(
+                        columnIndex,
+                        new ColumnSizeInfo(
+                                configuredWidth,
+                                configuredMinWidth,
+                                configuredResizable,
+                                configuredPercentage,
+                                configuredPercentageValue));
+            }
         }
 
         for (Integer columnIndex : positionsToHide.keySet()) {

@@ -1127,6 +1127,49 @@ public class ResizeColumnHideShowLayerTest {
     }
 
     @Test
+    public void shouldShowAfterDoubleHide() {
+        this.bodyDataLayer.setColumnPercentageSizing(true);
+
+        ClientAreaResizeCommand cmd = new ClientAreaResizeCommand(null);
+        cmd.setCalcArea(new Rectangle(0, 0, 500, 100));
+        this.hideShowLayer.doCommand(cmd);
+
+        assertEquals(500, this.hideShowLayer.getWidth());
+        assertEquals(100, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertEquals(100, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(100, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertEquals(100, this.hideShowLayer.getColumnWidthByPosition(3));
+        assertEquals(100, this.hideShowLayer.getColumnWidthByPosition(4));
+
+        this.hideShowLayer.hideColumnPositions(0);
+
+        assertEquals(500, this.hideShowLayer.getWidth());
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertEquals(125, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(125, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertEquals(125, this.hideShowLayer.getColumnWidthByPosition(3));
+        assertEquals(125, this.hideShowLayer.getColumnWidthByPosition(4));
+
+        this.hideShowLayer.hideColumnPositions(0, 1, 2);
+
+        assertEquals(500, this.hideShowLayer.getWidth());
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertEquals(250, this.hideShowLayer.getColumnWidthByPosition(3));
+        assertEquals(250, this.hideShowLayer.getColumnWidthByPosition(4));
+
+        this.hideShowLayer.showAllColumns();
+
+        assertEquals(500, this.hideShowLayer.getWidth());
+        assertEquals(100, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertEquals(100, this.hideShowLayer.getColumnWidthByPosition(1));
+        assertEquals(100, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertEquals(100, this.hideShowLayer.getColumnWidthByPosition(3));
+        assertEquals(100, this.hideShowLayer.getColumnWidthByPosition(4));
+    }
+
+    @Test
     public void shouldShowColumnPosition() {
         prepareReorderAndHide();
 
