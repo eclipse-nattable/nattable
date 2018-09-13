@@ -12,6 +12,7 @@ package org.eclipse.nebula.widgets.nattable.hideshow;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -115,7 +116,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
         if (rowPosition >= 0) {
             return rowPosition;
         } else {
-            Integer hiddenRowPosition = this.cachedHiddenRowIndexToPositionMap.get(rowIndex);
+            Integer hiddenRowPosition = getCachedHiddenRowIndexToPositionMap().get(rowIndex);
             if (hiddenRowPosition != null) {
                 return hiddenRowPosition;
             } else {
@@ -216,7 +217,8 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
         for (Integer hiddenIndex : getHiddenRowIndexes()) {
             int hiddenPosition = underlyingLayer.getRowPositionByIndex(hiddenIndex);
             // if the hidden position is -1, it is hidden in the underlying
-            // layertherefore the underlying layer should handle the positioning
+            // layer therefore the underlying layer should handle the
+            // positioning
             if (hiddenPosition >= 0 && hiddenPosition <= underlyingPosition) {
                 underlyingStartY -= underlyingLayer.getRowHeightByPosition(hiddenPosition);
             }
@@ -278,28 +280,35 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
     /**
      * Invalidate the cache to ensure that information is rebuild.
      */
-    protected void invalidateCache() {
+    protected synchronized void invalidateCache() {
         this.cachedVisibleRowIndexOrder = null;
         this.cachedVisibleRowPositionOrder = null;
         this.cachedHiddenRowIndexToPositionMap = null;
         this.startYCache.clear();
     }
 
-    private Map<Integer, Integer> getCachedVisibleRowIndexes() {
+    private synchronized Map<Integer, Integer> getCachedVisibleRowIndexes() {
         if (this.cachedVisibleRowIndexOrder == null) {
             cacheVisibleRowIndexes();
         }
-        return this.cachedVisibleRowIndexOrder;
+        return Collections.unmodifiableMap(this.cachedVisibleRowIndexOrder);
     }
 
-    private Map<Integer, Integer> getCachedVisibleRowPositons() {
+    private synchronized Map<Integer, Integer> getCachedVisibleRowPositons() {
         if (this.cachedVisibleRowPositionOrder == null) {
             cacheVisibleRowIndexes();
         }
-        return this.cachedVisibleRowPositionOrder;
+        return Collections.unmodifiableMap(this.cachedVisibleRowPositionOrder);
     }
 
-    protected void cacheVisibleRowIndexes() {
+    private synchronized Map<Integer, Integer> getCachedHiddenRowIndexToPositionMap() {
+        if (this.cachedHiddenRowIndexToPositionMap == null) {
+            cacheVisibleRowIndexes();
+        }
+        return Collections.unmodifiableMap(this.cachedHiddenRowIndexToPositionMap);
+    }
+
+    protected synchronized void cacheVisibleRowIndexes() {
         this.cachedVisibleRowIndexOrder = new HashMap<Integer, Integer>();
         this.cachedVisibleRowPositionOrder = new HashMap<Integer, Integer>();
         this.cachedHiddenRowIndexToPositionMap = new HashMap<Integer, Integer>();
