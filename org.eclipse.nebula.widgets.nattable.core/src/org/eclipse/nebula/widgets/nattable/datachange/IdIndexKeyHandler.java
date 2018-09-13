@@ -49,14 +49,16 @@ public class IdIndexKeyHandler<T> implements CellKeyHandler<IdIndexIdentifier<T>
 
     @Override
     public IdIndexIdentifier<T> getKey(int columnIndex, int rowIndex) {
-        T rowObject = this.rowDataProvider.getRowObject(rowIndex);
-        // only generate the key via row ID if the row object is of the type of
-        // the IRowIdAccessor
-        // Needed for example in case of GroupBy where GroupByObjects are added
-        // to the underlying list
-        if (rowObject.getClass().equals(this.clazz)) {
-            Object rowId = this.rowIdAccessor.getRowId(rowObject);
-            return new IdIndexIdentifier<T>(columnIndex, rowId, rowObject);
+        if (rowIndex >= 0) {
+            T rowObject = this.rowDataProvider.getRowObject(rowIndex);
+            // only generate the key via row ID if the row object is of the type
+            // of the IRowIdAccessor
+            // Needed for example in case of GroupBy where GroupByObjects are
+            // added to the underlying list
+            if (rowObject.getClass().equals(this.clazz)) {
+                Object rowId = this.rowIdAccessor.getRowId(rowObject);
+                return new IdIndexIdentifier<T>(columnIndex, rowId, rowObject);
+            }
         }
         return null;
     }
