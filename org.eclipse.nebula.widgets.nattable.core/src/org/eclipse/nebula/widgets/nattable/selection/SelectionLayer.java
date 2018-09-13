@@ -582,7 +582,8 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
                     cell.getColumnSpan(),
                     cell.getRowSpan());
 
-            if (cellRectangle.contains(getSelectionAnchor().columnPosition, getSelectionAnchor().rowPosition)) {
+            PositionCoordinate anchor = getSelectionAnchor();
+            if (cellRectangle.contains(anchor.columnPosition, anchor.rowPosition)) {
                 labelStack.addLabelOnTop(SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
             }
 

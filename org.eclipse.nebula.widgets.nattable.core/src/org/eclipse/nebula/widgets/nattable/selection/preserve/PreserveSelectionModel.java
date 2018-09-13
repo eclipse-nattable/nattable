@@ -29,9 +29,12 @@ import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.ResizeStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
+import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
+import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.IMarkerSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionUtils;
@@ -83,6 +86,12 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
      * column position
      */
     CellPosition<T> selectionAnchor;
+
+    /**
+     * The selection anchor point calculated out of the selection anchor marker.
+     * Tracked here to reduce the number of calculations on rendering.
+     */
+    Point selectionAnchorPoint;
 
     /**
      * Position of the last selected cell marker, expressed in row object and
@@ -543,12 +552,15 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
 
     @Override
     public Point getSelectionAnchor() {
-        this.selectionsLock.readLock().lock();
-        try {
-            return createMarkerPoint(this.selectionAnchor);
-        } finally {
-            this.selectionsLock.readLock().unlock();
+        if (this.selectionAnchorPoint == null) {
+            this.selectionsLock.readLock().lock();
+            try {
+                this.selectionAnchorPoint = createMarkerPoint(this.selectionAnchor);
+            } finally {
+                this.selectionsLock.readLock().unlock();
+            }
         }
+        return this.selectionAnchorPoint;
     }
 
     @Override
@@ -627,6 +639,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
             }
         } finally {
             this.selectionsLock.writeLock().unlock();
+            this.selectionAnchorPoint = null;
         }
     }
 
@@ -686,6 +699,16 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
 
     @Override
     public void handleLayerEvent(IStructuralChangeEvent event) {
+        // we are not interested in resize events
+        if (event instanceof ResizeStructuralRefreshEvent
+                || event instanceof ColumnResizeEvent
+                || event instanceof RowResizeEvent) {
+            return;
+        }
+
+        // ensure the selection anchor point is calculated on the next access
+        this.selectionAnchorPoint = null;
+
         // handling for deleting columns
         if (event.isHorizontalStructureChanged()) {
             Collection<StructuralDiff> diffs = event.getColumnDiffs();
