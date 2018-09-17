@@ -27,7 +27,6 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralChangeEve
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.painter.layer.CompositeFreezeLayerPainter;
-import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -41,7 +40,6 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
     private final FreezeLayer freezeLayer;
     private final ViewportLayer viewportLayer;
     private final SelectionLayer selectionLayer;
-    private final ILayerPainter layerPainter;
 
     public CompositeFreezeLayer(FreezeLayer freezeLayer,
             ViewportLayer viewportLayer, SelectionLayer selectionLayer) {
@@ -113,11 +111,6 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
 
     public boolean isFrozen() {
         return this.freezeLayer.isFrozen();
-    }
-
-    @Override
-    public ILayerPainter getLayerPainter() {
-        return this.layerPainter;
     }
 
     @Override
