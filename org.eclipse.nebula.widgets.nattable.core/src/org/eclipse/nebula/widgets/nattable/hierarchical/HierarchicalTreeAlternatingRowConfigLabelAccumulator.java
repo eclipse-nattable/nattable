@@ -12,8 +12,9 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hierarchical;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -37,7 +38,7 @@ import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
  */
 public class HierarchicalTreeAlternatingRowConfigLabelAccumulator extends AlternatingRowConfigLabelAccumulator implements ILayerListener {
 
-    private Map<Integer, String> rowLabelCache = new HashMap<Integer, String>();
+    private NavigableMap<Integer, String> rowLabelCache = new TreeMap<Integer, String>();
 
     /**
      *
@@ -67,25 +68,46 @@ public class HierarchicalTreeAlternatingRowConfigLabelAccumulator extends Altern
      *
      * @param rowPosition
      *            The row position for which the label should be determined.
-     * @return The even/odd row label to be applied for the given row.
+     * @return The even/odd row label to be applied for the given row or
+     *         <code>null</code> if the label could not be determined.
      */
     protected String calculateLabel(int rowPosition) {
-        // get cell in first column to determine the origin row position of the
-        // spanned cell
-        ILayerCell firstColumn = this.layer.getCellByPosition(0, rowPosition);
-        // check if there is a label for the origin row already
-        String label = this.rowLabelCache.get(firstColumn.getOriginRowPosition());
-        if (label == null) {
-            if (firstColumn.getOriginRowPosition() == 0) {
-                label = EVEN_ROW_CONFIG_TYPE;
-            } else {
-                // check for the label one row above
-                // remember: spanned cells are rendered at the end
-                String labelAbove = this.rowLabelCache.get(firstColumn.getOriginRowPosition() - 1);
-                if (labelAbove == null) {
-                    labelAbove = calculateLabel(firstColumn.getOriginRowPosition() - 1);
+        String label = null;
+        if (rowPosition >= 0) {
+            // get cell in first column to determine the origin row position of
+            // the spanned cell
+            ILayerCell firstColumn = this.layer.getCellByPosition(0, rowPosition);
+            // check if there is a label for the origin row already
+            label = this.rowLabelCache.get(firstColumn.getOriginRowPosition());
+            if (label == null) {
+                if (firstColumn.getOriginRowPosition() == 0) {
+                    label = EVEN_ROW_CONFIG_TYPE;
+                } else {
+                    // check for the label one row above
+                    // remember: spanned cells are rendered at the end
+                    String labelAbove = this.rowLabelCache.get(firstColumn.getOriginRowPosition() - 1);
+                    if (labelAbove == null) {
+                        // search from the last known label
+                        Entry<Integer, String> lastEntry = this.rowLabelCache.lastEntry();
+                        String lastKnownLabel = lastEntry.getValue();
+                        for (int row = lastEntry.getKey(); row < rowPosition;) {
+                            // determine the next row after the last known based
+                            // on spanning
+                            ILayerCell lastKnownCell = this.layer.getCellByPosition(0, row);
+                            row = lastKnownCell.getOriginRowPosition() + lastKnownCell.getRowSpan();
+
+                            firstColumn = this.layer.getCellByPosition(0, row);
+                            lastKnownLabel = (lastKnownLabel == ODD_ROW_CONFIG_TYPE) ? EVEN_ROW_CONFIG_TYPE : ODD_ROW_CONFIG_TYPE;
+
+                            this.rowLabelCache.put(row, lastKnownLabel);
+                        }
+                        // as we calculated only the values for the origin row
+                        // positions, we trigger the retrieval again
+                        label = calculateLabel(rowPosition);
+                    } else {
+                        label = (labelAbove == ODD_ROW_CONFIG_TYPE) ? EVEN_ROW_CONFIG_TYPE : ODD_ROW_CONFIG_TYPE;
+                    }
                 }
-                label = (labelAbove == EVEN_ROW_CONFIG_TYPE) ? ODD_ROW_CONFIG_TYPE : EVEN_ROW_CONFIG_TYPE;
             }
         }
         return label;
