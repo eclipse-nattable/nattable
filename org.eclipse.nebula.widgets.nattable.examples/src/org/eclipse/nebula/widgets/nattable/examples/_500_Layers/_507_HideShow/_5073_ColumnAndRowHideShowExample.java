@@ -32,6 +32,8 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
@@ -140,6 +142,15 @@ public class _5073_ColumnAndRowHideShowExample extends AbstractNatExample {
         // as the autoconfiguration of the NatTable is turned off, we have to
         // add the DefaultNatTableStyleConfiguration manually
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+
+        // add the optional rendering indicator for the hidden columns and rows
+        HideIndicatorOverlayPainter overlayPainter =
+                new HideIndicatorOverlayPainter(columnHeaderLayer, rowHeaderLayer);
+        natTable.addOverlayPainter(overlayPainter);
+
+        // add a menu configuration that attaches menus to the hidden row and column
+        // indicator
+        natTable.addConfiguration(new HideIndicatorMenuConfiguration(natTable, columnHeaderLayer, rowHeaderLayer));
 
         // add the header menu configuration for adding the column header menu
         // with hide/show actions
