@@ -23,6 +23,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
 
 /**
@@ -52,13 +53,15 @@ public class HierarchicalTreeAlternatingRowConfigLabelAccumulator extends Altern
 
     @Override
     public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
-        String label = this.rowLabelCache.get(rowPosition);
-        if (label == null) {
-            label = calculateLabel(rowPosition);
-            this.rowLabelCache.put(rowPosition, label);
-        }
-        if (label != null) {
-            configLabels.addLabel(label);
+        synchronized (this.rowLabelCache) {
+            String label = this.rowLabelCache.get(rowPosition);
+            if (label == null) {
+                label = calculateLabel(rowPosition);
+                this.rowLabelCache.put(rowPosition, label);
+            }
+            if (label != null) {
+                configLabels.addLabel(label);
+            }
         }
     }
 
@@ -89,17 +92,20 @@ public class HierarchicalTreeAlternatingRowConfigLabelAccumulator extends Altern
                     if (labelAbove == null) {
                         // search from the last known label
                         Entry<Integer, String> lastEntry = this.rowLabelCache.lastEntry();
-                        String lastKnownLabel = lastEntry.getValue();
-                        for (int row = lastEntry.getKey(); row < rowPosition;) {
+                        String lastKnownLabel = lastEntry != null ? lastEntry.getValue() : EVEN_ROW_CONFIG_TYPE;
+                        int row = lastEntry != null ? lastEntry.getKey() : 0;
+                        for (; row < rowPosition;) {
                             // determine the next row after the last known based
                             // on spanning
                             ILayerCell lastKnownCell = this.layer.getCellByPosition(0, row);
-                            row = lastKnownCell.getOriginRowPosition() + lastKnownCell.getRowSpan();
+                            if (lastKnownCell != null) {
+                                row = lastKnownCell.getOriginRowPosition() + lastKnownCell.getRowSpan();
 
-                            firstColumn = this.layer.getCellByPosition(0, row);
-                            lastKnownLabel = (lastKnownLabel == ODD_ROW_CONFIG_TYPE) ? EVEN_ROW_CONFIG_TYPE : ODD_ROW_CONFIG_TYPE;
+                                firstColumn = this.layer.getCellByPosition(0, row);
+                                lastKnownLabel = (lastKnownLabel == ODD_ROW_CONFIG_TYPE) ? EVEN_ROW_CONFIG_TYPE : ODD_ROW_CONFIG_TYPE;
 
-                            this.rowLabelCache.put(row, lastKnownLabel);
+                                this.rowLabelCache.put(row, lastKnownLabel);
+                            }
                         }
                         // as we calculated only the values for the origin row
                         // positions, we trigger the retrieval again
@@ -117,14 +123,17 @@ public class HierarchicalTreeAlternatingRowConfigLabelAccumulator extends Altern
      * Clears the local cache of calculated row position to label mappings.
      */
     public void clearCache() {
-        this.rowLabelCache.clear();
+        synchronized (this.rowLabelCache) {
+            this.rowLabelCache.clear();
+        }
     }
 
     @Override
     public void handleLayerEvent(ILayerEvent event) {
         // if there are structural changes to rows that are not related to
         // resizing, we need to clear the cache
-        if (event instanceof RowStructuralChangeEvent && !(event instanceof RowResizeEvent)) {
+        if ((event instanceof RowStructuralChangeEvent && !(event instanceof RowResizeEvent))
+                || event instanceof RowStructuralRefreshEvent) {
             clearCache();
         }
     }
