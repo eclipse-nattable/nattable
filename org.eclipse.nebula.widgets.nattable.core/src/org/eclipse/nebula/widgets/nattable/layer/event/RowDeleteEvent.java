@@ -46,7 +46,7 @@ public class RowDeleteEvent extends RowStructuralChangeEvent {
      *            The row position ranges for the rows that were deleted.
      */
     public RowDeleteEvent(ILayer layer, Range... rowPositionRanges) {
-        super(layer, Arrays.asList(rowPositionRanges));
+        this(layer, Arrays.asList(rowPositionRanges));
     }
 
     /**
@@ -90,7 +90,7 @@ public class RowDeleteEvent extends RowStructuralChangeEvent {
                 rowIndexes.add(getLayer().getRowIndexByPosition(i));
             }
         }
-        return getDeletedRowIndexes();
+        return rowIndexes;
     }
 
     @Override

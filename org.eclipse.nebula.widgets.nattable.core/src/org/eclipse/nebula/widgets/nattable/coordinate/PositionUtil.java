@@ -120,7 +120,7 @@ public class PositionUtil {
      *
      * @since 1.6
      */
-    public static int[] getPositions(Set<Range> ranges) {
+    public static int[] getPositions(Collection<Range> ranges) {
         if ((ranges == null) || (ranges.size() == 0)) {
             return new int[0];
         }

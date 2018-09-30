@@ -27,16 +27,23 @@ import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommand;
 import org.eclipse.nebula.widgets.nattable.config.AbstractLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
+import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.command.RowDeleteCommandHandler;
+import org.eclipse.nebula.widgets.nattable.data.command.RowInsertCommand;
+import org.eclipse.nebula.widgets.nattable.data.command.RowObjectDeleteCommand;
+import org.eclipse.nebula.widgets.nattable.data.command.RowObjectDeleteCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDateDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
@@ -47,6 +54,7 @@ import org.eclipse.nebula.widgets.nattable.datachange.DataChangeLayer;
 import org.eclipse.nebula.widgets.nattable.datachange.IdIndexIdentifier;
 import org.eclipse.nebula.widgets.nattable.datachange.IdIndexKeyHandler;
 import org.eclipse.nebula.widgets.nattable.datachange.command.DiscardDataChangesCommand;
+import org.eclipse.nebula.widgets.nattable.datachange.command.KeyRowInsertCommandHandler;
 import org.eclipse.nebula.widgets.nattable.datachange.command.SaveDataChangesCommand;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Address;
 import org.eclipse.nebula.widgets.nattable.dataset.person.ExtendedPersonWithAddress;
@@ -77,6 +85,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.ModernG
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.SummationGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowHeaderComposite;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
@@ -92,11 +101,13 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
@@ -112,13 +123,17 @@ import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
+import org.eclipse.nebula.widgets.nattable.ui.menu.MenuItemProviders;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.FontData;
@@ -435,12 +450,15 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
         // add group by header configuration
         natTable.addConfiguration(new GroupByHeaderMenuConfiguration(natTable, groupByHeaderLayer));
 
+        // add header menu configuration with additional items in the corner to
+        // save and discard changes
         natTable.addConfiguration(new AbstractHeaderMenuConfiguration(natTable) {
 
             @Override
             protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
                 return super.createColumnHeaderMenu(natTable)
-                        .withHideColumnMenuItem().withShowAllColumnsMenuItem()
+                        .withHideColumnMenuItem()
+                        .withShowAllColumnsMenuItem()
                         .withStateManagerMenuItemProvider();
             }
 
@@ -484,6 +502,114 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
                             }
                         });
             }
+        });
+
+        // add a body menu configuration to be able to add or delete rows
+        natTable.addConfiguration(new AbstractUiBindingConfiguration() {
+
+            private final Menu bodyMenu = new PopupMenuBuilder(natTable)
+                    .withMenuItemProvider(new IMenuItemProvider() {
+
+                        @Override
+                        public void addMenuItem(NatTable natTable, Menu popupMenu) {
+                            MenuItem deleteRow = new MenuItem(popupMenu, SWT.PUSH);
+                            deleteRow.setText("Insert below");
+                            deleteRow.setEnabled(true);
+
+                            deleteRow.addSelectionListener(new SelectionAdapter() {
+                                @Override
+                                public void widgetSelected(SelectionEvent event) {
+                                    int rowPosition = MenuItemProviders.getNatEventData(event).getRowPosition();
+
+                                    int index = natTable.getRowIndexByPosition(rowPosition);
+                                    if (index == bodyLayerStack.getEventList().size() - 1) {
+                                        rowPosition = -1;
+                                    } else {
+                                        rowPosition++;
+                                    }
+
+                                    Person person = new Person(bodyLayerStack.getEventList().size() + 1, "John", "Doe", Gender.MALE, false, new Date());
+                                    Address address = new Address();
+                                    address.setStreet("Some Street");
+                                    address.setHousenumber(42);
+                                    address.setPostalCode(12345);
+                                    address.setCity("In the clouds");
+
+                                    ExtendedPersonWithAddress entry = new ExtendedPersonWithAddress(person, address,
+                                            "0000", "Some custom person", 0,
+                                            new ArrayList<String>(), new ArrayList<String>());
+                                    natTable.doCommand(new RowInsertCommand<>(natTable, rowPosition, entry));
+                                }
+                            });
+                        }
+                    })
+                    .withMenuItemProvider(new IMenuItemProvider() {
+
+                        @Override
+                        public void addMenuItem(NatTable natTable, Menu popupMenu) {
+                            MenuItem deleteRow = new MenuItem(popupMenu, SWT.PUSH);
+                            deleteRow.setText("Delete");
+                            deleteRow.setEnabled(true);
+
+                            deleteRow.addSelectionListener(new SelectionAdapter() {
+                                @Override
+                                public void widgetSelected(SelectionEvent event) {
+                                    SelectionLayer selectionLayer = bodyLayerStack.getSelectionLayer();
+                                    int[] selectedRowPositions = PositionUtil.getPositions(selectionLayer.getSelectedRowPositions());
+
+                                    if (selectedRowPositions.length > 0) {
+                                        List<ExtendedPersonWithAddress> toDelete = new ArrayList<>();
+                                        for (int pos : selectedRowPositions) {
+                                            int idx = selectionLayer.getRowIndexByPosition(pos);
+                                            toDelete.add(bodyLayerStack.bodyDataProvider.getRowObject(idx));
+                                        }
+                                        selectionLayer.doCommand(new RowObjectDeleteCommand<>(toDelete));
+                                    } else {
+                                        int rowPosition = MenuItemProviders.getNatEventData(event).getRowPosition();
+                                        int pos = LayerUtil.convertRowPosition(natTable, rowPosition, selectionLayer);
+                                        int idx = selectionLayer.getRowIndexByPosition(pos);
+
+                                        natTable.doCommand(new RowObjectDeleteCommand<>(bodyLayerStack.bodyDataProvider.getRowObject(idx)));
+                                    }
+                                }
+                            });
+                        }
+                    })
+                    .build();
+
+            @Override
+            public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+                uiBindingRegistry.registerMouseDownBinding(
+                        new MouseEventMatcher(
+                                SWT.NONE,
+                                GridRegion.BODY,
+                                MouseEventMatcher.RIGHT_BUTTON),
+                        new PopupMenuAction(this.bodyMenu) {
+                            @Override
+                            public void run(NatTable natTable, MouseEvent event) {
+                                int columnPosition = natTable.getColumnPositionByX(event.x);
+                                int rowPosition = natTable.getRowPositionByY(event.y);
+
+                                SelectionLayer selectionLayer = bodyLayerStack.getSelectionLayer();
+
+                                int bodyRowPosition = LayerUtil.convertRowPosition(natTable, rowPosition, selectionLayer);
+
+                                if (!selectionLayer.isRowPositionFullySelected(bodyRowPosition)
+                                        && !selectionLayer.isRowPositionSelected(bodyRowPosition)) {
+                                    natTable.doCommand(
+                                            new SelectRowsCommand(
+                                                    natTable,
+                                                    columnPosition,
+                                                    rowPosition,
+                                                    false,
+                                                    false));
+                                }
+
+                                super.run(natTable, event);
+                            }
+                        });
+            }
+
         });
 
         natTable.configure();
@@ -586,22 +712,21 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
                 address.setPostalCode(12345);
                 address.setCity("In the clouds");
 
-                Person person = new Person(42, "Ralph", "Wiggum", Gender.MALE, false, new Date());
-                ExtendedPersonWithAddress entry = new ExtendedPersonWithAddress(person, address,
+                Person person1 = new Person(bodyLayerStack.getEventList().size() + 1, "Ralph", "Wiggum", Gender.MALE, false, new Date());
+                ExtendedPersonWithAddress entry1 = new ExtendedPersonWithAddress(person1, address,
                         "0000", "The little Ralphy", 0,
                         new ArrayList<String>(), new ArrayList<String>());
-                bodyLayerStack.getEventList().add(entry);
 
-                person = new Person(42, "Clancy", "Wiggum", Gender.MALE, true, new Date());
-                entry = new ExtendedPersonWithAddress(person, address,
+                Person person2 = new Person(bodyLayerStack.getEventList().size() + 2, "Clancy", "Wiggum", Gender.MALE, true, new Date());
+                ExtendedPersonWithAddress entry2 = new ExtendedPersonWithAddress(person2, address,
                         "XXXL", "It is Chief Wiggum", 0, new ArrayList<String>(), new ArrayList<String>());
-                bodyLayerStack.getEventList().add(entry);
 
-                person = new Person(42, "Sarah", "Wiggum", Gender.FEMALE, true, new Date());
-                entry = new ExtendedPersonWithAddress(person, address,
+                Person person3 = new Person(bodyLayerStack.getEventList().size() + 3, "Sarah", "Wiggum", Gender.FEMALE, true, new Date());
+                ExtendedPersonWithAddress entry3 = new ExtendedPersonWithAddress(person3, address,
                         "mommy", "Little Ralphy's mother", 0,
                         new ArrayList<String>(), new ArrayList<String>());
-                bodyLayerStack.getEventList().add(entry);
+
+                natTable.doCommand(new RowInsertCommand<>(natTable, -1, entry1, entry2, entry3));
             }
         });
 
@@ -657,6 +782,25 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
             // get the IDataProvider that was created by the GroupByDataLayer
             this.bodyDataProvider = (IRowDataProvider<T>) this.bodyDataLayer.getDataProvider();
 
+            // add support for row insert and delete operations
+            // use the event list instead of a transformed list to ensure the
+            // operations work even in a transformed (e.g. filtered) state
+            // register the RowDeleteCommandHandler for delete operations by
+            // index, e.g. used for reverting row insert operations
+            this.bodyDataLayer.registerCommandHandler(new RowDeleteCommandHandler<>(this.eventList));
+            // register the RowObjectDeleteCommandHandler for delete operations
+            // by object, e.g. delete by UI interaction
+            this.bodyDataLayer.registerCommandHandler(new RowObjectDeleteCommandHandler<>(this.eventList));
+            // register the KeyRowInsertCommandHandler to be able to revert key
+            // insert operations by firing KeyRowInsertEvents
+            // uses an IdIndexKeyHandler with an alternative ListDataProvider on
+            // the base list in order to be able to discard the change on the
+            // base list
+            this.bodyDataLayer.registerCommandHandler(
+                    new KeyRowInsertCommandHandler<>(
+                            this.eventList,
+                            new IdIndexKeyHandler<>(new ListDataProvider<>(this.eventList, columnPropertyAccessor), rowIdAccessor)));
+
             // layer for event handling of GlazedLists and PropertyChanges
             GlazedListsEventLayer<T> glazedListsEventLayer =
                     new GlazedListsEventLayer<>(this.bodyDataLayer, this.filterList);
@@ -672,6 +816,7 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
                             glazedListsEventLayer,
                             new IdIndexKeyHandler<>(this.bodyDataProvider, rowIdAccessor),
                             false,
+                            true,
                             false);
 
             changeLayer.addConfiguration(new CustomDataChangeLayerConfiguration<>(saveCallback));
@@ -778,11 +923,11 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
 
                 @Override
                 public boolean doCommand(ILayer targetLayer, SaveDataChangesCommand command) {
-                    layer.getDataChanges().forEach((key, cmd) -> {
+                    layer.getDataChanges().forEach(change -> {
                         // we know that the keys are created by using the
                         // IdIndexKeyHandler, so casting is safe here
                         @SuppressWarnings("unchecked")
-                        IdIndexIdentifier<T> identifier = ((IdIndexIdentifier<T>) key);
+                        IdIndexIdentifier<T> identifier = ((IdIndexIdentifier<T>) change.getKey());
                         CustomDataChangeLayerConfiguration.this.saveCallback.accept(
                                 identifier.rowObject,
                                 identifier.columnIndex);

@@ -49,7 +49,7 @@ public class IdIndexKeyHandler<T> implements CellKeyHandler<IdIndexIdentifier<T>
 
     @Override
     public IdIndexIdentifier<T> getKey(int columnIndex, int rowIndex) {
-        if (rowIndex >= 0) {
+        if (rowIndex >= 0 && rowIndex < this.rowDataProvider.getRowCount()) {
             T rowObject = this.rowDataProvider.getRowObject(rowIndex);
             // only generate the key via row ID if the row object is of the type
             // of the IRowIdAccessor
