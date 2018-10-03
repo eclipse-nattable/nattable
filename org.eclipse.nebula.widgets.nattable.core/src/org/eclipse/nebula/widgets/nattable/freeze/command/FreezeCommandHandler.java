@@ -38,43 +38,46 @@ public class FreezeCommandHandler extends AbstractLayerCommandHandler<IFreezeCom
 
     @Override
     public boolean doCommand(IFreezeCommand command) {
-
-        if (command instanceof FreezeColumnCommand) {
-            // freeze for a whole column
-            FreezeColumnCommand freezeColumnCommand = (FreezeColumnCommand) command;
-            IFreezeCoordinatesProvider coordinatesProvider = new FreezeColumnStrategy(
-                    this.freezeLayer, this.viewportLayer, freezeColumnCommand.getColumnPosition());
-            handleFreezeCommand(coordinatesProvider,
-                    freezeColumnCommand.isToggle(), command.isOverrideFreeze());
-            return true;
-        } else if (command instanceof FreezeRowCommand) {
-            // freeze for a whole row
-            FreezeRowCommand freezeRowCommand = (FreezeRowCommand) command;
-            IFreezeCoordinatesProvider coordinatesProvider = new FreezeRowStrategy(
-                    this.freezeLayer, this.viewportLayer, freezeRowCommand.getRowPosition());
-            handleFreezeCommand(coordinatesProvider,
-                    freezeRowCommand.isToggle(), command.isOverrideFreeze());
-            return true;
-        } else if (command instanceof FreezePositionCommand) {
-            // freeze for a given position
-            FreezePositionCommand freezePositionCommand = (FreezePositionCommand) command;
-            IFreezeCoordinatesProvider coordinatesProvider = new FreezePositionStrategy(
-                    this.freezeLayer, this.viewportLayer, freezePositionCommand.getColumnPosition(),
-                    freezePositionCommand.getRowPosition());
-            handleFreezeCommand(coordinatesProvider,
-                    freezePositionCommand.isToggle(),
-                    command.isOverrideFreeze());
-            return true;
-        } else if (command instanceof FreezeSelectionCommand) {
-            // freeze at the current selection anchor
-            IFreezeCoordinatesProvider coordinatesProvider = new FreezeSelectionStrategy(
-                    this.freezeLayer, this.viewportLayer, this.selectionLayer, ((FreezeSelectionCommand) command).isInclude());
-            handleFreezeCommand(coordinatesProvider, command.isToggle(), command.isOverrideFreeze());
-            return true;
-        } else if (command instanceof UnFreezeGridCommand) {
-            // unfreeze
-            handleUnfreeze();
-            return true;
+        // need to convert to SelectionLayer for correct handling in scrolled
+        // state
+        if (command.convertToTargetLayer(this.selectionLayer)) {
+            if (command instanceof FreezeColumnCommand) {
+                // freeze for a whole column
+                FreezeColumnCommand freezeColumnCommand = (FreezeColumnCommand) command;
+                IFreezeCoordinatesProvider coordinatesProvider = new FreezeColumnStrategy(
+                        this.freezeLayer, this.viewportLayer, freezeColumnCommand.getColumnPosition());
+                handleFreezeCommand(coordinatesProvider,
+                        freezeColumnCommand.isToggle(), command.isOverrideFreeze());
+                return true;
+            } else if (command instanceof FreezeRowCommand) {
+                // freeze for a whole row
+                FreezeRowCommand freezeRowCommand = (FreezeRowCommand) command;
+                IFreezeCoordinatesProvider coordinatesProvider = new FreezeRowStrategy(
+                        this.freezeLayer, this.viewportLayer, freezeRowCommand.getRowPosition());
+                handleFreezeCommand(coordinatesProvider,
+                        freezeRowCommand.isToggle(), command.isOverrideFreeze());
+                return true;
+            } else if (command instanceof FreezePositionCommand) {
+                // freeze for a given position
+                FreezePositionCommand freezePositionCommand = (FreezePositionCommand) command;
+                IFreezeCoordinatesProvider coordinatesProvider = new FreezePositionStrategy(
+                        this.freezeLayer, this.viewportLayer, freezePositionCommand.getColumnPosition(),
+                        freezePositionCommand.getRowPosition());
+                handleFreezeCommand(coordinatesProvider,
+                        freezePositionCommand.isToggle(),
+                        command.isOverrideFreeze());
+                return true;
+            } else if (command instanceof FreezeSelectionCommand) {
+                // freeze at the current selection anchor
+                IFreezeCoordinatesProvider coordinatesProvider = new FreezeSelectionStrategy(
+                        this.freezeLayer, this.viewportLayer, this.selectionLayer, ((FreezeSelectionCommand) command).isInclude());
+                handleFreezeCommand(coordinatesProvider, command.isToggle(), command.isOverrideFreeze());
+                return true;
+            } else if (command instanceof UnFreezeGridCommand) {
+                // unfreeze
+                handleUnfreeze();
+                return true;
+            }
         }
 
         return false;
