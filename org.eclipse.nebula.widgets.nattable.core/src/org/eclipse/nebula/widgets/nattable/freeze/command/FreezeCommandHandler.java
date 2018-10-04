@@ -38,9 +38,11 @@ public class FreezeCommandHandler extends AbstractLayerCommandHandler<IFreezeCom
 
     @Override
     public boolean doCommand(IFreezeCommand command) {
-        // need to convert to SelectionLayer for correct handling in scrolled
-        // state
-        if (command.convertToTargetLayer(this.selectionLayer)) {
+        // need to convert for correct handling in scrolled state
+        // using ViewportLayer#getScrollableLayer() because the positions in the
+        // further processing are taking from the scrollable layer, which does
+        // not need to be the SelectionLayer in every case
+        if (command.convertToTargetLayer(this.viewportLayer.getScrollableLayer())) {
             if (command instanceof FreezeColumnCommand) {
                 // freeze for a whole column
                 FreezeColumnCommand freezeColumnCommand = (FreezeColumnCommand) command;
