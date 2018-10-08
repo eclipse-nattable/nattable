@@ -49,7 +49,6 @@ import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalReflectiveCo
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalSpanningDataProvider;
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalTreeLayer;
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalWrapper;
-import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalWrapperComparator;
 import org.eclipse.nebula.widgets.nattable.hierarchical.action.HierarchicalTreeExpandCollapseAction;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
@@ -417,12 +416,11 @@ public class _6045_HierarchicalTreeLayerExample extends AbstractNatExample {
             this.eventList = GlazedLists.eventList(data);
             TransformedList<HierarchicalWrapper, HierarchicalWrapper> rowObjectsGlazedList = GlazedLists.threadSafeList(this.eventList);
 
-            // use the SortedList constructor with a
-            // HierarchicalWrapperComparator for initial sorting
-            // for dynamic sorting the Comparator will be set by configuration
-            this.sortedList = new SortedList<>(
-                    rowObjectsGlazedList,
-                    new HierarchicalWrapperComparator(this.columnPropertyAccessor, HierarchicalHelper.getLevelIndexMapping(propertyNames)));
+            // use the SortedList constructor with null as comparator for
+            // non-sorted state.
+            // for dynamic sorting the HierarchicalWrapperComparator will be set
+            // by configuration
+            this.sortedList = new SortedList<>(rowObjectsGlazedList, null);
             this.filterList = new FilterList<>(this.sortedList);
 
             this.bodyDataProvider = new ListDataProvider<>(this.filterList, this.columnPropertyAccessor);

@@ -157,7 +157,13 @@ public class HierarchicalWrapperSortModel implements ISortModel {
             // perform the sorting
             this.sortedList.getReadWriteLock().writeLock().lock();
             try {
-                this.sortedList.setComparator(new HierarchicalWrapperComparator(this.columnAccessor, this.levelIndexMapping, this));
+                if (this.sortingState.isEmpty()) {
+                    // if we do not have a sorting state, we disable sorting
+                    this.sortedList.setComparator(null);
+                } else {
+                    // we have some sorting state, so we trigger a re-sort
+                    this.sortedList.setComparator(new HierarchicalWrapperComparator(this.columnAccessor, this.levelIndexMapping, this));
+                }
             } finally {
                 this.sortedList.getReadWriteLock().writeLock().unlock();
             }
