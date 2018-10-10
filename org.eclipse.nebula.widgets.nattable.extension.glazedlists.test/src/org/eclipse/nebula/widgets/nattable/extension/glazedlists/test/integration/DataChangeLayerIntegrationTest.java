@@ -16,11 +16,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
+import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
@@ -35,6 +34,7 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,7 +52,7 @@ public class DataChangeLayerIntegrationTest {
     private DataLayer dataLayer;
     private DataChangeLayer dataChangeLayer;
 
-    private CompletableFuture<Void> future;
+    private CountDownLatch lock = new CountDownLatch(1);
 
     @Before
     public void setup() {
@@ -92,11 +92,16 @@ public class DataChangeLayerIntegrationTest {
             @Override
             public void handleLayerEvent(ILayerEvent event) {
                 if (event instanceof RowStructuralRefreshEvent) {
-                    DataChangeLayerIntegrationTest.this.future.complete(null);
+                    DataChangeLayerIntegrationTest.this.lock.countDown();
                 }
             }
         });
 
+    }
+
+    @After
+    public void tearDown() {
+        this.dataChangeLayer.doCommand(new DisposeResourcesCommand());
     }
 
     @Test
@@ -114,10 +119,9 @@ public class DataChangeLayerIntegrationTest {
     }
 
     @Test
-    public void shouldKeepChangeOnFilter() {
+    public void shouldKeepChangeOnFilter() throws InterruptedException {
         this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));
 
-        this.future = new CompletableFuture<>();
         this.filterList.setMatcher(new Matcher<Person>() {
 
             @Override
@@ -128,38 +132,26 @@ public class DataChangeLayerIntegrationTest {
 
         // give the GlazedListsEventLayer some time to trigger the
         // RowStructuralRefreshEvent
-        try {
-            this.future.get(1000, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e1) {
-            e1.printStackTrace();
-        }
+        this.lock.await(1000, TimeUnit.MILLISECONDS);
 
         assertEquals(9, this.filterList.size());
         assertFalse(this.dataChangeLayer.getDataChanges().isEmpty());
-        // this check fails on jenkins but succeeds locally
-        // assertFalse("Column 1 is dirty",
-        // this.dataChangeLayer.isColumnDirty(1));
+        assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
 
-        this.future = new CompletableFuture<>();
+        this.lock = new CountDownLatch(1);
         this.filterList.setMatcher(null);
 
         // give the GlazedListsEventLayer some time to trigger the
         // RowStructuralRefreshEvent
-        try {
-            this.future.get(1000, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e1) {
-            e1.printStackTrace();
-        }
+        this.lock.await(1000, TimeUnit.MILLISECONDS);
 
         assertEquals(18, this.filterList.size());
         assertFalse(this.dataChangeLayer.getDataChanges().isEmpty());
-        // this check fails on jenkins but succeeds locally
-        // assertTrue("Column 1 is not dirty",
-        // this.dataChangeLayer.isColumnDirty(1));
+        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
     }
 
     @Test
-    public void shouldNotThrowAnExceptionOnResize() {
+    public void shouldNotThrowAnExceptionOnResize() throws InterruptedException {
         this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));
 
         this.filterList.setMatcher(new Matcher<Person>() {
@@ -176,21 +168,14 @@ public class DataChangeLayerIntegrationTest {
         assertFalse(this.dataChangeLayer.getDataChanges().isEmpty());
         assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
 
-        this.future = new CompletableFuture<>();
         this.filterList.setMatcher(null);
 
         // give the GlazedListsEventLayer some time to trigger the
         // RowStructuralRefreshEvent
-        try {
-            this.future.get(1000, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e1) {
-            e1.printStackTrace();
-        }
+        this.lock.await(1000, TimeUnit.MILLISECONDS);
 
         assertEquals(18, this.filterList.size());
         assertFalse(this.dataChangeLayer.getDataChanges().isEmpty());
-        // this check fails on jenkins but succeeds locally
-        // assertTrue("Column 1 is not dirty",
-        // this.dataChangeLayer.isColumnDirty(1));
+        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
     }
 }

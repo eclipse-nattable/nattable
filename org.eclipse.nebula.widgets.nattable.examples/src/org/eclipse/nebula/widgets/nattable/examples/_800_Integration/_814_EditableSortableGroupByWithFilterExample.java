@@ -520,13 +520,7 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
                                 @Override
                                 public void widgetSelected(SelectionEvent event) {
                                     int rowPosition = MenuItemProviders.getNatEventData(event).getRowPosition();
-
-                                    int index = natTable.getRowIndexByPosition(rowPosition);
-                                    if (index == bodyLayerStack.getEventList().size() - 1) {
-                                        rowPosition = -1;
-                                    } else {
-                                        rowPosition++;
-                                    }
+                                    int rowIndex = natTable.getRowIndexByPosition(rowPosition);
 
                                     Person person = new Person(bodyLayerStack.getEventList().size() + 1, "John", "Doe", Gender.MALE, false, new Date());
                                     Address address = new Address();
@@ -538,7 +532,7 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
                                     ExtendedPersonWithAddress entry = new ExtendedPersonWithAddress(person, address,
                                             "0000", "Some custom person", 0,
                                             new ArrayList<String>(), new ArrayList<String>());
-                                    natTable.doCommand(new RowInsertCommand<>(natTable, rowPosition, entry));
+                                    natTable.doCommand(new RowInsertCommand<>(rowIndex + 1, entry));
                                 }
                             });
                         }

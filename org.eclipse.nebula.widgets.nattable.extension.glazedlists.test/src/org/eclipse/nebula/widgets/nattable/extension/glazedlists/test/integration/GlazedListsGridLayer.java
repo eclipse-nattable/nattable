@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -74,37 +74,32 @@ public class GlazedListsGridLayer<T> extends GridLayer {
         // Body - with list event listener
         // NOTE: Remember to use the SortedList constructor with 'null' for the
         // Comparator
-        SortedList<T> sortedList = new SortedList<T>(eventList, null);
-        IColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<T>(
-                propertyNames);
-        this.bodyDataProvider = new ListDataProvider<T>(sortedList,
-                columnPropertyAccessor);
+        SortedList<T> sortedList = new SortedList<>(eventList, null);
+        IColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(propertyNames);
+        this.bodyDataProvider = new ListDataProvider<>(sortedList, columnPropertyAccessor);
 
         this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
-        this.glazedListsEventLayer = new GlazedListsEventLayer<T>(this.bodyDataLayer,
-                eventList);
+        this.glazedListsEventLayer = new GlazedListsEventLayer<>(this.bodyDataLayer, eventList);
+        this.glazedListsEventLayer.setTestMode(true);
         this.bodyLayerStack = new DefaultBodyLayerStack(this.glazedListsEventLayer);
 
         // Sort Column header
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        this.columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        this.columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
         ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
                 this.columnHeaderDataLayer, this.bodyLayerStack,
                 this.bodyLayerStack.getSelectionLayer());
 
         // Auto configure off. Configurations have to applied manually.
-        SortHeaderLayer<T> columnHeaderSortableLayer = new SortHeaderLayer<T>(
-                columnHeaderLayer, new GlazedListsSortModel<T>(sortedList,
+        SortHeaderLayer<T> columnHeaderSortableLayer = new SortHeaderLayer<>(
+                columnHeaderLayer, new GlazedListsSortModel<>(sortedList,
                         columnPropertyAccessor, configRegistry,
-                        this.columnHeaderDataLayer), false);
+                        this.columnHeaderDataLayer),
+                false);
 
         // Row header
-        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                this.bodyDataProvider);
-        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
+        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(this.bodyDataProvider);
+        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
         RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
                 this.bodyLayerStack, this.bodyLayerStack.getSelectionLayer());
 

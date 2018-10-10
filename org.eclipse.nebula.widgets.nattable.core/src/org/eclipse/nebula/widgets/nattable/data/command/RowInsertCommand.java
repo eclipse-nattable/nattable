@@ -14,8 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.nebula.widgets.nattable.command.AbstractRowCommand;
-import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
+import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 /**
@@ -23,12 +22,15 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
  *
  * @since 1.6
  */
-public class RowInsertCommand<T> extends AbstractRowCommand {
+public class RowInsertCommand<T> extends AbstractContextFreeCommand {
 
+    private final int rowIndex;
     private final List<T> objects;
 
     /**
-     * Create a command to insert object(s) at the specified row position.
+     * Create a command to insert object(s) at the specified row position. The
+     * row index will be calculated from the given layer and the corresponding
+     * row position.
      *
      * @param layer
      *            The layer to which the row position matches.
@@ -38,12 +40,14 @@ public class RowInsertCommand<T> extends AbstractRowCommand {
      *            The object(s) to add.
      */
     public RowInsertCommand(ILayer layer, int rowPosition, T... objects) {
-        super(layer, rowPosition);
+        this.rowIndex = layer.getRowIndexByPosition(rowPosition);
         this.objects = Arrays.asList(objects);
     }
 
     /**
-     * Create a command to insert object(s) at the specified row position.
+     * Create a command to insert object(s) at the specified row position. row
+     * index will be calculated from the given layer and the corresponding row
+     * position.
      *
      * @param layer
      *            The layer to which the row position matches.
@@ -53,20 +57,20 @@ public class RowInsertCommand<T> extends AbstractRowCommand {
      *            The object(s) to add.
      */
     public RowInsertCommand(ILayer layer, int rowPosition, List<T> objects) {
-        super(layer, rowPosition);
+        this.rowIndex = layer.getRowIndexByPosition(rowPosition);
         this.objects = objects;
     }
 
     /**
      * Create a command to add an object.
      *
-     * @param layer
-     *            The layer to which the row position matches.
+     * @param rowIndex
+     *            The index at which the row should be inserted.
      * @param object
      *            The object to add.
      */
-    public RowInsertCommand(ILayer layer, T object) {
-        super(layer, -1);
+    public RowInsertCommand(int rowIndex, T object) {
+        this.rowIndex = rowIndex;
         this.objects = new ArrayList<T>(1);
         this.objects.add(object);
     }
@@ -74,42 +78,45 @@ public class RowInsertCommand<T> extends AbstractRowCommand {
     /**
      * Create a command to add object(s).
      *
-     * @param layer
-     *            The layer to which the row position matches.
+     * @param rowIndex
+     *            The index at which the rows should be inserted.
      * @param objects
      *            The object(s) to add.
      */
-    public RowInsertCommand(ILayer layer, List<T> objects) {
-        super(layer, -1);
+    public RowInsertCommand(int rowIndex, List<T> objects) {
+        this.rowIndex = rowIndex;
         this.objects = objects;
     }
 
     /**
-     * Clone constructor.
+     * Create a command to add an object.
      *
-     * @param command
-     *            The command to clone.
+     * @param object
+     *            The object to add.
      */
-    protected RowInsertCommand(RowInsertCommand<T> command) {
-        super(command);
-        this.objects = new ArrayList<T>(command.objects);
+    public RowInsertCommand(T object) {
+        this.rowIndex = -1;
+        this.objects = new ArrayList<T>(1);
+        this.objects.add(object);
     }
 
-    @Override
-    public boolean convertToTargetLayer(ILayer targetLayer) {
-        // If the row position is -1 the transported objects will be added at
-        // the end of the backing data list. A position conversion is not
-        // necessary in that case and we should avoid that the command is
-        // blocked because of a failing conversion.
-        if (getRowPosition() > -1) {
-            return super.convertToTargetLayer(targetLayer);
-        }
-        return true;
+    /**
+     * Create a command to add object(s).
+     *
+     * @param objects
+     *            The object(s) to add.
+     */
+    public RowInsertCommand(List<T> objects) {
+        this.rowIndex = -1;
+        this.objects = objects;
     }
 
-    @Override
-    public ILayerCommand cloneCommand() {
-        return new RowInsertCommand<T>(this);
+    /**
+     *
+     * @return The index at which the row should be inserted.
+     */
+    public int getRowIndex() {
+        return this.rowIndex;
     }
 
     /**

@@ -701,6 +701,7 @@ public class DataChangeLayerTest {
         assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
         assertFalse("Row 1 is dirty", this.dataChangeLayer.isRowDirty(1));
         assertFalse("Cell is dirty", this.dataChangeLayer.isCellDirty(1, 1));
+        assertEquals(0, this.dataChangeLayer.dataChanges.size());
     }
 
     @Test
@@ -715,6 +716,7 @@ public class DataChangeLayerTest {
         assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
         assertTrue("Row 1 is not dirty", this.dataChangeLayer.isRowDirty(1));
         assertTrue("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 1));
+        assertEquals(1, this.dataChangeLayer.dataChanges.size());
 
         this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Simpson"));
 
@@ -724,6 +726,7 @@ public class DataChangeLayerTest {
         assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
         assertFalse("Row 1 is dirty", this.dataChangeLayer.isRowDirty(1));
         assertFalse("Cell is dirty", this.dataChangeLayer.isCellDirty(1, 1));
+        assertEquals(2, this.dataChangeLayer.dataChanges.size());
     }
 
     @Test

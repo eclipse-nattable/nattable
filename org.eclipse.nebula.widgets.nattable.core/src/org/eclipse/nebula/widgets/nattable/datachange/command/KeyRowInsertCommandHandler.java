@@ -62,7 +62,7 @@ public class KeyRowInsertCommandHandler<T> implements ILayerCommandHandler<RowIn
         // convert the transported position to the target layer
         if (command.convertToTargetLayer(targetLayer)) {
             // add the elements
-            if (command.getRowPosition() < 0 || command.getRowPosition() > this.bodyData.size()) {
+            if (command.getRowIndex() < 0 || command.getRowIndex() >= this.bodyData.size()) {
                 int start = this.bodyData.size();
 
                 this.bodyData.addAll(command.getObjects());
@@ -79,17 +79,17 @@ public class KeyRowInsertCommandHandler<T> implements ILayerCommandHandler<RowIn
                         keys,
                         this.keyHandler));
             } else {
-                this.bodyData.addAll(command.getRowPosition(), command.getObjects());
+                this.bodyData.addAll(command.getRowIndex(), command.getObjects());
 
                 List<Object> keys = new ArrayList<Object>();
                 for (int i = 0; i < command.getObjects().size(); i++) {
-                    keys.add(this.keyHandler.getKey(-1, command.getRowPosition() + i));
+                    keys.add(this.keyHandler.getKey(-1, command.getRowIndex() + i));
                 }
 
                 // fire the event to refresh
                 targetLayer.fireLayerEvent(new KeyRowInsertEvent(
                         targetLayer,
-                        new Range(command.getRowPosition(), command.getRowPosition() + command.getObjects().size()),
+                        new Range(command.getRowIndex(), command.getRowIndex() + command.getObjects().size()),
                         keys,
                         this.keyHandler));
             }

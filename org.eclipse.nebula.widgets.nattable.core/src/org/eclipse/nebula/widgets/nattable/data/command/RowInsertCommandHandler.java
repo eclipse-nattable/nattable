@@ -48,7 +48,7 @@ public class RowInsertCommandHandler<T> implements ILayerCommandHandler<RowInser
         // convert the transported position to the target layer
         if (command.convertToTargetLayer(targetLayer)) {
             // add the elements
-            if (command.getRowPosition() < 0 || command.getRowPosition() > this.bodyData.size()) {
+            if (command.getRowIndex() < 0 || command.getRowIndex() >= this.bodyData.size()) {
                 this.bodyData.addAll(command.getObjects());
                 // fire the event to refresh
                 targetLayer.fireLayerEvent(
@@ -56,10 +56,10 @@ public class RowInsertCommandHandler<T> implements ILayerCommandHandler<RowInser
                                 targetLayer,
                                 new Range(this.bodyData.size() - command.getObjects().size(), this.bodyData.size())));
             } else {
-                this.bodyData.addAll(command.getRowPosition(), command.getObjects());
+                this.bodyData.addAll(command.getRowIndex(), command.getObjects());
                 // fire the event to refresh
                 targetLayer.fireLayerEvent(
-                        new RowInsertEvent(targetLayer, new Range(command.getRowPosition(), command.getRowPosition() + command.getObjects().size())));
+                        new RowInsertEvent(targetLayer, new Range(command.getRowIndex(), command.getRowIndex() + command.getObjects().size())));
             }
             return true;
         }

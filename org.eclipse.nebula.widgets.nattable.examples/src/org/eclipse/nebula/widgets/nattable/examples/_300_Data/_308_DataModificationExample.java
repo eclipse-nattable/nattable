@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._300_Data;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +32,7 @@ import org.eclipse.nebula.widgets.nattable.data.command.RowInsertCommand;
 import org.eclipse.nebula.widgets.nattable.data.command.RowInsertCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDateDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
@@ -219,15 +221,18 @@ public class _308_DataModificationExample extends AbstractNatExample {
 
                         @Override
                         public void addMenuItem(NatTable natTable, Menu popupMenu) {
-                            MenuItem deleteRow = new MenuItem(popupMenu, SWT.PUSH);
-                            deleteRow.setText("Insert below");
-                            deleteRow.setEnabled(true);
+                            MenuItem insertRow = new MenuItem(popupMenu, SWT.PUSH);
+                            insertRow.setText("Insert below");
+                            insertRow.setEnabled(true);
 
-                            deleteRow.addSelectionListener(new SelectionAdapter() {
+                            insertRow.addSelectionListener(new SelectionAdapter() {
                                 @Override
                                 public void widgetSelected(SelectionEvent event) {
                                     int rowPosition = MenuItemProviders.getNatEventData(event).getRowPosition();
-                                    natTable.doCommand(new RowInsertCommand<>(bodyDataLayer, rowPosition, PersonService.getPersons(1).get(0)));
+                                    int rowIndex = natTable.getRowIndexByPosition(rowPosition);
+
+                                    Person ralph = new Person(bodyDataLayer.getRowCount() + 1, "Ralph", "Wiggum", Gender.MALE, false, new Date());
+                                    natTable.doCommand(new RowInsertCommand<>(rowIndex + 1, ralph));
                                 }
                             });
                         }

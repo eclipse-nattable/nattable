@@ -19,11 +19,10 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
+import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
@@ -49,6 +48,7 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -71,7 +71,7 @@ public class RowStructuralDataChangeLayerIntegrationTest {
     private RowInsertDataChangeHandler insertHandler;
     private RowDeleteDataChangeHandler deleteHandler;
 
-    private CompletableFuture<Void> future;
+    private CountDownLatch lock = new CountDownLatch(1);
 
     @Before
     public void setup() {
@@ -133,7 +133,7 @@ public class RowStructuralDataChangeLayerIntegrationTest {
             @Override
             public void handleLayerEvent(ILayerEvent event) {
                 if (event instanceof RowStructuralRefreshEvent) {
-                    RowStructuralDataChangeLayerIntegrationTest.this.future.complete(null);
+                    RowStructuralDataChangeLayerIntegrationTest.this.lock.countDown();
                 }
             }
         });
@@ -148,6 +148,11 @@ public class RowStructuralDataChangeLayerIntegrationTest {
         assertNotNull("RowInsertDataChangeHandler not found", this.insertHandler);
         assertNotNull("RowDeleteDataChangeHandler not found", this.deleteHandler);
 
+    }
+
+    @After
+    public void tearDown() {
+        this.dataChangeLayer.doCommand(new DisposeResourcesCommand());
     }
 
     @Test
@@ -167,7 +172,7 @@ public class RowStructuralDataChangeLayerIntegrationTest {
     @Test
     public void shouldTrackRowInsert() {
         Person ralph = new Person(42, "Ralph", "Wiggum", Gender.MALE, false, new Date());
-        this.dataChangeLayer.doCommand(new RowInsertCommand<>(this.dataChangeLayer, ralph));
+        this.dataChangeLayer.doCommand(new RowInsertCommand<>(ralph));
 
         int ralphIndex = this.eventList.indexOf(ralph);
         Object key = this.insertHandler.getKeyHandler().getKey(-1, ralphIndex);
@@ -206,7 +211,7 @@ public class RowStructuralDataChangeLayerIntegrationTest {
     @Test
     public void shouldTrackRowInsertOnSort() {
         Person ralph = new Person(42, "Ralph", "Wiggum", Gender.MALE, false, new Date());
-        this.dataChangeLayer.doCommand(new RowInsertCommand<>(this.dataChangeLayer, ralph));
+        this.dataChangeLayer.doCommand(new RowInsertCommand<>(ralph));
 
         assertEquals(18, this.sortedList.indexOf(ralph));
         assertEquals(19, this.sortedList.size());
@@ -244,7 +249,7 @@ public class RowStructuralDataChangeLayerIntegrationTest {
 
         // insert while the list is sorted
         Person ralph = new Person(42, "Ralph", "Wiggum", Gender.MALE, false, new Date());
-        this.dataChangeLayer.doCommand(new RowInsertCommand<>(this.dataChangeLayer, ralph));
+        this.dataChangeLayer.doCommand(new RowInsertCommand<>(ralph));
 
         assertEquals(19, this.sortedList.size());
         int ralphIndex = this.sortedList.indexOf(ralph);
@@ -267,7 +272,7 @@ public class RowStructuralDataChangeLayerIntegrationTest {
     @Test
     public void shouldDiscardRowInsertInSortedState() {
         Person ralph = new Person(42, "Ralph", "Wiggum", Gender.MALE, false, new Date());
-        this.dataChangeLayer.doCommand(new RowInsertCommand<>(this.dataChangeLayer, ralph));
+        this.dataChangeLayer.doCommand(new RowInsertCommand<>(ralph));
 
         assertEquals(18, this.sortedList.indexOf(ralph));
         assertEquals(19, this.sortedList.size());
@@ -304,7 +309,7 @@ public class RowStructuralDataChangeLayerIntegrationTest {
         }));
 
         Person ralph = new Person(42, "Ralph", "Wiggum", Gender.MALE, false, new Date());
-        this.dataChangeLayer.doCommand(new RowInsertCommand<>(this.dataChangeLayer, ralph));
+        this.dataChangeLayer.doCommand(new RowInsertCommand<>(ralph));
 
         assertEquals(0, this.sortedList.indexOf(ralph));
         assertEquals(19, this.sortedList.size());
@@ -420,10 +425,9 @@ public class RowStructuralDataChangeLayerIntegrationTest {
     }
 
     @Test
-    public void shouldKeepChangeOnFilter() {
+    public void shouldKeepChangeOnFilter() throws InterruptedException {
         this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));
 
-        this.future = new CompletableFuture<>();
         this.filterList.setMatcher(new Matcher<Person>() {
 
             @Override
@@ -434,38 +438,26 @@ public class RowStructuralDataChangeLayerIntegrationTest {
 
         // give the GlazedListsEventLayer some time to trigger the
         // RowStructuralRefreshEvent
-        try {
-            this.future.get(1000, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e1) {
-            e1.printStackTrace();
-        }
+        this.lock.await(1000, TimeUnit.MILLISECONDS);
 
         assertEquals(9, this.filterList.size());
         assertFalse(this.dataChangeLayer.getDataChanges().isEmpty());
-        // this check fails on jenkins but succeeds locally
-        // assertFalse("Column 1 is dirty",
-        // this.dataChangeLayer.isColumnDirty(1));
+        assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
 
-        this.future = new CompletableFuture<>();
+        this.lock = new CountDownLatch(1);
         this.filterList.setMatcher(null);
 
         // give the GlazedListsEventLayer some time to trigger the
         // RowStructuralRefreshEvent
-        try {
-            this.future.get(1000, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e1) {
-            e1.printStackTrace();
-        }
+        this.lock.await(1000, TimeUnit.MILLISECONDS);
 
         assertEquals(18, this.filterList.size());
         assertFalse(this.dataChangeLayer.getDataChanges().isEmpty());
-        // this check fails on jenkins but succeeds locally
-        // assertTrue("Column 1 is not dirty",
-        // this.dataChangeLayer.isColumnDirty(1));
+        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
     }
 
     @Test
-    public void shouldNotThrowAnExceptionOnResize() {
+    public void shouldNotThrowAnExceptionOnResize() throws InterruptedException {
         this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));
 
         this.filterList.setMatcher(new Matcher<Person>() {
@@ -482,21 +474,14 @@ public class RowStructuralDataChangeLayerIntegrationTest {
         assertFalse(this.dataChangeLayer.getDataChanges().isEmpty());
         assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
 
-        this.future = new CompletableFuture<>();
         this.filterList.setMatcher(null);
 
         // give the GlazedListsEventLayer some time to trigger the
         // RowStructuralRefreshEvent
-        try {
-            this.future.get(1000, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e1) {
-            e1.printStackTrace();
-        }
+        this.lock.await(1000, TimeUnit.MILLISECONDS);
 
         assertEquals(18, this.filterList.size());
         assertFalse(this.dataChangeLayer.getDataChanges().isEmpty());
-        // this check fails on jenkins but succeeds locally
-        // assertTrue("Column 1 is not dirty",
-        // this.dataChangeLayer.isColumnDirty(1));
+        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,10 @@
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -20,9 +24,8 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.DataLay
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.LayerListenerFixture;
 import org.eclipse.nebula.widgets.nattable.layer.event.PropertyUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
-import org.junit.Assert;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.odell.glazedlists.EventList;
@@ -38,32 +41,32 @@ public class GlazedListsEventLayerTest {
     public void setup() {
         this.listFixture = GlazedLists.eventList(RowDataListFixture.getList());
 
-        this.layerUnderTest = new GlazedListsEventLayer<RowDataFixture>(
-                new DataLayerFixture(), this.listFixture);
+        this.layerUnderTest = new GlazedListsEventLayer<>(new DataLayerFixture(), this.listFixture);
         this.layerUnderTest.setTestMode(true);
 
         this.listenerFixture = new LayerListenerFixture();
         this.layerUnderTest.addLayerListener(this.listenerFixture);
     }
 
-    @Ignore
-    // This is failing in hudson, but works fine locally. Ignoring for now.
+    @After
+    public void tearDown() {
+        this.layerUnderTest.doCommand(new DisposeResourcesCommand());
+    }
+
     @Test
     public void shouldConflateEvents() throws Exception {
         this.listFixture.add(RowDataFixture.getInstance("T1", "A"));
         Thread.sleep(100);
 
         this.listFixture.add(RowDataFixture.getInstance("T2", "A"));
-        Thread.sleep(100);
+        Thread.sleep(200);
 
-        Assert.assertNotNull(this.listenerFixture
-                .getReceivedEvent(RowStructuralRefreshEvent.class));
+        assertNotNull(this.listenerFixture.getReceivedEvent(RowStructuralRefreshEvent.class));
     }
 
     @Test
-    public void shouldShutConflaterThreadDownWhenNatTableIsDisposed()
-            throws Exception {
-        Assert.assertFalse(this.layerUnderTest.isDisposed());
+    public void shouldShutConflaterThreadDownWhenNatTableIsDisposed() throws Exception {
+        assertFalse(this.layerUnderTest.isDisposed());
 
         this.listFixture.add(RowDataFixture.getInstance("T1", "A"));
         Thread.sleep(100);
@@ -72,17 +75,14 @@ public class GlazedListsEventLayerTest {
         Thread.sleep(100);
 
         this.layerUnderTest.doCommand(new DisposeResourcesCommand());
-        Assert.assertTrue(this.layerUnderTest.isDisposed());
+        assertTrue(this.layerUnderTest.isDisposed());
     }
 
     @Test
-    public void propertyChangeEventshouldBePropagatedImmediately()
-            throws Exception {
-        List<BlinkingRowDataFixture> list = BlinkingRowDataFixture
-                .getList(this.layerUnderTest);
+    public void propertyChangeEventshouldBePropagatedImmediately() throws Exception {
+        List<BlinkingRowDataFixture> list = BlinkingRowDataFixture.getList(this.layerUnderTest);
         list.get(0).setAsk_price(100.0F);
 
-        Assert.assertNotNull(this.listenerFixture
-                .getReceivedEvent(PropertyUpdateEvent.class));
+        assertNotNull(this.listenerFixture.getReceivedEvent(PropertyUpdateEvent.class));
     }
 }

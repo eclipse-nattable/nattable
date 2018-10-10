@@ -8,19 +8,26 @@
  * Contributors:
  *     Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  ******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.data.command;
+package org.eclipse.nebula.widgets.nattable.datachange.command;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.data.command.RowInsertCommand;
+import org.eclipse.nebula.widgets.nattable.datachange.IdIndexIdentifier;
+import org.eclipse.nebula.widgets.nattable.datachange.IdIndexKeyHandler;
+import org.eclipse.nebula.widgets.nattable.datachange.event.KeyRowInsertEvent;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
@@ -32,7 +39,6 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.CornerLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.event.RowInsertEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
@@ -42,7 +48,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
 import org.junit.Test;
 
-public class RowInsertCommandTest {
+public class KeyRowInsertCommandTest {
 
     private List<Person> dataModel;
     private ListDataProvider<Person> dataProvider;
@@ -53,17 +59,27 @@ public class RowInsertCommandTest {
     @Before
     public void setup() {
         this.dataModel = PersonService.getFixedPersons();
+
+        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(new String[] {
+                "firstName",
+                "lastName",
+                "gender",
+                "married",
+                "birthday" });
         this.dataProvider = new ListDataProvider<>(
                 this.dataModel,
-                new ReflectiveColumnPropertyAccessor<>(new String[] {
-                        "firstName",
-                        "lastName",
-                        "gender",
-                        "married",
-                        "birthday" }));
+                columnPropertyAccessor);
 
         this.dataLayer = new DataLayer(this.dataProvider);
-        this.dataLayer.registerCommandHandler(new RowInsertCommandHandler<>(this.dataModel));
+        this.dataLayer.registerCommandHandler(new KeyRowInsertCommandHandler<>(
+                this.dataModel,
+                new IdIndexKeyHandler<>(new ListDataProvider<>(this.dataModel, columnPropertyAccessor), new IRowIdAccessor<Person>() {
+
+                    @Override
+                    public Serializable getRowId(Person rowObject) {
+                        return rowObject.getId();
+                    }
+                })));
 
         this.listener = new LayerListenerFixture();
         this.dataLayer.addLayerListener(this.listener);
@@ -93,9 +109,10 @@ public class RowInsertCommandTest {
 
         // test the received event
         assertEquals(1, this.listener.getEventsCount());
-        assertTrue(this.listener.containsInstanceOf(RowInsertEvent.class));
-        RowInsertEvent event = (RowInsertEvent) this.listener.getReceivedEvents().get(0);
+        assertTrue(this.listener.containsInstanceOf(KeyRowInsertEvent.class));
+        KeyRowInsertEvent event = (KeyRowInsertEvent) this.listener.getReceivedEvents().get(0);
         assertEquals(new Range(18, 19), event.getRowPositionRanges().iterator().next());
+        assertEquals(new IdIndexIdentifier<>(-1, 42, ralph), event.getKeys().iterator().next());
     }
 
     @Test
@@ -111,9 +128,10 @@ public class RowInsertCommandTest {
 
         // test the received event
         assertEquals(1, this.listener.getEventsCount());
-        assertTrue(this.listener.containsInstanceOf(RowInsertEvent.class));
-        RowInsertEvent event = (RowInsertEvent) this.listener.getReceivedEvents().get(0);
+        assertTrue(this.listener.containsInstanceOf(KeyRowInsertEvent.class));
+        KeyRowInsertEvent event = (KeyRowInsertEvent) this.listener.getReceivedEvents().get(0);
         assertEquals(new Range(10, 11), event.getRowPositionRanges().iterator().next());
+        assertEquals(new IdIndexIdentifier<>(-1, 42, ralph), event.getKeys().iterator().next());
     }
 
     @Test
@@ -134,9 +152,12 @@ public class RowInsertCommandTest {
 
         // test the received event
         assertEquals(1, this.listener.getEventsCount());
-        assertTrue(this.listener.containsInstanceOf(RowInsertEvent.class));
-        RowInsertEvent event = (RowInsertEvent) this.listener.getReceivedEvents().get(0);
+        assertTrue(this.listener.containsInstanceOf(KeyRowInsertEvent.class));
+        KeyRowInsertEvent event = (KeyRowInsertEvent) this.listener.getReceivedEvents().get(0);
         assertEquals(new Range(18, 21), event.getRowPositionRanges().iterator().next());
+        assertTrue(event.getKeys().contains(new IdIndexIdentifier<>(-1, 40, clancy)));
+        assertTrue(event.getKeys().contains(new IdIndexIdentifier<>(-1, 41, sarah)));
+        assertTrue(event.getKeys().contains(new IdIndexIdentifier<>(-1, 42, ralph)));
     }
 
     @Test
@@ -157,9 +178,12 @@ public class RowInsertCommandTest {
 
         // test the received event
         assertEquals(1, this.listener.getEventsCount());
-        assertTrue(this.listener.containsInstanceOf(RowInsertEvent.class));
-        RowInsertEvent event = (RowInsertEvent) this.listener.getReceivedEvents().get(0);
+        assertTrue(this.listener.containsInstanceOf(KeyRowInsertEvent.class));
+        KeyRowInsertEvent event = (KeyRowInsertEvent) this.listener.getReceivedEvents().get(0);
         assertEquals(new Range(10, 13), event.getRowPositionRanges().iterator().next());
+        assertTrue(event.getKeys().contains(new IdIndexIdentifier<>(-1, 40, clancy)));
+        assertTrue(event.getKeys().contains(new IdIndexIdentifier<>(-1, 41, sarah)));
+        assertTrue(event.getKeys().contains(new IdIndexIdentifier<>(-1, 42, ralph)));
     }
 
     @Test
@@ -182,9 +206,10 @@ public class RowInsertCommandTest {
 
         // test the received event
         assertEquals(1, this.listener.getEventsCount());
-        assertTrue(this.listener.containsInstanceOf(RowInsertEvent.class));
-        RowInsertEvent event = (RowInsertEvent) this.listener.getReceivedEvents().get(0);
+        assertTrue(this.listener.containsInstanceOf(KeyRowInsertEvent.class));
+        KeyRowInsertEvent event = (KeyRowInsertEvent) this.listener.getReceivedEvents().get(0);
         assertEquals(new Range(10, 11), event.getRowPositionRanges().iterator().next());
+        assertEquals(new IdIndexIdentifier<>(-1, 42, ralph), event.getKeys().iterator().next());
     }
 
     @Test
@@ -202,9 +227,10 @@ public class RowInsertCommandTest {
 
         // test the received event
         assertEquals(1, this.listener.getEventsCount());
-        assertTrue(this.listener.containsInstanceOf(RowInsertEvent.class));
-        RowInsertEvent event = (RowInsertEvent) this.listener.getReceivedEvents().get(0);
+        assertTrue(this.listener.containsInstanceOf(KeyRowInsertEvent.class));
+        KeyRowInsertEvent event = (KeyRowInsertEvent) this.listener.getReceivedEvents().get(0);
         assertEquals(new Range(18, 19), event.getRowPositionRanges().iterator().next());
+        assertEquals(new IdIndexIdentifier<>(-1, 42, ralph), event.getKeys().iterator().next());
     }
 
     @Test
@@ -240,9 +266,10 @@ public class RowInsertCommandTest {
 
         // test the received event
         assertEquals(1, this.listener.getEventsCount());
-        assertTrue(this.listener.containsInstanceOf(RowInsertEvent.class));
-        RowInsertEvent event = (RowInsertEvent) this.listener.getReceivedEvents().get(0);
+        assertTrue(this.listener.containsInstanceOf(KeyRowInsertEvent.class));
+        KeyRowInsertEvent event = (KeyRowInsertEvent) this.listener.getReceivedEvents().get(0);
         assertEquals(new Range(10, 11), event.getRowPositionRanges().iterator().next());
+        assertEquals(new IdIndexIdentifier<>(-1, 42, ralph), event.getKeys().iterator().next());
     }
 
     @Test
@@ -277,8 +304,9 @@ public class RowInsertCommandTest {
 
         // test the received event
         assertEquals(1, this.listener.getEventsCount());
-        assertTrue(this.listener.containsInstanceOf(RowInsertEvent.class));
-        RowInsertEvent event = (RowInsertEvent) this.listener.getReceivedEvents().get(0);
+        assertTrue(this.listener.containsInstanceOf(KeyRowInsertEvent.class));
+        KeyRowInsertEvent event = (KeyRowInsertEvent) this.listener.getReceivedEvents().get(0);
         assertEquals(new Range(18, 19), event.getRowPositionRanges().iterator().next());
+        assertEquals(new IdIndexIdentifier<>(-1, 42, ralph), event.getKeys().iterator().next());
     }
 }

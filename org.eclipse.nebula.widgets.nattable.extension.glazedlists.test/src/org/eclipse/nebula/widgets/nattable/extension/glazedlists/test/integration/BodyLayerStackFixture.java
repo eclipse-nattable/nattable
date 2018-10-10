@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,13 +43,11 @@ public class BodyLayerStackFixture<T> extends AbstractLayerTransform {
             IColumnPropertyAccessor<T> columnPropertyAccessor,
             IConfigRegistry configRegistry) {
 
-        this.bodyDataProvider = new ListDataProvider<T>(eventList,
-                columnPropertyAccessor);
+        this.bodyDataProvider = new ListDataProvider<>(eventList, columnPropertyAccessor);
 
         this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
 
-        this.glazedListsEventLayer = new GlazedListsEventLayer<T>(this.bodyDataLayer,
-                eventList);
+        this.glazedListsEventLayer = new GlazedListsEventLayer<>(this.bodyDataLayer, eventList);
         this.glazedListsEventLayer.setTestMode(true);
 
         ColumnGroupModel columnGroupModel = new ColumnGroupModel();

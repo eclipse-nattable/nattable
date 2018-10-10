@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Dirk Fauth and others.
+ * Copyright (c) 2015, 2018 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -37,6 +38,7 @@ import org.eclipse.nebula.widgets.nattable.summaryrow.FixedSummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummationSummaryProvider;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,6 +50,7 @@ public class GroupByDataLayerSummaryRowConcurrencyTest {
 
     private FixedSummaryRowLayer summaryRowLayer;
     private int calcCount = 0;
+    private NatTable natTable;
 
     class Value {
         int value;
@@ -59,7 +62,7 @@ public class GroupByDataLayerSummaryRowConcurrencyTest {
 
     @Before
     public void setup() {
-        List<Value> values = new ArrayList<Value>();
+        List<Value> values = new ArrayList<>();
         values.add(new Value(1));
         values.add(new Value(2));
         values.add(new Value(3));
@@ -99,9 +102,10 @@ public class GroupByDataLayerSummaryRowConcurrencyTest {
 
         ConfigRegistry configRegistry = new ConfigRegistry();
 
-        final GroupByDataLayer<Value> dataLayer = new GroupByDataLayer<Value>(new GroupByModel(), eventList, columnAccessor);
+        final GroupByDataLayer<Value> dataLayer = new GroupByDataLayer<>(new GroupByModel(), eventList, columnAccessor);
         // DataLayer dataLayer = new DataLayer(dataProvider);
-        GlazedListsEventLayer<Value> glazedListsEventLayer = new GlazedListsEventLayer<Value>(dataLayer, rowObjectsGlazedList);
+        GlazedListsEventLayer<Value> glazedListsEventLayer = new GlazedListsEventLayer<>(dataLayer, rowObjectsGlazedList);
+        glazedListsEventLayer.setTestMode(true);
         DefaultBodyLayerStack bodyLayerStack = new DefaultBodyLayerStack(glazedListsEventLayer);
 
         this.summaryRowLayer = new FixedSummaryRowLayer(dataLayer, bodyLayerStack, configRegistry, false);
@@ -111,8 +115,8 @@ public class GroupByDataLayerSummaryRowConcurrencyTest {
         composite.setChildLayer("SUMMARY", this.summaryRowLayer, 0, 0);
         composite.setChildLayer(GridRegion.BODY, bodyLayerStack, 0, 1);
 
-        NatTable natTable = new NatTableFixture(composite, false);
-        natTable.addConfiguration(new DefaultSummaryRowConfiguration() {
+        this.natTable = new NatTableFixture(composite, false);
+        this.natTable.addConfiguration(new DefaultSummaryRowConfiguration() {
             @Override
             protected void addSummaryProviderConfig(IConfigRegistry configRegistry) {
                 configRegistry.registerConfigAttribute(
@@ -122,9 +126,14 @@ public class GroupByDataLayerSummaryRowConcurrencyTest {
                         SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
             }
         });
-        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-        natTable.setConfigRegistry(configRegistry);
-        natTable.configure();
+        this.natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        this.natTable.setConfigRegistry(configRegistry);
+        this.natTable.configure();
+    }
+
+    @After
+    public void tearDown() {
+        this.natTable.doCommand(new DisposeResourcesCommand());
     }
 
     // summary value == 55

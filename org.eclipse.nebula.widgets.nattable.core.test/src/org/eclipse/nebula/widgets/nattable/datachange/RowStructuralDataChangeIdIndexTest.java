@@ -98,7 +98,7 @@ public class RowStructuralDataChangeIdIndexTest {
     @Test
     public void shouldTrackRowInsertEvent() {
         Person ralph = new Person(42, "Ralph", "Wiggum", Gender.MALE, false, new Date());
-        this.dataChangeLayer.doCommand(new RowInsertCommand<>(this.dataChangeLayer, ralph));
+        this.dataChangeLayer.doCommand(new RowInsertCommand<>(ralph));
 
         int ralphIndex = this.dataModel.indexOf(ralph);
         Object key = this.insertHandler.keyHandler.getKey(-1, ralphIndex);
@@ -137,7 +137,7 @@ public class RowStructuralDataChangeIdIndexTest {
     @Test
     public void shouldClearRowInsertWithoutReset() {
         Person ralph = new Person(42, "Ralph", "Wiggum", Gender.MALE, false, new Date());
-        this.dataChangeLayer.doCommand(new RowInsertCommand<>(this.dataChangeLayer, ralph));
+        this.dataChangeLayer.doCommand(new RowInsertCommand<>(ralph));
 
         int ralphIndex = this.dataModel.indexOf(ralph);
         Object key = this.insertHandler.keyHandler.getKey(-1, ralphIndex);
