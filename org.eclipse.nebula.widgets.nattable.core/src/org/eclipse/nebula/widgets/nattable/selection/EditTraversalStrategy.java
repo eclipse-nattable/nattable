@@ -41,7 +41,7 @@ public class EditTraversalStrategy implements ITraversalStrategy {
     /**
      *
      * @param baseStrategy
-     *            The {@link ITraversalStrategy} that shoud be wrapped by this
+     *            The {@link ITraversalStrategy} that should be wrapped by this
      *            {@link EditTraversalStrategy}.
      * @param natTable
      *            The NatTable instance this strategy is connected to. Needed to

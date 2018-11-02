@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth.
+ * Copyright (c) 2014, 2018 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@ package org.eclipse.nebula.widgets.nattable.selection;
 
 import static org.junit.Assert.assertEquals;
 
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.selection.command.MoveSelectionCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
@@ -1660,4 +1661,266 @@ public class CellSelectionTraversalTest {
         assertEquals(8, this.selectionLayer.getLastSelectedCell().getRowPosition());
     }
 
+    @Test
+    public void testMoveToRowEndWithCustomStrategy() {
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, new ITraversalStrategy() {
+
+                    @Override
+                    public TraversalScope getTraversalScope() {
+                        return TraversalScope.TABLE;
+                    }
+
+                    @Override
+                    public boolean isCycle() {
+                        return true;
+                    }
+
+                    @Override
+                    public int getStepCount() {
+                        return 1;
+                    }
+
+                    @Override
+                    public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+                        if (to.getColumnIndex() == 0 || to.getColumnIndex() == 9) {
+                            return false;
+                        }
+                        return true;
+                    }
+
+                }));
+
+        // select a cell
+        this.selectionLayer.setSelectedCell(1, 2);
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move to end
+        this.viewportLayer.doCommand(new MoveSelectionCommand(
+                MoveDirectionEnum.RIGHT,
+                SelectionLayer.MOVE_ALL,
+                false,
+                false));
+
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveToRowStartWithCustomStrategy() {
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, new ITraversalStrategy() {
+
+                    @Override
+                    public TraversalScope getTraversalScope() {
+                        return TraversalScope.TABLE;
+                    }
+
+                    @Override
+                    public boolean isCycle() {
+                        return true;
+                    }
+
+                    @Override
+                    public int getStepCount() {
+                        return 1;
+                    }
+
+                    @Override
+                    public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+                        if (to.getColumnIndex() == 0 || to.getColumnIndex() == 9) {
+                            return false;
+                        }
+                        return true;
+                    }
+
+                }));
+
+        // select a cell
+        this.selectionLayer.setSelectedCell(7, 2);
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move to start
+        this.viewportLayer.doCommand(new MoveSelectionCommand(
+                MoveDirectionEnum.LEFT,
+                SelectionLayer.MOVE_ALL,
+                false,
+                false));
+
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveToTableEndWithCustomStrategy() {
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, new ITraversalStrategy() {
+
+                    @Override
+                    public TraversalScope getTraversalScope() {
+                        return TraversalScope.TABLE;
+                    }
+
+                    @Override
+                    public boolean isCycle() {
+                        return true;
+                    }
+
+                    @Override
+                    public int getStepCount() {
+                        return 1;
+                    }
+
+                    @Override
+                    public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+                        if (to.getColumnIndex() == 0 || to.getColumnIndex() == 9) {
+                            return false;
+                        }
+                        return true;
+                    }
+
+                }));
+
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move to end
+        this.viewportLayer.doCommand(new MoveSelectionCommand(
+                MoveDirectionEnum.RIGHT,
+                SelectionLayer.MOVE_ALL,
+                false,
+                false));
+        this.viewportLayer.doCommand(new MoveSelectionCommand(
+                MoveDirectionEnum.DOWN,
+                SelectionLayer.MOVE_ALL,
+                false,
+                false));
+
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(9, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveToTableStartWithCustomStrategy() {
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, new ITraversalStrategy() {
+
+                    @Override
+                    public TraversalScope getTraversalScope() {
+                        return TraversalScope.TABLE;
+                    }
+
+                    @Override
+                    public boolean isCycle() {
+                        return true;
+                    }
+
+                    @Override
+                    public int getStepCount() {
+                        return 1;
+                    }
+
+                    @Override
+                    public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+                        if (to.getColumnIndex() == 0 || to.getColumnIndex() == 9) {
+                            return false;
+                        }
+                        return true;
+                    }
+
+                }));
+
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move to start
+        this.viewportLayer.doCommand(new MoveSelectionCommand(
+                MoveDirectionEnum.LEFT,
+                SelectionLayer.MOVE_ALL,
+                false,
+                true));
+        this.viewportLayer.doCommand(new MoveSelectionCommand(
+                MoveDirectionEnum.UP,
+                SelectionLayer.MOVE_ALL,
+                false,
+                false));
+
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveToTableStartEndWithCustomStrategy() {
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, new ITraversalStrategy() {
+
+                    @Override
+                    public TraversalScope getTraversalScope() {
+                        return TraversalScope.TABLE;
+                    }
+
+                    @Override
+                    public boolean isCycle() {
+                        return true;
+                    }
+
+                    @Override
+                    public int getStepCount() {
+                        return 1;
+                    }
+
+                    @Override
+                    public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+                        // first and last column and first and last row are not
+                        // valid
+                        if (to.getColumnIndex() == 0 || to.getColumnIndex() == 9
+                                || to.getRowIndex() == 0 || to.getRowIndex() == 9) {
+                            return false;
+                        }
+                        return true;
+                    }
+
+                }));
+
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move to start
+        this.viewportLayer.doCommand(new MoveSelectionCommand(
+                MoveDirectionEnum.LEFT,
+                SelectionLayer.MOVE_ALL,
+                false,
+                true));
+        this.viewportLayer.doCommand(new MoveSelectionCommand(
+                MoveDirectionEnum.UP,
+                SelectionLayer.MOVE_ALL,
+                false,
+                false));
+
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move to end
+        this.viewportLayer.doCommand(new MoveSelectionCommand(
+                MoveDirectionEnum.RIGHT,
+                SelectionLayer.MOVE_ALL,
+                false,
+                false));
+        this.viewportLayer.doCommand(new MoveSelectionCommand(
+                MoveDirectionEnum.DOWN,
+                SelectionLayer.MOVE_ALL,
+                false,
+                false));
+
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
 }

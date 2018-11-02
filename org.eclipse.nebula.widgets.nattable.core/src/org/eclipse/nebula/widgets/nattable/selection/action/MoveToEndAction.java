@@ -40,7 +40,8 @@ public class MoveToEndAction extends AbstractKeySelectAction {
                             isShiftMask(),
                             isControlMask()));
         } else {
-            // if the CTRL key is pressed, we need to move the selection to the first cell
+            // if the CTRL key is pressed, we need to move the selection to the
+            // last cell
             natTable.doCommand(
                     new MoveSelectionCommand(
                             MoveDirectionEnum.RIGHT,
