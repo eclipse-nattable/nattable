@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2017 CEA LIST and others.
+ * Copyright (c) 2015, 2018 CEA LIST and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -117,6 +117,9 @@ public class FillHandleDragMode extends AutoScrollDragMode {
             int yStart = this.startIndex.y;
 
             Rectangle region = this.selectionLayer.getLastSelectedRegion();
+            // translate region positions to indexes
+            int regionColumnIndex = this.selectionLayer.getColumnIndexByPosition(region.x);
+            int regionRowIndex = this.selectionLayer.getRowIndexByPosition(region.y);
 
             // only increase range in one direction
             int xDiff = calculateIncreasedPositiveDiff(
@@ -125,10 +128,10 @@ public class FillHandleDragMode extends AutoScrollDragMode {
             int yDiff = calculateIncreasedPositiveDiff(
                     y,
                     (y < this.startEvent.y) ? this.selectionCell.getBounds().y : this.startEvent.y);
-            if (selectedColumnIndex >= region.x && selectedColumnIndex < (region.x + region.width)) {
+            if (selectedColumnIndex >= regionColumnIndex && selectedColumnIndex < (regionColumnIndex + region.width)) {
                 xDiff = 0;
             }
-            if (selectedRowIndex >= region.y && selectedRowIndex < (region.y + region.height)) {
+            if (selectedRowIndex >= regionRowIndex && selectedRowIndex < (regionRowIndex + region.height)) {
                 yDiff = 0;
             }
 
