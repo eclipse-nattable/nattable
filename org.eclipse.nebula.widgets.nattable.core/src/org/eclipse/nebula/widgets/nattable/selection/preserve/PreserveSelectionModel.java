@@ -149,7 +149,11 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
                 clearSelection();
             }
 
-            internalAddSelection(columnPosition, rowPosition);
+            T rowObject = getRowObjectByPosition(rowPosition);
+            if (rowObject != null) {
+                Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
+                this.selections.select(rowId, rowObject, columnPosition);
+            }
         } finally {
             this.selectionsLock.writeLock().unlock();
         }
@@ -163,30 +167,25 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
                 clearSelection();
             }
 
-            performOnKnownCells(range, new SelectionOperation() {
-                @Override
-                public void run(int columnPosition, int rowPosition) {
-                    internalAddSelection(columnPosition, rowPosition);
+            int startColumnPosition = range.x;
+            int startRowPosition = range.y;
+            if (startColumnPosition < this.selectionLayer.getColumnCount() && startRowPosition < this.selectionLayer.getRowCount()) {
+                int numberOfVisibleColumnsToBeSelected = getNumberOfColumnsToBeSelected(range);
+                int numberOfVisibleRowsToBeSelected = getNumberOfRowsToBeSelected(range);
+
+                for (int rowPosition = startRowPosition; rowPosition < startRowPosition + numberOfVisibleRowsToBeSelected; rowPosition++) {
+                    T rowObject = getRowObjectByPosition(rowPosition);
+                    if (rowObject != null) {
+                        Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
+                        for (int columnPosition = startColumnPosition; columnPosition < startColumnPosition + numberOfVisibleColumnsToBeSelected; columnPosition++) {
+                            this.selections.select(rowId, rowObject, columnPosition);
+                        }
+                    }
                 }
-            });
+            }
+
         } finally {
             this.selectionsLock.writeLock().unlock();
-        }
-    }
-
-    /**
-     * Selects a cell by given coordinates without performing locking.
-     *
-     * @param columnPosition
-     *            column position of the cell to select
-     * @param rowPosition
-     *            row position of the cell to select
-     */
-    private void internalAddSelection(int columnPosition, int rowPosition) {
-        T rowObject = getRowObjectByPosition(rowPosition);
-        if (rowObject != null) {
-            Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
-            this.selections.select(rowId, rowObject, columnPosition);
         }
     }
 
@@ -204,7 +203,11 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public void clearSelection(int columnPosition, int rowPosition) {
         this.selectionsLock.writeLock().lock();
         try {
-            internalClearSelection(columnPosition, rowPosition);
+            T rowObject = getRowObjectByPosition(rowPosition);
+            if (rowObject != null) {
+                Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
+                this.selections.deselect(rowId, columnPosition);
+            }
         } finally {
             this.selectionsLock.writeLock().unlock();
         }
@@ -214,60 +217,56 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public void clearSelection(Rectangle removedSelection) {
         this.selectionsLock.writeLock().lock();
         try {
-            performOnKnownCells(removedSelection, new SelectionOperation() {
-                @Override
-                public void run(int columnPosition, int rowPosition) {
-                    internalClearSelection(columnPosition, rowPosition);
+            int startColumnPosition = removedSelection.x;
+            int startRowPosition = removedSelection.y;
+            if (startColumnPosition < this.selectionLayer.getColumnCount() && startRowPosition < this.selectionLayer.getRowCount()) {
+                int numberOfVisibleColumnsToBeSelected = getNumberOfColumnsToBeSelected(removedSelection);
+                int numberOfVisibleRowsToBeSelected = getNumberOfRowsToBeSelected(removedSelection);
+
+                for (int rowPosition = startRowPosition; rowPosition < startRowPosition + numberOfVisibleRowsToBeSelected; rowPosition++) {
+                    T rowObject = getRowObjectByPosition(rowPosition);
+                    if (rowObject != null) {
+                        Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
+                        for (int columnPosition = startColumnPosition; columnPosition < startColumnPosition + numberOfVisibleColumnsToBeSelected; columnPosition++) {
+                            this.selections.deselect(rowId, columnPosition);
+                        }
+                    }
                 }
-            });
+            }
+
         } finally {
             this.selectionsLock.writeLock().unlock();
         }
     }
 
     /**
-     * Deselects a cell by given coordinates without performing locking.
+     * Return the number of columns to select. Determines the number based on
+     * the columns that are known. Needed in case of full row selection as the
+     * range will be from 0 to {@link Integer#MAX_VALUE}, where only the range
+     * from 0 to total column count is needed.
      *
-     * @param columnPosition
-     *            column position of the cell to select
-     * @param rowPosition
-     *            row position of the cell to select
+     * @param selection
+     *            The rectangle that should be selected.
+     * @return The number of columns to select.
      */
-    private void internalClearSelection(int columnPosition, int rowPosition) {
-        T rowObject = getRowObjectByPosition(rowPosition);
-        if (rowObject != null) {
-            Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
-            this.selections.deselect(rowId, columnPosition);
-        }
+    private int getNumberOfColumnsToBeSelected(Rectangle selection) {
+        int columnCount = this.selectionLayer.getColumnCount();
+        return (selection.x + selection.width <= columnCount) ? selection.width : columnCount;
     }
 
     /**
-     * Only perform selection operations on cells which are known.
-     *
-     * For example selecting a full row operation will have a range from 0 to
-     * Integer.Max_Value. But only needed to operate on a range from 0 to
-     * total-column-count
+     * Return the number of rows to select. Determines the number based on the
+     * rows that are known. Needed in case of full column selection as the range
+     * will be from 0 to {@link Integer#MAX_VALUE}, where only the range from 0
+     * to total row count is needed.
      *
      * @param selection
-     *            area which the operation should be run on.
-     * @param selectionOperation
-     *            the operation to be perform on every cell in the area.
+     *            The rectangle that should be selected.
+     * @return The number of rows to select.
      */
-    private void performOnKnownCells(Rectangle selection, SelectionOperation selectionOperation) {
-        int columnCount = this.selectionLayer.getColumnCount();
+    private int getNumberOfRowsToBeSelected(Rectangle selection) {
         int rowCount = this.selectionLayer.getRowCount();
-        int startColumnPosition = selection.x;
-        int startRowPosition = selection.y;
-        if (startColumnPosition < columnCount && startRowPosition < rowCount) {
-            int numberOfVisibleColumnsToBeSelected = (selection.x + selection.width <= columnCount) ? selection.width : columnCount;
-            int numberOfVisibleRowsToBeSelected = (selection.y + selection.height <= rowCount) ? selection.height : rowCount;
-
-            for (int columnPosition = startColumnPosition; columnPosition < startColumnPosition + numberOfVisibleColumnsToBeSelected; columnPosition++) {
-                for (int rowPosition = startRowPosition; rowPosition < startRowPosition + numberOfVisibleRowsToBeSelected; rowPosition++) {
-                    selectionOperation.run(columnPosition, rowPosition);
-                }
-            }
-        }
+        return (selection.y + selection.height <= rowCount) ? selection.height : rowCount;
     }
 
     @Override
@@ -661,16 +660,13 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
 
     @Override
     public void setLastSelectedRegion(Rectangle region) {
+        // clear the selection in the current last selected region
+        if (region != null && this.lastSelectedRegion != null) {
+            clearSelection(this.lastSelectedRegion);
+        }
+
         this.selectionsLock.writeLock().lock();
         try {
-            if (region != null && this.lastSelectedRegion != null) {
-                performOnKnownCells(this.lastSelectedRegion, new SelectionOperation() {
-                    @Override
-                    public void run(int columnPosition, int rowPosition) {
-                        internalClearSelection(columnPosition, rowPosition);
-                    }
-                });
-            }
 
             this.lastSelectedRegion = region;
 
@@ -777,20 +773,6 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     @Override
     public Class<IStructuralChangeEvent> getLayerEventClass() {
         return IStructuralChangeEvent.class;
-    }
-
-    /**
-     * Internal interface to be used for higher order methods.
-     *
-     */
-    abstract interface SelectionOperation {
-        /**
-         * Performs the operation
-         *
-         * @param columnPosition
-         * @param rowPosition
-         */
-        public void run(int columnPosition, int rowPosition);
     }
 
 }

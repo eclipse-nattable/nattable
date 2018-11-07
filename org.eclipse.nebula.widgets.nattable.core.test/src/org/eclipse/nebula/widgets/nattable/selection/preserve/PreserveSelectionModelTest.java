@@ -206,7 +206,9 @@ public class PreserveSelectionModelTest {
 
     @Test
     public void Clear_Infinity_Long_Row_Only_Clear_Known_Columns() {
-        long expectedLoops = 3;
+        // as only one row is cleared we expect that there is only one access
+        // for the rowId
+        long expectedLoops = 1;
         this.testee.addSelection(0, 0);
         this.testee.addSelection(1, 0);
         this.rowIdAccessor.numberOfCalls = 0;
