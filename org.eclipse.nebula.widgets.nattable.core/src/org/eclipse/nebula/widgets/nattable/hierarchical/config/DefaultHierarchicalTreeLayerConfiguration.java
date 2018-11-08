@@ -77,6 +77,8 @@ public class DefaultHierarchicalTreeLayerConfiguration implements IConfiguration
                 new HierarchicalTreeAlternatingRowConfigLabelAccumulator(this.treeLayer);
         this.treeLayer.setConfigLabelAccumulator(accumulator);
         this.treeLayer.addLayerListener(accumulator);
+        this.treeLayer.registerCommandHandler(accumulator);
+        accumulator.calculateLabels();
     }
 
     @Override
