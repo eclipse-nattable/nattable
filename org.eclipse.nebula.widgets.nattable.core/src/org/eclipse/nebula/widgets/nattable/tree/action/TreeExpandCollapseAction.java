@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,9 +31,11 @@ public class TreeExpandCollapseAction implements IMouseAction {
         int c = natTable.getColumnPositionByX(event.x);
         int r = natTable.getRowPositionByY(event.y);
         ILayerCell cell = natTable.getCellByPosition(c, r);
-        int rowIndex = cell.getLayer().getRowIndexByPosition(cell.getOriginRowPosition());
-        int columnIndex = cell.getLayer().getColumnIndexByPosition(cell.getOriginColumnPosition());
-        TreeExpandCollapseCommand command = new TreeExpandCollapseCommand(rowIndex, columnIndex);
-        natTable.doCommand(command);
+        if (cell != null) {
+            int rowIndex = cell.getLayer().getRowIndexByPosition(cell.getOriginRowPosition());
+            int columnIndex = cell.getLayer().getColumnIndexByPosition(cell.getOriginColumnPosition());
+            TreeExpandCollapseCommand command = new TreeExpandCollapseCommand(rowIndex, columnIndex);
+            natTable.doCommand(command);
+        }
     }
 }
