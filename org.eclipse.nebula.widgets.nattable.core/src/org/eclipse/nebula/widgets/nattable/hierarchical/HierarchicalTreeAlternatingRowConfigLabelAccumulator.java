@@ -73,46 +73,35 @@ public class HierarchicalTreeAlternatingRowConfigLabelAccumulator
 
     @Override
     public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
-        String label = getRowLabel(rowPosition);
-        if (label == null) {
-            if (this.future == null || (this.future.isCancelled() || this.future.isDone())) {
-                calculateLabels();
-            }
-
-            if (rowPosition < 100) {
-                // for the first few rows we wait a moment to give the
-                // background calculation time to proceed to avoid flickering at
-                // the top of the table. we do not wait in any case as otherwise
-                // sorting would show a bad performance in the middle or the end
-                // of the table
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    // nothing to do here
-                }
-                label = getRowLabel(rowPosition);
-
-                if (label != null) {
-                    configLabels.addLabel(label);
-                }
-            }
-        } else {
-            configLabels.addLabel(label);
-        }
-    }
-
-    /**
-     * Returns the row label for the given row position. Calculates the row
-     * label based on the logically corresponding origin row dependent on the
-     * row spanning.
-     *
-     * @param rowPosition
-     *            The row position for which the row label is requested.
-     * @return The row label for the given row position based on the origin row.
-     */
-    protected String getRowLabel(int rowPosition) {
         ILayerCell cell = this.layer.getCellByPosition(0, rowPosition);
-        return this.rowLabelCache.get(cell.getOriginRowPosition());
+        if (cell != null) {
+            String label = this.rowLabelCache.get(cell.getOriginRowPosition());
+            if (label == null) {
+                if (this.future == null || this.future.isCancelled() || this.future.isDone()) {
+                    calculateLabels();
+                }
+
+                if (rowPosition < 100) {
+                    // for the first few rows we wait a moment to give the
+                    // background calculation time to proceed to avoid
+                    // flickering at the top of the table. we do not wait in any
+                    // case as otherwise sorting would show a bad performance in
+                    // the middle or the end of the table
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        // nothing to do here
+                    }
+                    label = this.rowLabelCache.get(cell.getOriginRowPosition());
+
+                    if (label != null) {
+                        configLabels.addLabel(label);
+                    }
+                }
+            } else {
+                configLabels.addLabel(label);
+            }
+        }
     }
 
     /**
@@ -165,7 +154,7 @@ public class HierarchicalTreeAlternatingRowConfigLabelAccumulator
      * Clears the local cache of calculated row position to label mappings.
      */
     public void clearCache() {
-        if (this.future != null && (!this.future.isCancelled() || !this.future.isDone())) {
+        if (this.future != null && !this.future.isCancelled() && !this.future.isDone()) {
             // cancel a already running process
             this.future.cancel(true);
             // ensure to wait until the current running future is terminated
