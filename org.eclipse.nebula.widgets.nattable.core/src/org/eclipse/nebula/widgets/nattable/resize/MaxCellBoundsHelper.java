@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,23 +28,40 @@ import org.eclipse.swt.graphics.Rectangle;
 public class MaxCellBoundsHelper {
 
     /**
-     * @return Preferred widths for columns. Preferred width is the minimum
-     *         width required to horizontally fit all the contents of the column
-     *         (including header)
+     * Calculates the preferred column widths of the given columns based on the
+     * given {@link IConfigRegistry}. The preferred column width is the width
+     * needed at minimum to fit all the contents horizontally.
+     *
+     * @param configRegistry
+     *            The {@link IConfigRegistry} to get the required configuration
+     *            values.
+     * @param gcFactory
+     *            The {@link GCFactory} for creating a temporary {@link GC}
+     *            needed for UI related calculations without blocking the UI
+     *            thread.
+     * @param layer
+     *            The layer to which the column positions match.
+     * @param columnPositions
+     *            The column positions for which the preferred width should be
+     *            calculated.
+     * @return The preferred column widths of the given columns or
+     *         <code>null</code> if an error occurred on processing.
      */
     public static int[] getPreferredColumnWidths(
-            IConfigRegistry configRegistry, GCFactory gcFactory, ILayer layer,
-            int[] columnPositions) {
-        int[] columnWidths = new int[columnPositions.length];
+            IConfigRegistry configRegistry, GCFactory gcFactory, ILayer layer, int[] columnPositions) {
 
         GC gc = gcFactory.createGC();
-        for (int i = 0; i < columnPositions.length; i++) {
-            columnWidths[i] = getPreferredColumnWidth(layer,
-                    columnPositions[i], configRegistry, gc);
-        }
-        gc.dispose();
+        if (gc != null) {
+            int[] columnWidths = new int[columnPositions.length];
+            for (int i = 0; i < columnPositions.length; i++) {
+                columnWidths[i] = getPreferredColumnWidth(layer, columnPositions[i], configRegistry, gc);
+            }
+            gc.dispose();
 
-        return columnWidths;
+            return columnWidths;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -52,8 +69,9 @@ public class MaxCellBoundsHelper {
      * contents of the cells in a column. Takes into account the font settings
      * and display type conversion.
      */
-    private static int getPreferredColumnWidth(ILayer layer,
-            int columnPosition, IConfigRegistry configRegistry, GC gc) {
+    private static int getPreferredColumnWidth(
+            ILayer layer, int columnPosition, IConfigRegistry configRegistry, GC gc) {
+
         ICellPainter painter;
         int maxWidth = 0;
         ILayerCell cell;
@@ -101,22 +119,46 @@ public class MaxCellBoundsHelper {
         return maxWidth;
     }
 
-    public static int[] getPreferredRowHeights(IConfigRegistry configRegistry,
-            GCFactory gcFactory, ILayer layer, int[] rows) {
-        int[] rowHeights = new int[rows.length];
+    /**
+     * Calculates the preferred row heights of the given rows based on the given
+     * {@link IConfigRegistry}. The preferred row height is the height needed at
+     * minimum to fit all the content vertically.
+     *
+     * @param configRegistry
+     *            The {@link IConfigRegistry} to get the required configuration
+     *            values.
+     * @param gcFactory
+     *            The {@link GCFactory} for creating a temporary {@link GC}
+     *            needed for UI related calculations without blocking the UI
+     *            thread.
+     * @param layer
+     *            The layer to which the row positions match.
+     * @param rowPositions
+     *            The row positions for which the preferred height should be
+     *            calculated.
+     * @return The preferred row heights of the given rows or <code>null</code>
+     *         if an error occurred on processing.
+     */
+    public static int[] getPreferredRowHeights(
+            IConfigRegistry configRegistry, GCFactory gcFactory, ILayer layer, int[] rowPositions) {
 
         GC gc = gcFactory.createGC();
-        for (int i = 0; i < rows.length; i++) {
-            rowHeights[i] = getPreferredRowHeight(layer, rows[i],
-                    configRegistry, gc);
-        }
-        gc.dispose();
+        if (gc != null) {
+            int[] rowHeights = new int[rowPositions.length];
+            for (int i = 0; i < rowPositions.length; i++) {
+                rowHeights[i] = getPreferredRowHeight(layer, rowPositions[i], configRegistry, gc);
+            }
+            gc.dispose();
 
-        return rowHeights;
+            return rowHeights;
+        } else {
+            return null;
+        }
     }
 
-    private static int getPreferredRowHeight(ILayer layer, int rowPosition,
-            IConfigRegistry configRegistry, GC gc) {
+    private static int getPreferredRowHeight(
+            ILayer layer, int rowPosition, IConfigRegistry configRegistry, GC gc) {
+
         int maxHeight = 0;
         ICellPainter painter;
         ILayerCell cell;
