@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -93,9 +93,13 @@ public class AutoResizeColumnCommandHandler implements ILayerCommandHandler<Auto
                 this.commandLayer,
                 gridColumnPositions);
 
-        this.commandLayer.doCommand(
-                new MultiColumnResizeCommand(this.commandLayer, gridColumnPositions, gridColumnWidths, true));
-        targetLayer.doCommand(new TurnViewportOnCommand());
+        // only perform further actions if the widths could be calculated
+        // could fail and return null for example if the GCFactory fails
+        if (gridColumnWidths != null) {
+            this.commandLayer.doCommand(
+                    new MultiColumnResizeCommand(this.commandLayer, gridColumnPositions, gridColumnWidths, true));
+            targetLayer.doCommand(new TurnViewportOnCommand());
+        }
 
         return true;
     }

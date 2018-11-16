@@ -267,24 +267,29 @@ public class AutoResizeHelper {
                         bodyDataLayer,
                         rowPos);
 
-                // only perform row resize where necessary
-                // avoid unnecessary commands
-                final List<Integer> positions = new ArrayList<Integer>(rowPos.length);
-                final List<Integer> heights = new ArrayList<Integer>(rowPos.length);
-                for (int i = 0; i < rowPos.length; i++) {
-                    if (rowHeights[i] != calculatedRowHeights[i]) {
-                        positions.add(rowPos[i]);
-                        heights.add(calculatedRowHeights[i]);
+                // only perform further actions if the heights could be
+                // calculated
+                // could fail and return null for example if the GCFactory fails
+                if (calculatedRowHeights != null) {
+                    // only perform row resize where necessary
+                    // avoid unnecessary commands
+                    final List<Integer> positions = new ArrayList<Integer>(rowPos.length);
+                    final List<Integer> heights = new ArrayList<Integer>(rowPos.length);
+                    for (int i = 0; i < rowPos.length; i++) {
+                        if (rowHeights[i] != calculatedRowHeights[i]) {
+                            positions.add(rowPos[i]);
+                            heights.add(calculatedRowHeights[i]);
+                        }
                     }
-                }
 
-                if (!positions.isEmpty()) {
-                    bodyDataLayer.doCommand(
-                            new MultiRowResizeCommand(
-                                    bodyDataLayer,
-                                    ObjectUtils.asIntArray(positions),
-                                    ObjectUtils.asIntArray(heights),
-                                    true));
+                    if (!positions.isEmpty()) {
+                        bodyDataLayer.doCommand(
+                                new MultiRowResizeCommand(
+                                        bodyDataLayer,
+                                        ObjectUtils.asIntArray(positions),
+                                        ObjectUtils.asIntArray(heights),
+                                        true));
+                    }
                 }
             }
         });

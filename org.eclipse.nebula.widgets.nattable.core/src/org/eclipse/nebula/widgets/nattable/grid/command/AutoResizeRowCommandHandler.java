@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2018 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -90,10 +90,14 @@ public class AutoResizeRowCommandHandler implements ILayerCommandHandler<AutoRes
                 this.commandLayer,
                 gridRowPositions);
 
-        this.commandLayer.doCommand(
-                new MultiRowResizeCommand(this.commandLayer, gridRowPositions, gridRowHeights, true));
+        // only perform further actions if the heights could be calculated
+        // could fail and return null for example if the GCFactory fails
+        if (gridRowHeights != null) {
+            this.commandLayer.doCommand(
+                    new MultiRowResizeCommand(this.commandLayer, gridRowPositions, gridRowHeights, true));
 
-        targetLayer.doCommand(new TurnViewportOnCommand());
+            targetLayer.doCommand(new TurnViewportOnCommand());
+        }
 
         return true;
     }
