@@ -596,7 +596,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
         }
 
         if (this.fillHandleRegion != null
-                && this.fillHandleRegion.contains(cell.getColumnIndex(), cell.getRowIndex())) {
+                && this.fillHandleRegion.contains(cell.getColumnPosition(), cell.getRowPosition())) {
             labelStack.addLabel(SelectionStyleLabels.FILL_HANDLE_REGION);
         }
         return labelStack;

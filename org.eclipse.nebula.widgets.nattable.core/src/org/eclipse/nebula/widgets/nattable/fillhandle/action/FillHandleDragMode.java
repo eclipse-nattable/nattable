@@ -23,6 +23,7 @@ import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataToClipboardComma
 import org.eclipse.nebula.widgets.nattable.fillhandle.command.FillHandlePasteCommand;
 import org.eclipse.nebula.widgets.nattable.fillhandle.command.FillHandlePasteCommand.FillHandleOperation;
 import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillHandleConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
@@ -52,7 +53,16 @@ import org.eclipse.swt.widgets.MenuItem;
 public class FillHandleDragMode extends AutoScrollDragMode {
 
     protected MouseEvent startEvent;
+    /**
+     * The usage of the index is deprecated. Instead the startPosition should be
+     * used which is relative to the SelectionLayer.
+     */
+    @Deprecated
     protected Point startIndex;
+    /**
+     * @since 1.6
+     */
+    protected Point startPosition;
     protected MoveDirectionEnum direction;
 
     protected SelectionLayer selectionLayer;
@@ -95,6 +105,10 @@ public class FillHandleDragMode extends AutoScrollDragMode {
             this.startIndex = new Point(
                     this.selectionCell.getColumnIndex(),
                     this.selectionCell.getRowIndex());
+
+            this.startPosition = new Point(
+                    this.selectionCell.getColumnPosition(),
+                    this.selectionCell.getRowPosition());
         }
     }
 
@@ -104,22 +118,19 @@ public class FillHandleDragMode extends AutoScrollDragMode {
             int x, int y,
             MoveDirectionEnum horizontal, MoveDirectionEnum vertical) {
 
-        int selectedColumnPosition = natTable.getColumnPositionByX(x);
-        int selectedRowPosition = natTable.getRowPositionByY(y);
+        int natTableColumnPosition = natTable.getColumnPositionByX(x);
+        int natTableRowPosition = natTable.getRowPositionByY(y);
 
-        int selectedColumnIndex = natTable.getColumnIndexByPosition(selectedColumnPosition);
-        int selectedRowIndex = natTable.getRowIndexByPosition(selectedRowPosition);
+        int selectedColumnPosition = LayerUtil.convertColumnPosition(natTable, natTableColumnPosition, this.selectionLayer);
+        int selectedRowPosition = LayerUtil.convertRowPosition(natTable, natTableRowPosition, this.selectionLayer);
 
-        if (selectedColumnPosition > -1 && selectedRowPosition > -1) {
+        if (natTableColumnPosition > -1 && natTableRowPosition > -1) {
             Rectangle actionBounds = null;
 
-            int xStart = this.startIndex.x;
-            int yStart = this.startIndex.y;
+            int xStart = this.startPosition.x;
+            int yStart = this.startPosition.y;
 
             Rectangle region = this.selectionLayer.getLastSelectedRegion();
-            // translate region positions to indexes
-            int regionColumnIndex = this.selectionLayer.getColumnIndexByPosition(region.x);
-            int regionRowIndex = this.selectionLayer.getRowIndexByPosition(region.y);
 
             // only increase range in one direction
             int xDiff = calculateIncreasedPositiveDiff(
@@ -128,10 +139,10 @@ public class FillHandleDragMode extends AutoScrollDragMode {
             int yDiff = calculateIncreasedPositiveDiff(
                     y,
                     (y < this.startEvent.y) ? this.selectionCell.getBounds().y : this.startEvent.y);
-            if (selectedColumnIndex >= regionColumnIndex && selectedColumnIndex < (regionColumnIndex + region.width)) {
+            if (selectedColumnPosition >= region.x && selectedColumnPosition < (region.x + region.width)) {
                 xDiff = 0;
             }
-            if (selectedRowIndex >= regionRowIndex && selectedRowIndex < (regionRowIndex + region.height)) {
+            if (selectedRowPosition >= region.y && selectedRowPosition < (region.y + region.height)) {
                 yDiff = 0;
             }
 
@@ -151,22 +162,22 @@ public class FillHandleDragMode extends AutoScrollDragMode {
             if (direction != Direction.NONE) {
                 if (direction == Direction.VERTICAL
                         || (direction == Direction.BOTH && yDiff >= xDiff)) {
-                    int diff = calculateIncreasedPositiveDiff(selectedRowIndex, this.startIndex.y);
+                    int diff = calculateIncreasedPositiveDiff(selectedRowPosition, this.startPosition.y);
                     height = Math.max(diff, this.selectionLayer.getSelectedRowCount());
                     width = this.selectionLayer.getSelectedColumnPositions().length;
                     this.direction = MoveDirectionEnum.DOWN;
-                    if ((selectedRowIndex - this.startIndex.y) < 0) {
-                        yStart = selectedRowIndex;
+                    if ((selectedRowPosition - this.startPosition.y) < 0) {
+                        yStart = selectedRowPosition;
                         height = diff + this.selectionLayer.getSelectedRowCount() - 1;
                         this.direction = MoveDirectionEnum.UP;
                     }
                 } else {
-                    int diff = calculateIncreasedPositiveDiff(selectedColumnIndex, this.startIndex.x);
+                    int diff = calculateIncreasedPositiveDiff(selectedColumnPosition, this.startPosition.x);
                     height = this.selectionLayer.getSelectedRowCount();
                     width = Math.max(diff, this.selectionLayer.getSelectedColumnPositions().length);
                     this.direction = MoveDirectionEnum.RIGHT;
-                    if ((selectedColumnIndex - this.startIndex.x) < 0) {
-                        xStart = selectedColumnIndex;
+                    if ((selectedColumnPosition - this.startPosition.x) < 0) {
+                        xStart = selectedColumnPosition;
                         width = diff + this.selectionLayer.getSelectedColumnPositions().length - 1;
                         this.direction = MoveDirectionEnum.LEFT;
                     }
@@ -350,6 +361,7 @@ public class FillHandleDragMode extends AutoScrollDragMode {
         this.selectionCell = null;
         this.startEvent = null;
         this.startIndex = null;
+        this.startPosition = null;
         this.direction = null;
         this.selectionLayer.setFillHandleRegion(null);
         this.clipboard.clear();

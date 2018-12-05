@@ -46,6 +46,8 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -120,6 +122,17 @@ public class _305_FormulaDataExample extends AbstractNatExample {
                         ExportConfigAttributes.EXPORTER,
                         exporter);
             }
+        });
+
+        natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
+            @Override
+            protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
+                return new PopupMenuBuilder(natTable)
+                        .withHideColumnMenuItem()
+                        .withShowAllColumnsMenuItem()
+                        .withAutoResizeSelectedColumnsMenuItem();
+            }
+
         });
 
         natTable.configure();

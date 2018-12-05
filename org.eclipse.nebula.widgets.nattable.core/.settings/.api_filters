@@ -9,6 +9,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/org/eclipse/nebula/widgets/nattable/fillhandle/action/FillHandleDragMode.java" type="org.eclipse.nebula.widgets.nattable.fillhandle.action.FillHandleDragMode">
+        <filter comment="Added startPosition to fix an issue with the index based handling" id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.fillhandle.action.FillHandleDragMode"/>
+                <message_argument value="startPosition"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/org/eclipse/nebula/widgets/nattable/freeze/IFreezeConfigAttributes.java" type="org.eclipse.nebula.widgets.nattable.freeze.IFreezeConfigAttributes">
         <filter comment="Added new configuration attribute for freeze separator width" id="403767336">
             <message_arguments>
