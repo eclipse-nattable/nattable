@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth.
+ * Copyright (c) 2014, 2018 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -115,7 +115,7 @@ public class RowSelectionTraversalTest {
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT,
                 ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY, false, false));
 
-        assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -137,7 +137,7 @@ public class RowSelectionTraversalTest {
         // move one to right
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, false, false));
 
-        assertEquals(5, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -177,7 +177,7 @@ public class RowSelectionTraversalTest {
         // move 3 steps to right
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 3, false, false));
 
-        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -217,7 +217,7 @@ public class RowSelectionTraversalTest {
         // move one to right
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, false, false));
 
-        assertEquals(5, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -237,7 +237,7 @@ public class RowSelectionTraversalTest {
         // move one to right at end -> relocate at beginning, same row
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, false, false));
 
-        assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -257,7 +257,7 @@ public class RowSelectionTraversalTest {
         // move 3 steps to right
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 3, false, false));
 
-        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -277,7 +277,7 @@ public class RowSelectionTraversalTest {
         // move 4 steps to right
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 4, false, false));
 
-        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -297,7 +297,7 @@ public class RowSelectionTraversalTest {
         // move 24 steps to right
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 24, false, false));
 
-        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -317,7 +317,7 @@ public class RowSelectionTraversalTest {
         // move one to right
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, false, false));
 
-        assertEquals(5, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -337,7 +337,7 @@ public class RowSelectionTraversalTest {
         // move one to right at end -> relocate at beginning, new row
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, false, false));
 
-        assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(5, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -377,7 +377,7 @@ public class RowSelectionTraversalTest {
         // move 3 steps to right
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 3, false, false));
 
-        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -397,7 +397,7 @@ public class RowSelectionTraversalTest {
         // move 4 steps to right
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 4, false, false));
 
-        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(5, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -417,7 +417,7 @@ public class RowSelectionTraversalTest {
         // move 24 steps to right
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 24, false, false));
 
-        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -457,7 +457,7 @@ public class RowSelectionTraversalTest {
         // move one to right
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, false, false));
 
-        assertEquals(5, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -477,7 +477,7 @@ public class RowSelectionTraversalTest {
         // move one to right at end -> relocate at beginning, new row
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, false, false));
 
-        assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(5, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -497,7 +497,7 @@ public class RowSelectionTraversalTest {
         // move one to right at end -> relocate at beginning, top
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, false, false));
 
-        assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -520,7 +520,7 @@ public class RowSelectionTraversalTest {
         // move 3 steps to right
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 3, false, false));
 
-        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -540,7 +540,7 @@ public class RowSelectionTraversalTest {
         // move 4 steps to right
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 4, false, false));
 
-        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(5, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -560,7 +560,7 @@ public class RowSelectionTraversalTest {
         // move 24 steps to right
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 24, false, false));
 
-        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -580,7 +580,7 @@ public class RowSelectionTraversalTest {
         // move 34 steps to right
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 34, false, false));
 
-        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(2, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -602,7 +602,7 @@ public class RowSelectionTraversalTest {
         // move one to left
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, false, false));
 
-        assertEquals(3, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -622,7 +622,7 @@ public class RowSelectionTraversalTest {
         // move on to left at beginning -> stay
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, false, false));
 
-        assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -642,7 +642,7 @@ public class RowSelectionTraversalTest {
         // move 3 steps to left
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 3, false, false));
 
-        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -662,7 +662,7 @@ public class RowSelectionTraversalTest {
         // move 4 steps to left
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 4, false, false));
 
-        assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -682,7 +682,7 @@ public class RowSelectionTraversalTest {
         // move one to left
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, false, false));
 
-        assertEquals(3, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -722,7 +722,7 @@ public class RowSelectionTraversalTest {
         // move 3 steps to left
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 3, false, false));
 
-        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -742,7 +742,7 @@ public class RowSelectionTraversalTest {
         // move 4 steps to left
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 4, false, false));
 
-        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -762,7 +762,7 @@ public class RowSelectionTraversalTest {
         // move 24 steps to left
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 24, false, false));
 
-        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -782,7 +782,7 @@ public class RowSelectionTraversalTest {
         // move one to left
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, false, false));
 
-        assertEquals(3, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -822,7 +822,7 @@ public class RowSelectionTraversalTest {
         // move one to left at beginning -> stay
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, false, false));
 
-        assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -842,7 +842,7 @@ public class RowSelectionTraversalTest {
         // move 3 steps to left
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 3, false, false));
 
-        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -862,7 +862,7 @@ public class RowSelectionTraversalTest {
         // move 4 steps to left
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 4, false, false));
 
-        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(3, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -882,7 +882,7 @@ public class RowSelectionTraversalTest {
         // move 24 steps to left
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 24, false, false));
 
-        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -902,7 +902,7 @@ public class RowSelectionTraversalTest {
         // move 24 steps to left
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 24, false, false));
 
-        assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -922,7 +922,7 @@ public class RowSelectionTraversalTest {
         // move one to left
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, false, false));
 
-        assertEquals(3, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -982,7 +982,7 @@ public class RowSelectionTraversalTest {
         // move 3 steps to left
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 3, false, false));
 
-        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1002,7 +1002,7 @@ public class RowSelectionTraversalTest {
         // move 4 steps to left
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 4, false, false));
 
-        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(3, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1022,7 +1022,7 @@ public class RowSelectionTraversalTest {
         // move 24 steps to left
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 24, false, false));
 
-        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1042,7 +1042,7 @@ public class RowSelectionTraversalTest {
         // move 34 steps to left
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 34, false, false));
 
-        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1064,7 +1064,7 @@ public class RowSelectionTraversalTest {
         // move one down
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(5, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1084,7 +1084,7 @@ public class RowSelectionTraversalTest {
         // move down at end -> stay
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(9, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1104,7 +1104,7 @@ public class RowSelectionTraversalTest {
         // move 3 steps down
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 3, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1124,7 +1124,7 @@ public class RowSelectionTraversalTest {
         // move 4 steps down
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 4, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(9, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1144,7 +1144,7 @@ public class RowSelectionTraversalTest {
         // move one down
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(5, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1164,7 +1164,7 @@ public class RowSelectionTraversalTest {
         // move down at end -> relocate at beginning, same column
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1184,7 +1184,7 @@ public class RowSelectionTraversalTest {
         // move 3 steps down
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 3, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1204,7 +1204,7 @@ public class RowSelectionTraversalTest {
         // move 4 steps down
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 4, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1224,7 +1224,7 @@ public class RowSelectionTraversalTest {
         // move 24 steps down
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 24, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1244,7 +1244,7 @@ public class RowSelectionTraversalTest {
         // move one down
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(5, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1264,7 +1264,7 @@ public class RowSelectionTraversalTest {
         // move one down at end -> relocate at beginning, new column
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, false, false));
 
-        assertEquals(5, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1304,7 +1304,7 @@ public class RowSelectionTraversalTest {
         // move 3 steps down
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 3, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1324,7 +1324,7 @@ public class RowSelectionTraversalTest {
         // move 4 steps down
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 4, false, false));
 
-        assertEquals(5, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1344,7 +1344,7 @@ public class RowSelectionTraversalTest {
         // move 24 steps down
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 24, false, false));
 
-        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1384,7 +1384,7 @@ public class RowSelectionTraversalTest {
         // move one down
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(5, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1404,7 +1404,7 @@ public class RowSelectionTraversalTest {
         // move one down at end -> relocate at beginning, new column
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, false, false));
 
-        assertEquals(5, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1424,7 +1424,7 @@ public class RowSelectionTraversalTest {
         // move one to right at end -> relocate at beginning, top
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, false, false));
 
-        assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1444,7 +1444,7 @@ public class RowSelectionTraversalTest {
         // move 3 steps down
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 3, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1464,7 +1464,7 @@ public class RowSelectionTraversalTest {
         // move 4 steps down
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 4, false, false));
 
-        assertEquals(5, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1484,7 +1484,7 @@ public class RowSelectionTraversalTest {
         // move 24 steps down
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 24, false, false));
 
-        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1504,7 +1504,7 @@ public class RowSelectionTraversalTest {
         // move 34 steps down
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 34, false, false));
 
-        assertEquals(2, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1526,7 +1526,7 @@ public class RowSelectionTraversalTest {
         // move one up
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(3, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1546,7 +1546,7 @@ public class RowSelectionTraversalTest {
         // move up at beginning -> stay
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1566,7 +1566,7 @@ public class RowSelectionTraversalTest {
         // move 3 steps up
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 3, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1586,7 +1586,7 @@ public class RowSelectionTraversalTest {
         // move 4 steps up
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 4, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1606,7 +1606,7 @@ public class RowSelectionTraversalTest {
         // move one up
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(3, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1626,7 +1626,7 @@ public class RowSelectionTraversalTest {
         // move one up at beginning -> relocate at end, same column
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(9, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1646,7 +1646,7 @@ public class RowSelectionTraversalTest {
         // move 3 steps up
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 3, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1666,7 +1666,7 @@ public class RowSelectionTraversalTest {
         // move 4 steps up
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 4, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(8, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1686,7 +1686,7 @@ public class RowSelectionTraversalTest {
         // move 24 steps up
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 24, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(8, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1706,7 +1706,7 @@ public class RowSelectionTraversalTest {
         // move one up
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(3, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1726,7 +1726,7 @@ public class RowSelectionTraversalTest {
         // move one up at beginning -> relocate at end, new column
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, false, false));
 
-        assertEquals(3, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(9, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1746,7 +1746,7 @@ public class RowSelectionTraversalTest {
         // move one up at beginning -> stay
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, false, false));
 
-        assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1766,7 +1766,7 @@ public class RowSelectionTraversalTest {
         // move 3 steps up
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 3, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1786,7 +1786,7 @@ public class RowSelectionTraversalTest {
         // move 4 steps up
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 4, false, false));
 
-        assertEquals(3, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(8, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1806,7 +1806,7 @@ public class RowSelectionTraversalTest {
         // move 24 steps up
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 24, false, false));
 
-        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(8, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1826,7 +1826,7 @@ public class RowSelectionTraversalTest {
         // move 24 steps up
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 24, false, false));
 
-        assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1846,7 +1846,7 @@ public class RowSelectionTraversalTest {
         // move one up
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(3, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1866,7 +1866,7 @@ public class RowSelectionTraversalTest {
         // move one up at beginning -> relocate at end, new column
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, false, false));
 
-        assertEquals(3, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(9, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1906,7 +1906,7 @@ public class RowSelectionTraversalTest {
         // move 3 steps up
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 3, false, false));
 
-        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1926,7 +1926,7 @@ public class RowSelectionTraversalTest {
         // move 4 steps up
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 4, false, false));
 
-        assertEquals(3, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(8, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1946,7 +1946,7 @@ public class RowSelectionTraversalTest {
         // move 24 steps up
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 24, false, false));
 
-        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(8, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
@@ -1966,7 +1966,7 @@ public class RowSelectionTraversalTest {
         // move 34 steps up
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 34, false, false));
 
-        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(this.selectionLayer.getColumnCount() - 1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(8, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
         assertEquals(1, this.selectionLayer.getSelectedRowCount());

@@ -65,7 +65,7 @@ public class SelectColumnCommandHandler implements ILayerCommandHandler<SelectCo
         }
 
         // Set last selected column position to the recently clicked column
-        this.selectionLayer.setLastSelectedCell(columnPosition, rowPosition);
+        this.selectionLayer.setLastSelectedCell(columnPosition, this.selectionLayer.getRowCount() - 1);
 
         this.selectionLayer.fireLayerEvent(
                 new ColumnSelectionEvent(

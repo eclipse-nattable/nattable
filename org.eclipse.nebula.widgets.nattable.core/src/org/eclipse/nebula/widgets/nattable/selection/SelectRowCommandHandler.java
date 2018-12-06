@@ -132,7 +132,7 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
             changedRowRanges.add(selectRowWithCtrlKey(columnPosition, rowPosition));
         }
 
-        this.selectionLayer.setLastSelectedCell(columnPosition, rowPosition);
+        this.selectionLayer.setLastSelectedCell(this.selectionLayer.getColumnCount() - 1, rowPosition);
 
         return changedRowRanges;
     }
