@@ -21,9 +21,11 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
- * Does the calculations needed for auto resizing feature Helper class for
- * {@link AutoResizeColumnCommandHandler} and
- * {@link AutoResizeRowCommandHandler}
+ * Helper class that does the calculations needed for the auto resizing feature.
+ *
+ * @see AutoResizeColumnCommandHandler
+ * @see AutoResizeRowCommandHandler
+ * @see AutoResizeHelper
  */
 public class MaxCellBoundsHelper {
 
@@ -68,25 +70,33 @@ public class MaxCellBoundsHelper {
      * Calculates the minimum width (in pixels) required to display the complete
      * contents of the cells in a column. Takes into account the font settings
      * and display type conversion.
+     *
+     * @param layer
+     *            The layer to which the column position matches.
+     * @param columnPosition
+     *            The column position whose preferred width should be
+     *            calculated.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} to get the required configuration
+     *            values.
+     * @param gc
+     *            The {@link GC} needed for UI related calculations.
+     * @return The preferred column width of the given column.
      */
-    private static int getPreferredColumnWidth(
-            ILayer layer, int columnPosition, IConfigRegistry configRegistry, GC gc) {
+    private static int getPreferredColumnWidth(ILayer layer, int columnPosition, IConfigRegistry configRegistry, GC gc) {
 
-        ICellPainter painter;
         int maxWidth = 0;
+        ICellPainter painter;
         ILayerCell cell;
 
         for (int rowPosition = 0; rowPosition < layer.getRowCount(); rowPosition++) {
             cell = layer.getCellByPosition(columnPosition, rowPosition);
             if (cell != null) {
-                boolean atEndOfCellSpan = cell.getOriginColumnPosition()
-                        + cell.getColumnSpan() - 1 == columnPosition;
+                boolean atEndOfCellSpan = (cell.getOriginColumnPosition() + cell.getColumnSpan() - 1) == columnPosition;
                 if (atEndOfCellSpan) {
-                    painter = layer.getCellPainter(cell.getColumnPosition(),
-                            cell.getRowPosition(), cell, configRegistry);
+                    painter = layer.getCellPainter(cell.getColumnPosition(), cell.getRowPosition(), cell, configRegistry);
                     if (painter != null) {
-                        int preferredWidth = painter.getPreferredWidth(cell,
-                                gc, configRegistry);
+                        int preferredWidth = painter.getPreferredWidth(cell, gc, configRegistry);
 
                         // Adjust width
                         Rectangle bounds = cell.getBounds();
@@ -94,23 +104,16 @@ public class MaxCellBoundsHelper {
                         Rectangle adjustedCellBounds = cell
                                 .getLayer()
                                 .getLayerPainter()
-                                .adjustCellBounds(columnPosition, rowPosition,
-                                        bounds);
-                        preferredWidth += preferredWidth
-                                - adjustedCellBounds.width;
+                                .adjustCellBounds(columnPosition, rowPosition, bounds);
+                        preferredWidth += preferredWidth - adjustedCellBounds.width;
 
                         if (cell.getColumnSpan() > 1) {
-                            int columnStartX = layer
-                                    .getStartXOfColumnPosition(columnPosition);
-                            int cellStartX = layer
-                                    .getStartXOfColumnPosition(cell
-                                            .getOriginColumnPosition());
-                            preferredWidth = Math.max(0, preferredWidth
-                                    - (columnStartX - cellStartX));
+                            int columnStartX = layer.getStartXOfColumnPosition(columnPosition);
+                            int cellStartX = layer.getStartXOfColumnPosition(cell.getOriginColumnPosition());
+                            preferredWidth = Math.max(0, preferredWidth - (columnStartX - cellStartX));
                         }
 
-                        maxWidth = (preferredWidth > maxWidth) ? preferredWidth
-                                : maxWidth;
+                        maxWidth = (preferredWidth > maxWidth) ? preferredWidth : maxWidth;
                     }
                 }
             }
@@ -156,8 +159,23 @@ public class MaxCellBoundsHelper {
         }
     }
 
-    private static int getPreferredRowHeight(
-            ILayer layer, int rowPosition, IConfigRegistry configRegistry, GC gc) {
+    /**
+     * Calculates the minimum height (in pixels) required to display the
+     * complete contents of the cells in a row. Takes into account the font
+     * settings and display type conversion.
+     *
+     * @param layer
+     *            The layer to which the column position matches.
+     * @param rowPosition
+     *            The row position whose preferred height should be calculated.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} to get the required configuration
+     *            values.
+     * @param gc
+     *            The {@link GC} needed for UI related calculations.
+     * @return The preferred row height of the given row.
+     */
+    private static int getPreferredRowHeight(ILayer layer, int rowPosition, IConfigRegistry configRegistry, GC gc) {
 
         int maxHeight = 0;
         ICellPainter painter;
@@ -166,14 +184,11 @@ public class MaxCellBoundsHelper {
         for (int columnPosition = 0; columnPosition < layer.getColumnCount(); columnPosition++) {
             cell = layer.getCellByPosition(columnPosition, rowPosition);
             if (cell != null) {
-                boolean atEndOfCellSpan = cell.getOriginRowPosition()
-                        + cell.getRowSpan() - 1 == rowPosition;
+                boolean atEndOfCellSpan = (cell.getOriginRowPosition() + cell.getRowSpan() - 1) == rowPosition;
                 if (atEndOfCellSpan) {
-                    painter = layer.getCellPainter(cell.getColumnPosition(),
-                            cell.getRowPosition(), cell, configRegistry);
+                    painter = layer.getCellPainter(cell.getColumnPosition(), cell.getRowPosition(), cell, configRegistry);
                     if (painter != null) {
-                        int preferredHeight = painter.getPreferredHeight(cell,
-                                gc, configRegistry);
+                        int preferredHeight = painter.getPreferredHeight(cell, gc, configRegistry);
 
                         // Adjust height
                         Rectangle bounds = cell.getBounds();
@@ -181,22 +196,16 @@ public class MaxCellBoundsHelper {
                         Rectangle adjustedCellBounds = cell
                                 .getLayer()
                                 .getLayerPainter()
-                                .adjustCellBounds(columnPosition, rowPosition,
-                                        bounds);
-                        preferredHeight += preferredHeight
-                                - adjustedCellBounds.height;
+                                .adjustCellBounds(columnPosition, rowPosition, bounds);
+                        preferredHeight += preferredHeight - adjustedCellBounds.height;
 
-                        if (cell.getColumnSpan() > 1) {
-                            int rowStartY = layer
-                                    .getStartYOfRowPosition(rowPosition);
-                            int cellStartY = layer.getStartYOfRowPosition(cell
-                                    .getOriginRowPosition());
-                            preferredHeight = Math.max(0, preferredHeight
-                                    - (rowStartY - cellStartY));
+                        if (cell.getRowSpan() > 1) {
+                            int rowStartY = layer.getStartYOfRowPosition(rowPosition);
+                            int cellStartY = layer.getStartYOfRowPosition(cell.getOriginRowPosition());
+                            preferredHeight = Math.max(0, preferredHeight - (rowStartY - cellStartY));
                         }
 
-                        maxHeight = (preferredHeight > maxHeight) ? preferredHeight
-                                : maxHeight;
+                        maxHeight = (preferredHeight > maxHeight) ? preferredHeight : maxHeight;
                     }
                 }
             }
@@ -210,8 +219,7 @@ public class MaxCellBoundsHelper {
      * position.
      */
     public static int[] greater(int[] array1, int[] array2) {
-        int resultSize = (array1.length < array2.length) ? array1.length
-                : array2.length;
+        int resultSize = (array1.length < array2.length) ? array1.length : array2.length;
         int[] result = new int[resultSize];
 
         for (int i = 0; i < resultSize; i++) {
