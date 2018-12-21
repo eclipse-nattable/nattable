@@ -276,7 +276,12 @@ public class AutoResizeHelper {
                     final List<Integer> positions = new ArrayList<Integer>(rowPos.length);
                     final List<Integer> heights = new ArrayList<Integer>(rowPos.length);
                     for (int i = 0; i < rowPos.length; i++) {
-                        if (rowHeights[i] != calculatedRowHeights[i]) {
+                        // on scaling there could be a difference of 1 pixel
+                        // because of rounding issues.
+                        // in that case we do not trigger a resize to avoid
+                        // endless useless resizing
+                        int diff = rowHeights[i] - calculatedRowHeights[i];
+                        if (diff < -1 || diff > 1) {
                             positions.add(rowPos[i]);
                             heights.add(calculatedRowHeights[i]);
                         }

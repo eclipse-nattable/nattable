@@ -151,7 +151,11 @@ public class TextPainter extends AbstractTextPainter {
         if (!this.calculateWrappedHeight) {
             return gc.textExtent(text).y + (this.spacing * 2) + 1 + (getNumberOfNewLines(text) - 1) * this.lineSpacing;
         } else {
-            text = getTextToDisplay(cell, gc, cell.getBounds().width, text);
+            Rectangle adjustedBounds = cell.getLayer().getLayerPainter().adjustCellBounds(
+                    cell.getColumnPosition(),
+                    cell.getRowPosition(),
+                    cell.getBounds());
+            text = getTextToDisplay(cell, gc, adjustedBounds.width, text);
             int numberOfNewLines = getNumberOfNewLines(text);
             return (gc.getFontMetrics().getHeight() * numberOfNewLines) + (this.lineSpacing * (numberOfNewLines - 1)) + (this.spacing * 2);
         }
