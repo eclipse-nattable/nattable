@@ -1,0 +1,164 @@
+/*******************************************************************************
+ * Copyright (c) 2019 Dirk Fauth.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
+ ******************************************************************************/
+package org.eclipse.nebula.widgets.nattable.group.performance;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
+import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
+import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroupCollapseCommand;
+import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroupExpandCommand;
+import org.eclipse.nebula.widgets.nattable.group.performance.command.UpdateColumnGroupCollapseCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.AbstractColumnHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.event.HideColumnPositionsEvent;
+import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowColumnPositionsEvent;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+
+/**
+ * @since 1.6
+ */
+public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer {
+
+    private final Map<Group, Collection<Integer>> hidden = new HashMap<Group, Collection<Integer>>();
+
+    public ColumnGroupExpandCollapseLayer(IUniqueIndexLayer underlyingLayer) {
+        super(underlyingLayer);
+    }
+
+    @Override
+    public boolean doCommand(ILayerCommand command) {
+        if (command instanceof ColumnGroupExpandCommand) {
+            List<Group> groups = ((ColumnGroupExpandCommand) command).getGroups();
+
+            Set<Integer> shownIndexes = new TreeSet<Integer>();
+
+            for (Group group : groups) {
+                // if group is not collapseable return without any further
+                // operation
+                if (group == null || !group.isCollapseable()) {
+                    continue;
+                }
+
+                if (group.isCollapsed()) {
+                    group.setCollapsed(false);
+                    Collection<Integer> columnIndexes = this.hidden.get(group);
+                    this.hidden.remove(group);
+                    shownIndexes.addAll(columnIndexes);
+                }
+            }
+
+            if (!shownIndexes.isEmpty()) {
+                invalidateCache();
+                fireLayerEvent(new ShowColumnPositionsEvent(this, getColumnPositionsByIndexes(shownIndexes)));
+            }
+
+            return true;
+        } else if (command instanceof ColumnGroupCollapseCommand) {
+            GroupModel groupModel = ((ColumnGroupCollapseCommand) command).getGroupModel();
+            List<Group> groups = ((ColumnGroupCollapseCommand) command).getGroups();
+            Collections.sort(groups, new Comparator<Group>() {
+
+                @Override
+                public int compare(Group o1, Group o2) {
+                    return o2.getVisibleStartPosition() - o1.getVisibleStartPosition();
+                }
+            });
+
+            Set<Integer> hiddenPositions = new TreeSet<Integer>();
+
+            for (Group group : groups) {
+                // if group is not collapseable return without any further
+                // operation
+                if (group == null || !group.isCollapseable()) {
+                    continue;
+                }
+
+                Set<Integer> columnIndexes = new TreeSet<Integer>();
+                if (!group.isCollapsed()) {
+                    columnIndexes.addAll(group.getVisibleIndexes());
+                    group.setCollapsed(true);
+                } else if (!this.hidden.containsKey(group)) {
+                    for (int member : group.getMembers()) {
+                        int pos = groupModel.getPositionByIndex(member);
+                        if (pos > -1) {
+                            columnIndexes.add(pos);
+                        }
+                    }
+                }
+
+                Collection<Integer> staticIndexes = group.getStaticIndexes();
+                if (staticIndexes.isEmpty()) {
+                    // keep the first column
+                    columnIndexes.remove(group.getVisibleStartIndex());
+                } else {
+                    columnIndexes.removeAll(staticIndexes);
+                }
+                this.hidden.put(group, columnIndexes);
+
+                hiddenPositions.addAll(getColumnPositionsByIndexes(columnIndexes));
+            }
+
+            if (!hiddenPositions.isEmpty()) {
+                invalidateCache();
+                fireLayerEvent(new HideColumnPositionsEvent(this, hiddenPositions));
+            }
+
+            return true;
+        } else if (command instanceof UpdateColumnGroupCollapseCommand) {
+            UpdateColumnGroupCollapseCommand cmd = (UpdateColumnGroupCollapseCommand) command;
+            Group group = cmd.getGroup();
+            Collection<Integer> hiddenColumnIndexes = this.hidden.get(group);
+            if (group.getVisibleIndexes().size() + hiddenColumnIndexes.size() < group.getOriginalSpan()) {
+                Collection<Integer> indexesToHide = cmd.getIndexesToHide();
+                Collection<Integer> indexesToShow = cmd.getIndexesToShow();
+
+                Collection<Integer> hiddenPositions = getColumnPositionsByIndexes(indexesToHide);
+
+                hiddenColumnIndexes.addAll(indexesToHide);
+                hiddenColumnIndexes.removeAll(indexesToShow);
+
+                invalidateCache();
+
+                fireLayerEvent(new HideColumnPositionsEvent(this, hiddenPositions));
+            }
+
+            return true;
+        }
+        return super.doCommand(command);
+    }
+
+    @Override
+    public boolean isColumnIndexHidden(int columnIndex) {
+        for (Collection<Integer> indexes : this.hidden.values()) {
+            if (indexes.contains(Integer.valueOf(columnIndex))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Collection<Integer> getHiddenColumnIndexes() {
+        Set<Integer> hiddenColumnIndexes = new TreeSet<Integer>();
+        for (Collection<Integer> indexes : this.hidden.values()) {
+            hiddenColumnIndexes.addAll(indexes);
+        }
+        return hiddenColumnIndexes;
+    }
+
+}

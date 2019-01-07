@@ -147,4 +147,23 @@ public class PositionUtil {
         return result;
     }
 
+    /**
+     * Creates an array of positions from the given set of {@link Range}s.
+     *
+     * <p>
+     * Example: [[Range(0 - 3)][Range(4 - 7)]] will return [0, 1, 2, 4, 5, 6].
+     * </p>
+     * <p>
+     * The last number in the Range is not inclusive.
+     * </p>
+     *
+     * @param ranges
+     *            a set of ranges to retrieve positions
+     * @return an array of positions retrieved from ranges
+     *
+     * @since 1.6
+     */
+    public static int[] getPositions(Range... ranges) {
+        return getPositions(Arrays.asList(ranges));
+    }
 }

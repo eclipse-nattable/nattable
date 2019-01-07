@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
+ * Copyright (c) 2019 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,7 +8,7 @@
  * Contributors:
  *     Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  ******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.group;
+package org.eclipse.nebula.widgets.nattable.group.performance;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -34,7 +34,7 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.command.ViewportSelectColumnGroupCommand;
-import org.eclipse.nebula.widgets.nattable.group.config.DefaultColumnGroupHeaderLayerConfiguration;
+import org.eclipse.nebula.widgets.nattable.group.performance.config.DefaultColumnGroupHeaderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -59,7 +59,6 @@ public class ColumnGroupHeaderLayerSelectionTest {
     public static final String TEST_GROUP_NAME_1 = "testGroupName";
     public static final String NO_GROUP_NAME = "";
     public ColumnGroupHeaderLayer columnGroupLayer;
-    private ColumnGroupModel model;
     private GridLayer gridLayer;
     private DefaultBodyLayerStack bodyLayer;
 
@@ -90,19 +89,17 @@ public class ColumnGroupHeaderLayerSelectionTest {
         ILayer columnHeaderLayer = new ColumnHeaderLayer(
                 new DefaultColumnHeaderDataLayer(new DataProviderFixture(10, 1)), this.bodyLayer, selectionLayer);
 
-        this.model = new ColumnGroupModel();
         // 10 columns in header
         this.columnGroupLayer = new ColumnGroupHeaderLayer(
                 columnHeaderLayer,
                 selectionLayer,
-                this.model,
                 false);
 
-        this.columnGroupLayer.addConfiguration(new DefaultColumnGroupHeaderLayerConfiguration(this.model, true));
+        this.columnGroupLayer.addConfiguration(new DefaultColumnGroupHeaderLayerConfiguration(true));
 
-        this.columnGroupLayer.addColumnsIndexesToGroup(TEST_GROUP_NAME_1, 0, 1, 2);
-        this.columnGroupLayer.addColumnsIndexesToGroup(TEST_GROUP_NAME_2, 5, 6);
-        this.columnGroupLayer.addColumnsIndexesToGroup(TEST_GROUP_NAME_3, 8, 9);
+        this.columnGroupLayer.addGroup(TEST_GROUP_NAME_1, 0, 3);
+        this.columnGroupLayer.addGroup(TEST_GROUP_NAME_2, 5, 2);
+        this.columnGroupLayer.addGroup(TEST_GROUP_NAME_3, 8, 2);
 
         // Row header
         ILayer rowHeaderLayer = new RowHeaderLayer(

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.menu;
 
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.columnCategories.ChooseColumnsFromCategoriesCommand;
@@ -23,10 +24,12 @@ import org.eclipse.nebula.widgets.nattable.export.command.ExportTableCommandHand
 import org.eclipse.nebula.widgets.nattable.export.image.ImageExporter;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearAllFiltersCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ToggleFilterRowCommand;
+import org.eclipse.nebula.widgets.nattable.group.command.CreateColumnGroupCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.DisplayColumnGroupRenameDialogCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.OpenCreateColumnGroupDialog;
 import org.eclipse.nebula.widgets.nattable.group.command.RemoveColumnGroupCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.UngroupColumnCommand;
+import org.eclipse.nebula.widgets.nattable.group.performance.gui.ColumnGroupNameDialog;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnShowCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
@@ -771,6 +774,49 @@ public class MenuItemProviders {
                     public void widgetSelected(SelectionEvent e) {
                         natTable.doCommand(
                                 new OpenCreateColumnGroupDialog(natTable.getShell()));
+                    }
+                });
+            }
+        };
+    }
+
+    /**
+     *
+     * @return The {@link IMenuItemProvider} for adding a menu item to create a
+     *         column group with the new performance ColumnGroupHeaderLayer.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider createPerformanceColumnGroupMenuItemProvider() {
+        return createPerformanceColumnGroupMenuItemProvider("%MenuItemProviders.createColumnGroup"); //$NON-NLS-1$
+    }
+
+    /**
+     *
+     * @param menuLabel
+     *            The label to be used for showing the menu item.
+     * @return The {@link IMenuItemProvider} for adding a menu item to create a
+     *         column group with the new performance ColumnGroupHeaderLayer.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider createPerformanceColumnGroupMenuItemProvider(final String menuLabel) {
+        return new IMenuItemProvider() {
+
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
+                MenuItem createColumnGroup = new MenuItem(popupMenu, SWT.PUSH);
+                createColumnGroup.setText(Messages.getLocalizedMessage(menuLabel));
+                createColumnGroup.setEnabled(true);
+
+                createColumnGroup.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        ColumnGroupNameDialog dialog = new ColumnGroupNameDialog(natTable.getShell());
+                        int result = dialog.open();
+                        if (result == IDialogConstants.OK_ID) {
+                            natTable.doCommand(new CreateColumnGroupCommand(dialog.getColumnGroupName()));
+                        }
                     }
                 });
             }

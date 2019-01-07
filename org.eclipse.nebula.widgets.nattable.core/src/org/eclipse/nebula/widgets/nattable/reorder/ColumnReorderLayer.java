@@ -423,9 +423,11 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
         if (toColumnPosition > fromColumnPositions.get(fromColumnPositionsCount - 1)) {
             int firstColumnPosition = fromColumnPositions.get(0).intValue();
 
+            int moved = 0;
             for (int columnCount = 0; columnCount < fromColumnPositionsCount; columnCount++) {
-                final int fromColumnPosition = fromColumnPositions.get(0);
+                final int fromColumnPosition = fromColumnPositions.get(columnCount) - moved;
                 moveColumn(fromColumnPosition, toColumnPosition, reorderToLeftEdge);
+                moved++;
                 if (fromColumnPosition < firstColumnPosition) {
                     firstColumnPosition = fromColumnPosition;
                 }
