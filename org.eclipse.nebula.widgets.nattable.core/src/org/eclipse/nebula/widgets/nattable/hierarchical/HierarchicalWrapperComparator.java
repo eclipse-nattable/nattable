@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
+ * Copyright (c) 2018, 2019 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -105,7 +105,7 @@ public class HierarchicalWrapperComparator implements Comparator<HierarchicalWra
                 // find the level objects that differ
                 // do not consider the leaf level as it is not important for the
                 // tree structure
-                while (o1LvlObject == o2LvlObject && level < (this.levelIndexMapping.size() - 1)) {
+                while (o1LvlObject == o2LvlObject && level < (this.levelIndexMapping.size())) {
                     level++;
                     o1LvlObject = o1.getObject(level);
                     o2LvlObject = o2.getObject(level);
@@ -119,21 +119,6 @@ public class HierarchicalWrapperComparator implements Comparator<HierarchicalWra
                 } else if (o1LvlObject != null && o2LvlObject != null) {
                     // compare level objects
                     result = compareLevel(o1, o2, level);
-                }
-
-                if (result == 0 && this.sortModel != null) {
-                    // check if the sortModel is configured for leaf level
-                    // columns
-                    List<Integer> leafLevelColumns = this.levelIndexMapping.get(this.levelIndexMapping.size() - 1);
-                    List<Integer> sortedColumnIndexes = this.sortModel.getSortedColumnIndexes();
-                    for (Integer sorted : sortedColumnIndexes) {
-                        if (leafLevelColumns.contains(sorted)) {
-                            result = compareColumn(o1, o2, sorted, false);
-                            if (result != 0) {
-                                break;
-                            }
-                        }
-                    }
                 }
 
                 if (result < 0) {
@@ -163,26 +148,15 @@ public class HierarchicalWrapperComparator implements Comparator<HierarchicalWra
         List<Integer> levelIndexes = this.levelIndexMapping.get(level);
         int result = 0;
 
-        boolean sortComparatorFound = false;
         if (this.sortModel != null) {
             List<Integer> sortedColumnIndexes = this.sortModel.getSortedColumnIndexes();
 
             for (Integer sorted : sortedColumnIndexes) {
                 if (levelIndexes.contains(sorted)) {
-                    sortComparatorFound = true;
                     result = compareColumn(o1, o2, sorted, false);
                     if (result != 0) {
                         break;
                     }
-                }
-            }
-        }
-
-        if (!sortComparatorFound) {
-            for (int columnIndex : levelIndexes) {
-                result = compareColumn(o1, o2, columnIndex, true);
-                if (result != 0) {
-                    break;
                 }
             }
         }
