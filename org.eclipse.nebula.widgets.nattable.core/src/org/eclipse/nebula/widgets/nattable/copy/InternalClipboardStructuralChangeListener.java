@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2019 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,6 +15,8 @@ package org.eclipse.nebula.widgets.nattable.copy;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
+import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
 
 /**
  * {@link ILayerListener} that clears the {@link InternalCellClipboard} if an
@@ -32,7 +34,9 @@ public class InternalClipboardStructuralChangeListener implements ILayerListener
 
     @Override
     public void handleLayerEvent(ILayerEvent event) {
-        if (event instanceof IStructuralChangeEvent) {
+        if (event instanceof IStructuralChangeEvent
+                && !(event instanceof RowResizeEvent)
+                && !(event instanceof ColumnResizeEvent)) {
             this.clipboard.clear();
         }
     }
