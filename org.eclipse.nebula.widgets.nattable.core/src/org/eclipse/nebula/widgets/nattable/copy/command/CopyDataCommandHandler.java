@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -50,6 +50,7 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
      * header data.
      */
     private final ILayer columnHeaderLayer;
+
     /**
      * The row header layer of the grid, needed to also copy the row header
      * data.
@@ -289,4 +290,37 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
         }
         return selectedColumns;
     }
+
+    /**
+     *
+     * @return The column header layer of the grid, needed to also copy the
+     *         column header data.
+     * @since 1.6
+     */
+    public ILayer getColumnHeaderLayer() {
+        return this.columnHeaderLayer;
+    }
+
+    /**
+     *
+     * @return The row header layer of the grid, needed to also copy the row
+     *         header data.
+     * @since 1.6
+     */
+    public ILayer getRowHeaderLayer() {
+        return this.rowHeaderLayer;
+    }
+
+    /**
+     *
+     * @return The layer in the body region that should be used to copy. Only
+     *         necessary in case there are layers on top of the
+     *         {@link SelectionLayer} that introduce additional information,
+     *         e.g. the TreeLayer for the tree column.
+     * @since 1.6
+     */
+    public IUniqueIndexLayer getCopyLayer() {
+        return this.copyLayer;
+    }
+
 }

@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2019 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,6 +14,7 @@ package org.eclipse.nebula.widgets.nattable.copy.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
 import org.eclipse.nebula.widgets.nattable.edit.command.EditUtils;
@@ -61,11 +62,7 @@ public class InternalPasteDataCommandHandler extends AbstractLayerCommandHandler
 
             for (ILayerCell[] cells : this.clipboard.getCopiedCells()) {
                 for (ILayerCell cell : cells) {
-                    if (EditUtils.isCellEditable(
-                            this.selectionLayer,
-                            command.configRegistry,
-                            new PositionCoordinate(this.selectionLayer, pasteColumn, pasteRow))) {
-
+                    if (isPasteAllowed(cell, pasteColumn, pasteRow, command.configRegistry)) {
                         this.selectionLayer.doCommand(
                                 new UpdateDataCommand(
                                         this.selectionLayer,
@@ -87,6 +84,37 @@ public class InternalPasteDataCommandHandler extends AbstractLayerCommandHandler
             postInternalPaste();
         }
         return true;
+    }
+
+    /**
+     * Checks if the cell at the target coordinates supports the paste operation
+     * or not.
+     * <p>
+     * Note: The coordinates need to be related to the SelectionLayer, otherwise
+     * the wrong cell will be used for the check.
+     * </p>
+     *
+     * @param sourceCell
+     *            The {@link ILayerCell} that is copied and should be pasted to
+     *            the target coordinates.
+     * @param targetColumn
+     *            The column position of the cell on the {@link SelectionLayer}
+     *            to which the source cell value should be pasted to.
+     * @param targetRow
+     *            The row position of the cell on the {@link SelectionLayer} to
+     *            which the source cell value should be pasted to.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to access the configuration
+     *            values.
+     * @return <code>true</code> if the cell supports the paste operation,
+     *         <code>false</code> if not
+     * @since 1.6
+     */
+    protected boolean isPasteAllowed(ILayerCell sourceCell, int targetColumn, int targetRow, IConfigRegistry configRegistry) {
+        return EditUtils.isCellEditable(
+                this.selectionLayer,
+                configRegistry,
+                new PositionCoordinate(this.selectionLayer, targetColumn, targetRow));
     }
 
     /**
