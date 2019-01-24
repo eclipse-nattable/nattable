@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -137,7 +137,7 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
         } else {
             this.scroller.setThumb(max);
             this.scroller.setEnabled(false);
-            this.scroller.setVisible(viewportWindowSpan == 0);
+            this.scroller.setVisible(viewportWindowSpan == 0 && max > 0);
         }
     }
 
