@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2018 Dirk Fauth and others.
+ * Copyright (c) 2013, 2019 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -310,4 +310,30 @@ public class RowHideShowLayerTest {
         assertFalse(configLabels.hasLabel(HideIndicatorConstants.ROW_TOP_HIDDEN));
         assertTrue(configLabels.hasLabel(HideIndicatorConstants.ROW_BOTTOM_HIDDEN));
     }
+
+    @Test
+    public void shouldCalculateHeight() {
+        this.rowHideShowLayer = new RowHideShowLayer(new DataLayerFixture(5, 5, 100, 20));
+        assertEquals(5, this.rowHideShowLayer.getRowCount());
+        assertEquals(100, this.rowHideShowLayer.getHeight());
+
+        this.rowHideShowLayer.hideRowPositions(Arrays.asList(0, 1, 2, 3));
+
+        assertEquals(1, this.rowHideShowLayer.getRowCount());
+        assertEquals(20, this.rowHideShowLayer.getHeight());
+
+        this.rowHideShowLayer.hideRowPositions(Arrays.asList(0));
+
+        assertEquals(0, this.rowHideShowLayer.getRowCount());
+        assertEquals(0, this.rowHideShowLayer.getHeight());
+    }
+
+    @Test
+    public void shouldCalculateHeightForEmptyDataset() {
+        this.rowHideShowLayer = new RowHideShowLayer(new DataLayerFixture(0, 0, 100, 20));
+
+        assertEquals(0, this.rowHideShowLayer.getRowCount());
+        assertEquals(0, this.rowHideShowLayer.getHeight());
+    }
+
 }

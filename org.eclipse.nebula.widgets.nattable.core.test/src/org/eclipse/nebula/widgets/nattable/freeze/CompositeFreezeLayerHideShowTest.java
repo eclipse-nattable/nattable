@@ -1427,7 +1427,7 @@ public class CompositeFreezeLayerHideShowTest {
         assertEquals(5, this.viewportLayer.getColumnCount());
         assertEquals(0, this.viewportLayer.getRowCount());
         assertEquals(0, this.viewportLayer.getMinimumOriginColumnPosition());
-        assertEquals(0, this.viewportLayer.getMinimumOriginRowPosition());
+        assertEquals(-1, this.viewportLayer.getMinimumOriginRowPosition());
         assertEquals(0, this.viewportLayer.getMinimumOrigin().getX());
         assertEquals(0, this.viewportLayer.getMinimumOrigin().getY());
 
@@ -1442,7 +1442,7 @@ public class CompositeFreezeLayerHideShowTest {
         assertEquals(5, this.viewportLayer.getColumnCount());
         assertEquals(5, this.viewportLayer.getRowCount());
         assertEquals(0, this.viewportLayer.getMinimumOriginColumnPosition());
-        assertEquals(0, this.viewportLayer.getMinimumOriginRowPosition());
+        assertEquals(-1, this.viewportLayer.getMinimumOriginRowPosition());
         assertEquals(0, this.viewportLayer.getMinimumOrigin().getX());
         assertEquals(0, this.viewportLayer.getMinimumOrigin().getY());
 
