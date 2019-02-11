@@ -25,6 +25,15 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
 
 public class ColumnGroupUtils {
 
+    /**
+     * Calculates the move direction based on the from and to position.
+     *
+     * @param fromColumnPosition
+     *            The column position from which a move is triggered.
+     * @param toColumnPosition
+     *            The column position to which a move is triggered.
+     * @return The direction of the triggered move operation.
+     */
     public static MoveDirectionEnum getMoveDirection(int fromColumnPosition, int toColumnPosition) {
         if (fromColumnPosition > toColumnPosition) {
             return MoveDirectionEnum.LEFT;
@@ -273,6 +282,54 @@ public class ColumnGroupUtils {
     }
 
     /**
+     *
+     * @param columnGroupHeaderLayer
+     *            The {@link ColumnGroupHeaderLayer} to handle the checks.
+     * @param toPosition
+     *            The position to which a column should be reordered to
+     *            determine if the target would be between two groups. Needs to
+     *            be related to the positionLayer.
+     * @param reorderToLeftEdge
+     *            <code>true</code> if the reorder should be performed to the
+     *            left edge of the toPosition.
+     * @param moveDirection
+     *            The direction in which the reordering is performed.
+     * @return <code>true</code> if the destination would be between two groups,
+     *         <code>false</code> if the destinataion would be inside a group.
+     *
+     * @since 1.6
+     */
+    public static boolean isBetweenTwoGroups(ColumnGroupHeaderLayer columnGroupHeaderLayer, int toPosition, boolean reorderToLeftEdge, MoveDirectionEnum moveDirection) {
+        if ((toPosition == 0 && reorderToLeftEdge)
+                || (toPosition == (columnGroupHeaderLayer.getPositionLayer().getColumnCount() - 1) && !reorderToLeftEdge)) {
+            // start or end of the table
+            return true;
+        }
+
+        int toPositionToCheck = toPosition;
+        if (reorderToLeftEdge
+                && MoveDirectionEnum.RIGHT == moveDirection) {
+            toPositionToCheck--;
+        }
+
+        boolean valid = true;
+        for (int level = 0; level < columnGroupHeaderLayer.getLevelCount(); level++) {
+            // check if the from position is unbreakable
+            if (MoveDirectionEnum.RIGHT == moveDirection) {
+                valid = !isInTheSameGroup(columnGroupHeaderLayer, level, toPosition, toPositionToCheck);
+            } else {
+                valid = !isInTheSameGroup(columnGroupHeaderLayer, level, toPosition, toPositionToCheck + (reorderToLeftEdge ? -1 : 1));
+            }
+
+            if (!valid) {
+                break;
+            }
+        }
+
+        return valid;
+    }
+
+    /**
      * Checks if a reorder operation is valid by checking the unbreakable states
      * of the groups below the from and the to position.
      *
@@ -282,30 +339,64 @@ public class ColumnGroupUtils {
      *            The position from which a column should be reordered.
      * @param toPosition
      *            The position to which a column should be reordered.
+     * @param reorderToLeftEdge
+     *            <code>true</code> if the reorder should be performed to the
+     *            left edge of the toPosition.
      * @return <code>true</code> if the reorder operation would be valid,
      *         <code>false</code> if the either the source or the target belongs
      *         to an unbreakable group.
-     * 
+     *
      * @since 1.6
      */
-    public static boolean isReorderValid(ColumnGroupHeaderLayer columnGroupHeaderLayer, int fromPosition, int toPosition) {
+    public static boolean isReorderValid(ColumnGroupHeaderLayer columnGroupHeaderLayer, int fromPosition, int toPosition, boolean reorderToLeftEdge) {
+
+        MoveDirectionEnum moveDirection = getMoveDirection(fromPosition, toPosition);
+
+        int toPositionToCheck = toPosition;
+        if (MoveDirectionEnum.RIGHT == moveDirection && reorderToLeftEdge) {
+            toPositionToCheck--;
+        }
+
+        boolean fromUnbreakable = false;
+        boolean valid = true;
         for (int level = 0; level < columnGroupHeaderLayer.getLevelCount(); level++) {
             // check if the from position is unbreakable
             GroupModel model = columnGroupHeaderLayer.getGroupModel(level);
             if (model.isPartOfAnUnbreakableGroup(fromPosition)) {
-                return ColumnGroupUtils.isInTheSameGroup(columnGroupHeaderLayer, level, fromPosition, toPosition);
+                fromUnbreakable = true;
+                valid = isInTheSameGroup(columnGroupHeaderLayer, level, fromPosition, toPositionToCheck);
             }
         }
 
-        // check if the to position is unbreakable
-        for (int level = 0; level < columnGroupHeaderLayer.getLevelCount(); level++) {
-            GroupModel model = columnGroupHeaderLayer.getGroupModel(level);
-            if (model.isPartOfAnUnbreakableGroup(toPosition)) {
-                return false;
+        // if the from position is part of an unbreakable group, we already know
+        // the result
+        if (!fromUnbreakable) {
+            if ((toPosition == 0 && reorderToLeftEdge)
+                    || (toPosition == (columnGroupHeaderLayer.getPositionLayer().getColumnCount() - 1) && !reorderToLeftEdge)) {
+                // start or end of the table
+                return true;
+            }
+
+            // check if the to position is unbreakable
+            for (int level = 0; level < columnGroupHeaderLayer.getLevelCount(); level++) {
+                GroupModel model = columnGroupHeaderLayer.getGroupModel(level);
+                if (model.isPartOfAnUnbreakableGroup(toPositionToCheck)) {
+                    // check if the original toPosition is in another group to
+                    // see if we might reorder between groups
+                    if (MoveDirectionEnum.RIGHT == moveDirection) {
+                        valid = !isInTheSameGroup(columnGroupHeaderLayer, level, toPosition, toPositionToCheck);
+                    } else {
+                        valid = !isInTheSameGroup(columnGroupHeaderLayer, level, toPosition, toPositionToCheck + (reorderToLeftEdge ? -1 : 1));
+                    }
+
+                    if (!valid) {
+                        break;
+                    }
+                }
             }
         }
 
-        return true;
+        return valid;
     }
 
 }

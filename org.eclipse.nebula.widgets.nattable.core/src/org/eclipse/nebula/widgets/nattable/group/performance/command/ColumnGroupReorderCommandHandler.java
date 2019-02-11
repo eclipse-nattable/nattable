@@ -32,6 +32,12 @@ public class ColumnGroupReorderCommandHandler extends AbstractLayerCommandHandle
         int fromColumnPosition = command.getFromColumnPosition();
         int toColumnPosition = command.getToColumnPosition();
 
+        if (!command.isReorderToLeftEdge()) {
+            // needed to set the reorderToLeftEdge parameter correct on creating
+            // the MultiColumnReorderCommand
+            toColumnPosition++;
+        }
+
         return this.columnGroupHeaderLayer.reorderColumnGroup(level, fromColumnPosition, toColumnPosition);
     }
 

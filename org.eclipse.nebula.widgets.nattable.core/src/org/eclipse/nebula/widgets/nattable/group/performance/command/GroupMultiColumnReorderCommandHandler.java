@@ -34,14 +34,21 @@ public class GroupMultiColumnReorderCommandHandler extends AbstractLayerCommandH
 
     @Override
     protected boolean doCommand(MultiColumnReorderCommand command) {
-        int toColumnPosition = command.getToColumnPosition();
-
         List<Integer> fromColumnPositions = command.getFromColumnPositions();
+        int toColumnPosition = command.getToColumnPosition();
+        boolean reorderToLeftEdge = command.isReorderToLeftEdge();
 
-        for (int fromColumnPosition : fromColumnPositions) {
-            if (!ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, fromColumnPosition, toColumnPosition)) {
-                // consume as the reorder is not valid
-                return true;
+        if (!ColumnGroupUtils.isBetweenTwoGroups(
+                this.columnGroupHeaderLayer,
+                toColumnPosition,
+                reorderToLeftEdge,
+                ColumnGroupUtils.getMoveDirection(fromColumnPositions.get(0), toColumnPosition))) {
+
+            for (int fromColumnPosition : fromColumnPositions) {
+                if (!ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, fromColumnPosition, toColumnPosition, reorderToLeftEdge)) {
+                    // consume as the reorder is not valid
+                    return true;
+                }
             }
         }
         return false;

@@ -5127,7 +5127,6 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(6, group.getVisibleSpan());
     }
 
-    // TODO should not reorder in unbreakable group programmatically
     @Test
     public void shouldNotBreakUnbreakableGroupOnReorderToUnbreakable() {
         // set second group unbreakable
@@ -5206,6 +5205,319 @@ public class ColumnGroupHeaderLayerTest {
         // nothing should have been changed
         this.columnGroupHeaderLayer.setGroupUnbreakable(4, false);
         verifyCleanState();
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnReorderToUnbreakableEdgeRight() {
+        // set second group unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+
+        // remove first group
+        this.columnGroupHeaderLayer.removeGroup(0);
+
+        // try to reorder column 4 to second group
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 4, 5));
+
+        assertNull(this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0));
+        assertNull(this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(1));
+        assertNull(this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(2));
+        assertNull(this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(3));
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(11, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnReorderToUnbreakableEdgeLeft() {
+        // set first group unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(0, true);
+
+        // remove second group
+        this.columnGroupHeaderLayer.removeGroup(4);
+
+        // try to reorder column 4 to first group
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 5, 5));
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4));
+        assertNull(this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(5));
+        assertNull(this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(6));
+        assertNull(this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(7));
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(11, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnReorderBetweenGroupsRight() {
+        // set second group unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+
+        // remove first group
+        this.columnGroupHeaderLayer.removeGroup(0);
+
+        // try to reorder column 4 to second group
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 4, 9));
+
+        assertNull(this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0));
+        assertNull(this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(1));
+        assertNull(this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(2));
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(3);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(7));
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(11, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+    }
+
+    @Test
+    public void shouldReorderUnbreakableGroupsBetweenGroupsLeft() {
+        // set all groups unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(0, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(11, true);
+
+        // try to reorder group 3 between group 1 and 2
+        this.gridLayer.doCommand(new ColumnGroupReorderCommand(this.gridLayer, 0, 9, 5));
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+        assertEquals("Person", group1.getName());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
+        assertEquals(8, group2.getStartIndex());
+        assertEquals(8, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(3, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+        assertEquals("Facts", group2.getName());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
+        assertEquals(4, group3.getStartIndex());
+        assertEquals(4, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(4, group3.getOriginalSpan());
+        assertEquals(4, group3.getVisibleSpan());
+        assertEquals("Address", group3.getName());
+
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(11, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+        assertEquals("Personal", group4.getName());
+    }
+
+    @Test
+    public void shouldReorderUnbreakableGroupsToStartLeft() {
+        // set all groups unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(0, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(11, true);
+
+        // try to reorder group 3 to start
+        this.gridLayer.doCommand(new ColumnGroupReorderCommand(this.gridLayer, 0, 9, 1));
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(8, group1.getStartIndex());
+        assertEquals(8, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+        assertEquals("Facts", group1.getName());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(3);
+        assertEquals(0, group2.getStartIndex());
+        assertEquals(0, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+        assertEquals("Person", group2.getName());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
+        assertEquals(4, group3.getStartIndex());
+        assertEquals(4, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(4, group3.getOriginalSpan());
+        assertEquals(4, group3.getVisibleSpan());
+        assertEquals("Address", group3.getName());
+
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(11, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+        assertEquals("Personal", group4.getName());
+    }
+
+    @Test
+    public void shouldReorderUnbreakableGroupsToEndRight() {
+        // increase the client area to show all columns
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1600, 250);
+            }
+
+        });
+        this.gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+
+        // set all groups unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(0, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(11, true);
+
+        // try to reorder group 2 to end
+        this.gridLayer.doCommand(new ColumnGroupReorderCommand(this.gridLayer, 0, 5, 15));
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+        assertEquals("Person", group1.getName());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
+        assertEquals(8, group2.getStartIndex());
+        assertEquals(8, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(3, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+        assertEquals("Facts", group2.getName());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
+        assertEquals(11, group3.getStartIndex());
+        assertEquals(11, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+        assertEquals("Personal", group3.getName());
+
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(4, group4.getStartIndex());
+        assertEquals(4, group4.getVisibleStartIndex());
+        assertEquals(10, group4.getVisibleStartPosition());
+        assertEquals(4, group4.getOriginalSpan());
+        assertEquals(4, group4.getVisibleSpan());
+        assertEquals("Address", group4.getName());
+    }
+
+    @Test
+    public void shouldReorderUnbreakableGroupsToRight() {
+        // increase the client area to show all columns
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1600, 250);
+            }
+
+        });
+        this.gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+
+        // set all groups unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(0, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(11, true);
+
+        // try to reorder group 1 between 2 and 3
+        this.gridLayer.doCommand(new ColumnGroupReorderCommand(this.gridLayer, 0, 1, 9));
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(4, group1.getStartIndex());
+        assertEquals(4, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+        assertEquals("Address", group1.getName());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
+        assertEquals(0, group2.getStartIndex());
+        assertEquals(0, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+        assertEquals("Person", group2.getName());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+        assertEquals("Facts", group3.getName());
+
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(11, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+        assertEquals("Personal", group4.getName());
     }
 
     @Test

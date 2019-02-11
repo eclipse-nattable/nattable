@@ -34,9 +34,10 @@ public class GroupColumnReorderCommandHandler extends AbstractLayerCommandHandle
     protected boolean doCommand(ColumnReorderCommand command) {
         int fromColumnPosition = command.getFromColumnPosition();
         int toColumnPosition = command.getToColumnPosition();
+        boolean reorderToLeftEdge = command.isReorderToLeftEdge();
 
         // return false means process further and do not consume
-        return !ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, fromColumnPosition, toColumnPosition);
+        return !ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, fromColumnPosition, toColumnPosition, reorderToLeftEdge);
     }
 
     @Override

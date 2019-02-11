@@ -2134,7 +2134,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                     int adjacentPos = (moveDirection == MoveDirectionEnum.RIGHT) ? fromColumnPosition + 1 : fromColumnPosition - 1;
                     // check if there is an adjacent column group
                     Group adjacentColumnGroup = groupModel.getGroupByPosition(adjacentPos);
-                    if (adjacentColumnGroup != null) {
+                    if (adjacentColumnGroup != null && !adjacentColumnGroup.isUnbreakable()) {
                         addPositionsToGroup(adjacentColumnGroup, fromColumnPositions, adjacentPos, moveDirection);
                     }
                 } else if (fromColumnGroup != null
@@ -2151,32 +2151,36 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         }
 
         private void addPositionsToGroup(Group group, int[] fromColumnPositions, int toPosition, MoveDirectionEnum moveDirection) {
-            // increase the span as column is moved inside group
-            group.setOriginalSpan(group.getOriginalSpan() + fromColumnPositions.length);
-            group.setVisibleSpan(group.getVisibleSpan() + fromColumnPositions.length);
+            if (!group.isUnbreakable()) {
+                // increase the span as column is moved inside group
+                group.setOriginalSpan(group.getOriginalSpan() + fromColumnPositions.length);
+                group.setVisibleSpan(group.getVisibleSpan() + fromColumnPositions.length);
 
-            // update the start index
-            if (group.getVisibleStartPosition() == toPosition) {
-                int newStartIndex = (moveDirection == MoveDirectionEnum.RIGHT)
-                        ? getPositionLayer().getColumnIndexByPosition(group.getVisibleStartPosition() - fromColumnPositions.length)
-                        : getPositionLayer().getColumnIndexByPosition(group.getVisibleStartPosition());
-                group.setStartIndex(newStartIndex);
-                group.setVisibleStartIndex(newStartIndex);
+                // update the start index
+                if (group.getVisibleStartPosition() == toPosition) {
+                    int newStartIndex = (moveDirection == MoveDirectionEnum.RIGHT)
+                            ? getPositionLayer().getColumnIndexByPosition(group.getVisibleStartPosition() - fromColumnPositions.length)
+                            : getPositionLayer().getColumnIndexByPosition(group.getVisibleStartPosition());
+                    group.setStartIndex(newStartIndex);
+                    group.setVisibleStartIndex(newStartIndex);
+                }
             }
         }
 
         private void removePositionsFromGroup(Group group, int[] fromColumnPositions, int fromColumnPosition, MoveDirectionEnum moveDirection) {
-            // decrease the span as column is moved out of group
-            group.setOriginalSpan(group.getOriginalSpan() - fromColumnPositions.length);
-            group.setVisibleSpan(group.getVisibleSpan() - fromColumnPositions.length);
+            if (!group.isUnbreakable()) {
+                // decrease the span as column is moved out of group
+                group.setOriginalSpan(group.getOriginalSpan() - fromColumnPositions.length);
+                group.setVisibleSpan(group.getVisibleSpan() - fromColumnPositions.length);
 
-            // update the start index
-            if (group.isLeftEdge(fromColumnPosition)) {
-                int newStartIndex = (moveDirection == MoveDirectionEnum.RIGHT)
-                        ? getPositionLayer().getColumnIndexByPosition(group.getVisibleStartPosition())
-                        : getPositionLayer().getColumnIndexByPosition(group.getVisibleStartPosition() + fromColumnPositions.length);
-                group.setStartIndex(newStartIndex);
-                group.setVisibleStartIndex(newStartIndex);
+                // update the start index
+                if (group.isLeftEdge(fromColumnPosition)) {
+                    int newStartIndex = (moveDirection == MoveDirectionEnum.RIGHT)
+                            ? getPositionLayer().getColumnIndexByPosition(group.getVisibleStartPosition())
+                            : getPositionLayer().getColumnIndexByPosition(group.getVisibleStartPosition() + fromColumnPositions.length);
+                    group.setStartIndex(newStartIndex);
+                    group.setVisibleStartIndex(newStartIndex);
+                }
             }
         }
 

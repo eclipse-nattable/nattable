@@ -59,6 +59,11 @@ public class ColumnHeaderReorderDragMode extends ColumnReorderDragMode {
         // need to convert directly to the corresponding position layer
         int toPosition = LayerUtil.convertColumnPosition(natLayer, toGridColumnPosition, this.columnGroupHeaderLayer.getPositionLayer());
 
+        // if reordered to the beginning or the end, the position is valid
+        if (toPosition == 0 || toPosition == this.columnGroupHeaderLayer.getPositionLayer().getColumnCount() - 1) {
+            return true;
+        }
+
         // Allow moving within the unbreakable group
         for (int level = 0; level < this.columnGroupHeaderLayer.getLevelCount(); level++) {
             GroupModel model = this.columnGroupHeaderLayer.getGroupModel(level);

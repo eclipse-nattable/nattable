@@ -96,7 +96,7 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
         // need to convert directly to the corresponding position layer
         int toPosition = LayerUtil.convertColumnPosition(natLayer, toGridColumnPosition, this.columnGroupHeaderLayer.getPositionLayer());
 
-        // if reordered to the beginning or the start, the position is valid
+        // if reordered to the beginning or the end, the position is valid
         if (toPosition == 0 || toPosition == this.columnGroupHeaderLayer.getPositionLayer().getColumnCount() - 1) {
             return true;
         }

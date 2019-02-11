@@ -39,6 +39,7 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
@@ -88,14 +89,8 @@ public class ColumnGroupUtilsTest {
                         columnPropertyAccessor);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
-
-        // TODO
-        // ColumnGroupReorderLayer columnGroupReorderLayer =
-        // new ColumnGroupReorderLayer(columnReorderLayer, columnGroupModel);
         ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
-
         ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(columnHideShowLayer);
-
         this.selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
         ViewportLayer viewportLayer = new ViewportLayer(this.selectionLayer);
 
@@ -164,4 +159,140 @@ public class ColumnGroupUtilsTest {
         assertFalse(ColumnGroupUtils.isInTheSameGroup(this.columnGroupHeaderLayer, 0, 4, 8));
     }
 
+    @Test
+    public void shouldTestIsReorderValidWithoutUnbreakable() {
+        // increase the client area to show all columns
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1600, 250);
+            }
+
+        });
+        this.gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+
+        // in same group
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 0, 4, true));
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 4, 4, true));
+        // to other group
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 0, 6, true));
+        // to start of first group
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 8, 0, true));
+        // to end of last group
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 0, 13, false));
+    }
+
+    @Test
+    public void shouldTestIsReorderValidWithUnbreakableFromNonGroupedRight() {
+        // increase the client area to show all columns
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1600, 250);
+            }
+
+        });
+        this.gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+
+        // remove first group
+        this.columnGroupHeaderLayer.removeGroup(0);
+
+        // set all remaining groups unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(11, true);
+
+        // reorder outside group valid
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 0, 4, true));
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 3, 4, true));
+        // in same group
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 6, 7, true));
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 7, 4, true));
+        // in same group where adjacent group is also unbreakable
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 4, 8, true));
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 10, 8, true));
+        // to any other group
+        assertFalse(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 3, 5, true));
+        assertFalse(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 0, 6, true));
+        assertFalse(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 1, 9, true));
+        assertFalse(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 2, 13, true));
+        // to start of table
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 3, 0, true));
+        // to end of last group
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 0, 13, false));
+        // between unbreakable groups
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 3, 8, true));
+    }
+
+    @Test
+    public void shouldTestIsReorderValidWithUnbreakableFromNonGroupedLeft() {
+        // increase the client area to show all columns
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1600, 250);
+            }
+
+        });
+        this.gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+
+        // remove first group
+        this.columnGroupHeaderLayer.removeGroup(11);
+
+        // set all remaining groups unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(0, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+
+        // between unbreakable groups
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 12, 8, true));
+        // to start of table
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 13, 0, true));
+    }
+
+    @Test
+    public void shouldTestIsReorderValidFromUnbreakable() {
+        // remove first group
+        this.columnGroupHeaderLayer.removeGroup(0);
+
+        // set second and third group unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(11, true);
+
+        // in same group
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 4, 6, true));
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 5, 6, true));
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 7, 6, true));
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 4, 8, true));
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 7, 4, true));
+        assertTrue(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 10, 8, true));
+        // to other group
+        assertFalse(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 5, 9, true));
+        assertFalse(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 8, 5, true));
+        assertFalse(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 9, 4, true));
+        assertFalse(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 11, 8, true));
+        // to start of first group
+        assertFalse(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 4, 0, true));
+        // to end of last group
+        assertFalse(ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, 4, 13, false));
+    }
+
+    @Test
+    public void shouldTestIsBetweenTwoGroups() {
+        assertTrue(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 0, true, MoveDirectionEnum.LEFT));
+        assertTrue(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 4, true, MoveDirectionEnum.LEFT));
+        assertTrue(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 8, true, MoveDirectionEnum.LEFT));
+        assertTrue(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 11, true, MoveDirectionEnum.LEFT));
+        assertTrue(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 13, false, MoveDirectionEnum.RIGHT));
+
+        assertFalse(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 0, false, MoveDirectionEnum.LEFT));
+        assertFalse(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 2, true, MoveDirectionEnum.LEFT));
+        assertFalse(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 5, true, MoveDirectionEnum.LEFT));
+        assertFalse(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 12, true, MoveDirectionEnum.LEFT));
+        assertFalse(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 13, true, MoveDirectionEnum.RIGHT));
+    }
 }
