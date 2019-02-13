@@ -395,8 +395,11 @@ public class GroupModel implements IPersistable {
                         // start index
                         group.setStartIndex(getIndexByPosition(pos + 1));
                         group.members.remove(Integer.valueOf(index));
+                        group.staticIndexes.remove(Integer.valueOf(index));
                     } else {
-                        group.members.remove(Integer.valueOf(group.getVisibleStartPosition() + group.getVisibleSpan() - 1));
+                        Integer memberIndex = Integer.valueOf(group.getVisibleStartPosition() + group.getVisibleSpan() - 1);
+                        group.members.remove(memberIndex);
+                        group.staticIndexes.remove(memberIndex);
                     }
 
                     group.setOriginalSpan(group.getOriginalSpan() - 1);
@@ -452,8 +455,11 @@ public class GroupModel implements IPersistable {
                     // start index
                     group.setStartIndex(getIndexByPosition(pos + 1));
                     group.members.remove(Integer.valueOf(index));
+                    group.staticIndexes.remove(Integer.valueOf(index));
                 } else {
-                    group.members.remove(Integer.valueOf(group.getVisibleStartPosition() + group.getVisibleSpan() - 1));
+                    Integer memberIndex = Integer.valueOf(group.getVisibleStartPosition() + group.getVisibleSpan() - 1);
+                    group.members.remove(memberIndex);
+                    group.staticIndexes.remove(memberIndex);
                 }
 
                 group.setOriginalSpan(group.getOriginalSpan() - 1);

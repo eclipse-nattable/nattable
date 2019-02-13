@@ -16,6 +16,7 @@ import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.reorder.action.ColumnReorderDragMode;
+import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 
 /**
@@ -50,7 +51,10 @@ public class ColumnHeaderReorderDragMode extends ColumnReorderDragMode {
             // to column position by the event
             // if there is no current mouse event referenced it means the
             // reorder is triggered programmatically
-            toGridColumnPosition = natLayer.getColumnPositionByX(this.currentEvent.x);
+            CellEdgeEnum moveDirection = getMoveDirection(this.currentEvent.x);
+            toGridColumnPosition = getDragToGridColumnPosition(
+                    moveDirection,
+                    this.natTable.getColumnPositionByX(this.currentEvent.x));
         }
 
         // the drag mode is triggered on the top most layer, e.g. the NatTable

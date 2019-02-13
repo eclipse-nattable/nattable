@@ -41,6 +41,7 @@ import org.eclipse.nebula.widgets.nattable.group.performance.command.GroupColumn
 import org.eclipse.nebula.widgets.nattable.group.performance.command.GroupMultiColumnReorderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.UpdateColumnGroupCollapseCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.config.DefaultColumnGroupHeaderLayerConfiguration;
+import org.eclipse.nebula.widgets.nattable.group.performance.painter.ColumnGroupHeaderGridLineCellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -60,6 +61,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
+import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -93,6 +95,19 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
     private final List<GroupModel> model;
 
     /**
+     * The {@link ILayerPainter} that is used by this layer. Typically the
+     * {@link ColumnGroupHeaderGridLineCellLayerPainter} to support rendering of
+     * huge column group cells by inspecting the {@link #showAlwaysGroupNames}
+     * attribute.
+     */
+    private ILayerPainter layerPainter;
+
+    /**
+     * {@link SizeConfig} instance for the row height configuration.
+     */
+    private final SizeConfig rowHeightConfig = new SizeConfig(DataLayer.DEFAULT_ROW_HEIGHT);
+
+    /**
      * Flag which is used to tell the {@link ColumnGroupHeaderLayer} whether to
      * calculate the height of the layer dependent on column group configuration
      * or not. If it is set to <code>true</code> the column header will check if
@@ -102,9 +117,11 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
     private boolean calculateHeight = false;
 
     /**
-     * {@link SizeConfig} instance for the row height configuration.
+     * Flag to configure whether group names should be always visible on
+     * rendering, e.g. on scrolling, or if the group names should scroll with
+     * the cell. Default is <code>false</code>.
      */
-    private final SizeConfig rowHeightConfig = new SizeConfig(DataLayer.DEFAULT_ROW_HEIGHT);
+    private boolean showAlwaysGroupNames = false;
 
     /**
      * The layer to which the positions in the group should match. Typically
@@ -359,6 +376,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         }
 
         this.layerPath = findLayerPath(this);
+        this.layerPainter = new ColumnGroupHeaderGridLineCellLayerPainter(this);
 
         // add listener on dependent layer to be notified about structural
         // changes
@@ -369,6 +387,16 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         if (useDefaultConfiguration) {
             addConfiguration(new DefaultColumnGroupHeaderLayerConfiguration(false));
         }
+    }
+
+    @Override
+    public ILayerPainter getLayerPainter() {
+        return this.layerPainter;
+    }
+
+    @Override
+    public void setLayerPainter(ILayerPainter layerPainter) {
+        this.layerPainter = layerPainter;
     }
 
     /**
@@ -744,13 +772,28 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                     }
                 }
 
+                // if the header should be shown always, e.g. because of
+                // huge column groups, the start will not below 0 and the
+                // end not below column count
+                int columnSpan = getColumnSpan(group);
+                if (this.showAlwaysGroupNames) {
+                    if (start < 0) {
+                        columnSpan += start;
+                        start = 0;
+                    }
+
+                    if (start + columnSpan > getColumnCount()) {
+                        columnSpan = getColumnCount() - start;
+                    }
+                }
+
                 return new LayerCell(
                         this,
                         start,
                         rowPosition,
                         columnPosition,
                         row,
-                        getColumnSpan(group),
+                        columnSpan,
                         rowSpan);
             } else {
                 // for the level there is no group, check if the group below has
@@ -769,6 +812,22 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
                 if (subGroup != null) {
                     int start = convertColumnPositionUpwards(this.positionLayer.getColumnPositionByIndex(subGroup.getVisibleStartIndex()));
+                    int columnSpan = getColumnSpan(group);
+
+                    // if the header should be shown always, e.g. because of
+                    // huge column groups, the start will not below 0 and the
+                    // end not below column count
+                    if (this.showAlwaysGroupNames) {
+                        if (start < 0) {
+                            columnSpan += start;
+                            start = 0;
+                        }
+
+                        if (start + columnSpan > getColumnCount()) {
+                            columnSpan = getColumnCount() - start;
+                        }
+                    }
+
                     return new LayerCell(
                             this,
                             start,
@@ -891,7 +950,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
     /**
      * Checks if there is a {@link Group} configured for the given column
-     * position on level 0.
+     * position at any level.
      *
      * @param columnPosition
      *            The column position related to this layer.
@@ -899,7 +958,12 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *         position, <code>false</code> if not.
      */
     public boolean isPartOfAGroup(int columnPosition) {
-        return isPartOfAGroup(0, columnPosition);
+        for (int level = 0; level < this.model.size(); level++) {
+            if (isPartOfAGroup(level, columnPosition)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -1420,10 +1484,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *            The name of the group that should be collapsed.
      */
     public void collapseGroup(int level, String groupName) {
-        Group group = getGroupByName(groupName);
-        if (group != null) {
-            this.positionLayer.doCommand(new ColumnGroupCollapseCommand(getGroupModel(level), group));
-        }
+        collapseGroup(getGroupModel(level), getGroupByName(groupName));
     }
 
     /**
@@ -1450,9 +1511,20 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *            group should be collapsed.
      */
     public void collapseGroup(int level, int position) {
-        Group group = getGroupByPosition(level, position);
-        if (group != null) {
-            this.positionLayer.doCommand(new ColumnGroupCollapseCommand(getGroupModel(level), group));
+        collapseGroup(getGroupModel(level), getGroupByPosition(level, position));
+    }
+
+    /**
+     * Collapses the given group of the given group model.
+     *
+     * @param groupModel
+     *            The group model to which the given group belongs to.
+     * @param group
+     *            The group to collapse.
+     */
+    public void collapseGroup(GroupModel groupModel, Group group) {
+        if (groupModel != null && group != null) {
+            this.positionLayer.doCommand(new ColumnGroupCollapseCommand(groupModel, group));
         }
     }
 
@@ -1501,10 +1573,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *            The name of the group that should be expanded.
      */
     public void expandGroup(int level, String groupName) {
-        Group group = getGroupByName(groupName);
-        if (group != null) {
-            this.positionLayer.doCommand(new ColumnGroupExpandCommand(getGroupModel(level), group));
-        }
+        expandGroup(getGroupModel(level), getGroupByName(groupName));
     }
 
     /**
@@ -1531,9 +1600,20 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *            group should be expanded.
      */
     public void expandGroup(int level, int position) {
-        Group group = getGroupByPosition(level, position);
-        if (group != null) {
-            this.positionLayer.doCommand(new ColumnGroupExpandCommand(getGroupModel(level), group));
+        expandGroup(getGroupModel(level), getGroupByPosition(level, position));
+    }
+
+    /**
+     * Expands the given group of the given group model.
+     *
+     * @param groupModel
+     *            The group model to which the given group belongs to.
+     * @param group
+     *            The group to expand.
+     */
+    public void expandGroup(GroupModel groupModel, Group group) {
+        if (groupModel != null && group != null) {
+            this.positionLayer.doCommand(new ColumnGroupExpandCommand(groupModel, group));
         }
     }
 
@@ -1795,6 +1875,39 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         }
     }
 
+    // group cell/name rendering
+
+    /**
+     *
+     * @return <code>true</code> if the group names are always visible on
+     *         rendering, e.g. on scrolling, <code>false</code> if the group
+     *         names stay at the fixed position in the cell and scroll with the
+     *         cell. Default is <code>false</code>.
+     */
+    public boolean isShowAlwaysGroupNames() {
+        return this.showAlwaysGroupNames;
+    }
+
+    /**
+     * Configure whether group names should be always visible on rendering, e.g.
+     * on scrolling, or if the group names should scroll with the cell. Setting
+     * this value to <code>true</code> is recommended for huge column groups to
+     * ensure that the group name is always visible. This also increases the
+     * rendering performance as the spanned grouping cells are limited to the
+     * visible area.
+     *
+     * @param showAlwaysGroupNames
+     *            <code>true</code> if the group names should be always visible
+     *            on rendering, e.g. on scrolling, <code>false</code> if the
+     *            group names should stay at the fixed position in the cell and
+     *            scroll with the cell. Default is <code>false</code>.
+     */
+    public void setShowAlwaysGroupNames(boolean showAlwaysGroupNames) {
+        this.showAlwaysGroupNames = showAlwaysGroupNames;
+    }
+
+    // reorder
+
     /**
      * Used to support column reordering via drag and drop. Needed because on
      * drag the viewport could scroll and therefore on drag end the initial
@@ -1842,9 +1955,14 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      */
     public boolean reorderColumnGroup(int level, int fromColumnPosition, int toColumnPosition) {
         Group group = getGroupModel(level).getGroupByPosition(fromColumnPosition);
-        // TODO expand before reorder
+        int toPosition = toColumnPosition;
+        if (group.isCollapsed()) {
+            int toIndex = getPositionLayer().getColumnIndexByPosition(toColumnPosition);
+            expandGroup(getGroupModel(level), group);
+            toPosition = getPositionLayer().getColumnPositionByIndex(toIndex);
+        }
         return this.positionLayer.doCommand(
-                new MultiColumnReorderCommand(this.positionLayer, new ArrayList<Integer>(group.getVisiblePositions()), toColumnPosition));
+                new MultiColumnReorderCommand(this.positionLayer, new ArrayList<Integer>(group.getVisiblePositions()), toPosition));
     }
 
     @Override
@@ -2120,11 +2238,11 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                     }
                 } else if (fromColumnGroup == null
                         && toColumnGroup != null) {
-                    addPositionsToGroup(toColumnGroup, fromColumnPositions, toColumnPosition, moveDirection);
+                    addPositionsToGroup(groupModel, toColumnGroup, fromColumnPositions, toColumnPosition, moveDirection);
                 } else if (fromColumnGroup != null
                         && toColumnGroup == null
                         && !isGroupReordered(fromColumnGroup, fromColumnPositions)) {
-                    removePositionsFromGroup(fromColumnGroup, fromColumnPositions, fromColumnPosition, moveDirection);
+                    removePositionsFromGroup(groupModel, fromColumnGroup, fromColumnPositions, fromColumnPosition, moveDirection);
                 } else if (fromColumnGroup == null
                         && toColumnGroup == null
                         && fromColumnPosition == toColumnPosition) {
@@ -2135,26 +2253,25 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                     // check if there is an adjacent column group
                     Group adjacentColumnGroup = groupModel.getGroupByPosition(adjacentPos);
                     if (adjacentColumnGroup != null && !adjacentColumnGroup.isUnbreakable()) {
-                        addPositionsToGroup(adjacentColumnGroup, fromColumnPositions, adjacentPos, moveDirection);
+                        addPositionsToGroup(groupModel, adjacentColumnGroup, fromColumnPositions, adjacentPos, moveDirection);
                     }
                 } else if (fromColumnGroup != null
                         && toColumnGroup != null
                         && !fromColumnGroup.equals(toColumnGroup)
                         && !isGroupReordered(fromColumnGroup, fromColumnPositions)) {
 
-                    removePositionsFromGroup(fromColumnGroup, fromColumnPositions, fromColumnPositions[0], moveDirection);
-                    addPositionsToGroup(toColumnGroup, fromColumnPositions, toColumnPosition, moveDirection);
+                    removePositionsFromGroup(groupModel, fromColumnGroup, fromColumnPositions, fromColumnPositions[0], moveDirection);
+                    addPositionsToGroup(groupModel, toColumnGroup, fromColumnPositions, toColumnPosition, moveDirection);
                 }
 
                 groupModel.updateVisibleStartPositions();
             }
         }
 
-        private void addPositionsToGroup(Group group, int[] fromColumnPositions, int toPosition, MoveDirectionEnum moveDirection) {
+        private void addPositionsToGroup(GroupModel groupModel, Group group, int[] fromColumnPositions, int toPosition, MoveDirectionEnum moveDirection) {
             if (!group.isUnbreakable()) {
                 // increase the span as column is moved inside group
                 group.setOriginalSpan(group.getOriginalSpan() + fromColumnPositions.length);
-                group.setVisibleSpan(group.getVisibleSpan() + fromColumnPositions.length);
 
                 // update the start index
                 if (group.getVisibleStartPosition() == toPosition) {
@@ -2164,10 +2281,23 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                     group.setStartIndex(newStartIndex);
                     group.setVisibleStartIndex(newStartIndex);
                 }
+
+                if (group.isCollapsed()) {
+                    // update collapsed state
+                    UpdateColumnGroupCollapseCommand cmd = new UpdateColumnGroupCollapseCommand(groupModel, group);
+                    for (int from : fromColumnPositions) {
+                        cmd.getIndexesToHide().add(Integer.valueOf(getPositionLayer().getColumnIndexByPosition(from)));
+                    }
+                    getPositionLayer().doCommand(cmd);
+                } else {
+                    // we update the visible span only in case the group is not
+                    // collapsed
+                    group.setVisibleSpan(group.getVisibleSpan() + fromColumnPositions.length);
+                }
             }
         }
 
-        private void removePositionsFromGroup(Group group, int[] fromColumnPositions, int fromColumnPosition, MoveDirectionEnum moveDirection) {
+        private void removePositionsFromGroup(GroupModel groupModel, Group group, int[] fromColumnPositions, int fromColumnPosition, MoveDirectionEnum moveDirection) {
             if (!group.isUnbreakable()) {
                 // decrease the span as column is moved out of group
                 group.setOriginalSpan(group.getOriginalSpan() - fromColumnPositions.length);
@@ -2175,12 +2305,27 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
                 // update the start index
                 if (group.isLeftEdge(fromColumnPosition)) {
+
+                    // TODO if the group is collapsed and the only visible
+                    // column is removed we need to update the group
+                    boolean collapsed = group.isCollapsed();
+                    if (collapsed) {
+                        expandGroup(groupModel, group);
+                    }
+
                     int newStartIndex = (moveDirection == MoveDirectionEnum.RIGHT)
                             ? getPositionLayer().getColumnIndexByPosition(group.getVisibleStartPosition())
                             : getPositionLayer().getColumnIndexByPosition(group.getVisibleStartPosition() + fromColumnPositions.length);
                     group.setStartIndex(newStartIndex);
                     group.setVisibleStartIndex(newStartIndex);
+
+                    if (collapsed) {
+                        collapseGroup(groupModel, group);
+                    }
                 }
+
+                // TODO remove static index if removed position was a static
+                // index
             }
         }
 

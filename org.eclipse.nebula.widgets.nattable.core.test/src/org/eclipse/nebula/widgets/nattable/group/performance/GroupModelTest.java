@@ -844,6 +844,142 @@ public class GroupModelTest {
     }
 
     @Test
+    public void shouldRemoveStaticIndexIfRemovedFromGroupEnd() {
+        Group group = this.model.getGroupByPosition(0);
+        // set last two columns as static
+        this.model.addStaticIndexesToGroup(group, 2, 3);
+
+        assertEquals(2, group.getStaticIndexes().size());
+
+        assertTrue(this.model.isStatic(2));
+        assertTrue(this.model.isStatic(3));
+
+        // remove last position from group
+        this.model.removePositionsFromGroup(3);
+
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(3, group.getVisibleSpan());
+
+        Collection<Integer> members = group.getMembers();
+        assertEquals(3, members.size());
+        assertTrue(members.contains(Integer.valueOf(0)));
+        assertTrue(members.contains(Integer.valueOf(1)));
+        assertTrue(members.contains(Integer.valueOf(2)));
+
+        assertEquals(1, group.getStaticIndexes().size());
+
+        assertTrue(this.model.isStatic(2));
+        assertFalse(this.model.isStatic(3));
+    }
+
+    @Test
+    public void shouldRemoveStaticIndexIfRemovedFromGroupStart() {
+        Group group = this.model.getGroupByPosition(0);
+        // set first and last column as static
+        this.model.addStaticIndexesToGroup(group, 0, 3);
+
+        assertEquals(2, group.getStaticIndexes().size());
+
+        assertTrue(this.model.isStatic(0));
+        assertFalse(this.model.isStatic(1));
+        assertFalse(this.model.isStatic(2));
+        assertTrue(this.model.isStatic(3));
+
+        // remove first position from group
+        this.model.removePositionsFromGroup(0);
+
+        assertEquals(1, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(1, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(3, group.getVisibleSpan());
+
+        Collection<Integer> members = group.getMembers();
+        assertEquals(3, members.size());
+        assertTrue(members.contains(Integer.valueOf(1)));
+        assertTrue(members.contains(Integer.valueOf(2)));
+        assertTrue(members.contains(Integer.valueOf(3)));
+
+        assertEquals(1, group.getStaticIndexes().size());
+
+        assertFalse(this.model.isStatic(0));
+        assertFalse(this.model.isStatic(1));
+        assertFalse(this.model.isStatic(2));
+        assertTrue(this.model.isStatic(3));
+    }
+
+    @Test
+    public void shouldRemoveStaticIndexIfRemovedFromGroupEnd2() {
+        Group group = this.model.getGroupByPosition(0);
+        // set last two columns as static
+        this.model.addStaticIndexesToGroup(group, 2, 3);
+
+        assertEquals(2, group.getStaticIndexes().size());
+
+        assertTrue(this.model.isStatic(2));
+        assertTrue(this.model.isStatic(3));
+
+        // remove last position from group
+        this.model.removePositionsFromGroup(group, 3);
+
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(3, group.getVisibleSpan());
+
+        Collection<Integer> members = group.getMembers();
+        assertEquals(3, members.size());
+        assertTrue(members.contains(Integer.valueOf(0)));
+        assertTrue(members.contains(Integer.valueOf(1)));
+        assertTrue(members.contains(Integer.valueOf(2)));
+
+        assertEquals(1, group.getStaticIndexes().size());
+
+        assertTrue(this.model.isStatic(2));
+        assertFalse(this.model.isStatic(3));
+    }
+
+    @Test
+    public void shouldRemoveStaticIndexIfRemovedFromGroupStart2() {
+        Group group = this.model.getGroupByPosition(0);
+        // set first and last column as static
+        this.model.addStaticIndexesToGroup(group, 0, 3);
+
+        assertEquals(2, group.getStaticIndexes().size());
+
+        assertTrue(this.model.isStatic(0));
+        assertFalse(this.model.isStatic(1));
+        assertFalse(this.model.isStatic(2));
+        assertTrue(this.model.isStatic(3));
+
+        // remove first position from group
+        this.model.removePositionsFromGroup(group, 0);
+
+        assertEquals(1, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(1, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(3, group.getVisibleSpan());
+
+        Collection<Integer> members = group.getMembers();
+        assertEquals(3, members.size());
+        assertTrue(members.contains(Integer.valueOf(1)));
+        assertTrue(members.contains(Integer.valueOf(2)));
+        assertTrue(members.contains(Integer.valueOf(3)));
+
+        assertEquals(1, group.getStaticIndexes().size());
+
+        assertFalse(this.model.isStatic(0));
+        assertFalse(this.model.isStatic(1));
+        assertFalse(this.model.isStatic(2));
+        assertTrue(this.model.isStatic(3));
+    }
+
+    @Test
     public void shouldReturnVisiblePositionCollection() {
         Collection<Integer> positions1 = this.model.getGroupByPosition(0).getVisiblePositions();
         Collection<Integer> positions2 = this.model.getGroupByPosition(5).getVisiblePositions();

@@ -23,7 +23,10 @@ import org.eclipse.nebula.widgets.nattable.group.performance.action.ColumnGroupH
 import org.eclipse.nebula.widgets.nattable.group.performance.action.ColumnHeaderReorderDragMode;
 import org.eclipse.nebula.widgets.nattable.group.performance.action.CreateColumnGroupAction;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.BeveledBorderDecorator;
+import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
+import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.ui.action.AggregateDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.CellDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.NoOpMouseAction;
@@ -73,6 +76,21 @@ public class DefaultColumnGroupHeaderLayerConfiguration extends AbstractLayerCon
         // as this would override the column header configuration. This is
         // because the the column group header is part of the column header
         // region.
+
+        // if the column group header value should be shown always, e.g. for
+        // huge column groups, the consistent rendering is to show the group
+        // name always left aligned
+        if (this.columnGroupHeaderLayer.isShowAlwaysGroupNames()) {
+            Style headerStyle = new Style();
+            headerStyle.setAttributeValue(
+                    CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+                    HorizontalAlignmentEnum.LEFT);
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_STYLE,
+                    headerStyle,
+                    DisplayMode.NORMAL,
+                    GridRegion.COLUMN_GROUP_HEADER);
+        }
     }
 
     @Override
