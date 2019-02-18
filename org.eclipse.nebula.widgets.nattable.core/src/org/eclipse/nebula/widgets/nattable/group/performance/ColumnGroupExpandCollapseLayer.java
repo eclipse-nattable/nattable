@@ -101,13 +101,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
                     }
                 }
 
-                Collection<Integer> staticIndexes = group.getStaticIndexes();
-                if (staticIndexes.isEmpty()) {
-                    // keep the first column
-                    columnIndexes.remove(group.getVisibleStartIndex());
-                } else {
-                    columnIndexes.removeAll(staticIndexes);
-                }
+                modifyForVisible(group, columnIndexes);
                 this.hidden.put(group, columnIndexes);
 
                 hiddenPositions.addAll(getColumnPositionsByIndexes(columnIndexes));
@@ -127,6 +121,8 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
                 Collection<Integer> indexesToHide = cmd.getIndexesToHide();
                 Collection<Integer> indexesToShow = cmd.getIndexesToShow();
 
+                modifyForVisible(group, indexesToHide);
+
                 Collection<Integer> hiddenPositions = getColumnPositionsByIndexes(indexesToHide);
 
                 hiddenColumnIndexes.addAll(indexesToHide);
@@ -140,6 +136,27 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
             return true;
         }
         return super.doCommand(command);
+    }
+
+    /**
+     * Ensure that a group is never hidden completely via collapse operations.
+     * Removes either the configured static indexes of the group or the first
+     * visible column in a group from the given collection of indexes for this.
+     * 
+     * @param group
+     *            The group to check.
+     * @param columnIndexes
+     *            The collection of indexes that should be hidden.
+     */
+    private void modifyForVisible(Group group, Collection<Integer> columnIndexes) {
+        Collection<Integer> staticIndexes = group.getStaticIndexes();
+        if (staticIndexes.isEmpty()) {
+            // keep the first column
+            columnIndexes.remove(group.getVisibleStartIndex());
+        } else {
+            // do not hide static indexes
+            columnIndexes.removeAll(staticIndexes);
+        }
     }
 
     @Override

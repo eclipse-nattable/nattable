@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.group.performance.command;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupUtils;
 import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
@@ -42,7 +43,7 @@ public class GroupMultiColumnReorderCommandHandler extends AbstractLayerCommandH
                 this.columnGroupHeaderLayer,
                 toColumnPosition,
                 reorderToLeftEdge,
-                ColumnGroupUtils.getMoveDirection(fromColumnPositions.get(0), toColumnPosition))) {
+                PositionUtil.getMoveDirection(fromColumnPositions.get(0), toColumnPosition))) {
 
             for (int fromColumnPosition : fromColumnPositions) {
                 if (!ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, fromColumnPosition, toColumnPosition, reorderToLeftEdge)) {

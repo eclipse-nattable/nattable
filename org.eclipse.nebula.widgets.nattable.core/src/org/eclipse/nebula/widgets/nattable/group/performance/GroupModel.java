@@ -1181,6 +1181,18 @@ public class GroupModel implements IPersistable {
         }
 
         /**
+         * Adds the given member indexes to the local list of members that are
+         * needed for consistency checks.
+         * 
+         * @param memberIndexes
+         *            The indexes of the positions that should be added to the
+         *            local group members.
+         */
+        void addMembers(Collection<Integer> memberIndexes) {
+            this.members.addAll(memberIndexes);
+        }
+
+        /**
          *
          * @return The configured number of items that belong to this group.
          */

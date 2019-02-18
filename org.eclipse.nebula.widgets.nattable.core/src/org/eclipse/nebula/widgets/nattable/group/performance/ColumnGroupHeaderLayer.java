@@ -26,7 +26,6 @@ import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentIndexLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentLayer;
-import org.eclipse.nebula.widgets.nattable.group.ColumnGroupUtils;
 import org.eclipse.nebula.widgets.nattable.group.command.ColumnGroupExpandCollapseCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroupCollapseCommand;
@@ -1995,12 +1994,8 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
             // removes and adds a column at the same time and we need special
             // handling in terms of left edge to ungroup if possible
             if (event instanceof ColumnReorderEvent) {
-                ColumnReorderEvent reorderEvent = (ColumnReorderEvent) event;
-
                 // handle reorder event and update model
-                int[] fromColumnPositions = PositionUtil.getPositions(reorderEvent.getBeforeFromColumnPositionRanges());
-                updateColumnGroupModel(fromColumnPositions, reorderEvent.getBeforeToColumnPosition(), reorderEvent.isReorderToLeftEdge());
-
+                updateColumnGroupModel((ColumnReorderEvent) event);
             } else if (event instanceof IStructuralChangeEvent &&
                     ((IStructuralChangeEvent) event).isHorizontalStructureChanged()) {
                 IStructuralChangeEvent changeEvent = (IStructuralChangeEvent) event;
@@ -2169,7 +2164,11 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
             }
         }
 
-        private void updateColumnGroupModel(int[] fromColumnPositions, int toColumnPosition, boolean reorderToLeftEdge) {
+        private void updateColumnGroupModel(ColumnReorderEvent reorderEvent) {
+
+            int[] fromColumnPositions = PositionUtil.getPositions(reorderEvent.getBeforeFromColumnPositionRanges());
+            int toColumnPosition = reorderEvent.getBeforeToColumnPosition();
+            boolean reorderToLeftEdge = reorderEvent.isReorderToLeftEdge();
 
             int fromColumnPosition = toColumnPosition;
 
@@ -2181,7 +2180,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                 fromColumnPosition = fromColumnPositions[0];
             }
 
-            MoveDirectionEnum moveDirection = ColumnGroupUtils.getMoveDirection(fromColumnPosition, toColumnPosition);
+            MoveDirectionEnum moveDirection = PositionUtil.getMoveDirection(fromColumnPosition, toColumnPosition);
 
             if (reorderToLeftEdge
                     && toColumnPosition > 0
@@ -2238,7 +2237,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                     }
                 } else if (fromColumnGroup == null
                         && toColumnGroup != null) {
-                    addPositionsToGroup(groupModel, toColumnGroup, fromColumnPositions, toColumnPosition, moveDirection);
+                    addPositionsToGroup(groupModel, toColumnGroup, fromColumnPositions, reorderEvent.getBeforeFromColumnIndexes(), toColumnPosition, moveDirection);
                 } else if (fromColumnGroup != null
                         && toColumnGroup == null
                         && !isGroupReordered(fromColumnGroup, fromColumnPositions)) {
@@ -2253,7 +2252,16 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                     // check if there is an adjacent column group
                     Group adjacentColumnGroup = groupModel.getGroupByPosition(adjacentPos);
                     if (adjacentColumnGroup != null && !adjacentColumnGroup.isUnbreakable()) {
-                        addPositionsToGroup(groupModel, adjacentColumnGroup, fromColumnPositions, adjacentPos, moveDirection);
+                        // addPositionsToGroup(groupModel, adjacentColumnGroup,
+                        // fromColumnPositions, fromColumnPosition, adjacentPos,
+                        // moveDirection);
+                        addPositionsToGroup(
+                                groupModel,
+                                adjacentColumnGroup,
+                                fromColumnPositions,
+                                reorderEvent.getBeforeFromColumnIndexes(),
+                                (adjacentColumnGroup.isCollapsed() && moveDirection != MoveDirectionEnum.RIGHT) ? toColumnPosition : adjacentPos,
+                                moveDirection);
                     }
                 } else if (fromColumnGroup != null
                         && toColumnGroup != null
@@ -2261,14 +2269,21 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                         && !isGroupReordered(fromColumnGroup, fromColumnPositions)) {
 
                     removePositionsFromGroup(groupModel, fromColumnGroup, fromColumnPositions, fromColumnPositions[0], moveDirection);
-                    addPositionsToGroup(groupModel, toColumnGroup, fromColumnPositions, toColumnPosition, moveDirection);
+                    addPositionsToGroup(groupModel, toColumnGroup, fromColumnPositions, reorderEvent.getBeforeFromColumnIndexes(), toColumnPosition, moveDirection);
                 }
 
                 groupModel.updateVisibleStartPositions();
             }
         }
 
-        private void addPositionsToGroup(GroupModel groupModel, Group group, int[] fromColumnPositions, int toPosition, MoveDirectionEnum moveDirection) {
+        private void addPositionsToGroup(
+                GroupModel groupModel,
+                Group group,
+                int[] fromColumnPositions,
+                Collection<Integer> fromColumnIndexes,
+                int toPosition,
+                MoveDirectionEnum moveDirection) {
+
             if (!group.isUnbreakable()) {
                 // increase the span as column is moved inside group
                 group.setOriginalSpan(group.getOriginalSpan() + fromColumnPositions.length);
@@ -2282,11 +2297,25 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                     group.setVisibleStartIndex(newStartIndex);
                 }
 
+                // add the member indexes
+                group.addMembers(fromColumnIndexes);
+
                 if (group.isCollapsed()) {
                     // update collapsed state
                     UpdateColumnGroupCollapseCommand cmd = new UpdateColumnGroupCollapseCommand(groupModel, group);
-                    for (int from : fromColumnPositions) {
-                        cmd.getIndexesToHide().add(Integer.valueOf(getPositionLayer().getColumnIndexByPosition(from)));
+                    if (group.getVisibleStartPosition() == toPosition) {
+                        cmd.getIndexesToHide().addAll(group.getMembers());
+
+                        // the update command will trigger a hide event to hide
+                        // the previous visible first column, therefore we need
+                        // to update the visible start position before firing
+                        // the command to ensure the hide handling is operating
+                        // on the correct positions
+                        group.updateVisibleStartPosition();
+                    } else {
+                        for (int from : fromColumnPositions) {
+                            cmd.getIndexesToHide().add(Integer.valueOf(getPositionLayer().getColumnIndexByPosition(from)));
+                        }
                     }
                     getPositionLayer().doCommand(cmd);
                 } else {

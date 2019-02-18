@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 
 public class PositionUtil {
 
@@ -166,4 +168,26 @@ public class PositionUtil {
     public static int[] getPositions(Range... ranges) {
         return getPositions(Arrays.asList(ranges));
     }
+
+    /**
+     * Calculates the move direction based on the from and to position.
+     *
+     * @param fromPosition
+     *            The position from which a move is triggered.
+     * @param toPosition
+     *            The position to which a move is triggered.
+     * @return The direction of the triggered move operation.
+     *
+     * @since 1.6
+     */
+    public static MoveDirectionEnum getMoveDirection(int fromPosition, int toPosition) {
+        if (fromPosition > toPosition) {
+            return MoveDirectionEnum.LEFT;
+        } else if (fromPosition < toPosition) {
+            return MoveDirectionEnum.RIGHT;
+        } else {
+            return MoveDirectionEnum.NONE;
+        }
+    }
+
 }
