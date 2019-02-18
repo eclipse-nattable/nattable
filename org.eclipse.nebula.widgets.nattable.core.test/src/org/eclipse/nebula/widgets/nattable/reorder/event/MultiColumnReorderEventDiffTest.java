@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,12 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder.event;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -17,13 +23,11 @@ import java.util.Iterator;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
-import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.graphics.Rectangle;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,10 +55,10 @@ public class MultiColumnReorderEventDiffTest {
 
     @After
     public void after() {
-        Assert.assertTrue(this.event.isHorizontalStructureChanged());
+        assertTrue(this.event.isHorizontalStructureChanged());
 
-        Assert.assertFalse(this.event.isVerticalStructureChanged());
-        Assert.assertNull(this.event.getRowDiffs());
+        assertFalse(this.event.isVerticalStructureChanged());
+        assertNull(this.event.getRowDiffs());
     }
 
     /**
@@ -62,17 +66,20 @@ public class MultiColumnReorderEventDiffTest {
      */
     @Test
     public void testReorderRightColumnDiffs() {
-        this.event = new ColumnReorderEvent(this.dataLayer, Arrays.asList(new Integer[] {
-                2, 3, 4 }), 7, true);
+        this.event = new ColumnReorderEvent(
+                this.dataLayer,
+                Arrays.asList(new Integer[] { 2, 3, 4 }),
+                Arrays.asList(new Integer[] { 2, 3, 4 }),
+                7,
+                7,
+                true);
 
         Collection<StructuralDiff> columnDiffs = this.event.getColumnDiffs();
-        Assert.assertNotNull(columnDiffs);
-        Assert.assertEquals(2, columnDiffs.size());
+        assertNotNull(columnDiffs);
+        assertEquals(2, columnDiffs.size());
         Iterator<StructuralDiff> iterator = columnDiffs.iterator();
-        Assert.assertEquals(new StructuralDiff(DiffTypeEnum.DELETE, new Range(
-                2, 5), new Range(2, 2)), iterator.next());
-        Assert.assertEquals(new StructuralDiff(DiffTypeEnum.ADD,
-                new Range(7, 7), new Range(4, 7)), iterator.next());
+        assertEquals(new StructuralDiff(DiffTypeEnum.DELETE, new Range(2, 5), new Range(2, 2)), iterator.next());
+        assertEquals(new StructuralDiff(DiffTypeEnum.ADD, new Range(7, 7), new Range(4, 7)), iterator.next());
     }
 
     /**
@@ -80,18 +87,21 @@ public class MultiColumnReorderEventDiffTest {
      */
     @Test
     public void testReorderRightConvertToLocal() {
-        this.event = new ColumnReorderEvent(this.dataLayer, Arrays.asList(new Integer[] {
-                2, 3, 4 }), 7, true);
+        this.event = new ColumnReorderEvent(
+                this.dataLayer,
+                Arrays.asList(new Integer[] { 2, 3, 4 }),
+                Arrays.asList(new Integer[] { 2, 3, 4 }),
+                7,
+                7,
+                true);
         this.event.convertToLocal(this.viewportLayer);
 
         Collection<StructuralDiff> columnDiffs = this.event.getColumnDiffs();
-        Assert.assertNotNull(columnDiffs);
-        Assert.assertEquals(2, columnDiffs.size());
+        assertNotNull(columnDiffs);
+        assertEquals(2, columnDiffs.size());
         Iterator<StructuralDiff> iterator = columnDiffs.iterator();
-        Assert.assertEquals(new StructuralDiff(DiffTypeEnum.DELETE, new Range(
-                0, 3), new Range(0, 0)), iterator.next());
-        Assert.assertEquals(new StructuralDiff(DiffTypeEnum.ADD,
-                new Range(5, 5), new Range(2, 5)), iterator.next());
+        assertEquals(new StructuralDiff(DiffTypeEnum.DELETE, new Range(0, 3), new Range(0, 0)), iterator.next());
+        assertEquals(new StructuralDiff(DiffTypeEnum.ADD, new Range(5, 5), new Range(2, 5)), iterator.next());
     }
 
     /**
@@ -100,17 +110,20 @@ public class MultiColumnReorderEventDiffTest {
      */
     @Test
     public void testReorderLeftColumnDiffs() {
-        this.event = new ColumnReorderEvent(this.dataLayer, Arrays.asList(new Integer[] {
-                7, 8, 9 }), 2, true);
+        this.event = new ColumnReorderEvent(
+                this.dataLayer,
+                Arrays.asList(new Integer[] { 7, 8, 9 }),
+                Arrays.asList(new Integer[] { 7, 8, 9 }),
+                2,
+                2,
+                true);
 
         Collection<StructuralDiff> columnDiffs = this.event.getColumnDiffs();
-        Assert.assertNotNull(columnDiffs);
-        Assert.assertEquals(2, columnDiffs.size());
+        assertNotNull(columnDiffs);
+        assertEquals(2, columnDiffs.size());
         Iterator<StructuralDiff> iterator = columnDiffs.iterator();
-        Assert.assertEquals(new StructuralDiff(DiffTypeEnum.DELETE, new Range(
-                7, 10), new Range(10, 10)), iterator.next());
-        Assert.assertEquals(new StructuralDiff(DiffTypeEnum.ADD,
-                new Range(2, 2), new Range(2, 5)), iterator.next());
+        assertEquals(new StructuralDiff(DiffTypeEnum.DELETE, new Range(7, 10), new Range(10, 10)), iterator.next());
+        assertEquals(new StructuralDiff(DiffTypeEnum.ADD, new Range(2, 2), new Range(2, 5)), iterator.next());
     }
 
     /**
@@ -119,18 +132,21 @@ public class MultiColumnReorderEventDiffTest {
      */
     @Test
     public void testReorderLeftConvertToLocal() {
-        this.event = new ColumnReorderEvent(this.dataLayer, Arrays.asList(new Integer[] {
-                7, 8, 9 }), 2, true);
+        this.event = new ColumnReorderEvent(
+                this.dataLayer,
+                Arrays.asList(new Integer[] { 7, 8, 9 }),
+                Arrays.asList(new Integer[] { 7, 8, 9 }),
+                2,
+                2,
+                true);
         this.event.convertToLocal(this.viewportLayer);
 
         Collection<StructuralDiff> columnDiffs = this.event.getColumnDiffs();
-        Assert.assertNotNull(columnDiffs);
-        Assert.assertEquals(2, columnDiffs.size());
+        assertNotNull(columnDiffs);
+        assertEquals(2, columnDiffs.size());
         Iterator<StructuralDiff> iterator = columnDiffs.iterator();
-        Assert.assertEquals(new StructuralDiff(DiffTypeEnum.DELETE, new Range(
-                5, 8), new Range(8, 8)), iterator.next());
-        Assert.assertEquals(new StructuralDiff(DiffTypeEnum.ADD,
-                new Range(0, 0), new Range(0, 3)), iterator.next());
+        assertEquals(new StructuralDiff(DiffTypeEnum.DELETE, new Range(5, 8), new Range(8, 8)), iterator.next());
+        assertEquals(new StructuralDiff(DiffTypeEnum.ADD, new Range(0, 0), new Range(0, 3)), iterator.next());
     }
 
 }

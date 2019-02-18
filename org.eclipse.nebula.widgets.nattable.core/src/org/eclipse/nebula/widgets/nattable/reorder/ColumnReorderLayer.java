@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -379,8 +379,11 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
      *            be positioned to the right
      */
     public void reorderColumnPosition(int fromColumnPosition, int toColumnPosition, boolean reorderToLeftEdge) {
+        // get the indexes before the move operation
+        int fromColumnIndex = getColumnIndexByPosition(fromColumnPosition);
+        int toColumnIndex = getColumnIndexByPosition(toColumnPosition);
         moveColumn(fromColumnPosition, toColumnPosition, reorderToLeftEdge);
-        fireLayerEvent(new ColumnReorderEvent(this, fromColumnPosition, toColumnPosition, reorderToLeftEdge));
+        fireLayerEvent(new ColumnReorderEvent(this, fromColumnPosition, fromColumnIndex, toColumnPosition, toColumnIndex, reorderToLeftEdge));
     }
 
     /**
@@ -417,6 +420,13 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
      *            should be positioned to the right
      */
     public void reorderMultipleColumnPositions(List<Integer> fromColumnPositions, int toColumnPosition, boolean reorderToLeftEdge) {
+        // get the indexes before the move operation
+        List<Integer> fromColumnIndexes = new ArrayList<Integer>();
+        for (int fromColumnPosition : fromColumnPositions) {
+            fromColumnIndexes.add(getColumnIndexByPosition(fromColumnPosition));
+        }
+        int toColumnIndex = getColumnIndexByPosition(toColumnPosition);
+
         // Moving from left to right
         final int fromColumnPositionsCount = fromColumnPositions.size();
 
@@ -441,7 +451,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
             }
         }
 
-        fireLayerEvent(new ColumnReorderEvent(this, fromColumnPositions, toColumnPosition, reorderToLeftEdge));
+        fireLayerEvent(new ColumnReorderEvent(this, fromColumnPositions, fromColumnIndexes, toColumnPosition, toColumnIndex, reorderToLeftEdge));
     }
 
     /**

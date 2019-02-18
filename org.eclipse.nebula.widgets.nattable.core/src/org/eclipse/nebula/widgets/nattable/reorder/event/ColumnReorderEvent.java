@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,29 +27,132 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
  */
 public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 
+    private ILayer beforeLayer;
+
     private Collection<Range> beforeFromColumnPositionRanges;
+    private Collection<Integer> beforeFromColumnIndexes;
 
     private int beforeToColumnPosition;
+    private int beforeToColumnIndex;
+
     private boolean reorderToLeftEdge;
 
-    public ColumnReorderEvent(ILayer layer, int beforeFromColumnPosition,
-            int beforeToColumnPosition, boolean reorderToLeftEdge) {
-        this(layer, Arrays.asList(new Integer[] { Integer
-                .valueOf(beforeFromColumnPosition) }), beforeToColumnPosition,
+    /**
+     *
+     * @param layer
+     *            The layer to which the column positions match.
+     * @param beforeFromColumnPosition
+     *            The column position that was reordered, before the reorder
+     *            operation was performed.
+     * @param beforeToColumnPosition
+     *            The position of the column to which the reorder operation was
+     *            performed, before the reorder operation was performed
+     * @param reorderToLeftEdge
+     *            whether the reorder operation was performed to the left or the
+     *            right edge.
+     *
+     * @deprecated Use constructor with explicit index parameters.
+     */
+    @Deprecated
+    public ColumnReorderEvent(ILayer layer, int beforeFromColumnPosition, int beforeToColumnPosition, boolean reorderToLeftEdge) {
+        this(layer, beforeFromColumnPosition, beforeFromColumnPosition, beforeToColumnPosition, beforeToColumnPosition, reorderToLeftEdge);
+    }
+
+    /**
+     *
+     * @param layer
+     *            The layer to which the column positions match.
+     * @param beforeFromColumnPosition
+     *            The column position that was reordered, before the reorder
+     *            operation was performed.
+     * @param beforeFromColumnIndex
+     *            The index of the reordered position.
+     * @param beforeToColumnPosition
+     *            The position of the column to which the reorder operation was
+     *            performed, before the reorder operation was performed
+     * @param beforeToColumnIndex
+     *            The index of the column to which the reorder operation was
+     *            performed.
+     * @param reorderToLeftEdge
+     *            whether the reorder operation was performed to the left or the
+     *            right edge.
+     *
+     * @since 1.6
+     */
+    public ColumnReorderEvent(ILayer layer,
+            int beforeFromColumnPosition,
+            int beforeFromColumnIndex,
+            int beforeToColumnPosition,
+            int beforeToColumnIndex,
+            boolean reorderToLeftEdge) {
+        this(layer,
+                Arrays.asList(new Integer[] { Integer.valueOf(beforeFromColumnPosition) }),
+                Arrays.asList(new Integer[] { Integer.valueOf(beforeFromColumnIndex) }),
+                beforeToColumnPosition,
+                beforeToColumnIndex,
                 reorderToLeftEdge);
     }
 
+    /**
+     *
+     * @param layer
+     *            The layer to which the column positions match.
+     * @param beforeFromColumnPositions
+     *            The column positions that were reordered, before the reorder
+     *            operation was performed.
+     * @param beforeToColumnPosition
+     *            The position of the column to which the reorder operation was
+     *            performed, before the reorder operation was performed
+     * @param reorderToLeftEdge
+     *            whether the reorder operation was performed to the left or the
+     *            right edge.
+     *
+     * @deprecated Use constructor with explicit index parameters.
+     */
+    @Deprecated
     public ColumnReorderEvent(ILayer layer,
             List<Integer> beforeFromColumnPositions,
-            int beforeToColumnPosition, boolean reorderToLeftEdge) {
-        super(layer);
-        this.beforeFromColumnPositionRanges = PositionUtil
-                .getRanges(beforeFromColumnPositions);
-        this.reorderToLeftEdge = reorderToLeftEdge;
-        this.beforeToColumnPosition = beforeToColumnPosition;
+            int beforeToColumnPosition,
+            boolean reorderToLeftEdge) {
+        this(layer, beforeFromColumnPositions, beforeFromColumnPositions, beforeToColumnPosition, beforeToColumnPosition, reorderToLeftEdge);
+    }
 
-        List<Integer> allColumnPositions = new ArrayList<Integer>(
-                beforeFromColumnPositions);
+    /**
+     *
+     * @param layer
+     *            The layer to which the column positions match.
+     * @param beforeFromColumnPositions
+     *            The column positions that were reordered, before the reorder
+     *            operation was performed.
+     * @param beforeFromColumnIndexes
+     *            The indexes of the reordered positions.
+     * @param beforeToColumnPosition
+     *            The position of the column to which the reorder operation was
+     *            performed, before the reorder operation was performed
+     * @param beforeToColumnIndex
+     *            The index of the column to which the reorder operation was
+     *            performed.
+     * @param reorderToLeftEdge
+     *            whether the reorder operation was performed to the left or the
+     *            right edge.
+     *
+     * @since 1.6
+     */
+    public ColumnReorderEvent(ILayer layer,
+            List<Integer> beforeFromColumnPositions,
+            List<Integer> beforeFromColumnIndexes,
+            int beforeToColumnPosition,
+            int beforeToColumnIndex,
+            boolean reorderToLeftEdge) {
+        super(layer);
+        this.beforeLayer = layer;
+        this.beforeFromColumnPositionRanges = PositionUtil.getRanges(beforeFromColumnPositions);
+        this.beforeFromColumnIndexes = beforeFromColumnIndexes;
+        this.beforeToColumnPosition = beforeToColumnPosition;
+        this.beforeToColumnIndex = beforeToColumnIndex;
+        this.reorderToLeftEdge = reorderToLeftEdge;
+
+        List<Integer> allColumnPositions = new ArrayList<Integer>(beforeFromColumnPositions);
         allColumnPositions.add(Integer.valueOf(beforeToColumnPosition));
         setColumnPositionRanges(PositionUtil.getRanges(allColumnPositions));
     }
@@ -62,19 +165,57 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
      */
     public ColumnReorderEvent(ColumnReorderEvent event) {
         super(event);
-        this.beforeFromColumnPositionRanges = event.beforeFromColumnPositionRanges;
+        this.beforeLayer = event.beforeLayer;
+        this.beforeFromColumnPositionRanges = new ArrayList<Range>(event.beforeFromColumnPositionRanges);
+        this.beforeFromColumnIndexes = new ArrayList<Integer>(event.beforeFromColumnIndexes);
         this.beforeToColumnPosition = event.beforeToColumnPosition;
+        this.beforeToColumnIndex = event.beforeToColumnIndex;
         this.reorderToLeftEdge = event.reorderToLeftEdge;
     }
 
+    /**
+     *
+     * @return The indexes of the reordered columns.
+     * @since 1.6
+     */
+    public Collection<Integer> getBeforeFromColumnIndexes() {
+        return this.beforeFromColumnIndexes;
+    }
+
+    /**
+     *
+     * @return The position ranges of the reordered columns.
+     */
     public Collection<Range> getBeforeFromColumnPositionRanges() {
         return this.beforeFromColumnPositionRanges;
     }
 
+    /**
+     *
+     * @return The position of the column to which the reorder operation was
+     *         performed.
+     */
     public int getBeforeToColumnPosition() {
         return this.beforeToColumnPosition;
     }
 
+    /**
+     *
+     * @return The index of the column to which the reorder operation was
+     *         performed.
+     * @since 1.6
+     */
+    public int getBeforeToColumnIndex() {
+        return this.beforeToColumnIndex;
+    }
+
+    /**
+     *
+     * @return <code>true</code> if the columns were reordered to the left edge
+     *         of the toColumnPosition, <code>false</code> if the reorder
+     *         operation was performed on the right edge (e.g. at the end of a
+     *         table)
+     */
     public boolean isReorderToLeftEdge() {
         return this.reorderToLeftEdge;
     }
@@ -85,15 +226,14 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 
         Collection<Range> beforeFromColumnPositionRanges = getBeforeFromColumnPositionRanges();
 
-        final int beforeToColumnPosition = (this.reorderToLeftEdge) ? this.beforeToColumnPosition
+        final int beforeToColumnPosition = (this.reorderToLeftEdge)
+                ? this.beforeToColumnPosition
                 : (this.beforeToColumnPosition + 1);
         int afterAddColumnPosition = beforeToColumnPosition;
         for (Range beforeFromColumnPositionRange : beforeFromColumnPositionRanges) {
             if (beforeFromColumnPositionRange.start < beforeToColumnPosition) {
-                afterAddColumnPosition -= Math.min(
-                        beforeFromColumnPositionRange.end,
-                        beforeToColumnPosition)
-                        - beforeFromColumnPositionRange.start;
+                afterAddColumnPosition -=
+                        Math.min(beforeFromColumnPositionRange.end, beforeToColumnPosition) - beforeFromColumnPositionRange.start;
             } else {
                 break;
             }
@@ -105,38 +245,68 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 
         int offset = 0;
         for (Range beforeFromColumnPositionRange : beforeFromColumnPositionRanges) {
-            int afterDeleteColumnPosition = beforeFromColumnPositionRange.start
-                    - offset;
+            int afterDeleteColumnPosition = beforeFromColumnPositionRange.start - offset;
             if (afterAddColumnPosition < afterDeleteColumnPosition) {
                 afterDeleteColumnPosition += cumulativeAddSize;
             }
-            columnDiffs.add(new StructuralDiff(DiffTypeEnum.DELETE,
-                    beforeFromColumnPositionRange, new Range(
-                            afterDeleteColumnPosition,
-                            afterDeleteColumnPosition)));
+            columnDiffs.add(new StructuralDiff(
+                    DiffTypeEnum.DELETE,
+                    beforeFromColumnPositionRange,
+                    new Range(afterDeleteColumnPosition, afterDeleteColumnPosition)));
             offset += beforeFromColumnPositionRange.size();
         }
-        Range beforeAddRange = new Range(beforeToColumnPosition,
-                beforeToColumnPosition);
+        Range beforeAddRange = new Range(beforeToColumnPosition, beforeToColumnPosition);
         offset = 0;
         for (Range beforeFromColumnPositionRange : beforeFromColumnPositionRanges) {
             int size = beforeFromColumnPositionRange.size();
-            columnDiffs.add(new StructuralDiff(DiffTypeEnum.ADD,
-                    beforeAddRange, new Range(afterAddColumnPosition + offset,
-                            afterAddColumnPosition + offset + size)));
+            columnDiffs.add(new StructuralDiff(
+                    DiffTypeEnum.ADD,
+                    beforeAddRange,
+                    new Range(afterAddColumnPosition + offset, afterAddColumnPosition + offset + size)));
             offset += size;
         }
 
         return columnDiffs;
     }
 
+    /**
+     * This method is intended to be used for position conversion of the before
+     * positions. The locally stored before positions are the positions of the
+     * reordered columns positions <b>before</b> the reorder is applied. Needed
+     * in case the conversion needs to be done before other states in the given
+     * layer are updated, and therefore the local before position cannot be
+     * determined anymore.
+     *
+     * @param layer
+     *            The layer that performed the conversion of the before
+     *            positions.
+     * @param fromColumnPositionRanges
+     *            The converted column position ranges that were reordered
+     *            before the reorder happened.
+     * @param toColumnPosition
+     *            The converted column position to which a reorder happened
+     *            before the reordering was performed.
+     *
+     * @since 1.6
+     */
+    public void setConvertedBeforePositions(ILayer layer, Collection<Range> fromColumnPositionRanges, int toColumnPosition) {
+        this.beforeLayer = layer;
+        this.beforeFromColumnPositionRanges = fromColumnPositionRanges;
+        this.beforeToColumnPosition = toColumnPosition;
+    }
+
     @Override
     public boolean convertToLocal(ILayer targetLayer) {
-        this.beforeFromColumnPositionRanges = targetLayer
-                .underlyingToLocalColumnPositions(getLayer(),
-                        this.beforeFromColumnPositionRanges);
-        this.beforeToColumnPosition = targetLayer.underlyingToLocalColumnPosition(
-                getLayer(), this.beforeToColumnPosition);
+        // if the conversion was done before, e.g. by an
+        // AbstractColumnHideShowLayer, we don't need to perform the conversion
+        // again
+        if (this.beforeLayer != targetLayer) {
+            this.beforeFromColumnPositionRanges =
+                    targetLayer.underlyingToLocalColumnPositions(getLayer(), this.beforeFromColumnPositionRanges);
+            this.beforeToColumnPosition =
+                    targetLayer.underlyingToLocalColumnPosition(getLayer(), this.beforeToColumnPosition);
+            this.beforeLayer = targetLayer;
+        }
 
         if (this.beforeToColumnPosition >= 0) {
             return super.convertToLocal(targetLayer);

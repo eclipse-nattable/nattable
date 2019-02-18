@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
@@ -25,6 +27,7 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
 
 public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
 
@@ -41,6 +44,22 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 
     @Override
     public void handleLayerEvent(ILayerEvent event) {
+        if (event instanceof ColumnReorderEvent) {
+            // we need to convert the before positions in the event BEFORE the
+            // local states are changed, otherwise we are not able to convert
+            // the before positions as the changed layer states would return
+            // incorrect values
+            ColumnReorderEvent reorderEvent = (ColumnReorderEvent) event;
+
+            Collection<Integer> fromPositions = new TreeSet<Integer>();
+            for (int pos : reorderEvent.getBeforeFromColumnIndexes()) {
+                fromPositions.add(getColumnPositionByIndex(pos));
+            }
+            Collection<Range> fromRanges = PositionUtil.getRanges(fromPositions);
+
+            reorderEvent.setConvertedBeforePositions(this, fromRanges, getColumnPositionByIndex(reorderEvent.getBeforeToColumnIndex()));
+        }
+
         if (event instanceof IStructuralChangeEvent) {
             IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
             if (structuralChangeEvent.isHorizontalStructureChanged()) {
