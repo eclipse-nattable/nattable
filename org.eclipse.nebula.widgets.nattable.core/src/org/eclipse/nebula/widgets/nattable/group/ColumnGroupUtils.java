@@ -270,15 +270,26 @@ public class ColumnGroupUtils {
      * @since 1.6
      */
     public static boolean isBetweenTwoGroups(ILayer natLayer, int startX, int endX, ColumnGroupHeaderLayer layer, int level) {
-        // convert grid position to layer position
-        int fromPosition = LayerUtil.convertColumnPosition(natLayer, natLayer.getColumnPositionByX(startX), layer.getPositionLayer());
-        int toPosition = LayerUtil.convertColumnPosition(natLayer, natLayer.getColumnPositionByX(endX), layer.getPositionLayer());
+        int natFromPosition = natLayer.getColumnPositionByX(startX);
+        int natToPosition = natLayer.getColumnPositionByX(endX);
 
-        return !ColumnGroupUtils.isInTheSameGroup(
+        // convert grid position to layer position
+        int fromPosition = LayerUtil.convertColumnPosition(natLayer, natFromPosition, layer.getPositionLayer());
+        int toPosition = LayerUtil.convertColumnPosition(natLayer, natToPosition, layer.getPositionLayer());
+
+        boolean result = !ColumnGroupUtils.isInTheSameGroup(
                 layer,
                 level,
                 fromPosition,
                 toPosition);
+
+        // special check for reordering to position 0 left of an unbreakable
+        // group
+        if (!result && fromPosition == toPosition && natFromPosition < natToPosition) {
+            result = true;
+        }
+
+        return result;
     }
 
     /**

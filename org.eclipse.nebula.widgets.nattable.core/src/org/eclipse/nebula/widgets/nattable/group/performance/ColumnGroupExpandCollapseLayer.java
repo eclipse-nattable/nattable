@@ -28,6 +28,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.AbstractColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideColumnPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowColumnPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 
 /**
  * @since 1.6
@@ -65,6 +66,8 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
             if (!shownIndexes.isEmpty()) {
                 invalidateCache();
                 fireLayerEvent(new ShowColumnPositionsEvent(this, getColumnPositionsByIndexes(shownIndexes)));
+            } else {
+                fireLayerEvent(new VisualRefreshEvent(this));
             }
 
             return true;
@@ -110,6 +113,8 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
             if (!hiddenPositions.isEmpty()) {
                 invalidateCache();
                 fireLayerEvent(new HideColumnPositionsEvent(this, hiddenPositions));
+            } else {
+                fireLayerEvent(new VisualRefreshEvent(this));
             }
 
             return true;
@@ -121,6 +126,10 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
                 Collection<Integer> indexesToHide = cmd.getIndexesToHide();
                 Collection<Integer> indexesToShow = cmd.getIndexesToShow();
 
+                // remove already hidden indexes
+                indexesToHide.removeAll(hiddenColumnIndexes);
+
+                // remove static indexes
                 modifyForVisible(group, indexesToHide);
 
                 Collection<Integer> hiddenPositions = getColumnPositionsByIndexes(indexesToHide);
@@ -142,7 +151,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
      * Ensure that a group is never hidden completely via collapse operations.
      * Removes either the configured static indexes of the group or the first
      * visible column in a group from the given collection of indexes for this.
-     * 
+     *
      * @param group
      *            The group to check.
      * @param columnIndexes

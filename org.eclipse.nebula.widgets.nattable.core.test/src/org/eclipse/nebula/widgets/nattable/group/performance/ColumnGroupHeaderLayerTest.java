@@ -68,6 +68,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ColumnGroupHeaderLayerTest {
@@ -5786,7 +5787,7 @@ public class ColumnGroupHeaderLayerTest {
         verifyCleanState();
     }
 
-    // TODO reordering with expand/collapse
+    // reordering with expand/collapse
 
     @Test
     public void shouldReorderLeftAddUngroupedToCollapsedGroupLeft() {
@@ -6507,18 +6508,595 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(3, group4.getVisibleSpan());
     }
 
-    // TODO
+    @Test
     public void shouldReorderInsideCollapsedGroupWithStatics() {
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        group1.addStaticIndexes(1, 2);
 
+        // collapse
+        this.columnGroupHeaderLayer.collapseGroup(this.groupModel, group1);
+
+        ILayerCell cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginColumnPosition());
+        assertEquals(0, cell.getColumnPosition());
+        assertEquals(1, cell.getColumnIndex());
+        assertEquals(2, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(200, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(2, 0);
+        assertEquals(2, cell.getOriginColumnPosition());
+        assertEquals(2, cell.getColumnPosition());
+        assertEquals(4, cell.getColumnIndex());
+        assertEquals(4, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Address", cell.getDataValue());
+        assertEquals(200, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(400, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(2, group1.getVisibleSpan());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(2);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(2, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        // reorder first visible to last visible inside a group
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 1, 3));
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginColumnPosition());
+        assertEquals(0, cell.getColumnPosition());
+        assertEquals(2, cell.getColumnIndex());
+        assertEquals(2, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(200, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(2, 0);
+        assertEquals(2, cell.getOriginColumnPosition());
+        assertEquals(2, cell.getColumnPosition());
+        assertEquals(4, cell.getColumnIndex());
+        assertEquals(4, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Address", cell.getDataValue());
+        assertEquals(200, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(400, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(2, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(2, group1.getVisibleSpan());
+
+        group2 = this.columnGroupHeaderLayer.getGroupByPosition(2);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(2, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        // expand
+        this.columnGroupHeaderLayer.expandGroup(0);
+
+        verifyCleanState();
     }
 
-    // TODO
+    @Test
+    public void shouldReorderInsideCollapsedGroupWithStaticsFromBeginning() {
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        group1.addStaticIndexes(0, 1);
+
+        // collapse
+        this.columnGroupHeaderLayer.collapseGroup(this.groupModel, group1);
+
+        ILayerCell cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginColumnPosition());
+        assertEquals(0, cell.getColumnPosition());
+        assertEquals(0, cell.getColumnIndex());
+        assertEquals(2, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(200, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(2, 0);
+        assertEquals(2, cell.getOriginColumnPosition());
+        assertEquals(2, cell.getColumnPosition());
+        assertEquals(4, cell.getColumnIndex());
+        assertEquals(4, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Address", cell.getDataValue());
+        assertEquals(200, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(400, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(2, group1.getVisibleSpan());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(2);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(2, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        // reorder first visible to last visible inside a group
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 1, 3));
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginColumnPosition());
+        assertEquals(0, cell.getColumnPosition());
+        assertEquals(1, cell.getColumnIndex());
+        assertEquals(2, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(200, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(2, 0);
+        assertEquals(2, cell.getOriginColumnPosition());
+        assertEquals(2, cell.getColumnPosition());
+        assertEquals(4, cell.getColumnIndex());
+        assertEquals(4, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Address", cell.getDataValue());
+        assertEquals(200, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(400, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(2, group1.getVisibleSpan());
+
+        group2 = this.columnGroupHeaderLayer.getGroupByPosition(2);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(2, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        // reorder again first visible to last visible inside a group
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 1, 3));
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginColumnPosition());
+        assertEquals(0, cell.getColumnPosition());
+        assertEquals(0, cell.getColumnIndex());
+        assertEquals(2, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(200, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(2, 0);
+        assertEquals(2, cell.getOriginColumnPosition());
+        assertEquals(2, cell.getColumnPosition());
+        assertEquals(4, cell.getColumnIndex());
+        assertEquals(4, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Address", cell.getDataValue());
+        assertEquals(200, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(400, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(2, group1.getVisibleSpan());
+
+        group2 = this.columnGroupHeaderLayer.getGroupByPosition(2);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(2, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        // expand
+        this.columnGroupHeaderLayer.expandGroup(0);
+
+        // verify expanded state, slightly different than the clean state
+        for (int column = 0; column < this.columnGroupHeaderLayer.getColumnCount(); column++) {
+            assertTrue(this.columnGroupHeaderLayer.isPartOfAGroup(column));
+            assertFalse(this.columnGroupHeaderLayer.isPartOfAnUnbreakableGroup(column));
+        }
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginColumnPosition());
+        assertEquals(0, cell.getColumnPosition());
+        assertEquals(2, cell.getColumnIndex());
+        assertEquals(4, cell.getColumnSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(400, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(4, 0);
+        assertEquals(4, cell.getOriginColumnPosition());
+        assertEquals(4, cell.getColumnSpan());
+        assertEquals("Address", cell.getDataValue());
+        assertEquals(400, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(400, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(8, 0);
+        assertEquals(8, cell.getOriginColumnPosition());
+        assertEquals(3, cell.getColumnSpan());
+        assertEquals("Facts", cell.getDataValue());
+        assertEquals(800, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(300, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        // this cell is not visible because of the client area
+        cell = this.columnGroupHeaderLayer.getCellByPosition(11, 0);
+        assertEquals(11, cell.getOriginColumnPosition());
+        assertEquals(3, cell.getColumnSpan());
+        assertEquals("Personal", cell.getDataValue());
+        assertEquals(-1, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(0, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(2, group1.getStartIndex());
+        assertEquals(2, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(11, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+    }
+
+    @Test
     public void shouldReorderLeftAddColumnToCollapsedGroupWithStatics() {
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        group1.addStaticIndexes(1, 2);
 
+        this.columnGroupHeaderLayer.removePositionsFromGroup(0, 3);
+
+        ILayerCell cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginColumnPosition());
+        assertEquals(3, cell.getColumnSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(300, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(3, 0);
+        assertEquals(3, cell.getOriginColumnPosition());
+        assertEquals(3, cell.getColumnPosition());
+        assertEquals(1, cell.getColumnSpan());
+        assertEquals(2, cell.getRowSpan());
+        assertEquals("Married", cell.getDataValue());
+        assertEquals(300, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(100, cell.getBounds().width);
+        assertEquals(40, cell.getBounds().height);
+
+        group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        // collapse first group
+        this.columnGroupHeaderLayer.collapseGroup(0);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginColumnPosition());
+        assertEquals(0, cell.getColumnPosition());
+        assertEquals(2, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(200, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(2, 0);
+        assertEquals(2, cell.getOriginColumnPosition());
+        assertEquals(2, cell.getColumnPosition());
+        assertEquals(1, cell.getColumnSpan());
+        assertEquals(2, cell.getRowSpan());
+        assertEquals("Married", cell.getDataValue());
+        assertEquals(200, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(100, cell.getBounds().width);
+        assertEquals(40, cell.getBounds().height);
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(2, group1.getVisibleSpan());
+
+        // reorder in same column to add to next group
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 3, 3));
+
+        // added column is not shown as part of collapsed group
+        // group is collapsed and therefore the added column is hidden
+        cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginColumnPosition());
+        assertEquals(0, cell.getColumnPosition());
+        assertEquals(2, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(200, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(2, 0);
+        assertEquals(2, cell.getOriginColumnPosition());
+        assertEquals(2, cell.getColumnPosition());
+        assertEquals(4, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Address", cell.getDataValue());
+        assertEquals(200, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(400, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        // only the original span should have changed
+        group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(2, group1.getVisibleSpan());
+
+        group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(2);
+        assertEquals(4, group1.getStartIndex());
+        assertEquals(4, group1.getVisibleStartIndex());
+        assertEquals(2, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        // expand again
+        this.columnGroupHeaderLayer.expandGroup(0);
+
+        verifyCleanState();
     }
 
-    // TODO
+    // TODO correct test case
+    @Ignore
+    @Test
     public void shouldReorderRightAddColumnToCollapsedGroupWithStatics() {
+        Group group = this.columnGroupHeaderLayer.getGroupByPosition(5);
+        group.addStaticIndexes(5, 6);
+
+        this.columnGroupHeaderLayer.removePositionsFromGroup(0, 4);
+
+        ILayerCell cell = this.columnGroupHeaderLayer.getCellByPosition(4, 0);
+        assertEquals(4, cell.getOriginColumnPosition());
+        assertEquals(4, cell.getColumnPosition());
+        assertEquals(1, cell.getColumnSpan());
+        assertEquals(2, cell.getRowSpan());
+        assertEquals("Street", cell.getDataValue());
+        assertEquals(400, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(100, cell.getBounds().width);
+        assertEquals(40, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(5, 0);
+        assertEquals(5, cell.getOriginColumnPosition());
+        assertEquals(5, cell.getColumnPosition());
+        assertEquals(3, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Address", cell.getDataValue());
+        assertEquals(500, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(300, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        assertNull(this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4));
+
+        group = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(5);
+        assertEquals(5, group.getStartIndex());
+        assertEquals(5, group.getVisibleStartIndex());
+        assertEquals(5, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(3, group.getVisibleSpan());
+
+        // collapse second group
+        this.columnGroupHeaderLayer.collapseGroup(5);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(4, 0);
+        assertEquals(4, cell.getOriginColumnPosition());
+        assertEquals(4, cell.getColumnPosition());
+        assertEquals(1, cell.getColumnSpan());
+        assertEquals(2, cell.getRowSpan());
+        assertEquals("Street", cell.getDataValue());
+        assertEquals(400, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(100, cell.getBounds().width);
+        assertEquals(40, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(5, 0);
+        assertEquals(5, cell.getOriginColumnPosition());
+        assertEquals(5, cell.getColumnPosition());
+        assertEquals(2, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Address", cell.getDataValue());
+        assertEquals(500, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(200, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        assertEquals(5, group.getStartIndex());
+        assertEquals(5, group.getVisibleStartIndex());
+        assertEquals(5, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        // reorder to right to add to next group at the beginning
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 5, 6));
+
+        // added column is not shown as visible column in collapsed group
+        cell = this.columnGroupHeaderLayer.getCellByPosition(4, 0);
+        assertEquals(4, cell.getOriginColumnPosition());
+        assertEquals(4, cell.getColumnPosition());
+        assertEquals(2, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Address", cell.getDataValue());
+        assertEquals(400, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(200, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(6, 0);
+        assertEquals(6, cell.getOriginColumnPosition());
+        assertEquals(6, cell.getColumnPosition());
+        assertEquals(3, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Facts", cell.getDataValue());
+        assertEquals(600, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(300, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        // only the original span should have changed
+        group = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
+        assertEquals(5, group.getStartIndex());
+        assertEquals(5, group.getVisibleStartIndex());
+        assertEquals(4, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        group = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(5);
+        assertEquals(8, group.getStartIndex());
+        assertEquals(8, group.getVisibleStartIndex());
+        assertEquals(5, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(3, group.getVisibleSpan());
+
+        // expand again
+        this.columnGroupHeaderLayer.expandGroup(4);
+
+        // TODO verifyCleanState
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginColumnPosition());
+        assertEquals(4, cell.getColumnSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(400, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(4, 0);
+        assertEquals(4, cell.getOriginColumnPosition());
+        assertEquals(4, cell.getColumnPosition());
+        assertEquals(5, cell.getColumnIndex());
+        assertEquals(4, cell.getColumnSpan());
+        assertEquals("Address", cell.getDataValue());
+        assertEquals(400, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(400, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(8, 0);
+        assertEquals(8, cell.getOriginColumnPosition());
+        assertEquals(3, cell.getColumnSpan());
+        assertEquals("Facts", cell.getDataValue());
+        assertEquals(800, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(300, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        // this cell is not visible because of the client area
+        cell = this.columnGroupHeaderLayer.getCellByPosition(11, 0);
+        assertEquals(11, cell.getOriginColumnPosition());
+        assertEquals(3, cell.getColumnSpan());
+        assertEquals("Personal", cell.getDataValue());
+        assertEquals(-1, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(0, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
+        assertEquals(5, group2.getStartIndex());
+        assertEquals(5, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(11, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
 
     }
 
@@ -6550,6 +7128,207 @@ public class ColumnGroupHeaderLayerTest {
     // TODO reordering with hidden
     // hide last, reorder to last for add, show all
     // hide first, reorder to first for add, show all
+
+    @Test
+    public void shouldReorderInsideGroupWithHiddenColumnsAtEnd() {
+
+        // hide last two columns at group end
+        this.gridLayer.doCommand(new MultiColumnHideCommand(this.gridLayer, 3, 4));
+
+        ILayerCell cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginColumnPosition());
+        assertEquals(0, cell.getColumnPosition());
+        assertEquals(0, cell.getColumnIndex());
+        assertEquals(2, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(200, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(2, 0);
+        assertEquals(2, cell.getOriginColumnPosition());
+        assertEquals(2, cell.getColumnPosition());
+        assertEquals(4, cell.getColumnIndex());
+        assertEquals(4, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Address", cell.getDataValue());
+        assertEquals(200, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(400, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(2, group1.getVisibleSpan());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(2);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(2, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        // reorder first visible to last visible inside a group
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 1, 3));
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginColumnPosition());
+        assertEquals(0, cell.getColumnPosition());
+        assertEquals(1, cell.getColumnIndex());
+        assertEquals(2, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(200, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(2, 0);
+        assertEquals(2, cell.getOriginColumnPosition());
+        assertEquals(2, cell.getColumnPosition());
+        assertEquals(4, cell.getColumnIndex());
+        assertEquals(4, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Address", cell.getDataValue());
+        assertEquals(200, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(400, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(2, group1.getVisibleSpan());
+
+        group2 = this.columnGroupHeaderLayer.getGroupByPosition(2);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(2, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        // reorder again first visible to last visible inside a group
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 1, 3));
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginColumnPosition());
+        assertEquals(0, cell.getColumnPosition());
+        assertEquals(0, cell.getColumnIndex());
+        assertEquals(2, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(200, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(2, 0);
+        assertEquals(2, cell.getOriginColumnPosition());
+        assertEquals(2, cell.getColumnPosition());
+        assertEquals(4, cell.getColumnIndex());
+        assertEquals(4, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Address", cell.getDataValue());
+        assertEquals(200, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(400, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(2, group1.getVisibleSpan());
+
+        group2 = this.columnGroupHeaderLayer.getGroupByPosition(2);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(2, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        // show all again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        // verify expanded state, slightly different than the clean state
+        for (int column = 0; column < this.columnGroupHeaderLayer.getColumnCount(); column++) {
+            assertTrue(this.columnGroupHeaderLayer.isPartOfAGroup(column));
+            assertFalse(this.columnGroupHeaderLayer.isPartOfAnUnbreakableGroup(column));
+        }
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginColumnPosition());
+        assertEquals(0, cell.getColumnPosition());
+        assertEquals(2, cell.getColumnIndex());
+        assertEquals(4, cell.getColumnSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(400, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(4, 0);
+        assertEquals(4, cell.getOriginColumnPosition());
+        assertEquals(4, cell.getColumnSpan());
+        assertEquals("Address", cell.getDataValue());
+        assertEquals(400, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(400, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.columnGroupHeaderLayer.getCellByPosition(8, 0);
+        assertEquals(8, cell.getOriginColumnPosition());
+        assertEquals(3, cell.getColumnSpan());
+        assertEquals("Facts", cell.getDataValue());
+        assertEquals(800, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(300, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        // this cell is not visible because of the client area
+        cell = this.columnGroupHeaderLayer.getCellByPosition(11, 0);
+        assertEquals(11, cell.getOriginColumnPosition());
+        assertEquals(3, cell.getColumnSpan());
+        assertEquals("Personal", cell.getDataValue());
+        assertEquals(-1, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(0, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(2, group1.getStartIndex());
+        assertEquals(2, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(11, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+    }
 
     // reorder with hidden and collapsed
 

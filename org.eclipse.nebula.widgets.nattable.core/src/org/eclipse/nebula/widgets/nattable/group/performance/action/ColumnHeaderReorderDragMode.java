@@ -16,6 +16,7 @@ import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.reorder.action.ColumnReorderDragMode;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 
@@ -63,16 +64,21 @@ public class ColumnHeaderReorderDragMode extends ColumnReorderDragMode {
         // need to convert directly to the corresponding position layer
         int toPosition = LayerUtil.convertColumnPosition(natLayer, toGridColumnPosition, this.columnGroupHeaderLayer.getPositionLayer());
 
-        // if reordered to the beginning or the end, the position is valid
-        if (toPosition == 0 || toPosition == this.columnGroupHeaderLayer.getPositionLayer().getColumnCount() - 1) {
-            return true;
-        }
-
         // Allow moving within the unbreakable group
+        int fromPosition = this.columnGroupHeaderLayer.getReorderFromColumnPosition();
         for (int level = 0; level < this.columnGroupHeaderLayer.getLevelCount(); level++) {
             GroupModel model = this.columnGroupHeaderLayer.getGroupModel(level);
-            if (model.isPartOfAnUnbreakableGroup(this.columnGroupHeaderLayer.getReorderFromColumnPosition())) {
-                return ColumnGroupUtils.isInTheSameGroup(this.columnGroupHeaderLayer, level, this.columnGroupHeaderLayer.getReorderFromColumnPosition(), toPosition);
+            if (model.isPartOfAnUnbreakableGroup(fromPosition)) {
+                int toCheck = toPosition;
+                if (toPosition < 0 && toGridColumnPosition == natLayer.getColumnCount()) {
+                    toCheck = LayerUtil.convertColumnPosition(natLayer, toGridColumnPosition - 1, this.columnGroupHeaderLayer.getPositionLayer());
+                }
+                MoveDirectionEnum moveDirection = ColumnGroupUtils.getMoveDirection(fromPosition, toCheck);
+                toCheck = MoveDirectionEnum.RIGHT == moveDirection ? toCheck - 1 : toCheck;
+                return ColumnGroupUtils.isInTheSameGroup(
+                        this.columnGroupHeaderLayer,
+                        level, fromPosition,
+                        toCheck);
             }
         }
 
