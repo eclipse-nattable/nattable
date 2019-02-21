@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -184,8 +184,9 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer implements 
     @Override
     public void showColumnIndexes(Collection<Integer> columnIndexes) {
         this.hiddenColumnIndexes.removeAll(columnIndexes);
+        Collection<Integer> positions = getColumnPositionsByIndexes(columnIndexes);
         invalidateCache();
-        fireLayerEvent(new ShowColumnPositionsEvent(this, getColumnPositionsByIndexes(columnIndexes)));
+        fireLayerEvent(new ShowColumnPositionsEvent(this, positions));
     }
 
     @Override
@@ -228,7 +229,7 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer implements 
         Collection<Integer> hiddenColumns = new ArrayList<Integer>(this.hiddenColumnIndexes);
         this.hiddenColumnIndexes.clear();
         invalidateCache();
-        fireLayerEvent(new ShowColumnPositionsEvent(this, hiddenColumns));
+        fireLayerEvent(new ShowColumnPositionsEvent(this, getColumnPositionsByIndexes(hiddenColumns)));
     }
 
     @Override
