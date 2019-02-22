@@ -449,6 +449,10 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      * @return The {@link GroupModel} for the corresponding level.
      */
     public GroupModel getGroupModel(int level) {
+        if (level >= this.model.size()) {
+            LOG.warn("tried to add a group on a non-existent level"); //$NON-NLS-1$
+            return null;
+        }
         return this.model.get(level);
     }
 
@@ -950,8 +954,11 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         // calculate the position matching the position layer
         int posColumn = LayerUtil.convertColumnPosition(this, columnPosition, this.positionLayer);
         if (posColumn > -1) {
-            Group group = getGroupModel(level).getGroupByPosition(posColumn);
-            return group;
+            GroupModel groupModel = getGroupModel(level);
+            if (groupModel != null) {
+                Group group = groupModel.getGroupByPosition(posColumn);
+                return group;
+            }
         }
         return null;
     }
@@ -1145,7 +1152,11 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *         is no group with such a name.
      */
     public Group getGroupByName(int level, String name) {
-        return getGroupModel(level).getGroupByName(name);
+        GroupModel groupModel = getGroupModel(level);
+        if (groupModel != null) {
+            return groupModel.getGroupByName(name);
+        }
+        return null;
     }
 
     /**
@@ -1174,9 +1185,12 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *            The positions to add corresponding to this layer.
      */
     public void addPositionsToGroup(int level, String groupName, int... positions) {
-        Group group = getGroupModel(level).getGroupByName(groupName);
-        if (group != null) {
-            addPositionsToGroup(group, positions);
+        GroupModel groupModel = getGroupModel(level);
+        if (groupModel != null) {
+            Group group = groupModel.getGroupByName(groupName);
+            if (group != null) {
+                addPositionsToGroup(group, positions);
+            }
         }
     }
 
@@ -1235,7 +1249,10 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
             this.positionLayer.doCommand(new ColumnGroupExpandCommand(getGroupModel(level), group));
         }
 
-        getGroupModel(level).addPositionsToGroup(group, converted);
+        GroupModel groupModel = getGroupModel(level);
+        if (groupModel != null) {
+            groupModel.addPositionsToGroup(group, converted);
+        }
 
         fireLayerEvent(new RowStructuralRefreshEvent(ColumnGroupHeaderLayer.this.underlyingLayer));
     }
@@ -1269,13 +1286,15 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         }
 
         GroupModel groupModel = getGroupModel(level);
-        for (int i = converted.length - 1; i >= 0; i--) {
-            int pos = converted[i];
-            Group group = groupModel.getGroupByPosition(pos);
-            if (group.isCollapsed()) {
-                this.positionLayer.doCommand(new ColumnGroupExpandCommand(groupModel, group));
+        if (groupModel != null) {
+            for (int i = converted.length - 1; i >= 0; i--) {
+                int pos = converted[i];
+                Group group = groupModel.getGroupByPosition(pos);
+                if (group.isCollapsed()) {
+                    this.positionLayer.doCommand(new ColumnGroupExpandCommand(groupModel, group));
+                }
+                groupModel.removePositionsFromGroup(group, pos);
             }
-            groupModel.removePositionsFromGroup(group, pos);
         }
 
         // fire the event to update column group rendering in case calculate
@@ -1313,7 +1332,10 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *            The configured number of items that belong to this group.
      */
     public void addGroup(int level, String groupName, int startIndex, int span) {
-        getGroupModel(level).addGroup(groupName, startIndex, span);
+        GroupModel groupModel = getGroupModel(level);
+        if (groupModel != null) {
+            groupModel.addGroup(groupName, startIndex, span);
+        }
     }
 
     /**
@@ -1336,9 +1358,12 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *            The name of the group to remove.
      */
     public void removeGroup(int level, String groupName) {
-        Group group = getGroupModel(level).removeGroup(groupName);
-        if (group != null && group.isCollapsed()) {
-            this.positionLayer.doCommand(new ColumnGroupExpandCommand(getGroupModel(level), group));
+        GroupModel groupModel = getGroupModel(level);
+        if (groupModel != null) {
+            Group group = groupModel.removeGroup(groupName);
+            if (group != null && group.isCollapsed()) {
+                this.positionLayer.doCommand(new ColumnGroupExpandCommand(getGroupModel(level), group));
+            }
         }
     }
 
@@ -1362,9 +1387,12 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *            The group that contains the given column position.
      */
     public void removeGroup(int level, int columnPosition) {
-        Group group = getGroupModel(level).removeGroup(columnPosition);
-        if (group != null && group.isCollapsed()) {
-            this.positionLayer.doCommand(new ColumnGroupExpandCommand(getGroupModel(level), group));
+        GroupModel groupModel = getGroupModel(level);
+        if (groupModel != null) {
+            Group group = groupModel.removeGroup(columnPosition);
+            if (group != null && group.isCollapsed()) {
+                this.positionLayer.doCommand(new ColumnGroupExpandCommand(getGroupModel(level), group));
+            }
         }
     }
 
@@ -1388,9 +1416,12 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *            The group to remove.
      */
     public void removeGroup(int level, Group group) {
-        getGroupModel(level).removeGroup(group);
-        if (group != null && group.isCollapsed()) {
-            this.positionLayer.doCommand(new ColumnGroupExpandCommand(getGroupModel(level), group));
+        GroupModel groupModel = getGroupModel(level);
+        if (groupModel != null) {
+            groupModel.removeGroup(group);
+            if (group != null && group.isCollapsed()) {
+                this.positionLayer.doCommand(new ColumnGroupExpandCommand(getGroupModel(level), group));
+            }
         }
     }
 
@@ -1415,7 +1446,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      */
     public void clearAllGroups(int level) {
         GroupModel groupModel = getGroupModel(level);
-        if (!groupModel.isEmpty()) {
+        if (groupModel != null && !groupModel.isEmpty()) {
             this.positionLayer.doCommand(new ColumnGroupExpandCommand(groupModel, groupModel.getGroups()));
             groupModel.clear();
         }
@@ -1451,7 +1482,10 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *            The static indexes to add.
      */
     public void addStaticColumnIndexesToGroup(int level, String groupName, int... staticIndexes) {
-        getGroupModel(level).addStaticIndexesToGroup(groupName, staticIndexes);
+        GroupModel groupModel = getGroupModel(level);
+        if (groupModel != null) {
+            groupModel.addStaticIndexesToGroup(groupName, staticIndexes);
+        }
     }
 
     /**
@@ -1469,7 +1503,10 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *            The static indexes to add.
      */
     public void addStaticColumnIndexesToGroup(int level, int columnPosition, int... staticIndexes) {
-        getGroupModel(level).addStaticIndexesToGroup(columnPosition, staticIndexes);
+        GroupModel groupModel = getGroupModel(level);
+        if (groupModel != null) {
+            groupModel.addStaticIndexesToGroup(columnPosition, staticIndexes);
+        }
     }
 
     /**
@@ -1556,7 +1593,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      */
     public void collapseAllGroups(int level) {
         GroupModel groupModel = getGroupModel(level);
-        if (!groupModel.isEmpty()) {
+        if (groupModel != null && !groupModel.isEmpty()) {
             this.positionLayer.doCommand(new ColumnGroupCollapseCommand(groupModel, groupModel.getGroups()));
         }
     }
@@ -1645,7 +1682,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      */
     public void expandAllGroups(int level) {
         GroupModel groupModel = getGroupModel(level);
-        if (!groupModel.isEmpty()) {
+        if (groupModel != null && !groupModel.isEmpty()) {
             this.positionLayer.doCommand(new ColumnGroupExpandCommand(groupModel, groupModel.getGroups()));
         }
     }
@@ -1673,7 +1710,11 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *         group objects.
      */
     public boolean isDefaultCollapseable(int level) {
-        return getGroupModel(level).isDefaultCollapseable();
+        GroupModel groupModel = getGroupModel(level);
+        if (groupModel != null) {
+            return groupModel.isDefaultCollapseable();
+        }
+        return false;
     }
 
     /**
@@ -1688,7 +1729,10 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *            on creating group.
      */
     public void setDefaultCollapseable(int level, boolean defaultCollapseable) {
-        getGroupModel(level).setDefaultCollapseable(defaultCollapseable);
+        GroupModel groupModel = getGroupModel(level);
+        if (groupModel != null) {
+            groupModel.setDefaultCollapseable(defaultCollapseable);
+        }
     }
 
     /**
@@ -1717,7 +1761,10 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *            <code>false</code> to set it not to be collapseable.
      */
     public void setGroupCollapseable(int level, String groupName, boolean collabseable) {
-        getGroupModel(level).setGroupCollapseable(groupName, collabseable);
+        GroupModel groupModel = getGroupModel(level);
+        if (groupModel != null) {
+            groupModel.setGroupCollapseable(groupName, collabseable);
+        }
     }
 
     /**
@@ -1748,7 +1795,10 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *            <code>false</code> to set it not to be collapseable.
      */
     public void setGroupCollapseable(int level, int position, boolean collabseable) {
-        getGroupModel(level).setGroupCollapseable(position, collabseable);
+        GroupModel groupModel = getGroupModel(level);
+        if (groupModel != null) {
+            groupModel.setGroupCollapseable(position, collabseable);
+        }
     }
 
     /**
@@ -1774,7 +1824,11 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *         objects.
      */
     public boolean isDefaultUnbreakable(int level) {
-        return getGroupModel(level).isDefaultUnbreakable();
+        GroupModel groupModel = getGroupModel(level);
+        if (groupModel != null) {
+            return groupModel.isDefaultUnbreakable();
+        }
+        return false;
     }
 
     /**
@@ -1789,7 +1843,10 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *            on creating group.
      */
     public void setDefaultUnbreakable(int level, boolean defaultUnbreakable) {
-        getGroupModel(level).setDefaultUnbreakable(defaultUnbreakable);
+        GroupModel groupModel = getGroupModel(level);
+        if (groupModel != null) {
+            groupModel.setDefaultUnbreakable(defaultUnbreakable);
+        }
     }
 
     /**
@@ -1818,7 +1875,10 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *            <code>false</code> to remove the unbreakable state.
      */
     public void setGroupUnbreakable(int level, String groupName, boolean unbreakable) {
-        getGroupModel(level).setGroupUnbreakable(groupName, unbreakable);
+        GroupModel groupModel = getGroupModel(level);
+        if (groupModel != null) {
+            groupModel.setGroupUnbreakable(groupName, unbreakable);
+        }
     }
 
     /**
@@ -1847,7 +1907,10 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *            <code>false</code> to remove the unbreakable state.
      */
     public void setGroupUnbreakable(int level, int position, boolean unbreakable) {
-        getGroupModel(level).setGroupUnbreakable(position, unbreakable);
+        GroupModel groupModel = getGroupModel(level);
+        if (groupModel != null) {
+            groupModel.setGroupUnbreakable(position, unbreakable);
+        }
     }
 
     // height
@@ -1962,15 +2025,19 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *         consumed successfully
      */
     public boolean reorderColumnGroup(int level, int fromColumnPosition, int toColumnPosition) {
-        Group group = getGroupModel(level).getGroupByPosition(fromColumnPosition);
-        int toPosition = toColumnPosition;
-        if (group.isCollapsed()) {
-            int toIndex = getPositionLayer().getColumnIndexByPosition(toColumnPosition);
-            expandGroup(getGroupModel(level), group);
-            toPosition = getPositionLayer().getColumnPositionByIndex(toIndex);
+        GroupModel groupModel = getGroupModel(level);
+        if (groupModel != null) {
+            Group group = groupModel.getGroupByPosition(fromColumnPosition);
+            int toPosition = toColumnPosition;
+            if (group.isCollapsed()) {
+                int toIndex = getPositionLayer().getColumnIndexByPosition(toColumnPosition);
+                expandGroup(groupModel, group);
+                toPosition = getPositionLayer().getColumnPositionByIndex(toIndex);
+            }
+            return this.positionLayer.doCommand(
+                    new MultiColumnReorderCommand(this.positionLayer, new ArrayList<Integer>(group.getVisiblePositions()), toPosition));
         }
-        return this.positionLayer.doCommand(
-                new MultiColumnReorderCommand(this.positionLayer, new ArrayList<Integer>(group.getVisiblePositions()), toPosition));
+        return false;
     }
 
     @Override
