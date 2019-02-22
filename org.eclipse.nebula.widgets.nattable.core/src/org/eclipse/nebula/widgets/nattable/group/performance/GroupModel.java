@@ -928,7 +928,7 @@ public class GroupModel implements IPersistable {
         /**
          * The indexes that remain visible when collapsing this group.
          */
-        private final Collection<Integer> staticIndexes = new LinkedList<Integer>();
+        private final Collection<Integer> staticIndexes = new HashSet<Integer>();
 
         /**
          * Flag to configure whether this group can be collapsed or not.
@@ -953,7 +953,7 @@ public class GroupModel implements IPersistable {
          * hide operations performed at the end of a table lead to an
          * inconsistent group state.
          */
-        private final Collection<Integer> members = new LinkedList<Integer>();
+        private final Collection<Integer> members = new HashSet<Integer>();
 
         /**
          *
@@ -1183,7 +1183,7 @@ public class GroupModel implements IPersistable {
         /**
          * Adds the given member indexes to the local list of members that are
          * needed for consistency checks.
-         * 
+         *
          * @param memberIndexes
          *            The indexes of the positions that should be added to the
          *            local group members.

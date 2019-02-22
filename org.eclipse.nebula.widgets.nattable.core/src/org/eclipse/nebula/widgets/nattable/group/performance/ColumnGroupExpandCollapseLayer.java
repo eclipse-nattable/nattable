@@ -122,7 +122,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
             UpdateColumnGroupCollapseCommand cmd = (UpdateColumnGroupCollapseCommand) command;
             Group group = cmd.getGroup();
             Collection<Integer> hiddenColumnIndexes = this.hidden.get(group);
-            if (group.getVisibleIndexes().size() + hiddenColumnIndexes.size() < group.getOriginalSpan()) {
+            if (group.getVisibleIndexes().size() + hiddenColumnIndexes.size() <= group.getOriginalSpan()) {
                 Collection<Integer> indexesToHide = cmd.getIndexesToHide();
                 Collection<Integer> indexesToShow = cmd.getIndexesToShow();
 
