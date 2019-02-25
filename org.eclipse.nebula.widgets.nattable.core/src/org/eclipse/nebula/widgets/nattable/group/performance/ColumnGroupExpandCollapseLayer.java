@@ -83,6 +83,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
             });
 
             Set<Integer> hiddenPositions = new TreeSet<Integer>();
+            Set<Integer> hiddenIndexes = new TreeSet<Integer>();
 
             for (Group group : groups) {
                 // if group is not collapseable return without any further
@@ -108,11 +109,12 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
                 this.hidden.put(group, columnIndexes);
 
                 hiddenPositions.addAll(getColumnPositionsByIndexes(columnIndexes));
+                hiddenIndexes.addAll(columnIndexes);
             }
 
             if (!hiddenPositions.isEmpty()) {
                 invalidateCache();
-                fireLayerEvent(new HideColumnPositionsEvent(this, hiddenPositions));
+                fireLayerEvent(new HideColumnPositionsEvent(this, hiddenPositions, hiddenIndexes));
             } else {
                 fireLayerEvent(new VisualRefreshEvent(this));
             }
@@ -139,7 +141,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
 
                 invalidateCache();
 
-                fireLayerEvent(new HideColumnPositionsEvent(this, hiddenPositions));
+                fireLayerEvent(new HideColumnPositionsEvent(this, hiddenPositions, indexesToHide));
             }
 
             return true;

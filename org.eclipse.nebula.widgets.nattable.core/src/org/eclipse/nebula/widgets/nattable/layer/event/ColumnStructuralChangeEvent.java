@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,8 +23,7 @@ import org.eclipse.swt.graphics.Rectangle;
  * ColumnDiffs (Collection&lt;StructuralDiff&gt;) indicating the columns which
  * have changed.
  */
-public abstract class ColumnStructuralChangeEvent extends
-        ColumnVisualChangeEvent implements IStructuralChangeEvent {
+public abstract class ColumnStructuralChangeEvent extends ColumnVisualChangeEvent implements IStructuralChangeEvent {
 
     /**
      * Creates a new ColumnStructuralChangeEvent based on the given information.
@@ -34,8 +33,7 @@ public abstract class ColumnStructuralChangeEvent extends
      * @param columnPositionRanges
      *            The column position ranges for the columns that have changed.
      */
-    public ColumnStructuralChangeEvent(ILayer layer,
-            Range... columnPositionRanges) {
+    public ColumnStructuralChangeEvent(ILayer layer, Range... columnPositionRanges) {
         this(layer, Arrays.asList(columnPositionRanges));
     }
 
@@ -47,9 +45,24 @@ public abstract class ColumnStructuralChangeEvent extends
      * @param columnPositionRanges
      *            The column position ranges for the columns that have changed.
      */
-    public ColumnStructuralChangeEvent(ILayer layer,
-            Collection<Range> columnPositionRanges) {
+    public ColumnStructuralChangeEvent(ILayer layer, Collection<Range> columnPositionRanges) {
         super(layer, columnPositionRanges);
+    }
+
+    /**
+     * Creates a new ColumnStructuralChangeEvent based on the given information.
+     *
+     * @param layer
+     *            The ILayer to which the given column positions match.
+     * @param columnPositionRanges
+     *            The column position ranges for the columns that have changed.
+     * @param columnIndexes
+     *            The indexes of the columns that have changed.
+     *
+     * @since 1.6
+     */
+    public ColumnStructuralChangeEvent(ILayer layer, Collection<Range> columnPositionRanges, Collection<Integer> columnIndexes) {
+        super(layer, columnPositionRanges, columnIndexes);
     }
 
     /**
@@ -79,8 +92,11 @@ public abstract class ColumnStructuralChangeEvent extends
 
             int columnCount = getLayer().getColumnCount();
             int rowCount = getLayer().getRowCount();
-            changedPositionRectangles.add(new Rectangle(leftmostColumnPosition,
-                    0, columnCount - leftmostColumnPosition, rowCount));
+            changedPositionRectangles.add(new Rectangle(
+                    leftmostColumnPosition,
+                    0,
+                    columnCount - leftmostColumnPosition,
+                    rowCount));
         }
 
         return changedPositionRectangles;

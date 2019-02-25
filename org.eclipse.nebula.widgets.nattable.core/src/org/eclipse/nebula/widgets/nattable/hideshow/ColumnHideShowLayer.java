@@ -168,7 +168,7 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer implements 
         }
         this.hiddenColumnIndexes.addAll(columnIndexes);
         invalidateCache();
-        fireLayerEvent(new HideColumnPositionsEvent(this, columnPositions));
+        fireLayerEvent(new HideColumnPositionsEvent(this, columnPositions, columnIndexes));
     }
 
     /**

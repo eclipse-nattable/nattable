@@ -602,7 +602,7 @@ public class GroupModel implements IPersistable {
      */
     public Group getGroupByStaticIndex(int staticIndex) {
         for (Group group : this.groups) {
-            if (group.getStaticIndexes().contains(Integer.valueOf(staticIndex))) {
+            if (group.staticIndexes.contains(Integer.valueOf(staticIndex))) {
                 return group;
             }
         }
@@ -1193,6 +1193,18 @@ public class GroupModel implements IPersistable {
         }
 
         /**
+         * Removes the given member indexes from the local list of members that
+         * are needed for consistency checks.
+         *
+         * @param memberIndexes
+         *            The indexes of the positions that should be removed from
+         *            the local group members.
+         */
+        void removeMembers(Collection<Integer> memberIndexes) {
+            this.members.removeAll(memberIndexes);
+        }
+
+        /**
          *
          * @return The configured number of items that belong to this group.
          */
@@ -1256,10 +1268,22 @@ public class GroupModel implements IPersistable {
         }
 
         /**
+         * Removes the given indexes as static indexes from this group.
+         *
+         * @param indexes
+         *            The static indexes to remove.
+         */
+        public void removeStaticIndexes(int... indexes) {
+            for (int index : indexes) {
+                this.staticIndexes.remove(Integer.valueOf(index));
+            }
+        }
+
+        /**
          * @return The indexes that remain visible when collapsing this group.
          */
         public Collection<Integer> getStaticIndexes() {
-            return this.staticIndexes;
+            return Collections.unmodifiableCollection(this.staticIndexes);
         }
 
         /**
