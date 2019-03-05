@@ -76,11 +76,6 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
         fireMoveStartCommand(natTable, this.dragFromGridColumnPosition);
     }
 
-    /**
-     * Work off the event coordinates since the drag
-     * {@link ColumnReorderDragMode} adjusts the 'to' column positions (for on
-     * screen semantics)
-     */
     @Override
     protected boolean isValidTargetColumnPosition(ILayer natLayer, int fromGridColumnPosition, int toGridColumnPosition) {
         if (this.currentEvent != null) {
@@ -123,17 +118,21 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
             }
         }
 
-        return true;
-
+        return ColumnGroupUtils.isBetweenTwoGroups(
+                this.columnGroupHeaderLayer,
+                this.level,
+                toPosition,
+                toPosition < this.columnGroupHeaderLayer.getColumnCount(),
+                ColumnGroupUtils.getMoveDirection(fromGridColumnPosition, toGridColumnPosition));
     }
 
     @Override
     protected void fireMoveStartCommand(NatTable natTable, int dragFromGridColumnPosition) {
-        natTable.doCommand(new ColumnGroupReorderStartCommand(natTable, dragFromGridColumnPosition, this.level));
+        natTable.doCommand(new ColumnGroupReorderStartCommand(natTable, this.level, dragFromGridColumnPosition));
     }
 
     @Override
     protected void fireMoveEndCommand(NatTable natTable, int dragToGridColumnPosition) {
-        natTable.doCommand(new ColumnGroupReorderEndCommand(natTable, dragToGridColumnPosition, this.level));
+        natTable.doCommand(new ColumnGroupReorderEndCommand(natTable, this.level, dragToGridColumnPosition));
     }
 }

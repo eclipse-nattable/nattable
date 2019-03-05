@@ -295,4 +295,40 @@ public class ColumnGroupUtilsTest {
         assertFalse(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 12, true, MoveDirectionEnum.LEFT));
         assertFalse(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 13, true, MoveDirectionEnum.RIGHT));
     }
+
+    @Test
+    public void shouldTestIsBetweenTwoGroupsOnLevel() {
+        // add a second level
+        this.columnGroupHeaderLayer.addGroupingLevel();
+        // group spans Address and Facts
+        this.columnGroupHeaderLayer.addGroup(1, "Test", 4, 7);
+
+        // tests on level 0
+        assertTrue(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 0, 0, true, MoveDirectionEnum.LEFT));
+        assertTrue(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 0, 4, true, MoveDirectionEnum.LEFT));
+        assertTrue(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 0, 8, true, MoveDirectionEnum.LEFT));
+        assertTrue(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 0, 11, true, MoveDirectionEnum.LEFT));
+        assertTrue(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 0, 13, false, MoveDirectionEnum.RIGHT));
+
+        assertFalse(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 0, 0, false, MoveDirectionEnum.LEFT));
+        assertFalse(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 0, 2, true, MoveDirectionEnum.LEFT));
+        assertFalse(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 0, 5, true, MoveDirectionEnum.LEFT));
+        assertFalse(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 0, 12, true, MoveDirectionEnum.LEFT));
+        assertFalse(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 0, 13, true, MoveDirectionEnum.RIGHT));
+
+        // tests on level 1
+        assertTrue(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 1, 0, true, MoveDirectionEnum.LEFT));
+        assertTrue(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 1, 4, true, MoveDirectionEnum.LEFT));
+        assertTrue(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 1, 11, true, MoveDirectionEnum.LEFT));
+        assertTrue(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 1, 13, false, MoveDirectionEnum.RIGHT));
+
+        assertFalse(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 1, 8, true, MoveDirectionEnum.LEFT));
+        assertFalse(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 1, 5, true, MoveDirectionEnum.LEFT));
+
+        // no group on level 1 at this positions
+        assertTrue(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 1, 0, false, MoveDirectionEnum.LEFT));
+        assertTrue(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 1, 2, true, MoveDirectionEnum.LEFT));
+        assertTrue(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 1, 12, true, MoveDirectionEnum.LEFT));
+        assertTrue(ColumnGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer, 1, 13, true, MoveDirectionEnum.RIGHT));
+    }
 }

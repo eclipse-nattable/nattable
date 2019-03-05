@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,16 +15,26 @@ import org.eclipse.nebula.widgets.nattable.command.LayerCommandUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.ColumnPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
+/**
+ * Command to reorder a single column.
+ */
 public class ColumnReorderCommand implements ILayerCommand {
 
     private ColumnPositionCoordinate fromColumnPositionCoordinate;
     private ColumnPositionCoordinate toColumnPositionCoordinate;
     private boolean reorderToLeftEdge;
 
-    public ColumnReorderCommand(ILayer layer, int fromColumnPosition,
-            int toColumnPosition) {
-        this.fromColumnPositionCoordinate = new ColumnPositionCoordinate(layer,
-                fromColumnPosition);
+    /**
+     *
+     * @param layer
+     *            The layer to which the column positions match.
+     * @param fromColumnPosition
+     *            The column position to reorder.
+     * @param toColumnPosition
+     *            The target column position to reorder to.
+     */
+    public ColumnReorderCommand(ILayer layer, int fromColumnPosition, int toColumnPosition) {
+        this.fromColumnPositionCoordinate = new ColumnPositionCoordinate(layer, fromColumnPosition);
 
         if (toColumnPosition < layer.getColumnCount()) {
             this.reorderToLeftEdge = true;
@@ -33,36 +43,75 @@ public class ColumnReorderCommand implements ILayerCommand {
             toColumnPosition--;
         }
 
-        this.toColumnPositionCoordinate = new ColumnPositionCoordinate(layer,
-                toColumnPosition);
+        this.toColumnPositionCoordinate = new ColumnPositionCoordinate(layer, toColumnPosition);
     }
 
+    /**
+     * Clone constructor.
+     *
+     * @param command
+     *            The command to clone.
+     */
     protected ColumnReorderCommand(ColumnReorderCommand command) {
         this.fromColumnPositionCoordinate = command.fromColumnPositionCoordinate;
         this.toColumnPositionCoordinate = command.toColumnPositionCoordinate;
         this.reorderToLeftEdge = command.reorderToLeftEdge;
     }
 
+    /**
+     *
+     * @return The column position that is reordered.
+     */
     public int getFromColumnPosition() {
         return this.fromColumnPositionCoordinate.getColumnPosition();
     }
 
+    /**
+     *
+     * @param fromPosition
+     *            The new fromColumnPosition.
+     *
+     * @since 1.6
+     */
+    public void updateFromColumnPosition(int fromPosition) {
+        this.fromColumnPositionCoordinate.columnPosition = fromPosition;
+    }
+
+    /**
+     *
+     * @return The column position to which the column should be reordered to.
+     */
     public int getToColumnPosition() {
         return this.toColumnPositionCoordinate.getColumnPosition();
     }
 
+    /**
+     *
+     * @param toPosition
+     *            The new toColumnPosition.
+     *
+     * @since 1.6
+     */
+    public void updateToColumnPosition(int toPosition) {
+        this.toColumnPositionCoordinate.columnPosition = toPosition;
+    }
+
+    /**
+     *
+     * @return <code>true</code> if the reorder operation should be done on the
+     *         left edge of the toColumnPosition, <code>false</code> if it
+     *         should be reordered to the right edge.
+     */
     public boolean isReorderToLeftEdge() {
         return this.reorderToLeftEdge;
     }
 
     @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
-        ColumnPositionCoordinate targetFromColumnPositionCoordinate = LayerCommandUtil
-                .convertColumnPositionToTargetContext(
-                        this.fromColumnPositionCoordinate, targetLayer);
-        ColumnPositionCoordinate targetToColumnPositionCoordinate = LayerCommandUtil
-                .convertColumnPositionToTargetContext(
-                        this.toColumnPositionCoordinate, targetLayer);
+        ColumnPositionCoordinate targetFromColumnPositionCoordinate =
+                LayerCommandUtil.convertColumnPositionToTargetContext(this.fromColumnPositionCoordinate, targetLayer);
+        ColumnPositionCoordinate targetToColumnPositionCoordinate =
+                LayerCommandUtil.convertColumnPositionToTargetContext(this.toColumnPositionCoordinate, targetLayer);
         if (targetFromColumnPositionCoordinate != null
                 && targetToColumnPositionCoordinate != null) {
             this.fromColumnPositionCoordinate = targetFromColumnPositionCoordinate;

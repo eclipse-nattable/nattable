@@ -30,14 +30,14 @@ public class ColumnGroupReorderStartCommand extends AbstractColumnCommand {
      *
      * @param layer
      *            The layer to which the position matches.
-     * @param fromColumnPosition
-     *            The column position from which the reorder is started via
-     *            drag.
      * @param level
      *            The group level on which the group reorder should be
      *            performed.
+     * @param fromColumnPosition
+     *            The column position from which the reorder is started via
+     *            drag.
      */
-    public ColumnGroupReorderStartCommand(ILayer layer, int fromColumnPosition, int level) {
+    public ColumnGroupReorderStartCommand(ILayer layer, int level, int fromColumnPosition) {
         super(layer, fromColumnPosition);
         this.level = level;
     }

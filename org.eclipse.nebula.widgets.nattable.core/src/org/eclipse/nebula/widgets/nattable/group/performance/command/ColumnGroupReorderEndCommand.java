@@ -31,14 +31,14 @@ public class ColumnGroupReorderEndCommand extends AbstractColumnCommand {
      *
      * @param layer
      *            The layer to which the position matches.
-     * @param toColumnPosition
-     *            The column position to which the reorder should be performed
-     *            on drag end.
      * @param level
      *            The group level on which the group reorder should be
      *            performed.
+     * @param toColumnPosition
+     *            The column position to which the reorder should be performed
+     *            on drag end.
      */
-    public ColumnGroupReorderEndCommand(ILayer layer, int toColumnPosition, int level) {
+    public ColumnGroupReorderEndCommand(ILayer layer, int level, int toColumnPosition) {
         super(layer, toColumnPosition < layer.getColumnCount() ? toColumnPosition : (toColumnPosition - 1));
         this.level = level;
 
