@@ -10,15 +10,21 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group.performance.action;
 
+import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupUtils;
 import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.reorder.action.ColumnReorderDragMode;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
+import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeDetectUtil;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Extends the regular column drag functionality to work with column groups. It
@@ -35,6 +41,8 @@ public class ColumnHeaderReorderDragMode extends ColumnReorderDragMode {
 
     private final ColumnGroupHeaderLayer columnGroupHeaderLayer;
 
+    protected int dragFromGridRowPosition;
+
     /**
      *
      * @param columnGroupHeaderLayer
@@ -43,6 +51,20 @@ public class ColumnHeaderReorderDragMode extends ColumnReorderDragMode {
      */
     public ColumnHeaderReorderDragMode(ColumnGroupHeaderLayer columnGroupHeaderLayer) {
         this.columnGroupHeaderLayer = columnGroupHeaderLayer;
+    }
+
+    @Override
+    public void mouseDown(NatTable natTable, MouseEvent event) {
+        super.mouseDown(natTable, event);
+
+        ILayerCell cell = natTable.getCellByPosition(
+                natTable.getColumnPositionByX(this.initialEvent.x),
+                natTable.getRowPositionByY(this.initialEvent.y));
+        if (cell != null) {
+            this.dragFromGridRowPosition = cell.getOriginRowPosition() + cell.getRowSpan() - 1;
+        } else {
+            this.dragFromGridRowPosition = -1;
+        }
     }
 
     @Override
@@ -101,5 +123,24 @@ public class ColumnHeaderReorderDragMode extends ColumnReorderDragMode {
         }
 
         return true;
+    }
+
+    @Override
+    protected CellEdgeEnum getMoveDirection(int x) {
+        ILayerCell cell = getColumnCell(x);
+        if (cell != null) {
+            Rectangle selectedColumnHeaderRect = cell.getBounds();
+            return CellEdgeDetectUtil.getHorizontalCellEdge(
+                    selectedColumnHeaderRect,
+                    new Point(x, this.natTable.getStartYOfRowPosition(this.dragFromGridRowPosition)));
+        }
+
+        return null;
+    }
+
+    @Override
+    protected ILayerCell getColumnCell(int x) {
+        int gridColumnPosition = this.natTable.getColumnPositionByX(x);
+        return this.natTable.getCellByPosition(gridColumnPosition, this.dragFromGridRowPosition);
     }
 }

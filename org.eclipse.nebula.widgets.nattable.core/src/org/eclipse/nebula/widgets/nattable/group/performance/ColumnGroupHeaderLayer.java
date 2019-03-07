@@ -154,6 +154,11 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
     private int reorderFromColumnPosition;
 
     /**
+     * Map in which it is stored if reordering is supported per level.
+     */
+    private Map<Integer, Boolean> reorderSupportedOnLevel = new HashMap<Integer, Boolean>();
+
+    /**
      * Creates a {@link ColumnGroupHeaderLayer} with the specified
      * configurations and one grouping level. Uses the SelectionLayer as
      * positionLayer and the default configuration.
@@ -381,6 +386,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
             GroupModel groupModel = new GroupModel();
             groupModel.setPositionLayer(this.positionLayer, this.indexPositionConverter);
             this.model.add(groupModel);
+            this.reorderSupportedOnLevel.put(i, Boolean.TRUE);
         }
 
         this.layerPath = findLayerPath(this);
@@ -465,6 +471,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         GroupModel groupModel = new GroupModel();
         groupModel.setPositionLayer(getPositionLayer(), this.indexPositionConverter);
         this.model.add(groupModel);
+        this.reorderSupportedOnLevel.put(this.model.size() - 1, Boolean.TRUE);
     }
 
     /**
@@ -694,7 +701,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *            The level for which the row position is requested.
      * @return The row positions for the given grouping level.
      */
-    protected int getRowPositionForLevel(int level) {
+    public int getRowPositionForLevel(int level) {
         return this.model.size() - level - 1;
     }
 
@@ -804,9 +811,9 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                 return new LayerCell(
                         this,
                         start,
-                        rowPosition,
-                        columnPosition,
                         row,
+                        columnPosition,
+                        rowPosition,
                         columnSpan,
                         rowSpan);
             } else {
@@ -2010,6 +2017,41 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
     }
 
     /**
+     * Check if reordering for the given grouping level is supported or not. By
+     * default reordering is supported on all grouping levels.
+     *
+     * @param level
+     *            The level to check.
+     * @return <code>true</code> if the given grouping level does support
+     *         reordering, <code>false</code> if group reordering is not
+     *         supported for the given level.
+     */
+    public boolean isReorderSupportedOnLevel(int level) {
+        Boolean supported = this.reorderSupportedOnLevel.get(level);
+        if (supported != null) {
+            return supported;
+        }
+        return true;
+    }
+
+    /**
+     * Configure whether reordering for a grouping level should be supported or
+     * not. By default reordering is enabled for all grouping levels.
+     *
+     * @param level
+     *            The level for which the reorder support should be configured.
+     * @param supported
+     *            <code>true</code> if the given grouping level should support
+     *            reordering, <code>false</code> if group reordering should not
+     *            be supported for the given level.
+     */
+    public void setReorderSupportedOnLevel(int level, boolean supported) {
+        if (level < this.model.size()) {
+            this.reorderSupportedOnLevel.put(level, supported);
+        }
+    }
+
+    /**
      * Reorder a column group for the fromColumnPosition at the given level to
      * the specified toColumnPosition.
      *
@@ -2027,11 +2069,13 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *         consumed successfully
      */
     public boolean reorderColumnGroup(int level, int fromColumnPosition, int toColumnPosition) {
-        if (!ColumnGroupUtils.isBetweenTwoGroups(
-                this,
-                toColumnPosition,
-                toColumnPosition < getColumnCount(),
-                ColumnGroupUtils.getMoveDirection(fromColumnPosition, toColumnPosition))) {
+        if (!isReorderSupportedOnLevel(level)
+                || !ColumnGroupUtils.isBetweenTwoGroups(
+                        this,
+                        level,
+                        toColumnPosition,
+                        toColumnPosition < getColumnCount(),
+                        ColumnGroupUtils.getMoveDirection(fromColumnPosition, toColumnPosition))) {
 
             // consume the command and avoid reordering a group into another
             // group

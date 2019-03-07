@@ -12,20 +12,27 @@ package org.eclipse.nebula.widgets.nattable.group.performance.action;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.LayerCommandUtil;
+import org.eclipse.nebula.widgets.nattable.coordinate.ColumnPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.RowPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupUtils;
 import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel;
+import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroupReorderEndCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroupReorderStartCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.reorder.action.ColumnReorderDragMode;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.selection.command.ClearAllSelectionsCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
+import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeDetectUtil;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Default {@link IDragMode} invoked for 'left click + drag' on the column group
@@ -44,6 +51,7 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
     protected final ColumnGroupHeaderLayer columnGroupHeaderLayer;
 
     protected int level;
+    protected int dragFromGridRowPosition;
 
     /**
      *
@@ -62,12 +70,17 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
         this.currentEvent = this.initialEvent;
         this.dragFromGridColumnPosition = this.natTable.getColumnPositionByX(this.initialEvent.x);
 
-        int dragFromGridRowPosition = this.natTable.getRowPositionByY(this.initialEvent.y);
+        this.dragFromGridRowPosition = this.natTable.getRowPositionByY(this.initialEvent.y);
         RowPositionCoordinate convertedRow =
                 LayerCommandUtil.convertRowPositionToTargetContext(
-                        new RowPositionCoordinate(natTable, dragFromGridRowPosition),
+                        new RowPositionCoordinate(natTable, this.dragFromGridRowPosition),
                         this.columnGroupHeaderLayer);
-        this.level = this.columnGroupHeaderLayer.getLevelForRowPosition(convertedRow.getRowPosition());
+
+        ColumnPositionCoordinate convertedColumn =
+                LayerCommandUtil.convertColumnPositionToTargetContext(
+                        new ColumnPositionCoordinate(natTable, this.dragFromGridColumnPosition),
+                        this.columnGroupHeaderLayer);
+        calculateLevel(convertedRow.getRowPosition(), convertedColumn.getColumnPosition());
 
         natTable.addOverlayPainter(this.targetOverlayPainter);
 
@@ -78,6 +91,11 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
 
     @Override
     protected boolean isValidTargetColumnPosition(ILayer natLayer, int fromGridColumnPosition, int toGridColumnPosition) {
+        // check if the reordered level supports reordering
+        if (!this.columnGroupHeaderLayer.isReorderSupportedOnLevel(this.level)) {
+            return false;
+        }
+
         if (this.currentEvent != null) {
             // if this method was triggered by a mouse event, we determine the
             // to column position by the event
@@ -95,20 +113,33 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
         // need to convert directly to the corresponding position layer
         int toPosition = LayerUtil.convertColumnPosition(natLayer, toGridColumnPosition, this.columnGroupHeaderLayer.getPositionLayer());
 
-        // if reordered to the beginning or the end, the position is valid
-        if (toPosition == 0 || toPosition == this.columnGroupHeaderLayer.getPositionLayer().getColumnCount() - 1) {
-            return true;
+        // Allow moving within the unbreakable group
+        int fromPosition = this.columnGroupHeaderLayer.getReorderFromColumnPosition();
+        for (int lvl = (this.level + 1); lvl < this.columnGroupHeaderLayer.getLevelCount(); lvl++) {
+            GroupModel model = this.columnGroupHeaderLayer.getGroupModel(lvl);
+            if (model.isPartOfAnUnbreakableGroup(fromPosition)) {
+                int toCheck = toPosition;
+                if (toPosition < 0 && toGridColumnPosition == natLayer.getColumnCount()) {
+                    toCheck = LayerUtil.convertColumnPosition(natLayer, toGridColumnPosition - 1, this.columnGroupHeaderLayer.getPositionLayer());
+                }
+                MoveDirectionEnum moveDirection = ColumnGroupUtils.getMoveDirection(fromPosition, toCheck);
+                toCheck = MoveDirectionEnum.RIGHT == moveDirection ? toCheck - 1 : toCheck;
+                return ColumnGroupUtils.isInTheSameGroup(
+                        this.columnGroupHeaderLayer,
+                        lvl, fromPosition,
+                        toCheck);
+            }
         }
 
-        // ensure that the target position is valid on every level
-        for (int level = 0; level < this.columnGroupHeaderLayer.getLevelCount(); level++) {
-            GroupModel model = this.columnGroupHeaderLayer.getGroupModel(level);
+        // ensure that the target position is valid on every level above
+        for (int lvl = (this.level + 1); lvl < this.columnGroupHeaderLayer.getLevelCount(); lvl++) {
+            GroupModel model = this.columnGroupHeaderLayer.getGroupModel(lvl);
 
             boolean betweenTwoGroups = false;
             if (this.currentEvent != null) {
                 int minX = this.currentEvent.x - GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
                 int maxX = this.currentEvent.x + GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
-                betweenTwoGroups = ColumnGroupUtils.isBetweenTwoGroups(natLayer, minX, maxX, this.columnGroupHeaderLayer, level);
+                betweenTwoGroups = ColumnGroupUtils.isBetweenTwoGroups(natLayer, minX, maxX, this.columnGroupHeaderLayer, lvl);
             }
 
             if (!betweenTwoGroups) {
@@ -134,5 +165,50 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
     @Override
     protected void fireMoveEndCommand(NatTable natTable, int dragToGridColumnPosition) {
         natTable.doCommand(new ColumnGroupReorderEndCommand(natTable, this.level, dragToGridColumnPosition));
+    }
+
+    @Override
+    protected CellEdgeEnum getMoveDirection(int x) {
+        ILayerCell cell = getColumnCell(x);
+        if (cell != null) {
+            Rectangle selectedColumnHeaderRect = cell.getBounds();
+            return CellEdgeDetectUtil.getHorizontalCellEdge(
+                    selectedColumnHeaderRect,
+                    new Point(x, this.natTable.getStartYOfRowPosition(this.dragFromGridRowPosition)));
+        }
+
+        return null;
+    }
+
+    @Override
+    protected ILayerCell getColumnCell(int x) {
+        int gridColumnPosition = this.natTable.getColumnPositionByX(x);
+        return this.natTable.getCellByPosition(gridColumnPosition, this.dragFromGridRowPosition);
+    }
+
+    /**
+     * Calculate the group level and based on that the real drag from grid row
+     * position that is reordered. Needed in case there is no group at the
+     * coordinate level and therefore a spanning indicates a group at a lower
+     * level.
+     *
+     * @param rowPosition
+     *            The row position from which the drag was started. Needs to be
+     *            related to the position layer.
+     * @param columnPosition
+     *            The column position from which the drag was started. Needed to
+     *            check if there is a group at the calculated level.
+     */
+    protected void calculateLevel(int rowPosition, int columnPosition) {
+        this.level = this.columnGroupHeaderLayer.getLevelForRowPosition(rowPosition);
+
+        Group group = this.columnGroupHeaderLayer.getGroupModel(this.level).getGroupByPosition(columnPosition);
+        while (group == null && this.level > 0) {
+            // decrease the level and increase the from row position as we need
+            // to check one row below
+            this.level--;
+            this.dragFromGridRowPosition++;
+            group = this.columnGroupHeaderLayer.getGroupModel(this.level).getGroupByPosition(columnPosition);
+        }
     }
 }
