@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -315,7 +316,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      * @return The selected ILayerCells
      */
     public Collection<ILayerCell> getSelectedCells() {
-        Set<ILayerCell> selectedCells = new HashSet<ILayerCell>();
+        Set<ILayerCell> selectedCells = new LinkedHashSet<ILayerCell>();
 
         PositionCoordinate[] selectedCoords = getSelectedCellPositions();
         for (PositionCoordinate coord : selectedCoords) {
