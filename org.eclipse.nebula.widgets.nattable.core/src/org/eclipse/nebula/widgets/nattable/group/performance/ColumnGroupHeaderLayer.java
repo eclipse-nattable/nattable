@@ -2619,8 +2619,11 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
         private boolean isGroupReordered(Group fromGroup, int[] fromColumnPositions) {
             Collection<Integer> visiblePositions = fromGroup.getVisiblePositions();
-            if (visiblePositions.size() != fromColumnPositions.length) {
+            if (visiblePositions.size() > fromColumnPositions.length) {
                 return false;
+            } else if (visiblePositions.size() < fromColumnPositions.length) {
+                List<Integer> fromPositions = ArrayUtil.asIntegerList(fromColumnPositions);
+                return fromPositions.containsAll(visiblePositions);
             } else {
                 int[] positionsArray = ArrayUtil.asIntArray(visiblePositions);
                 return Arrays.equals(positionsArray, fromColumnPositions);

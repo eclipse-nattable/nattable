@@ -373,9 +373,12 @@ public class ColumnGroupUtils {
         }
 
         int toPositionToCheck = toPosition;
-        if (reorderToLeftEdge
-                && MoveDirectionEnum.RIGHT == moveDirection) {
-            toPositionToCheck--;
+        if (MoveDirectionEnum.RIGHT == moveDirection) {
+            if (reorderToLeftEdge) {
+                toPositionToCheck--;
+            } else {
+                toPositionToCheck++;
+            }
         }
 
         boolean valid = true;
@@ -383,6 +386,11 @@ public class ColumnGroupUtils {
             valid = !isInTheSameGroup(columnGroupHeaderLayer, level, toPosition, toPositionToCheck);
         } else {
             valid = !isInTheSameGroup(columnGroupHeaderLayer, level, toPosition, toPositionToCheck + (reorderToLeftEdge ? -1 : 1));
+        }
+
+        if (valid && level > 0) {
+            // check on deeper levels
+            valid = isBetweenTwoGroups(columnGroupHeaderLayer, level - 1, toPosition, reorderToLeftEdge, moveDirection);
         }
 
         return valid;
