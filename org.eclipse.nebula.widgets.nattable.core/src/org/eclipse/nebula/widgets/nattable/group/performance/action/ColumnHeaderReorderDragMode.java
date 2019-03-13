@@ -90,7 +90,11 @@ public class ColumnHeaderReorderDragMode extends ColumnReorderDragMode {
         int fromPosition = this.columnGroupHeaderLayer.getReorderFromColumnPosition();
         for (int level = 0; level < this.columnGroupHeaderLayer.getLevelCount(); level++) {
             GroupModel model = this.columnGroupHeaderLayer.getGroupModel(level);
-            if (model.isPartOfAnUnbreakableGroup(fromPosition)) {
+            // check only in case the group is an unbreakable group or the group
+            // contains only one column, as reordering a column in such a group
+            // is like reordering the whole group and does not break the group
+            if (model.isPartOfAnUnbreakableGroup(fromPosition)
+                    && model.getGroupByPosition(fromPosition).getOriginalSpan() > 1) {
                 int toCheck = toPosition;
                 if (toPosition < 0 && toGridColumnPosition == natLayer.getColumnCount()) {
                     toCheck = LayerUtil.convertColumnPosition(natLayer, toGridColumnPosition - 1, this.columnGroupHeaderLayer.getPositionLayer());

@@ -2468,7 +2468,8 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                             moveDirection);
                 } else if (fromColumnGroup == null
                         && toColumnGroup == null
-                        && fromColumnPosition == toColumnPosition) {
+                        && fromColumnPosition == toColumnPosition
+                        && fromColumnPositions.length == 1) {
                     // this might happen on drag and drop operations when
                     // trying to add a column back into an adjacent column
                     // group

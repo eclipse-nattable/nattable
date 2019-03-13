@@ -387,7 +387,9 @@ public class GroupModel implements IPersistable {
      */
     public void removePositionsFromGroup(Group group, int... positions) {
         if (group != null && !group.isUnbreakable()) {
-            for (int pos : positions) {
+            Arrays.sort(positions);
+            for (int i = positions.length - 1; i >= 0; i--) {
+                int pos = positions[i];
                 if (group.getVisiblePositions().contains(Integer.valueOf(pos))) {
                     int index = getIndexByPosition(pos);
                     if (index == group.getStartIndex()) {
@@ -397,7 +399,7 @@ public class GroupModel implements IPersistable {
                         group.members.remove(Integer.valueOf(index));
                         group.staticIndexes.remove(Integer.valueOf(index));
                     } else {
-                        Integer memberIndex = Integer.valueOf(group.getVisibleStartPosition() + group.getVisibleSpan() - 1);
+                        Integer memberIndex = getIndexByPosition(Integer.valueOf(group.getVisibleStartPosition() + group.getVisibleSpan() - 1));
                         group.members.remove(memberIndex);
                         group.staticIndexes.remove(memberIndex);
                     }
@@ -446,7 +448,9 @@ public class GroupModel implements IPersistable {
     public Collection<Group> removePositionsFromGroup(int... positions) {
         Set<Group> changed = new HashSet<Group>();
         Group group = null;
-        for (int pos : positions) {
+        Arrays.sort(positions);
+        for (int i = positions.length - 1; i >= 0; i--) {
+            int pos = positions[i];
             group = getGroupByPosition(pos);
             if (group != null && !group.isUnbreakable()) {
                 int index = getIndexByPosition(pos);
@@ -457,7 +461,7 @@ public class GroupModel implements IPersistable {
                     group.members.remove(Integer.valueOf(index));
                     group.staticIndexes.remove(Integer.valueOf(index));
                 } else {
-                    Integer memberIndex = Integer.valueOf(group.getVisibleStartPosition() + group.getVisibleSpan() - 1);
+                    Integer memberIndex = getIndexByPosition(Integer.valueOf(group.getVisibleStartPosition() + group.getVisibleSpan() - 1));
                     group.members.remove(memberIndex);
                     group.staticIndexes.remove(memberIndex);
                 }

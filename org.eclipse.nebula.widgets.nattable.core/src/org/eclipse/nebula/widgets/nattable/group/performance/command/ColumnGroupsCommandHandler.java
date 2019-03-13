@@ -11,8 +11,11 @@
 package org.eclipse.nebula.widgets.nattable.group.performance.command;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -23,7 +26,6 @@ import org.eclipse.nebula.widgets.nattable.group.command.CreateColumnGroupComman
 import org.eclipse.nebula.widgets.nattable.group.command.DisplayColumnGroupRenameDialogCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.IColumnGroupCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.RemoveColumnGroupCommand;
-import org.eclipse.nebula.widgets.nattable.group.command.ReorderColumnGroupCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.UngroupColumnCommand;
 import org.eclipse.nebula.widgets.nattable.group.event.GroupColumnsEvent;
 import org.eclipse.nebula.widgets.nattable.group.event.UngroupColumnsEvent;
@@ -33,7 +35,6 @@ import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -81,6 +82,17 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
         return false;
     }
 
+    /**
+     * Creates a new column group with the given name out of the currently fully
+     * selected column positions. If a selected column is part of an existing
+     * group, the existing group will be removed and all columns belonging to
+     * that group will be also part of the new group.
+     *
+     * @param columnGroupName
+     *            The name of the new column group.
+     * @return <code>true</code> if the column group could be created,
+     *         <code>false</code> if there are no columns fully selected.
+     */
     protected boolean handleCreateColumnGroupCommand(String columnGroupName) {
         int[] fullySelectedColumns = this.selectionLayer.getFullySelectedColumnPositions();
 
@@ -101,10 +113,17 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
             }
 
             Set<Group> existingGroups = new HashSet<Group>();
-            for (int column : positionsToGroup) {
+            for (Iterator<Integer> it = positionsToGroup.iterator(); it.hasNext();) {
+                int column = it.next();
                 Group group = model.getGroupByPosition(column);
                 if (group != null) {
-                    existingGroups.add(group);
+                    if (!group.isUnbreakable()) {
+                        existingGroups.add(group);
+                    } else {
+                        // if a position of an unbreakable group was found, we
+                        // ignore that position
+                        it.remove();
+                    }
                 }
             }
 
@@ -138,19 +157,32 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
         return false;
     }
 
+    /**
+     * Remove the column group at the given column index.
+     *
+     * @param columnIndex
+     *            The column index to retrieve the column group to remove.
+     */
     protected void handleRemoveColumnGroupCommand(int columnIndex) {
         int selectedPosition = this.selectionLayer.getColumnPositionByIndex(columnIndex);
         int converted = LayerUtil.convertColumnPosition(this.selectionLayer, selectedPosition, this.contextLayer.getPositionLayer());
         GroupModel model = this.contextLayer.getGroupModel();
         Group group = model.getGroupByPosition(converted);
-        if (group.isCollapsed()) {
-            this.contextLayer.doCommand(new ColumnGroupExpandCommand(model, group));
-        }
-        model.removeGroup(group);
+        if (group != null && !group.isUnbreakable()) {
+            if (group.isCollapsed()) {
+                this.contextLayer.doCommand(new ColumnGroupExpandCommand(model, group));
+            }
+            model.removeGroup(group);
 
-        this.contextLayer.fireLayerEvent(new GroupColumnsEvent(this.contextLayer));
+            this.contextLayer.fireLayerEvent(new GroupColumnsEvent(this.contextLayer));
+        }
     }
 
+    /**
+     * Remove the currently fully selected columns from their corresponding
+     * groups. Will also trigger a reorder to ensure a consistent group
+     * rendering
+     */
     protected void handleUngroupCommand() {
         // Grab fully selected column positions
         int[] fullySelectedColumns = this.selectionLayer.getFullySelectedColumnPositions();
@@ -170,20 +202,42 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
             // we operate on the GroupModel directly to avoid the position
             // transformation
             GroupModel model = this.contextLayer.getGroupModel();
+            Map<Group, List<Integer>> toRemove = new HashMap<Group, List<Integer>>();
             for (int pos : positionsToUngroup) {
                 Group group = model.getGroupByPosition(pos);
                 if (group != null) {
                     int endPos = group.getVisibleStartPosition() + group.getVisibleSpan();
-                    if (pos < endPos) {
-                        // FIXME correct reordering, consider unbreakable and do
-                        // not break on reorder
-                        this.selectionLayer.doCommand(
-                                new ReorderColumnGroupCommand(this.selectionLayer, pos, endPos));
+                    if (pos < endPos && !group.isLeftEdge(pos)) {
+                        // remember position to remove
+                        List<Integer> remove = toRemove.get(group);
+                        if (remove == null) {
+                            remove = new ArrayList<Integer>();
+                            toRemove.put(group, remove);
+                        }
+                        remove.add(pos);
+                    } else {
+                        model.removePositionsFromGroup(group, pos);
                     }
-                    model.removePositionsFromGroup(group, pos);
                 }
             }
-            model.removePositionsFromGroup(ArrayUtil.asIntArray(positionsToUngroup));
+
+            if (!toRemove.isEmpty()) {
+                for (Map.Entry<Group, List<Integer>> entry : toRemove.entrySet()) {
+                    Group group = entry.getKey();
+                    int endPos = group.getVisibleStartPosition() + group.getVisibleSpan();
+
+                    this.selectionLayer.doCommand(new MultiColumnReorderCommand(this.selectionLayer, entry.getValue(), endPos));
+
+                    List<Integer> value = entry.getValue();
+                    int start = endPos - value.size();
+                    int[] positionsToRemove = new int[value.size()];
+                    for (int i = 0; i < entry.getValue().size(); i++) {
+                        positionsToRemove[i] = start + i;
+                    }
+
+                    model.removePositionsFromGroup(group, positionsToRemove);
+                }
+            }
 
             this.selectionLayer.clear();
 
