@@ -1064,6 +1064,61 @@ public class GroupModelTest {
     }
 
     @Test
+    public void shouldFindGroupByMember() {
+        Group group1 = this.model.getGroupByPosition(0);
+        Group group2 = this.model.getGroupByPosition(5);
+        Group group3 = this.model.getGroupByPosition(12);
+
+        assertNull(this.model.findGroupByMemberIndex(-1));
+
+        assertEquals(group1, this.model.findGroupByMemberIndex(0));
+        assertEquals(group1, this.model.findGroupByMemberIndex(1));
+        assertEquals(group1, this.model.findGroupByMemberIndex(2));
+        assertEquals(group1, this.model.findGroupByMemberIndex(3));
+
+        assertNull(this.model.findGroupByMemberIndex(4));
+
+        assertEquals(group2, this.model.findGroupByMemberIndex(5));
+        assertEquals(group2, this.model.findGroupByMemberIndex(6));
+        assertEquals(group2, this.model.findGroupByMemberIndex(7));
+
+        assertEquals(group3, this.model.findGroupByMemberIndex(12));
+        assertEquals(group3, this.model.findGroupByMemberIndex(13));
+
+        assertNull(this.model.findGroupByMemberIndex(15));
+    }
+
+    @Test
+    public void shouldFindGroupByMemberInCollapsed() {
+        Group group1 = this.model.getGroupByPosition(0);
+        Group group2 = this.model.getGroupByPosition(5);
+        Group group3 = this.model.getGroupByPosition(12);
+
+        // collapsed state should not have an effect
+        group1.setCollapsed(true);
+        group2.setCollapsed(true);
+        group3.setCollapsed(true);
+
+        assertNull(this.model.findGroupByMemberIndex(-1));
+
+        assertEquals(group1, this.model.findGroupByMemberIndex(0));
+        assertEquals(group1, this.model.findGroupByMemberIndex(1));
+        assertEquals(group1, this.model.findGroupByMemberIndex(2));
+        assertEquals(group1, this.model.findGroupByMemberIndex(3));
+
+        assertNull(this.model.findGroupByMemberIndex(4));
+
+        assertEquals(group2, this.model.findGroupByMemberIndex(5));
+        assertEquals(group2, this.model.findGroupByMemberIndex(6));
+        assertEquals(group2, this.model.findGroupByMemberIndex(7));
+
+        assertEquals(group3, this.model.findGroupByMemberIndex(12));
+        assertEquals(group3, this.model.findGroupByMemberIndex(13));
+
+        assertNull(this.model.findGroupByMemberIndex(15));
+    }
+
+    @Test
     public void shouldSaveState() {
         Group group1 = this.model.getGroupByPosition(0);
         Group group2 = this.model.getGroupByPosition(5);

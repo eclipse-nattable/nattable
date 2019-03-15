@@ -40,6 +40,7 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultColumnHeaderDataLay
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.group.command.ColumnGroupExpandCollapseCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.CreateColumnGroupCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.RemoveColumnGroupCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.UngroupColumnCommand;
@@ -1432,6 +1433,29 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(0, cell.getColumnPosition());
         assertEquals(4, cell.getColumnSpan());
         assertEquals(1, cell.getRowSpan());
+    }
+
+    @Test
+    public void shouldExpandCollapseNonVisibleGroup() {
+        // with the ColumnGroupExpandCollapseCommand it should be possible to
+        // expand and collapse groups outside the viewport
+        this.gridLayer.doCommand(new ColumnGroupExpandCollapseCommand(this.selectionLayer, 11));
+
+        assertEquals(12, this.selectionLayer.getColumnCount());
+
+        Group group = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(11, group.getVisibleStartIndex());
+        assertEquals(1, group.getVisibleSpan());
+        assertTrue(group.isCollapsed());
+
+        this.gridLayer.doCommand(new ColumnGroupExpandCollapseCommand(this.selectionLayer, 11));
+
+        assertEquals(14, this.selectionLayer.getColumnCount());
+
+        group = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(11, group.getVisibleStartIndex());
+        assertEquals(3, group.getVisibleSpan());
+        assertFalse(group.isCollapsed());
     }
 
     @Test

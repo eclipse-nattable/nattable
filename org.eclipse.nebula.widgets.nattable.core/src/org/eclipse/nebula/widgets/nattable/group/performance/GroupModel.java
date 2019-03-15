@@ -597,6 +597,11 @@ public class GroupModel implements IPersistable {
 
     /**
      * Checks if there is a group that has the given index as static index.
+     * <p>
+     * <b>Note:</b> This method iterates over all groups and checks if the
+     * static index collection contains the given index. Could have a bad
+     * performance in case of huge groups.
+     * </p>
      *
      * @param staticIndex
      *            The index to check.
@@ -607,6 +612,28 @@ public class GroupModel implements IPersistable {
     public Group getGroupByStaticIndex(int staticIndex) {
         for (Group group : this.groups) {
             if (group.staticIndexes.contains(Integer.valueOf(staticIndex))) {
+                return group;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Searches for a group that has a given member index.
+     * <p>
+     * <b>Note:</b> This method iterates over all groups and checks if the
+     * member collection contains the given index. Could have a bad performance
+     * in case of huge groups.
+     * </p>
+     * 
+     * @param memberIndex
+     *            The index to check.
+     * @return The Group that contains the given index or <code>null</code> if
+     *         the index is not a member in any group.
+     */
+    public Group findGroupByMemberIndex(int memberIndex) {
+        for (Group group : this.groups) {
+            if (group.members.contains(Integer.valueOf(memberIndex))) {
                 return group;
             }
         }

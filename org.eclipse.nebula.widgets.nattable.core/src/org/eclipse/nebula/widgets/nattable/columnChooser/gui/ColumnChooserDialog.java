@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,6 +29,9 @@ import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupUtils;
+import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel;
+import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -50,15 +53,31 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
+/**
+ * Dialog that contains two {@link Tree}s to support hide/show and reordering of
+ * columns.
+ */
 public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 
     private Tree availableTree;
     private Tree selectedTree;
     private final String selectedLabel;
     private final String availableLabel;
-    private ColumnGroupModel columnGroupModel;
     private boolean preventHidingAllColumns = false;
 
+    private ColumnGroupModel columnGroupModel;
+    private ColumnGroupHeaderLayer columnGroupHeaderLayer;
+
+    /**
+     *
+     * @param parentShell
+     *            the parent shell, or <code>null</code> to create a top-level
+     *            shell
+     * @param availableLabel
+     *            The label to be shown for the available tree.
+     * @param selectedLabel
+     *            The label to be shown for the selected tree.
+     */
     public ColumnChooserDialog(Shell parentShell, String availableLabel, String selectedLabel) {
         super(parentShell);
 
@@ -304,18 +323,52 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
         }
     }
 
-    public void populateSelectedTree(List<ColumnEntry> columnEntries, ColumnGroupModel columnGroupModel) {
-        populateModel(this.selectedTree, columnEntries, columnGroupModel);
-    }
-
+    /**
+     * Populates the available item tree with the given column entries for the
+     * given {@link ColumnGroupModel}.
+     *
+     * @param columnEntries
+     *            The column entries to add as available items.
+     * @param columnGroupModel
+     *            The {@link ColumnGroupModel} needed to inspect the column
+     *            groups, can be <code>null</code> if no column grouping is
+     *            supported in the underlying table composition.
+     */
     public void populateAvailableTree(List<ColumnEntry> columnEntries, ColumnGroupModel columnGroupModel) {
         populateModel(this.availableTree, columnEntries, columnGroupModel);
     }
 
     /**
-     * Populates the tree. Looks for column group and adds an extra node for the
-     * group. The column leaves carry a {@link ColumnEntry} object as data. The
-     * column group leaves carry a {@link ColumnGroupEntry} object as data.
+     * Populates the selected item tree with the given column entries for the
+     * given {@link ColumnGroupModel}.
+     *
+     * @param columnEntries
+     *            The column entries to add as selected items.
+     * @param columnGroupModel
+     *            The {@link ColumnGroupModel} needed to inspect the column
+     *            groups, can be <code>null</code> if no column grouping is
+     *            supported in the underlying table composition.
+     */
+    public void populateSelectedTree(List<ColumnEntry> columnEntries, ColumnGroupModel columnGroupModel) {
+        populateModel(this.selectedTree, columnEntries, columnGroupModel);
+    }
+
+    /**
+     * Populates the given tree with the given column entries for the given
+     * {@link ColumnGroupModel}. Looks for column groups if the
+     * {@link ColumnGroupModel} is not <code>null</code> and adds an extra node
+     * for the group. The column leaves carry a {@link ColumnEntry} object as
+     * data. The column group leaves carry a {@link ColumnGroupEntry} object as
+     * data.
+     *
+     * @param tree
+     *            The {@link Tree} that should be populated.
+     * @param columnEntries
+     *            The column entries to add items to the tree.
+     * @param columnGroupModel
+     *            The {@link ColumnGroupModel} needed to inspect the column
+     *            groups, can be <code>null</code> if no column grouping is
+     *            supported in the underlying table composition.
      */
     private void populateModel(Tree tree, List<ColumnEntry> columnEntries, ColumnGroupModel columnGroupModel) {
         this.columnGroupModel = columnGroupModel;
@@ -333,7 +386,8 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 
                 if (columnGroupTreeItem == null) {
                     columnGroupTreeItem = new TreeItem(tree, SWT.NONE);
-                    ColumnGroupEntry columnGroupEntry = new ColumnGroupEntry(columnGroupName, columnEntry.getPosition(), columnEntry.getIndex(), columnGroup.isCollapsed());
+                    ColumnGroupEntry columnGroupEntry =
+                            new ColumnGroupEntry(columnGroupName, columnEntry.getPosition(), columnEntry.getIndex(), columnGroup.isCollapsed());
                     columnGroupTreeItem.setData(columnGroupEntry);
                     columnGroupTreeItem.setText(columnGroupEntry.getLabel());
                 }
@@ -347,7 +401,114 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
     }
 
     /**
-     * If the tree contains an item with the given label return it
+     * Populates the available item tree with the given column entries for the
+     * new performance {@link ColumnGroupHeaderLayer}.
+     *
+     * @param columnEntries
+     *            The column entries to add as available items.
+     * @param columnGroupHeaderLayer
+     *            The new performance {@link ColumnGroupHeaderLayer} needed to
+     *            inspect the column groups, can be <code>null</code> if no
+     *            column grouping is supported in the underlying table
+     *            composition.
+     * @since 1.6
+     */
+    public void populateAvailableTree(List<ColumnEntry> columnEntries, ColumnGroupHeaderLayer columnGroupHeaderLayer) {
+        populateModel(this.availableTree, columnEntries, columnGroupHeaderLayer);
+    }
+
+    /**
+     * Populates the selected item tree with the given column entries for the
+     * new performance {@link ColumnGroupHeaderLayer}.
+     *
+     * @param columnEntries
+     *            The column entries to add as selected items.
+     * @param columnGroupHeaderLayer
+     *            The new performance {@link ColumnGroupHeaderLayer} needed to
+     *            inspect the column groups, can be <code>null</code> if no
+     *            column grouping is supported in the underlying table
+     *            composition.
+     * @since 1.6
+     */
+    public void populateSelectedTree(List<ColumnEntry> columnEntries, ColumnGroupHeaderLayer columnGroupHeaderLayer) {
+        populateModel(this.selectedTree, columnEntries, columnGroupHeaderLayer);
+    }
+
+    /**
+     * Populates the given tree with the given column entries for the new
+     * performance {@link ColumnGroupHeaderLayer}. Looks for column groups if
+     * the {@link ColumnGroupHeaderLayer} is not <code>null</code> and adds an
+     * extra node for the group. The column leaves carry a {@link ColumnEntry}
+     * object as data. The column group leaves carry a {@link ColumnGroupEntry}
+     * object as data.
+     *
+     * @param tree
+     *            The {@link Tree} that should be populated.
+     * @param columnEntries
+     *            The column entries to add as items to the tree.
+     * @param columnGroupHeaderLayer
+     *            The new performance {@link ColumnGroupHeaderLayer} needed to
+     *            inspect the column groups, can be <code>null</code> if no
+     *            column grouping is supported in the underlying table
+     *            composition.
+     * @since 1.6
+     */
+    private void populateModel(Tree tree, List<ColumnEntry> columnEntries, ColumnGroupHeaderLayer columnGroupHeaderLayer) {
+        this.columnGroupHeaderLayer = columnGroupHeaderLayer;
+
+        for (ColumnEntry columnEntry : columnEntries) {
+            TreeItem treeItem = null;
+            int columnEntryPosition = columnEntry.getPosition();
+
+            // Create a node for the column group - if needed
+            // Operate on the GroupModel so we can handle also positions not
+            // visible
+            // TODO check for multi level
+            GroupModel groupModel = null;
+            if (columnGroupHeaderLayer != null) {
+                groupModel = columnGroupHeaderLayer.getGroupModel(0);
+                columnEntryPosition = columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(columnEntry.getIndex());
+            }
+
+            Group columnGroup = null;
+            if (groupModel != null && groupModel.isPartOfAGroup(columnEntryPosition)) {
+                columnGroup = groupModel.getGroupByPosition(columnEntryPosition);
+            } else if (groupModel != null && columnEntryPosition < 0) {
+                // try to find the collapsed column group that contains the
+                // index of the column entry
+                columnGroup = groupModel.findGroupByMemberIndex(columnEntry.getIndex());
+            }
+
+            if (columnGroup != null) {
+                TreeItem columnGroupTreeItem = getTreeItem(tree, columnGroup);
+                if (columnGroupTreeItem == null) {
+                    columnGroupTreeItem = new TreeItem(tree, SWT.NONE);
+                    ColumnGroupEntry columnGroupEntry = new ColumnGroupEntry(columnGroup);
+                    columnGroupTreeItem.setData(columnGroupEntry);
+                    columnGroupTreeItem.setText(columnGroupEntry.getLabel());
+                }
+                treeItem = new TreeItem(columnGroupTreeItem, SWT.NONE);
+            }
+
+            if (treeItem == null) {
+                treeItem = new TreeItem(tree, SWT.NONE);
+            }
+
+            treeItem.setText(columnEntry.getLabel());
+            treeItem.setData(columnEntry);
+        }
+    }
+
+    /**
+     * Find the {@link TreeItem} for the given label.
+     *
+     * @param tree
+     *            The {@link Tree} in which the {@link TreeItem} should be
+     *            searched.
+     * @param label
+     *            The label to check for.
+     * @return The {@link TreeItem} in the given {@link Tree} with the specified
+     *         label, or <code>null</code> if not found.
      */
     private TreeItem getTreeItem(Tree tree, String label) {
         for (TreeItem treeItem : tree.getItems()) {
@@ -359,10 +520,35 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
     }
 
     /**
-     * Get the ColumnEntries from the selected TreeItem(s) Includes nested
-     * column group entries - if the column group is selected. Does not include
-     * parent of the nested entries - since that does not denote an actual
-     * column
+     * Find the {@link TreeItem} for the given Group.
+     *
+     * @param tree
+     *            The {@link Tree} in which the {@link TreeItem} should be
+     *            searched.
+     * @param group
+     *            The {@link Group} to search for.
+     * @return The {@link TreeItem} in the given {@link Tree} with the specified
+     *         {@link Group} as data, or <code>null</code> if not found.
+     */
+    private TreeItem getTreeItem(Tree tree, Group group) {
+        for (TreeItem treeItem : tree.getItems()) {
+            if (isColumnGroupLeaf(treeItem)
+                    && group.equals(((ColumnGroupEntry) treeItem.getData()).getGroup())) {
+                return treeItem;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the {@link ColumnEntry}s from the selected {@link TreeItem}s.
+     * Includes nested column group entries if the column group is selected.
+     * Does not include parent of the nested entries since that does not denote
+     * an actual column
+     *
+     * @param selectedTreeItems
+     *            The selected {@link TreeItem}s to process.
+     * @return The {@link ColumnEntry}s out of the selected {@link TreeItem}s.
      */
     private List<ColumnEntry> getColumnEntriesIncludingNested(TreeItem[] selectedTreeItems) {
         List<ColumnEntry> selectedColumnEntries = new ArrayList<ColumnEntry>();
@@ -490,6 +676,11 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
         tree.showSelection();
     }
 
+    /**
+     * Move selected items in the selected tree to the top. In case the selected
+     * position is part of an unbreakable group, moves the selected items to the
+     * start of the group.
+     */
     void moveSelectedToTop() {
         if (isAnyLeafSelected(this.selectedTree)) {
             if (!isFirstLeafSelected(this.selectedTree)) {
@@ -499,37 +690,49 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
                 List<Integer> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
 
                 // Group continuous positions
-                List<List<Integer>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
+                List<List<Integer>> positionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
                 List<Integer> toPositions = new ArrayList<Integer>();
 
+                // TODO all level?
+                GroupModel groupModel = null;
+                if (this.columnGroupHeaderLayer != null) {
+                    groupModel = this.columnGroupHeaderLayer.getGroupModel(0);
+                }
+
                 int shift = getUpperMostPosition();
-                for (List<Integer> groupedPositions : postionsGroupedByContiguous) {
+                for (List<Integer> groupedPositions : positionsGroupedByContiguous) {
                     // check for unbreakable group
                     // Position of first element in list
                     int firstPositionInGroup = groupedPositions.get(0);
 
+                    boolean columnGroupMoved = columnGroupMoved(groupedPositions, selectedColumnGroupEntries);
+
                     // Column entry
                     ColumnEntry columnEntry = getNextColumnEntryForPosition(this.selectedTree, firstPositionInGroup);
-                    int columnEntryIndex = columnEntry.getIndex();
-                    if (this.columnGroupModel != null && this.columnGroupModel.isPartOfAnUnbreakableGroup(columnEntryIndex)) {
-                        List<Integer> groupMembers = this.columnGroupModel.getColumnGroupByIndex(columnEntryIndex).getMembers();
+                    int columnEntryPosition = -1;
+                    if (groupModel != null) {
+                        columnEntryPosition = this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(columnEntry.getIndex());
+                    }
+
+                    if (this.columnGroupModel != null && this.columnGroupModel.isPartOfAnUnbreakableGroup(columnEntry.getIndex())) {
+                        List<Integer> groupMembers = this.columnGroupModel.getColumnGroupByIndex(columnEntry.getIndex()).getMembers();
                         int groupUpperMost = groupMembers.get(0);
                         toPositions.add(groupUpperMost);
-                    }
-                    else {
+                    } else if (groupModel != null && groupModel.isPartOfAnUnbreakableGroup(columnEntryPosition) && !columnGroupMoved) {
+                        toPositions.add(groupModel.getGroupByPosition(columnEntryPosition).getVisibleStartPosition());
+                    } else {
                         toPositions.add(shift);
                         shift += groupedPositions.size();
                     }
                 }
-                fireItemsMoved(MoveDirectionEnum.UP, selectedColumnGroupEntries, selectedColumnEntries, postionsGroupedByContiguous, toPositions);
+                fireItemsMoved(MoveDirectionEnum.UP, selectedColumnGroupEntries, selectedColumnEntries, positionsGroupedByContiguous, toPositions);
             }
         }
     }
 
     /**
-     * Move columns <i>up</i> in the 'Selected' Tree (Right)
+     * Move selected items in the selected tree up (left).
      */
-    @SuppressWarnings("boxing")
     protected void moveSelectedUp() {
         if (isAnyLeafSelected(this.selectedTree)) {
             if (!isFirstLeafSelected(this.selectedTree)) {
@@ -543,6 +746,12 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
                 List<List<Integer>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
                 List<Integer> toPositions = new ArrayList<Integer>();
 
+                // TODO all level?
+                GroupModel groupModel = null;
+                if (this.columnGroupHeaderLayer != null) {
+                    groupModel = this.columnGroupHeaderLayer.getGroupModel(0);
+                }
+
                 // Set destination positions
                 for (List<Integer> groupedPositions : postionsGroupedByContiguous) {
                     // Do these contiguous positions contain a column group ?
@@ -554,45 +763,82 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
                     // Column entry
                     ColumnEntry columnEntry = getPreviousColumnEntryForPosition(this.selectedTree, firstPositionInGroup);
                     int columnEntryIndex = columnEntry.getIndex();
+                    int columnEntryPosition = -1;
+                    if (groupModel != null) {
+                        columnEntryPosition = this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(columnEntry.getIndex());
+                    }
 
                     // Previous column entry
                     ColumnEntry previousColumnEntry = getPreviousColumnEntryForPosition(this.selectedTree, firstPositionInGroup - 1);
+                    int previousColumnEntryPosition = -1;
+                    if (groupModel != null && previousColumnEntry != null) {
+                        previousColumnEntryPosition = this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(previousColumnEntry.getIndex());
+                    }
 
                     // Previous column entry is null if the last leaf in the
                     // tree is selected
                     if (previousColumnEntry == null) {
                         toPositions.add(firstPositionInGroup);
-                    }
-                    else {
+                    } else {
                         int previousColumnEntryIndex = previousColumnEntry.getIndex();
 
                         if (columnGroupMoved) {
                             // If the previous entry is a column group
                             // move above it.
-                            if (this.columnGroupModel != null && this.columnGroupModel.isPartOfAGroup(previousColumnEntryIndex)) {
-
+                            if (this.columnGroupModel != null
+                                    && this.columnGroupModel.isPartOfAGroup(previousColumnEntryIndex)) {
                                 ColumnGroup previousColumnGroup = this.columnGroupModel.getColumnGroupByIndex(previousColumnEntryIndex);
                                 toPositions.add(firstPositionInGroup - previousColumnGroup.getSize());
+                            } else if (groupModel != null
+                                    && groupModel.isPartOfAGroup(previousColumnEntryPosition)) {
+                                Group previousGroup = groupModel.getGroupByPosition(previousColumnEntryPosition);
+                                toPositions.add(firstPositionInGroup - previousGroup.getVisibleSpan());
                             } else {
                                 toPositions.add(firstPositionInGroup - 1);
                             }
                         } else {
                             // If is first member of the unbreakable group,
                             // can't move up i.e. out of the group
-                            if (this.columnGroupModel != null && this.columnGroupModel.isPartOfAnUnbreakableGroup(columnEntryIndex)
+                            if (this.columnGroupModel != null
+                                    && this.columnGroupModel.isPartOfAnUnbreakableGroup(columnEntryIndex)
                                     && !ColumnGroupUtils.isInTheSameGroup(columnEntryIndex, previousColumnEntryIndex, this.columnGroupModel)) {
+                                return;
+                            }
 
+                            if (groupModel != null
+                                    && groupModel.isPartOfAnUnbreakableGroup(columnEntryIndex)
+                                    // TODO all level?
+                                    && !ColumnGroupUtils.isInTheSameGroup(this.columnGroupHeaderLayer, 0, columnEntryPosition, previousColumnEntryPosition)) {
                                 return;
                             }
 
                             // If previous entry is an unbreakable column group
                             // move above it
-                            if (this.columnGroupModel != null && this.columnGroupModel.isPartOfAnUnbreakableGroup(previousColumnEntryIndex)
+                            if (this.columnGroupModel != null
+                                    && this.columnGroupModel.isPartOfAnUnbreakableGroup(previousColumnEntryIndex)
                                     && !this.columnGroupModel.isPartOfAGroup(columnEntryIndex)
                                     && !ColumnGroupUtils.isInTheSameGroup(columnEntryIndex, previousColumnEntryIndex, this.columnGroupModel)) {
 
                                 ColumnGroup previousColumnGroup = this.columnGroupModel.getColumnGroupByIndex(previousColumnEntryIndex);
                                 toPositions.add(firstPositionInGroup - previousColumnGroup.getSize());
+                            } else if (groupModel != null
+                                    && groupModel.isPartOfAnUnbreakableGroup(previousColumnEntryPosition)
+                                    && !groupModel.isPartOfAGroup(columnEntryPosition)
+                                    // TODO all level?
+                                    && !ColumnGroupUtils.isInTheSameGroup(this.columnGroupHeaderLayer, 0, columnEntryPosition, previousColumnEntryPosition)) {
+
+                                Group previousGroup = groupModel.getGroupByPosition(previousColumnEntryPosition);
+                                toPositions.add(firstPositionInGroup - previousGroup.getVisibleSpan());
+                            } else if (groupModel != null
+                                    && ((groupModel.isPartOfAGroup(columnEntryPosition)
+                                            && groupModel.getGroupByPosition(columnEntryPosition).isLeftEdge(columnEntryPosition))
+                                            || (groupModel.isPartOfAGroup(previousColumnEntryPosition)
+                                                    && groupModel.getGroupByPosition(previousColumnEntryPosition).isRightEdge(previousColumnEntryPosition)
+                                                    && !groupModel.getGroupByPosition(previousColumnEntryPosition).isUnbreakable()))) {
+                                // we first move out of the group if we are at
+                                // the left edge in a current group or the right
+                                // edge of the previous group
+                                toPositions.add(firstPositionInGroup);
                             } else {
                                 toPositions.add(firstPositionInGroup - 1);
                             }
@@ -621,9 +867,8 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
     }
 
     /**
-     * Move columns <i>down</i> in the 'Selected' Tree (Right)
+     * Move selected items in the selected tree down (right).
      */
-    @SuppressWarnings("boxing")
     protected void moveSelectedDown() {
         if (isAnyLeafSelected(this.selectedTree)) {
             if (!isLastLeafSelected(this.selectedTree)) {
@@ -635,6 +880,12 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
                 // Group continuous positions
                 List<List<Integer>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
                 List<Integer> toPositions = new ArrayList<Integer>();
+
+                // TODO all level?
+                GroupModel groupModel = null;
+                if (this.columnGroupHeaderLayer != null) {
+                    groupModel = this.columnGroupHeaderLayer.getGroupModel(0);
+                }
 
                 // Set destination positions
                 for (List<Integer> groupedPositions : postionsGroupedByContiguous) {
@@ -648,45 +899,79 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
                     // Column entry
                     ColumnEntry columnEntry = getNextColumnEntryForPosition(this.selectedTree, lastPositionInGroup);
                     int columnEntryIndex = columnEntry.getIndex();
+                    int columnEntryPosition = -1;
+                    if (groupModel != null) {
+                        columnEntryPosition = this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(columnEntry.getIndex());
+                    }
 
                     // Next Column Entry
                     ColumnEntry nextColumnEntry = getNextColumnEntryForPosition(this.selectedTree, lastPositionInGroup + 1);
+                    int nextColumnEntryPosition = -1;
+                    if (groupModel != null && nextColumnEntry != null) {
+                        nextColumnEntryPosition = this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(nextColumnEntry.getIndex());
+                    }
 
                     // Next column entry will be null the last leaf in the tree
                     // is selected
                     if (nextColumnEntry == null) {
                         toPositions.add(lastPositionInGroup);
-                    }
-                    else {
+                    } else {
                         int nextColumnEntryIndex = nextColumnEntry.getIndex();
 
                         if (columnGroupMoved) {
                             // If the next entry is a column group
                             // move past it.
-                            if (this.columnGroupModel != null && this.columnGroupModel.isPartOfAGroup(nextColumnEntryIndex)) {
+                            if (this.columnGroupModel != null
+                                    && this.columnGroupModel.isPartOfAGroup(nextColumnEntryIndex)) {
                                 ColumnGroup nextColumnGroup = this.columnGroupModel.getColumnGroupByIndex(nextColumnEntryIndex);
                                 toPositions.add(lastPositionInGroup + nextColumnGroup.getSize());
+                            } else if (groupModel != null
+                                    && groupModel.isPartOfAGroup(nextColumnEntryPosition)) {
+                                Group nextGroup = groupModel.getGroupByPosition(nextColumnEntryPosition);
+                                toPositions.add(lastPositionInGroup + nextGroup.getVisibleSpan());
                             } else {
                                 toPositions.add(lastPositionInGroup + 1);
                             }
                         } else {
                             // If is last member of the unbreakable group, can't
                             // move down i.e. out of the group
-                            if (this.columnGroupModel != null && this.columnGroupModel.isPartOfAnUnbreakableGroup(columnEntryIndex)
+                            if (this.columnGroupModel != null
+                                    && this.columnGroupModel.isPartOfAnUnbreakableGroup(columnEntryIndex)
                                     && !ColumnGroupUtils.isInTheSameGroup(columnEntryIndex, nextColumnEntryIndex, this.columnGroupModel)) {
+                                return;
+                            }
 
+                            if (groupModel != null
+                                    && groupModel.isPartOfAnUnbreakableGroup(columnEntryPosition)
+                                    // TODO all level?
+                                    && !ColumnGroupUtils.isInTheSameGroup(this.columnGroupHeaderLayer, 0, columnEntryPosition, nextColumnEntryPosition)) {
                                 return;
                             }
 
                             // If next entry is an unbreakable column group
                             // move past it
-                            if (this.columnGroupModel != null && this.columnGroupModel.isPartOfAnUnbreakableGroup(nextColumnEntryIndex)
+                            if (this.columnGroupModel != null
+                                    && this.columnGroupModel.isPartOfAnUnbreakableGroup(nextColumnEntryIndex)
                                     && !this.columnGroupModel.isPartOfAGroup(columnEntryIndex)
                                     && !ColumnGroupUtils.isInTheSameGroup(columnEntryIndex, nextColumnEntryIndex, this.columnGroupModel)) {
                                 ColumnGroup nextColumnGroup = this.columnGroupModel.getColumnGroupByIndex(nextColumnEntryIndex);
                                 toPositions.add(lastPositionInGroup + nextColumnGroup.getSize());
-                            }
-                            else {
+                            } else if (groupModel != null
+                                    && groupModel.isPartOfAnUnbreakableGroup(nextColumnEntryPosition)
+                                    && !groupModel.isPartOfAGroup(columnEntryPosition)) {
+                                Group nextGroup = groupModel.getGroupByPosition(nextColumnEntryPosition);
+                                toPositions.add(lastPositionInGroup + nextGroup.getVisibleSpan());
+                            } else if (groupModel != null
+                                    && ((groupModel.isPartOfAGroup(columnEntryPosition)
+                                            && groupModel.getGroupByPosition(columnEntryPosition).isRightEdge(columnEntryPosition))
+                                            || (groupModel.isPartOfAGroup(nextColumnEntryPosition)
+                                                    && groupModel.getGroupByPosition(nextColumnEntryPosition).isLeftEdge(nextColumnEntryPosition)
+                                                    && !groupModel.getGroupByPosition(nextColumnEntryPosition).isUnbreakable()))) {
+                                // we first move out of the group if we are at
+                                // the left edge in a current group or the right
+                                // edge of the previous group
+                                toPositions.add(lastPositionInGroup);
+                            } else {
                                 toPositions.add(lastPositionInGroup + 1);
                             }
                         }
@@ -697,6 +982,11 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
         }
     }
 
+    /**
+     * Move selected items in the selected tree to the bottom. In case the
+     * selected position is part of an unbreakable group, moves the selected
+     * items to the end of the group.
+     */
     void moveSelectedToBottom() {
         if (isAnyLeafSelected(this.selectedTree)) {
             if (!isLastLeafSelected(this.selectedTree)) {
@@ -714,6 +1004,12 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 
                 int lowerMost = getLowerMostPosition();
 
+                // TODO all level?
+                GroupModel groupModel = null;
+                if (this.columnGroupHeaderLayer != null) {
+                    groupModel = this.columnGroupHeaderLayer.getGroupModel(0);
+                }
+
                 int shift = 0;
                 for (List<Integer> groupedPositions : reversed) {
                     // check for unbreakable group
@@ -721,15 +1017,24 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
                     int lastListIndex = groupedPositions.size() - 1;
                     int lastPositionInGroup = groupedPositions.get(lastListIndex);
 
+                    boolean columnGroupMoved = columnGroupMoved(groupedPositions, selectedColumnGroupEntries);
+
                     // Column entry
                     ColumnEntry columnEntry = getNextColumnEntryForPosition(this.selectedTree, lastPositionInGroup);
+                    int columnEntryPosition = -1;
+                    if (groupModel != null) {
+                        columnEntryPosition = this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(columnEntry.getIndex());
+                    }
+
                     int columnEntryIndex = columnEntry.getIndex();
                     if (this.columnGroupModel != null && this.columnGroupModel.isPartOfAnUnbreakableGroup(columnEntryIndex)) {
                         List<Integer> groupMembers = this.columnGroupModel.getColumnGroupByIndex(columnEntryIndex).getMembers();
                         int groupLowerMost = groupMembers.get(groupMembers.size() - 1);
                         toPositions.add(groupLowerMost);
-                    }
-                    else {
+                    } else if (groupModel != null && groupModel.isPartOfAnUnbreakableGroup(columnEntryPosition) && !columnGroupMoved) {
+                        Group group = groupModel.getGroupByPosition(columnEntryPosition);
+                        toPositions.add(group.getVisibleStartPosition() + group.getVisibleSpan() - 1);
+                    } else {
                         toPositions.add(Integer.valueOf(lowerMost - shift));
                         shift += groupedPositions.size();
                     }
@@ -742,15 +1047,13 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 
     private boolean columnGroupMoved(List<Integer> fromPositions, List<ColumnGroupEntry> movedColumnGroupEntries) {
         for (ColumnGroupEntry columnGroupEntry : movedColumnGroupEntries) {
-            if (fromPositions.contains(columnGroupEntry.getFirstElementPosition()))
+            if (fromPositions.contains(columnGroupEntry.getFirstElementPosition())) {
                 return true;
+            }
         }
         return false;
     }
 
-    /**
-     * Get the ColumnEntry in the tree with the given position
-     */
     private ColumnEntry getColumnEntryForPosition(Tree tree, int columnEntryPosition) {
         List<ColumnEntry> allColumnEntries = getColumnEntriesIncludingNested(this.selectedTree.getItems());
 
@@ -789,6 +1092,13 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
     /**
      * Get Leaf index of the selected leaves in the tree
      */
+    /**
+     * Return the indexes of the selected leaves in the tree.
+     *
+     * @param tree
+     *            The {@link Tree} to inspect.
+     * @return The indexes of the selected leaves.
+     */
     protected List<Integer> getIndexesOfSelectedLeaves(Tree tree) {
         List<TreeItem> allSelectedLeaves = ArrayUtil.asList(tree.getSelection());
         List<Integer> allSelectedIndexes = new ArrayList<Integer>();
@@ -800,6 +1110,9 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
         return allSelectedIndexes;
     }
 
+    /**
+     * Expands all leaves.
+     */
     public void expandAllLeaves() {
         List<TreeItem> allLeaves = ArrayUtil.asList(this.selectedTree.getItems());
 
@@ -852,6 +1165,9 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
         }
     }
 
+    /**
+     * Removes all items from the available and the selected tree.
+     */
     public void removeAllLeaves() {
         this.selectedTree.removeAll();
         this.availableTree.removeAll();
@@ -983,8 +1299,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
             TreeItem[] children = item.getItems();
             if (children.length == 0) {
                 return false;
-            }
-            else {
+            } else {
                 // if there are children: check if all children are selected
                 // (which means the sub-root is implicitly selected)
                 for (TreeItem child : item.getItems()) {

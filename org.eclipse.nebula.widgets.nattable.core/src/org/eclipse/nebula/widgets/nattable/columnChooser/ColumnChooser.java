@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -55,9 +55,39 @@ public class ColumnChooser {
     protected final boolean sortAvailableColumns;
     protected final boolean preventHidingAllColumns;
 
+    private final org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer columnGroupHeaderLayer;
+
     List<Integer> nonModifiableColumns = new ArrayList<Integer>();
 
-    public ColumnChooser(Shell shell, SelectionLayer selectionLayer,
+    /**
+     * Constructor to be used with the old column grouping feature.
+     *
+     * @param shell
+     *            The parent shell to be used for creating the
+     *            {@link ColumnChooserDialog}.
+     * @param selectionLayer
+     *            The {@link SelectionLayer} needed for
+     *            position-index-transformation and to execute commands.
+     * @param columnHideShowLayer
+     *            The {@link ColumnHideShowLayer} for hide/show support.
+     * @param columnHeaderLayer
+     *            The {@link ColumnHeaderLayer} for retrieving column header
+     *            information.
+     * @param columnHeaderDataLayer
+     *            The {@link DataLayer} of the column header region for
+     *            retrieving column header information.
+     * @param columnGroupHeaderLayer
+     *            The old {@link ColumnGroupHeaderLayer}, currently unused.
+     * @param columnGroupModel
+     *            The old {@link ColumnGroupModel} used to support column
+     *            grouping with the old column grouping feature, can be
+     *            <code>null</code> if column grouping is not supported.
+     * @param sortAvailableColumns
+     *            Flag to configure if entries in the available tree should be
+     *            displayed in sorted order.
+     */
+    public ColumnChooser(Shell shell,
+            SelectionLayer selectionLayer,
             ColumnHideShowLayer columnHideShowLayer,
             ColumnHeaderLayer columnHeaderLayer,
             DataLayer columnHeaderDataLayer,
@@ -68,7 +98,38 @@ public class ColumnChooser {
         this(shell, selectionLayer, columnHideShowLayer, columnHeaderLayer, columnHeaderDataLayer, columnGroupHeaderLayer, columnGroupModel, sortAvailableColumns, false);
     }
 
-    public ColumnChooser(Shell shell, SelectionLayer selectionLayer,
+    /**
+     * Constructor to be used with the old column grouping feature.
+     *
+     * @param shell
+     *            The parent shell to be used for creating the
+     *            {@link ColumnChooserDialog}.
+     * @param selectionLayer
+     *            The {@link SelectionLayer} needed for
+     *            position-index-transformation and to execute commands.
+     * @param columnHideShowLayer
+     *            The {@link ColumnHideShowLayer} for hide/show support.
+     * @param columnHeaderLayer
+     *            The {@link ColumnHeaderLayer} for retrieving column header
+     *            information.
+     * @param columnHeaderDataLayer
+     *            The {@link DataLayer} of the column header region for
+     *            retrieving column header information.
+     * @param columnGroupHeaderLayer
+     *            The old {@link ColumnGroupHeaderLayer}, currently unused.
+     * @param columnGroupModel
+     *            The old {@link ColumnGroupModel} used to support column
+     *            grouping with the old column grouping feature, can be
+     *            <code>null</code> if column grouping is not supported.
+     * @param sortAvailableColumns
+     *            Flag to configure if entries in the available tree should be
+     *            displayed in sorted order.
+     * @param preventHidingAllColumns
+     *            Flag to prevent hiding all columns, currently without
+     *            function.
+     */
+    public ColumnChooser(Shell shell,
+            SelectionLayer selectionLayer,
             ColumnHideShowLayer columnHideShowLayer,
             ColumnHeaderLayer columnHeaderLayer,
             DataLayer columnHeaderDataLayer,
@@ -84,9 +145,59 @@ public class ColumnChooser {
         this.columnGroupModel = columnGroupModel;
         this.sortAvailableColumns = sortAvailableColumns;
         this.preventHidingAllColumns = preventHidingAllColumns;
+        this.columnGroupHeaderLayer = null;
 
         this.columnChooserDialog = new ColumnChooserDialog(shell, Messages.getString("ColumnChooser.availableColumns"), Messages.getString("ColumnChooser.selectedColumns")); //$NON-NLS-1$ //$NON-NLS-2$
         this.columnChooserDialog.setPreventHidingAllColumns(preventHidingAllColumns);
+    }
+
+    /**
+     * Constructor to be used with the new performance column grouping feature.
+     *
+     * @param shell
+     *            The parent shell to be used for creating the
+     *            {@link ColumnChooserDialog}.
+     * @param columnHideShowLayer
+     *            The {@link ColumnHideShowLayer} for hide/show support.
+     * @param columnHeaderLayer
+     *            The {@link ColumnHeaderLayer} for retrieving column header
+     *            information.
+     * @param columnHeaderDataLayer
+     *            The {@link DataLayer} of the column header region for
+     *            retrieving column header information.
+     * @param columnGroupHeaderLayer
+     *            The new performance
+     *            {@link org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer}
+     *            to support column grouping. <code>null</code> is not allowed.
+     * @param sortAvailableColumns
+     *            Flag to configure if entries in the available tree should be
+     *            displayed in sorted order.
+     * @throws IllegalArgumentException
+     *             if columnGroupHeaderLayer is null
+     * @since 1.6
+     */
+    public ColumnChooser(Shell shell,
+            ColumnHideShowLayer columnHideShowLayer,
+            ColumnHeaderLayer columnHeaderLayer,
+            DataLayer columnHeaderDataLayer,
+            org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer columnGroupHeaderLayer,
+            boolean sortAvailableColumns) {
+
+        if (columnGroupHeaderLayer == null) {
+            throw new IllegalArgumentException("columnGroupHeaderLayer cannot be null"); //$NON-NLS-1$
+        }
+
+        this.selectionLayer = null;
+        this.columnHideShowLayer = columnHideShowLayer;
+        this.columnHeaderLayer = columnHeaderLayer;
+        this.columnHeaderDataLayer = columnHeaderDataLayer;
+        this.columnGroupModel = null;
+        this.sortAvailableColumns = sortAvailableColumns;
+        this.preventHidingAllColumns = false;
+        this.columnGroupHeaderLayer = columnGroupHeaderLayer;
+
+        this.columnChooserDialog = new ColumnChooserDialog(shell, Messages.getString("ColumnChooser.availableColumns"), Messages.getString("ColumnChooser.selectedColumns")); //$NON-NLS-1$ //$NON-NLS-2$
+        this.columnChooserDialog.setPreventHidingAllColumns(this.preventHidingAllColumns);
     }
 
     public void setDialogSettings(IDialogSettings dialogSettings) {
@@ -97,10 +208,18 @@ public class ColumnChooser {
         this.columnChooserDialog.create();
 
         this.hiddenColumnEntries = getHiddenColumnEntries();
-        this.columnChooserDialog.populateAvailableTree(this.hiddenColumnEntries, this.columnGroupModel);
+        if (this.columnGroupHeaderLayer != null) {
+            this.columnChooserDialog.populateAvailableTree(this.hiddenColumnEntries, this.columnGroupHeaderLayer);
+        } else {
+            this.columnChooserDialog.populateAvailableTree(this.hiddenColumnEntries, this.columnGroupModel);
+        }
 
         this.visibleColumnsEntries = getVisibleColumnEntries();
-        this.columnChooserDialog.populateSelectedTree(this.visibleColumnsEntries, this.columnGroupModel);
+        if (this.columnGroupHeaderLayer != null) {
+            this.columnChooserDialog.populateSelectedTree(this.visibleColumnsEntries, this.columnGroupHeaderLayer);
+        } else {
+            this.columnChooserDialog.populateSelectedTree(this.visibleColumnsEntries, this.columnGroupModel);
+        }
 
         this.columnChooserDialog.expandAllLeaves();
 
@@ -123,7 +242,7 @@ public class ColumnChooser {
                 ColumnChooserUtils.showColumnEntries(addedItems, ColumnChooser.this.columnHideShowLayer);
                 refreshColumnChooserDialog();
                 ColumnChooser.this.columnChooserDialog
-                .setSelectionIncludingNested(ColumnChooserUtils.getColumnEntryIndexes(addedItems));
+                        .setSelectionIncludingNested(ColumnChooserUtils.getColumnEntryIndexes(addedItems));
             }
 
             @Override
@@ -197,16 +316,28 @@ public class ColumnChooser {
 
             @Override
             public void itemsCollapsed(ColumnGroupEntry columnGroupEntry) {
-                int index = columnGroupEntry.getFirstElementIndex().intValue();
-                int position = ColumnChooser.this.selectionLayer.getColumnPositionByIndex(index);
-                ColumnChooser.this.selectionLayer.doCommand(new ColumnGroupExpandCollapseCommand(ColumnChooser.this.selectionLayer, position));
+                if (ColumnChooser.this.columnGroupHeaderLayer != null) {
+                    int index = columnGroupEntry.getFirstElementIndex();
+                    int position = ColumnChooser.this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(index);
+                    ColumnChooser.this.columnGroupHeaderLayer.doCommand(new ColumnGroupExpandCollapseCommand(ColumnChooser.this.columnGroupHeaderLayer.getPositionLayer(), position));
+                } else {
+                    int index = columnGroupEntry.getFirstElementIndex();
+                    int position = ColumnChooser.this.selectionLayer.getColumnPositionByIndex(index);
+                    ColumnChooser.this.selectionLayer.doCommand(new ColumnGroupExpandCollapseCommand(ColumnChooser.this.selectionLayer, position));
+                }
             }
 
             @Override
             public void itemsExpanded(ColumnGroupEntry columnGroupEntry) {
-                int index = columnGroupEntry.getFirstElementIndex().intValue();
-                int position = ColumnChooser.this.selectionLayer.getColumnPositionByIndex(index);
-                ColumnChooser.this.selectionLayer.doCommand(new ColumnGroupExpandCollapseCommand(ColumnChooser.this.selectionLayer, position));
+                if (ColumnChooser.this.columnGroupHeaderLayer != null) {
+                    int index = columnGroupEntry.getFirstElementIndex();
+                    int position = ColumnChooser.this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(index);
+                    ColumnChooser.this.columnGroupHeaderLayer.doCommand(new ColumnGroupExpandCollapseCommand(ColumnChooser.this.columnGroupHeaderLayer.getPositionLayer(), position));
+                } else {
+                    int index = columnGroupEntry.getFirstElementIndex();
+                    int position = ColumnChooser.this.selectionLayer.getColumnPositionByIndex(index);
+                    ColumnChooser.this.selectionLayer.doCommand(new ColumnGroupExpandCollapseCommand(ColumnChooser.this.selectionLayer, position));
+                }
             }
         });
     }
@@ -217,8 +348,13 @@ public class ColumnChooser {
 
         this.columnChooserDialog.removeAllLeaves();
 
-        this.columnChooserDialog.populateSelectedTree(this.visibleColumnsEntries, this.columnGroupModel);
-        this.columnChooserDialog.populateAvailableTree(this.hiddenColumnEntries, this.columnGroupModel);
+        if (this.columnGroupHeaderLayer != null) {
+            this.columnChooserDialog.populateSelectedTree(this.visibleColumnsEntries, this.columnGroupHeaderLayer);
+            this.columnChooserDialog.populateAvailableTree(this.hiddenColumnEntries, this.columnGroupHeaderLayer);
+        } else {
+            this.columnChooserDialog.populateSelectedTree(this.visibleColumnsEntries, this.columnGroupModel);
+            this.columnChooserDialog.populateAvailableTree(this.hiddenColumnEntries, this.columnGroupModel);
+        }
         this.columnChooserDialog.expandAllLeaves();
     }
 

@@ -556,17 +556,23 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
     @Override
     public boolean doCommand(ILayerCommand command) {
-        if (command.convertToTargetLayer(this)
-                && command instanceof ColumnGroupExpandCollapseCommand) {
+        if (command instanceof ColumnGroupExpandCollapseCommand
+                && command.convertToTargetLayer(getPositionLayer())) {
+            // only ColumnGroupExpandCollapseCommand needs to be converted to
+            // positionLayer so also currently not visible column groups can be
+            // expanded/collapsed, e.g. via ColumnChooser
             int rowPosition = ((ColumnGroupExpandCollapseCommand) command).getRowPosition();
             int level = getLevelForRowPosition(rowPosition);
             int columnPosition = ((ColumnGroupExpandCollapseCommand) command).getColumnPosition();
 
-            Group group = getGroupByPosition(level, columnPosition);
-            if (group.isCollapsed()) {
-                expandGroup(level, columnPosition);
-            } else {
-                collapseGroup(level, columnPosition);
+            GroupModel groupModel = getGroupModel(level);
+            if (groupModel != null) {
+                Group group = groupModel.getGroupByPosition(columnPosition);
+                if (group != null && group.isCollapsed()) {
+                    expandGroup(groupModel, group);
+                } else if (group != null && !group.isCollapsed()) {
+                    collapseGroup(groupModel, group);
+                }
             }
             return true;
         }

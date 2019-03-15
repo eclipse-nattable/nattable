@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,6 +37,8 @@ public class DisplayColumnChooserCommandHandler extends AbstractLayerCommandHand
     private IDialogSettings dialogSettings;
     private List<Integer> nonModifiableColumns = new ArrayList<Integer>();
 
+    private final org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer cghLayer;
+
     public DisplayColumnChooserCommandHandler(SelectionLayer selectionLayer,
             ColumnHideShowLayer columnHideShowLayer,
             ColumnHeaderLayer columnHeaderLayer,
@@ -47,16 +49,20 @@ public class DisplayColumnChooserCommandHandler extends AbstractLayerCommandHand
         this(selectionLayer, columnHideShowLayer, columnHeaderLayer, columnHeaderDataLayer, cgHeader, columnGroupModel, false, false);
     }
 
-    public DisplayColumnChooserCommandHandler(SelectionLayer selectionLayer,
+    public DisplayColumnChooserCommandHandler(
+            SelectionLayer selectionLayer,
             ColumnHideShowLayer columnHideShowLayer,
             ColumnHeaderLayer columnHeaderLayer,
-            DataLayer columnHeaderDataLayer, ColumnGroupHeaderLayer cgHeader,
-            ColumnGroupModel columnGroupModel, boolean sortAvailableColumns) {
+            DataLayer columnHeaderDataLayer,
+            ColumnGroupHeaderLayer cgHeader,
+            ColumnGroupModel columnGroupModel,
+            boolean sortAvailableColumns) {
 
         this(selectionLayer, columnHideShowLayer, columnHeaderLayer, columnHeaderDataLayer, cgHeader, columnGroupModel, sortAvailableColumns, false);
     }
 
-    public DisplayColumnChooserCommandHandler(SelectionLayer selectionLayer,
+    public DisplayColumnChooserCommandHandler(
+            SelectionLayer selectionLayer,
             ColumnHideShowLayer columnHideShowLayer,
             ColumnHeaderLayer columnHeaderLayer,
             DataLayer columnHeaderDataLayer,
@@ -73,15 +79,106 @@ public class DisplayColumnChooserCommandHandler extends AbstractLayerCommandHand
         this.columnGroupModel = columnGroupModel;
         this.sortAvailableColumns = sortAvalableColumns;
         this.preventHidingAllColumns = preventHidingAllColumns;
+        this.cghLayer = null;
+    }
+
+    /**
+     * Create the {@link DisplayColumnChooserCommandHandler} for the new
+     * performance column grouping feature showing the columns in the available
+     * tree unsorted.
+     *
+     * @param columnHideShowLayer
+     *            The {@link ColumnHideShowLayer} for hide/show support.
+     * @param columnHeaderLayer
+     *            The {@link ColumnHeaderLayer} for retrieving column header
+     *            information.
+     * @param columnHeaderDataLayer
+     *            The {@link DataLayer} of the column header region for
+     *            retrieving column header information.
+     * @param cgHeader
+     *            The new performance
+     *            {@link org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer}
+     *            to support column grouping. Cannot be <code>null</code>.
+     * @throws IllegalArgumentException
+     *             if cgHeader is null
+     *
+     * @since 1.6
+     */
+    public DisplayColumnChooserCommandHandler(
+            ColumnHideShowLayer columnHideShowLayer,
+            ColumnHeaderLayer columnHeaderLayer,
+            DataLayer columnHeaderDataLayer,
+            org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer cgHeader) {
+
+        this(columnHideShowLayer, columnHeaderLayer, columnHeaderDataLayer, cgHeader, false);
+    }
+
+    /**
+     * Create the {@link DisplayColumnChooserCommandHandler} for the new
+     * performance column grouping feature.
+     *
+     * @param columnHideShowLayer
+     *            The {@link ColumnHideShowLayer} for hide/show support.
+     * @param columnHeaderLayer
+     *            The {@link ColumnHeaderLayer} for retrieving column header
+     *            information.
+     * @param columnHeaderDataLayer
+     *            The {@link DataLayer} of the column header region for
+     *            retrieving column header information.
+     * @param cgHeader
+     *            The new performance
+     *            {@link org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer}
+     *            to support column grouping. Cannot be <code>null</code>.
+     * @param sortAvailableColumns
+     *            Flag to configure if entries in the available tree should be
+     *            displayed in sorted order.
+     * @throws IllegalArgumentException
+     *             if cgHeader is null
+     *
+     * @since 1.6
+     */
+    public DisplayColumnChooserCommandHandler(
+            ColumnHideShowLayer columnHideShowLayer,
+            ColumnHeaderLayer columnHeaderLayer,
+            DataLayer columnHeaderDataLayer,
+            org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer cgHeader,
+            boolean sortAvailableColumns) {
+
+        if (cgHeader == null) {
+            throw new IllegalArgumentException("cgHeader cannot be null"); //$NON-NLS-1$
+        }
+
+        this.selectionLayer = null;
+        this.columnHideShowLayer = columnHideShowLayer;
+        this.columnHeaderLayer = columnHeaderLayer;
+        this.columnHeaderDataLayer = columnHeaderDataLayer;
+        this.columnGroupHeaderLayer = null;
+        this.columnGroupModel = null;
+        this.sortAvailableColumns = sortAvailableColumns;
+        this.preventHidingAllColumns = false;
+        this.cghLayer = cgHeader;
     }
 
     @Override
     public boolean doCommand(DisplayColumnChooserCommand command) {
-        ColumnChooser columnChooser = new ColumnChooser(command.getNatTable()
-                .getShell(), this.selectionLayer, this.columnHideShowLayer,
-                this.columnHeaderLayer, this.columnHeaderDataLayer,
-                this.columnGroupHeaderLayer, this.columnGroupModel,
-                this.sortAvailableColumns, this.preventHidingAllColumns);
+        ColumnChooser columnChooser = this.cghLayer == null
+                ? new ColumnChooser(
+                        command.getNatTable().getShell(),
+                        this.selectionLayer,
+                        this.columnHideShowLayer,
+                        this.columnHeaderLayer,
+                        this.columnHeaderDataLayer,
+                        this.columnGroupHeaderLayer,
+                        this.columnGroupModel,
+                        this.sortAvailableColumns,
+                        this.preventHidingAllColumns)
+                : new ColumnChooser(
+                        command.getNatTable().getShell(),
+                        this.columnHideShowLayer,
+                        this.columnHeaderLayer,
+                        this.columnHeaderDataLayer,
+                        this.cghLayer,
+                        this.sortAvailableColumns);
 
         columnChooser.setDialogSettings(this.dialogSettings);
         columnChooser.addNonModifiableColumn(this.nonModifiableColumns.toArray(new Integer[] {}));
