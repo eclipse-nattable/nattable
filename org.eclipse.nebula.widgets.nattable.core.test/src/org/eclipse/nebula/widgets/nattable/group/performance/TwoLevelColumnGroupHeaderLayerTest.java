@@ -12,6 +12,7 @@ package org.eclipse.nebula.widgets.nattable.group.performance;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
@@ -43,6 +44,9 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
+import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
+import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderEndCommand;
+import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderStartCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
@@ -1138,5 +1142,88 @@ public class TwoLevelColumnGroupHeaderLayerTest {
         assertTrue(members.contains(8));
         assertTrue(members.contains(9));
         assertTrue(members.contains(10));
+    }
+
+    @Test
+    public void shouldNotReorderNonGroupedToUnbreakableLevel1Group() {
+        // first clear all groups
+        this.columnGroupHeaderLayer.clearAllGroups();
+
+        assertTrue(this.columnGroupHeaderLayer.getGroupModel(0).isEmpty());
+        assertTrue(this.columnGroupHeaderLayer.getGroupModel(1).isEmpty());
+
+        this.columnGroupHeaderLayer.addGroup("Address", 4, 4);
+        this.columnGroupHeaderLayer.addGroup("Facts", 8, 3);
+        this.columnGroupHeaderLayer.addGroup("Personal", 11, 3);
+
+        this.columnGroupHeaderLayer.addGroup(1, "Test", 0, 8);
+
+        this.columnGroupHeaderLayer.setGroupUnbreakable(0, 4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(1, 4, true);
+
+        // now try to reorder a non grouped column to the non-breakable column
+        // group on level 0
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 3, 6));
+
+        // no changes should have happened
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0, 0));
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0, 1));
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0, 2));
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0, 3));
+
+        Group group = this.columnGroupHeaderLayer.getGroupByPosition(0, 4);
+        assertEquals(4, group.getStartIndex());
+        assertEquals(4, group.getVisibleStartIndex());
+        assertEquals(4, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(4, group.getVisibleSpan());
+        Collection<Integer> members = group.getMembers();
+        assertEquals(4, members.size());
+        assertTrue(members.contains(4));
+        assertTrue(members.contains(5));
+        assertTrue(members.contains(6));
+        assertTrue(members.contains(7));
+    }
+
+    @Test
+    public void shouldNotDragReorderNonGroupedToUnbreakableLevel1Group() {
+        // first clear all groups
+        this.columnGroupHeaderLayer.clearAllGroups();
+
+        assertTrue(this.columnGroupHeaderLayer.getGroupModel(0).isEmpty());
+        assertTrue(this.columnGroupHeaderLayer.getGroupModel(1).isEmpty());
+
+        this.columnGroupHeaderLayer.addGroup("Address", 4, 4);
+        this.columnGroupHeaderLayer.addGroup("Facts", 8, 3);
+        this.columnGroupHeaderLayer.addGroup("Personal", 11, 3);
+
+        this.columnGroupHeaderLayer.addGroup(1, "Test", 0, 8);
+
+        this.columnGroupHeaderLayer.setGroupUnbreakable(0, 4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(1, 4, true);
+
+        // now try to reorder a non grouped column to the non-breakable column
+        // group on level 0
+        this.gridLayer.doCommand(new ColumnReorderStartCommand(this.gridLayer, 3));
+        this.gridLayer.doCommand(new ColumnReorderEndCommand(this.gridLayer, 6));
+
+        // no changes should have happened
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0, 0));
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0, 1));
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0, 2));
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0, 3));
+
+        Group group = this.columnGroupHeaderLayer.getGroupByPosition(0, 4);
+        assertEquals(4, group.getStartIndex());
+        assertEquals(4, group.getVisibleStartIndex());
+        assertEquals(4, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(4, group.getVisibleSpan());
+        Collection<Integer> members = group.getMembers();
+        assertEquals(4, members.size());
+        assertTrue(members.contains(4));
+        assertTrue(members.contains(5));
+        assertTrue(members.contains(6));
+        assertTrue(members.contains(7));
     }
 }

@@ -24,6 +24,8 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.reorder.action.ColumnReorderDragMode;
+import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderEndCommand;
+import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderStartCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.selection.command.ClearAllSelectionsCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
@@ -159,12 +161,20 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
 
     @Override
     protected void fireMoveStartCommand(NatTable natTable, int dragFromGridColumnPosition) {
-        natTable.doCommand(new ColumnGroupReorderStartCommand(natTable, this.level, dragFromGridColumnPosition));
+        if (this.level >= 0) {
+            natTable.doCommand(new ColumnGroupReorderStartCommand(natTable, this.level, dragFromGridColumnPosition));
+        } else {
+            natTable.doCommand(new ColumnReorderStartCommand(natTable, dragFromGridColumnPosition));
+        }
     }
 
     @Override
     protected void fireMoveEndCommand(NatTable natTable, int dragToGridColumnPosition) {
-        natTable.doCommand(new ColumnGroupReorderEndCommand(natTable, this.level, dragToGridColumnPosition));
+        if (this.level >= 0) {
+            natTable.doCommand(new ColumnGroupReorderEndCommand(natTable, this.level, dragToGridColumnPosition));
+        } else {
+            natTable.doCommand(new ColumnReorderEndCommand(natTable, dragToGridColumnPosition));
+        }
     }
 
     @Override
@@ -209,6 +219,12 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
             this.level--;
             this.dragFromGridRowPosition++;
             group = this.columnGroupHeaderLayer.getGroupModel(this.level).getGroupByPosition(columnPosition);
+        }
+
+        if (group == null) {
+            // no group found, so we set the level to -1 and trigger column
+            // reordering instead of column group reordering in further steps
+            this.level = -1;
         }
     }
 }
