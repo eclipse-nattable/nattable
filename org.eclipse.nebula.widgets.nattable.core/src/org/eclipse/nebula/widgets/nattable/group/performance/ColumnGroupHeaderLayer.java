@@ -544,6 +544,14 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      */
     protected int convertColumnPositionUpwards(int columnPosition) {
         int converted = columnPosition;
+
+        // This could be for example when the CompositeFreezeLayer is in the
+        // composition. At creation time the underlying layers would be empty
+        // because the width is not yet calculated.
+        if (this.layerPath == null) {
+            this.layerPath = findLayerPath(this);
+        }
+
         if (this.layerPath != null) {
             for (int i = 0; i < this.layerPath.size() - 1; i++) {
                 ILayer underlying = this.layerPath.get(i);
@@ -561,9 +569,10 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
             // only ColumnGroupExpandCollapseCommand needs to be converted to
             // positionLayer so also currently not visible column groups can be
             // expanded/collapsed, e.g. via ColumnChooser
-            int rowPosition = ((ColumnGroupExpandCollapseCommand) command).getRowPosition();
+            ColumnGroupExpandCollapseCommand cmd = (ColumnGroupExpandCollapseCommand) command;
+            int rowPosition = cmd.getLocalRowPosition(this);
             int level = getLevelForRowPosition(rowPosition);
-            int columnPosition = ((ColumnGroupExpandCollapseCommand) command).getColumnPosition();
+            int columnPosition = cmd.getColumnPosition();
 
             GroupModel groupModel = getGroupModel(level);
             if (groupModel != null) {
@@ -753,7 +762,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                 return this.rowHeightConfig.getAggregateSize(rowPosition);
             } else {
                 int startY = 0;
-                for (int i = 0; i < this.model.size(); i++) {
+                for (int i = 0; i < rowPosition; i++) {
                     GroupModel groupModel = this.model.get(i);
                     if (!groupModel.isEmpty()) {
                         startY += this.rowHeightConfig.getSize(getRowPositionForLevel(i));
