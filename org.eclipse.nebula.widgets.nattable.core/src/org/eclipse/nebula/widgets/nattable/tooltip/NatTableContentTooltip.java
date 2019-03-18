@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,9 +31,6 @@ import org.eclipse.swt.widgets.Event;
  * It is possible to configure for which regions the tooltips should be
  * activated. If none are configured, the tooltips are active for every region
  * of the {@link NatTable}.
- *
- * @author Dirk Fauth
- * @version 1.0.0
  */
 public class NatTableContentTooltip extends DefaultToolTip {
 
@@ -49,7 +46,9 @@ public class NatTableContentTooltip extends DefaultToolTip {
 
     /**
      * Creates a new {@link ToolTip} object, attaches it to the given
-     * {@link NatTable} instance and configures and activates it.
+     * {@link NatTable} instance and configures and activates it. Uses
+     * {@link ToolTip#NO_RECREATE} as style option and manualActivation ==
+     * false.
      *
      * @param natTable
      *            The {@link NatTable} instance for which this {@link ToolTip}
@@ -60,6 +59,35 @@ public class NatTableContentTooltip extends DefaultToolTip {
      *            be active for all regions.
      */
     public NatTableContentTooltip(NatTable natTable, String... tooltipRegions) {
+        super(natTable, ToolTip.NO_RECREATE, false);
+        setPopupDelay(500);
+        setShift(new Point(10, 10));
+        activate();
+        this.natTable = natTable;
+        this.tooltipRegions = tooltipRegions;
+    }
+
+    /**
+     * Creates a new {@link ToolTip} object, attached to the given
+     * {@link NatTable} instance.
+     *
+     * @param natTable
+     *            The {@link NatTable} instance for which this {@link ToolTip}
+     *            is used.
+     * @param style
+     *            The style passed to control tooltip behaviour.
+     * @param manualActivation
+     *            <code>true</code> if the activation is done manually using
+     *            {@link #show(Point)}.
+     * @param tooltipRegions
+     *            The regions of the {@link NatTable} for which this
+     *            {@link ToolTip} is active. If none are given, the tooltip will
+     *            be active for all regions.
+     * @see #RECREATE
+     * @see #NO_RECREATE
+     * @since 1.6
+     */
+    public NatTableContentTooltip(NatTable natTable, int style, boolean manualActivation, String... tooltipRegions) {
         super(natTable, ToolTip.NO_RECREATE, false);
         setPopupDelay(500);
         setShift(new Point(10, 10));
