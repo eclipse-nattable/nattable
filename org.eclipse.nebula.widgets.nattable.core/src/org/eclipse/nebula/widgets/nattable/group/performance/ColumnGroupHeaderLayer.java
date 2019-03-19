@@ -11,7 +11,6 @@
 package org.eclipse.nebula.widgets.nattable.group.performance;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -2118,8 +2117,17 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                         toPosition = getPositionLayer().getColumnPositionByIndex(toIndex);
                     }
                 }
-                return getPositionLayer().doCommand(
-                        new MultiColumnReorderCommand(getPositionLayer(), new ArrayList<Integer>(group.getVisiblePositions()), toPosition));
+
+                // we need to convert and fire the command on the underlying
+                // layer of the positionLayer as otherwise the special command
+                // handler is activated
+                List<Integer> underlyingFrom = new ArrayList<Integer>();
+                for (int from : group.getVisiblePositions()) {
+                    underlyingFrom.add(getPositionLayer().localToUnderlyingColumnPosition(from));
+                }
+                int underlyingTo = getPositionLayer().localToUnderlyingColumnPosition(toPosition);
+                return getPositionLayer().getUnderlyingLayerByPosition(0, 0).doCommand(
+                        new MultiColumnReorderCommand(getPositionLayer(), underlyingFrom, underlyingTo));
             }
         }
         return false;
@@ -2416,7 +2424,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                     // column at the edge of a group, remove the
                     // position from the group
                     if (fromColumnPosition == toColumnPosition
-                            && (!isGroupReordered(fromColumnGroup, fromColumnPositions) || (fromColumnGroup.isCollapsed() && fromColumnGroup.getMembers().size() > 1))
+                            && (!ColumnGroupUtils.isGroupReordered(fromColumnGroup, fromColumnPositions) || (fromColumnGroup.isCollapsed() && fromColumnGroup.getMembers().size() > 1))
                             && (fromColumnGroup.isLeftEdge(fromColumnPosition)
                                     || fromColumnGroup.isRightEdge(fromColumnPosition))) {
                         if (MoveDirectionEnum.RIGHT == moveDirection) {
@@ -2473,7 +2481,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                             moveDirection);
                 } else if (fromColumnGroup != null
                         && toColumnGroup == null
-                        && (!isGroupReordered(fromColumnGroup, fromColumnPositions) || fromColumnGroup.isCollapsed())) {
+                        && (!ColumnGroupUtils.isGroupReordered(fromColumnGroup, fromColumnPositions) || fromColumnGroup.isCollapsed())) {
                     removePositionsFromGroup(
                             groupModel,
                             fromColumnGroup,
@@ -2503,7 +2511,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                 } else if (fromColumnGroup != null
                         && toColumnGroup != null
                         && !fromColumnGroup.equals(toColumnGroup)
-                        && (!isGroupReordered(fromColumnGroup, fromColumnPositions) || fromColumnGroup.isCollapsed() || fromColumnGroup.getVisiblePositions().size() == 1)) {
+                        && (!ColumnGroupUtils.isGroupReordered(fromColumnGroup, fromColumnPositions) || fromColumnGroup.isCollapsed() || fromColumnGroup.getVisiblePositions().size() == 1)) {
 
                     removePositionsFromGroup(
                             groupModel,
@@ -2630,19 +2638,6 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                     // the group itself
                     groupModel.removeGroup(group);
                 }
-            }
-        }
-
-        private boolean isGroupReordered(Group fromGroup, int[] fromColumnPositions) {
-            Collection<Integer> visiblePositions = fromGroup.getVisiblePositions();
-            if (visiblePositions.size() > fromColumnPositions.length) {
-                return false;
-            } else if (visiblePositions.size() < fromColumnPositions.length) {
-                List<Integer> fromPositions = ArrayUtil.asIntegerList(fromColumnPositions);
-                return fromPositions.containsAll(visiblePositions);
-            } else {
-                int[] positionsArray = ArrayUtil.asIntArray(visiblePositions);
-                return Arrays.equals(positionsArray, fromColumnPositions);
             }
         }
     }

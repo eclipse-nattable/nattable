@@ -11,6 +11,8 @@
 package org.eclipse.nebula.widgets.nattable.group;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,6 +24,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
 public class ColumnGroupUtils {
 
@@ -459,7 +462,8 @@ public class ColumnGroupUtils {
         boolean valid = true;
         // check if the from position is unbreakable
         GroupModel model = columnGroupHeaderLayer.getGroupModel(level);
-        if (model.isPartOfAnUnbreakableGroup(fromPosition)) {
+        Group group = model.getGroupByPosition(fromPosition);
+        if (group != null && group.isUnbreakable() && group.getVisibleSpan() > 1) {
             fromUnbreakable = true;
             valid = isInTheSameGroup(columnGroupHeaderLayer, level, fromPosition, toPositionToCheck);
         }
@@ -486,5 +490,29 @@ public class ColumnGroupUtils {
         }
 
         return valid;
+    }
+
+    /**
+     * Check if a complete group is reordered.
+     *
+     * @param fromGroup
+     *            The group to check.
+     * @param fromColumnPositions
+     *            The column positions to check.
+     * @return <code>true</code> if the fromColumnPositions are all part of the
+     *         given group.
+     * @since 1.6
+     */
+    public static boolean isGroupReordered(Group fromGroup, int[] fromColumnPositions) {
+        Collection<Integer> visiblePositions = fromGroup.getVisiblePositions();
+        if (visiblePositions.size() > fromColumnPositions.length) {
+            return false;
+        } else if (visiblePositions.size() < fromColumnPositions.length) {
+            List<Integer> fromPositions = ArrayUtil.asIntegerList(fromColumnPositions);
+            return fromPositions.containsAll(visiblePositions);
+        } else {
+            int[] positionsArray = ArrayUtil.asIntArray(visiblePositions);
+            return Arrays.equals(positionsArray, fromColumnPositions);
+        }
     }
 }

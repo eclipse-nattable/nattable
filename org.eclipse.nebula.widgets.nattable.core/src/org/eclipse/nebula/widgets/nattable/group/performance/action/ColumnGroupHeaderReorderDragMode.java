@@ -204,21 +204,22 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
      *
      * @param rowPosition
      *            The row position from which the drag was started. Needs to be
-     *            related to the position layer.
+     *            related to the columnGroupHeaderLayer.
      * @param columnPosition
      *            The column position from which the drag was started. Needed to
-     *            check if there is a group at the calculated level.
+     *            check if there is a group at the calculated level. Needs to be
+     *            related to the columnGroupHeaderLayer.
      */
     protected void calculateLevel(int rowPosition, int columnPosition) {
         this.level = this.columnGroupHeaderLayer.getLevelForRowPosition(rowPosition);
 
-        Group group = this.columnGroupHeaderLayer.getGroupModel(this.level).getGroupByPosition(columnPosition);
+        Group group = this.columnGroupHeaderLayer.getGroupByPosition(this.level, columnPosition);
         while (group == null && this.level > 0) {
             // decrease the level and increase the from row position as we need
             // to check one row below
             this.level--;
             this.dragFromGridRowPosition++;
-            group = this.columnGroupHeaderLayer.getGroupModel(this.level).getGroupByPosition(columnPosition);
+            group = this.columnGroupHeaderLayer.getGroupByPosition(this.level, columnPosition);
         }
 
         if (group == null) {
