@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth.
+ * Copyright (c) 2014, 2019 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,6 +24,7 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.painter.layer.GridLineCellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 
@@ -59,11 +60,11 @@ import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
  *      GridLayer gridLayer = new GridLayer(...);
  *      FixedSummaryRowLayer summaryRowLayer =
  *          new FixedSummaryRowLayer(bodyDataLayer, gridLayer, configRegistry);
- * 
+ *
  *      CompositeLayer composite = new CompositeLayer(1, 2);
  *      composite.setChildLayer("GRID", gridLayer, 0, 0);
  *      composite.setChildLayer(SUMMARY_REGION, summaryRowLayer, 0, 1);
- * 
+ *
  *      NatTable natTable = new NatTable(panel, composite);
  * </pre>
  * <p>
@@ -224,7 +225,14 @@ public class FixedSummaryRowLayer extends SummaryRowLayer {
 
                 @Override
                 public void handleLayerEvent(ILayerEvent event) {
-                    FixedSummaryRowLayer.this.handleLayerEvent(event);
+                    // we only propagate events further if we need to handle
+                    // them upwards, otherwise we only clear the cache like the
+                    // SummaryRowLayer does without further processing upwards
+                    if (event.convertToLocal(FixedSummaryRowLayer.this)) {
+                        FixedSummaryRowLayer.this.handleLayerEvent(event.cloneEvent());
+                    } else if (event instanceof IVisualChangeEvent) {
+                        clearCache();
+                    }
                 }
             });
         }
@@ -304,8 +312,7 @@ public class FixedSummaryRowLayer extends SummaryRowLayer {
      * already.
      */
     @Override
-    protected LabelStack getConfigLabelsByPositionWithoutTransformation(
-            int columnPosition, int rowPosition) {
+    protected LabelStack getConfigLabelsByPositionWithoutTransformation(int columnPosition, int rowPosition) {
         return super.getConfigLabelsByPosition(columnPosition, rowPosition);
     }
 
@@ -318,8 +325,7 @@ public class FixedSummaryRowLayer extends SummaryRowLayer {
             labelStack.addLabelOnTop(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 
             if (getConfigLabelAccumulator() != null) {
-                getConfigLabelAccumulator().accumulateConfigLabels(
-                        labelStack, columnPosition, rowPosition);
+                getConfigLabelAccumulator().accumulateConfigLabels(labelStack, columnPosition, rowPosition);
             }
             return labelStack;
         }
@@ -352,8 +358,7 @@ public class FixedSummaryRowLayer extends SummaryRowLayer {
     }
 
     @Override
-    public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer,
-            int underlyingColumnPosition) {
+    public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
         if (sourceUnderlyingLayer == this.horizontalLayerDependency) {
             return underlyingColumnPosition;
         }
@@ -365,6 +370,7 @@ public class FixedSummaryRowLayer extends SummaryRowLayer {
     public Collection<Range> underlyingToLocalColumnPositions(
             ILayer sourceUnderlyingLayer,
             Collection<Range> underlyingColumnPositionRanges) {
+
         if (sourceUnderlyingLayer == this.horizontalLayerDependency) {
             return underlyingColumnPositionRanges;
         }
