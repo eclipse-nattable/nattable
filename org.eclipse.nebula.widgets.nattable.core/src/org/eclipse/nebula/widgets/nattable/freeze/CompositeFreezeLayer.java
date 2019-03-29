@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,6 +22,7 @@ import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentIndexLayer;
 import org.eclipse.nebula.widgets.nattable.group.command.ViewportSelectColumnGroupCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
@@ -185,6 +186,71 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
         }
 
         return new Point(layoutX, layoutY);
+    }
+
+    /**
+     * This method is used to determine the bounds of a cell with column span in
+     * case of an active freeze. This is needed because column positions can be
+     * ambiguous if the start column of a spanned cell is moved below the frozen
+     * area.
+     *
+     * @param columnPosition
+     *            The column position that was used to retrieve the cell. Needed
+     *            to identify the origin layout in order to know if the start
+     *            needs to be searched in the frozen or the scrollable area.
+     * @param startColumn
+     *            The start column position of the spanned cell.
+     * @param endColumn
+     *            The end column position of the spanned cell.
+     * @return int array that contains the start x position of a cell in the
+     *         first element, and the width of the cell in the second element.
+     * @since 1.6
+     */
+    public int[] getColumnBounds(int columnPosition, int startColumn, int endColumn) {
+        int columnPositionLayout = getLayoutXByColumnPosition(columnPosition);
+        int startColumnLayout = getLayoutXByColumnPosition(startColumn);
+        int endColumnLayout = getLayoutXByColumnPosition(endColumn);
+
+        int start = startColumn;
+        int end = isFrozen() && endColumnLayout == 1 ? endColumn - this.viewportLayer.getScrollableLayer().getColumnPositionByX(this.viewportLayer.getOrigin().getX()) : endColumn;
+        ILayer startLayer = null;
+
+        int startX = 0;
+        int width = 0;
+        if (columnPositionLayout == endColumnLayout) {
+            // if a column in the same layout was requested where the end
+            // position is, we use the same layout for calculating start/end
+
+            if (endColumnLayout == 0 || startColumn == columnPosition) {
+                startX = getStartXOfColumnPosition(startColumn);
+                int column = startColumn;
+                for (; column <= endColumn; column++) {
+                    width += getColumnWidthByPosition(column);
+                }
+            } else {
+                startLayer = getChildLayerByLayoutCoordinate(endColumnLayout, 1);
+                start = start - this.viewportLayer.getMinimumOriginColumnPosition();
+                end = endColumn - this.viewportLayer.getMinimumOriginColumnPosition();
+                startX = this.freezeLayer.getWidth() + startLayer.getStartXOfColumnPosition(start);
+                int column = start;
+                for (; column <= end; column++) {
+                    width += this.viewportLayer.getColumnWidthByPosition(column);
+                }
+            }
+        } else {
+            startLayer = getChildLayerByLayoutCoordinate(startColumnLayout, 1);
+            startX = this.freezeLayer.getStartXOfColumnPosition(start);
+            int freezeWidth = 0;
+            int column = start;
+            for (; column < this.freezeLayer.getColumnCount(); column++) {
+                freezeWidth += this.freezeLayer.getColumnWidthByPosition(column);
+            }
+
+            int endX = this.freezeLayer.getWidth() + this.viewportLayer.getStartXOfColumnPosition(end) + this.viewportLayer.getColumnWidthByPosition(end);
+            width = Math.max(freezeWidth, endX - startX);
+        }
+
+        return new int[] { startX, width };
     }
 
     // Persistence

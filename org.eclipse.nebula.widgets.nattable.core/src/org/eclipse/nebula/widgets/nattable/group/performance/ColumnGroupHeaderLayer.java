@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
+import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentIndexLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentLayer;
@@ -71,6 +72,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Adds the column grouping functionality to the column header. Also persists
@@ -156,6 +158,13 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      * Map in which it is stored if reordering is supported per level.
      */
     private Map<Integer, Boolean> reorderSupportedOnLevel = new HashMap<Integer, Boolean>();
+
+    /**
+     * The {@link CompositeFreezeLayer} in case it is part of the layer
+     * composition. Needed to deal with groups in frozen state as column
+     * positions could get ambiguous on scrolling.
+     */
+    private CompositeFreezeLayer compositeFreezeLayer;
 
     /**
      * Creates a {@link ColumnGroupHeaderLayer} with the specified
@@ -388,7 +397,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
             this.reorderSupportedOnLevel.put(i, Boolean.TRUE);
         }
 
-        this.layerPath = findLayerPath(this);
+        this.layerPath = findLayerPath(this, 0);
         this.layerPainter = new ColumnGroupHeaderGridLineCellLayerPainter(this);
 
         // add listener on dependent layer to be notified about structural
@@ -500,7 +509,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *         given {@link ILayer} or <code>null</code> if a direct path is not
      *         available.
      */
-    List<ILayer> findLayerPath(ILayer layer) {
+    List<ILayer> findLayerPath(ILayer layer, int columnPosition) {
 
         if (layer == getPositionLayer()) {
             List<ILayer> result = new ArrayList<ILayer>();
@@ -508,23 +517,27 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
             return result;
         }
 
+        if (this.compositeFreezeLayer == null && layer instanceof CompositeFreezeLayer) {
+            this.compositeFreezeLayer = (CompositeFreezeLayer) layer;
+        }
+
         // handle collection
         List<ILayer> result = null;
-        Collection<ILayer> underlyingLayers = layer.getUnderlyingLayersByColumnPosition(0);
+        Collection<ILayer> underlyingLayers = layer.getUnderlyingLayersByColumnPosition(columnPosition);
         if (underlyingLayers != null) {
             for (ILayer underlyingLayer : underlyingLayers) {
                 if (underlyingLayer != null) {
-                    result = findLayerPath(underlyingLayer);
+                    result = findLayerPath(underlyingLayer, columnPosition);
                 }
             }
         }
 
         // handle horizontal dependency
         if (result == null && layer instanceof DimensionallyDependentLayer) {
-            result = findLayerPath(((DimensionallyDependentLayer) layer).getHorizontalLayerDependency());
+            result = findLayerPath(((DimensionallyDependentLayer) layer).getHorizontalLayerDependency(), columnPosition);
         }
         if (result == null && this.underlyingLayer instanceof DimensionallyDependentIndexLayer) {
-            result = findLayerPath(((DimensionallyDependentIndexLayer) layer).getHorizontalLayerDependency());
+            result = findLayerPath(((DimensionallyDependentIndexLayer) layer).getHorizontalLayerDependency(), columnPosition);
         }
 
         if (result != null) {
@@ -547,14 +560,15 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         // This could be for example when the CompositeFreezeLayer is in the
         // composition. At creation time the underlying layers would be empty
         // because the width is not yet calculated.
-        if (this.layerPath == null) {
-            this.layerPath = findLayerPath(this);
+        List<ILayer> path = this.layerPath;
+        if (path == null) {
+            path = findLayerPath(this, columnPosition);
         }
 
-        if (this.layerPath != null) {
-            for (int i = 0; i < this.layerPath.size() - 1; i++) {
-                ILayer underlying = this.layerPath.get(i);
-                ILayer upper = this.layerPath.get(i + 1);
+        if (path != null) {
+            for (int i = 0; i < path.size() - 1; i++) {
+                ILayer underlying = path.get(i);
+                ILayer upper = path.get(i + 1);
                 converted = upper.underlyingToLocalColumnPosition(underlying, converted);
             }
         }
@@ -777,13 +791,6 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
     // Cell features
 
-    /**
-     * If a cell belongs to a column group: column position - set to the start
-     * position of the group span - set to the width/size of the column group
-     *
-     * NOTE: gc.setClip() is used in the CompositeLayerPainter to ensure that
-     * partially visible Column group header cells are rendered properly.
-     */
     @Override
     public ILayerCell getCellByPosition(final int columnPosition, final int rowPosition) {
         // Column group header cell
@@ -944,6 +951,26 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
             }
             return cell;
         }
+    }
+
+    @Override
+    public Rectangle getBoundsByPosition(int columnPosition, int rowPosition) {
+        Rectangle bounds = super.getBoundsByPosition(columnPosition, rowPosition);
+        if (this.compositeFreezeLayer != null && this.compositeFreezeLayer.isFrozen()) {
+            // if we are have a composition with freeze and there is a freeze
+            // region active, we need to perform some special bound calculation
+            // because the origin column positions of a spanned cell could be
+            // ambiguous on scrolling
+            ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
+            int[] columnBounds = this.compositeFreezeLayer.getColumnBounds(
+                    columnPosition,
+                    cell.getOriginColumnPosition(),
+                    cell.getOriginColumnPosition() + cell.getColumnSpan() - 1);
+            bounds.x = columnBounds[0];
+            bounds.width = columnBounds[1];
+        }
+
+        return bounds;
     }
 
     /**
