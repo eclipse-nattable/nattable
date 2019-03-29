@@ -28,6 +28,15 @@ public class FreezePositionStrategy implements IFreezeCoordinatesProvider {
     }
 
     /**
+     * @param freezeLayer
+     *            The {@link FreezeLayer} for the {@link PositionCoordinate}.
+     * @param viewportLayer
+     *            The {@link ViewportLayer} needed to calculate the viewport
+     *            relative position.
+     * @param columnPosition
+     *            The column position based on the CompositeFreezeLayer.
+     * @param rowPosition
+     *            The row position based on the CompositeFreezeLayer.
      * @since 1.5
      */
     public FreezePositionStrategy(FreezeLayer freezeLayer, ViewportLayer viewportLayer, int columnPosition, int rowPosition) {

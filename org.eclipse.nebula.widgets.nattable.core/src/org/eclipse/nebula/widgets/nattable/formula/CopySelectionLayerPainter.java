@@ -222,6 +222,8 @@ public class CopySelectionLayerPainter extends SelectionLayerPainter {
      * @param configRegistry
      *            The {@link ConfigRegistry} to retrieve the style information
      *            from.
+     * @return The {@link BorderStyle} that should be used for rendering the
+     *         copy border.
      * @since 1.6
      */
     protected BorderStyle getCopyBorderStyle(IConfigRegistry configRegistry) {

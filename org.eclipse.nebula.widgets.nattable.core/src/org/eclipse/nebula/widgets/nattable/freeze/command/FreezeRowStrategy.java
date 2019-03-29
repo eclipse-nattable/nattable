@@ -26,6 +26,13 @@ public class FreezeRowStrategy implements IFreezeCoordinatesProvider {
     }
 
     /**
+     * @param freezeLayer
+     *            The {@link FreezeLayer} for the {@link PositionCoordinate}.
+     * @param viewportLayer
+     *            The {@link ViewportLayer} needed to calculate the viewport
+     *            relative position.
+     * @param rowPosition
+     *            The row position based on the CompositeFreezeLayer.
      * @since 1.5
      */
     public FreezeRowStrategy(FreezeLayer freezeLayer, ViewportLayer viewportLayer, int rowPosition) {
