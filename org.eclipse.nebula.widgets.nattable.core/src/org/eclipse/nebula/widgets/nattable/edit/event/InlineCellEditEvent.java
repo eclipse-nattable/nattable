@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,14 +29,9 @@ import org.eclipse.swt.widgets.Composite;
 public class InlineCellEditEvent implements ILayerEvent {
 
     /**
-     * The layer the cellCoordinates rely on. The layer will change on event
-     * processing to always match the translated coordinates.
-     */
-    private ILayer layer;
-    /**
      * The coordinates of the cell to edit for the set layer.
      */
-    private final PositionCoordinate cellCoordinate;
+    private PositionCoordinate cellCoordinate;
     /**
      * The parent Composite, needed for the creation of the editor control.
      */
@@ -55,6 +50,36 @@ public class InlineCellEditEvent implements ILayerEvent {
 
     /**
      *
+     * @param cellCoordinate
+     *            The coordinates of the cell to edit for the set layer.
+     * @param parent
+     *            The parent Composite, needed for the creation of the editor
+     *            control.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} containing the configuration of
+     *            the current NatTable instance the command should be executed
+     *            for. This is necessary because the edit controllers in the
+     *            current architecture are not aware of the instance they are
+     *            running in.
+     * @param initialValue
+     *            The value that should be put to the activated editor control.
+     * 
+     * @since 1.6
+     */
+    public InlineCellEditEvent(
+            PositionCoordinate cellCoordinate,
+            Composite parent,
+            IConfigRegistry configRegistry,
+            Object initialValue) {
+
+        this.cellCoordinate = cellCoordinate;
+        this.parent = parent;
+        this.configRegistry = configRegistry;
+        this.initialValue = initialValue;
+    }
+
+    /**
+     *
      * @param layer
      *            The layer the cellCoordinates rely on.
      * @param cellCoordinate
@@ -70,12 +95,16 @@ public class InlineCellEditEvent implements ILayerEvent {
      *            running in.
      * @param initialValue
      *            The value that should be put to the activated editor control.
+     * @deprecated use constructor without layer parameter
      */
-    public InlineCellEditEvent(ILayer layer, PositionCoordinate cellCoordinate,
-            Composite parent, IConfigRegistry configRegistry,
+    @Deprecated
+    public InlineCellEditEvent(
+            ILayer layer,
+            PositionCoordinate cellCoordinate,
+            Composite parent,
+            IConfigRegistry configRegistry,
             Object initialValue) {
 
-        this.layer = layer;
         this.cellCoordinate = cellCoordinate;
         this.parent = parent;
         this.configRegistry = configRegistry;
@@ -84,22 +113,17 @@ public class InlineCellEditEvent implements ILayerEvent {
 
     @Override
     public boolean convertToLocal(ILayer localLayer) {
-        this.cellCoordinate.columnPosition = localLayer
-                .underlyingToLocalColumnPosition(this.layer,
-                        this.cellCoordinate.columnPosition);
-        if (this.cellCoordinate.columnPosition < 0
-                || this.cellCoordinate.columnPosition >= localLayer.getColumnCount()) {
+        int convertedColumn = localLayer.underlyingToLocalColumnPosition(this.cellCoordinate.getLayer(), this.cellCoordinate.columnPosition);
+        int convertedRow = localLayer.underlyingToLocalRowPosition(this.cellCoordinate.getLayer(), this.cellCoordinate.rowPosition);
+
+        if (convertedColumn < 0
+                || convertedColumn >= localLayer.getColumnCount()
+                || convertedRow < 0
+                || convertedRow >= localLayer.getRowCount()) {
             return false;
         }
 
-        this.cellCoordinate.rowPosition = localLayer.underlyingToLocalRowPosition(
-                this.layer, this.cellCoordinate.rowPosition);
-        if (this.cellCoordinate.rowPosition < 0
-                || this.cellCoordinate.rowPosition >= localLayer.getRowCount()) {
-            return false;
-        }
-
-        this.layer = localLayer;
+        this.cellCoordinate = new PositionCoordinate(localLayer, convertedColumn, convertedRow);
         return true;
     }
 
@@ -144,8 +168,7 @@ public class InlineCellEditEvent implements ILayerEvent {
 
     @Override
     public InlineCellEditEvent cloneEvent() {
-        return new InlineCellEditEvent(this.layer, new PositionCoordinate(
-                this.cellCoordinate), this.parent, this.configRegistry, this.initialValue);
+        return new InlineCellEditEvent(new PositionCoordinate(this.cellCoordinate), this.parent, this.configRegistry, this.initialValue);
     }
 
 }
