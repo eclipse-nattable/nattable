@@ -234,8 +234,10 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
         // position would cause issues if rows are added or removed because
         // the value cache takes into account column and row position for
         // caching.
-        return this.valueCache.getCalculatedValue(columnPosition,
-                getSummaryRowPosition(), calculateInBackground,
+        return this.valueCache.getCalculatedValue(
+                columnPosition,
+                getSummaryRowPosition(),
+                calculateInBackground,
                 new ICalculator() {
 
                     @Override
@@ -259,20 +261,26 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
     }
 
     /**
+     * Checks if the given row position is the position of the summary row.
+     *
      * @param rowPosition
      *            The row position to check.
      * @return <code>true</code> if the given row position is the summary row
      *         position.
+     * @since 1.6
      */
-    private boolean isSummaryRowPosition(int rowPosition) {
+    public boolean isSummaryRowPosition(int rowPosition) {
         return rowPosition == getSummaryRowPosition();
     }
 
     /**
-     * @return The position of the summary row. In most cases
+     * Get the position of the summary row in this layer.
+     * 
+     * @return The position of the summary row. Typically
      *         <code>rowCount - 1</code>.
+     * @since 1.6
      */
-    private int getSummaryRowPosition() {
+    public int getSummaryRowPosition() {
         return getRowCount() - 1;
     }
 
