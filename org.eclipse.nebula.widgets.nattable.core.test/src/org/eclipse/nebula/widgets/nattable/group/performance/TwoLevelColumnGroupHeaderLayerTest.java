@@ -41,13 +41,18 @@ import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroup
 import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroupReorderEndCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroupReorderStartCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderEndCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderStartCommand;
+import org.eclipse.nebula.widgets.nattable.resize.command.MultiRowResizeCommand;
+import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
@@ -1436,5 +1441,130 @@ public class TwoLevelColumnGroupHeaderLayerTest {
         assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0, 5));
         assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0, 6));
         assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0, 7));
+    }
+
+    @Test
+    public void shouldSetGroupHeaderRowHeight() {
+        this.columnGroupHeaderLayer.setRowHeight(100);
+        assertEquals(100, this.gridLayer.getRowHeightByPosition(1));
+    }
+
+    @Test
+    public void shouldSetGroupHeaderRowHeightByLevel() {
+        this.columnGroupHeaderLayer.setRowHeight(this.columnGroupHeaderLayer.getRowPositionForLevel(1), 100);
+        assertEquals(100, this.gridLayer.getRowHeightByPosition(0));
+    }
+
+    @Test
+    public void shouldResizeColumnGroupHeaderRow() {
+        this.gridLayer.doCommand(new RowResizeCommand(this.gridLayer, 1, 100));
+        assertEquals(20, this.gridLayer.getRowHeightByPosition(0));
+        assertEquals(100, this.gridLayer.getRowHeightByPosition(1));
+    }
+
+    @Test
+    public void shouldResizeColumnGroupHeaderRowWithoutDownScale() {
+        IDpiConverter dpiConverter = new AbstractDpiConverter() {
+
+            @Override
+            protected void readDpiFromDisplay() {
+                this.dpi = 120;
+            }
+
+        };
+        this.gridLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+
+        // scaling enabled, therefore default height of 20 pixels is up scaled
+        // to 25
+        assertEquals(25, this.gridLayer.getRowHeightByPosition(0));
+
+        this.gridLayer.doCommand(new RowResizeCommand(this.gridLayer, 0, 100));
+        assertEquals(125, this.gridLayer.getRowHeightByPosition(0));
+        assertEquals(25, this.gridLayer.getRowHeightByPosition(1));
+    }
+
+    @Test
+    public void shouldResizeColumnGroupHeaderRowWithDownScale() {
+        IDpiConverter dpiConverter = new AbstractDpiConverter() {
+
+            @Override
+            protected void readDpiFromDisplay() {
+                this.dpi = 120;
+            }
+
+        };
+        this.gridLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+
+        // scaling enabled, therefore default height of 20 pixels is up scaled
+        // to 25
+        assertEquals(25, this.gridLayer.getRowHeightByPosition(0));
+
+        this.gridLayer.doCommand(new RowResizeCommand(this.gridLayer, 0, 100, true));
+
+        // down scaling in the command was enabled, therefore the value set is
+        // the value that will be returned
+        assertEquals(100, this.gridLayer.getRowHeightByPosition(0));
+        assertEquals(25, this.gridLayer.getRowHeightByPosition(1));
+    }
+
+    @Test
+    public void shouldMultiResizeColumnGroupHeaderRow() {
+        this.gridLayer.doCommand(new MultiRowResizeCommand(this.gridLayer, new int[] { 0, 1 }, 100));
+        assertEquals(100, this.gridLayer.getRowHeightByPosition(0));
+        assertEquals(100, this.gridLayer.getRowHeightByPosition(1));
+    }
+
+    @Test
+    public void shouldMultiResizeColumnGroupHeaderAndBody() {
+        this.gridLayer.doCommand(new MultiRowResizeCommand(this.gridLayer, new int[] { 0, 1, 2 }, 100));
+        assertEquals(100, this.gridLayer.getRowHeightByPosition(0));
+        assertEquals(100, this.gridLayer.getRowHeightByPosition(1));
+        assertEquals(100, this.gridLayer.getRowHeightByPosition(2));
+    }
+
+    @Test
+    public void shouldMultiResizeColumnGroupHeaderRowWithoutDownScale() {
+        IDpiConverter dpiConverter = new AbstractDpiConverter() {
+
+            @Override
+            protected void readDpiFromDisplay() {
+                this.dpi = 120;
+            }
+
+        };
+        this.gridLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+
+        // scaling enabled, therefore default height of 20 pixels is up scaled
+        // to 25
+        assertEquals(25, this.gridLayer.getRowHeightByPosition(0));
+
+        this.gridLayer.doCommand(new MultiRowResizeCommand(this.gridLayer, new int[] { 0, 1 }, 100));
+        assertEquals(125, this.gridLayer.getRowHeightByPosition(0));
+        assertEquals(125, this.gridLayer.getRowHeightByPosition(1));
+    }
+
+    @Test
+    public void shouldMultiResizeColumnGroupHeaderRowWithDownScale() {
+        ;
+        IDpiConverter dpiConverter = new AbstractDpiConverter() {
+
+            @Override
+            protected void readDpiFromDisplay() {
+                this.dpi = 120;
+            }
+
+        };
+        this.gridLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+
+        // scaling enabled, therefore default height of 20 pixels is up scaled
+        // to 25
+        assertEquals(25, this.gridLayer.getRowHeightByPosition(0));
+
+        this.gridLayer.doCommand(new MultiRowResizeCommand(this.gridLayer, new int[] { 0, 1 }, 100, true));
+
+        // down scaling in the command was enabled, therefore the value set is
+        // the value that will be returned
+        assertEquals(100, this.gridLayer.getRowHeightByPosition(0));
+        assertEquals(100, this.gridLayer.getRowHeightByPosition(1));
     }
 }

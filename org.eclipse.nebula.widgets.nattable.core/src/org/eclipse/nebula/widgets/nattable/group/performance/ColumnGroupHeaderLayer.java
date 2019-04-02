@@ -68,6 +68,9 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
+import org.eclipse.nebula.widgets.nattable.resize.command.MultiRowResizeCommand;
+import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
+import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -597,6 +600,27 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                 }
             }
             return true;
+        } else if (command instanceof RowResizeCommand && command.convertToTargetLayer(this)) {
+            RowResizeCommand rowResizeCommand = (RowResizeCommand) command;
+            int newRowHeight = rowResizeCommand.downScaleValue()
+                    ? this.rowHeightConfig.downScale(rowResizeCommand.getNewHeight())
+                    : rowResizeCommand.getNewHeight();
+
+            setRowHeight(rowResizeCommand.getRowPosition(), newRowHeight);
+            fireLayerEvent(new RowResizeEvent(this, rowResizeCommand.getRowPosition()));
+            return true;
+        } else if (command instanceof MultiRowResizeCommand && command.convertToTargetLayer(this)) {
+            MultiRowResizeCommand rowResizeCommand = (MultiRowResizeCommand) command;
+            for (int row : rowResizeCommand.getRowPositions()) {
+                int newRowHeight = rowResizeCommand.downScaleValue()
+                        ? this.rowHeightConfig.downScale(rowResizeCommand.getRowHeight(row))
+                        : rowResizeCommand.getRowHeight(row);
+
+                setRowHeight(row, newRowHeight);
+                fireLayerEvent(new RowResizeEvent(this, row));
+                // do not consume as additional rows might need to get updated
+                // too
+            }
         }
         return super.doCommand(command);
     }
@@ -714,13 +738,30 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         }
     }
 
-    // TODO verify scaling
+    /**
+     * Set the row height for grouping level 0.
+     *
+     * @param rowHeight
+     *            The height to set for grouping level 0.
+     */
     public void setRowHeight(int rowHeight) {
-        this.rowHeightConfig.setSize(0, rowHeight);
+        setRowHeight(getRowPositionForLevel(0), rowHeight);
     }
 
-    public void setRowHeight(int level, int rowHeight) {
-        this.rowHeightConfig.setSize(getRowPositionForLevel(level), rowHeight);
+    /**
+     * Set the row height for the given row in this layer.
+     * <p>
+     * <b>Note: </b> Use {@link #getLevelForRowPosition(int)} if the row
+     * position for a level needs to be determined.
+     * </p>
+     *
+     * @param row
+     *            The row whose height should be set.
+     * @param rowHeight
+     *            The height to set for the given row position.
+     */
+    public void setRowHeight(int row, int rowHeight) {
+        this.rowHeightConfig.setSize(row, rowHeight);
     }
 
     /**
