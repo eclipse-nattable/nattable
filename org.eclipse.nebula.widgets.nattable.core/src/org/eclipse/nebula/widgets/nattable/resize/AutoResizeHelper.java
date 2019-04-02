@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2018 Dirk Fauth.
+ * Copyright (c) 2015, 2019 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -231,6 +231,12 @@ public class AutoResizeHelper {
     }
 
     /**
+     * Reference to the currently active {@link AutoResizeRowRunnable} or
+     * <code>null</code> if no runnable is active.
+     */
+    private static AutoResizeRowRunnable activeRunnable;
+
+    /**
      * Trigger auto-resizing of rows based on the content of the whole row.
      *
      * @param natTable
@@ -252,60 +258,99 @@ public class AutoResizeHelper {
      * @since 1.6
      */
     public static void autoResizeRows(final NatTable natTable, final ILayer rowLayer, final ILayer bodyDataLayer) {
-        natTable.getDisplay().asyncExec(new Runnable() {
+        if (activeRunnable != null) {
+            // if a runnable is currently active we stop it to avoid
+            // inconsistent execution, e.g. a previous started runnable could
+            // not have been finished although in the meanwhile the state of the
+            // table has changed
+            activeRunnable.cancelled = true;
+        }
 
-            @Override
-            public void run() {
-                int rowCount = rowLayer.getRowCount();
-                if (rowCount > 0) {
-                    int[] rowPos = new int[rowCount];
-                    int[] rowHeights = new int[rowCount];
-                    for (int i = 0; i < rowCount; i++) {
-                        rowPos[i] = rowLayer.getRowIndexByPosition(i);
-                        rowHeights[i] = rowLayer.getRowHeightByPosition(i);
-                    }
+        activeRunnable = new AutoResizeRowRunnable(natTable, rowLayer, bodyDataLayer);
+        natTable.getDisplay().asyncExec(activeRunnable);
+    }
 
-                    int[] calculatedRowHeights = MaxCellBoundsHelper.getPreferredRowHeights(
-                            natTable.getConfigRegistry(),
-                            new GCFactory(natTable),
-                            bodyDataLayer,
-                            rowPos);
+    /**
+     * {@link Runnable} that is executed asynchronously to calculate the
+     * preferred height of the visible rows.
+     */
+    private static class AutoResizeRowRunnable implements Runnable {
 
-                    // only perform further actions if the heights could be
-                    // calculated
-                    // could fail and return null for example if the GCFactory
-                    // fails
-                    if (calculatedRowHeights != null) {
-                        // only perform row resize where necessary
-                        // avoid unnecessary commands
-                        final List<Integer> positions = new ArrayList<Integer>(rowPos.length);
-                        final List<Integer> heights = new ArrayList<Integer>(rowPos.length);
-                        for (int i = 0; i < rowPos.length; i++) {
-                            // we ignore resizing of negative calculated heights
-                            if (calculatedRowHeights[i] >= 0) {
-                                // on scaling there could be a difference of 1
-                                // pixel because of rounding issues.
-                                // in that case we do not trigger a resize to
-                                // avoid endless useless resizing
-                                int diff = rowHeights[i] - calculatedRowHeights[i];
-                                if (diff < -1 || diff > 1) {
-                                    positions.add(rowPos[i]);
-                                    heights.add(calculatedRowHeights[i]);
-                                }
+        private final NatTable natTable;
+        private final ILayer rowLayer;
+        private final ILayer bodyDataLayer;
+
+        private boolean cancelled = false;
+
+        public AutoResizeRowRunnable(NatTable natTable, ILayer rowLayer, ILayer bodyDataLayer) {
+            this.natTable = natTable;
+            this.rowLayer = rowLayer;
+            this.bodyDataLayer = bodyDataLayer;
+        }
+
+        @Override
+        public void run() {
+            int rowCount = this.rowLayer.getRowCount();
+            if (rowCount > 0) {
+                int[] rowPos = new int[rowCount];
+                int[] rowHeights = new int[rowCount];
+                for (int i = 0; i < rowCount; i++) {
+                    rowPos[i] = this.rowLayer.getRowIndexByPosition(i);
+                    rowHeights[i] = this.rowLayer.getRowHeightByPosition(i);
+                }
+
+                if (this.cancelled) {
+                    activeRunnable = null;
+                    return;
+                }
+
+                int[] calculatedRowHeights = MaxCellBoundsHelper.getPreferredRowHeights(
+                        this.natTable.getConfigRegistry(),
+                        new GCFactory(this.natTable),
+                        this.bodyDataLayer,
+                        rowPos);
+
+                // only perform further actions if the heights could be
+                // calculated
+                // could fail and return null for example if the GCFactory fails
+                if (calculatedRowHeights != null) {
+                    // only perform row resize where necessary
+                    // avoid unnecessary commands
+                    final List<Integer> positions = new ArrayList<Integer>(rowPos.length);
+                    final List<Integer> heights = new ArrayList<Integer>(rowPos.length);
+                    for (int i = 0; i < rowPos.length; i++) {
+
+                        if (this.cancelled) {
+                            activeRunnable = null;
+                            return;
+                        }
+
+                        // we ignore resizing of negative calculated heights
+                        if (calculatedRowHeights[i] >= 0) {
+                            // on scaling there could be a difference of 1
+                            // pixel because of rounding issues.
+                            // in that case we do not trigger a resize to
+                            // avoid endless useless resizing
+                            int diff = rowHeights[i] - calculatedRowHeights[i];
+                            if (diff < -1 || diff > 1) {
+                                positions.add(rowPos[i]);
+                                heights.add(calculatedRowHeights[i]);
                             }
                         }
+                    }
 
-                        if (!positions.isEmpty()) {
-                            bodyDataLayer.doCommand(
-                                    new MultiRowResizeCommand(
-                                            bodyDataLayer,
-                                            ObjectUtils.asIntArray(positions),
-                                            ObjectUtils.asIntArray(heights),
-                                            true));
-                        }
+                    if (!positions.isEmpty() && !this.cancelled) {
+                        this.bodyDataLayer.doCommand(
+                                new MultiRowResizeCommand(
+                                        this.bodyDataLayer,
+                                        ObjectUtils.asIntArray(positions),
+                                        ObjectUtils.asIntArray(heights),
+                                        true));
                     }
                 }
             }
-        });
+
+            activeRunnable = null;
+        }
     }
 }
