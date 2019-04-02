@@ -28,6 +28,7 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
+import org.eclipse.nebula.widgets.nattable.resize.command.MultiRowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -275,7 +276,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 
     /**
      * Get the position of the summary row in this layer.
-     * 
+     *
      * @return The position of the summary row. Typically
      *         <code>rowCount - 1</code>.
      * @since 1.6
@@ -296,6 +297,20 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
                 }
                 fireLayerEvent(new RowResizeEvent(this, getSummaryRowPosition()));
                 return true;
+            }
+        } else if (command instanceof MultiRowResizeCommand && command.convertToTargetLayer(this)) {
+            MultiRowResizeCommand rowResizeCommand = (MultiRowResizeCommand) command;
+            for (int row : rowResizeCommand.getRowPositions()) {
+                if (isSummaryRowPosition(row)) {
+                    if (rowResizeCommand.downScaleValue() && this.dpiConverter != null) {
+                        this.summaryRowHeight = this.dpiConverter.convertDpiToPixel(rowResizeCommand.getRowHeight(row));
+                    } else {
+                        this.summaryRowHeight = rowResizeCommand.getRowHeight(row);
+                    }
+                    fireLayerEvent(new RowResizeEvent(this, getSummaryRowPosition()));
+                    // do not consume as additional rows might need to get
+                    // updated too
+                }
             }
         } else if (command instanceof CalculateSummaryRowValuesCommand) {
             for (int i = 0; i < getColumnCount(); i++) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -81,11 +81,12 @@ public class MaxCellBoundsHelper {
      *            values.
      * @param gc
      *            The {@link GC} needed for UI related calculations.
-     * @return The preferred column width of the given column.
+     * @return The preferred column width of the given column or -1 if there are
+     *         no cells for the specified column position.
      */
     private static int getPreferredColumnWidth(ILayer layer, int columnPosition, IConfigRegistry configRegistry, GC gc) {
 
-        int maxWidth = 0;
+        int maxWidth = -1;
         ICellPainter painter;
         ILayerCell cell;
 
@@ -173,11 +174,12 @@ public class MaxCellBoundsHelper {
      *            values.
      * @param gc
      *            The {@link GC} needed for UI related calculations.
-     * @return The preferred row height of the given row.
+     * @return The preferred row height of the given row or -1 if there are no
+     *         cells for the specified row position.
      */
     private static int getPreferredRowHeight(ILayer layer, int rowPosition, IConfigRegistry configRegistry, GC gc) {
 
-        int maxHeight = 0;
+        int maxHeight = -1;
         ICellPainter painter;
         ILayerCell cell;
 

@@ -245,7 +245,9 @@ public class AutoResizeHelper {
      *            rows.
      * @param bodyDataLayer
      *            The {@link DataLayer} of the body region to inspect all
-     *            columns in a row, even if not visible in the viewport.
+     *            columns in a row, even if not visible in the viewport. Can
+     *            also be a higher level layer if it adds rows, e.g. the
+     *            SummaryRowLayer.
      *
      * @since 1.6
      */
@@ -254,46 +256,53 @@ public class AutoResizeHelper {
 
             @Override
             public void run() {
-                int[] rowPos = new int[rowLayer.getRowCount()];
-                int[] rowHeights = new int[rowLayer.getRowCount()];
-                for (int i = 0; i < rowLayer.getRowCount(); i++) {
-                    rowPos[i] = rowLayer.getRowIndexByPosition(i);
-                    rowHeights[i] = rowLayer.getRowHeightByPosition(i);
-                }
-
-                int[] calculatedRowHeights = MaxCellBoundsHelper.getPreferredRowHeights(
-                        natTable.getConfigRegistry(),
-                        new GCFactory(natTable),
-                        bodyDataLayer,
-                        rowPos);
-
-                // only perform further actions if the heights could be
-                // calculated
-                // could fail and return null for example if the GCFactory fails
-                if (calculatedRowHeights != null) {
-                    // only perform row resize where necessary
-                    // avoid unnecessary commands
-                    final List<Integer> positions = new ArrayList<Integer>(rowPos.length);
-                    final List<Integer> heights = new ArrayList<Integer>(rowPos.length);
-                    for (int i = 0; i < rowPos.length; i++) {
-                        // on scaling there could be a difference of 1 pixel
-                        // because of rounding issues.
-                        // in that case we do not trigger a resize to avoid
-                        // endless useless resizing
-                        int diff = rowHeights[i] - calculatedRowHeights[i];
-                        if (diff < -1 || diff > 1) {
-                            positions.add(rowPos[i]);
-                            heights.add(calculatedRowHeights[i]);
-                        }
+                int rowCount = rowLayer.getRowCount();
+                if (rowCount > 0) {
+                    int[] rowPos = new int[rowCount];
+                    int[] rowHeights = new int[rowCount];
+                    for (int i = 0; i < rowCount; i++) {
+                        rowPos[i] = rowLayer.getRowIndexByPosition(i);
+                        rowHeights[i] = rowLayer.getRowHeightByPosition(i);
                     }
 
-                    if (!positions.isEmpty()) {
-                        bodyDataLayer.doCommand(
-                                new MultiRowResizeCommand(
-                                        bodyDataLayer,
-                                        ObjectUtils.asIntArray(positions),
-                                        ObjectUtils.asIntArray(heights),
-                                        true));
+                    int[] calculatedRowHeights = MaxCellBoundsHelper.getPreferredRowHeights(
+                            natTable.getConfigRegistry(),
+                            new GCFactory(natTable),
+                            bodyDataLayer,
+                            rowPos);
+
+                    // only perform further actions if the heights could be
+                    // calculated
+                    // could fail and return null for example if the GCFactory
+                    // fails
+                    if (calculatedRowHeights != null) {
+                        // only perform row resize where necessary
+                        // avoid unnecessary commands
+                        final List<Integer> positions = new ArrayList<Integer>(rowPos.length);
+                        final List<Integer> heights = new ArrayList<Integer>(rowPos.length);
+                        for (int i = 0; i < rowPos.length; i++) {
+                            // we ignore resizing of negative calculated heights
+                            if (calculatedRowHeights[i] >= 0) {
+                                // on scaling there could be a difference of 1
+                                // pixel because of rounding issues.
+                                // in that case we do not trigger a resize to
+                                // avoid endless useless resizing
+                                int diff = rowHeights[i] - calculatedRowHeights[i];
+                                if (diff < -1 || diff > 1) {
+                                    positions.add(rowPos[i]);
+                                    heights.add(calculatedRowHeights[i]);
+                                }
+                            }
+                        }
+
+                        if (!positions.isEmpty()) {
+                            bodyDataLayer.doCommand(
+                                    new MultiRowResizeCommand(
+                                            bodyDataLayer,
+                                            ObjectUtils.asIntArray(positions),
+                                            ObjectUtils.asIntArray(heights),
+                                            true));
+                        }
                     }
                 }
             }
