@@ -12,8 +12,10 @@ package org.eclipse.nebula.widgets.nattable.summaryrow;
 
 import java.util.Collection;
 
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
@@ -236,6 +238,18 @@ public class FixedSummaryRowLayer extends SummaryRowLayer {
                 }
             });
         }
+    }
+
+    @Override
+    public boolean doCommand(ILayerCommand command) {
+        if (command instanceof ClientAreaResizeCommand) {
+            // we do not handle the command here as the fixed summary row is not
+            // responsible for handling scrollbars. we avoid further processing
+            // down the layer stack here, as the command could then get consumed
+            // too early in the body data layer.
+            return false;
+        }
+        return super.doCommand(command);
     }
 
     @Override
