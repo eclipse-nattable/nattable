@@ -950,19 +950,24 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                 }
             }
         } else {
-            // check if one row above has a group
-            int level = getLevelForRowPosition(rowPosition - 1);
 
-            Group group = null;
             int rowSpan = 1;
-            while (level < this.model.size()) {
-                group = getGroupByPosition(level, columnPosition);
-                if (group == null) {
-                    rowSpan++;
-                } else {
-                    break;
+            // check for special case if a column header data provider supports
+            // multiple rows
+            if (rowPosition - 1 < this.model.size()) {
+                // check if one row above has a group
+                int level = getLevelForRowPosition(rowPosition - 1);
+
+                Group group = null;
+                while (level < this.model.size()) {
+                    group = getGroupByPosition(level, columnPosition);
+                    if (group == null) {
+                        rowSpan++;
+                    } else {
+                        break;
+                    }
+                    level++;
                 }
-                level++;
             }
 
             final int span = rowSpan;
