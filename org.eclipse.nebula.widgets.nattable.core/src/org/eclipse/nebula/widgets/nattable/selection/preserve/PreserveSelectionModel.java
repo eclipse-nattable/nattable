@@ -39,6 +39,7 @@ import org.eclipse.nebula.widgets.nattable.selection.IMarkerSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionUtils;
 import org.eclipse.nebula.widgets.nattable.selection.preserve.Selections.CellPosition;
+import org.eclipse.nebula.widgets.nattable.selection.preserve.Selections.Row;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -52,9 +53,11 @@ import org.eclipse.swt.graphics.Rectangle;
 public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
 
     /**
-     * Provider of cell information
+     * Provider of cell information.
+     *
+     * @since 1.6
      */
-    private final IUniqueIndexLayer selectionLayer;
+    protected final IUniqueIndexLayer selectionLayer;
 
     /**
      * Provider of underlying row objects
@@ -149,9 +152,9 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
                 clearSelection();
             }
 
-            T rowObject = getRowObjectByPosition(rowPosition);
-            if (rowObject != null) {
-                Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
+            Serializable rowId = getRowIdByPosition(rowPosition);
+            if (rowId != null) {
+                T rowObject = getRowObjectByPosition(rowPosition);
                 this.selections.select(rowId, rowObject, columnPosition);
             }
         } finally {
@@ -174,10 +177,10 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
                 int numberOfVisibleRowsToBeSelected = getNumberOfRowsToBeSelected(range);
 
                 for (int rowPosition = startRowPosition; rowPosition < startRowPosition + numberOfVisibleRowsToBeSelected; rowPosition++) {
-                    T rowObject = getRowObjectByPosition(rowPosition);
-                    if (rowObject != null) {
-                        Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
-                        for (int columnPosition = startColumnPosition; columnPosition < startColumnPosition + numberOfVisibleColumnsToBeSelected; columnPosition++) {
+                    Serializable rowId = getRowIdByPosition(rowPosition);
+                    if (rowId != null) {
+                        T rowObject = getRowObjectByPosition(rowPosition);
+                        for (int columnPosition = startColumnPosition; columnPosition < (startColumnPosition + numberOfVisibleColumnsToBeSelected); columnPosition++) {
                             this.selections.select(rowId, rowObject, columnPosition);
                         }
                     }
@@ -203,9 +206,8 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public void clearSelection(int columnPosition, int rowPosition) {
         this.selectionsLock.writeLock().lock();
         try {
-            T rowObject = getRowObjectByPosition(rowPosition);
-            if (rowObject != null) {
-                Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
+            Serializable rowId = getRowIdByPosition(rowPosition);
+            if (rowId != null) {
                 this.selections.deselect(rowId, columnPosition);
             }
         } finally {
@@ -224,9 +226,8 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
                 int numberOfVisibleRowsToBeSelected = getNumberOfRowsToBeSelected(removedSelection);
 
                 for (int rowPosition = startRowPosition; rowPosition < startRowPosition + numberOfVisibleRowsToBeSelected; rowPosition++) {
-                    T rowObject = getRowObjectByPosition(rowPosition);
-                    if (rowObject != null) {
-                        Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
+                    Serializable rowId = getRowIdByPosition(rowPosition);
+                    if (rowId != null) {
                         for (int columnPosition = startColumnPosition; columnPosition < startColumnPosition + numberOfVisibleColumnsToBeSelected; columnPosition++) {
                             this.selections.deselect(rowId, columnPosition);
                         }
@@ -470,9 +471,8 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
 
         this.selectionsLock.readLock().lock();
         try {
-            T rowObject = getRowObjectByPosition(rowPosition);
-            if (rowObject != null) {
-                Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
+            Serializable rowId = getRowIdByPosition(rowPosition);
+            if (rowId != null) {
                 Selections.Row<T> selectedColumnsInRow = this.selections.getSelectedColumns(rowId);
                 if (hasRowSelectedColumns(selectedColumnsInRow)) {
                     for (Integer columnPosition : selectedColumnsInRow.getItems()) {
@@ -506,8 +506,10 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
      * @param rowPosition
      *            row position for retrieving row ID
      * @return row ID for rowPosition, or null if undefined
+     *
+     * @since 1.6
      */
-    private Serializable getRowIdByPosition(int rowPosition) {
+    protected Serializable getRowIdByPosition(int rowPosition) {
         T rowObject = getRowObjectByPosition(rowPosition);
         if (rowObject != null) {
             return this.rowIdAccessor.getRowId(rowObject);
@@ -540,8 +542,10 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
      * @param rowObject
      *            row object for retrieving row position
      * @return row position for rowObject, or -1 if undefined
+     *
+     * @since 1.6
      */
-    private int getRowPositionByRowObject(T rowObject) {
+    protected int getRowPositionByRowObject(T rowObject) {
         int rowIndex = this.rowDataProvider.indexOfRowObject(rowObject);
         if (rowIndex == -1) {
             return -1;
@@ -758,9 +762,11 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
             // need to check if the selected objects still exist
             Collection<Serializable> keysToRemove = new ArrayList<Serializable>();
             for (Selections.Row<T> row : this.selections.getRows()) {
-                int rowIndex = this.rowDataProvider.indexOfRowObject(row.getRowObject());
-                if (rowIndex == -1 || this.selectionLayer.getRowPositionByIndex(rowIndex) == -1) {
-                    keysToRemove.add(row.getId());
+                if (!ignoreVerticalChange(row)) {
+                    int rowIndex = this.rowDataProvider.indexOfRowObject(row.getRowObject());
+                    if (rowIndex == -1 || this.selectionLayer.getRowPositionByIndex(rowIndex) == -1) {
+                        keysToRemove.add(row.getId());
+                    }
                 }
             }
 
@@ -770,9 +776,27 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
         }
     }
 
+    /**
+     * Check if the default handling for vertical structure changes should be
+     * performed for the given {@link Row}, or if it should be skipped. Skipping
+     * for example would make sense for selections that are stored for rows that
+     * have no row data in the backing data structure, e.g. a summary row
+     * selection.
+     * 
+     * @param row
+     *            The internal selected row representation.
+     * @return <code>false</code> if the default handling for vertical changes
+     *         should be performed, <code>true</code> if the default handling
+     *         should be skipped.
+     *
+     * @since 1.6
+     */
+    protected boolean ignoreVerticalChange(Selections.Row<T> row) {
+        return false;
+    }
+
     @Override
     public Class<IStructuralChangeEvent> getLayerEventClass() {
         return IStructuralChangeEvent.class;
     }
-
 }
