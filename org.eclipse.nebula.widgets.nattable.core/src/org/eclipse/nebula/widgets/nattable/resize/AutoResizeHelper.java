@@ -234,7 +234,7 @@ public class AutoResizeHelper {
      * Reference to the currently active {@link AutoResizeRowRunnable} or
      * <code>null</code> if no runnable is active.
      */
-    private static AutoResizeRowRunnable activeRunnable;
+    private static volatile AutoResizeRowRunnable activeRunnable;
 
     /**
      * Trigger auto-resizing of rows based on the content of the whole row.
@@ -280,7 +280,7 @@ public class AutoResizeHelper {
         private final ILayer rowLayer;
         private final ILayer bodyDataLayer;
 
-        private boolean cancelled = false;
+        private volatile boolean cancelled = false;
 
         public AutoResizeRowRunnable(NatTable natTable, ILayer rowLayer, ILayer bodyDataLayer) {
             this.natTable = natTable;
