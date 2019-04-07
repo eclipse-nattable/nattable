@@ -35,6 +35,7 @@ import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
+import org.eclipse.nebula.widgets.nattable.freeze.IFreezeConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.freeze.config.DefaultFreezeGridBindings;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -55,6 +56,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
+import org.eclipse.nebula.widgets.nattable.painter.layer.CompositeFreezeLayerPainter;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -130,6 +132,18 @@ public class _816_EditableFixedSummaryRowWithFreezeExample extends AbstractNatEx
                 new SummaryRowGridLayer(dataProvider, configRegistry,
                         propertyNames, propertyToLabelMap, true);
 
+        // register a CompositeFreezeLayerPainter that renders also in the
+        // header regions by registering it on the GridLayer itself
+        CompositeFreezeLayerPainter painter = new CompositeFreezeLayerPainter(
+                gridLayerWithSummary,
+                ((SummaryRowBodyLayerStack) gridLayerWithSummary.getBodyLayer()).getCompositeFreezeLayer());
+        // in this composition we have in the body a composite with summary row
+        // on top and the composite freeze below. we therefore also need to add
+        // the summary row as nested vertical layer to shift the freeze border
+        // for the height of the summary row
+        painter.addNestedVerticalLayer(((SummaryRowBodyLayerStack) gridLayerWithSummary.getBodyLayer()).getSummaryRowLayer());
+        gridLayerWithSummary.setLayerPainter(painter);
+
         NatTable natTable = new NatTable(panel, gridLayerWithSummary, false);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 
@@ -148,6 +162,10 @@ public class _816_EditableFixedSummaryRowWithFreezeExample extends AbstractNatEx
                         CellConfigAttributes.DISPLAY_CONVERTER,
                         new DefaultIntegerDisplayConverter(),
                         DisplayMode.NORMAL);
+
+                configRegistry.registerConfigAttribute(
+                        IFreezeConfigAttributes.SEPARATOR_COLOR,
+                        GUIHelper.COLOR_RED);
             }
         });
         natTable.configure();
@@ -178,6 +196,23 @@ public class _816_EditableFixedSummaryRowWithFreezeExample extends AbstractNatEx
         composite.setChildLayer("GRID", gridLayer, 0, 0);
         composite.setChildLayer(SUMMARY_REGION, summaryRowLayer, 0, 1);
 
+        // register a CompositeFreezeLayerPainter that renders also in the
+        // header regions by registering it on the top CompositeLayer itself
+        // we configure the inspectComposite flag as false to avoid that the top
+        // and left positions in this CompositeLayer are inspected for the
+        // freeze line position
+        CompositeFreezeLayerPainter painter2 = new CompositeFreezeLayerPainter(
+                composite,
+                ((SummaryRowBodyLayerStack) gridLayer.getBodyLayer()).getCompositeFreezeLayer(),
+                false);
+
+        // now we configure the column header layer and the row header layer as
+        // nested layers to shift the freeze lines to left and to the bottom so
+        // they are correctly aligned.
+        painter2.addNestedVerticalLayer(gridLayer.getColumnHeaderLayer());
+        painter2.addNestedHorizontalLayer(gridLayer.getRowHeaderLayer());
+        composite.setLayerPainter(painter2);
+
         natTable = new NatTable(panel, composite, false);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 
@@ -201,7 +236,7 @@ public class _816_EditableFixedSummaryRowWithFreezeExample extends AbstractNatEx
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new DebugMenuConfiguration(natTable));
         natTable.addConfiguration(new DefaultFreezeGridBindings());
-        // add editing support
+        // add editing support and custom freeze border
         natTable.addConfiguration(new AbstractRegistryConfiguration() {
             @Override
             public void configureRegistry(IConfigRegistry configRegistry) {
@@ -212,6 +247,10 @@ public class _816_EditableFixedSummaryRowWithFreezeExample extends AbstractNatEx
                         CellConfigAttributes.DISPLAY_CONVERTER,
                         new DefaultIntegerDisplayConverter(),
                         DisplayMode.NORMAL);
+
+                configRegistry.registerConfigAttribute(
+                        IFreezeConfigAttributes.SEPARATOR_COLOR,
+                        GUIHelper.COLOR_RED);
             }
         });
         natTable.configure();
@@ -283,7 +322,7 @@ public class _816_EditableFixedSummaryRowWithFreezeExample extends AbstractNatEx
     class SummaryRowBodyLayerStack extends AbstractLayerTransform {
 
         private final DataLayer bodyDataLayer;
-        // private final SummaryRowLayer summaryRowLayer;
+        private FixedSummaryRowLayer summaryRowLayer;
         private final ColumnReorderLayer columnReorderLayer;
         private final ColumnHideShowLayer columnHideShowLayer;
         private final SelectionLayer selectionLayer;
@@ -306,17 +345,17 @@ public class _816_EditableFixedSummaryRowWithFreezeExample extends AbstractNatEx
                 // since the summary row should be fixed at the top of the body
                 // region the horizontal dependency of the FixedSummaryRowLayer
                 // is the CompositeFreezeLayer
-                FixedSummaryRowLayer summaryRowLayer =
+                this.summaryRowLayer =
                         new FixedSummaryRowLayer(this.bodyDataLayer, this.compositeFreezeLayer, configRegistry, false);
                 // because the horizontal dependency is the CompositeFreezeLayer
                 // we need to set the composite dependency to false
-                summaryRowLayer.setHorizontalCompositeDependency(false);
+                this.summaryRowLayer.setHorizontalCompositeDependency(false);
 
-                summaryRowLayer.addConfiguration(
+                this.summaryRowLayer.addConfiguration(
                         new ExampleSummaryRowGridConfiguration(this.bodyDataLayer.getDataProvider()));
 
                 CompositeLayer composite = new CompositeLayer(1, 2);
-                composite.setChildLayer(SUMMARY_REGION, summaryRowLayer, 0, 0);
+                composite.setChildLayer(SUMMARY_REGION, this.summaryRowLayer, 0, 0);
                 composite.setChildLayer(GridRegion.BODY, this.compositeFreezeLayer, 0, 1);
 
                 setUnderlyingLayer(composite);
@@ -341,6 +380,10 @@ public class _816_EditableFixedSummaryRowWithFreezeExample extends AbstractNatEx
 
         public CompositeFreezeLayer getCompositeFreezeLayer() {
             return this.compositeFreezeLayer;
+        }
+
+        public FixedSummaryRowLayer getSummaryRowLayer() {
+            return this.summaryRowLayer;
         }
     }
 

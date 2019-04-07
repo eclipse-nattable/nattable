@@ -10,6 +10,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.layer;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.IFreezeConfigAttributes;
@@ -38,11 +41,23 @@ public class CompositeFreezeLayerPainter extends CompositeLayerPainter {
     private CompositeLayer compositeLayer;
     private CompositeFreezeLayer compositeFreezeLayer;
     private ILayer freezeLayer;
+    private boolean inspectComposite = true;
 
     /**
-     * Creates a {@link CompositeFreezeLayerPainter} that can be set on a
-     * {@link CompositeLayer} that contains a {@link CompositeFreezeLayer}. This
-     * way the freeze border will be rendered also on the adjacent regions.
+     * ILayer that should be used to shift the freeze border down in case of
+     * nested composite layers, e.g. with fixed summary rows.
+     */
+    private final Collection<ILayer> nestedVerticalLayers = new ArrayList<ILayer>();
+    /**
+     * ILayer that should be used to shift the freeze border to the right in
+     * case of nested composite layers.
+     */
+    private final Collection<ILayer> nestedHorizontalLayers = new ArrayList<ILayer>();
+
+    /**
+     * Creates a {@link CompositeFreezeLayerPainter} that can be set directly on
+     * a {@link CompositeFreezeLayer}. This way the freeze border will be
+     * rendered only inside the {@link CompositeFreezeLayer}.
      *
      * @param compositeFreezeLayer
      *            The {@link CompositeFreezeLayer} for rendering the freeze
@@ -57,7 +72,11 @@ public class CompositeFreezeLayerPainter extends CompositeLayerPainter {
     /**
      * Creates a {@link CompositeFreezeLayerPainter} that can be set on a
      * {@link CompositeLayer} that contains a {@link CompositeFreezeLayer}. This
-     * way the freeze border will be rendered also on the adjacent regions.
+     * way the freeze border will be rendered also on the adjacent regions. For
+     * this typically the given {@link #compositeLayer} is inspected and the
+     * freeze border is moved by the width/height of the first layers on top and
+     * to the left, as we do not know the needed offset values on the higher
+     * level composition.
      *
      * @param compositeLayer
      *            The top level {@link CompositeLayer}, e.g. a GridLayer.
@@ -66,10 +85,44 @@ public class CompositeFreezeLayerPainter extends CompositeLayerPainter {
      *            border.
      */
     public CompositeFreezeLayerPainter(CompositeLayer compositeLayer, CompositeFreezeLayer compositeFreezeLayer) {
+        this(compositeLayer, compositeFreezeLayer, true);
+    }
+
+    /**
+     * Creates a {@link CompositeFreezeLayerPainter} that can be set on a
+     * {@link CompositeLayer} that contains a {@link CompositeFreezeLayer}. This
+     * way the freeze border will be rendered also on the adjacent regions. For
+     * this typically the given {@link #compositeLayer} is inspected and the
+     * freeze border is moved by the width/height of the first layers on top and
+     * to the left, as we do not know the needed offset values on the higher
+     * level composition.
+     * <p>
+     * <b>Note: </b> Via the <code>inspectComposite</code> parameter the
+     * behavior in more complex layer compositions with nested CompositeLayer
+     * can be adjusted.
+     * </p>
+     *
+     * @param compositeLayer
+     *            The top level {@link CompositeLayer}, e.g. a GridLayer.
+     * @param compositeFreezeLayer
+     *            The {@link CompositeFreezeLayer} for rendering the freeze
+     *            border.
+     * @param inspectComposite
+     *            <code>true</code> if the given {@link #compositeLayer} should
+     *            be inspected for the position of the freeze border,
+     *            <code>false</code> if not. Default is <code>true</code>.
+     *            Remember to add nested layers to manually configure the freeze
+     *            border shift when setting this value to <code>false</code>.
+     * 
+     * @see #addNestedVerticalLayer(ILayer)
+     * @see #addNestedHorizontalLayer(ILayer)
+     */
+    public CompositeFreezeLayerPainter(CompositeLayer compositeLayer, CompositeFreezeLayer compositeFreezeLayer, boolean inspectComposite) {
         compositeLayer.super();
         this.compositeLayer = compositeLayer;
         this.compositeFreezeLayer = compositeFreezeLayer;
         this.freezeLayer = compositeFreezeLayer.getChildLayerByLayoutCoordinate(0, 0);
+        this.inspectComposite = inspectComposite;
     }
 
     @Override
@@ -156,8 +209,11 @@ public class CompositeFreezeLayerPainter extends CompositeLayerPainter {
      */
     protected int getFreezeX(int xOffset) {
         int result = xOffset + this.freezeLayer.getWidth() - 1;
-        if (this.compositeLayer != null && this.compositeLayer.getLayoutXCount() > 1) {
+        if (this.compositeLayer != null && this.inspectComposite && this.compositeLayer.getLayoutXCount() > 1) {
             result += this.compositeLayer.getChildLayerByLayoutCoordinate(0, 0).getWidth();
+        }
+        for (ILayer nested : this.nestedHorizontalLayers) {
+            result += nested.getWidth();
         }
         return result;
     }
@@ -171,9 +227,40 @@ public class CompositeFreezeLayerPainter extends CompositeLayerPainter {
      */
     protected int getFreezeY(int yOffset) {
         int result = yOffset + this.freezeLayer.getHeight() - 1;
-        if (this.compositeLayer != null && this.compositeLayer.getLayoutYCount() > 1) {
+        if (this.compositeLayer != null && this.inspectComposite && this.compositeLayer.getLayoutYCount() > 1) {
             result += this.compositeLayer.getChildLayerByLayoutCoordinate(0, 0).getHeight();
         }
+        for (ILayer nested : this.nestedVerticalLayers) {
+            result += nested.getHeight();
+        }
         return result;
+    }
+
+    /**
+     * Adds the given layer to the list of nested vertical layers that are used
+     * to shift the freeze border down. Needed in case of nested compositions,
+     * e.g. using a fixed summary row in the body region.
+     *
+     * @param layer
+     *            The {@link ILayer} to add.
+     */
+    public void addNestedVerticalLayer(ILayer layer) {
+        if (layer != null) {
+            this.nestedVerticalLayers.add(layer);
+        }
+    }
+
+    /**
+     * Adds the given layer to the list of nested horizontal layers that are
+     * used to shift the freeze border to the right. Needed in case of nested
+     * compositions in the body region.
+     *
+     * @param layer
+     *            The {@link ILayer} to add.
+     */
+    public void addNestedHorizontalLayer(ILayer layer) {
+        if (layer != null) {
+            this.nestedHorizontalLayers.add(layer);
+        }
     }
 }
