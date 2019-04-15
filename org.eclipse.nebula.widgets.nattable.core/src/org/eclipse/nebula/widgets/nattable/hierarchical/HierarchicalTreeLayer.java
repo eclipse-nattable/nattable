@@ -37,6 +37,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowPositionHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
+import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorConstants;
 import org.eclipse.nebula.widgets.nattable.hierarchical.command.HierarchicalTreeCollapseAllCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hierarchical.command.HierarchicalTreeExpandAllCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hierarchical.command.HierarchicalTreeExpandCollapseCommandHandler;
@@ -567,7 +568,14 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
     public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
         // for level header we do not need to call super
         if (isLevelHeaderColumn(columnPosition)) {
-            return new LabelStack(LEVEL_HEADER_CELL);
+            LabelStack labelStack = new LabelStack(LEVEL_HEADER_CELL);
+            // if all cells in the last level are hidden, we need to add the
+            // hide indicator to the level header
+            if (columnPosition + 1 == getColumnCount()
+                    || getStartXOfColumnPosition(columnPosition + 1) == getWidth()) {
+                labelStack.addLabel(HideIndicatorConstants.COLUMN_RIGHT_HIDDEN);
+            }
+            return labelStack;
         }
 
         LabelStack configLabels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
@@ -1673,8 +1681,13 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
             if (isLevelHeaderColumn(columnPosition)) {
                 // get the underlying start of the next column and reduce the
                 // header width afterwards
-                int start = getStartXOfColumnPosition(columnPosition + 1);
-                return start - getScaledLevelHeaderWidth();
+                if (columnPosition + 1 < getColumnCount()) {
+                    int start = getStartXOfColumnPosition(columnPosition + 1);
+                    return start - getScaledLevelHeaderWidth();
+                } else {
+                    int start = getStartXOfColumnPosition(columnPosition - 1);
+                    return start + getColumnWidthByPosition(columnPosition - 1);
+                }
             }
             int start = super.getStartXOfColumnPosition(columnPosition);
             for (int pos : this.levelHeaderPositions) {

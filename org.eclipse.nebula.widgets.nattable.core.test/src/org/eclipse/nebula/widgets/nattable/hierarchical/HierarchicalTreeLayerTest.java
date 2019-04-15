@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
+ * Copyright (c) 2018, 2019 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -43,6 +43,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsComman
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
+import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorConstants;
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalTreeLayer.HierarchicalTreeNode;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -2006,6 +2007,21 @@ public class HierarchicalTreeLayerTest {
         assertTrue(this.treeLayer.isLevelHeaderColumn(0));
         assertTrue(this.treeLayer.isLevelHeaderColumn(1));
         assertTrue(this.treeLayer.isLevelHeaderColumn(2));
+    }
+
+    @Test
+    public void testHideAllColumnsInLastLevel() {
+        assertEquals(9, this.treeLayer.getColumnCount());
+        assertTrue(this.treeLayer.doCommand(new MultiColumnHideCommand(this.treeLayer, 7, 8)));
+        assertEquals(7, this.treeLayer.getColumnCount());
+        assertTrue(this.treeLayer.isLevelHeaderColumn(6));
+
+        // check hide indicator
+        LabelStack labelStack = this.treeLayer.getConfigLabelsByPosition(6, 0);
+        assertTrue(labelStack.hasLabel(HideIndicatorConstants.COLUMN_RIGHT_HIDDEN));
+
+        // check start position
+        assertEquals(440, this.treeLayer.getStartXOfColumnPosition(6));
     }
 
     @Test
