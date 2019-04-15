@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -176,79 +176,40 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
         BorderCell[][] borderCells;
         boolean atLeastOne = false;
 
-        int columnPositionOffset = positionRectangle.x;
-        int rowPositionOffset = positionRectangle.y;
+        // we are going to read also adjacent cells in the extremities to ensure
+        // that external borders are rendered correctly for single cell updates
+        int columnPositionOffset = positionRectangle.x - 1;
+        int rowPositionOffset = positionRectangle.y - 1;
+        int columnPositionEnd = columnPositionOffset + positionRectangle.width + 2;
+        int rowPositionEnd = rowPositionOffset + positionRectangle.height + 2;
 
-        // tentative way to know that this is a single cell update
-        if (positionRectangle.width <= 2 && positionRectangle.height <= 2) {
+        borderCells = new BorderCell[positionRectangle.height + 2][positionRectangle.width + 2];
 
-            // In order to correctly paint the selection borders in case of
-            // single cell updates we need to consider also the adjacent cells.
-            // Therefore we try to retrieve also cells that are outside the
-            // pixelRectangle but still inside our layer.
+        for (int columnPosition = columnPositionOffset, ix = 0; columnPosition < columnPositionEnd; columnPosition++, ix++) {
+            for (int rowPosition = rowPositionOffset, iy = 0; rowPosition < rowPositionEnd; rowPosition++, iy++) {
 
-            // +2 because we are going to read also adjacent cells in the
-            // extremities
-            borderCells = new BorderCell[positionRectangle.height + 2][positionRectangle.width + 2];
+                boolean insideBorder = false;
+                Rectangle cellBounds = null;
 
-            // -1/+1 because we are going to read also adjacent cells in the
-            // extremities
-            for (int columnPosition = columnPositionOffset - 1, ix = 0; columnPosition < columnPositionOffset + positionRectangle.width + 1; columnPosition++, ix++) {
-                for (int rowPosition = rowPositionOffset - 1, iy = 0; rowPosition < rowPositionOffset + positionRectangle.height + 1; rowPosition++, iy++) {
+                ILayerCell currentCell = natLayer.getCellByPosition(columnPosition, rowPosition);
+                if (currentCell != null) {
 
-                    boolean insideBorder = false;
-                    Rectangle cellBounds = null;
+                    // In case of spanned cells the border painter needs to
+                    // know the bounds of adjacent cells even if they are
+                    // not selected. This is the reason why we get the
+                    // bounds also for non selected cells.
 
-                    ILayerCell currentCell = natLayer.getCellByPosition(columnPosition, rowPosition);
-                    if (currentCell != null) {
+                    cellBounds = currentCell.getBounds();
 
-                        cellBounds = currentCell.getBounds();
-
-                        // the cell should be considered only if it is in our
-                        // layer
-                        boolean toBeConsidered = isInCurrentLayer(ix, iy, xOffset, yOffset, cellBounds, borderCells);
-
-                        if (toBeConsidered && function.applyBorder(currentCell)) {
-                            insideBorder = true;
-                            atLeastOne = true;
-                        }
+                    if (function.applyBorder(currentCell)) {
+                        insideBorder = true;
+                        atLeastOne = true;
                     }
-
-                    Rectangle fixedBounds = fixBoundsInGridLines(cellBounds, xOffset, yOffset);
-                    BorderCell borderCell = new BorderCell(fixedBounds, insideBorder);
-                    borderCells[iy][ix] = borderCell;
                 }
-            }
-        } else {
 
-            borderCells = new BorderCell[positionRectangle.height][positionRectangle.width];
-
-            for (int columnPosition = columnPositionOffset, ix = 0; columnPosition < columnPositionOffset + positionRectangle.width; columnPosition++, ix++) {
-                for (int rowPosition = rowPositionOffset, iy = 0; rowPosition < rowPositionOffset + positionRectangle.height; rowPosition++, iy++) {
-
-                    boolean insideBorder = false;
-                    Rectangle cellBounds = null;
-
-                    ILayerCell currentCell = natLayer.getCellByPosition(columnPosition, rowPosition);
-                    if (currentCell != null) {
-
-                        // In case of spanned cells the border painter needs to
-                        // know the bounds of adjacent cells even if they are
-                        // not selected. This is the reason why we get the
-                        // bounds also for non selected cells.
-
-                        cellBounds = currentCell.getBounds();
-
-                        if (function.applyBorder(currentCell)) {
-                            insideBorder = true;
-                            atLeastOne = true;
-                        }
-                    }
-
-                    Rectangle fixedBounds = fixBoundsInGridLines(cellBounds, xOffset, yOffset);
-                    BorderCell borderCell = new BorderCell(fixedBounds, insideBorder);
-                    borderCells[iy][ix] = borderCell;
-                }
+                Rectangle fixedBounds = fixBoundsInGridLines(cellBounds, xOffset, yOffset);
+                BorderCell borderCell = new BorderCell(fixedBounds, insideBorder);
+                borderCells[iy][ix] = borderCell;
             }
         }
 

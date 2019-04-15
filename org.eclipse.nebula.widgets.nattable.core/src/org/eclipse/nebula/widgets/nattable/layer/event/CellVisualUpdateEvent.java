@@ -1,17 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2019 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer.event;
 
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 /**
  * Specialization of the CellVisualChangeEvent. The only difference is the
@@ -22,9 +23,6 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
  * the specified cell itself. This is for example necessary for hover styling,
  * where redrawing everything is not necessary and would cause lags in applying
  * hover styling.
- *
- * @author Dirk Fauth
- *
  */
 public class CellVisualUpdateEvent extends CellVisualChangeEvent {
 
@@ -38,8 +36,7 @@ public class CellVisualUpdateEvent extends CellVisualChangeEvent {
      * @param rowPosition
      *            The row position of the cell that needs to be redrawn.
      */
-    public CellVisualUpdateEvent(ILayer layer, int columnPosition,
-            int rowPosition) {
+    public CellVisualUpdateEvent(ILayer layer, int columnPosition, int rowPosition) {
         super(layer, columnPosition, rowPosition);
     }
 
@@ -61,16 +58,39 @@ public class CellVisualUpdateEvent extends CellVisualChangeEvent {
 
     @Override
     public boolean convertToLocal(ILayer localLayer) {
+        int columnPos = this.columnPosition;
+        int rowPos = this.rowPosition;
+
         if (!(localLayer instanceof DimensionallyDependentLayer)) {
-            this.columnPosition = localLayer.underlyingToLocalColumnPosition(
-                    getLayer(), this.columnPosition);
-            this.rowPosition = localLayer.underlyingToLocalRowPosition(getLayer(),
-                    this.rowPosition);
+            columnPos = localLayer.underlyingToLocalColumnPosition(getLayer(), this.columnPosition);
+            rowPos = localLayer.underlyingToLocalRowPosition(getLayer(), this.rowPosition);
         }
 
+        if (columnPos < 0 || rowPos < 0) {
+            ILayerCell cell = getLayer().getCellByPosition(this.columnPosition, this.rowPosition);
+            if (cell != null && cell.isSpannedCell()) {
+                // check if a cell in the spanning is still valid
+                for (int column = cell.getOriginColumnPosition(); column < cell.getOriginColumnPosition() + cell.getColumnSpan(); column++) {
+                    columnPos = localLayer.underlyingToLocalColumnPosition(getLayer(), column);
+                    if (columnPos >= 0) {
+                        break;
+                    }
+                }
+                for (int row = cell.getOriginRowPosition(); row < cell.getOriginRowPosition() + cell.getRowSpan(); row++) {
+                    rowPos = localLayer.underlyingToLocalRowPosition(getLayer(), row);
+                    if (rowPos >= 0) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        this.columnPosition = columnPos;
+        this.rowPosition = rowPos;
         this.layer = localLayer;
 
-        return this.columnPosition >= 0 && this.rowPosition >= 0
+        return this.columnPosition >= 0
+                && this.rowPosition >= 0
                 && this.columnPosition < this.layer.getColumnCount()
                 && this.rowPosition < this.layer.getRowCount();
     }

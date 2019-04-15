@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -558,11 +558,21 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
      *            row position of the cell to repaint
      */
     public void repaintCell(int columnPosition, int rowPosition) {
-        int xOffset = getStartXOfColumnPosition(columnPosition);
-        int yOffset = getStartYOfRowPosition(rowPosition);
-
-        redraw(xOffset, yOffset, getColumnWidthByPosition(columnPosition),
-                getRowHeightByPosition(rowPosition), true);
+        ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
+        if (cell != null) {
+            Rectangle bounds = cell.getBounds();
+            redraw(bounds.x,
+                    bounds.y,
+                    bounds.width,
+                    bounds.height,
+                    true);
+        } else {
+            redraw(getStartXOfColumnPosition(columnPosition),
+                    getStartYOfRowPosition(rowPosition),
+                    getColumnWidthByPosition(columnPosition),
+                    getRowHeightByPosition(rowPosition),
+                    true);
+        }
     }
 
     /**

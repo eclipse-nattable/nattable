@@ -43,7 +43,6 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
-import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiColumnResizeCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiRowResizeCommand;
@@ -153,11 +152,6 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
         }
         this.selectionModel = selectionModel != null ? selectionModel : new SelectionModel(this);
         registerEventHandler(this.selectionModel);
-    }
-
-    @Override
-    public ILayerPainter getLayerPainter() {
-        return this.layerPainter;
     }
 
     public void addSelection(Rectangle selection) {

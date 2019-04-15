@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2019 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hover;
 
@@ -15,6 +15,7 @@ import org.eclipse.nebula.widgets.nattable.hover.command.HoverStylingCommandHand
 import org.eclipse.nebula.widgets.nattable.hover.config.BodyHoverStylingBindings;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.swt.graphics.Point;
@@ -37,9 +38,6 @@ import org.eclipse.swt.graphics.Point;
  * configuration. This is because the row and column headers by default have
  * mouse move listeners registered that collide with the mouse move listener for
  * managing hover behaviour.
- *
- * @author Dirk Fauth
- *
  */
 public class HoverLayer extends AbstractIndexLayerTransform {
 
@@ -67,12 +65,12 @@ public class HoverLayer extends AbstractIndexLayerTransform {
      *            <code>false</code> if a different configuration will be set
      *            after creation time.
      */
-    public HoverLayer(IUniqueIndexLayer underlyingLayer,
-            boolean useDefaultConfiguration) {
+    public HoverLayer(IUniqueIndexLayer underlyingLayer, boolean useDefaultConfiguration) {
         super(underlyingLayer);
 
-        if (useDefaultConfiguration)
+        if (useDefaultConfiguration) {
             addConfiguration(new BodyHoverStylingBindings(this));
+        }
 
         registerCommandHandler(new HoverStylingCommandHandler(this));
         registerCommandHandler(new ClearHoverStylingCommandHandler(this));
@@ -112,8 +110,14 @@ public class HoverLayer extends AbstractIndexLayerTransform {
      *         the cell at the given position, <code>false</code> if not.
      */
     public boolean isCellPositionHovered(int columnPosition, int rowPosition) {
-        return (this.currentHoveredCellPosition != null
-                && this.currentHoveredCellPosition.x == columnPosition && this.currentHoveredCellPosition.y == rowPosition);
+        if (this.currentHoveredCellPosition != null) {
+            ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
+            if (cell != null) {
+                return (this.currentHoveredCellPosition.x == cell.getOriginColumnPosition()
+                        && this.currentHoveredCellPosition.y == cell.getOriginRowPosition());
+            }
+        }
+        return false;
     }
 
     /**
@@ -134,8 +138,7 @@ public class HoverLayer extends AbstractIndexLayerTransform {
      * @param rowPosition
      *            The row position of the cell that is currently hovered.
      */
-    public void setCurrentHoveredCellPosition(int columnPosition,
-            int rowPosition) {
+    public void setCurrentHoveredCellPosition(int columnPosition, int rowPosition) {
         setCurrentHoveredCellPosition(new Point(columnPosition, rowPosition));
     }
 
@@ -152,11 +155,14 @@ public class HoverLayer extends AbstractIndexLayerTransform {
         if (!isCellPositionHovered(cellPosition)) {
             Point oldHover = this.currentHoveredCellPosition;
 
-            this.currentHoveredCellPosition = cellPosition;
+            ILayerCell cell = getCellByPosition(cellPosition.x, cellPosition.y);
+            if (cell != null) {
+                this.currentHoveredCellPosition =
+                        new Point(cell.getOriginColumnPosition(), cell.getOriginRowPosition());
+            }
 
             if (oldHover != null) {
-                fireLayerEvent(new CellVisualUpdateEvent(this, oldHover.x,
-                        oldHover.y));
+                fireLayerEvent(new CellVisualUpdateEvent(this, oldHover.x, oldHover.y));
             }
             fireLayerEvent(new CellVisualUpdateEvent(this,
                     this.currentHoveredCellPosition.x,
@@ -173,8 +179,7 @@ public class HoverLayer extends AbstractIndexLayerTransform {
         if (this.currentHoveredCellPosition != null) {
             Point oldHover = this.currentHoveredCellPosition;
             this.currentHoveredCellPosition = null;
-            fireLayerEvent(new CellVisualUpdateEvent(this, oldHover.x,
-                    oldHover.y));
+            fireLayerEvent(new CellVisualUpdateEvent(this, oldHover.x, oldHover.y));
         }
     }
 }

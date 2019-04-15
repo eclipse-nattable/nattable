@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
+ * Copyright (c) 2018, 2019 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -42,6 +42,8 @@ import org.eclipse.nebula.widgets.nattable.hierarchical.command.HierarchicalTree
 import org.eclipse.nebula.widgets.nattable.hierarchical.command.HierarchicalTreeExpandCollapseCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hierarchical.command.HierarchicalTreeExpandToLevelCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hierarchical.config.DefaultHierarchicalTreeLayerConfiguration;
+import org.eclipse.nebula.widgets.nattable.hover.command.ClearHoverStylingCommand;
+import org.eclipse.nebula.widgets.nattable.hover.command.HoverStylingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
@@ -458,6 +460,12 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
                     return super.doCommand(new RowPositionHideCommand(this, cmd.getColumnPosition() + 1, cmd.getRowPosition()));
                 } else {
                     return doCommand(new RowHideCommand(this, cmd.getRowPosition()));
+                }
+            } else if (command instanceof HoverStylingCommand) {
+                // when hovering over a level header we simply clear hover
+                // styling
+                if (isLevelHeaderColumn(((HoverStylingCommand) command).getColumnPosition())) {
+                    return super.doCommand(new ClearHoverStylingCommand());
                 }
             }
         }

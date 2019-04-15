@@ -11,12 +11,14 @@
 package org.eclipse.nebula.widgets.nattable.hover.config;
 
 import org.eclipse.nebula.widgets.nattable.config.AggregateConfiguration;
+import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
 import org.eclipse.nebula.widgets.nattable.layer.config.DefaultColumnHeaderStyleConfiguration;
 
 /**
  * Setup for the column header area to support column resizing and hover
- * styling.
+ * styling. Needs to be registered with the {@link ColumnHeaderLayer} instead of
+ * the default configuration to work correctly.
  */
 public class ColumnHeaderHoverLayerConfiguration extends AggregateConfiguration {
 
