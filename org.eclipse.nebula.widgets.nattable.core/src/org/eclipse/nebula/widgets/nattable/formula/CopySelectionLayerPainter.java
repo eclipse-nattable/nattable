@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2018 CEA LIST.
+ * Copyright (c) 2015, 2019 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,9 +12,12 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.formula;
 
+import org.eclipse.nebula.widgets.nattable.command.LayerCommandUtil;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.ColumnPositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.coordinate.RowPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -141,11 +144,38 @@ public class CopySelectionLayerPainter extends SelectionLayerPainter {
 
                 @Override
                 public boolean applyBorder(ILayerCell cell) {
-                    for (ILayerCell[] cells : CopySelectionLayerPainter.this.clipboard.getCopiedCells()) {
-                        for (ILayerCell copyCell : cells) {
-                            if (copyCell.getColumnIndex() == cell.getColumnIndex()
-                                    && copyCell.getRowIndex() == cell.getRowIndex()) {
-                                return true;
+                    if (cell.getColumnIndex() >= 0
+                            && cell.getRowIndex() >= 0) {
+                        ColumnPositionCoordinate convertedColumn = null;
+                        RowPositionCoordinate convertedRow = null;
+                        ILayerCell convertedCell = null;
+                        boolean convertedCalculated = false;
+
+                        for (ILayerCell[] cells : CopySelectionLayerPainter.this.clipboard.getCopiedCells()) {
+                            for (ILayerCell copyCell : cells) {
+                                if (copyCell != null) {
+                                    if (!convertedCalculated) {
+                                        convertedColumn = LayerCommandUtil.convertColumnPositionToTargetContext(
+                                                new ColumnPositionCoordinate(cell.getLayer(), cell.getColumnPosition()),
+                                                copyCell.getLayer());
+                                        convertedRow = LayerCommandUtil.convertRowPositionToTargetContext(
+                                                new RowPositionCoordinate(cell.getLayer(), cell.getRowPosition()),
+                                                copyCell.getLayer());
+                                        if (convertedColumn != null
+                                                && convertedRow != null) {
+                                            convertedCell = convertedColumn.getLayer().getCellByPosition(
+                                                    convertedColumn.getColumnPosition(),
+                                                    convertedRow.getRowPosition());
+                                        }
+                                        convertedCalculated = true;
+                                    }
+
+                                    if (convertedCell != null
+                                            && convertedCell.getOriginColumnPosition() == copyCell.getOriginColumnPosition()
+                                            && convertedCell.getOriginRowPosition() == copyCell.getOriginRowPosition()) {
+                                        return true;
+                                    }
+                                }
                             }
                         }
                     }
