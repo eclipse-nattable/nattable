@@ -176,14 +176,26 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
         BorderCell[][] borderCells;
         boolean atLeastOne = false;
 
+        int columnPositionOffset = positionRectangle.x;
+        int columnPositionEnd = columnPositionOffset + positionRectangle.width;
+        int rectangleWidth = positionRectangle.width;
+        if ((positionRectangle.width + positionRectangle.x) < natLayer.getColumnCount()) {
+            columnPositionOffset--;
+            columnPositionEnd++;
+            rectangleWidth += 2;
+        }
         // we are going to read also adjacent cells in the extremities to ensure
         // that external borders are rendered correctly for single cell updates
-        int columnPositionOffset = positionRectangle.x - 1;
-        int rowPositionOffset = positionRectangle.y - 1;
-        int columnPositionEnd = columnPositionOffset + positionRectangle.width + 2;
-        int rowPositionEnd = rowPositionOffset + positionRectangle.height + 2;
+        int rowPositionOffset = positionRectangle.y;
+        int rowPositionEnd = rowPositionOffset + positionRectangle.height;
+        int rectangleHeight = positionRectangle.height;
+        if ((positionRectangle.height + positionRectangle.y) < natLayer.getRowCount()) {
+            rowPositionOffset--;
+            rowPositionEnd++;
+            rectangleHeight += 2;
+        }
 
-        borderCells = new BorderCell[positionRectangle.height + 2][positionRectangle.width + 2];
+        borderCells = new BorderCell[rectangleHeight][rectangleWidth];
 
         for (int columnPosition = columnPositionOffset, ix = 0; columnPosition < columnPositionEnd; columnPosition++, ix++) {
             for (int rowPosition = rowPositionOffset, iy = 0; rowPosition < rowPositionEnd; rowPosition++, iy++) {
