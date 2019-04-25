@@ -63,6 +63,8 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CellPainterDec
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.search.event.SearchEvent;
+import org.eclipse.nebula.widgets.nattable.selection.ITraversalStrategy;
+import org.eclipse.nebula.widgets.nattable.selection.MoveCellSelectionCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectColumnCommand;
@@ -343,6 +345,15 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
         registerCommandHandler(new HierarchicalTreeExpandAllCommandHandler(this));
         registerCommandHandler(new HierarchicalTreeCollapseAllCommandHandler(this));
         registerCommandHandler(new HierarchicalTreeExpandToLevelCommandHandler(this));
+
+        // register a specialized MoveCellSelectionCommandHandler to ensure that
+        // the selection movement is always performed on visible cells
+        if (this.selectionLayer != null) {
+            registerCommandHandler(
+                    new MoveCellSelectionCommandHandler(
+                            this.selectionLayer,
+                            new HierarchicalTraversalStrategy(ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY, this)));
+        }
     }
 
     @Override

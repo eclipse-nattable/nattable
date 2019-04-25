@@ -274,9 +274,18 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     }
 
     /**
-     * When extending a selected area we need to start adding cells from the
-     * last selected cell. If we are not extending a selection we need to move
-     * from the selection <i>anchor</i>.
+     * When extending a selected area via modifier keys, we need to move from
+     * the last selected cell. If we are not extending a selection we need to
+     * move from the <i>selection anchor</i>.
+     * 
+     * @param withShiftMask
+     *            <code>true</code> if the shift mask is active,
+     *            <code>false</code> if not.
+     * @param withControlMask
+     *            <code>true</code> if the shift mask is active,
+     *            <code>false</code> if not.
+     * @return The cell position coordinate related to this SelectionLayer, from
+     *         where to move from.
      */
     protected PositionCoordinate getCellPositionToMoveFrom(boolean withShiftMask, boolean withControlMask) {
         return (!withShiftMask && !withControlMask) ? getSelectionAnchor() : getLastSelectedCellPosition();
