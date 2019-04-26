@@ -124,8 +124,8 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
             @Override
             public boolean applyBorder(ILayerCell cell) {
                 // only cells below the offset that are selected
-                return (cell.getOriginColumnPosition() >= columnOffset
-                        && cell.getOriginRowPosition() >= rowOffset)
+                return (cell.getColumnPosition() >= columnOffset
+                        && cell.getRowPosition() >= rowOffset)
                         && (cell.getDisplayMode() == DisplayMode.SELECT
                                 || cell.getDisplayMode() == DisplayMode.SELECT_HOVER);
             }
