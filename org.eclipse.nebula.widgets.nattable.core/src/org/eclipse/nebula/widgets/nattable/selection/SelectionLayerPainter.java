@@ -117,12 +117,17 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
             return;
         }
 
+        final int columnOffset = natLayer.getColumnPositionByX(xOffset);
+        final int rowOffset = natLayer.getRowPositionByY(yOffset);
         BorderCell[][] borderCells = getBorderCells(natLayer, xOffset, yOffset, positionRectangle, new ApplyBorderFunction() {
 
             @Override
             public boolean applyBorder(ILayerCell cell) {
-                return (cell.getDisplayMode() == DisplayMode.SELECT
-                        || cell.getDisplayMode() == DisplayMode.SELECT_HOVER);
+                // only cells below the offset that are selected
+                return (cell.getOriginColumnPosition() >= columnOffset
+                        && cell.getOriginRowPosition() >= rowOffset)
+                        && (cell.getDisplayMode() == DisplayMode.SELECT
+                                || cell.getDisplayMode() == DisplayMode.SELECT_HOVER);
             }
         });
 
@@ -179,7 +184,7 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
         int columnPositionOffset = positionRectangle.x;
         int columnPositionEnd = columnPositionOffset + positionRectangle.width;
         int rectangleWidth = positionRectangle.width;
-        if ((positionRectangle.width + positionRectangle.x) < natLayer.getColumnCount()) {
+        if ((positionRectangle.width + positionRectangle.x) <= natLayer.getColumnCount()) {
             columnPositionOffset--;
             columnPositionEnd++;
             rectangleWidth += 2;
@@ -189,7 +194,7 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
         int rowPositionOffset = positionRectangle.y;
         int rowPositionEnd = rowPositionOffset + positionRectangle.height;
         int rectangleHeight = positionRectangle.height;
-        if ((positionRectangle.height + positionRectangle.y) < natLayer.getRowCount()) {
+        if ((positionRectangle.height + positionRectangle.y) <= natLayer.getRowCount()) {
             rowPositionOffset--;
             rowPositionEnd++;
             rectangleHeight += 2;
