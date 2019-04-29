@@ -794,7 +794,8 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
         // first perform a check if any position in the row is selected
         // better performance in case of no selection
         if (this.selectionLayer != null) {
-            int selectionLayerRowPosition = LayerUtil.convertRowPosition(this, rowPosition, this.selectionLayer);
+            ILayerCell headerCell = getCellByPosition(levelHeaderColumnPosition, rowPosition);
+            int selectionLayerRowPosition = LayerUtil.convertRowPosition(this, headerCell.getOriginRowPosition(), this.selectionLayer);
             if (this.selectionLayer.isRowPositionSelected(selectionLayerRowPosition)) {
                 int level = 0;
                 for (int i = 0; i < this.levelHeaderPositions.length; i++) {
