@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2019 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -61,19 +61,21 @@ public class FormulaFillHandleDragMode extends FillHandleDragMode {
             Class<?> type = null;
             for (ILayerCell[] cells : this.clipboard.getCopiedCells()) {
                 for (ILayerCell cell : cells) {
-                    if (cell.getDataValue() == null) {
-                        return false;
-                    } else {
-                        if (type == null) {
-                            type = cell.getDataValue().getClass();
-                            if (!Number.class.isAssignableFrom(type)
-                                    && !Date.class.isAssignableFrom(type)
-                                    && (String.class.isAssignableFrom(type)
-                                            && !this.dataProvider.getFormulaParser().isNumber((String) cell.getDataValue()))) {
+                    if (cell != null) {
+                        if (cell.getDataValue() == null) {
+                            return false;
+                        } else {
+                            if (type == null) {
+                                type = cell.getDataValue().getClass();
+                                if (!Number.class.isAssignableFrom(type)
+                                        && !Date.class.isAssignableFrom(type)
+                                        && (String.class.isAssignableFrom(type)
+                                                && !this.dataProvider.getFormulaParser().isNumber((String) cell.getDataValue()))) {
+                                    return false;
+                                }
+                            } else if (type != cell.getDataValue().getClass()) {
                                 return false;
                             }
-                        } else if (type != cell.getDataValue().getClass()) {
-                            return false;
                         }
                     }
                 }

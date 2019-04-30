@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2019 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -140,50 +140,55 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
      * @return The value that should be set to the given position.
      */
     protected Object getPasteValue(ILayerCell cell, FillHandlePasteCommand command, int toColumn, int toRow) {
-        switch (command.operation) {
-            case COPY:
-                return cell.getDataValue();
-            case SERIES:
-                Object diff = 0;
-                if (command.direction == MoveDirectionEnum.LEFT || command.direction == MoveDirectionEnum.RIGHT) {
-                    diff = calculateVerticalDiff(cell, toColumn, command.configRegistry);
-                } else if (command.direction == MoveDirectionEnum.UP || command.direction == MoveDirectionEnum.DOWN) {
-                    diff = calculateHorizontalDiff(cell, toRow, command.configRegistry);
-                }
-                Object value = cell.getDataValue();
-                // if we can not determine a common diff value we perform a copy
-                if (diff != null) {
-                    if (value instanceof Byte) {
-                        byte result = (byte) (((Byte) value).byteValue() + (Byte) diff);
-                        return result;
-                    } else if (value instanceof Short) {
-                        short result = (short) (((Short) value).shortValue() + (Short) diff);
-                        return result;
-                    } else if (value instanceof Integer) {
-                        return (Integer) value + (Integer) diff;
-                    } else if (value instanceof Long) {
-                        return (Long) value + (Long) diff;
-                    } else if (value instanceof Float) {
-                        return (Float) value + (Float) diff;
-                    } else if (value instanceof Double) {
-                        return (Double) value + (Double) diff;
-                    } else if (value instanceof BigInteger) {
-                        return ((BigInteger) value).add((BigInteger) diff);
-                    } else if (value instanceof BigDecimal) {
-                        return ((BigDecimal) value).add((BigDecimal) diff);
-                    } else if (value instanceof Date) {
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTime((Date) value);
-                        cal.add(getIncrementDateField(cell, command.configRegistry), (Integer) diff);
-                        return cal.getTime();
+        if (cell != null) {
+            switch (command.operation) {
+                case COPY:
+                    return cell.getDataValue();
+                case SERIES:
+                    Object diff = 0;
+                    if (command.direction == MoveDirectionEnum.LEFT || command.direction == MoveDirectionEnum.RIGHT) {
+                        diff = calculateVerticalDiff(cell, toColumn, command.configRegistry);
+                    } else if (command.direction == MoveDirectionEnum.UP || command.direction == MoveDirectionEnum.DOWN) {
+                        diff = calculateHorizontalDiff(cell, toRow, command.configRegistry);
                     }
-                }
-                // if the value is neither a number nor a date simply return the
-                // value as we can't calculate a series for other data types
-                return value;
-            default:
-                return cell.getDataValue();
+                    Object value = cell.getDataValue();
+                    // if we can not determine a common diff value we perform a
+                    // copy
+                    if (diff != null) {
+                        if (value instanceof Byte) {
+                            byte result = (byte) (((Byte) value).byteValue() + (Byte) diff);
+                            return result;
+                        } else if (value instanceof Short) {
+                            short result = (short) (((Short) value).shortValue() + (Short) diff);
+                            return result;
+                        } else if (value instanceof Integer) {
+                            return (Integer) value + (Integer) diff;
+                        } else if (value instanceof Long) {
+                            return (Long) value + (Long) diff;
+                        } else if (value instanceof Float) {
+                            return (Float) value + (Float) diff;
+                        } else if (value instanceof Double) {
+                            return (Double) value + (Double) diff;
+                        } else if (value instanceof BigInteger) {
+                            return ((BigInteger) value).add((BigInteger) diff);
+                        } else if (value instanceof BigDecimal) {
+                            return ((BigDecimal) value).add((BigDecimal) diff);
+                        } else if (value instanceof Date) {
+                            Calendar cal = Calendar.getInstance();
+                            cal.setTime((Date) value);
+                            cal.add(getIncrementDateField(cell, command.configRegistry), (Integer) diff);
+                            return cal.getTime();
+                        }
+                    }
+                    // if the value is neither a number nor a date simply return
+                    // the value as we can't calculate a series for other data
+                    // types
+                    return value;
+                default:
+                    return cell.getDataValue();
+            }
         }
+        return null;
     }
 
     protected Number calculateHorizontalDiff(ILayerCell cell, int toRow, IConfigRegistry configRegistry) {
@@ -502,30 +507,49 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
     }
 
     protected Byte calculateByteDiff(ILayerCell c1, ILayerCell c2) {
+        if (c1 == null || c2 == null) {
+            return null;
+        }
         return (c1.getDataValue() == null || c2.getDataValue() == null
                 || !(c1.getDataValue() instanceof Byte) || !(c2.getDataValue() instanceof Byte))
-                        ? null : (byte) (((Byte) c1.getDataValue()) - ((Byte) c2.getDataValue()));
+                        ? null
+                        : (byte) (((Byte) c1.getDataValue()) - ((Byte) c2.getDataValue()));
     }
 
     protected Short calculateShortDiff(ILayerCell c1, ILayerCell c2) {
+        if (c1 == null || c2 == null) {
+            return null;
+        }
         return (c1.getDataValue() == null || c2.getDataValue() == null
                 || !(c1.getDataValue() instanceof Short) || !(c2.getDataValue() instanceof Short))
-                        ? null : (short) (((Short) c1.getDataValue()) - ((Short) c2.getDataValue()));
+                        ? null
+                        : (short) (((Short) c1.getDataValue()) - ((Short) c2.getDataValue()));
     }
 
     protected Integer calculateIntDiff(ILayerCell c1, ILayerCell c2) {
+        if (c1 == null || c2 == null) {
+            return null;
+        }
         return (c1.getDataValue() == null || c2.getDataValue() == null
                 || !(c1.getDataValue() instanceof Integer) || !(c2.getDataValue() instanceof Integer))
-                        ? null : (Integer) (c1.getDataValue()) - (Integer) (c2.getDataValue());
+                        ? null
+                        : (Integer) (c1.getDataValue()) - (Integer) (c2.getDataValue());
     }
 
     protected Long calculateLongDiff(ILayerCell c1, ILayerCell c2) {
+        if (c1 == null || c2 == null) {
+            return null;
+        }
         return (c1.getDataValue() == null || c2.getDataValue() == null
                 || !(c1.getDataValue() instanceof Long) || !(c2.getDataValue() instanceof Long))
-                        ? null : ((Long) c1.getDataValue()) - ((Long) c2.getDataValue());
+                        ? null
+                        : ((Long) c1.getDataValue()) - ((Long) c2.getDataValue());
     }
 
     protected Float calculateFloatDiff(ILayerCell c1, ILayerCell c2) {
+        if (c1 == null || c2 == null) {
+            return null;
+        }
         if (c1.getDataValue() == null || c2.getDataValue() == null
                 || !(c1.getDataValue() instanceof Float) || !(c2.getDataValue() instanceof Float)) {
             return null;
@@ -540,6 +564,9 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
     }
 
     protected Double calculateDoubleDiff(ILayerCell c1, ILayerCell c2) {
+        if (c1 == null || c2 == null) {
+            return null;
+        }
         if (c1.getDataValue() == null || c2.getDataValue() == null
                 || !(c1.getDataValue() instanceof Double) || !(c2.getDataValue() instanceof Double)) {
             return null;
@@ -554,18 +581,29 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
     }
 
     protected BigInteger calculateBigIntegerDiff(ILayerCell c1, ILayerCell c2) {
+        if (c1 == null || c2 == null) {
+            return null;
+        }
         return (c1.getDataValue() == null || c2.getDataValue() == null
                 || !(c1.getDataValue() instanceof BigInteger) || !(c2.getDataValue() instanceof BigInteger))
-                        ? null : ((BigInteger) c1.getDataValue()).subtract((BigInteger) c2.getDataValue());
+                        ? null
+                        : ((BigInteger) c1.getDataValue()).subtract((BigInteger) c2.getDataValue());
     }
 
     protected BigDecimal calculateBigDecimalDiff(ILayerCell c1, ILayerCell c2) {
+        if (c1 == null || c2 == null) {
+            return null;
+        }
         return (c1.getDataValue() == null || c2.getDataValue() == null
                 || !(c1.getDataValue() instanceof BigDecimal) || !(c2.getDataValue() instanceof BigDecimal))
-                        ? null : ((BigDecimal) c1.getDataValue()).subtract((BigDecimal) c2.getDataValue());
+                        ? null
+                        : ((BigDecimal) c1.getDataValue()).subtract((BigDecimal) c2.getDataValue());
     }
 
     protected Integer calculateDateDiff(ILayerCell c1, ILayerCell c2, IConfigRegistry configRegistry) {
+        if (c1 == null || c2 == null) {
+            return null;
+        }
         if (c1.getDataValue() == null || c2.getDataValue() == null
                 || !(c1.getDataValue() instanceof Date) || !(c2.getDataValue() instanceof Date)) {
             return null;

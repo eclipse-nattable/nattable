@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2019 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -71,7 +71,7 @@ public class FormulaFillHandlePasteCommandHandler extends FillHandlePasteCommand
 
     @Override
     protected Object getPasteValue(ILayerCell cell, FillHandlePasteCommand command, int toColumn, int toRow) {
-        Object cellValue = cell.getDataValue();
+        Object cellValue = (cell != null) ? cell.getDataValue() : null;
         if (cellValue != null && this.dataProvider.getFormulaParser().isFunction(cellValue.toString())) {
             try {
                 cellValue = this.dataProvider.getFormulaParser().updateReferences(
@@ -107,7 +107,7 @@ public class FormulaFillHandlePasteCommandHandler extends FillHandlePasteCommand
     @Override
     protected BigDecimal calculateBigDecimalDiff(ILayerCell c1, ILayerCell c2) {
         BigDecimal result = null;
-        if (c1.getDataValue() != null && c2.getDataValue() != null) {
+        if (c1 != null && c2 != null && c1.getDataValue() != null && c2.getDataValue() != null) {
             BigDecimal v1 = null;
             if (c1.getDataValue() instanceof BigDecimal) {
                 v1 = (BigDecimal) c1.getDataValue();

@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2018 CEA LIST.
+ * Copyright (c) 2015, 2019 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,6 +13,7 @@
 package org.eclipse.nebula.widgets.nattable.copy.command;
 
 import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionUtils;
@@ -45,28 +46,30 @@ public class InternalCopyDataCommandHandler extends CopyDataCommandHandler {
     }
 
     @Override
-    public boolean doCommand(CopyDataToClipboardCommand command) {
+    protected void internalDoCommand(CopyDataToClipboardCommand command, ILayerCell[][] assembledCopiedDataStructure) {
         // copy to clipboard
-        super.doCommand(command);
+        super.internalDoCommand(command, assembledCopiedDataStructure);
 
         // only copy if contiguous cells
         if (SelectionUtils.hasConsecutiveSelection(this.selectionLayer)) {
             preInternalCopy();
 
             // remember cells to copy to support paste
+            // we need to re-assemble the data structure to copy because
+            // preInternalCopy() could have changed the data, e.g. for formula
+            // resolution
             this.clipboard.setCopiedCells(assembleCopiedDataStructure());
 
             postInternalCopy();
         }
-
-        return true;
     }
 
     /**
      * Perform actions prior copying values to the internal clipboard. E.g.
      * disabling formula evaluation.
      */
-    protected void preInternalCopy() {}
+    protected void preInternalCopy() {
+    }
 
     /**
      * Perform actions after copying values to the internal clipboard. E.g.

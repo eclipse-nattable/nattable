@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2018 CEA LIST and others.
+ * Copyright (c) 2015, 2019 CEA LIST and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -373,7 +373,8 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
             public boolean applyBorder(ILayerCell cell) {
                 for (ILayerCell[] cells : FillHandleLayerPainter.this.clipboard.getCopiedCells()) {
                     for (ILayerCell copyCell : cells) {
-                        if (copyCell.getColumnIndex() == cell.getColumnIndex()
+                        if (copyCell != null
+                                && copyCell.getColumnIndex() == cell.getColumnIndex()
                                 && copyCell.getRowIndex() == cell.getRowIndex()) {
                             return true;
                         }

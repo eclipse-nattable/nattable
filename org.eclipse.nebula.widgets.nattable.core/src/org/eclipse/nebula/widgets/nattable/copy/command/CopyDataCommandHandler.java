@@ -12,9 +12,9 @@
 package org.eclipse.nebula.widgets.nattable.copy.command;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -98,9 +98,10 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
      *            The row header layer within the NatTable grid. Can be
      *            <code>null</code>.
      */
-    public CopyDataCommandHandler(SelectionLayer selectionLayer,
-            ILayer columnHeaderLayer, ILayer rowHeaderLayer) {
-        assert selectionLayer != null : "The SelectionLayer can not be null on creating a CopyDataCommandHandler"; //$NON-NLS-1$
+    public CopyDataCommandHandler(SelectionLayer selectionLayer, ILayer columnHeaderLayer, ILayer rowHeaderLayer) {
+        if (selectionLayer == null) {
+            throw new IllegalArgumentException("The SelectionLayer can not be null on creating a CopyDataCommandHandler"); //$NON-NLS-1$
+        }
         this.selectionLayer = selectionLayer;
         this.columnHeaderLayer = columnHeaderLayer;
         this.rowHeaderLayer = rowHeaderLayer;
@@ -137,11 +138,27 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
 
     @Override
     public boolean doCommand(CopyDataToClipboardCommand command) {
-        ISerializer serializer = this.copyFormattedText
-                ? new CopyFormattedTextToClipboardSerializer(assembleCopiedDataStructure(), command)
-                : new CopyDataToClipboardSerializer(assembleCopiedDataStructure(), command);
-        serializer.serialize();
+        internalDoCommand(command, assembleCopiedDataStructure());
         return true;
+    }
+
+    /**
+     * Internal implementation of the command handling that additionally takes
+     * the assembled data structure to copy as parameter to avoid multiple
+     * assemble operations.
+     *
+     * @param command
+     *            The {@link CopyDataToClipboardCommand} to handle.
+     * @param assembledCopiedDataStructure
+     *            The assembled data structure to copy.
+     *
+     * @since 1.6
+     */
+    protected void internalDoCommand(CopyDataToClipboardCommand command, ILayerCell[][] assembledCopiedDataStructure) {
+        ISerializer serializer = this.copyFormattedText
+                ? new CopyFormattedTextToClipboardSerializer(assembledCopiedDataStructure, command)
+                : new CopyDataToClipboardSerializer(assembledCopiedDataStructure, command);
+        serializer.serialize();
     }
 
     @Override
@@ -160,13 +177,20 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
      */
     protected ILayerCell[][] assembleCopiedDataStructure() {
         final Set<Range> selectedRows = this.selectionLayer.getSelectedRowPositions();
-        final ILayerCell[][] copiedCells = assembleColumnHeaders();
+        final List<ILayerCell[]> copiedCells = new ArrayList<ILayerCell[]>();
+
+        final ILayerCell[][] columnHeaderCells = assembleColumnHeaders();
+        for (ILayerCell[] cells : columnHeaderCells) {
+            if (!isEmpty(cells)) {
+                copiedCells.add(cells);
+            }
+        }
 
         // cleanup the row positions to copy
         // this is needed because taking only the Range.start into account leads
         // to overriding values in the array instead of adding if there are
         // multiple Ranges returned
-        List<Integer> selectedRowPositions = new ArrayList<Integer>();
+        Set<Integer> selectedRowPositions = new TreeSet<Integer>();
         for (Range range : selectedRows) {
             for (int rowPosition = range.start; rowPosition < range.end; rowPosition++) {
                 if (this.selectionLayer.getRowHeightByPosition(rowPosition) > 0) {
@@ -174,17 +198,25 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
                 }
             }
         }
-        // ensure the correct order as a Set is not ordered at all and we want
-        // to paste the values in the same order we copied them.
-        Collections.sort(selectedRowPositions);
 
-        final int rowOffset = this.columnHeaderLayer != null ? this.columnHeaderLayer.getRowCount() : 0;
-        for (int i = 0; i < selectedRowPositions.size(); i++) {
-            Integer rowPos = selectedRowPositions.get(i);
-            copiedCells[i + rowOffset] = assembleBody(rowPos);
+        for (int rowPos : selectedRowPositions) {
+            ILayerCell[] body = assembleBody(rowPos);
+            if (body != null) {
+                copiedCells.add(body);
+            }
         }
 
-        return copiedCells;
+        ILayerCell[][] result = new ILayerCell[copiedCells.size()][1];
+        ILayerCell[] cells = null;
+        boolean atLeastOne = false;
+        for (int i = 0; i < copiedCells.size(); i++) {
+            cells = copiedCells.get(i);
+            if (!atLeastOne && !isEmpty(cells)) {
+                atLeastOne = true;
+            }
+            result[i] = cells;
+        }
+        return atLeastOne ? result : null;
     }
 
     /**
@@ -210,12 +242,20 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
 
         if (this.columnHeaderLayer != null) {
             int[] selectedColumnPositions = getSelectedColumnPositions();
+            ILayerCell cellToCopy = null;
             for (int i = 0; i < rowOffset; i++) {
                 final ILayerCell[] cells = new ILayerCell[selectedColumnPositions.length + columnOffset];
                 for (int columnPosition = 0; columnPosition < selectedColumnPositions.length; columnPosition++) {
                     // Pad the width of the vertical layer
-                    cells[columnPosition + columnOffset] =
-                            this.columnHeaderLayer.getCellByPosition(selectedColumnPositions[columnPosition], i);
+                    if (this.copyLayer == null) {
+                        cellToCopy = this.columnHeaderLayer.getCellByPosition(selectedColumnPositions[columnPosition], i);
+                    } else {
+                        int copyColPos = LayerUtil.convertColumnPosition(this.selectionLayer, selectedColumnPositions[columnPosition], this.copyLayer);
+                        cellToCopy = this.columnHeaderLayer.getCellByPosition(copyColPos, i);
+                    }
+                    if (isCopyAllowed(cellToCopy)) {
+                        cells[columnPosition + columnOffset] = cellToCopy;
+                    }
                 }
 
                 copiedCells[i] = cells;
@@ -242,9 +282,14 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
         final int columnOffset = this.rowHeaderLayer != null ? this.rowHeaderLayer.getColumnCount() : 0;
         final ILayerCell[] bodyCells = new ILayerCell[selectedColumns.length + columnOffset];
 
+        ILayerCell cellToCopy = null;
+
         if (this.rowHeaderLayer != null) {
             for (int i = 0; i < this.rowHeaderLayer.getColumnCount(); i++) {
-                bodyCells[i] = this.rowHeaderLayer.getCellByPosition(i, currentRowPosition);
+                cellToCopy = this.rowHeaderLayer.getCellByPosition(i, currentRowPosition);
+                if (isCopyAllowed(cellToCopy)) {
+                    bodyCells[i] = cellToCopy;
+                }
             }
         }
 
@@ -252,17 +297,25 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
             final int selectedColumnPosition = selectedColumns[columnPosition];
             if (this.selectionLayer.isCellPositionSelected(selectedColumnPosition, currentRowPosition)) {
                 if (this.copyLayer == null) {
-                    bodyCells[columnPosition + columnOffset] =
-                            this.selectionLayer.getCellByPosition(selectedColumnPosition, currentRowPosition);
+                    cellToCopy = this.selectionLayer.getCellByPosition(selectedColumnPosition, currentRowPosition);
+                    if (isCopyAllowed(cellToCopy)) {
+                        bodyCells[columnPosition + columnOffset] = cellToCopy;
+                    }
+
                 } else {
                     int copyColPos = LayerUtil.convertColumnPosition(this.selectionLayer, selectedColumnPosition, this.copyLayer);
                     int copyRowPos = LayerUtil.convertRowPosition(this.selectionLayer, currentRowPosition, this.copyLayer);
 
-                    bodyCells[columnPosition + columnOffset] =
-                            this.copyLayer.getCellByPosition(copyColPos, copyRowPos);
+                    cellToCopy = this.copyLayer.getCellByPosition(copyColPos, copyRowPos);
+                    if (isCopyAllowed(cellToCopy)) {
+                        bodyCells[columnPosition + columnOffset] = cellToCopy;
+                    }
+
                 }
             }
         }
+
+        // no empty check because this command handler supports gaps
         return bodyCells;
     }
 
@@ -323,4 +376,39 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
         return this.copyLayer;
     }
 
+    /**
+     * Checks if the given cell can be copied.
+     *
+     * @param cellToCopy
+     *            The {@link ILayerCell} that should be copied.
+     * @return <code>true</code> if the cell can be copied, <code>false</code>
+     *         if a copy operation for that cell should be avoided.
+     * @since 1.6
+     */
+    protected boolean isCopyAllowed(ILayerCell cellToCopy) {
+        return true;
+    }
+
+    /**
+     * Checks if the given array contains a value or if it only contains
+     * <code>null</code> values. If all array positions point to
+     * <code>null</code>it is considered to be empty.
+     *
+     * @param layerCells
+     *            The array to check.
+     * @return <code>true</code> if all values in the array are
+     *         <code>null</code>, <code>false</code> if at least one real value
+     *         is contained.
+     * @since 1.6
+     */
+    protected boolean isEmpty(ILayerCell[] layerCells) {
+        if (layerCells != null) {
+            for (ILayerCell cell : layerCells) {
+                if (cell != null) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
