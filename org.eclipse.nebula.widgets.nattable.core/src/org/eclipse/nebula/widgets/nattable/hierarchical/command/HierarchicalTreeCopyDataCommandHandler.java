@@ -26,6 +26,8 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
  * or {@link HierarchicalTreeLayer#NO_OBJECT_IN_LEVEL} are applied.
  *
  * @since 1.6
+ *
+ * @see HierarchicalTreePasteDataCommandHandler
  */
 public class HierarchicalTreeCopyDataCommandHandler extends RowSpanningCopyDataCommandHandler {
 

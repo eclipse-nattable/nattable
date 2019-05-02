@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.config.EditableRule;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
@@ -34,6 +35,8 @@ import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.dataset.car.Car;
 import org.eclipse.nebula.widgets.nattable.dataset.car.CarService;
 import org.eclipse.nebula.widgets.nattable.dataset.car.Classification;
+import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.edit.command.EditUtils;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
@@ -51,6 +54,7 @@ import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.SpanningDataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
@@ -2077,5 +2081,36 @@ public class HierarchicalTreeLayerTest {
         // all selected rows should be hidden
         assertTrue(this.treeLayer.doCommand(new RowPositionHideCommand(this.treeLayer, 0, 0)));
         assertEquals(1, this.treeLayer.getRowCount());
+    }
+
+    @Test
+    public void shouldPerformEditChecksOnHierarchicalTreeLayer() {
+        this.treeLayer.setConfigLabelAccumulator(new IConfigLabelAccumulator() {
+            @Override
+            public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+                // second row in second level is not editable
+                if (rowPosition == 2 && (columnPosition == 4 || columnPosition == 5)) {
+                    configLabels.addLabel("not_editable");
+                }
+            }
+        });
+
+        ConfigRegistry configRegistry = new ConfigRegistry();
+        configRegistry.registerConfigAttribute(
+                EditConfigAttributes.CELL_EDITABLE_RULE,
+                EditableRule.ALWAYS_EDITABLE);
+        configRegistry.registerConfigAttribute(
+                EditConfigAttributes.CELL_EDITABLE_RULE,
+                EditableRule.NEVER_EDITABLE,
+                DisplayMode.EDIT,
+                "not_editable");
+
+        this.treeLayer.doCommand(new SelectCellCommand(this.treeLayer, 4, 1, false, false));
+        this.treeLayer.doCommand(new SelectCellCommand(this.treeLayer, 5, 3, true, false));
+
+        assertEquals(6, this.selectionLayer.getSelectedCells().size());
+
+        assertTrue(EditUtils.allCellsEditable(this.selectionLayer, configRegistry));
+        assertFalse(EditUtils.allCellsEditable(this.selectionLayer, this.treeLayer, configRegistry));
     }
 }

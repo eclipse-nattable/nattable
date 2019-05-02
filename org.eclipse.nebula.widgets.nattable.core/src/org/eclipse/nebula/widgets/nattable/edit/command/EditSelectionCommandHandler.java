@@ -17,6 +17,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.edit.EditController;
 import org.eclipse.nebula.widgets.nattable.edit.event.InlineCellEditEvent;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.swt.widgets.Composite;
@@ -30,9 +31,37 @@ import org.eclipse.swt.widgets.Composite;
 public class EditSelectionCommandHandler extends AbstractLayerCommandHandler<EditSelectionCommand> {
 
     private SelectionLayer selectionLayer;
+    private IUniqueIndexLayer upperLayer;
 
+    /**
+     * Creates a command handler that performs the edit checks on the
+     * {@link SelectionLayer}.
+     *
+     * @param selectionLayer
+     *            The {@link SelectionLayer} to retrieve the current selection.
+     */
     public EditSelectionCommandHandler(SelectionLayer selectionLayer) {
+        this(selectionLayer, null);
+    }
+
+    /**
+     * Creates a command handler that performs the edit checks based on the
+     * given upper layer. Needed for example if the upper layer adds information
+     * that is needed for checks, e.g. a tree layer.
+     *
+     * @param selectionLayer
+     *            The {@link SelectionLayer} to retrieve the current selection.
+     * @param upperLayer
+     *            The layer on top of the given {@link SelectionLayer} to which
+     *            the selection should be converted to. Can be <code>null</code>
+     *            which causes the resulting selected cells to be related to the
+     *            {@link SelectionLayer}.
+     *
+     * @since 1.6
+     */
+    public EditSelectionCommandHandler(SelectionLayer selectionLayer, IUniqueIndexLayer upperLayer) {
         this.selectionLayer = selectionLayer;
+        this.upperLayer = upperLayer;
     }
 
     @Override
@@ -46,13 +75,13 @@ public class EditSelectionCommandHandler extends AbstractLayerCommandHandler<Edi
         IConfigRegistry configRegistry = command.getConfigRegistry();
         Character initialValue = command.getCharacter();
 
-        if (EditUtils.allCellsEditable(this.selectionLayer, configRegistry)
-                && EditUtils.isEditorSame(this.selectionLayer, configRegistry)
-                && EditUtils.isConverterSame(this.selectionLayer, configRegistry)
+        if (EditUtils.allCellsEditable(this.selectionLayer, this.upperLayer, configRegistry)
+                && EditUtils.isEditorSame(this.selectionLayer, this.upperLayer, configRegistry)
+                && EditUtils.isConverterSame(this.selectionLayer, this.upperLayer, configRegistry)
                 && EditUtils.activateLastSelectedCellEditor(this.selectionLayer, configRegistry, command.isByTraversal())) {
 
             // check how many cells are selected
-            Collection<ILayerCell> selectedCells = EditUtils.getSelectedCellsForEditing(this.selectionLayer);
+            Collection<ILayerCell> selectedCells = EditUtils.getSelectedCellsForEditing(this.selectionLayer, this.upperLayer);
             if (selectedCells.size() == 1) {
                 // editing is triggered by key for a single cell
                 // we need to fire the InlineCellEditEvent here because we
@@ -72,7 +101,7 @@ public class EditSelectionCommandHandler extends AbstractLayerCommandHandler<Edi
                 // determine the initial value
                 Object initialEditValue = initialValue;
                 if (initialValue == null
-                        && EditUtils.isValueSame(this.selectionLayer)) {
+                        && EditUtils.isValueSame(this.selectionLayer, this.upperLayer)) {
                     ILayerCell cell = selectedCells.iterator().next();
                     initialEditValue = this.selectionLayer.getDataValueByPosition(
                             cell.getColumnPosition(),

@@ -14,6 +14,8 @@ import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 
@@ -51,12 +53,23 @@ public class RowSpanningPasteDataCommandHandler extends InternalPasteDataCommand
             int pasteColumn = coord.getColumnPosition();
             int pasteRow = coord.getRowPosition();
 
+            IUniqueIndexLayer pasteLayer = getPasteLayer(this.clipboard.getCopiedCells());
+            if (pasteLayer != this.selectionLayer) {
+                // if the paste layer is not the SelectionLayer we need to
+                // perform a conversion
+                pasteColumn = LayerUtil.convertColumnPosition(this.selectionLayer, pasteColumn, pasteLayer);
+                pasteRow = LayerUtil.convertRowPosition(this.selectionLayer, pasteRow, pasteLayer);
+                coord = new PositionCoordinate(pasteLayer, pasteColumn, pasteRow);
+            }
+
             for (ILayerCell[] cells : this.clipboard.getCopiedCells()) {
                 for (ILayerCell cell : cells) {
-                    if (isPasteAllowed(cell, pasteColumn, pasteRow, command.configRegistry)) {
-                        this.selectionLayer.doCommand(
+                    ILayerCell targetCell = pasteLayer.getCellByPosition(pasteColumn, pasteRow);
+
+                    if (isPasteAllowed(cell, targetCell, command.configRegistry)) {
+                        pasteLayer.doCommand(
                                 new UpdateDataCommand(
-                                        this.selectionLayer,
+                                        pasteLayer,
                                         pasteColumn,
                                         pasteRow,
                                         getPasteValue(cell, pasteColumn, pasteRow)));
@@ -64,11 +77,11 @@ public class RowSpanningPasteDataCommandHandler extends InternalPasteDataCommand
 
                     pasteColumn++;
 
-                    if (pasteColumn >= this.selectionLayer.getColumnCount()) {
+                    if (pasteColumn >= pasteLayer.getColumnCount()) {
                         break;
                     }
                 }
-                ILayerCell targetCell = this.selectionLayer.getCellByPosition(coord.getColumnPosition(), coord.getRowPosition());
+                ILayerCell targetCell = pasteLayer.getCellByPosition(coord.getColumnPosition(), pasteRow);
                 pasteRow += targetCell.getRowSpan();
                 pasteColumn = coord.getColumnPosition();
             }

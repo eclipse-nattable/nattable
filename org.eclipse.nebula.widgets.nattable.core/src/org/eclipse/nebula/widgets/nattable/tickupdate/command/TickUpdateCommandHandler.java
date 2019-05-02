@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.data.validate.IDataValidator;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.command.EditUtils;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -41,12 +42,40 @@ public class TickUpdateCommandHandler extends AbstractLayerCommandHandler<TickUp
     private SelectionLayer selectionLayer;
 
     /**
+     * The layer on top of the given {@link SelectionLayer} to which the
+     * selection should be converted to. Can be <code>null</code> which causes
+     * the resulting selected cells to be related to the {@link SelectionLayer}.
+     */
+    private IUniqueIndexLayer upperLayer;
+
+    /**
      * @param selectionLayer
      *            The {@link SelectionLayer} needed to retrieve the selected
      *            cells on which the tick update should be processed.
      */
     public TickUpdateCommandHandler(SelectionLayer selectionLayer) {
+        this(selectionLayer, null);
+    }
+
+    /**
+     * Creates a command handler that performs the edit checks based on the
+     * given upper layer. Needed for example if the upper layer adds information
+     * that is needed for checks, e.g. a tree layer.
+     *
+     * @param selectionLayer
+     *            The {@link SelectionLayer} needed to retrieve the selected
+     *            cells on which the tick update should be processed.
+     * @param upperLayer
+     *            The layer on top of the given {@link SelectionLayer} to which
+     *            the selection should be converted to. Can be <code>null</code>
+     *            which causes the resulting selected cells to be related to the
+     *            {@link SelectionLayer}.
+     *
+     * @since 1.6
+     */
+    public TickUpdateCommandHandler(SelectionLayer selectionLayer, IUniqueIndexLayer upperLayer) {
         this.selectionLayer = selectionLayer;
+        this.upperLayer = upperLayer;
     }
 
     @Override
@@ -57,9 +86,9 @@ public class TickUpdateCommandHandler extends AbstractLayerCommandHandler<TickUp
         // Tick update for multiple cells in selection
         if (selectedPositions.length > 1) {
             // Can all cells be updated ?
-            if (EditUtils.allCellsEditable(this.selectionLayer, configRegistry)
-                    && EditUtils.isEditorSame(this.selectionLayer, configRegistry)
-                    && EditUtils.isConverterSame(this.selectionLayer, configRegistry)) {
+            if (EditUtils.allCellsEditable(this.selectionLayer, this.upperLayer, configRegistry)
+                    && EditUtils.isEditorSame(this.selectionLayer, this.upperLayer, configRegistry)
+                    && EditUtils.isConverterSame(this.selectionLayer, this.upperLayer, configRegistry)) {
                 for (PositionCoordinate position : selectedPositions) {
                     updateSingleCell(command, position);
                 }

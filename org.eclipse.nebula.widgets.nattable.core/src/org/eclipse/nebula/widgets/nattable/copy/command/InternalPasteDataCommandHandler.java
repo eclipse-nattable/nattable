@@ -19,6 +19,8 @@ import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
 import org.eclipse.nebula.widgets.nattable.edit.command.EditUtils;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 
@@ -60,12 +62,22 @@ public class InternalPasteDataCommandHandler extends AbstractLayerCommandHandler
             int pasteColumn = coord.getColumnPosition();
             int pasteRow = coord.getRowPosition();
 
+            IUniqueIndexLayer pasteLayer = getPasteLayer(this.clipboard.getCopiedCells());
+            if (pasteLayer != this.selectionLayer) {
+                // if the paste layer is not the SelectionLayer we need to
+                // perform a conversion
+                pasteColumn = LayerUtil.convertColumnPosition(this.selectionLayer, pasteColumn, pasteLayer);
+                pasteRow = LayerUtil.convertRowPosition(this.selectionLayer, pasteRow, pasteLayer);
+            }
+
             for (ILayerCell[] cells : this.clipboard.getCopiedCells()) {
                 for (ILayerCell cell : cells) {
-                    if (isPasteAllowed(cell, pasteColumn, pasteRow, command.configRegistry)) {
-                        this.selectionLayer.doCommand(
+                    ILayerCell targetCell = pasteLayer.getCellByPosition(pasteColumn, pasteRow);
+
+                    if (isPasteAllowed(cell, targetCell, command.configRegistry)) {
+                        pasteLayer.doCommand(
                                 new UpdateDataCommand(
-                                        this.selectionLayer,
+                                        pasteLayer,
                                         pasteColumn,
                                         pasteRow,
                                         getPasteValue(cell, pasteColumn, pasteRow)));
@@ -73,7 +85,7 @@ public class InternalPasteDataCommandHandler extends AbstractLayerCommandHandler
 
                     pasteColumn++;
 
-                    if (pasteColumn >= this.selectionLayer.getColumnCount()) {
+                    if (pasteColumn >= pasteLayer.getColumnCount()) {
                         break;
                     }
                 }
@@ -96,13 +108,10 @@ public class InternalPasteDataCommandHandler extends AbstractLayerCommandHandler
      *
      * @param sourceCell
      *            The {@link ILayerCell} that is copied and should be pasted to
-     *            the target coordinates.
-     * @param targetColumn
-     *            The column position of the cell on the {@link SelectionLayer}
-     *            to which the source cell value should be pasted to.
-     * @param targetRow
-     *            The row position of the cell on the {@link SelectionLayer} to
-     *            which the source cell value should be pasted to.
+     *            the target cell.
+     * @param targetCell
+     *            The {@link ILayerCell} to which the content of the source cell
+     *            should be pasted to.
      * @param configRegistry
      *            The {@link IConfigRegistry} needed to access the configuration
      *            values.
@@ -110,11 +119,10 @@ public class InternalPasteDataCommandHandler extends AbstractLayerCommandHandler
      *         <code>false</code> if not
      * @since 1.6
      */
-    protected boolean isPasteAllowed(ILayerCell sourceCell, int targetColumn, int targetRow, IConfigRegistry configRegistry) {
+    protected boolean isPasteAllowed(ILayerCell sourceCell, ILayerCell targetCell, IConfigRegistry configRegistry) {
         return EditUtils.isCellEditable(
-                this.selectionLayer,
-                configRegistry,
-                new PositionCoordinate(this.selectionLayer, targetColumn, targetRow));
+                new PositionCoordinate(targetCell.getLayer(), targetCell.getColumnPosition(), targetCell.getRowPosition()),
+                configRegistry);
     }
 
     /**
@@ -130,20 +138,47 @@ public class InternalPasteDataCommandHandler extends AbstractLayerCommandHandler
      * @return The value that should be pasted.
      */
     protected Object getPasteValue(ILayerCell cell, int pasteColumn, int pasteRow) {
-        return cell.getDataValue();
+        return cell != null ? cell.getDataValue() : null;
+    }
+
+    /**
+     * Identifies the {@link IUniqueIndexLayer} from which the cells are copied.
+     *
+     * @param copiedCells
+     *            The copied cells from the internal clipboard.
+     * @return The {@link IUniqueIndexLayer} if the copied cells are collected
+     *         from a different layer, or the locally configured
+     *         {@link SelectionLayer} in case there are no copied cells in the
+     *         internal cell clipboard.
+     *
+     * @since 1.6
+     */
+    public IUniqueIndexLayer getPasteLayer(ILayerCell[][] copiedCells) {
+        if (copiedCells != null && copiedCells.length > 0 && copiedCells[0].length > 0) {
+            for (ILayerCell[] cells : this.clipboard.getCopiedCells()) {
+                for (ILayerCell cell : cells) {
+                    if (cell != null && cell.getLayer() instanceof IUniqueIndexLayer) {
+                        return (IUniqueIndexLayer) cell.getLayer();
+                    }
+                }
+            }
+        }
+        return this.selectionLayer;
     }
 
     /**
      * Perform actions prior pasting values from the internal clipboard. E.g.
      * disabling formula evaluation.
      */
-    protected void preInternalPaste() {}
+    protected void preInternalPaste() {
+    }
 
     /**
      * Perform actions after pasting values from the internal clipboard. E.g.
      * enabling formula evaluation.
      */
-    protected void postInternalPaste() {}
+    protected void postInternalPaste() {
+    }
 
     @Override
     public Class<PasteDataCommand> getCommandClass() {

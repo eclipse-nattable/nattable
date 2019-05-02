@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,7 +26,9 @@ import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditorRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.IRowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -129,6 +131,42 @@ public class EditUtils {
     }
 
     /**
+     * For every cell that is selected it is checked whether the cell is
+     * editable or not.
+     *
+     * <p>
+     * In case a {@link IRowSelectionModel} is in use, only the selection anchor
+     * is checked.
+     * </p>
+     *
+     * <p>
+     * <b>Note:</b><br>
+     * Converts the {@link SelectionLayer} based cells to the given upperLayer
+     * to be able to inspect the cells if that layer on top of the
+     * {@link SelectionLayer} adds information that needs to be inspected for
+     * editing checks, e.g. a tree layer.
+     * </p>
+     *
+     * @param selectionLayer
+     *            The {@link SelectionLayer} to retrieve the current selection.
+     * @param upperLayer
+     *            The layer on top of the given {@link SelectionLayer} to which
+     *            the selection should be converted to. Can be <code>null</code>
+     *            which causes the resulting selected cells to be related to the
+     *            {@link SelectionLayer}.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to access the configured
+     *            {@link IEditableRule}s.
+     * @return <code>true</code> if all selected cells are editable,
+     *         <code>false</code> if at least one cell is not editable.
+     *
+     * @since 1.6
+     */
+    public static boolean allCellsEditable(SelectionLayer selectionLayer, IUniqueIndexLayer upperLayer, IConfigRegistry configRegistry) {
+        return allCellsEditable(getSelectedCellsForEditing(selectionLayer, upperLayer), configRegistry);
+    }
+
+    /**
      * For every selected cell it is checked whether the cell is editable or
      * not. If the collection of selected cells is <code>null</code> or empty,
      * this method will also return <code>true</code>.
@@ -176,9 +214,47 @@ public class EditUtils {
      *            related to the given {@link ILayer}
      * @return <code>true</code> if the cell is editable, <code>false</code> if
      *         not
+     * @deprecated Use
+     *             {@link #isCellEditable(PositionCoordinate, IConfigRegistry)}
+     *             as PositionCoordinate already contains the layer to which the
+     *             coordinates match. The redundant layer parameter is not
+     *             needed and can lead to failures in case the positions do not
+     *             match it.
      */
+    @Deprecated
     public static boolean isCellEditable(ILayer layer, IConfigRegistry configRegistry, PositionCoordinate cellCoords) {
         ILayerCell layerCell = layer.getCellByPosition(cellCoords.columnPosition, cellCoords.rowPosition);
+        if (layerCell != null) {
+            LabelStack labelStack = layerCell.getConfigLabels();
+
+            IEditableRule editableRule = configRegistry.getConfigAttribute(
+                    EditConfigAttributes.CELL_EDITABLE_RULE,
+                    DisplayMode.EDIT,
+                    labelStack.getLabels());
+
+            if (editableRule != null) {
+                return editableRule.isEditable(layerCell, configRegistry);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the cell at the specified coordinates is editable or not.
+     *
+     * @param cellCoords
+     *            The coordinates of the cell to check the editable state,
+     *            related to the given {@link ILayer}
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to access the configured
+     *            {@link IEditableRule}s.
+     * @return <code>true</code> if the cell is editable, <code>false</code> if
+     *         not
+     *
+     * @since 1.6
+     */
+    public static boolean isCellEditable(PositionCoordinate cellCoords, IConfigRegistry configRegistry) {
+        ILayerCell layerCell = cellCoords.getLayer().getCellByPosition(cellCoords.columnPosition, cellCoords.rowPosition);
         if (layerCell != null) {
             LabelStack labelStack = layerCell.getConfigLabels();
 
@@ -210,6 +286,38 @@ public class EditUtils {
      */
     public static boolean isEditorSame(SelectionLayer selectionLayer, IConfigRegistry configRegistry) {
         return isEditorSame(getSelectedCellsForEditing(selectionLayer), configRegistry);
+    }
+
+    /**
+     * Checks if all selected cells have the same {@link ICellEditor}
+     * configured. This is needed for the multi edit feature to determine if a
+     * multi edit is possible.
+     * <p>
+     * <b>Note:</b><br>
+     * Converts the {@link SelectionLayer} based cells to the given upperLayer
+     * to be able to inspect the cells if that layer on top of the
+     * {@link SelectionLayer} adds information that needs to be inspected for
+     * editing checks, e.g. a tree layer.
+     * </p>
+     *
+     * @param selectionLayer
+     *            The {@link SelectionLayer} to retrieve the current selection.
+     * @param upperLayer
+     *            The layer on top of the given {@link SelectionLayer} to which
+     *            the selection should be converted to. Can be <code>null</code>
+     *            which causes the resulting selected cells to be related to the
+     *            {@link SelectionLayer}.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to access the configured
+     *            {@link ICellEditor}s.
+     * @return <code>true</code> if all selected cells have the same
+     *         {@link ICellEditor} configured, <code>false</code> if at least
+     *         one cell has another {@link ICellEditor} configured.
+     *
+     * @since 1.6
+     */
+    public static boolean isEditorSame(SelectionLayer selectionLayer, IUniqueIndexLayer upperLayer, IConfigRegistry configRegistry) {
+        return isEditorSame(getSelectedCellsForEditing(selectionLayer, upperLayer), configRegistry);
     }
 
     /**
@@ -281,6 +389,44 @@ public class EditUtils {
     /**
      * Checks if all selected cells have the same {@link IDisplayConverter}
      * configured. This is needed for the multi edit feature to determine if a
+     * multi edit is possible.
+     * <p>
+     * Let's assume there are two columns, one containing an Integer, the other
+     * a Date. Both have a TextCellEditor configured, so if only the editor is
+     * checked, the multi edit dialog would open. On committing a changed value
+     * an error would occur because of wrong conversion.
+     * </p>
+     * <p>
+     * <b>Note:</b><br>
+     * Converts the {@link SelectionLayer} based cells to the given upperLayer
+     * to be able to inspect the cells if that layer on top of the
+     * {@link SelectionLayer} adds information that needs to be inspected for
+     * editing checks, e.g. a tree layer.
+     * </p>
+     *
+     * @param selectionLayer
+     *            The {@link SelectionLayer} to retrieve the current selection.
+     * @param upperLayer
+     *            The layer on top of the given {@link SelectionLayer} to which
+     *            the selection should be converted to. Can be <code>null</code>
+     *            which causes the resulting selected cells to be related to the
+     *            {@link SelectionLayer}.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to access the configured
+     *            {@link IDisplayConverter}s.
+     * @return <code>true</code> if all selected cells have the same
+     *         {@link IDisplayConverter} configured, <code>false</code> if at
+     *         least one cell has another {@link IDisplayConverter} configured.
+     *
+     * @since 1.6
+     */
+    public static boolean isConverterSame(SelectionLayer selectionLayer, IUniqueIndexLayer upperLayer, IConfigRegistry configRegistry) {
+        return isConverterSame(getSelectedCellsForEditing(selectionLayer, upperLayer), configRegistry);
+    }
+
+    /**
+     * Checks if all selected cells have the same {@link IDisplayConverter}
+     * configured. This is needed for the multi edit feature to determine if a
      * multi edit is possible. If the collection of selected cells is
      * <code>null</code> or empty, this method will also return
      * <code>true</code>.
@@ -333,6 +479,34 @@ public class EditUtils {
      */
     public static boolean isValueSame(SelectionLayer selectionLayer) {
         return isValueSame(getSelectedCellsForEditing(selectionLayer));
+    }
+
+    /**
+     * Checks if all selected cells contain the same canonical value. This is
+     * needed for multi edit to know if the editor should be initialised with
+     * the value that is shared amongst all cells.
+     * <p>
+     * <b>Note:</b><br>
+     * Converts the {@link SelectionLayer} based cells to the given upperLayer
+     * to be able to inspect the cells if that layer on top of the
+     * {@link SelectionLayer} adds information that needs to be inspected for
+     * editing checks, e.g. a tree layer.
+     * </p>
+     *
+     * @param selectionLayer
+     *            The {@link SelectionLayer} to retrieve the current selection.
+     * @param upperLayer
+     *            The layer on top of the given {@link SelectionLayer} to which
+     *            the selection should be converted to. Can be <code>null</code>
+     *            which causes the resulting selected cells to be related to the
+     *            {@link SelectionLayer}.
+     * @return <code>true</code> if all cells contain the same value,
+     *         <code>false</code> if at least one cell contains another value.
+     *
+     * @since 1.6
+     */
+    public static boolean isValueSame(SelectionLayer selectionLayer, IUniqueIndexLayer upperLayer) {
+        return isValueSame(getSelectedCellsForEditing(selectionLayer, upperLayer));
     }
 
     /**
@@ -400,6 +574,45 @@ public class EditUtils {
             }
         } else {
             selectedCells = selectionLayer.getSelectedCells();
+        }
+        return selectedCells;
+    }
+
+    /**
+     * Returns the collection of selected {@link ILayerCell}s that are eligible
+     * for editing.
+     * <p>
+     * <b>Note:</b><br>
+     * Converts the {@link SelectionLayer} based cells to the given upperLayer
+     * to be able to inspect the cells if that layer on top of the
+     * {@link SelectionLayer} adds information that needs to be inspected for
+     * editing checks, e.g. a tree layer.
+     * </p>
+     *
+     * @param selectionLayer
+     *            The {@link SelectionLayer} to retrieve the current selection.
+     * @param upperLayer
+     *            The layer on top of the given {@link SelectionLayer} to which
+     *            the selection should be converted to. Can be <code>null</code>
+     *            which causes the resulting selected cells to be related to the
+     *            {@link SelectionLayer}.
+     * @return The selected {@link ILayerCell}s that are eligible for editing,
+     *         related to the given upperLayer.
+     *
+     * @since 1.6
+     *
+     * @see #getSelectedCellsForEditing(SelectionLayer)
+     */
+    public static Collection<ILayerCell> getSelectedCellsForEditing(SelectionLayer selectionLayer, IUniqueIndexLayer upperLayer) {
+        Collection<ILayerCell> selectedCells = getSelectedCellsForEditing(selectionLayer);
+        if (upperLayer != null) {
+            Collection<ILayerCell> convertedCells = new ArrayList<ILayerCell>();
+            for (ILayerCell cell : selectedCells) {
+                int convertedColPos = LayerUtil.convertColumnPosition(cell.getLayer(), cell.getColumnPosition(), upperLayer);
+                int convertedRowPos = LayerUtil.convertRowPosition(cell.getLayer(), cell.getRowPosition(), upperLayer);
+                convertedCells.add(upperLayer.getCellByPosition(convertedColPos, convertedRowPos));
+            }
+            return convertedCells;
         }
         return selectedCells;
     }

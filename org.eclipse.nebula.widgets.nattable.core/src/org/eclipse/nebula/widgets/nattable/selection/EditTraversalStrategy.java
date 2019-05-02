@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth.
+ * Copyright (c) 2014, 2019 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -75,9 +75,8 @@ public class EditTraversalStrategy implements ITraversalStrategy {
             // if there is an open editor, we suppose that the movement should
             // be performed from there, as the focus is typically in the editor
             return EditUtils.isCellEditable(
-                    to.getLayer(),
-                    this.natTable.getConfigRegistry(),
-                    new PositionCoordinate(to.getLayer(), to.getColumnPosition(), to.getRowPosition()));
+                    new PositionCoordinate(to.getLayer(), to.getColumnPosition(), to.getRowPosition()),
+                    this.natTable.getConfigRegistry());
         }
         return true;
     }

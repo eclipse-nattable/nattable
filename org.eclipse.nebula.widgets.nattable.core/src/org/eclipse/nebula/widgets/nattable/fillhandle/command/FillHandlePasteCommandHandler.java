@@ -100,11 +100,10 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                     Object cellValue = getPasteValue(cell, command, pasteColumn, pasteRow);
 
                     if (EditUtils.isCellEditable(
-                            this.selectionLayer,
-                            command.configRegistry,
                             new PositionCoordinate(this.selectionLayer,
                                     pasteColumn,
-                                    pasteRow))) {
+                                    pasteRow),
+                            command.configRegistry)) {
                         this.selectionLayer.doCommand(new UpdateDataCommand(this.selectionLayer, pasteColumn, pasteRow, cellValue));
                     }
 
