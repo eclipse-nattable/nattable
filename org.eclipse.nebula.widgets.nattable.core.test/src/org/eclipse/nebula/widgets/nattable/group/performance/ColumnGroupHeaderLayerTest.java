@@ -11353,6 +11353,12 @@ public class ColumnGroupHeaderLayerTest {
     }
 
     @Test
+    public void shouldResizeColumnHeaderRow() {
+        this.gridLayer.doCommand(new RowResizeCommand(this.gridLayer, 1, 100));
+        assertEquals(100, this.gridLayer.getRowHeightByPosition(1));
+    }
+
+    @Test
     public void shouldResizeColumnGroupHeaderRowWithoutDownScale() {
         IDpiConverter dpiConverter = new AbstractDpiConverter() {
 

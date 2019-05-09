@@ -600,7 +600,9 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                 }
             }
             return true;
-        } else if (command instanceof RowResizeCommand && command.convertToTargetLayer(this)) {
+        } else if (command instanceof RowResizeCommand
+                && command.convertToTargetLayer(this)
+                && ((RowResizeCommand) command).getRowPosition() < getRowCount() - 1) {
             RowResizeCommand rowResizeCommand = (RowResizeCommand) command;
             int newRowHeight = rowResizeCommand.downScaleValue()
                     ? this.rowHeightConfig.downScale(rowResizeCommand.getNewHeight())
