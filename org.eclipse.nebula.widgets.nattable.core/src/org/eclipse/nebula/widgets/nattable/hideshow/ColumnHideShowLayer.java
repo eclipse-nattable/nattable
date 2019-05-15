@@ -184,8 +184,8 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer implements 
     @Override
     public void showColumnIndexes(Collection<Integer> columnIndexes) {
         this.hiddenColumnIndexes.removeAll(columnIndexes);
-        Collection<Integer> positions = getColumnPositionsByIndexes(columnIndexes);
         invalidateCache();
+        Collection<Integer> positions = getColumnPositionsByIndexes(columnIndexes);
         fireLayerEvent(new ShowColumnPositionsEvent(this, positions));
     }
 
