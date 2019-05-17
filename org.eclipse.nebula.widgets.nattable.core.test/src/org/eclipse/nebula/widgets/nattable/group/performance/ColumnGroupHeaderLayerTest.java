@@ -5987,6 +5987,434 @@ public class ColumnGroupHeaderLayerTest {
         verifyCleanState();
     }
 
+    @Test
+    public void shouldReorderGroupToNonVisibleArea() {
+        // reduce the client area to only show the first and half of the second
+        // group
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 640, 250);
+            }
+
+        });
+        this.gridLayer.doCommand(
+                new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+
+        assertEquals(7, this.gridLayer.getColumnCount());
+
+        // reorder first group to be the second group
+        this.columnGroupHeaderLayer.reorderColumnGroup(0, 0, 8);
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(4, group1.getStartIndex());
+        assertEquals(4, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+        assertEquals("Address", group1.getName());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
+        assertEquals(0, group2.getStartIndex());
+        assertEquals(0, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+        assertEquals("Person", group2.getName());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+        assertEquals("Facts", group3.getName());
+
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(11, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+        assertEquals("Personal", group4.getName());
+    }
+
+    @Test
+    public void shouldReorderGroupToNonVisibleAreaEnd() {
+        // reduce the client area to only show the first and half of the second
+        // group
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 640, 250);
+            }
+
+        });
+        this.gridLayer.doCommand(
+                new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+
+        assertEquals(7, this.gridLayer.getColumnCount());
+
+        // reorder first group to be the last group
+        this.columnGroupHeaderLayer.reorderColumnGroup(0, 0, 14);
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(4, group1.getStartIndex());
+        assertEquals(4, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+        assertEquals("Address", group1.getName());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
+        assertEquals(8, group2.getStartIndex());
+        assertEquals(8, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(3, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+        assertEquals("Facts", group2.getName());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
+        assertEquals(11, group3.getStartIndex());
+        assertEquals(11, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+        assertEquals("Personal", group3.getName());
+
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(0, group4.getStartIndex());
+        assertEquals(0, group4.getVisibleStartIndex());
+        assertEquals(10, group4.getVisibleStartPosition());
+        assertEquals(4, group4.getOriginalSpan());
+        assertEquals(4, group4.getVisibleSpan());
+        assertEquals("Person", group4.getName());
+    }
+
+    @Test
+    public void shouldReorderGroupFromNonVisibleArea() {
+        // reduce the client area to only show the first and half of the second
+        // group
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 640, 250);
+            }
+
+        });
+        this.gridLayer.doCommand(
+                new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+
+        assertEquals(7, this.gridLayer.getColumnCount());
+
+        // reorder last group to be the first group
+        this.columnGroupHeaderLayer.reorderColumnGroup(0, 11, 0);
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(11, group1.getStartIndex());
+        assertEquals(11, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+        assertEquals("Personal", group1.getName());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
+        assertEquals(0, group2.getStartIndex());
+        assertEquals(0, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+        assertEquals("Person", group2.getName());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
+        assertEquals(4, group3.getStartIndex());
+        assertEquals(4, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(4, group3.getOriginalSpan());
+        assertEquals(4, group3.getVisibleSpan());
+        assertEquals("Address", group3.getName());
+
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(8, group4.getStartIndex());
+        assertEquals(8, group4.getVisibleStartIndex());
+        assertEquals(11, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+        assertEquals("Facts", group4.getName());
+    }
+
+    @Test
+    public void shouldReorderGroupOutsideVisibleArea() {
+        // reduce the client area to only show the first and half of the second
+        // group
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 640, 250);
+            }
+
+        });
+        this.gridLayer.doCommand(
+                new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+
+        assertEquals(7, this.gridLayer.getColumnCount());
+
+        // reorder last group to be the third group
+        this.columnGroupHeaderLayer.reorderColumnGroup(0, 11, 8);
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+        assertEquals("Person", group1.getName());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+        assertEquals("Address", group2.getName());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
+        assertEquals(11, group3.getStartIndex());
+        assertEquals(11, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+        assertEquals("Personal", group3.getName());
+
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(8, group4.getStartIndex());
+        assertEquals(8, group4.getVisibleStartIndex());
+        assertEquals(11, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+        assertEquals("Facts", group4.getName());
+    }
+
+    @Test
+    public void shouldReorderGroupToNonVisibleAreaWithCommand() {
+        // reduce the client area to only show the first and half of the second
+        // group
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 640, 250);
+            }
+
+        });
+        this.gridLayer.doCommand(
+                new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+
+        assertEquals(7, this.gridLayer.getColumnCount());
+
+        // reorder first group to be the second group
+        this.gridLayer.doCommand(
+                new ColumnGroupReorderCommand(this.columnGroupHeaderLayer.getPositionLayer(), 0, 0, 8, false));
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(4, group1.getStartIndex());
+        assertEquals(4, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+        assertEquals("Address", group1.getName());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
+        assertEquals(0, group2.getStartIndex());
+        assertEquals(0, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+        assertEquals("Person", group2.getName());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+        assertEquals("Facts", group3.getName());
+
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(11, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+        assertEquals("Personal", group4.getName());
+    }
+
+    @Test
+    public void shouldReorderGroupToNonVisibleAreaEndWithCommand() {
+        // reduce the client area to only show the first and half of the second
+        // group
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 640, 250);
+            }
+
+        });
+        this.gridLayer.doCommand(
+                new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+
+        assertEquals(7, this.gridLayer.getColumnCount());
+
+        // reorder first group to be the last group
+        this.gridLayer.doCommand(
+                new ColumnGroupReorderCommand(this.columnGroupHeaderLayer.getPositionLayer(), 0, 0, 14, false));
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(4, group1.getStartIndex());
+        assertEquals(4, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+        assertEquals("Address", group1.getName());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
+        assertEquals(8, group2.getStartIndex());
+        assertEquals(8, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(3, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+        assertEquals("Facts", group2.getName());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
+        assertEquals(11, group3.getStartIndex());
+        assertEquals(11, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+        assertEquals("Personal", group3.getName());
+
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(0, group4.getStartIndex());
+        assertEquals(0, group4.getVisibleStartIndex());
+        assertEquals(10, group4.getVisibleStartPosition());
+        assertEquals(4, group4.getOriginalSpan());
+        assertEquals(4, group4.getVisibleSpan());
+        assertEquals("Person", group4.getName());
+    }
+
+    @Test
+    public void shouldReorderGroupFromNonVisibleAreaWithCommand() {
+        // reduce the client area to only show the first and half of the second
+        // group
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 640, 250);
+            }
+
+        });
+        this.gridLayer.doCommand(
+                new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+
+        assertEquals(7, this.gridLayer.getColumnCount());
+
+        // reorder last group to be the first group
+        this.gridLayer.doCommand(
+                new ColumnGroupReorderCommand(this.columnGroupHeaderLayer.getPositionLayer(), 0, 11, 0, false));
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(11, group1.getStartIndex());
+        assertEquals(11, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+        assertEquals("Personal", group1.getName());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
+        assertEquals(0, group2.getStartIndex());
+        assertEquals(0, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+        assertEquals("Person", group2.getName());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
+        assertEquals(4, group3.getStartIndex());
+        assertEquals(4, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(4, group3.getOriginalSpan());
+        assertEquals(4, group3.getVisibleSpan());
+        assertEquals("Address", group3.getName());
+
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(8, group4.getStartIndex());
+        assertEquals(8, group4.getVisibleStartIndex());
+        assertEquals(11, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+        assertEquals("Facts", group4.getName());
+    }
+
+    @Test
+    public void shouldReorderGroupOutsideVisibleAreaWithCommand() {
+        // reduce the client area to only show the first and half of the second
+        // group
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 640, 250);
+            }
+
+        });
+        this.gridLayer.doCommand(
+                new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+
+        assertEquals(7, this.gridLayer.getColumnCount());
+
+        // reorder last group to be the third group
+        this.gridLayer.doCommand(
+                new ColumnGroupReorderCommand(this.columnGroupHeaderLayer.getPositionLayer(), 0, 11, 8, false));
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+        assertEquals("Person", group1.getName());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+        assertEquals("Address", group2.getName());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
+        assertEquals(11, group3.getStartIndex());
+        assertEquals(11, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+        assertEquals("Personal", group3.getName());
+
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
+        assertEquals(8, group4.getStartIndex());
+        assertEquals(8, group4.getVisibleStartIndex());
+        assertEquals(11, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+        assertEquals("Facts", group4.getName());
+    }
+
     // reordering with expand/collapse
 
     @Test
@@ -7795,6 +8223,7 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(3, group4.getVisibleSpan());
     }
 
+    @Test
     public void shouldReorderRightAddColumnToCollapsedGroupWithStaticsInMiddleOfGroup() {
         Group group = this.columnGroupHeaderLayer.getGroupByPosition(5);
         group.addStaticIndexes(5, 6);
@@ -11408,7 +11837,7 @@ public class ColumnGroupHeaderLayerTest {
     }
 
     @Test
-    public void shouldMultiResizeColumnGroupHeaderAndBody() {
+    public void shouldMultiResizeColumnGroupHeaderAndColumnHeader() {
         this.gridLayer.doCommand(new MultiRowResizeCommand(this.gridLayer, new int[] { 0, 1 }, 100));
         assertEquals(100, this.gridLayer.getRowHeightByPosition(0));
         assertEquals(100, this.gridLayer.getRowHeightByPosition(1));

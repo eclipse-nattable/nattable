@@ -30,6 +30,7 @@ public class ColumnGroupReorderCommand implements ILayerCommand {
     private ColumnPositionCoordinate fromColumnPositionCoordinate;
     private ColumnPositionCoordinate toColumnPositionCoordinate;
     private boolean reorderToLeftEdge;
+    private boolean performConversion;
 
     /**
      *
@@ -44,6 +45,30 @@ public class ColumnGroupReorderCommand implements ILayerCommand {
      *            The column position to which the reorder should be performed.
      */
     public ColumnGroupReorderCommand(ILayer layer, int level, int fromColumnPosition, int toColumnPosition) {
+        this(layer, level, fromColumnPosition, toColumnPosition, true);
+    }
+
+    /**
+     *
+     * @param layer
+     *            The layer to which the positions match.
+     * @param level
+     *            The group level on which the group reorder should be
+     *            performed.
+     * @param fromColumnPosition
+     *            The column position of the group that should be reordered.
+     * @param toColumnPosition
+     *            The column position to which the reorder should be performed.
+     * @param performConversion
+     *            Configure whether a position conversion should be performed or
+     *            not. If this value is set to <code>false</code>
+     *            {@link #convertToTargetLayer(ILayer)} does not perform any
+     *            logic and will always return <code>true</code>. In that case
+     *            layer has to be the positionLayer of the
+     *            ColumnGroupHeaderLayer, typically the SelectionLayer.
+     *            Otherwise this command will not work correctly.
+     */
+    public ColumnGroupReorderCommand(ILayer layer, int level, int fromColumnPosition, int toColumnPosition, boolean performConversion) {
         this.fromColumnPositionCoordinate = new ColumnPositionCoordinate(layer, fromColumnPosition);
 
         this.level = level;
@@ -56,6 +81,7 @@ public class ColumnGroupReorderCommand implements ILayerCommand {
         }
 
         this.toColumnPositionCoordinate = new ColumnPositionCoordinate(layer, toColumnPosition);
+        this.performConversion = performConversion;
     }
 
     /**
@@ -69,6 +95,7 @@ public class ColumnGroupReorderCommand implements ILayerCommand {
         this.fromColumnPositionCoordinate = command.fromColumnPositionCoordinate;
         this.toColumnPositionCoordinate = command.toColumnPositionCoordinate;
         this.reorderToLeftEdge = command.reorderToLeftEdge;
+        this.performConversion = command.performConversion;
     }
 
     /**
@@ -108,18 +135,23 @@ public class ColumnGroupReorderCommand implements ILayerCommand {
 
     @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
-        ColumnPositionCoordinate targetFromColumnPositionCoordinate =
-                LayerCommandUtil.convertColumnPositionToTargetContext(this.fromColumnPositionCoordinate, targetLayer);
-        ColumnPositionCoordinate targetToColumnPositionCoordinate =
-                LayerCommandUtil.convertColumnPositionToTargetContext(this.toColumnPositionCoordinate, targetLayer);
-        if (targetFromColumnPositionCoordinate != null
-                && targetToColumnPositionCoordinate != null) {
-            this.fromColumnPositionCoordinate = targetFromColumnPositionCoordinate;
-            this.toColumnPositionCoordinate = targetToColumnPositionCoordinate;
-            return true;
-        } else {
-            return false;
+        if (this.performConversion) {
+            ColumnPositionCoordinate targetFromColumnPositionCoordinate =
+                    LayerCommandUtil.convertColumnPositionToTargetContext(this.fromColumnPositionCoordinate, targetLayer);
+            ColumnPositionCoordinate targetToColumnPositionCoordinate =
+                    LayerCommandUtil.convertColumnPositionToTargetContext(this.toColumnPositionCoordinate, targetLayer);
+            if (targetFromColumnPositionCoordinate != null
+                    && targetToColumnPositionCoordinate != null) {
+                this.fromColumnPositionCoordinate = targetFromColumnPositionCoordinate;
+                this.toColumnPositionCoordinate = targetToColumnPositionCoordinate;
+                return true;
+            } else {
+                return false;
+            }
         }
+
+        // if we should not perform a conversion, we simply return true
+        return true;
     }
 
     @Override

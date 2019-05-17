@@ -2163,7 +2163,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                         this,
                         level,
                         toColumnPosition,
-                        toColumnPosition < getColumnCount(),
+                        toColumnPosition < getPositionLayer().getColumnCount(),
                         ColumnGroupUtils.getMoveDirection(fromColumnPosition, toColumnPosition))) {
 
             // consume the command and avoid reordering a group into another
