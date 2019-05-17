@@ -11865,7 +11865,6 @@ public class ColumnGroupHeaderLayerTest {
 
     @Test
     public void shouldMultiResizeColumnGroupHeaderRowWithDownScale() {
-        ;
         IDpiConverter dpiConverter = new AbstractDpiConverter() {
 
             @Override
@@ -11885,6 +11884,21 @@ public class ColumnGroupHeaderLayerTest {
         // down scaling in the command was enabled, therefore the value set is
         // the value that will be returned
         assertEquals(100, this.gridLayer.getRowHeightByPosition(0));
+    }
+
+    @Test
+    public void shouldNotResizeNotResizableColumnGroupHeaderRow() {
+        this.columnGroupHeaderLayer.setRowPositionResizable(0, false);
+        this.gridLayer.doCommand(new RowResizeCommand(this.gridLayer, 0, 100));
+        assertEquals(20, this.gridLayer.getRowHeightByPosition(0));
+    }
+
+    @Test
+    public void shouldNotResizeNotResizableColumnGroupHeaderRowMulti() {
+        this.columnGroupHeaderLayer.setRowPositionResizable(0, false);
+        this.gridLayer.doCommand(new MultiRowResizeCommand(this.gridLayer, new int[] { 0, 1 }, 100));
+        assertEquals(20, this.gridLayer.getRowHeightByPosition(0));
+        assertEquals(100, this.gridLayer.getRowHeightByPosition(1));
     }
 
     // TODO testcases with compositions that have no scrolling

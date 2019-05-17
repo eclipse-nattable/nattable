@@ -798,6 +798,19 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         }
     }
 
+    /**
+     * Set the row resizable configuration for the given row position.
+     *
+     * @param rowPosition
+     *            The row for which the resizable flag should be set.
+     * @param resizable
+     *            <code>true</code> if the row should be resizable,
+     *            <code>false</code> if not.
+     */
+    public void setRowPositionResizable(int rowPosition, boolean resizable) {
+        this.rowHeightConfig.setPositionResizable(rowPosition, resizable);
+    }
+
     // Y
 
     @Override
