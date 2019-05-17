@@ -61,6 +61,22 @@ public class PopupMenuBuilder {
      * @since 1.5
      */
     public static final String EXPORT_IMAGE_MENU_ITEM_ID = "exportImageMenuItem"; //$NON-NLS-1$
+    /**
+     * @since 1.6
+     */
+    public static final String CREATE_ROW_GROUP_MENU_ITEM_ID = "createRowGroupMenuItem"; //$NON-NLS-1$
+    /**
+     * @since 1.6
+     */
+    public static final String RENAME_ROW_GROUP_MENU_ITEM_ID = "renameRowGroupMenuItem"; //$NON-NLS-1$
+    /**
+     * @since 1.6
+     */
+    public static final String REMOVE_ROW_GROUP_MENU_ITEM_ID = "removeRowGroupMenuItem"; //$NON-NLS-1$
+    /**
+     * @since 1.6
+     */
+    public static final String UNGROUP_ROWS_MENU_ITEM_ID = "ungroupRowsMenuItem"; //$NON-NLS-1$
 
     /**
      * The active NatTable instance the context menu should be added to. Needed
@@ -627,6 +643,122 @@ public class PopupMenuBuilder {
                 MenuItemProviders.removeColumnGroupMenuItemProvider(menuLabel));
     }
 
+    /**
+     * Adds the menu item for creating a row group with the new performance
+     * RowGroupHeaderLayer.
+     *
+     * @return This PopupMenuBuilder.
+     *
+     * @since 1.6
+     */
+    public PopupMenuBuilder withCreateRowGroupMenuItem() {
+        return withMenuItemProvider(
+                CREATE_ROW_GROUP_MENU_ITEM_ID,
+                MenuItemProviders.createRowGroupMenuItemProvider());
+    }
+
+    /**
+     * Adds the menu item for creating a row group with the new performance
+     * RowGroupHeaderLayer.
+     *
+     * @param menuLabel
+     *            The label to be used for showing the menu item.
+     * @return This PopupMenuBuilder.
+     *
+     * @since 1.6
+     */
+    public PopupMenuBuilder withCreateRowGroupMenuItem(String menuLabel) {
+        return withMenuItemProvider(
+                CREATE_ROW_GROUP_MENU_ITEM_ID,
+                MenuItemProviders.createRowGroupMenuItemProvider(menuLabel));
+    }
+
+    /**
+     * Adds the menu item for ungrouping selected rows from an existing row
+     * group.
+     *
+     * @return This PopupMenuBuilder.
+     *
+     * @since 1.6
+     */
+    public PopupMenuBuilder withUngroupRowsMenuItem() {
+        return withMenuItemProvider(
+                UNGROUP_ROWS_MENU_ITEM_ID,
+                MenuItemProviders.ungroupRowsMenuItemProvider());
+    }
+
+    /**
+     * Adds the menu item for ungrouping selected rows from an existing row
+     * group.
+     *
+     * @param menuLabel
+     *            The label to be used for showing the menu item.
+     * @return This PopupMenuBuilder.
+     *
+     * @since 1.6
+     */
+    public PopupMenuBuilder withUngroupRowsMenuItem(String menuLabel) {
+        return withMenuItemProvider(
+                UNGROUP_ROWS_MENU_ITEM_ID,
+                MenuItemProviders.ungroupRowsMenuItemProvider(menuLabel));
+    }
+
+    /**
+     * Adds the menu item for renaming a row group.
+     *
+     * @return This PopupMenuBuilder.
+     *
+     * @since 1.6
+     */
+    public PopupMenuBuilder withRenameRowGroupMenuItem() {
+        return withMenuItemProvider(
+                RENAME_ROW_GROUP_MENU_ITEM_ID,
+                MenuItemProviders.renameRowGroupMenuItemProvider());
+    }
+
+    /**
+     * Adds the menu item for renaming a row group.
+     *
+     * @param menuLabel
+     *            The label to be used for showing the menu item.
+     * @return This PopupMenuBuilder.
+     *
+     * @since 1.6
+     */
+    public PopupMenuBuilder withRenameRowGroupMenuItem(String menuLabel) {
+        return withMenuItemProvider(
+                RENAME_ROW_GROUP_MENU_ITEM_ID,
+                MenuItemProviders.renameRowGroupMenuItemProvider(menuLabel));
+    }
+
+    /**
+     * Adds the menu item for removing a row group.
+     *
+     * @return This PopupMenuBuilder.
+     *
+     * @since 1.6
+     */
+    public PopupMenuBuilder withRemoveRowGroupMenuItem() {
+        return withMenuItemProvider(
+                REMOVE_ROW_GROUP_MENU_ITEM_ID,
+                MenuItemProviders.removeRowGroupMenuItemProvider());
+    }
+
+    /**
+     * Adds the menu item for removing a row group.
+     *
+     * @param menuLabel
+     *            The label to be used for showing the menu item.
+     * @return This PopupMenuBuilder.
+     *
+     * @since 1.6
+     */
+    public PopupMenuBuilder withRemoveRowGroupMenuItem(String menuLabel) {
+        return withMenuItemProvider(
+                REMOVE_ROW_GROUP_MENU_ITEM_ID,
+                MenuItemProviders.removeRowGroupMenuItemProvider(menuLabel));
+    }
+
     public PopupMenuBuilder withInspectLabelsMenuItem() {
         return withMenuItemProvider(
                 INSPECT_LABEL_MENU_ITEM_ID,
@@ -891,7 +1023,7 @@ public class PopupMenuBuilder {
         @Override
         public boolean isEnabled() {
             if (getId() != null) {
-                Object eventData = PopupMenuBuilder.this.popupMenu != null
+                Object eventData = (PopupMenuBuilder.this.popupMenu != null && !PopupMenuBuilder.this.popupMenu.isDisposed())
                         ? PopupMenuBuilder.this.popupMenu.getData(MenuItemProviders.NAT_EVENT_DATA_KEY)
                         : PopupMenuBuilder.this.menuManager.getMenu().getData(MenuItemProviders.NAT_EVENT_DATA_KEY);
                 if (eventData != null && eventData instanceof NatEventData) {
@@ -904,7 +1036,7 @@ public class PopupMenuBuilder {
         @Override
         public boolean isVisible() {
             if (getId() != null) {
-                Object eventData = PopupMenuBuilder.this.popupMenu != null
+                Object eventData = (PopupMenuBuilder.this.popupMenu != null && !PopupMenuBuilder.this.popupMenu.isDisposed())
                         ? PopupMenuBuilder.this.popupMenu.getData(MenuItemProviders.NAT_EVENT_DATA_KEY)
                         : PopupMenuBuilder.this.menuManager.getMenu().getData(MenuItemProviders.NAT_EVENT_DATA_KEY);
                 if (eventData != null && eventData instanceof NatEventData) {

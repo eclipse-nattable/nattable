@@ -31,6 +31,9 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 
 /**
+ * Layer that is used in combination with the performance
+ * {@link ColumnGroupHeaderLayer} to support expand/collapse of column groups.
+ *
  * @since 1.6
  */
 public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer {

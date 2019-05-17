@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.eclipse.nebula.widgets.nattable.Messages;
-import org.eclipse.nebula.widgets.nattable.columnRename.ColumnRenameDialog;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.command.CreateColumnGroupCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.DisplayColumnGroupRenameDialogCommand;
@@ -35,6 +34,8 @@ import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.ui.rename.HeaderRenameDialog;
+import org.eclipse.nebula.widgets.nattable.ui.rename.HeaderRenameDialog.RenameDialogLabels;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -207,7 +208,7 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
                 Group group = model.getGroupByPosition(pos);
                 if (group != null) {
                     int endPos = group.getVisibleStartPosition() + group.getVisibleSpan();
-                    if (pos < endPos && !group.isLeftEdge(pos)) {
+                    if (pos < endPos && !group.isGroupStart(pos)) {
                         // remember position to remove
                         List<Integer> remove = toRemove.get(group);
                         if (remove == null) {
@@ -249,7 +250,7 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
     protected boolean displayColumnGroupRenameDialog(DisplayColumnGroupRenameDialogCommand command) {
         int columnPosition = command.getColumnPosition();
 
-        ColumnRenameDialog dialog = new ColumnRenameDialog(Display.getDefault().getActiveShell(), null, null);
+        HeaderRenameDialog dialog = new HeaderRenameDialog(Display.getDefault().getActiveShell(), null, null, RenameDialogLabels.COLUMN_RENAME);
         Rectangle colHeaderBounds = this.contextLayer.getBoundsByPosition(columnPosition, 0);
         Point point = new Point(colHeaderBounds.x, colHeaderBounds.y + colHeaderBounds.height);
         dialog.setLocation(command.toDisplayCoordinates(point));
@@ -257,7 +258,7 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
 
         if (!dialog.isCancelPressed()) {
             Group columnGroup = this.contextLayer.getGroupByPosition(columnPosition);
-            columnGroup.setName(dialog.getNewColumnLabel());
+            columnGroup.setName(dialog.getNewLabel());
         }
 
         return true;

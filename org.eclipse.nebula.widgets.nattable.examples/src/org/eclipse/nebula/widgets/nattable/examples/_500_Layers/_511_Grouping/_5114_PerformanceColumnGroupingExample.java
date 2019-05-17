@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Dirk Fauth.
+ * Copyright (c) 2018, 2019 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,17 +10,23 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers._511_Grouping;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
+import org.eclipse.nebula.widgets.nattable.columnChooser.command.DisplayColumnChooserCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
-import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
-import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.dataset.person.ExtendedPersonWithAddress;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
-import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillHandleConfiguration;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
+import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
@@ -32,75 +38,88 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupExpandCollapseLayer;
 import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
-import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
-import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
-import org.eclipse.nebula.widgets.nattable.painter.cell.VerticalTextPainter;
-import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.BeveledBorderDecorator;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
-import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.ui.menu.VisibleColumnsRemaining;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
-import org.eclipse.nebula.widgets.nattable.viewport.command.ShowColumnInViewportCommand;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 
 /**
- * This example shows the usage of the performance
- * {@link ColumnGroupHeaderLayer} in a layer composition of a grid for a huge
- * number of columns that are grouped.
+ * Simple example showing how to add the performance
+ * {@link ColumnGroupHeaderLayer} to the layer composition of a grid and how to
+ * add the corresponding actions to the column header menu.
  */
-public class _5115_HugeGroupingExample extends AbstractNatExample {
+public class _5114_PerformanceColumnGroupingExample extends AbstractNatExample {
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner.run(1010, 500, new _5115_HugeGroupingExample());
+        StandaloneNatExampleRunner.run(1010, 250, new _5114_PerformanceColumnGroupingExample());
     }
 
     @Override
     public String getDescription() {
-        return "This example shows the usage of the performance {@link ColumnGroupHeaderLayer} in a "
-                + "layer composition of a grid for a huge number of columns that are grouped.";
+        return "This example shows the usage of the performance ColumnGroupHeaderLayer within a grid and "
+                + "its corresponding actions in the column header menu. If you perform a right "
+                + "click on the column header, you are able to create a group out of the current selected "
+                + "columns, remove a column group or even rename a column group.";
     }
 
     @Override
     public Control createExampleControl(Composite parent) {
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "address.street", "address.housenumber",
+                "address.postalCode", "address.city", "age", "birthday",
+                "money", "description", "favouriteFood", "favouriteDrinks" };
 
-        int rowCount = 20;
-        int columnCount = 900000;
-        int groupWidth = columnCount / 3;
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<>();
+        propertyToLabelMap.put("firstName", "Firstname");
+        propertyToLabelMap.put("lastName", "Lastname");
+        propertyToLabelMap.put("gender", "Gender");
+        propertyToLabelMap.put("married", "Married");
+        propertyToLabelMap.put("address.street", "Street");
+        propertyToLabelMap.put("address.housenumber", "Housenumber");
+        propertyToLabelMap.put("address.postalCode", "Postalcode");
+        propertyToLabelMap.put("address.city", "City");
+        propertyToLabelMap.put("age", "Age");
+        propertyToLabelMap.put("birthday", "Birthday");
+        propertyToLabelMap.put("money", "Money");
+        propertyToLabelMap.put("description", "Description");
+        propertyToLabelMap.put("favouriteFood", "Food");
+        propertyToLabelMap.put("favouriteDrinks", "Drinks");
+
+        IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor =
+                new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
 
         // build the body layer stack
         // Usually you would create a new layer stack by extending
         // AbstractIndexLayerTransform and setting the ViewportLayer as
         // underlying layer. But in this case using the ViewportLayer
         // directly as body layer is also working.
-        IDataProvider bodyDataProvider = new HugeBodyDataProvider(rowCount, columnCount);
-
+        IDataProvider bodyDataProvider =
+                new ListDataProvider<>(
+                        PersonService.getExtendedPersonsWithAddress(10),
+                        columnPropertyAccessor);
         DataLayer bodyDataLayer =
                 new DataLayer(bodyDataProvider);
-
-        RowHideShowLayer rowHideShowLayer =
-                new RowHideShowLayer(bodyDataLayer);
-
         ColumnReorderLayer columnReorderLayer =
-                new ColumnReorderLayer(rowHideShowLayer);
+                new ColumnReorderLayer(bodyDataLayer);
 
         ColumnHideShowLayer columnHideShowLayer =
                 new ColumnHideShowLayer(columnReorderLayer);
+        // ResizeColumnHideShowLayer columnHideShowLayer =
+        // new ResizeColumnHideShowLayer(columnReorderLayer, bodyDataLayer);
+        // bodyDataLayer.setColumnPercentageSizing(true);
 
         ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer =
                 new ColumnGroupExpandCollapseLayer(columnHideShowLayer);
@@ -111,7 +130,8 @@ public class _5115_HugeGroupingExample extends AbstractNatExample {
                 new ViewportLayer(selectionLayer);
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new HugeColumnHeaderDataProvider(columnCount);
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
         DataLayer columnHeaderDataLayer =
                 new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
         ColumnHeaderLayer columnHeaderLayer =
@@ -119,16 +139,19 @@ public class _5115_HugeGroupingExample extends AbstractNatExample {
         ColumnGroupHeaderLayer columnGroupHeaderLayer =
                 new ColumnGroupHeaderLayer(columnHeaderLayer, selectionLayer);
 
-        columnGroupHeaderLayer.setShowAlwaysGroupNames(true);
-
         // configure the column groups
-        columnGroupHeaderLayer.setDefaultUnbreakable(true);
-        columnGroupHeaderLayer.addGroup("First", 0, groupWidth);
-        columnGroupHeaderLayer.addGroup("Second", groupWidth, groupWidth);
-        columnGroupHeaderLayer.addGroup("Third", (groupWidth * 2), groupWidth);
+        columnGroupHeaderLayer.addGroup("Person", 0, 4);
+        columnGroupHeaderLayer.addGroup("Address", 4, 4);
+        columnGroupHeaderLayer.addGroup("Facts", 8, 3);
+        columnGroupHeaderLayer.addGroup("Personal", 11, 3);
+
+        columnGroupHeaderLayer.setGroupUnbreakable(1, true);
+
+        columnGroupHeaderLayer.addStaticColumnIndexesToGroup(0, 0, 0, 1);
+        columnGroupHeaderLayer.addStaticColumnIndexesToGroup(0, 4, 5, 6);
 
         // columnGroupHeaderLayer.addGroupingLevel();
-        // columnGroupHeaderLayer.addGroup(1, "Test", 0, 7);
+        // columnGroupHeaderLayer.addGroup(1, "Test", 0, 8);
 
         // build the row header layer
         IDataProvider rowHeaderDataProvider =
@@ -170,23 +193,7 @@ public class _5115_HugeGroupingExample extends AbstractNatExample {
                         .withAutoResizeSelectedColumnsMenuItem()
                         .withColumnRenameDialog()
                         .withColumnChooserMenuItem()
-                        .withMenuItemProvider(new IMenuItemProvider() {
-
-                            @Override
-                            public void addMenuItem(NatTable natTable, Menu popupMenu) {
-                                MenuItem scroll = new MenuItem(popupMenu, SWT.PUSH);
-                                scroll.setText("Scroll");
-                                scroll.setEnabled(true);
-
-                                scroll.addSelectionListener(new SelectionAdapter() {
-                                    @Override
-                                    public void widgetSelected(SelectionEvent e) {
-                                        natTable.doCommand(
-                                                new ShowColumnInViewportCommand(11));
-                                    }
-                                });
-                            }
-                        });
+                        .withInspectLabelsMenuItem();
                 builder.withEnabledState(
                         PopupMenuBuilder.HIDE_COLUMN_MENU_ITEM_ID,
                         new VisibleColumnsRemaining(selectionLayer));
@@ -209,6 +216,7 @@ public class _5115_HugeGroupingExample extends AbstractNatExample {
         final Menu columnGroupHeaderMenu = new PopupMenuBuilder(natTable)
                 .withRenameColumnGroupMenuItem()
                 .withRemoveColumnGroupMenuItem()
+                .withInspectLabelsMenuItem()
                 .build();
 
         natTable.addConfiguration(new AbstractUiBindingConfiguration() {
@@ -223,108 +231,33 @@ public class _5115_HugeGroupingExample extends AbstractNatExample {
             }
         });
 
-        // TODO additional configs
-        natTable.addConfiguration(new FillHandleConfiguration(selectionLayer));
-
-        HideIndicatorOverlayPainter overlayPainter =
-                new HideIndicatorOverlayPainter(columnHeaderLayer, rowHeaderLayer);
-        natTable.addOverlayPainter(overlayPainter);
-
         // enable this configuration to verify the automatic height calculation
         // when using vertical text painter
-        natTable.addConfiguration(new AbstractRegistryConfiguration() {
-
-            @Override
-            public void configureRegistry(IConfigRegistry configRegistry) {
-                ICellPainter cellPainter = new BeveledBorderDecorator(new VerticalTextPainter(false, true, 5, true, true));
-                configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.CELL_PAINTER, cellPainter,
-                        DisplayMode.NORMAL,
-                        GridRegion.COLUMN_HEADER);
-            }
-        });
-
-        // TODO
-        // Register column chooser
-        // DisplayColumnChooserCommandHandler columnChooserCommandHandler =
-        // new DisplayColumnChooserCommandHandler(
-        // selectionLayer,
-        // columnHideShowLayer,
-        // columnHeaderLayer,
-        // columnHeaderDataLayer,
-        // columnGroupHeaderLayer,
-        // columnGroupModel,
-        // false,
-        // true);
+        // natTable.addConfiguration(new AbstractRegistryConfiguration() {
         //
-        // viewportLayer.registerCommandHandler(columnChooserCommandHandler);
+        // @Override
+        // public void configureRegistry(IConfigRegistry configRegistry) {
+        // ICellPainter cellPainter = new BeveledBorderDecorator(new
+        // VerticalTextPainter(false, true, 5, true, true));
+        // configRegistry.registerConfigAttribute(
+        // CellConfigAttributes.CELL_PAINTER, cellPainter, DisplayMode.NORMAL,
+        // GridRegion.COLUMN_HEADER);
+        // }
+        // });
+
+        // Register column chooser
+        DisplayColumnChooserCommandHandler columnChooserCommandHandler =
+                new DisplayColumnChooserCommandHandler(
+                        columnHideShowLayer,
+                        columnHeaderLayer,
+                        columnHeaderDataLayer,
+                        columnGroupHeaderLayer,
+                        false);
+
+        viewportLayer.registerCommandHandler(columnChooserCommandHandler);
 
         natTable.configure();
 
         return natTable;
     }
-
-    private class HugeColumnHeaderDataProvider implements IDataProvider {
-
-        private final int columnCount;
-
-        public HugeColumnHeaderDataProvider(int columnCount) {
-            this.columnCount = columnCount;
-        }
-
-        @Override
-        public Object getDataValue(int columnIndex, int rowIndex) {
-            return "Column Header" + columnIndex;
-        }
-
-        @Override
-        public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getColumnCount() {
-            return this.columnCount;
-        }
-
-        @Override
-        public int getRowCount() {
-            return 1;
-        }
-
-    }
-
-    private class HugeBodyDataProvider implements IDataProvider {
-
-        private final int rowCount;
-        private final int columnCount;
-
-        public HugeBodyDataProvider(int rowCount, int columnCount) {
-            this.rowCount = rowCount;
-            this.columnCount = columnCount;
-        }
-
-        @Override
-        public Object getDataValue(int columnIndex, int rowIndex) {
-            return "Body data " + columnIndex + "/" + rowIndex;
-        }
-
-        @Override
-        public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getColumnCount() {
-            return this.columnCount;
-        }
-
-        @Override
-        public int getRowCount() {
-            return this.rowCount;
-        }
-
-    }
-
-    // private class HugeListDataProvider extends ListDataProvider<T>
 }

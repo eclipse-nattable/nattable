@@ -44,6 +44,7 @@ import org.eclipse.nebula.widgets.nattable.group.performance.command.GroupColumn
 import org.eclipse.nebula.widgets.nattable.group.performance.command.GroupMultiColumnReorderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.UpdateColumnGroupCollapseCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.config.DefaultColumnGroupHeaderLayerConfiguration;
+import org.eclipse.nebula.widgets.nattable.group.performance.config.GroupHeaderConfigLabels;
 import org.eclipse.nebula.widgets.nattable.group.performance.painter.ColumnGroupHeaderGridLineCellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -439,7 +440,6 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         registerCommandHandler(new ColumnGroupReorderCommandHandler(this));
         registerCommandHandler(new ColumnGroupReorderStartCommandHandler(this));
         registerCommandHandler(new ColumnGroupReorderEndCommandHandler(this));
-        // ReorderColumnsAndGroupsCommand ???
 
         // register command handlers to add checks if a reordering is valid in
         // case of unbreakable groups
@@ -508,6 +508,9 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      *
      * @param layer
      *            The {@link ILayer} for which the path is requested.
+     * @param columnPosition
+     *            The column position for which the layer path should be
+     *            calculated.
      * @return The path of {@link ILayer} from the {@link #positionLayer} to the
      *         given {@link ILayer} or <code>null</code> if a direct path is not
      *         available.
@@ -587,15 +590,15 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
             // expanded/collapsed, e.g. via ColumnChooser
             ColumnGroupExpandCollapseCommand cmd = (ColumnGroupExpandCollapseCommand) command;
             int rowPosition = cmd.getLocalRowPosition(this);
-            int level = getLevelForRowPosition(rowPosition);
             int columnPosition = cmd.getColumnPosition();
 
-            GroupModel groupModel = getGroupModel(level);
-            if (groupModel != null) {
-                Group group = groupModel.getGroupByPosition(columnPosition);
-                if (group != null && group.isCollapsed()) {
+            Object[] found = findGroupForCoordinates(columnPosition, rowPosition);
+            if (found != null) {
+                GroupModel groupModel = (GroupModel) found[0];
+                Group group = (Group) found[1];
+                if (group.isCollapsed()) {
                     expandGroup(groupModel, group);
-                } else if (group != null && !group.isCollapsed()) {
+                } else {
                     collapseGroup(groupModel, group);
                 }
             }
@@ -1075,6 +1078,37 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
     }
 
     /**
+     * Finds a {@link Group} and its parent {@link GroupModel} based on the
+     * coordinates.
+     *
+     * @param columnPosition
+     *            The column position based on the position layer.
+     * @param rowPosition
+     *            The row position based on this layer.
+     * @return Object array where the first item is the {@link GroupModel} and
+     *         the second item is the found {@link Group}. Returns
+     *         <code>null</code> if either no {@link GroupModel} or no
+     *         {@link Group} was found.
+     */
+    protected Object[] findGroupForCoordinates(int columnPosition, int rowPosition) {
+        int level = getLevelForRowPosition(rowPosition);
+        GroupModel groupModel = null;
+        Group group = null;
+
+        for (; level >= 0; level--) {
+            groupModel = getGroupModel(level);
+            if (groupModel != null) {
+                group = groupModel.getGroupByPosition(columnPosition);
+                if (group != null) {
+                    return new Object[] { groupModel, group };
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Checks if there is a {@link Group} configured for the given column
      * position at any level.
      *
@@ -1184,19 +1218,22 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
     @Override
     public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
-        if (rowPosition < this.model.size() && isPartOfAGroup(getLevelForRowPosition(rowPosition), columnPosition)) {
+        int posColumn = LayerUtil.convertColumnPosition(this, columnPosition, getPositionLayer());
+        Object[] found = findGroupForCoordinates(posColumn, rowPosition);
+        Group group = found != null ? (Group) found[1] : null;
+
+        if (rowPosition < this.model.size() && group != null) {
             LabelStack stack = new LabelStack();
             if (getConfigLabelAccumulator() != null) {
                 getConfigLabelAccumulator().accumulateConfigLabels(stack, columnPosition, rowPosition);
             }
             stack.addLabel(GridRegion.COLUMN_GROUP_HEADER);
 
-            Group group = getGroupByPosition(getLevelForRowPosition(rowPosition), columnPosition);
             if (group != null && group.isCollapseable()) {
                 if (group.isCollapsed()) {
-                    stack.addLabelOnTop(DefaultColumnGroupHeaderLayerConfiguration.GROUP_COLLAPSED_CONFIG_TYPE);
+                    stack.addLabelOnTop(GroupHeaderConfigLabels.GROUP_COLLAPSED_CONFIG_TYPE);
                 } else {
-                    stack.addLabelOnTop(DefaultColumnGroupHeaderLayerConfiguration.GROUP_EXPANDED_CONFIG_TYPE);
+                    stack.addLabelOnTop(GroupHeaderConfigLabels.GROUP_EXPANDED_CONFIG_TYPE);
                 }
             }
 
@@ -2177,7 +2214,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                         level,
                         toColumnPosition,
                         toColumnPosition < getPositionLayer().getColumnCount(),
-                        ColumnGroupUtils.getMoveDirection(fromColumnPosition, toColumnPosition))) {
+                        PositionUtil.getHorizontalMoveDirection(fromColumnPosition, toColumnPosition))) {
 
             // consume the command and avoid reordering a group into another
             // group
@@ -2226,8 +2263,8 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         Collection<String> labels = super.getProvidedLabels();
 
         labels.add(GridRegion.COLUMN_GROUP_HEADER);
-        labels.add(DefaultColumnGroupHeaderLayerConfiguration.GROUP_COLLAPSED_CONFIG_TYPE);
-        labels.add(DefaultColumnGroupHeaderLayerConfiguration.GROUP_EXPANDED_CONFIG_TYPE);
+        labels.add(GroupHeaderConfigLabels.GROUP_COLLAPSED_CONFIG_TYPE);
+        labels.add(GroupHeaderConfigLabels.GROUP_EXPANDED_CONFIG_TYPE);
 
         // add the labels configured via IConfigLabelAccumulator
         if (getConfigLabelAccumulator() != null
@@ -2484,7 +2521,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                 fromColumnPosition = fromColumnPositions[0];
             }
 
-            MoveDirectionEnum moveDirection = PositionUtil.getMoveDirection(fromColumnPosition, toColumnPosition);
+            MoveDirectionEnum moveDirection = PositionUtil.getHorizontalMoveDirection(fromColumnPosition, toColumnPosition);
 
             if (reorderToLeftEdge
                     && toColumnPosition > 0
@@ -2513,8 +2550,8 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                     // position from the group
                     if (fromColumnPosition == toColumnPosition
                             && (!ColumnGroupUtils.isGroupReordered(fromColumnGroup, fromColumnPositions) || (fromColumnGroup.isCollapsed() && fromColumnGroup.getMembers().size() > 1))
-                            && (fromColumnGroup.isLeftEdge(fromColumnPosition)
-                                    || fromColumnGroup.isRightEdge(fromColumnPosition))) {
+                            && (fromColumnGroup.isGroupStart(fromColumnPosition)
+                                    || fromColumnGroup.isGroupEnd(fromColumnPosition))) {
                         if (MoveDirectionEnum.RIGHT == moveDirection) {
                             int pos[] = new int[fromColumnPositions.length];
                             int index = 0;
@@ -2634,7 +2671,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                 group.setOriginalSpan(group.getOriginalSpan() + fromColumnPositions.length);
 
                 // update the start index
-                if (group.isLeftEdge(toPosition)) {
+                if (group.isGroupStart(toPosition)) {
                     int newStartIndex = (moveDirection == MoveDirectionEnum.RIGHT)
                             ? getPositionLayer().getColumnIndexByPosition(group.getVisibleStartPosition() - fromColumnPositions.length)
                             : getPositionLayer().getColumnIndexByPosition(group.getVisibleStartPosition());
@@ -2652,7 +2689,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                 if (group.isCollapsed()) {
                     // update collapsed state
                     UpdateColumnGroupCollapseCommand cmd = new UpdateColumnGroupCollapseCommand(groupModel, group);
-                    if (group.isLeftEdge(toPosition)) {
+                    if (group.isGroupStart(toPosition)) {
                         cmd.getIndexesToHide().addAll(group.getMembers());
 
                         if (!group.getStaticIndexes().isEmpty()) {
@@ -2700,7 +2737,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                 group.setVisibleSpan(group.getVisibleSpan() - fromColumnPositions.length);
 
                 // update the start index
-                if (group.isLeftEdge(fromColumnPosition)) {
+                if (group.isGroupStart(fromColumnPosition)) {
                     int newStartIndex = (moveDirection == MoveDirectionEnum.RIGHT)
                             ? getPositionLayer().getColumnIndexByPosition(group.getVisibleStartPosition())
                             : getPositionLayer().getColumnIndexByPosition(group.getVisibleStartPosition() + fromColumnPositions.length);

@@ -13,7 +13,8 @@ package org.eclipse.nebula.widgets.nattable.group.performance.action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.group.command.CreateColumnGroupCommand;
-import org.eclipse.nebula.widgets.nattable.group.performance.gui.ColumnGroupNameDialog;
+import org.eclipse.nebula.widgets.nattable.group.performance.gui.HeaderGroupNameDialog;
+import org.eclipse.nebula.widgets.nattable.group.performance.gui.HeaderGroupNameDialog.HeaderGroupNameDialogLabels;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.swt.events.KeyEvent;
 
@@ -27,10 +28,11 @@ public class CreateColumnGroupAction implements IKeyAction {
 
     @Override
     public void run(NatTable natTable, KeyEvent event) {
-        ColumnGroupNameDialog dialog = new ColumnGroupNameDialog(natTable.getShell());
+        HeaderGroupNameDialog dialog =
+                new HeaderGroupNameDialog(natTable.getShell(), HeaderGroupNameDialogLabels.CREATE_COLUMN_GROUP);
         int result = dialog.open();
         if (result == IDialogConstants.OK_ID) {
-            natTable.doCommand(new CreateColumnGroupCommand(dialog.getColumnGroupName()));
+            natTable.doCommand(new CreateColumnGroupCommand(dialog.getGroupName()));
         }
     }
 

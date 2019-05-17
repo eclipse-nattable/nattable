@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,11 +22,40 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
 
 public class HideRowPositionsEvent extends RowStructuralChangeEvent {
 
+    /**
+     * Creates a new HideRowPositionsEvent based on the given information.
+     *
+     * @param layer
+     *            The ILayer to which the given row positions match.
+     * @param rowPositions
+     *            The positions of the rows that have changed.
+     */
     public HideRowPositionsEvent(ILayer layer, Collection<Integer> rowPositions) {
         super(layer, PositionUtil.getRanges(rowPositions));
     }
 
-    // Copy constructor
+    /**
+     * Creates a new HideRowPositionsEvent based on the given information.
+     *
+     * @param layer
+     *            The ILayer to which the given row positions match.
+     * @param rowPositions
+     *            The positions of the rows that have changed.
+     * @param rowIndexes
+     *            The indexes of the rows that have changed.
+     *
+     * @since 1.6
+     */
+    public HideRowPositionsEvent(ILayer layer, Collection<Integer> rowPositions, Collection<Integer> rowIndexes) {
+        super(layer, PositionUtil.getRanges(rowPositions), rowIndexes);
+    }
+
+    /**
+     * Clone constructor.
+     *
+     * @param event
+     *            The event to clone.
+     */
     protected HideRowPositionsEvent(HideRowPositionsEvent event) {
         super(event);
     }
@@ -57,4 +86,5 @@ public class HideRowPositionsEvent extends RowStructuralChangeEvent {
         super.convertToLocal(localLayer);
         return true;
     }
+
 }

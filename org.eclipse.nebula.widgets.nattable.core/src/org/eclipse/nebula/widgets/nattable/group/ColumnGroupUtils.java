@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel;
@@ -451,7 +452,7 @@ public class ColumnGroupUtils {
     public static boolean isReorderValid(
             ColumnGroupHeaderLayer columnGroupHeaderLayer, int level, int fromPosition, int toPosition, boolean reorderToLeftEdge) {
 
-        MoveDirectionEnum moveDirection = getMoveDirection(fromPosition, toPosition);
+        MoveDirectionEnum moveDirection = PositionUtil.getHorizontalMoveDirection(fromPosition, toPosition);
 
         int toPositionToCheck = toPosition;
         if (MoveDirectionEnum.RIGHT == moveDirection && reorderToLeftEdge) {

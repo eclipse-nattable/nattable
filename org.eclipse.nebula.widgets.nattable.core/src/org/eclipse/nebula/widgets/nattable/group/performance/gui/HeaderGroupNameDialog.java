@@ -26,26 +26,51 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Dialog that is used to specify a name for a column group, either for creation
- * or renaming a column group.
+ * Dialog that is used to specify a name for a header group, either for creation
+ * or renaming a group.
  *
  * @since 1.6
  */
-public class ColumnGroupNameDialog extends Dialog {
+public class HeaderGroupNameDialog extends Dialog {
 
     private Button createButton;
     private Text groupNameText;
-    private String columnGroupName;
+    private String groupName;
+    private final HeaderGroupNameDialogLabels dialogLabels;
 
-    public ColumnGroupNameDialog(Shell parentShell) {
+    public enum HeaderGroupNameDialogLabels {
+        CREATE_COLUMN_GROUP(
+                Messages.getString("ColumnGroups.createColumnGroupDialogTitle"), //$NON-NLS-1$
+                Messages.getString("ColumnGroups.createButtonLabel"), //$NON-NLS-1$
+                Messages.getString("ColumnGroups.createGroupLabel")) { //$NON-NLS-1$
+        },
+        CREATE_ROW_GROUP(
+                Messages.getString("RowGroups.createRowGroupDialogTitle"), //$NON-NLS-1$
+                Messages.getString("RowGroups.createButtonLabel"), //$NON-NLS-1$
+                Messages.getString("RowGroups.createGroupLabel")) { //$NON-NLS-1$
+        };
+
+        public final String shellTitle;
+        public final String createButtonLabel;
+        public final String createGroupLabel;
+
+        HeaderGroupNameDialogLabels(String shellTitle, String createButtonLabel, String createGroupLabel) {
+            this.shellTitle = shellTitle;
+            this.createButtonLabel = createButtonLabel;
+            this.createGroupLabel = createGroupLabel;
+        }
+    }
+
+    public HeaderGroupNameDialog(Shell parentShell, HeaderGroupNameDialogLabels dialogLabels) {
         super(parentShell);
+        this.dialogLabels = dialogLabels;
         setShellStyle(SWT.CLOSE | SWT.BORDER | SWT.TITLE | SWT.APPLICATION_MODAL);
     }
 
     @Override
     public void create() {
         super.create();
-        getShell().setText(Messages.getString("ColumnGroups.createColumnGroupDialogTitle")); //$NON-NLS-1$
+        getShell().setText(this.dialogLabels.shellTitle);
     }
 
     @Override
@@ -80,7 +105,7 @@ public class ColumnGroupNameDialog extends Dialog {
         this.createButton = createButton(
                 panel,
                 IDialogConstants.OK_ID,
-                Messages.getString("ColumnGroups.createButtonLabel"), false); //$NON-NLS-1$
+                this.dialogLabels.createButtonLabel, false);
         GridDataFactory.swtDefaults()
                 .align(SWT.RIGHT, SWT.BOTTOM)
                 .grab(true, true)
@@ -106,7 +131,7 @@ public class ColumnGroupNameDialog extends Dialog {
         row.setLayout(new GridLayout(2, false));
 
         final Label createLabel = new Label(row, SWT.NONE);
-        createLabel.setText(Messages.getString("ColumnGroups.createGroupLabel") + ":"); //$NON-NLS-1$ //$NON-NLS-2$
+        createLabel.setText(this.dialogLabels.createGroupLabel + ":"); //$NON-NLS-1$
         GridDataFactory.fillDefaults()
                 .align(SWT.LEFT, SWT.CENTER)
                 .applyTo(createLabel);
@@ -119,7 +144,7 @@ public class ColumnGroupNameDialog extends Dialog {
         this.groupNameText.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                ColumnGroupNameDialog.this.createButton.setEnabled(ColumnGroupNameDialog.this.groupNameText.getText().length() > 0);
+                HeaderGroupNameDialog.this.createButton.setEnabled(HeaderGroupNameDialog.this.groupNameText.getText().length() > 0);
             }
         });
 
@@ -128,15 +153,15 @@ public class ColumnGroupNameDialog extends Dialog {
 
     @Override
     protected void okPressed() {
-        this.columnGroupName = this.groupNameText.getText();
+        this.groupName = this.groupNameText.getText();
         super.okPressed();
     }
 
     /**
      *
-     * @return The column group name that was entered in the input field.
+     * @return The group name that was entered in the input field.
      */
-    public String getColumnGroupName() {
-        return this.columnGroupName;
+    public String getGroupName() {
+        return this.groupName;
     }
 }

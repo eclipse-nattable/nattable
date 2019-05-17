@@ -26,6 +26,7 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.dataset.person.ExtendedPersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
@@ -36,15 +37,18 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultColumnHeaderDataLay
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.group.command.ColumnGroupExpandCollapseCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroupReorderCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroupReorderEndCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroupReorderStartCommand;
+import org.eclipse.nebula.widgets.nattable.group.performance.config.GroupHeaderConfigLabels;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
@@ -1545,7 +1549,6 @@ public class TwoLevelColumnGroupHeaderLayerTest {
 
     @Test
     public void shouldMultiResizeColumnGroupHeaderRowWithDownScale() {
-        ;
         IDpiConverter dpiConverter = new AbstractDpiConverter() {
 
             @Override
@@ -1566,5 +1569,65 @@ public class TwoLevelColumnGroupHeaderLayerTest {
         // the value that will be returned
         assertEquals(100, this.gridLayer.getRowHeightByPosition(0));
         assertEquals(100, this.gridLayer.getRowHeightByPosition(1));
+    }
+
+    @Test
+    public void shouldReturnConfigLabelsOnLevel0() {
+        // check expanded column group
+        LabelStack stack = this.columnGroupHeaderLayer.getConfigLabelsByPosition(4, 1);
+        assertEquals(2, stack.getLabels().size());
+        assertTrue(stack.hasLabel(GridRegion.COLUMN_GROUP_HEADER));
+        assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_EXPANDED_CONFIG_TYPE));
+
+        // check collapsed column group
+        this.columnGroupHeaderLayer.collapseGroup(0, 4);
+        stack = this.columnGroupHeaderLayer.getConfigLabelsByPosition(4, 1);
+        assertEquals(2, stack.getLabels().size());
+        assertTrue(stack.hasLabel(GridRegion.COLUMN_GROUP_HEADER));
+        assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_COLLAPSED_CONFIG_TYPE));
+    }
+
+    @Test
+    public void shouldReturnConfigLabelsOnLevel1() {
+        // check expanded column group
+        LabelStack stack = this.columnGroupHeaderLayer.getConfigLabelsByPosition(4, 0);
+        assertEquals(2, stack.getLabels().size());
+        assertTrue(stack.hasLabel(GridRegion.COLUMN_GROUP_HEADER));
+        assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_EXPANDED_CONFIG_TYPE));
+
+        // check collapsed column group
+        this.columnGroupHeaderLayer.collapseGroup(1, 4);
+        stack = this.columnGroupHeaderLayer.getConfigLabelsByPosition(4, 0);
+        assertEquals(2, stack.getLabels().size());
+        assertTrue(stack.hasLabel(GridRegion.COLUMN_GROUP_HEADER));
+        assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_COLLAPSED_CONFIG_TYPE));
+    }
+
+    @Test
+    public void shouldReturnConfigLabelsOnLevel0WithoutLevel0() {
+        // check column 0 where we only have a group on level 0 but not on level
+        // 0
+        LabelStack stack = this.columnGroupHeaderLayer.getConfigLabelsByPosition(0, 0);
+        assertEquals(2, stack.getLabels().size());
+        assertTrue(stack.hasLabel(GridRegion.COLUMN_GROUP_HEADER));
+        assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_EXPANDED_CONFIG_TYPE));
+
+        // check collapsed column group
+        this.columnGroupHeaderLayer.collapseGroup(0);
+        stack = this.columnGroupHeaderLayer.getConfigLabelsByPosition(0, 0);
+        assertEquals(2, stack.getLabels().size());
+        assertTrue(stack.hasLabel(GridRegion.COLUMN_GROUP_HEADER));
+        assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_COLLAPSED_CONFIG_TYPE));
+    }
+
+    @Test
+    public void shouldExpandCollapseLevel0ViaLevel1WithoutLevel1Group() {
+        Group level0Group = this.columnGroupHeaderLayer.getGroupByPosition(0, 0);
+        assertFalse(level0Group.isCollapsed());
+
+        // trigger the command for the origin row position of the column group
+        this.gridLayer.doCommand(new ColumnGroupExpandCollapseCommand(this.gridLayer, 1, 0));
+
+        assertTrue(level0Group.isCollapsed());
     }
 }

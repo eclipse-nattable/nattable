@@ -170,7 +170,8 @@ public class PositionUtil {
     }
 
     /**
-     * Calculates the move direction based on the from and to position.
+     * Calculates the horizontal move direction based on the from and to column
+     * position.
      *
      * @param fromPosition
      *            The position from which a move is triggered.
@@ -178,13 +179,43 @@ public class PositionUtil {
      *            The position to which a move is triggered.
      * @return The direction of the triggered move operation.
      *
+     * @see MoveDirectionEnum#LEFT
+     * @see MoveDirectionEnum#RIGHT
+     * @see MoveDirectionEnum#NONE
+     *
      * @since 1.6
      */
-    public static MoveDirectionEnum getMoveDirection(int fromPosition, int toPosition) {
+    public static MoveDirectionEnum getHorizontalMoveDirection(int fromPosition, int toPosition) {
         if (fromPosition > toPosition) {
             return MoveDirectionEnum.LEFT;
         } else if (fromPosition < toPosition) {
             return MoveDirectionEnum.RIGHT;
+        } else {
+            return MoveDirectionEnum.NONE;
+        }
+    }
+
+    /**
+     * Calculates the vertical move direction based on the from and to row
+     * position.
+     *
+     * @param fromRowPosition
+     *            The row position from which a move is triggered.
+     * @param toRowPosition
+     *            The row position to which a move is triggered.
+     * @return The direction of the triggered move operation.
+     *
+     * @see MoveDirectionEnum#UP
+     * @see MoveDirectionEnum#DOWN
+     * @see MoveDirectionEnum#NONE
+     *
+     * @since 1.6
+     */
+    public static MoveDirectionEnum getVerticalMoveDirection(int fromRowPosition, int toRowPosition) {
+        if (fromRowPosition > toRowPosition) {
+            return MoveDirectionEnum.UP;
+        } else if (fromRowPosition < toRowPosition) {
+            return MoveDirectionEnum.DOWN;
         } else {
             return MoveDirectionEnum.NONE;
         }

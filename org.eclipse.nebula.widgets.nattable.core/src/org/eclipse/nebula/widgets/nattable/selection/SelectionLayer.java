@@ -277,7 +277,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      * When extending a selected area via modifier keys, we need to move from
      * the last selected cell. If we are not extending a selection we need to
      * move from the <i>selection anchor</i>.
-     * 
+     *
      * @param withShiftMask
      *            <code>true</code> if the shift mask is active,
      *            <code>false</code> if not.
@@ -457,14 +457,24 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      * @since 1.6
      */
     public boolean allCellsSelectedInRegion(Rectangle region) {
-        for (int col = region.x; col < (region.x + region.width); col++) {
+        if (region.height == Integer.MAX_VALUE) {
             // if the region is for a full column selection, simplify the check
             // for better performance and correctness
-            if (region.height == Integer.MAX_VALUE) {
+            for (int col = region.x; col < (region.x + region.width); col++) {
                 if (!isColumnPositionFullySelected(col)) {
                     return false;
                 }
-            } else {
+            }
+        } else if (region.width == Integer.MAX_VALUE) {
+            // if the region is for a full row selection, simplify the check
+            // for better performance and correctness
+            for (int row = region.y; row < (region.y + region.height); row++) {
+                if (!isRowPositionFullySelected(row)) {
+                    return false;
+                }
+            }
+        } else {
+            for (int col = region.x; col < (region.x + region.width); col++) {
                 for (int row = region.y; row < (region.y + region.height); row++) {
                     if (!isCellPositionSelected(col, row)) {
                         return false;

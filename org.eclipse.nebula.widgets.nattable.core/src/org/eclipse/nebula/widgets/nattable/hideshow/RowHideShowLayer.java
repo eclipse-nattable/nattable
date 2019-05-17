@@ -149,7 +149,7 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
         }
         this.hiddenRowIndexes.addAll(rowIndexes);
         invalidateCache();
-        fireLayerEvent(new HideRowPositionsEvent(this, rowPositions));
+        fireLayerEvent(new HideRowPositionsEvent(this, rowPositions, rowIndexes));
     }
 
     @Override
@@ -160,14 +160,15 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
         }
         this.hiddenRowIndexes.addAll(rowIndexes);
         invalidateCache();
-        fireLayerEvent(new HideRowPositionsEvent(this, rowPositions));
+        fireLayerEvent(new HideRowPositionsEvent(this, rowPositions, rowIndexes));
     }
 
     @Override
     public void showRowIndexes(Collection<Integer> rowIndexes) {
         this.hiddenRowIndexes.removeAll(rowIndexes);
         invalidateCache();
-        fireLayerEvent(new ShowRowPositionsEvent(this, getRowPositionsByIndexes(rowIndexes)));
+        Collection<Integer> positions = getRowPositionsByIndexes(rowIndexes);
+        fireLayerEvent(new ShowRowPositionsEvent(this, positions));
     }
 
     @Override
@@ -210,7 +211,7 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
         Collection<Integer> hiddenRows = new ArrayList<Integer>(this.hiddenRowIndexes);
         this.hiddenRowIndexes.clear();
         invalidateCache();
-        fireLayerEvent(new ShowRowPositionsEvent(this, hiddenRows));
+        fireLayerEvent(new ShowRowPositionsEvent(this, getRowPositionsByIndexes(hiddenRows)));
     }
 
     @Override

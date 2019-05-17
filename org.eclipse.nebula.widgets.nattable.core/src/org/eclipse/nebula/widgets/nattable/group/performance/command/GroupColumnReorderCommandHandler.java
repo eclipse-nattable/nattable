@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.group.performance.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupUtils;
 import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
@@ -45,7 +46,7 @@ public class GroupColumnReorderCommandHandler extends AbstractLayerCommandHandle
         if (isValid) {
             int fromIndex = this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(fromColumnPosition);
             int toIndex = this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(toColumnPosition);
-            MoveDirectionEnum moveDirection = ColumnGroupUtils.getMoveDirection(fromColumnPosition, toColumnPosition);
+            MoveDirectionEnum moveDirection = PositionUtil.getHorizontalMoveDirection(fromColumnPosition, toColumnPosition);
             boolean updateToPosition = false;
             for (int level = 0; level < this.columnGroupHeaderLayer.getLevelCount(); level++) {
                 // as we are registered on the positionLayer, there is no need

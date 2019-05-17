@@ -43,7 +43,7 @@ public class GroupMultiColumnReorderCommandHandler extends AbstractLayerCommandH
                 this.columnGroupHeaderLayer,
                 toColumnPosition,
                 reorderToLeftEdge,
-                PositionUtil.getMoveDirection(fromColumnPositions.get(0), toColumnPosition))) {
+                PositionUtil.getHorizontalMoveDirection(fromColumnPositions.get(0), toColumnPosition))) {
 
             for (int fromColumnPosition : fromColumnPositions) {
                 if (!ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, fromColumnPosition, toColumnPosition, reorderToLeftEdge)) {

@@ -42,6 +42,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.Defau
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigLabelModifier;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByDataLayer;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderConfiguration;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByModel;
@@ -262,7 +263,10 @@ public class _815_SortableGroupByFilterPerformanceColumnGroupAndFreezeExample ex
                 bodyLayerStack.getGroupByModel(),
                 gridLayer,
                 columnHeaderDataProvider,
-                columnHeaderLayer);
+                columnHeaderLayer,
+                // register special configured GroupByHeaderConfiguration to
+                // correctly visualize that unbreakable groups can't be broken
+                new GroupByHeaderConfiguration(bodyLayerStack.getGroupByModel(), columnHeaderDataProvider, columnHeaderLayer, columnGroupHeaderLayer));
         compositeGridLayer.setChildLayer(GroupByHeaderLayer.GROUP_BY_REGION, groupByHeaderLayer, 0, 0);
         compositeGridLayer.setChildLayer("Grid", gridLayer, 0, 1);
 
@@ -372,8 +376,8 @@ public class _815_SortableGroupByFilterPerformanceColumnGroupAndFreezeExample ex
         });
 
         // add group by header configuration
-        natTable.addConfiguration(new GroupByHeaderMenuConfiguration(natTable,
-                groupByHeaderLayer));
+        natTable.addConfiguration(
+                new GroupByHeaderMenuConfiguration(natTable, groupByHeaderLayer));
 
         natTable.addConfiguration(new AbstractHeaderMenuConfiguration(natTable) {
 

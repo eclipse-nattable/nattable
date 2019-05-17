@@ -16,7 +16,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.TreeSet;
 
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -27,6 +29,7 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.SpanningLayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
+import org.eclipse.nebula.widgets.nattable.reorder.event.RowReorderEvent;
 
 public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
 
@@ -43,6 +46,22 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 
     @Override
     public void handleLayerEvent(ILayerEvent event) {
+        if (event instanceof RowReorderEvent) {
+            // we need to convert the before positions in the event BEFORE the
+            // local states are changed, otherwise we are not able to convert
+            // the before positions as the changed layer states would return
+            // incorrect values
+            RowReorderEvent reorderEvent = (RowReorderEvent) event;
+
+            Collection<Integer> fromPositions = new TreeSet<Integer>();
+            for (int pos : reorderEvent.getBeforeFromRowIndexes()) {
+                fromPositions.add(getRowPositionByIndex(pos));
+            }
+            Collection<Range> fromRanges = PositionUtil.getRanges(fromPositions);
+
+            reorderEvent.setConvertedBeforePositions(this, fromRanges, getRowPositionByIndex(reorderEvent.getBeforeToRowIndex()));
+        }
+
         if (event instanceof IStructuralChangeEvent) {
             IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
             if (structuralChangeEvent.isVerticalStructureChanged()) {

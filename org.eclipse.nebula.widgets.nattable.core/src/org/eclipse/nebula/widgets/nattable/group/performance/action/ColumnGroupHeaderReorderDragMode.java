@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.group.performance.action;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.LayerCommandUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.ColumnPositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.RowPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupUtils;
 import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer;
@@ -124,7 +125,7 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
                 if (toPosition < 0 && toGridColumnPosition == natLayer.getColumnCount()) {
                     toCheck = LayerUtil.convertColumnPosition(natLayer, toGridColumnPosition - 1, this.columnGroupHeaderLayer.getPositionLayer());
                 }
-                MoveDirectionEnum moveDirection = ColumnGroupUtils.getMoveDirection(fromPosition, toCheck);
+                MoveDirectionEnum moveDirection = PositionUtil.getHorizontalMoveDirection(fromPosition, toCheck);
                 toCheck = MoveDirectionEnum.RIGHT == moveDirection ? toCheck - 1 : toCheck;
                 return ColumnGroupUtils.isInTheSameGroup(
                         this.columnGroupHeaderLayer,
@@ -156,7 +157,7 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
                 this.level,
                 toPosition,
                 toPosition < this.columnGroupHeaderLayer.getColumnCount(),
-                ColumnGroupUtils.getMoveDirection(fromGridColumnPosition, toGridColumnPosition));
+                PositionUtil.getHorizontalMoveDirection(fromGridColumnPosition, toGridColumnPosition));
     }
 
     @Override

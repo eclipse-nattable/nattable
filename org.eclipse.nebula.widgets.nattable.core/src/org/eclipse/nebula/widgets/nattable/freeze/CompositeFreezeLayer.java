@@ -21,6 +21,7 @@ import org.eclipse.nebula.widgets.nattable.freeze.config.DefaultFreezeGridBindin
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentIndexLayer;
 import org.eclipse.nebula.widgets.nattable.group.command.ViewportSelectColumnGroupCommandHandler;
+import org.eclipse.nebula.widgets.nattable.group.command.ViewportSelectRowGroupCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
@@ -121,6 +122,7 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
         final DimensionallyDependentIndexLayer frozenRowLayer =
                 (DimensionallyDependentIndexLayer) getChildLayerByLayoutCoordinate(1, 0);
         frozenRowLayer.registerCommandHandler(new ViewportSelectRowCommandHandler(frozenRowLayer));
+        frozenRowLayer.registerCommandHandler(new ViewportSelectRowGroupCommandHandler(frozenRowLayer));
 
         final DimensionallyDependentIndexLayer frozenColumnLayer =
                 (DimensionallyDependentIndexLayer) getChildLayerByLayoutCoordinate(0, 1);
@@ -251,6 +253,71 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
         }
 
         return new int[] { startX, width };
+    }
+
+    /**
+     * This method is used to determine the bounds of a cell with row span in
+     * case of an active freeze. This is needed because row positions can be
+     * ambiguous if the start row of a spanned cell is moved below the frozen
+     * area.
+     *
+     * @param rowPosition
+     *            The row position that was used to retrieve the cell. Needed to
+     *            identify the origin layout in order to know if the start needs
+     *            to be searched in the frozen or the scrollable area.
+     * @param startRow
+     *            The start row position of the spanned cell.
+     * @param endRow
+     *            The end row position of the spanned cell.
+     * @return int array that contains the start y position of a cell in the
+     *         first element, and the height of the cell in the second element.
+     * @since 1.6
+     */
+    public int[] getRowBounds(int rowPosition, int startRow, int endRow) {
+        int rowPositionLayout = getLayoutYByRowPosition(rowPosition);
+        int startRowLayout = getLayoutYByRowPosition(startRow);
+        int endRowLayout = getLayoutYByRowPosition(endRow);
+
+        int start = startRow;
+        int end = isFrozen() && endRowLayout == 1 ? endRow - this.viewportLayer.getScrollableLayer().getRowPositionByY(this.viewportLayer.getOrigin().getY()) : endRow;
+        ILayer startLayer = null;
+
+        int startY = 0;
+        int height = 0;
+        if (rowPositionLayout == endRowLayout) {
+            // if a row in the same layout was requested where the end
+            // position is, we use the same layout for calculating start/end
+
+            if (endRowLayout == 0 || startRow == rowPosition) {
+                startY = getStartYOfRowPosition(startRow);
+                int row = startRow;
+                for (; row <= endRow; row++) {
+                    height += getRowHeightByPosition(row);
+                }
+            } else {
+                startLayer = getChildLayerByLayoutCoordinate(1, endRowLayout);
+                start = start - this.viewportLayer.getMinimumOriginRowPosition();
+                end = endRow - this.viewportLayer.getMinimumOriginRowPosition();
+                startY = this.freezeLayer.getHeight() + startLayer.getStartYOfRowPosition(start);
+                int row = start;
+                for (; row <= end; row++) {
+                    height += this.viewportLayer.getRowHeightByPosition(row);
+                }
+            }
+        } else {
+            startLayer = getChildLayerByLayoutCoordinate(1, startRowLayout);
+            startY = this.freezeLayer.getStartYOfRowPosition(start);
+            int freezeHeight = 0;
+            int row = start;
+            for (; row < this.freezeLayer.getRowCount(); row++) {
+                freezeHeight += this.freezeLayer.getRowHeightByPosition(row);
+            }
+
+            int endY = this.freezeLayer.getHeight() + this.viewportLayer.getStartYOfRowPosition(end) + this.viewportLayer.getRowHeightByPosition(end);
+            height = Math.max(freezeHeight, endY - startY);
+        }
+
+        return new int[] { startY, height };
     }
 
     // Persistence

@@ -81,10 +81,10 @@ public abstract class ColumnStructuralChangeEvent extends ColumnVisualChangeEven
     public Collection<Rectangle> getChangedPositionRectangles() {
         Collection<Rectangle> changedPositionRectangles = new ArrayList<Rectangle>();
 
-        Collection<Range> columnPositionRanges = getColumnPositionRanges();
-        if (columnPositionRanges != null && columnPositionRanges.size() > 0) {
+        Collection<Range> ranges = getColumnPositionRanges();
+        if (ranges != null && ranges.size() > 0) {
             int leftmostColumnPosition = Integer.MAX_VALUE;
-            for (Range range : columnPositionRanges) {
+            for (Range range : ranges) {
                 if (range.start < leftmostColumnPosition) {
                     leftmostColumnPosition = range.start;
                 }

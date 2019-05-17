@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2016 Dirk Fauth and others.
+ * Copyright (c) 2013, 2019 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -382,8 +382,11 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
      *            not
      */
     public void reorderRowPosition(int fromRowPosition, int toRowPosition, boolean reorderToTopEdge) {
+        // get the indexes before the move operation
+        int fromRowIndex = getRowIndexByPosition(fromRowPosition);
+        int toRowIndex = getRowIndexByPosition(toRowPosition);
         moveRow(fromRowPosition, toRowPosition, reorderToTopEdge);
-        fireLayerEvent(new RowReorderEvent(this, fromRowPosition, toRowPosition, reorderToTopEdge));
+        fireLayerEvent(new RowReorderEvent(this, fromRowPosition, fromRowIndex, toRowPosition, toRowIndex, reorderToTopEdge));
     }
 
     /**
@@ -420,15 +423,24 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
      *            not
      */
     public void reorderMultipleRowPositions(List<Integer> fromRowPositions, int toRowPosition, boolean reorderToTopEdge) {
+        // get the indexes before the move operation
+        List<Integer> fromRowIndexes = new ArrayList<Integer>();
+        for (int fromRowPosition : fromRowPositions) {
+            fromRowIndexes.add(getRowIndexByPosition(fromRowPosition));
+        }
+        int toRowIndex = getRowIndexByPosition(toRowPosition);
+
         final int fromRowPositionsCount = fromRowPositions.size();
 
         if (toRowPosition > fromRowPositions.get(fromRowPositionsCount - 1)) {
             // Moving from top to bottom
             int firstRowPosition = fromRowPositions.get(0);
 
+            int moved = 0;
             for (int rowCount = 0; rowCount < fromRowPositionsCount; rowCount++) {
-                final int fromRowPosition = fromRowPositions.get(0);
+                final int fromRowPosition = fromRowPositions.get(rowCount) - moved;
                 moveRow(fromRowPosition, toRowPosition, reorderToTopEdge);
+                moved++;
                 if (fromRowPosition < firstRowPosition) {
                     firstRowPosition = fromRowPosition;
                 }
@@ -442,7 +454,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
             }
         }
 
-        fireLayerEvent(new RowReorderEvent(this, fromRowPositions, toRowPosition, reorderToTopEdge));
+        fireLayerEvent(new RowReorderEvent(this, fromRowPositions, fromRowIndexes, toRowPosition, toRowIndex, reorderToTopEdge));
     }
 
     /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
+ * Copyright (c) 2019 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,10 +10,15 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers._511_Grouping;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.columnChooser.command.DisplayColumnChooserCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
@@ -36,45 +41,46 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupExpandCollapseLayer;
 import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
+import org.eclipse.nebula.widgets.nattable.group.performance.RowGroupExpandCollapseLayer;
+import org.eclipse.nebula.widgets.nattable.group.performance.RowGroupHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.group.performance.config.DefaultColumnGroupHeaderLayerConfiguration;
+import org.eclipse.nebula.widgets.nattable.group.performance.config.DefaultRowGroupHeaderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
+import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
-import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.ui.menu.VisibleColumnsRemaining;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
-import org.eclipse.nebula.widgets.nattable.viewport.command.ShowColumnInViewportCommand;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 
 /**
- * Simple example showing how to add the {@link ColumnGroupHeaderLayer} to the
+ * Simple example showing how to add the performance
+ * {@link ColumnGroupHeaderLayer} and the {@link RowGroupHeaderLayer} to the
  * layer composition of a grid and how to add the corresponding actions to the
- * column header menu.
+ * header menus.
  */
-public class _5114_GroupingExample extends AbstractNatExample {
+public class _5117_PerformanceColumnAndRowGroupingExample extends AbstractNatExample {
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner.run(1010, 250, new _5114_GroupingExample());
+        StandaloneNatExampleRunner.run(1010, 500, new _5117_PerformanceColumnAndRowGroupingExample());
     }
 
     @Override
     public String getDescription() {
-        return "This example shows the usage of the ColumnGroupHeaderLayer within a grid and "
-                + "its corresponding actions in the column header menu. If you perform a right "
-                + "click on the column header, you are able to hide the current selected "
-                + "column or show all columns again.";
+        return "This example shows the usage of the performance ColumnGroupHeaderLayer and the "
+                + "RowGroupHeaderLayer within a grid and its corresponding actions in the header menus.";
     }
 
     @Override
@@ -110,26 +116,32 @@ public class _5114_GroupingExample extends AbstractNatExample {
         // AbstractIndexLayerTransform and setting the ViewportLayer as
         // underlying layer. But in this case using the ViewportLayer
         // directly as body layer is also working.
+        List<ExtendedPersonWithAddress> persons = PersonService.getExtendedPersonsWithAddress(50);
+        Collections.sort(persons, (o1, o2) -> {
+            return o1.getLastName().compareTo(o2.getLastName());
+        });
+
         IDataProvider bodyDataProvider =
                 new ListDataProvider<>(
-                        PersonService.getExtendedPersonsWithAddress(10),
+                        persons,
                         columnPropertyAccessor);
         DataLayer bodyDataLayer =
                 new DataLayer(bodyDataProvider);
         ColumnReorderLayer columnReorderLayer =
                 new ColumnReorderLayer(bodyDataLayer);
-
-        // TODO
-        // ColumnGroupReorderLayer columnGroupReorderLayer =
-        // new ColumnGroupReorderLayer(columnReorderLayer, columnGroupModel);
         ColumnHideShowLayer columnHideShowLayer =
                 new ColumnHideShowLayer(columnReorderLayer);
-
         ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer =
                 new ColumnGroupExpandCollapseLayer(columnHideShowLayer);
+        RowReorderLayer rowReorderLayer =
+                new RowReorderLayer(columnGroupExpandCollapseLayer);
+        RowHideShowLayer rowHideShowLayer =
+                new RowHideShowLayer(rowReorderLayer);
+        RowGroupExpandCollapseLayer rowGroupExpandCollapseLayer =
+                new RowGroupExpandCollapseLayer(rowHideShowLayer);
 
         final SelectionLayer selectionLayer =
-                new SelectionLayer(columnGroupExpandCollapseLayer);
+                new SelectionLayer(rowGroupExpandCollapseLayer);
         ViewportLayer viewportLayer =
                 new ViewportLayer(selectionLayer);
 
@@ -141,28 +153,21 @@ public class _5114_GroupingExample extends AbstractNatExample {
         ColumnHeaderLayer columnHeaderLayer =
                 new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
         ColumnGroupHeaderLayer columnGroupHeaderLayer =
-                new ColumnGroupHeaderLayer(columnHeaderLayer, selectionLayer);
+                new ColumnGroupHeaderLayer(columnHeaderLayer, selectionLayer, false);
+
+        // enable column group selection bindings
+        columnGroupHeaderLayer.addConfiguration(new DefaultColumnGroupHeaderLayerConfiguration(true));
 
         // configure the column groups
-        // columnGroupHeaderLayer.addColumnsIndexesToGroup("Person", 0, 1, 2,
-        // 3);
-        // columnGroupHeaderLayer.addColumnsIndexesToGroup("Address", 4, 5, 6,
-        // 7);
-        // columnGroupHeaderLayer.addColumnsIndexesToGroup("Facts", 8, 9, 10);
-        // columnGroupHeaderLayer.addColumnsIndexesToGroup("Personal", 11, 12,
-        // 13);
-        // columnGroupHeaderLayer.setStaticColumnIndexesByGroup("Person", 0, 1);
-        // columnGroupHeaderLayer.setStaticColumnIndexesByGroup("Address", 4, 5,
-        // 6);
-        // columnGroupHeaderLayer.setGroupUnbreakable(1);
-
         columnGroupHeaderLayer.addGroup("Person", 0, 4);
         columnGroupHeaderLayer.addGroup("Address", 4, 4);
         columnGroupHeaderLayer.addGroup("Facts", 8, 3);
         columnGroupHeaderLayer.addGroup("Personal", 11, 3);
 
-//        columnGroupHeaderLayer.addGroupingLevel();
-//        columnGroupHeaderLayer.addGroup(1, "Test", 0, 7);
+        columnGroupHeaderLayer.setGroupUnbreakable(1, true);
+
+        columnGroupHeaderLayer.addStaticColumnIndexesToGroup(0, 0, 0, 1);
+        columnGroupHeaderLayer.addStaticColumnIndexesToGroup(0, 4, 5, 6);
 
         // build the row header layer
         IDataProvider rowHeaderDataProvider =
@@ -171,6 +176,53 @@ public class _5114_GroupingExample extends AbstractNatExample {
                 new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
         ILayer rowHeaderLayer =
                 new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
+        RowGroupHeaderLayer rowGroupHeaderLayer =
+                new RowGroupHeaderLayer(rowHeaderLayer, selectionLayer, false);
+
+        // enable row group selection bindings
+        rowGroupHeaderLayer.addConfiguration(new DefaultRowGroupHeaderLayerConfiguration(true));
+
+        // using this configuration instead, expand/collapse would not be
+        // supported in the row header
+        // in that case even the RowGroupExpandCollapseLayer in the body layer
+        // stack could be removed
+        // rowGroupHeaderLayer.addConfiguration(
+        // new DefaultRowGroupHeaderLayerConfiguration(true, false));
+        // rowGroupHeaderLayer.setDefaultCollapseable(false);
+
+        // configure the row groups
+        // collect containing last names and the number of persons with that
+        // last name
+        Map<String, Long> counted = persons.stream()
+                .collect(Collectors.groupingBy(ExtendedPersonWithAddress::getLastName, Collectors.counting()));
+        counted.entrySet().stream().forEach(e -> {
+            rowGroupHeaderLayer.addGroup(
+                    e.getKey(),
+                    // retrieve the index of the first element with the given
+                    // last name
+                    IntStream.range(0, persons.size())
+                            .filter(index -> persons.get(index).getLastName().equals(e.getKey()))
+                            .findFirst()
+                            .getAsInt(),
+                    e.getValue().intValue());
+        });
+
+        // the Simpsons are unbreakable
+        rowGroupHeaderLayer.setGroupUnbreakable("Simpson", true);
+
+        // Homer should be static
+        Group simpsonGroup = rowGroupHeaderLayer.getGroupByName("Simpson");
+        for (int row = simpsonGroup.getStartIndex(); row < simpsonGroup.getStartIndex() + simpsonGroup.getOriginalSpan(); row++) {
+            if (persons.get(row).getFirstName().equals("Homer")) {
+                simpsonGroup.addStaticIndexes(row);
+            }
+        }
+
+        // Group carlsonGroup = rowGroupHeaderLayer.getGroupByName("Carlson");
+        // Group flandersGroup = rowGroupHeaderLayer.getGroupByName("Flanders");
+        // rowGroupHeaderLayer.addGroupingLevel();
+        // rowGroupHeaderLayer.addGroup(1, "Friends", 0,
+        // carlsonGroup.getOriginalSpan() + flandersGroup.getOriginalSpan());
 
         // build the corner layer
         IDataProvider cornerDataProvider =
@@ -178,11 +230,11 @@ public class _5114_GroupingExample extends AbstractNatExample {
         DataLayer cornerDataLayer =
                 new DataLayer(cornerDataProvider);
         ILayer cornerLayer =
-                new CornerLayer(cornerDataLayer, rowHeaderLayer, columnGroupHeaderLayer);
+                new CornerLayer(cornerDataLayer, rowGroupHeaderLayer, columnGroupHeaderLayer);
 
         // build the grid layer
         GridLayer gridLayer =
-                new GridLayer(viewportLayer, columnGroupHeaderLayer, rowHeaderLayer, cornerLayer);
+                new GridLayer(viewportLayer, columnGroupHeaderLayer, rowGroupHeaderLayer, cornerLayer);
 
         // turn the auto configuration off as we want to add our header menu
         // configuration
@@ -204,23 +256,7 @@ public class _5114_GroupingExample extends AbstractNatExample {
                         .withAutoResizeSelectedColumnsMenuItem()
                         .withColumnRenameDialog()
                         .withColumnChooserMenuItem()
-                        .withMenuItemProvider(new IMenuItemProvider() {
-
-                            @Override
-                            public void addMenuItem(NatTable natTable, Menu popupMenu) {
-                                MenuItem scroll = new MenuItem(popupMenu, SWT.PUSH);
-                                scroll.setText("Scroll");
-                                scroll.setEnabled(true);
-
-                                scroll.addSelectionListener(new SelectionAdapter() {
-                                    @Override
-                                    public void widgetSelected(SelectionEvent e) {
-                                        natTable.doCommand(
-                                                new ShowColumnInViewportCommand(11));
-                                    }
-                                });
-                            }
-                        });
+                        .withInspectLabelsMenuItem();
                 builder.withEnabledState(
                         PopupMenuBuilder.HIDE_COLUMN_MENU_ITEM_ID,
                         new VisibleColumnsRemaining(selectionLayer));
@@ -230,12 +266,17 @@ public class _5114_GroupingExample extends AbstractNatExample {
             @Override
             protected PopupMenuBuilder createRowHeaderMenu(NatTable natTable) {
                 return super.createRowHeaderMenu(natTable)
-                        .withAutoResizeSelectedRowsMenuItem();
+                        .withHideRowMenuItem()
+                        .withShowAllRowsMenuItem()
+                        .withCreateRowGroupMenuItem()
+                        .withUngroupRowsMenuItem()
+                        .withAutoResizeSelectedRowsMenuItem()
+                        .withInspectLabelsMenuItem();
             }
 
             @Override
             protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
-                return super.createCornerMenu(natTable).withShowAllColumnsMenuItem();
+                return super.createCornerMenu(natTable).withShowAllRowsMenuItem();
             }
         });
 
@@ -243,6 +284,7 @@ public class _5114_GroupingExample extends AbstractNatExample {
         final Menu columnGroupHeaderMenu = new PopupMenuBuilder(natTable)
                 .withRenameColumnGroupMenuItem()
                 .withRemoveColumnGroupMenuItem()
+                .withInspectLabelsMenuItem()
                 .build();
 
         natTable.addConfiguration(new AbstractUiBindingConfiguration() {
@@ -257,34 +299,35 @@ public class _5114_GroupingExample extends AbstractNatExample {
             }
         });
 
-        // enable this configuration to verify the automatic height calculation
-        // when using vertical text painter
-        // natTable.addConfiguration(new AbstractRegistryConfiguration() {
-        //
-        // @Override
-        // public void configureRegistry(IConfigRegistry configRegistry) {
-        // ICellPainter cellPainter = new BeveledBorderDecorator(new
-        // VerticalTextPainter(false, true, 5, true, true));
-        // configRegistry.registerConfigAttribute(
-        // CellConfigAttributes.CELL_PAINTER, cellPainter, DisplayMode.NORMAL,
-        // GridRegion.COLUMN_HEADER);
-        // }
-        // });
+        // Row group header menu
+        final Menu rowGroupHeaderMenu = new PopupMenuBuilder(natTable)
+                .withRenameRowGroupMenuItem()
+                .withRemoveRowGroupMenuItem()
+                .withInspectLabelsMenuItem()
+                .build();
 
-        // TODO
+        natTable.addConfiguration(new AbstractUiBindingConfiguration() {
+            @Override
+            public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+                uiBindingRegistry.registerFirstMouseDownBinding(
+                        new MouseEventMatcher(
+                                SWT.NONE,
+                                GridRegion.ROW_GROUP_HEADER,
+                                MouseEventMatcher.RIGHT_BUTTON),
+                        new PopupMenuAction(rowGroupHeaderMenu));
+            }
+        });
+
         // Register column chooser
-        // DisplayColumnChooserCommandHandler columnChooserCommandHandler =
-        // new DisplayColumnChooserCommandHandler(
-        // selectionLayer,
-        // columnHideShowLayer,
-        // columnHeaderLayer,
-        // columnHeaderDataLayer,
-        // columnGroupHeaderLayer,
-        // columnGroupModel,
-        // false,
-        // true);
-        //
-        // viewportLayer.registerCommandHandler(columnChooserCommandHandler);
+        DisplayColumnChooserCommandHandler columnChooserCommandHandler =
+                new DisplayColumnChooserCommandHandler(
+                        columnHideShowLayer,
+                        columnHeaderLayer,
+                        columnHeaderDataLayer,
+                        columnGroupHeaderLayer,
+                        false);
+
+        viewportLayer.registerCommandHandler(columnChooserCommandHandler);
 
         natTable.configure();
 

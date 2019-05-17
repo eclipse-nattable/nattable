@@ -1023,21 +1023,21 @@ public class GroupModelTest {
         Group group2 = this.model.getGroupByPosition(5);
         Group group3 = this.model.getGroupByPosition(12);
 
-        assertTrue(group1.isLeftEdge(0));
-        assertFalse(group1.isLeftEdge(1));
-        assertFalse(group1.isLeftEdge(2));
-        assertFalse(group1.isLeftEdge(3));
+        assertTrue(group1.isGroupStart(0));
+        assertFalse(group1.isGroupStart(1));
+        assertFalse(group1.isGroupStart(2));
+        assertFalse(group1.isGroupStart(3));
 
-        assertFalse(group1.isLeftEdge(4));
-        assertFalse(group2.isLeftEdge(4));
+        assertFalse(group1.isGroupStart(4));
+        assertFalse(group2.isGroupStart(4));
 
-        assertTrue(group2.isLeftEdge(5));
-        assertFalse(group2.isLeftEdge(6));
-        assertFalse(group2.isLeftEdge(7));
+        assertTrue(group2.isGroupStart(5));
+        assertFalse(group2.isGroupStart(6));
+        assertFalse(group2.isGroupStart(7));
 
-        assertTrue(group3.isLeftEdge(12));
-        assertFalse(group3.isLeftEdge(13));
-        assertFalse(group3.isLeftEdge(14));
+        assertTrue(group3.isGroupStart(12));
+        assertFalse(group3.isGroupStart(13));
+        assertFalse(group3.isGroupStart(14));
     }
 
     @Test
@@ -1046,21 +1046,21 @@ public class GroupModelTest {
         Group group2 = this.model.getGroupByPosition(5);
         Group group3 = this.model.getGroupByPosition(12);
 
-        assertFalse(group1.isRightEdge(0));
-        assertFalse(group1.isRightEdge(1));
-        assertFalse(group1.isRightEdge(2));
-        assertTrue(group1.isRightEdge(3));
+        assertFalse(group1.isGroupEnd(0));
+        assertFalse(group1.isGroupEnd(1));
+        assertFalse(group1.isGroupEnd(2));
+        assertTrue(group1.isGroupEnd(3));
 
-        assertFalse(group1.isRightEdge(4));
-        assertFalse(group2.isRightEdge(4));
+        assertFalse(group1.isGroupEnd(4));
+        assertFalse(group2.isGroupEnd(4));
 
-        assertFalse(group2.isRightEdge(5));
-        assertFalse(group2.isRightEdge(6));
-        assertTrue(group2.isRightEdge(7));
+        assertFalse(group2.isGroupEnd(5));
+        assertFalse(group2.isGroupEnd(6));
+        assertTrue(group2.isGroupEnd(7));
 
-        assertFalse(group3.isRightEdge(12));
-        assertTrue(group3.isRightEdge(13));
-        assertFalse(group3.isRightEdge(14));
+        assertFalse(group3.isGroupEnd(12));
+        assertTrue(group3.isGroupEnd(13));
+        assertFalse(group3.isGroupEnd(14));
     }
 
     @Test

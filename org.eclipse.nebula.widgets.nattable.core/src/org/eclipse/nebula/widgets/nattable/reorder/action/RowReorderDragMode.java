@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2018 Dirk Fauth and others.
+ * Copyright (c) 2013, 2019 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.selection.command.ClearAllSelectionsC
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeDetectUtil;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
+import org.eclipse.nebula.widgets.nattable.ui.util.MouseEventHelper;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.action.AutoScrollDragMode;
 import org.eclipse.swt.events.MouseEvent;
@@ -79,15 +80,18 @@ public class RowReorderDragMode extends AutoScrollDragMode {
 
         natTable.removeOverlayPainter(this.targetOverlayPainter);
 
-        int dragToGridRowPosition = getDragToGridRowPosition(
-                getMoveDirection(event.y),
-                natTable.getRowPositionByY(event.y));
+        // only trigger column reordering in case there is a real drag operation
+        if (!MouseEventHelper.treatAsClick(this.initialEvent, this.currentEvent)) {
+            int dragToGridRowPosition = getDragToGridRowPosition(
+                    getMoveDirection(event.y),
+                    natTable.getRowPositionByY(event.y));
 
-        if (!isValidTargetRowPosition(natTable, this.dragFromGridRowPosition, dragToGridRowPosition)) {
-            dragToGridRowPosition = -1;
+            if (!isValidTargetRowPosition(natTable, this.dragFromGridRowPosition, dragToGridRowPosition)) {
+                dragToGridRowPosition = -1;
+            }
+
+            fireMoveEndCommand(natTable, dragToGridRowPosition);
         }
-
-        fireMoveEndCommand(natTable, dragToGridRowPosition);
 
         natTable.redraw();
     }

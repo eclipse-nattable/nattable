@@ -625,7 +625,7 @@ public class GroupModel implements IPersistable {
      * member collection contains the given index. Could have a bad performance
      * in case of huge groups.
      * </p>
-     * 
+     *
      * @param memberIndex
      *            The index to check.
      * @return The Group that contains the given index or <code>null</code> if
@@ -1343,30 +1343,30 @@ public class GroupModel implements IPersistable {
         }
 
         /**
-         * Checks if the given position is the left most position of this group.
-         * This actually means if the given position is the visible start
+         * Checks if the given position is the left/top most position of this
+         * group. This actually means if the given position is the visible start
          * position.
          *
          * @param position
          *            The position to check.
-         * @return <code>true</code> if the given position is the left most
+         * @return <code>true</code> if the given position is the left/top most
          *         position of this group, <code>false</code> if not.
          */
-        public boolean isLeftEdge(int position) {
+        public boolean isGroupStart(int position) {
             return position == this.visibleStartPosition;
         }
 
         /**
-         * Checks if the given position is the right most position of this
-         * group. This actually means if the given position is the visible start
-         * position + visible span.
+         * Checks if the given position is the right/bottom most position of
+         * this group. This actually means if the given position is the visible
+         * start position + visible span.
          *
          * @param position
          *            The position to check.
-         * @return <code>true</code> if the given position is the right most
-         *         position of this group, <code>false</code> if not.
+         * @return <code>true</code> if the given position is the right/bottom
+         *         most position of this group, <code>false</code> if not.
          */
-        public boolean isRightEdge(int position) {
+        public boolean isGroupEnd(int position) {
             return (this.visibleStartPosition + this.visibleSpan - 1) == position;
         }
 

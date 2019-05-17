@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.eclipse.nebula.widgets.nattable.core" version="2">
-    <resource path="src/org/eclipse/nebula/widgets/nattable/conflation/EventConflaterChain.java" type="org.eclipse.nebula.widgets.nattable.conflation.EventConflaterChain">
-        <filter id="388194388">
-            <message_arguments>
-                <message_argument value="org.eclipse.nebula.widgets.nattable.conflation.EventConflaterChain"/>
-                <message_argument value="DEFAULT_REFRESH_INTERVAL"/>
-                <message_argument value="100"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="src/org/eclipse/nebula/widgets/nattable/fillhandle/action/FillHandleDragMode.java" type="org.eclipse.nebula.widgets.nattable.fillhandle.action.FillHandleDragMode">
         <filter comment="Added startPosition to fix an issue with the index based handling" id="336658481">
             <message_arguments>
@@ -114,6 +105,32 @@
             <message_arguments>
                 <message_argument value="org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter"/>
                 <message_argument value="IndentedTreeImagePainter(int, TreeImagePainter)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/nebula/widgets/nattable/ui/menu/PopupMenuBuilder.java" type="org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder">
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder"/>
+                <message_argument value="CREATE_ROW_GROUP_MENU_ITEM_ID"/>
+            </message_arguments>
+        </filter>
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder"/>
+                <message_argument value="REMOVE_ROW_GROUP_MENU_ITEM_ID"/>
+            </message_arguments>
+        </filter>
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder"/>
+                <message_argument value="RENAME_ROW_GROUP_MENU_ITEM_ID"/>
+            </message_arguments>
+        </filter>
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder"/>
+                <message_argument value="UNGROUP_ROWS_MENU_ITEM_ID"/>
             </message_arguments>
         </filter>
     </resource>

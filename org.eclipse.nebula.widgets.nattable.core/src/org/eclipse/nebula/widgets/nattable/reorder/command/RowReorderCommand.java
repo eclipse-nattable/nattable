@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2019 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder.command;
 
@@ -16,10 +16,7 @@ import org.eclipse.nebula.widgets.nattable.coordinate.RowPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 /**
- * Command for reordering a row.
- *
- * @author Dirk Fauth
- *
+ * Command for reordering a single row.
  */
 public class RowReorderCommand implements ILayerCommand {
 
@@ -48,10 +45,8 @@ public class RowReorderCommand implements ILayerCommand {
      *            The position of the row to which the dragged row should be
      *            dropped
      */
-    public RowReorderCommand(ILayer layer, int fromRowPosition,
-            int toRowPosition) {
-        this.fromRowPositionCoordinate = new RowPositionCoordinate(layer,
-                fromRowPosition);
+    public RowReorderCommand(ILayer layer, int fromRowPosition, int toRowPosition) {
+        this.fromRowPositionCoordinate = new RowPositionCoordinate(layer, fromRowPosition);
 
         if (toRowPosition < layer.getRowCount()) {
             this.reorderToTopEdge = true;
@@ -60,8 +55,7 @@ public class RowReorderCommand implements ILayerCommand {
             toRowPosition--;
         }
 
-        this.toRowPositionCoordinate = new RowPositionCoordinate(layer,
-                toRowPosition);
+        this.toRowPositionCoordinate = new RowPositionCoordinate(layer, toRowPosition);
     }
 
     /**
@@ -84,11 +78,33 @@ public class RowReorderCommand implements ILayerCommand {
     }
 
     /**
+     *
+     * @param fromPosition
+     *            The new fromRowPosition.
+     *
+     * @since 1.6
+     */
+    public void updateFromRowPosition(int fromPosition) {
+        this.fromRowPositionCoordinate.rowPosition = fromPosition;
+    }
+
+    /**
      * @return The position of the row to which the dragged row should be
      *         dropped
      */
     public int getToRowPosition() {
         return this.toRowPositionCoordinate.getRowPosition();
+    }
+
+    /**
+     *
+     * @param toPosition
+     *            The new toRowPosition.
+     *
+     * @since 1.6
+     */
+    public void updateToRowPosition(int toPosition) {
+        this.toRowPositionCoordinate.rowPosition = toPosition;
     }
 
     /**
@@ -101,12 +117,10 @@ public class RowReorderCommand implements ILayerCommand {
 
     @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
-        RowPositionCoordinate targetFromRowPositionCoordinate = LayerCommandUtil
-                .convertRowPositionToTargetContext(this.fromRowPositionCoordinate,
-                        targetLayer);
-        RowPositionCoordinate targetToRowPositionCoordinate = LayerCommandUtil
-                .convertRowPositionToTargetContext(this.toRowPositionCoordinate,
-                        targetLayer);
+        RowPositionCoordinate targetFromRowPositionCoordinate =
+                LayerCommandUtil.convertRowPositionToTargetContext(this.fromRowPositionCoordinate, targetLayer);
+        RowPositionCoordinate targetToRowPositionCoordinate =
+                LayerCommandUtil.convertRowPositionToTargetContext(this.toRowPositionCoordinate, targetLayer);
         if (targetFromRowPositionCoordinate != null
                 && targetToRowPositionCoordinate != null) {
             this.fromRowPositionCoordinate = targetFromRowPositionCoordinate;

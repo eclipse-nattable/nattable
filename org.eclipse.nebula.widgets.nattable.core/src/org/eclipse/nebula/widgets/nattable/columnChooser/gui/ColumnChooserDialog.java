@@ -831,9 +831,9 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
                                 toPositions.add(firstPositionInGroup - previousGroup.getVisibleSpan());
                             } else if (groupModel != null
                                     && ((groupModel.isPartOfAGroup(columnEntryPosition)
-                                            && groupModel.getGroupByPosition(columnEntryPosition).isLeftEdge(columnEntryPosition))
+                                            && groupModel.getGroupByPosition(columnEntryPosition).isGroupStart(columnEntryPosition))
                                             || (groupModel.isPartOfAGroup(previousColumnEntryPosition)
-                                                    && groupModel.getGroupByPosition(previousColumnEntryPosition).isRightEdge(previousColumnEntryPosition)
+                                                    && groupModel.getGroupByPosition(previousColumnEntryPosition).isGroupEnd(previousColumnEntryPosition)
                                                     && !groupModel.getGroupByPosition(previousColumnEntryPosition).isUnbreakable()))) {
                                 // we first move out of the group if we are at
                                 // the left edge in a current group or the right
@@ -963,9 +963,9 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
                                 toPositions.add(lastPositionInGroup + nextGroup.getVisibleSpan());
                             } else if (groupModel != null
                                     && ((groupModel.isPartOfAGroup(columnEntryPosition)
-                                            && groupModel.getGroupByPosition(columnEntryPosition).isRightEdge(columnEntryPosition))
+                                            && groupModel.getGroupByPosition(columnEntryPosition).isGroupEnd(columnEntryPosition))
                                             || (groupModel.isPartOfAGroup(nextColumnEntryPosition)
-                                                    && groupModel.getGroupByPosition(nextColumnEntryPosition).isLeftEdge(nextColumnEntryPosition)
+                                                    && groupModel.getGroupByPosition(nextColumnEntryPosition).isGroupStart(nextColumnEntryPosition)
                                                     && !groupModel.getGroupByPosition(nextColumnEntryPosition).isUnbreakable()))) {
                                 // we first move out of the group if we are at
                                 // the left edge in a current group or the right

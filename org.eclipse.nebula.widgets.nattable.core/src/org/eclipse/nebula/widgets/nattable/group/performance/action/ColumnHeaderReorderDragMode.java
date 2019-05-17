@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.group.performance.action;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupUtils;
 import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel;
@@ -100,7 +101,7 @@ public class ColumnHeaderReorderDragMode extends ColumnReorderDragMode {
 
     /**
      * Test if the reorder is valid for the given level.
-     * 
+     *
      * @param natLayer
      *            The layer on which the drag operation is triggered, typically
      *            the NatTable instance.
@@ -134,7 +135,7 @@ public class ColumnHeaderReorderDragMode extends ColumnReorderDragMode {
             if (toPosition < 0 && toGridColumnPosition == natLayer.getColumnCount()) {
                 toCheck = LayerUtil.convertColumnPosition(natLayer, toGridColumnPosition - 1, this.columnGroupHeaderLayer.getPositionLayer());
             }
-            MoveDirectionEnum moveDirection = ColumnGroupUtils.getMoveDirection(fromPosition, toCheck);
+            MoveDirectionEnum moveDirection = PositionUtil.getHorizontalMoveDirection(fromPosition, toCheck);
             toCheck = MoveDirectionEnum.RIGHT == moveDirection ? toCheck - 1 : toCheck;
 
             // Allow moving within the unbreakable group

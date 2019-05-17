@@ -42,14 +42,14 @@ import org.eclipse.swt.SWT;
  */
 public class DefaultColumnGroupHeaderLayerConfiguration extends AbstractLayerConfiguration<ColumnGroupHeaderLayer> {
 
-    public static final String GROUP_COLLAPSED_CONFIG_TYPE = "GROUP_COLLAPSED"; //$NON-NLS-1$
-    public static final String GROUP_EXPANDED_CONFIG_TYPE = "GROUP_EXPANDED"; //$NON-NLS-1$
-
-    private final boolean enableColumnGroupSelectionHandling;
+    private final boolean enableColumnGroupSelectionBinding;
+    private final boolean enableExpandCollapseBinding;
 
     private ColumnGroupHeaderLayer columnGroupHeaderLayer;
 
     /**
+     * Creates the DefaultColumnGroupHeaderLayerConfiguration with enabled
+     * expand/collapse binding.
      *
      * @param enableGroupSelection
      *            <code>true</code> if single click selection bindings on the
@@ -57,7 +57,23 @@ public class DefaultColumnGroupHeaderLayerConfiguration extends AbstractLayerCon
      *            no operations should be triggered on single click.
      */
     public DefaultColumnGroupHeaderLayerConfiguration(boolean enableGroupSelection) {
-        this.enableColumnGroupSelectionHandling = enableGroupSelection;
+        this(enableGroupSelection, true);
+    }
+
+    /**
+     *
+     * @param enableGroupSelection
+     *            <code>true</code> if single click selection bindings on the
+     *            column group header should be enabled, <code>false</code> if
+     *            no operations should be triggered on single click.
+     * @param enableExpandCollapse
+     *            <code>true</code> if the binding should be registered to
+     *            expand/collapse a group on double click, <code>false</code> if
+     *            the binding should not be registered.
+     */
+    public DefaultColumnGroupHeaderLayerConfiguration(boolean enableGroupSelection, boolean enableExpandCollapse) {
+        this.enableColumnGroupSelectionBinding = enableGroupSelection;
+        this.enableExpandCollapseBinding = enableExpandCollapse;
     }
 
     @Override
@@ -107,7 +123,7 @@ public class DefaultColumnGroupHeaderLayerConfiguration extends AbstractLayerCon
                 new AggregateDragMode(new CellDragMode(), new ColumnHeaderReorderDragMode(this.columnGroupHeaderLayer)));
 
         // added NoOpMouseAction on single click because of Bug 428901
-        if (!this.enableColumnGroupSelectionHandling) {
+        if (!this.enableColumnGroupSelectionBinding) {
             uiBindingRegistry.registerFirstSingleClickBinding(
                     MouseEventMatcher.columnGroupHeaderLeftClick(SWT.NONE),
                     new NoOpMouseAction());
@@ -135,9 +151,18 @@ public class DefaultColumnGroupHeaderLayerConfiguration extends AbstractLayerCon
                     new ViewportSelectColumnGroupAction(true, true));
         }
 
-        uiBindingRegistry.registerDoubleClickBinding(
-                MouseEventMatcher.columnGroupHeaderLeftClick(SWT.NONE),
-                new ColumnGroupExpandCollapseAction());
+        if (this.enableExpandCollapseBinding) {
+            // if column group selection is enabled, the
+            // ColumnGroupExpandCollapseAction is configured to be exclusive to
+            // avoid that the selection is also triggered on expand/collapse.
+            // Note that this is causing a delay of Display#getDoubleClickTime()
+            // in performing the selection. In case expand/collapse is not
+            // supported, you might want to override this configuration with a
+            // non-exclusive ColumnGroupExpandCollapseAction.
+            uiBindingRegistry.registerDoubleClickBinding(
+                    MouseEventMatcher.columnGroupHeaderLeftClick(SWT.NONE),
+                    new ColumnGroupExpandCollapseAction(this.enableColumnGroupSelectionBinding));
+        }
 
         uiBindingRegistry.registerKeyBinding(
                 new KeyEventMatcher(SWT.MOD1, 'g'),

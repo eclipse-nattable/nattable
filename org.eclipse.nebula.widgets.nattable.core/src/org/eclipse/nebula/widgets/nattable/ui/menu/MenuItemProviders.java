@@ -25,11 +25,16 @@ import org.eclipse.nebula.widgets.nattable.export.image.ImageExporter;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearAllFiltersCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ToggleFilterRowCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.CreateColumnGroupCommand;
+import org.eclipse.nebula.widgets.nattable.group.command.CreateRowGroupCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.DisplayColumnGroupRenameDialogCommand;
+import org.eclipse.nebula.widgets.nattable.group.command.DisplayRowGroupRenameDialogCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.OpenCreateColumnGroupDialog;
 import org.eclipse.nebula.widgets.nattable.group.command.RemoveColumnGroupCommand;
+import org.eclipse.nebula.widgets.nattable.group.command.RemoveRowGroupCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.UngroupColumnCommand;
-import org.eclipse.nebula.widgets.nattable.group.performance.gui.ColumnGroupNameDialog;
+import org.eclipse.nebula.widgets.nattable.group.command.UngroupRowCommand;
+import org.eclipse.nebula.widgets.nattable.group.performance.gui.HeaderGroupNameDialog;
+import org.eclipse.nebula.widgets.nattable.group.performance.gui.HeaderGroupNameDialog.HeaderGroupNameDialogLabels;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnShowCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
@@ -812,10 +817,11 @@ public class MenuItemProviders {
                 createColumnGroup.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        ColumnGroupNameDialog dialog = new ColumnGroupNameDialog(natTable.getShell());
+                        HeaderGroupNameDialog dialog =
+                                new HeaderGroupNameDialog(natTable.getShell(), HeaderGroupNameDialogLabels.CREATE_COLUMN_GROUP);
                         int result = dialog.open();
                         if (result == IDialogConstants.OK_ID) {
-                            natTable.doCommand(new CreateColumnGroupCommand(dialog.getColumnGroupName()));
+                            natTable.doCommand(new CreateColumnGroupCommand(dialog.getGroupName()));
                         }
                     }
                 });
@@ -1138,4 +1144,173 @@ public class MenuItemProviders {
             }
         };
     }
+
+    /**
+     *
+     * @return The {@link IMenuItemProvider} for adding a menu item to create a
+     *         row group with the new performance RowGroupHeaderLayer.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider createRowGroupMenuItemProvider() {
+        return createRowGroupMenuItemProvider("%MenuItemProviders.createRowGroup"); //$NON-NLS-1$
+    }
+
+    /**
+     *
+     * @param menuLabel
+     *            The label to be used for showing the menu item.
+     * @return The {@link IMenuItemProvider} for adding a menu item to create a
+     *         row group with the new performance RowGroupHeaderLayer.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider createRowGroupMenuItemProvider(final String menuLabel) {
+        return new IMenuItemProvider() {
+
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
+                MenuItem createRowGroup = new MenuItem(popupMenu, SWT.PUSH);
+                createRowGroup.setText(Messages.getLocalizedMessage(menuLabel));
+                createRowGroup.setEnabled(true);
+
+                createRowGroup.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        HeaderGroupNameDialog dialog =
+                                new HeaderGroupNameDialog(natTable.getShell(), HeaderGroupNameDialogLabels.CREATE_ROW_GROUP);
+                        int result = dialog.open();
+                        if (result == IDialogConstants.OK_ID) {
+                            natTable.doCommand(new CreateRowGroupCommand(dialog.getGroupName()));
+                        }
+                    }
+                });
+            }
+        };
+    }
+
+    /**
+     *
+     * @return The {@link IMenuItemProvider} for adding a menu item to ungroup
+     *         selected rows from an existing row group.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider ungroupRowsMenuItemProvider() {
+        return ungroupRowsMenuItemProvider("%MenuItemProviders.ungroupRows"); //$NON-NLS-1$
+    }
+
+    /**
+     *
+     * @param menuLabel
+     *            The label to be used for showing the menu item.
+     * @return The {@link IMenuItemProvider} for adding a menu item to ungroup
+     *         selected rows from an existing row group.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider ungroupRowsMenuItemProvider(final String menuLabel) {
+        return new IMenuItemProvider() {
+
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
+                MenuItem ungroupRow = new MenuItem(popupMenu, SWT.PUSH);
+                ungroupRow.setText(Messages.getLocalizedMessage(menuLabel));
+                ungroupRow.setEnabled(true);
+
+                ungroupRow.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        natTable.doCommand(new UngroupRowCommand());
+                    }
+                });
+            }
+        };
+    }
+
+    /**
+     *
+     * @return The {@link IMenuItemProvider} for adding a menu item for renaming
+     *         a row group.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider renameRowGroupMenuItemProvider() {
+        return renameRowGroupMenuItemProvider("%RowGroups.renameRowGroup"); //$NON-NLS-1$
+    }
+
+    /**
+     *
+     * @param menuLabel
+     *            The label to be used for showing the menu item.
+     * @return The {@link IMenuItemProvider} for adding a menu item for renaming
+     *         a row group.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider renameRowGroupMenuItemProvider(final String menuLabel) {
+        return new IMenuItemProvider() {
+
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
+                MenuItem renameRowGroup = new MenuItem(popupMenu, SWT.PUSH);
+                renameRowGroup.setText(Messages.getLocalizedMessage(menuLabel));
+                renameRowGroup.setEnabled(true);
+
+                renameRowGroup.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        NatEventData natEventData = MenuItemProviders.getNatEventData(e);
+                        int rowPosition = natEventData.getRowPosition();
+                        natTable.doCommand(
+                                new DisplayRowGroupRenameDialogCommand(natTable, rowPosition));
+                    }
+                });
+            }
+        };
+    }
+
+    /**
+     *
+     * @return The {@link IMenuItemProvider} for adding a menu item to remove a
+     *         row group.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider removeRowGroupMenuItemProvider() {
+        return removeRowGroupMenuItemProvider("%RowGroups.removeRowGroup"); //$NON-NLS-1$
+    }
+
+    /**
+     *
+     * @param menuLabel
+     *            The label to be used for showing the menu item.
+     * @return The {@link IMenuItemProvider} for adding a menu item to remove a
+     *         row group.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider removeRowGroupMenuItemProvider(final String menuLabel) {
+        return new IMenuItemProvider() {
+
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
+                MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+                menuItem.setText(Messages.getLocalizedMessage(menuLabel));
+                menuItem.setEnabled(true);
+
+                menuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        NatEventData natEventData = MenuItemProviders.getNatEventData(e);
+                        int rowPosition = natEventData.getRowPosition();
+                        int rowIndex = natEventData.getNatTable().getRowIndexByPosition(rowPosition);
+                        natTable.doCommand(
+                                new RemoveRowGroupCommand(rowIndex));
+                    }
+                });
+            }
+        };
+    }
+
 }

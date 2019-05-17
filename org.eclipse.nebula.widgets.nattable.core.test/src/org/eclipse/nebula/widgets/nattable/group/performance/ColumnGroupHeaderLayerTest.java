@@ -48,7 +48,7 @@ import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroupReorderCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroupReorderEndCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroupReorderStartCommand;
-import org.eclipse.nebula.widgets.nattable.group.performance.config.DefaultColumnGroupHeaderLayerConfiguration;
+import org.eclipse.nebula.widgets.nattable.group.performance.config.GroupHeaderConfigLabels;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommand;
@@ -11602,14 +11602,14 @@ public class ColumnGroupHeaderLayerTest {
         LabelStack stack = this.columnGroupHeaderLayer.getConfigLabelsByPosition(0, 0);
         assertEquals(2, stack.getLabels().size());
         assertTrue(stack.hasLabel(GridRegion.COLUMN_GROUP_HEADER));
-        assertTrue(stack.hasLabel(DefaultColumnGroupHeaderLayerConfiguration.GROUP_EXPANDED_CONFIG_TYPE));
+        assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_EXPANDED_CONFIG_TYPE));
 
         // check collapsed column group
         this.columnGroupHeaderLayer.collapseGroup(0);
         stack = this.columnGroupHeaderLayer.getConfigLabelsByPosition(0, 0);
         assertEquals(2, stack.getLabels().size());
         assertTrue(stack.hasLabel(GridRegion.COLUMN_GROUP_HEADER));
-        assertTrue(stack.hasLabel(DefaultColumnGroupHeaderLayerConfiguration.GROUP_COLLAPSED_CONFIG_TYPE));
+        assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_COLLAPSED_CONFIG_TYPE));
 
         // expand again as positions are visible and otherwise we cannot remove
         // a column from the group
@@ -11641,7 +11641,7 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(3, stack.getLabels().size());
         assertTrue(stack.hasLabel(GridRegion.COLUMN_GROUP_HEADER));
         assertTrue(stack.hasLabel("custom"));
-        assertTrue(stack.hasLabel(DefaultColumnGroupHeaderLayerConfiguration.GROUP_EXPANDED_CONFIG_TYPE));
+        assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_EXPANDED_CONFIG_TYPE));
 
         // check collapsed column group
         this.columnGroupHeaderLayer.collapseGroup(0);
@@ -11649,7 +11649,7 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(3, stack.getLabels().size());
         assertTrue(stack.hasLabel(GridRegion.COLUMN_GROUP_HEADER));
         assertTrue(stack.hasLabel("custom"));
-        assertTrue(stack.hasLabel(DefaultColumnGroupHeaderLayerConfiguration.GROUP_COLLAPSED_CONFIG_TYPE));
+        assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_COLLAPSED_CONFIG_TYPE));
 
         // expand again as positions are visible and otherwise we cannot remove
         // a column from the group
