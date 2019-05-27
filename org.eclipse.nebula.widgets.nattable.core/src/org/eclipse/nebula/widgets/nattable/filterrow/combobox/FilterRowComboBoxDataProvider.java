@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2018 Dirk Fauth and others.
+ * Copyright (c) 2013, 2019 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
@@ -97,6 +99,13 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
     private boolean updateEventsEnabled = true;
 
     /**
+     * Lock used for accessing the value cache.
+     *
+     * @since 1.6
+     */
+    private final ReadWriteLock valueCacheLock = new ReentrantReadWriteLock();
+
+    /**
      * @param bodyLayer
      *            A layer in the body region. Usually the DataLayer or a layer
      *            that is responsible for list event handling. Needed to
@@ -146,7 +155,12 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
 
         if (!this.lazyLoading) {
             // build the cache
-            buildValueCache();
+            this.valueCacheLock.writeLock().lock();
+            try {
+                buildValueCache();
+            } finally {
+                this.valueCacheLock.writeLock().unlock();
+            }
         }
 
         bodyLayer.addLayerListener(this);
@@ -155,10 +169,24 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
     @Override
     public List<?> getValues(int columnIndex, int rowIndex) {
         if (this.cachingEnabled) {
-            List<?> result = this.valueCache.get(columnIndex);
+
+            this.valueCacheLock.readLock().lock();
+            List<?> result = null;
+            try {
+                result = this.valueCache.get(columnIndex);
+            } finally {
+                this.valueCacheLock.readLock().unlock();
+            }
+
             if (result == null) {
-                result = collectValues(columnIndex);
-                this.valueCache.put(columnIndex, result);
+                this.valueCacheLock.writeLock().lock();
+                try {
+                    result = collectValues(columnIndex);
+                    this.valueCache.put(columnIndex, result);
+                } finally {
+                    this.valueCacheLock.writeLock().unlock();
+                }
+
                 if (isUpdateEventsEnabled()) {
                     fireCacheUpdateEvent(buildUpdateEvent(columnIndex, null, result));
                 }
@@ -186,7 +214,12 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      * @return The column indexes of the columns for which values was cached.
      */
     public Collection<Integer> getCachedColumnIndexes() {
-        return this.valueCache.keySet();
+        this.valueCacheLock.readLock().lock();
+        try {
+            return this.valueCache.keySet();
+        } finally {
+            this.valueCacheLock.readLock().unlock();
+        }
     }
 
     /**
@@ -221,6 +254,28 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
             result.add(0, null);
         }
 
+        // TODO Java8
+        // List result = this.baseCollection.stream()
+        // .unordered()
+        // .parallel()
+        // .map(x -> this.bodyDataColumnAccessor.getDataValue(x,
+        // columnIndex))
+        // .distinct()
+        // .collect(Collectors.toList());
+        //
+        // Object firstNonNull =
+        // result.stream().filter(Objects::nonNull).findFirst().orElse(null);
+        // if (firstNonNull instanceof Comparable) {
+        // result.sort(nullsFirst(naturalOrder()));
+        // } else {
+        // // always ensure that null is at the first position
+        // int index = result.indexOf(null);
+        // if (index >= 0) {
+        // result.remove(index);
+        // result.add(0, null);
+        // }
+        // }
+
         return result;
     }
 
@@ -231,34 +286,45 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
             if (event instanceof CellVisualChangeEvent) {
                 // usually this is fired for data updates
                 // so we need to update the value cache for the updated column
-                int column = ((CellVisualChangeEvent) event).getColumnPosition();
+                this.valueCacheLock.writeLock().lock();
+                try {
+                    int column = ((CellVisualChangeEvent) event).getColumnPosition();
 
-                List<?> cacheBefore = this.valueCache.get(column);
+                    List<?> cacheBefore = this.valueCache.get(column);
 
-                this.valueCache.put(column, collectValues(column));
+                    if (!this.lazyLoading || cacheBefore != null) {
+                        this.valueCache.put(column, collectValues(column));
+                    }
 
-                if (isUpdateEventsEnabled()) {
-                    // get the diff and fire the event
-                    fireCacheUpdateEvent(buildUpdateEvent(column, cacheBefore, this.valueCache.get(column)));
+                    if (isUpdateEventsEnabled()) {
+                        // get the diff and fire the event
+                        fireCacheUpdateEvent(buildUpdateEvent(column, cacheBefore, this.valueCache.get(column)));
+                    }
+                } finally {
+                    this.valueCacheLock.writeLock().unlock();
                 }
             } else if (event instanceof IStructuralChangeEvent
                     && ((IStructuralChangeEvent) event).isVerticalStructureChanged()) {
                 // a new row was added or a row was deleted
+                this.valueCacheLock.writeLock().lock();
+                try {
+                    // remember the cache before updating
+                    Map<Integer, List<?>> cacheBefore = new HashMap<Integer, List<?>>(this.valueCache);
 
-                // remember the cache before updating
-                Map<Integer, List<?>> cacheBefore = new HashMap<Integer, List<?>>(this.valueCache);
-
-                // perform a refresh of the whole cache
-                this.valueCache.clear();
-                if (!this.lazyLoading) {
-                    buildValueCache();
-                }
-
-                if (isUpdateEventsEnabled()) {
-                    // fire events for every column
-                    for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
-                        fireCacheUpdateEvent(buildUpdateEvent(entry.getKey(), entry.getValue(), this.valueCache.get(entry.getKey())));
+                    // perform a refresh of the whole cache
+                    this.valueCache.clear();
+                    if (!this.lazyLoading) {
+                        buildValueCache();
                     }
+
+                    if (isUpdateEventsEnabled()) {
+                        // fire events for every column
+                        for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
+                            fireCacheUpdateEvent(buildUpdateEvent(entry.getKey(), entry.getValue(), this.valueCache.get(entry.getKey())));
+                        }
+                    }
+                } finally {
+                    this.valueCacheLock.writeLock().unlock();
                 }
             }
         }
@@ -343,8 +409,25 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      *
      * @param listener
      *            The listener to remove.
+     *
+     * @deprecated typo in method, use
+     *             {@link #removeCacheUpdateListener(IFilterRowComboUpdateListener)}
      */
+    @Deprecated
     public void removeCacheUdpateListener(IFilterRowComboUpdateListener listener) {
+        this.cacheUpdateListener.remove(listener);
+    }
+
+    /**
+     * Removes the given listener from the list of listeners for value cache
+     * updates.
+     *
+     * @param listener
+     *            The listener to remove.
+     *
+     * @since 1.6
+     */
+    public void removeCacheUpdateListener(IFilterRowComboUpdateListener listener) {
         this.cacheUpdateListener.remove(listener);
     }
 
@@ -452,4 +535,16 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
     public void disableUpdateEvents() {
         this.updateEventsEnabled = false;
     }
+
+    /**
+     *
+     * @return The {@link ReadWriteLock} that should be used for locking on
+     *         accessing the {@link #valueCache}.
+     *
+     * @since 1.6
+     */
+    public ReadWriteLock getValueCacheLock() {
+        return this.valueCacheLock;
+    }
+
 }

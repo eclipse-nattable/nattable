@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2016 Dirk Fauth and others.
+ * Copyright (c) 2013, 2019 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
+import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
@@ -52,6 +54,8 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
     private static final Scheduler SCHEDULER = new Scheduler("GlazedListsFilterRowComboBoxDataProvider"); //$NON-NLS-1$
 
     private AtomicBoolean changeHandlingProcessing = new AtomicBoolean(false);
+
+    private EventList<T> baseEventList;
 
     /**
      * @param bodyLayer
@@ -102,7 +106,8 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
         super(bodyLayer, baseCollection, columnAccessor, lazy);
 
         if (baseCollection instanceof EventList) {
-            ((EventList<T>) baseCollection).addListEventListener(this);
+            this.baseEventList = ((EventList<T>) baseCollection);
+            this.baseEventList.addListEventListener(this);
         } else {
             LOG.error("baseCollection is not of type EventList. List changes can not be tracked."); //$NON-NLS-1$
         }
@@ -116,55 +121,85 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
 
                 @Override
                 public void run() {
-                    // remember the cache before updating
-                    Map<Integer, List<?>> cacheBefore = new HashMap<Integer, List<?>>(getValueCache());
+                    List<FilterRowComboUpdateEvent> updateEvents = new ArrayList<FilterRowComboUpdateEvent>();
+                    getValueCacheLock().writeLock().lock();
+                    try {
+                        // remember the cache before updating
+                        Map<Integer, List<?>> cacheBefore = new HashMap<Integer, List<?>>(getValueCache());
 
-                    // perform a refresh of the whole cache
-                    getValueCache().clear();
+                        // perform a refresh of the whole cache
+                        getValueCache().clear();
 
-                    if (!GlazedListsFilterRowComboBoxDataProvider.this.lazyLoading) {
-                        buildValueCache();
-                    }
-
-                    // fire events for every column
-                    for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
-
-                        if (GlazedListsFilterRowComboBoxDataProvider.this.lazyLoading) {
-                            // to determine the diff for the update event the
-                            // current values need to be collected, otherwise on
-                            // clear() - addAll() a full reset will be triggered
-                            // since there are no cached values
-                            getValueCache().put(entry.getKey(), collectValues(entry.getKey()));
+                        if (!GlazedListsFilterRowComboBoxDataProvider.this.lazyLoading) {
+                            buildValueCache();
+                        } else {
+                            // to determine the diff for the update event
+                            // the current values need to be collected,
+                            // otherwise on clear() - addAll() a full reset
+                            // will be triggered since there are no cached
+                            // values
+                            for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
+                                getValueCache().put(entry.getKey(),
+                                        collectValues(entry.getKey()));
+                            }
                         }
 
-                        fireCacheUpdateEvent(buildUpdateEvent(
-                                entry.getKey(),
-                                entry.getValue(),
-                                getValueCache().get(entry.getKey())));
+                        // fire events for every column that has cached data
+                        for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
+                            updateEvents.add(buildUpdateEvent(
+                                    entry.getKey(),
+                                    entry.getValue(),
+                                    getValueCache().get(entry.getKey())));
+                        }
+
+                        GlazedListsFilterRowComboBoxDataProvider.this.changeHandlingProcessing.set(false);
+                    } finally {
+                        getValueCacheLock().writeLock().unlock();
                     }
 
-                    GlazedListsFilterRowComboBoxDataProvider.this.changeHandlingProcessing.set(false);
+                    for (FilterRowComboUpdateEvent event : updateEvents) {
+                        fireCacheUpdateEvent(event);
+                    }
                 }
             }, 100);
         }
     }
 
     @Override
-    public void handleLayerEvent(ILayerEvent event) {
-        if (event instanceof CellVisualChangeEvent) {
-            // usually this is fired for data updates
-            // so we need to update the value cache for the updated column
-            int column = ((CellVisualChangeEvent) event).getColumnPosition();
+    public void handleLayerEvent(final ILayerEvent event) {
+        // we only need to perform event handling if caching is enabled
+        if (this.cachingEnabled) {
+            if (event instanceof CellVisualChangeEvent) {
+                SCHEDULER.schedule(new Runnable() {
 
-            List<?> cacheBefore = getValueCache().get(column);
+                    @Override
+                    public void run() {
+                        // usually this is fired for data updates
+                        // so we need to update the value cache for the updated
+                        // column
+                        getValueCacheLock().writeLock().lock();
+                        try {
+                            int column = ((CellVisualChangeEvent) event).getColumnPosition();
 
-            getValueCache().put(column, collectValues(column));
+                            List<?> cacheBefore = getValueCache().get(column);
 
-            // get the diff and fire the event
-            fireCacheUpdateEvent(buildUpdateEvent(
-                    column,
-                    cacheBefore,
-                    getValueCache().get(column)));
+                            // only update the cache in case a cache was build
+                            // already
+                            if (!GlazedListsFilterRowComboBoxDataProvider.this.lazyLoading
+                                    || cacheBefore != null) {
+                                getValueCache().put(column, collectValues(column));
+                            }
+
+                            if (isUpdateEventsEnabled()) {
+                                // get the diff and fire the event
+                                fireCacheUpdateEvent(buildUpdateEvent(column, cacheBefore, getValueCache().get(column)));
+                            }
+                        } finally {
+                            getValueCacheLock().writeLock().unlock();
+                        }
+                    }
+                }, 0);
+            }
         }
     }
 
@@ -173,4 +208,5 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
         super.dispose();
         SCHEDULER.shutdownNow();
     }
+
 }

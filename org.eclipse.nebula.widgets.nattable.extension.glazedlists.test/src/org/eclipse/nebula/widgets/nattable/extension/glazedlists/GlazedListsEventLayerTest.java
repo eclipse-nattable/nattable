@@ -15,6 +15,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.BlinkingRowDataFixture;
@@ -55,24 +57,33 @@ public class GlazedListsEventLayerTest {
 
     @Test
     public void shouldConflateEvents() throws Exception {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        this.listenerFixture.setCountDownLatch(countDownLatch);
         this.listFixture.add(RowDataFixture.getInstance("T1", "A"));
-        Thread.sleep(100);
+        countDownLatch.await(500, TimeUnit.MILLISECONDS);
 
+        countDownLatch = new CountDownLatch(1);
+        this.listenerFixture.setCountDownLatch(countDownLatch);
         this.listFixture.add(RowDataFixture.getInstance("T2", "A"));
-        Thread.sleep(200);
+        countDownLatch.await(500, TimeUnit.MILLISECONDS);
 
         assertNotNull(this.listenerFixture.getReceivedEvent(RowStructuralRefreshEvent.class));
     }
 
     @Test
     public void shouldShutConflaterThreadDownWhenNatTableIsDisposed() throws Exception {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        this.listenerFixture.setCountDownLatch(countDownLatch);
+
         assertFalse(this.layerUnderTest.isDisposed());
 
         this.listFixture.add(RowDataFixture.getInstance("T1", "A"));
-        Thread.sleep(100);
+        countDownLatch.await(500, TimeUnit.MILLISECONDS);
 
+        countDownLatch = new CountDownLatch(1);
+        this.listenerFixture.setCountDownLatch(countDownLatch);
         this.listFixture.add(RowDataFixture.getInstance("T2", "A"));
-        Thread.sleep(100);
+        countDownLatch.await(500, TimeUnit.MILLISECONDS);
 
         this.layerUnderTest.doCommand(new DisposeResourcesCommand());
         assertTrue(this.layerUnderTest.isDisposed());

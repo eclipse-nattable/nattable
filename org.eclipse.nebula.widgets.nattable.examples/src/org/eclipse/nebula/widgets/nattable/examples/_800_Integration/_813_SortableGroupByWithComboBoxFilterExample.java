@@ -19,24 +19,39 @@ import java.util.Map;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommand;
+import org.eclipse.nebula.widgets.nattable.config.AbstractLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.EditableRule;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.command.RowInsertCommand;
+import org.eclipse.nebula.widgets.nattable.data.command.RowObjectDeleteCommand;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.validate.DefaultDataValidator;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Address;
 import org.eclipse.nebula.widgets.nattable.dataset.person.ExtendedPersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
+import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.edit.command.EditCellCommandHandler;
+import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditBindings;
+import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.event.InlineCellEditEventHandler;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.data.command.GlazedListsRowInsertCommandHandler;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.data.command.GlazedListsRowObjectDeleteCommandHandler;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxFilterRowHeaderComposite;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigLabelModifier;
@@ -46,6 +61,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupBy
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.SummationGroupBySummaryProvider;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
@@ -56,15 +72,18 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
@@ -73,11 +92,17 @@ import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
+import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
+import org.eclipse.nebula.widgets.nattable.ui.menu.MenuItemProviders;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.FontData;
@@ -86,6 +111,8 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -124,18 +151,27 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
         final ConfigRegistry configRegistry = new ConfigRegistry();
 
         // property names of the ExtendedPersonWithAddress class
-        String[] propertyNames = { "firstName", "lastName", "age", "money",
-                "married", "gender", "birthday" };
+        String[] propertyNames = { "firstName", "lastName", "gender", "married",
+                "age", "birthday", "money",
+                "address.street", "address.housenumber", "address.postalCode", "address.city",
+                "description", "favouriteFood", "favouriteDrinks" };
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put("firstName", "Firstname");
         propertyToLabelMap.put("lastName", "Lastname");
-        propertyToLabelMap.put("age", "Age");
-        propertyToLabelMap.put("money", "Money");
-        propertyToLabelMap.put("married", "Married");
         propertyToLabelMap.put("gender", "Gender");
+        propertyToLabelMap.put("married", "Married");
+        propertyToLabelMap.put("age", "Age");
         propertyToLabelMap.put("birthday", "Birthday");
+        propertyToLabelMap.put("money", "Money");
+        propertyToLabelMap.put("address.street", "Street");
+        propertyToLabelMap.put("address.housenumber", "Housenumber");
+        propertyToLabelMap.put("address.postalCode", "Postalcode");
+        propertyToLabelMap.put("address.city", "City");
+        propertyToLabelMap.put("description", "Description");
+        propertyToLabelMap.put("favouriteFood", "Food");
+        propertyToLabelMap.put("favouriteDrinks", "Drinks");
 
         final IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor =
                 new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
@@ -202,7 +238,7 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
                 new CornerLayer(cornerDataLayer, rowHeaderLayer, filterRowHeaderLayer);
 
         // build the grid layer
-        GridLayer gridLayer = new GridLayer(bodyLayerStack, filterRowHeaderLayer, rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer = new GridLayer(bodyLayerStack, filterRowHeaderLayer, rowHeaderLayer, cornerLayer, false);
 
         // set the group by header on top of the grid
         CompositeLayer compositeGridLayer = new CompositeLayer(1, 2);
@@ -230,21 +266,55 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
                         CellConfigAttributes.CELL_PAINTER,
                         new CheckBoxPainter(),
                         DisplayMode.NORMAL,
-                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
 
                 configRegistry.registerConfigAttribute(
                         CellConfigAttributes.DISPLAY_CONVERTER,
                         new DefaultDoubleDisplayConverter(),
                         DisplayMode.NORMAL,
-                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 6);
             }
         });
 
         // add sorting configuration
         natTable.addConfiguration(new SingleClickSortConfiguration());
 
-        this.sumMoneySummaryProvider = new SummationGroupBySummaryProvider<>(
-                columnPropertyAccessor);
+        // add some minor editing support
+        compositeGridLayer.addConfiguration(new AbstractLayerConfiguration<AbstractLayer>() {
+
+            @Override
+            public void configureRegistry(IConfigRegistry configRegistry) {
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.CELL_EDITABLE_RULE,
+                        EditableRule.ALWAYS_EDITABLE,
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 0);
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.CELL_EDITABLE_RULE,
+                        EditableRule.ALWAYS_EDITABLE,
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 1);
+
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.DATA_VALIDATOR,
+                        new DefaultDataValidator());
+
+                // register matching editors
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.CELL_EDITOR,
+                        new TextCellEditor());
+            }
+
+            @Override
+            public void configureTypedLayer(AbstractLayer layer) {
+                layer.registerCommandHandler(new EditCellCommandHandler());
+                layer.registerEventHandler(new InlineCellEditEventHandler(layer));
+            }
+
+        });
+        compositeGridLayer.addConfiguration(new DefaultEditBindings());
+
+        this.sumMoneySummaryProvider = new SummationGroupBySummaryProvider<>(columnPropertyAccessor);
         this.avgMoneySummaryProvider = new AverageMoneyGroupBySummaryProvider();
 
         // add group by summary configuration
@@ -256,13 +326,13 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
                         GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
                         _813_SortableGroupByWithComboBoxFilterExample.this.sumMoneySummaryProvider,
                         DisplayMode.NORMAL,
-                        GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
+                        GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 6);
 
                 configRegistry.registerConfigAttribute(
                         GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
                         new AverageAgeGroupBySummaryProvider(),
                         DisplayMode.NORMAL,
-                        GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 2);
+                        GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 4);
 
                 configRegistry.registerConfigAttribute(
                         GroupByConfigAttributes.GROUP_BY_CHILD_COUNT_PATTERN,
@@ -290,7 +360,9 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
             @Override
             protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
                 return super.createColumnHeaderMenu(natTable)
-                        .withHideColumnMenuItem().withShowAllColumnsMenuItem()
+                        .withHideColumnMenuItem()
+                        .withShowAllColumnsMenuItem()
+                        .withClearAllFilters()
                         .withStateManagerMenuItemProvider();
             }
 
@@ -300,6 +372,111 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
                         .withShowAllColumnsMenuItem()
                         .withStateManagerMenuItemProvider();
             }
+        });
+
+        // add a body menu configuration to be able to add or delete rows
+        natTable.addConfiguration(new AbstractUiBindingConfiguration() {
+
+            private final Menu bodyMenu = new PopupMenuBuilder(natTable)
+                    .withMenuItemProvider(new IMenuItemProvider() {
+
+                        @Override
+                        public void addMenuItem(NatTable natTable, Menu popupMenu) {
+                            MenuItem deleteRow = new MenuItem(popupMenu, SWT.PUSH);
+                            deleteRow.setText("Insert below");
+                            deleteRow.setEnabled(true);
+
+                            deleteRow.addSelectionListener(new SelectionAdapter() {
+                                @Override
+                                public void widgetSelected(SelectionEvent event) {
+                                    int rowPosition = MenuItemProviders.getNatEventData(event).getRowPosition();
+                                    int rowIndex = natTable.getRowIndexByPosition(rowPosition);
+
+                                    Person person = new Person(bodyLayerStack.getEventList().size() + 1, "John", "Doe", Gender.MALE, false, new Date());
+                                    Address address = new Address();
+                                    address.setStreet("Some Street");
+                                    address.setHousenumber(42);
+                                    address.setPostalCode(12345);
+                                    address.setCity("In the clouds");
+
+                                    ExtendedPersonWithAddress entry = new ExtendedPersonWithAddress(person, address,
+                                            "0000", "Some custom person", 0,
+                                            new ArrayList<String>(), new ArrayList<String>());
+                                    natTable.doCommand(new RowInsertCommand<>(rowIndex + 1, entry));
+                                }
+                            });
+                        }
+                    })
+                    .withMenuItemProvider(new IMenuItemProvider() {
+
+                        @Override
+                        public void addMenuItem(NatTable natTable, Menu popupMenu) {
+                            MenuItem deleteRow = new MenuItem(popupMenu, SWT.PUSH);
+                            deleteRow.setText("Delete");
+                            deleteRow.setEnabled(true);
+
+                            deleteRow.addSelectionListener(new SelectionAdapter() {
+                                @Override
+                                public void widgetSelected(SelectionEvent event) {
+                                    SelectionLayer selectionLayer = bodyLayerStack.getSelectionLayer();
+                                    int[] selectedRowPositions = PositionUtil.getPositions(selectionLayer.getSelectedRowPositions());
+
+                                    if (selectedRowPositions.length > 0) {
+                                        List<ExtendedPersonWithAddress> toDelete = new ArrayList<>();
+                                        for (int pos : selectedRowPositions) {
+                                            int idx = selectionLayer.getRowIndexByPosition(pos);
+                                            Object o = bodyLayerStack.bodyDataProvider.getRowObject(idx);
+                                            if (o instanceof ExtendedPersonWithAddress) {
+                                                toDelete.add((ExtendedPersonWithAddress) o);
+                                            }
+                                        }
+                                        selectionLayer.doCommand(new RowObjectDeleteCommand<>(toDelete));
+                                    } else {
+                                        int rowPosition = MenuItemProviders.getNatEventData(event).getRowPosition();
+                                        int pos = LayerUtil.convertRowPosition(natTable, rowPosition, selectionLayer);
+                                        int idx = selectionLayer.getRowIndexByPosition(pos);
+
+                                        natTable.doCommand(new RowObjectDeleteCommand<>(bodyLayerStack.bodyDataProvider.getRowObject(idx)));
+                                    }
+                                }
+                            });
+                        }
+                    })
+                    .build();
+
+            @Override
+            public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+                uiBindingRegistry.registerMouseDownBinding(
+                        new MouseEventMatcher(
+                                SWT.NONE,
+                                GridRegion.BODY,
+                                MouseEventMatcher.RIGHT_BUTTON),
+                        new PopupMenuAction(this.bodyMenu) {
+                            @Override
+                            public void run(NatTable natTable, MouseEvent event) {
+                                int columnPosition = natTable.getColumnPositionByX(event.x);
+                                int rowPosition = natTable.getRowPositionByY(event.y);
+
+                                SelectionLayer selectionLayer = bodyLayerStack.getSelectionLayer();
+
+                                int bodyRowPosition = LayerUtil.convertRowPosition(natTable, rowPosition, selectionLayer);
+
+                                if (!selectionLayer.isRowPositionFullySelected(bodyRowPosition)
+                                        && !selectionLayer.isRowPositionSelected(bodyRowPosition)) {
+                                    natTable.doCommand(
+                                            new SelectRowsCommand(
+                                                    natTable,
+                                                    columnPosition,
+                                                    rowPosition,
+                                                    false,
+                                                    false));
+                                }
+
+                                super.run(natTable, event);
+                            }
+                        });
+            }
+
         });
 
         natTable.configure();
@@ -364,13 +541,13 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
                             GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
                             _813_SortableGroupByWithComboBoxFilterExample.this.sumMoneySummaryProvider,
                             DisplayMode.NORMAL,
-                            GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
+                            GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 6);
                 } else {
                     configRegistry.registerConfigAttribute(
                             GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
                             _813_SortableGroupByWithComboBoxFilterExample.this.avgMoneySummaryProvider,
                             DisplayMode.NORMAL,
-                            GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
+                            GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 6);
                 }
                 natTable.doCommand(new VisualRefreshCommand());
             }
@@ -424,7 +601,7 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
         private final SortedList<T> sortedList;
         private final FilterList<T> filterList;
 
-        private final IDataProvider bodyDataProvider;
+        private final IRowDataProvider<Object> bodyDataProvider;
 
         private final GroupByDataLayer<T> bodyDataLayer;
 
@@ -436,6 +613,7 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
 
         private final GlazedListsEventLayer<T> glazedListsEventLayer;
 
+        @SuppressWarnings("unchecked")
         public BodyLayerStack(List<T> values,
                 IColumnPropertyAccessor<T> columnPropertyAccessor,
                 ConfigRegistry configRegistry) {
@@ -457,8 +635,15 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
                     this.filterList,
                     columnPropertyAccessor,
                     configRegistry);
+
+            // register the RowObjectDeleteCommandHandler for delete operations
+            // by object, e.g. delete by UI interaction
+            this.bodyDataLayer.registerCommandHandler(new GlazedListsRowObjectDeleteCommandHandler<>(this.filterList));
+
+            this.bodyDataLayer.registerCommandHandler(new GlazedListsRowInsertCommandHandler<>(this.filterList));
+
             // get the IDataProvider that was created by the GroupByDataLayer
-            this.bodyDataProvider = this.bodyDataLayer.getDataProvider();
+            this.bodyDataProvider = (IRowDataProvider<Object>) this.bodyDataLayer.getDataProvider();
 
             // layer for event handling of GlazedLists and PropertyChanges
             this.glazedListsEventLayer =
@@ -507,7 +692,7 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
             return this.filterList;
         }
 
-        public IDataProvider getBodyDataProvider() {
+        public IRowDataProvider<Object> getBodyDataProvider() {
             return this.bodyDataProvider;
         }
 
