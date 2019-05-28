@@ -239,6 +239,9 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
 
     @Override
     public void showColumnIndexes(Collection<Integer> columnIndexes) {
+        // only handle column indexes that are hidden
+        columnIndexes.retainAll(this.hiddenColumns.keySet());
+
         // On show we expect that all visible columns share the free
         // space. To avoid that only the adjacent column is decreased, we
         // disable fixColumnPercentageValuesOnResize in any case and restore it

@@ -32,6 +32,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralChangeEventHelper;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
+import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.reorder.action.ColumnReorderDragMode;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderEndCommandHandler;
@@ -152,7 +153,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
             StringBuilder strBuilder = new StringBuilder();
             for (Integer index : this.columnIndexOrder) {
                 strBuilder.append(index);
-                strBuilder.append(',');
+                strBuilder.append(IPersistable.VALUE_SEPARATOR);
             }
             properties.setProperty(prefix + PERSISTENCE_KEY_COLUMN_INDEX_ORDER, strBuilder.toString());
         }
@@ -165,7 +166,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 
         if (property != null) {
             List<Integer> newColumnIndexOrder = new ArrayList<Integer>();
-            StringTokenizer tok = new StringTokenizer(property, ","); //$NON-NLS-1$
+            StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
             while (tok.hasMoreTokens()) {
                 String index = tok.nextToken();
                 newColumnIndexOrder.add(Integer.valueOf(index));
@@ -250,7 +251,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
         List<Integer> reorderedColumnPositions = new ArrayList<Integer>();
         for (Range underlyingColumnPositionRange : underlyingColumnPositionRanges) {
             for (int underlyingColumnPosition = underlyingColumnPositionRange.start; underlyingColumnPosition < underlyingColumnPositionRange.end; underlyingColumnPosition++) {
-                int localColumnPosition = underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingColumnPositionRange.start);
+                int localColumnPosition = underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingColumnPosition);
                 reorderedColumnPositions.add(Integer.valueOf(localColumnPosition));
             }
         }

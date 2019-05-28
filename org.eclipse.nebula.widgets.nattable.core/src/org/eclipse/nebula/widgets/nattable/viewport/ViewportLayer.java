@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -266,9 +266,27 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
             if (newMinimumOriginX != this.minimumOrigin.getX()) {
                 this.minimumOrigin = new PixelCoordinate(newMinimumOriginX, this.minimumOrigin.getY());
                 int minimumColumn = this.scrollableLayer.getColumnPositionByX(this.minimumOrigin.getX());
+
                 // special handling for column resizing to 0
-                // used e.g. with the ResizeColumnHideShowLayer in combination
-                // with percentage sizing
+                // used e.g. with the ResizeColumnHideShowLayer in
+                // combination with percentage sizing
+                if (minimumColumn < 0 && newMinimumOriginX == this.scrollableLayer.getWidth()) {
+                    int left = this.scrollableLayer.getColumnPositionByX(this.minimumOrigin.getX() - 1);
+                    // if there are only 0 sized columns between the calculated
+                    // left and the current minimum origin column there is no
+                    // need to update the minimum column as we have a column
+                    // resize to 0
+                    boolean onlyZeroSized = left < this.scrollableLayer.getColumnCount() - 1;
+                    for (int i = left + 1; i < this.minimumOriginColumnPosition; i++) {
+                        if (this.scrollableLayer.getColumnWidthByPosition(i) > 0) {
+                            onlyZeroSized = false;
+                        }
+                    }
+                    if (onlyZeroSized) {
+                        minimumColumn = this.minimumOriginColumnPosition;
+                    }
+                }
+
                 int start = this.scrollableLayer.getStartXOfColumnPosition(minimumColumn);
                 while ((minimumColumn > this.minimumOriginColumnPosition)
                         && (this.scrollableLayer.getStartXOfColumnPosition(minimumColumn - 1) == start)) {

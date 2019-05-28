@@ -877,6 +877,63 @@ public class CompositeFreezeLayerHideShowTest {
         reset();
     }
 
+    @Test
+    public void testFreezeHideMultiColumnShowPositionInvalid() {
+        // freeze
+        this.compositeFreezeLayer.doCommand(
+                new FreezeColumnCommand(this.compositeFreezeLayer, 1));
+
+        assertEquals(2, this.freezeLayer.getColumnCount());
+        assertEquals(0, this.freezeLayer.getRowCount());
+        assertEquals(1, this.freezeLayer.getBottomRightPosition().columnPosition);
+        assertEquals(-1, this.freezeLayer.getBottomRightPosition().rowPosition);
+
+        assertEquals(3, this.viewportLayer.getColumnCount());
+        assertEquals(5, this.viewportLayer.getRowCount());
+        assertEquals(2, this.viewportLayer.getMinimumOriginColumnPosition());
+        assertEquals(0, this.viewportLayer.getMinimumOriginRowPosition());
+        assertEquals(200, this.viewportLayer.getMinimumOrigin().getX());
+        assertEquals(0, this.viewportLayer.getMinimumOrigin().getY());
+
+        this.compositeFreezeLayer.doCommand(
+                new ColumnHideCommand(this.compositeFreezeLayer, 4));
+        this.compositeFreezeLayer.doCommand(
+                new ColumnHideCommand(this.compositeFreezeLayer, 3));
+        this.compositeFreezeLayer.doCommand(
+                new ColumnHideCommand(this.compositeFreezeLayer, 2));
+        this.compositeFreezeLayer.doCommand(
+                new ColumnHideCommand(this.compositeFreezeLayer, 0));
+
+        assertEquals(1, this.freezeLayer.getColumnCount());
+        assertEquals(0, this.freezeLayer.getRowCount());
+        assertEquals(0, this.freezeLayer.getBottomRightPosition().columnPosition);
+        assertEquals(-1, this.freezeLayer.getBottomRightPosition().rowPosition);
+
+        assertEquals(0, this.viewportLayer.getColumnCount());
+        assertEquals(5, this.viewportLayer.getRowCount());
+        assertEquals(-1, this.viewportLayer.getMinimumOriginColumnPosition());
+        assertEquals(0, this.viewportLayer.getMinimumOriginRowPosition());
+        assertEquals(100, this.viewportLayer.getMinimumOrigin().getX());
+        assertEquals(0, this.viewportLayer.getMinimumOrigin().getY());
+
+        // show again
+        this.compositeFreezeLayer.doCommand(new MultiColumnShowCommand(Arrays.asList(0, 2, 3, 4, 5)));
+
+        assertEquals(2, this.freezeLayer.getColumnCount());
+        assertEquals(0, this.freezeLayer.getRowCount());
+        assertEquals(1, this.freezeLayer.getBottomRightPosition().columnPosition);
+        assertEquals(-1, this.freezeLayer.getBottomRightPosition().rowPosition);
+
+        assertEquals(3, this.viewportLayer.getColumnCount());
+        assertEquals(5, this.viewportLayer.getRowCount());
+        assertEquals(2, this.viewportLayer.getMinimumOriginColumnPosition());
+        assertEquals(0, this.viewportLayer.getMinimumOriginRowPosition());
+        assertEquals(200, this.viewportLayer.getMinimumOrigin().getX());
+        assertEquals(0, this.viewportLayer.getMinimumOrigin().getY());
+
+        reset();
+    }
+
     // Row hide/show
 
     @Test
