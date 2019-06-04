@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014, 2015 Dirk Fauth and others.
+ * Copyright (c) 2013, 2019 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -123,7 +123,12 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
     @Override
     public void applyFilter(Map<Integer, Object> filterIndexToObjectMap) {
         if (filterIndexToObjectMap.isEmpty()) {
-            this.getMatcherEditor().getMatcherEditors().add(this.matchNone);
+            this.filterLock.writeLock().lock();
+            try {
+                this.getMatcherEditor().getMatcherEditors().add(this.matchNone);
+            } finally {
+                this.filterLock.writeLock().unlock();
+            }
             return;
         }
 
@@ -148,7 +153,12 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
                 if (filterCollection == null || filterCollection.isEmpty()) {
                     // for one column there are no items selected in the combo,
                     // therefore nothing matches
-                    this.getMatcherEditor().getMatcherEditors().add(this.matchNone);
+                    this.filterLock.writeLock().lock();
+                    try {
+                        this.getMatcherEditor().getMatcherEditors().add(this.matchNone);
+                    } finally {
+                        this.filterLock.writeLock().unlock();
+                    }
                     return;
                 } else if (filterCollectionsEqual(filterCollection, dataProviderList)) {
                     it.remove();
