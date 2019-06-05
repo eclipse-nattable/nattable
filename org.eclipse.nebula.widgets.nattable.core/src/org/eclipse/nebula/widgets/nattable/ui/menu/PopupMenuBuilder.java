@@ -77,6 +77,22 @@ public class PopupMenuBuilder {
      * @since 1.6
      */
     public static final String UNGROUP_ROWS_MENU_ITEM_ID = "ungroupRowsMenuItem"; //$NON-NLS-1$
+    /**
+     * @since 1.6
+     */
+    public static final String FREEZE_COLUMN_MENU_ITEM_ID = "freezeColumnMenuItem"; //$NON-NLS-1$
+    /**
+     * @since 1.6
+     */
+    public static final String FREEZE_ROW_MENU_ITEM_ID = "freezeRowMenuItem"; //$NON-NLS-1$
+    /**
+     * @since 1.6
+     */
+    public static final String FREEZE_POSITION_MENU_ITEM_ID = "freezePositionMenuItem"; //$NON-NLS-1$
+    /**
+     * @since 1.6
+     */
+    public static final String UNFREEZE_MENU_ITEM_ID = "unfreezeMenuItem"; //$NON-NLS-1$
 
     /**
      * The active NatTable instance the context menu should be added to. Needed
@@ -757,6 +773,130 @@ public class PopupMenuBuilder {
         return withMenuItemProvider(
                 REMOVE_ROW_GROUP_MENU_ITEM_ID,
                 MenuItemProviders.removeRowGroupMenuItemProvider(menuLabel));
+    }
+
+    /**
+     * Adds the menu item for for freezing a grid at a given column position.
+     *
+     * @return This PopupMenuBuilder.
+     *
+     * @since 1.6
+     */
+    public PopupMenuBuilder withFreezeColumnMenuItem() {
+        return withMenuItemProvider(
+                FREEZE_COLUMN_MENU_ITEM_ID,
+                MenuItemProviders.freezeColumnMenuItemProvider());
+    }
+
+    /**
+     * Adds the menu item for for freezing a grid at a given column position.
+     *
+     * @param menuLabel
+     *            The label to be used for showing the menu item.
+     * @return This PopupMenuBuilder.
+     *
+     * @since 1.6
+     */
+    public PopupMenuBuilder withFreezeColumnMenuItem(String menuLabel) {
+        return withMenuItemProvider(
+                FREEZE_COLUMN_MENU_ITEM_ID,
+                MenuItemProviders.freezeColumnMenuItemProvider(menuLabel));
+    }
+
+    /**
+     * Adds the menu item for for freezing a grid at a given row position.
+     *
+     * @return This PopupMenuBuilder.
+     *
+     * @since 1.6
+     */
+    public PopupMenuBuilder withFreezeRowMenuItem() {
+        return withMenuItemProvider(
+                FREEZE_ROW_MENU_ITEM_ID,
+                MenuItemProviders.freezeRowMenuItemProvider());
+    }
+
+    /**
+     * Adds the menu item for for freezing a grid at a given row position.
+     *
+     * @param menuLabel
+     *            The label to be used for showing the menu item.
+     * @return This PopupMenuBuilder.
+     *
+     * @since 1.6
+     */
+    public PopupMenuBuilder withFreezeRowMenuItem(String menuLabel) {
+        return withMenuItemProvider(
+                FREEZE_ROW_MENU_ITEM_ID,
+                MenuItemProviders.freezeRowMenuItemProvider(menuLabel));
+    }
+
+    /**
+     * Adds the menu item for freezing a grid at a given cell position. This
+     * menu item is intended to be used in a body menu.
+     *
+     * @param include
+     *            whether the selected cell should be included in the freeze
+     *            region or not. Include means the freeze borders will be to the
+     *            right and bottom, while exclude means the freeze borders are
+     *            to the left and top.
+     * @return This PopupMenuBuilder.
+     *
+     * @since 1.6
+     */
+    public PopupMenuBuilder withFreezePositionMenuItem(boolean include) {
+        return withMenuItemProvider(
+                FREEZE_POSITION_MENU_ITEM_ID,
+                MenuItemProviders.freezePositionMenuItemProvider(include));
+    }
+
+    /**
+     * Adds the menu item for freezing a grid at a given cell position. This
+     * menu item is intended to be used in a body menu.
+     *
+     * @param menuLabel
+     *            The label to be used for showing the menu item.
+     * @param include
+     *            whether the selected cell should be included in the freeze
+     *            region or not. Include means the freeze borders will be to the
+     *            right and bottom, while exclude means the freeze borders are
+     *            to the left and top.
+     * @return This PopupMenuBuilder.
+     *
+     * @since 1.6
+     */
+    public PopupMenuBuilder withFreezePositionMenuItem(String menuLabel, boolean include) {
+        return withMenuItemProvider(
+                FREEZE_POSITION_MENU_ITEM_ID,
+                MenuItemProviders.freezePositionMenuItemProvider(menuLabel, include));
+    }
+
+    /**
+     * Adds the menu item for removing a frozen state.
+     *
+     * @return This PopupMenuBuilder.
+     *
+     * @since 1.6
+     */
+    public PopupMenuBuilder withUnfreezeMenuItem() {
+        return withMenuItemProvider(
+                UNFREEZE_MENU_ITEM_ID,
+                MenuItemProviders.unfreezeMenuItemProvider());
+    }
+
+    /**
+     * Adds the menu item for removing a frozen state.
+     *
+     * @param menuLabel
+     *            The label to be used for showing the menu item.
+     * @return This PopupMenuBuilder.
+     *
+     * @since 1.6
+     */
+    public PopupMenuBuilder withUnfreezeMenuItem(String menuLabel) {
+        return withMenuItemProvider(
+                UNFREEZE_MENU_ITEM_ID,
+                MenuItemProviders.unfreezeMenuItemProvider(menuLabel));
     }
 
     public PopupMenuBuilder withInspectLabelsMenuItem() {

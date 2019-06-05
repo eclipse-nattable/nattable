@@ -118,6 +118,24 @@
         <filter id="336658481">
             <message_arguments>
                 <message_argument value="org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder"/>
+                <message_argument value="FREEZE_COLUMN_MENU_ITEM_ID"/>
+            </message_arguments>
+        </filter>
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder"/>
+                <message_argument value="FREEZE_POSITION_MENU_ITEM_ID"/>
+            </message_arguments>
+        </filter>
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder"/>
+                <message_argument value="FREEZE_ROW_MENU_ITEM_ID"/>
+            </message_arguments>
+        </filter>
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder"/>
                 <message_argument value="REMOVE_ROW_GROUP_MENU_ITEM_ID"/>
             </message_arguments>
         </filter>
@@ -125,6 +143,12 @@
             <message_arguments>
                 <message_argument value="org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder"/>
                 <message_argument value="RENAME_ROW_GROUP_MENU_ITEM_ID"/>
+            </message_arguments>
+        </filter>
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder"/>
+                <message_argument value="UNFREEZE_MENU_ITEM_ID"/>
             </message_arguments>
         </filter>
         <filter id="336658481">

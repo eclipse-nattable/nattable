@@ -24,6 +24,10 @@ import org.eclipse.nebula.widgets.nattable.export.command.ExportTableCommandHand
 import org.eclipse.nebula.widgets.nattable.export.image.ImageExporter;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearAllFiltersCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ToggleFilterRowCommand;
+import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeColumnCommand;
+import org.eclipse.nebula.widgets.nattable.freeze.command.FreezePositionCommand;
+import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeRowCommand;
+import org.eclipse.nebula.widgets.nattable.freeze.command.UnFreezeGridCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.CreateColumnGroupCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.CreateRowGroupCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.DisplayColumnGroupRenameDialogCommand;
@@ -1260,10 +1264,8 @@ public class MenuItemProviders {
                 renameRowGroup.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        NatEventData natEventData = MenuItemProviders.getNatEventData(e);
-                        int rowPosition = natEventData.getRowPosition();
-                        natTable.doCommand(
-                                new DisplayRowGroupRenameDialogCommand(natTable, rowPosition));
+                        int rowPosition = getNatEventData(e).getRowPosition();
+                        natTable.doCommand(new DisplayRowGroupRenameDialogCommand(natTable, rowPosition));
                     }
                 });
             }
@@ -1302,11 +1304,176 @@ public class MenuItemProviders {
                 menuItem.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        NatEventData natEventData = MenuItemProviders.getNatEventData(e);
+                        NatEventData natEventData = getNatEventData(e);
                         int rowPosition = natEventData.getRowPosition();
                         int rowIndex = natEventData.getNatTable().getRowIndexByPosition(rowPosition);
+                        natTable.doCommand(new RemoveRowGroupCommand(rowIndex));
+                    }
+                });
+            }
+        };
+    }
+
+    /**
+     *
+     * @return The {@link IMenuItemProvider} for adding a menu item to freeze a
+     *         column.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider freezeColumnMenuItemProvider() {
+        return freezeColumnMenuItemProvider("%MenuItemProviders.freezeColumn"); //$NON-NLS-1$
+    }
+
+    /**
+     *
+     * @param menuLabel
+     *            The label to be used for showing the menu item.
+     * @return The {@link IMenuItemProvider} for adding a menu item to freeze a
+     *         column.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider freezeColumnMenuItemProvider(final String menuLabel) {
+        return new IMenuItemProvider() {
+
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
+                MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+                menuItem.setText(Messages.getLocalizedMessage(menuLabel));
+                menuItem.setEnabled(true);
+
+                menuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        int columnPosition = getNatEventData(e).getColumnPosition();
+                        natTable.doCommand(new FreezeColumnCommand(natTable, columnPosition, false, true));
+                    }
+                });
+            }
+        };
+    }
+
+    /**
+     *
+     * @return The {@link IMenuItemProvider} for adding a menu item to freeze a
+     *         row.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider freezeRowMenuItemProvider() {
+        return freezeRowMenuItemProvider("%MenuItemProviders.freezeRow"); //$NON-NLS-1$
+    }
+
+    /**
+     *
+     * @param menuLabel
+     *            The label to be used for showing the menu item.
+     * @return The {@link IMenuItemProvider} for adding a menu item to freeze a
+     *         row.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider freezeRowMenuItemProvider(final String menuLabel) {
+        return new IMenuItemProvider() {
+
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
+                MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+                menuItem.setText(Messages.getLocalizedMessage(menuLabel));
+                menuItem.setEnabled(true);
+
+                menuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        int rowPosition = getNatEventData(e).getRowPosition();
+                        natTable.doCommand(new FreezeRowCommand(natTable, rowPosition, false, true));
+                    }
+                });
+            }
+        };
+    }
+
+    /**
+     *
+     * @return The {@link IMenuItemProvider} for adding a menu item to freeze a
+     *         cell position.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider freezePositionMenuItemProvider(boolean include) {
+        return freezePositionMenuItemProvider("%MenuItemProviders.freezePosition", include); //$NON-NLS-1$
+    }
+
+    /**
+     *
+     * @param menuLabel
+     *            The label to be used for showing the menu item.
+     * @param include
+     *            whether the selected cell should be included in the freeze
+     *            region or not. Include means the freeze borders will be to the
+     *            right and bottom, while exclude means the freeze borders are
+     *            to the left and top.
+     * @return The {@link IMenuItemProvider} for adding a menu item to freeze a
+     *         cell position.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider freezePositionMenuItemProvider(final String menuLabel, final boolean include) {
+        return new IMenuItemProvider() {
+
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
+                MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+                menuItem.setText(Messages.getLocalizedMessage(menuLabel));
+                menuItem.setEnabled(true);
+
+                menuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        int columnPosition = getNatEventData(e).getColumnPosition();
+                        int rowPosition = getNatEventData(e).getRowPosition();
                         natTable.doCommand(
-                                new RemoveRowGroupCommand(rowIndex));
+                                new FreezePositionCommand(natTable, columnPosition, rowPosition, false, true, include));
+                    }
+                });
+            }
+        };
+    }
+
+    /**
+     *
+     * @return The {@link IMenuItemProvider} for adding a menu item to remove a
+     *         frozen state.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider unfreezeMenuItemProvider() {
+        return unfreezeMenuItemProvider("%MenuItemProviders.unfreeze"); //$NON-NLS-1$
+    }
+
+    /**
+     *
+     * @param menuLabel
+     *            The label to be used for showing the menu item.
+     * @return The {@link IMenuItemProvider} for adding a menu item to remove a
+     *         frozen state.
+     *
+     * @since 1.6
+     */
+    public static IMenuItemProvider unfreezeMenuItemProvider(final String menuLabel) {
+        return new IMenuItemProvider() {
+
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
+                MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+                menuItem.setText(Messages.getLocalizedMessage(menuLabel));
+                menuItem.setEnabled(true);
+
+                menuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        natTable.doCommand(new UnFreezeGridCommand());
                     }
                 });
             }

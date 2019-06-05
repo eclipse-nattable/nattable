@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Dirk Fauth and others.
+ * Copyright (c) 2013, 2019 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,7 @@ import java.util.Map;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.columnChooser.command.DisplayColumnChooserCommandHandler;
+import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
@@ -40,13 +41,19 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
+import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemState;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
 
 /**
  * Simple example showing how to add the functionality for freezing regions to a
@@ -152,15 +159,24 @@ public class _513_FreezeExample extends AbstractNatExample {
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new DefaultFreezeGridBindings());
 
-        // add the corner menu configuration for adding the view management
-        // action
+        // add the menu configuration
+        IMenuItemState freezeActiveState = new IMenuItemState() {
+
+            @Override
+            public boolean isActive(NatEventData natEventData) {
+                return freezeLayer.isFrozen();
+            }
+        };
         natTable.addConfiguration(new AbstractHeaderMenuConfiguration(natTable) {
             @Override
             protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
                 return super.createColumnHeaderMenu(natTable)
                         .withHideColumnMenuItem()
                         .withShowAllColumnsMenuItem()
-                        .withColumnChooserMenuItem();
+                        .withColumnChooserMenuItem()
+                        .withFreezeColumnMenuItem()
+                        .withUnfreezeMenuItem()
+                        .withVisibleState(PopupMenuBuilder.UNFREEZE_MENU_ITEM_ID, freezeActiveState);
             }
 
             @Override
@@ -169,7 +185,34 @@ public class _513_FreezeExample extends AbstractNatExample {
                         .withShowAllColumnsMenuItem()
                         .withStateManagerMenuItemProvider();
             }
+
+            @Override
+            protected PopupMenuBuilder createRowHeaderMenu(NatTable natTable) {
+                return super.createRowHeaderMenu(natTable)
+                        .withFreezeRowMenuItem()
+                        .withUnfreezeMenuItem()
+                        .withVisibleState(PopupMenuBuilder.UNFREEZE_MENU_ITEM_ID, freezeActiveState);
+            }
         });
+
+        natTable.addConfiguration(new AbstractUiBindingConfiguration() {
+
+            private final Menu bodyMenu = new PopupMenuBuilder(natTable)
+                    .withInspectLabelsMenuItem()
+                    .withFreezePositionMenuItem(true)
+                    .withUnfreezeMenuItem()
+                    .withVisibleState(PopupMenuBuilder.UNFREEZE_MENU_ITEM_ID, freezeActiveState)
+                    .build();
+
+            @Override
+            public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+                uiBindingRegistry.registerMouseDownBinding(
+                        new MouseEventMatcher(SWT.NONE, null, 3),
+                        new PopupMenuAction(this.bodyMenu));
+            }
+
+        });
+
         natTable.configure();
 
         panel.setLayout(new GridLayout());
