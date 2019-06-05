@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -209,7 +209,7 @@ public class TextPainter extends AbstractTextPainter {
                         text,
                         rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth) + this.spacing,
                         rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight) + this.spacing,
-                        SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER);
+                        SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 
                 // start x of line = start x of text
                 int x = rectangle.x
@@ -233,7 +233,7 @@ public class TextPainter extends AbstractTextPainter {
                             line,
                             rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, lineContentWidth) + this.spacing,
                             yStartPos + this.spacing,
-                            SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER);
+                            SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 
                     // start x of line = start x of text
                     int x = rectangle.x

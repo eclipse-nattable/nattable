@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -242,7 +242,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
 
                     gc.setTransform(transform);
 
-                    gc.drawText(text, rectangle.x, rectangle.y, SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER);
+                    gc.drawText(text, rectangle.x, rectangle.y, SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 
                     int length = gc.textExtent(text).x;
                     paintDecoration(cellStyle, gc, rectangle.x, rectangle.y, length, fontHeight);
@@ -308,7 +308,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
 
                         gc.setTransform(transform);
 
-                        gc.drawText(line, rectangle.x, rectangle.y, SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER);
+                        gc.drawText(line, rectangle.x, rectangle.y, SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 
                         int length = gc.textExtent(line).x;
                         paintDecoration(cellStyle, gc, rectangle.x, rectangle.y, length, fontHeight);
