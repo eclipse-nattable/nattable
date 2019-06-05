@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -40,10 +40,32 @@ public class FreezePositionStrategy implements IFreezeCoordinatesProvider {
      * @since 1.5
      */
     public FreezePositionStrategy(FreezeLayer freezeLayer, ViewportLayer viewportLayer, int columnPosition, int rowPosition) {
+        this(freezeLayer, viewportLayer, columnPosition, rowPosition, false);
+    }
+
+    /**
+     * @param freezeLayer
+     *            The {@link FreezeLayer} for the {@link PositionCoordinate}.
+     * @param viewportLayer
+     *            The {@link ViewportLayer} needed to calculate the viewport
+     *            relative position.
+     * @param columnPosition
+     *            The column position based on the CompositeFreezeLayer.
+     * @param rowPosition
+     *            The row position based on the CompositeFreezeLayer.
+     * @param include
+     *            Whether the last selected cell should be included in the
+     *            freeze region or not. Include means the freeze borders will be
+     *            to the right and bottom, while exclude means the freeze
+     *            borders are to the left and top. Default is
+     *            <code>false</code>.
+     * @since 1.6
+     */
+    public FreezePositionStrategy(FreezeLayer freezeLayer, ViewportLayer viewportLayer, int columnPosition, int rowPosition, boolean include) {
         this.freezeLayer = freezeLayer;
         this.viewportLayer = viewportLayer;
-        this.columnPosition = columnPosition;
-        this.rowPosition = rowPosition;
+        this.columnPosition = !include ? columnPosition : columnPosition + 1;
+        this.rowPosition = !include ? rowPosition : rowPosition + 1;
     }
 
     @Override
