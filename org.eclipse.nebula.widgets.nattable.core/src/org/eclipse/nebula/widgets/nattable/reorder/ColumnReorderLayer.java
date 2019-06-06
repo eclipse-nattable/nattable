@@ -39,6 +39,7 @@ import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderEndComma
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderStartCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderStartCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommandHandler;
+import org.eclipse.nebula.widgets.nattable.reorder.command.ResetColumnReorderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.config.DefaultColumnReorderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
 
@@ -142,6 +143,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
         registerCommandHandler(new ColumnReorderStartCommandHandler(this));
         registerCommandHandler(new ColumnReorderEndCommandHandler(this));
         registerCommandHandler(new MultiColumnReorderCommandHandler(this));
+        registerCommandHandler(new ResetColumnReorderCommandHandler(this));
     }
 
     // Persistence
@@ -483,6 +485,17 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
      */
     public void setReorderFromColumnPosition(int fromColumnPosition) {
         this.reorderFromColumnPosition = fromColumnPosition;
+    }
+
+    /**
+     * Resets the reordering tracked by this layer.
+     *
+     * @since 1.6
+     */
+    public void resetReorder() {
+        populateIndexOrder();
+        invalidateCache();
+        fireLayerEvent(new ColumnStructuralRefreshEvent(this));
     }
 
 }

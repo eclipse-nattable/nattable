@@ -2399,8 +2399,9 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                     // trigger a consistency check as the details of the event
                     // probably where removed on converting the layer stack
                     // upwards (e.g. if the hidden position was at the end of
-                    // the table)
-                    performConsistencyCheck();
+                    // the table) or a complete refresh was triggered which
+                    // means there are no diffs
+                    performConsistencyCheck(rowDiffs == null);
                 }
             }
         }
@@ -2482,7 +2483,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                 // converting the layer stack upwards (e.g. if
                 // the hidden position was at the end of the
                 // table)
-                performConsistencyCheck();
+                performConsistencyCheck(false);
             }
         }
 
@@ -2492,9 +2493,9 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
             }
         }
 
-        private void performConsistencyCheck() {
+        private void performConsistencyCheck(boolean updateStartIndex) {
             for (GroupModel groupModel : RowGroupHeaderLayer.this.model) {
-                groupModel.performConsistencyCheck();
+                groupModel.performConsistencyCheck(updateStartIndex);
             }
         }
 

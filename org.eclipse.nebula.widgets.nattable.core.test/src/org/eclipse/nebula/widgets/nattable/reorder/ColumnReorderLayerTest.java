@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,6 +24,7 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
+import org.eclipse.nebula.widgets.nattable.reorder.command.ResetColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.command.LayerCommandFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.BaseDataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
@@ -86,7 +87,6 @@ public class ColumnReorderLayerTest {
         assertEquals(1, this.columnReorderLayer.getColumnIndexByPosition(0));
     }
 
-    @SuppressWarnings("boxing")
     @Test
     /**
      * 	Index		2 	0	1	3
@@ -104,7 +104,6 @@ public class ColumnReorderLayerTest {
         assertEquals(3, this.columnReorderLayer.getColumnIndexByPosition(3));
     }
 
-    @SuppressWarnings("boxing")
     @Test
     /**
      * 	Index		2 	3	0	1
@@ -138,7 +137,6 @@ public class ColumnReorderLayerTest {
         assertEquals(0, this.columnReorderLayer.getColumnIndexByPosition(0));
     }
 
-    @SuppressWarnings("boxing")
     @Test
     /**
      * 	Index		2	3	0	1
@@ -156,7 +154,6 @@ public class ColumnReorderLayerTest {
         assertEquals(1, this.columnReorderLayer.getColumnIndexByPosition(3));
     }
 
-    @SuppressWarnings("boxing")
     @Test
     /**
      * 	Index		2	3	0	1 ... 20
@@ -232,7 +229,6 @@ public class ColumnReorderLayerTest {
         Assert.assertEquals(150, this.columnReorderLayer.getColumnWidthByPosition(4));
     }
 
-    @SuppressWarnings("boxing")
     @Test
     public void getWidthForMultipleColumnsReordering() throws Exception {
         this.underlyingLayer = new DataLayerFixture();
@@ -287,6 +283,44 @@ public class ColumnReorderLayerTest {
         assertEquals(2, labelsForIndex4.size());
         assertEquals("INDEX_4_LABEL", labelsForIndex4.get(0));
         assertEquals("EVEN_BODY", labelsForIndex4.get(1));
+    }
+
+    @Test
+    public void shouldResetReordering() {
+        this.columnReorderLayer.reorderColumnPosition(0, 4);
+
+        assertEquals(2, this.columnReorderLayer.getColumnPositionByIndex(3));
+        assertEquals(3, this.columnReorderLayer.getColumnPositionByIndex(0));
+
+        assertEquals(0, this.columnReorderLayer.getColumnIndexByPosition(3));
+        assertEquals(1, this.columnReorderLayer.getColumnIndexByPosition(0));
+
+        this.columnReorderLayer.resetReorder();
+
+        assertEquals(3, this.columnReorderLayer.getColumnPositionByIndex(3));
+        assertEquals(0, this.columnReorderLayer.getColumnPositionByIndex(0));
+
+        assertEquals(3, this.columnReorderLayer.getColumnIndexByPosition(3));
+        assertEquals(0, this.columnReorderLayer.getColumnIndexByPosition(0));
+    }
+
+    @Test
+    public void shouldResetReorderingViaCommand() {
+        this.columnReorderLayer.reorderColumnPosition(0, 4);
+
+        assertEquals(2, this.columnReorderLayer.getColumnPositionByIndex(3));
+        assertEquals(3, this.columnReorderLayer.getColumnPositionByIndex(0));
+
+        assertEquals(0, this.columnReorderLayer.getColumnIndexByPosition(3));
+        assertEquals(1, this.columnReorderLayer.getColumnIndexByPosition(0));
+
+        this.columnReorderLayer.doCommand(new ResetColumnReorderCommand());
+
+        assertEquals(3, this.columnReorderLayer.getColumnPositionByIndex(3));
+        assertEquals(0, this.columnReorderLayer.getColumnPositionByIndex(0));
+
+        assertEquals(3, this.columnReorderLayer.getColumnIndexByPosition(3));
+        assertEquals(0, this.columnReorderLayer.getColumnIndexByPosition(0));
     }
 
     private void registerCellStyleAccumulators(DataLayer bodyDataLayer, ColumnOverrideLabelAccumulator columnLabelAccumulator) {

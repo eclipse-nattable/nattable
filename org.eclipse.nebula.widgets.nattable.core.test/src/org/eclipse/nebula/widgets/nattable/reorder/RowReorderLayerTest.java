@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2019 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.reorder.command.ResetRowReorderCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.RowReorderCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.command.LayerCommandFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.BaseDataLayerFixture;
@@ -81,7 +82,6 @@ public class RowReorderLayerTest {
         assertEquals(1, this.rowReorderLayer.getRowIndexByPosition(0));
     }
 
-    @SuppressWarnings("boxing")
     @Test
     /**
      * 	Index		2 	0	1	3
@@ -99,7 +99,6 @@ public class RowReorderLayerTest {
         assertEquals(3, this.rowReorderLayer.getRowIndexByPosition(3));
     }
 
-    @SuppressWarnings("boxing")
     @Test
     /**
      * 	Index		2 	3	0	1
@@ -133,7 +132,6 @@ public class RowReorderLayerTest {
         assertEquals(0, this.rowReorderLayer.getRowPositionByIndex(0));
     }
 
-    @SuppressWarnings("boxing")
     @Test
     /**
      * 	Index		2	3	0	1
@@ -151,7 +149,6 @@ public class RowReorderLayerTest {
         assertEquals(1, this.rowReorderLayer.getRowPositionByIndex(3));
     }
 
-    @SuppressWarnings("boxing")
     @Test
     /**
      * 	Index		2	3	0	1 ... 20
@@ -228,7 +225,6 @@ public class RowReorderLayerTest {
         Assert.assertEquals(40, this.rowReorderLayer.getRowHeightByPosition(6));
     }
 
-    @SuppressWarnings("boxing")
     @Test
     public void getHeightForMultipleRowsReordering() throws Exception {
         this.underlyingLayer = new DataLayerFixture();
@@ -263,6 +259,44 @@ public class RowReorderLayerTest {
         assertEquals(185, this.rowReorderLayer.getStartYOfRowPosition(4));
         assertEquals(225, this.rowReorderLayer.getStartYOfRowPosition(5));
         assertEquals(265, this.rowReorderLayer.getStartYOfRowPosition(6));
+    }
+
+    @Test
+    public void shouldResetReordering() {
+        this.rowReorderLayer.reorderRowPosition(0, 4);
+
+        assertEquals(2, this.rowReorderLayer.getRowPositionByIndex(3));
+        assertEquals(3, this.rowReorderLayer.getRowPositionByIndex(0));
+
+        assertEquals(0, this.rowReorderLayer.getRowIndexByPosition(3));
+        assertEquals(1, this.rowReorderLayer.getRowIndexByPosition(0));
+
+        this.rowReorderLayer.resetReorder();
+
+        assertEquals(3, this.rowReorderLayer.getRowPositionByIndex(3));
+        assertEquals(0, this.rowReorderLayer.getRowPositionByIndex(0));
+
+        assertEquals(3, this.rowReorderLayer.getRowIndexByPosition(3));
+        assertEquals(0, this.rowReorderLayer.getRowIndexByPosition(0));
+    }
+
+    @Test
+    public void shouldResetReorderingViaCommand() {
+        this.rowReorderLayer.reorderRowPosition(0, 4);
+
+        assertEquals(2, this.rowReorderLayer.getRowPositionByIndex(3));
+        assertEquals(3, this.rowReorderLayer.getRowPositionByIndex(0));
+
+        assertEquals(0, this.rowReorderLayer.getRowIndexByPosition(3));
+        assertEquals(1, this.rowReorderLayer.getRowIndexByPosition(0));
+
+        this.rowReorderLayer.doCommand(new ResetRowReorderCommand());
+
+        assertEquals(3, this.rowReorderLayer.getRowPositionByIndex(3));
+        assertEquals(0, this.rowReorderLayer.getRowPositionByIndex(0));
+
+        assertEquals(3, this.rowReorderLayer.getRowIndexByPosition(3));
+        assertEquals(0, this.rowReorderLayer.getRowIndexByPosition(0));
     }
 
 }

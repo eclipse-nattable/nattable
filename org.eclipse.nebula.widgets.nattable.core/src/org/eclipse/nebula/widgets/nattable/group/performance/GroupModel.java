@@ -166,10 +166,15 @@ public class GroupModel implements IPersistable {
      * current visible state matches the position state. Should only be
      * triggered in case it is expected that the consistency is not given, e.g.
      * if hide events without details where triggered.
+     * 
+     * @param updateStartIndex
+     *            flag to indicate if the start index of the group should also
+     *            be updated. Needed in case of complete structural refreshes to
+     *            be able to reset the group completely.
      */
-    void performConsistencyCheck() {
+    void performConsistencyCheck(boolean updateStartIndex) {
         for (Group group : this.groups) {
-            group.consistencyCheck();
+            group.consistencyCheck(updateStartIndex);
         }
     }
 
@@ -1170,7 +1175,7 @@ public class GroupModel implements IPersistable {
                 // if a multi hide command was triggered for non-contiguous
                 // column ranges, where one range is at the end, the group could
                 // be in an inconsistent state which needs to be corrected.
-                consistencyCheck();
+                consistencyCheck(false);
             }
         }
 
@@ -1179,8 +1184,13 @@ public class GroupModel implements IPersistable {
          * group member indexes. Needed in case events where not processed in
          * the corresponding header layer because of position transformations,
          * which then lead to an inconsistent group state.
+         * 
+         * @param updateStartIndex
+         *            flag to indicate if the start index of the group should
+         *            also be updated. Needed in case of complete structural
+         *            refreshes to be able to reset the group completely.
          */
-        void consistencyCheck() {
+        void consistencyCheck(boolean updateStartIndex) {
             // check if the member indexes are all visible
             int hidden = 0;
             int smallestPosition = -1;
@@ -1198,7 +1208,11 @@ public class GroupModel implements IPersistable {
             }
             setVisibleSpan(this.originalSpan - hidden);
 
-            setVisibleStartIndex(getIndexByPosition(smallestPosition));
+            int smallestIndex = getIndexByPosition(smallestPosition);
+            if (updateStartIndex) {
+                setStartIndex(smallestIndex);
+            }
+            setVisibleStartIndex(smallestIndex);
             this.visibleStartPosition = smallestPosition;
         }
 

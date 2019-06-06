@@ -66,6 +66,7 @@ import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderEndCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderStartCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
+import org.eclipse.nebula.widgets.nattable.reorder.command.ResetColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiRowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -11899,6 +11900,39 @@ public class ColumnGroupHeaderLayerTest {
         this.gridLayer.doCommand(new MultiRowResizeCommand(this.gridLayer, new int[] { 0, 1 }, 100));
         assertEquals(20, this.gridLayer.getRowHeightByPosition(0));
         assertEquals(100, this.gridLayer.getRowHeightByPosition(1));
+    }
+
+    @Test
+    public void shouldHandleResetOfColumnReordering() {
+        Group group1 = this.groupModel.getGroupByPosition(0);
+        group1.addStaticIndexes(0, 1);
+
+        Group group2 = this.groupModel.getGroupByPosition(4);
+        group2.addStaticIndexes(5, 6);
+
+        // reorder some columns to the first position of a group
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 4, 1));
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 8, 5));
+
+        assertEquals(3, group1.getStartIndex());
+        assertEquals(3, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        assertEquals(7, group2.getStartIndex());
+        assertEquals(7, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        // reset reordering
+        this.gridLayer.doCommand(new ResetColumnReorderCommand());
+
+        group1.removeStaticIndexes(0, 1);
+        group2.removeStaticIndexes(5, 6);
+
+        verifyCleanState();
     }
 
     // TODO testcases with compositions that have no scrolling

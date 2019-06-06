@@ -34,6 +34,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralChangeEventHelp
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiRowReorderCommandHandler;
+import org.eclipse.nebula.widgets.nattable.reorder.command.ResetRowReorderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.command.RowReorderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.command.RowReorderEndCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.command.RowReorderStartCommandHandler;
@@ -147,6 +148,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
         registerCommandHandler(new RowReorderStartCommandHandler(this));
         registerCommandHandler(new RowReorderEndCommandHandler(this));
         registerCommandHandler(new MultiRowReorderCommandHandler(this));
+        registerCommandHandler(new ResetRowReorderCommandHandler(this));
     }
 
     // Persistence
@@ -479,6 +481,17 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
      */
     public void setReorderFromRowPosition(int fromRowPosition) {
         this.reorderFromRowPosition = fromRowPosition;
+    }
+
+    /**
+     * Resets the reordering tracked by this layer.
+     *
+     * @since 1.6
+     */
+    public void resetReorder() {
+        populateIndexOrder();
+        invalidateCache();
+        fireLayerEvent(new RowStructuralRefreshEvent(this));
     }
 
 }
