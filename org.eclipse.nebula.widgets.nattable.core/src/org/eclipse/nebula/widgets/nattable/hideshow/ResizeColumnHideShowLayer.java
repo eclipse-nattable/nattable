@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2017, 2018 Dirk Fauth.
+ * Copyright (c) 2017, 2019 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -174,9 +174,9 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
         this.bodyDataLayer.setFixColumnPercentageValuesOnResize(false);
 
         for (Integer columnPosition : columnPositions) {
-            if (!this.hiddenColumns.containsKey(columnPosition)) {
-                // transform the position to index
-                int columnIndex = getColumnIndexByPosition(columnPosition);
+            // transform the position to index
+            int columnIndex = getColumnIndexByPosition(columnPosition);
+            if (!this.hiddenColumns.containsKey(columnIndex)) {
                 // get the currently applied width of the column
                 int configuredWidth = this.bodyDataLayer.getConfiguredColumnWidthByPosition(columnIndex);
                 // get the currently applied min width of the column

@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2017, 2018 Dirk Fauth.
+ * Copyright (c) 2017, 2019 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,6 +17,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -1262,6 +1263,27 @@ public class ResizeColumnHideShowLayerTest {
         assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(4));
     }
 
+    @Test
+    public void shouldHideFirstPositionAfterIndex0IsHidden() {
+        prepareReorderAndHide();
+
+        this.listener.clearReceivedEvents();
+
+        this.hideShowLayer.hideColumnPositions(0);
+
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertTrue(this.hideShowLayer.hiddenColumns.keySet().contains(0));
+
+        assertTrue(this.listener.containsInstanceOf(ColumnResizeEvent.class));
+        assertEquals(1, this.listener.getEventsCount());
+        ColumnResizeEvent receivedEvent = (ColumnResizeEvent) this.listener.getReceivedEvent(ColumnResizeEvent.class);
+        Collection<Range> columnPositionRanges = receivedEvent.getColumnPositionRanges();
+        assertEquals(1, columnPositionRanges.size());
+        Range range = columnPositionRanges.iterator().next();
+        assertEquals(0, range.start);
+        assertEquals(1, range.end);
+    }
+
     private void prepareReorderAndHide() {
         // trigger reordering
         this.reorderLayer.reorderColumnPosition(4, 0); // 4 0 1 2 3
@@ -1279,5 +1301,8 @@ public class ResizeColumnHideShowLayerTest {
 
         assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(2));
         assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(4));
+
+        assertTrue(this.hideShowLayer.hiddenColumns.keySet().contains(0));
+        assertTrue(this.hideShowLayer.hiddenColumns.keySet().contains(3));
     }
 }
