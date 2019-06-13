@@ -157,8 +157,10 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
                         getValueCacheLock().writeLock().unlock();
                     }
 
-                    for (FilterRowComboUpdateEvent event : updateEvents) {
-                        fireCacheUpdateEvent(event);
+                    if (isUpdateEventsEnabled()) {
+                        for (FilterRowComboUpdateEvent event : updateEvents) {
+                            fireCacheUpdateEvent(event);
+                        }
                     }
                 }
             }, 100);
