@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2015 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -127,5 +127,14 @@ public class GlazedListsSortModel<T> implements ISortModel, ILayerListener {
             this.comparatorChooser = null;
             getComparatorChooser().fromString(test);
         }
+    }
+
+    /**
+     * Helper method to re-apply the sorting.
+     *
+     * @since 1.6
+     */
+    public void refresh() {
+        getComparatorChooser().fromString(getComparatorChooser().toString());
     }
 }

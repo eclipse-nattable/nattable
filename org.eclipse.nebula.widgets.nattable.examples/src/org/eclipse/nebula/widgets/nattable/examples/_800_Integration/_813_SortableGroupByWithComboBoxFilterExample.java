@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Dirk Fauth and others.
+ * Copyright (c) 2016, 2019 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -77,8 +77,11 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
@@ -195,13 +198,14 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
                 new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // add sorting
+        GlazedListsSortModel<ExtendedPersonWithAddress> sortModel = new GlazedListsSortModel<>(
+                bodyLayerStack.getSortedList(),
+                columnPropertyAccessor,
+                configRegistry,
+                columnHeaderDataLayer);
         SortHeaderLayer<ExtendedPersonWithAddress> sortHeaderLayer = new SortHeaderLayer<>(
                 columnHeaderLayer,
-                new GlazedListsSortModel<>(
-                        bodyLayerStack.getSortedList(),
-                        columnPropertyAccessor,
-                        configRegistry,
-                        columnHeaderDataLayer),
+                sortModel,
                 false);
 
         // connect sortModel to GroupByDataLayer to support sorting by group by
@@ -567,22 +571,36 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
                 address.setPostalCode(12345);
                 address.setCity("In the clouds");
 
-                Person person = new Person(42, "Ralph", "Wiggum", Gender.MALE, false, new Date());
-                ExtendedPersonWithAddress entry = new ExtendedPersonWithAddress(person, address,
-                        "0000", "The little Ralphy", 0,
-                        new ArrayList<String>(), new ArrayList<String>());
-                bodyLayerStack.getEventList().add(entry);
+                bodyLayerStack.getEventList().getReadWriteLock().writeLock().lock();
+                try {
+                    Person person = new Person(42, "Ralph", "Wiggum", Gender.MALE, false, new Date());
+                    ExtendedPersonWithAddress entry = new ExtendedPersonWithAddress(person, address,
+                            "0000", "The little Ralphy", 0,
+                            new ArrayList<String>(), new ArrayList<String>());
+                    bodyLayerStack.getEventList().add(entry);
 
-                person = new Person(42, "Clancy", "Wiggum", Gender.MALE, true, new Date());
-                entry = new ExtendedPersonWithAddress(person, address,
-                        "XXXL", "It is Chief Wiggum", 0, new ArrayList<String>(), new ArrayList<String>());
-                bodyLayerStack.getEventList().add(entry);
+                    person = new Person(42, "Clancy", "Wiggum", Gender.MALE, true, new Date());
+                    entry = new ExtendedPersonWithAddress(person, address,
+                            "XXXL", "It is Chief Wiggum", 0, new ArrayList<String>(), new ArrayList<String>());
+                    bodyLayerStack.getEventList().add(entry);
 
-                person = new Person(42, "Sarah", "Wiggum", Gender.FEMALE, true, new Date());
-                entry = new ExtendedPersonWithAddress(person, address,
-                        "mommy", "Little Ralphy's mother", 0,
-                        new ArrayList<String>(), new ArrayList<String>());
-                bodyLayerStack.getEventList().add(entry);
+                    person = new Person(42, "Sarah", "Wiggum", Gender.FEMALE, true, new Date());
+                    entry = new ExtendedPersonWithAddress(person, address,
+                            "mommy", "Little Ralphy's mother", 0,
+                            new ArrayList<String>(), new ArrayList<String>());
+                    bodyLayerStack.getEventList().add(entry);
+                } finally {
+                    bodyLayerStack.getEventList().getReadWriteLock().writeLock().unlock();
+                    // Inserting new objects could cause the creation of new
+                    // GroupByObjects dependent on the GroupBy state. If
+                    // additionally to the GroupBy state a sorting is applied on
+                    // a column that contain a GroupBy summary value, the
+                    // comparison and therefore the sorting is incorrect as the
+                    // GroupBy summary value cannot be calculated. Therefore the
+                    // sorting is re-applied after the insert operation to have
+                    // a reliable sorting.
+                    sortModel.refresh();
+                }
             }
         });
 
@@ -648,6 +666,23 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
             // layer for event handling of GlazedLists and PropertyChanges
             this.glazedListsEventLayer =
                     new GlazedListsEventLayer<>(this.bodyDataLayer, this.filterList);
+
+            // NOTE:
+            // we need to tell the GroupByDataLayer to clear its cache if
+            // a IVisualChangeEvent occurs. This is necessary because the
+            // GlazedListsEventLayer transforms GlazedLists change events to
+            // NatTable change events and fires the event the layer stack
+            // upwards. But as it sits on top of the GroupByDataLayer, the
+            // GroupByDataLayer never gets informed about the change.
+            this.glazedListsEventLayer.addLayerListener(new ILayerListener() {
+
+                @Override
+                public void handleLayerEvent(ILayerEvent event) {
+                    if (event instanceof IVisualChangeEvent) {
+                        BodyLayerStack.this.bodyDataLayer.clearCache();
+                    }
+                }
+            });
 
             ColumnReorderLayer columnReorderLayer =
                     new ColumnReorderLayer(this.glazedListsEventLayer);
