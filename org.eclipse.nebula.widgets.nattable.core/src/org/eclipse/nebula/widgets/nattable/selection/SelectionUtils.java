@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,13 +13,10 @@ package org.eclipse.nebula.widgets.nattable.selection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -110,50 +107,35 @@ public class SelectionUtils {
      * @since 1.4
      */
     public static boolean hasConsecutiveSelection(SelectionLayer selectionLayer) {
-        if (selectionLayer != null
-                && SelectionUtils.isConsecutive(selectionLayer.getSelectedColumnPositions())) {
+        if (selectionLayer == null) {
+            return false;
+        }
 
-            Map<Integer, Set<Integer>> positions = new HashMap<Integer, Set<Integer>>();
-            int column = -1;
-            int row = -1;
+        int[] selectedColumnPositions = selectionLayer.getSelectedColumnPositions();
+        if (selectedColumnPositions.length == 0) {
+            return false;
+        }
 
-            // collect the selection information
-            for (PositionCoordinate coord : selectionLayer.getSelectedCellPositions()) {
-                Set<Integer> rows = positions.get(coord.columnPosition);
-                if (rows == null) {
-                    rows = new LinkedHashSet<Integer>();
-                    positions.put(coord.columnPosition, rows);
-                }
-                rows.add(coord.rowPosition);
+        Arrays.sort(selectedColumnPositions);
 
-                column = Math.max(column, coord.columnPosition);
-                row = Math.max(row, coord.rowPosition);
+        Set<Range> selectedRowPositions = selectionLayer.getSelectedRowPositions();
+        Range range = PositionUtil.joinConsecutiveRanges(selectedRowPositions);
+        if (range == null) {
+            return false;
+        }
+
+        for (int colPosIdx = 0; colPosIdx < selectedColumnPositions.length; colPosIdx++) {
+            if (colPosIdx > 0 && selectedColumnPositions[colPosIdx - 1] + 1 != selectedColumnPositions[colPosIdx]) {
+                return false;
             }
-
-            // check if the selected region is a rectangle
-            // every row collection for each column needs to have the same size
-            // and the same content
-            Set<Integer> previous = null;
-            for (Set<Integer> rows : positions.values()) {
-                if (previous != null && !previous.equals(rows)) {
+            final int columnPosition = selectedColumnPositions[colPosIdx];
+            for (int rowPositionIndex = range.start; rowPositionIndex < range.end; rowPositionIndex++) {
+                if (!selectionLayer.isCellPositionSelected(columnPosition, rowPositionIndex)) {
                     return false;
-                }
-                previous = rows;
-            }
-
-            // test if rows are consecutive
-            if (previous != null) {
-                int[] rowPositions = new int[previous.size()];
-                int i = 0;
-                for (Integer rowPos : previous) {
-                    rowPositions[i++] = rowPos;
-                }
-                if (SelectionUtils.isConsecutive(rowPositions)) {
-                    return true;
                 }
             }
         }
-        return false;
+        return true;
     }
 
     /**
@@ -170,16 +152,34 @@ public class SelectionUtils {
      * @since 1.4
      */
     public static ILayerCell getBottomRightCellInSelection(SelectionLayer selectionLayer) {
-        if (hasConsecutiveSelection(selectionLayer)) {
-            int column = -1;
-            int row = -1;
-            for (PositionCoordinate coord : selectionLayer.getSelectedCellPositions()) {
-                column = Math.max(column, coord.columnPosition);
-                row = Math.max(row, coord.rowPosition);
-            }
-            return selectionLayer.getCellByPosition(column, row);
+        if (selectionLayer == null) {
+            return null;
         }
-        return null;
+
+        int[] selectedColumnPositions = selectionLayer.getSelectedColumnPositions();
+        Arrays.sort(selectedColumnPositions);
+
+        Set<Range> selectedRowPositions = selectionLayer.getSelectedRowPositions();
+        Range range = PositionUtil.joinConsecutiveRanges(selectedRowPositions);
+        if (range == null) {
+            return null;
+        }
+
+        for (int colPosIdx = 0; colPosIdx < selectedColumnPositions.length; colPosIdx++) {
+            if (colPosIdx > 0 && selectedColumnPositions[colPosIdx - 1] + 1 != selectedColumnPositions[colPosIdx]) {
+                return null;
+            }
+            final int columnPosition = selectedColumnPositions[colPosIdx];
+            for (int rowPositionIndex = range.start; rowPositionIndex < range.end; rowPositionIndex++) {
+                if (!selectionLayer.isCellPositionSelected(columnPosition, rowPositionIndex)) {
+                    return null;
+                }
+            }
+        }
+
+        int colPosition = selectedColumnPositions[selectedColumnPositions.length - 1];
+        int rowPosition = range.end - 1;
+        return selectionLayer.getCellByPosition(colPosition, rowPosition);
     }
 
     /**

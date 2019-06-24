@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.coordinate;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -102,4 +103,45 @@ public class PositionUtilTest {
         }
     }
 
+    @Test
+    public void shouldJoinContiguousRanges() {
+        Range r1 = new Range(2, 5);
+        Range r2 = new Range(5, 9);
+        Range r3 = new Range(9, 12);
+
+        assertEquals(new Range(2, 12), PositionUtil.joinConsecutiveRanges(Arrays.asList(r1, r2, r3)));
+    }
+
+    @Test
+    public void shouldNotJoinNotContiguousRanges() {
+        Range r1 = new Range(2, 5);
+        Range r2 = new Range(6, 9);
+        Range r3 = new Range(10, 12);
+
+        assertNull(PositionUtil.joinConsecutiveRanges(Arrays.asList(r1, r2, r3)));
+    }
+
+    @Test
+    public void shouldMergeContiguousRangesToOne() {
+        Range r1 = new Range(2, 5);
+        Range r2 = new Range(4, 9);
+        Range r3 = new Range(7, 12);
+
+        List<Range> mergedRanges = PositionUtil.mergeRanges(Arrays.asList(r1, r2, r3));
+        assertEquals(1, mergedRanges.size());
+        assertEquals(new Range(2, 12), mergedRanges.get(0));
+    }
+
+    @Test
+    public void shouldMergeNotContiguousRanges() {
+        Range r1 = new Range(2, 5);
+        Range r2 = new Range(4, 9);
+        Range r3 = new Range(10, 12);
+        Range r4 = new Range(12, 15);
+
+        List<Range> mergedRanges = PositionUtil.mergeRanges(Arrays.asList(r1, r2, r3, r4));
+        assertEquals(2, mergedRanges.size());
+        assertEquals(new Range(2, 9), mergedRanges.get(0));
+        assertEquals(new Range(10, 15), mergedRanges.get(1));
+    }
 }

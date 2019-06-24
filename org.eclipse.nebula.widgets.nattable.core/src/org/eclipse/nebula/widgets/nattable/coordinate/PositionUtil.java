@@ -16,9 +16,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 
@@ -167,6 +169,73 @@ public class PositionUtil {
      */
     public static int[] getPositions(Range... ranges) {
         return getPositions(Arrays.asList(ranges));
+    }
+
+    /**
+     * Join a set of ranges if they describe a consecutive range when combined.
+     *
+     * @param ranges
+     *            Collection of {@link Range}s that should be joined.
+     * @return The joined {@link Range} or <code>null</code> if {@link Range}s
+     *         do not describe a consecutive {@link Range} when combined.
+     *
+     * @since 1.6
+     */
+    public static Range joinConsecutiveRanges(Collection<Range> ranges) {
+        if (ranges == null || ranges.isEmpty()) {
+            return null;
+        }
+
+        // put to list
+        List<Range> sortedRanges = new ArrayList<Range>(ranges);
+
+        // sort by 1) start, 2) end position
+        Collections.sort(sortedRanges, new Comparator<Range>() {
+
+            @Override
+            public int compare(Range o1, Range o2) {
+                if (o1.start == o2.start) {
+                    return Integer.compare(o1.end, o2.end);
+                } else {
+                    return Integer.compare(o1.start, o2.start);
+                }
+            }
+        });
+
+        int start = sortedRanges.get(0).start;
+        int end = sortedRanges.get(0).end;
+        for (int i = 1; i < sortedRanges.size(); i++) {
+            Range range = sortedRanges.get(i);
+            if (range.start > end) {
+                return null;
+            }
+            end = Integer.max(end, range.end);
+        }
+
+        return new Range(start, end);
+    }
+
+    /**
+     * Takes a collection of {@link Range}s and merges them to get
+     * {@link Range}s without overlapping. If there are no gaps between the
+     * {@link Range}s a single Range will be the result, otherwise multiple
+     * {@link Range}s will be in the resulting collection.
+     *
+     * @param ranges
+     *            The {@link Range}s to merge.
+     * @return Collection of {@link Range}s without overlapping.
+     *
+     * @since 1.6
+     */
+    public static List<Range> mergeRanges(Collection<Range> ranges) {
+        Set<Integer> numbers = new TreeSet<Integer>();
+        for (Range range : ranges) {
+            for (int number = range.start; number < range.end; number++) {
+                numbers.add(number);
+            }
+        }
+
+        return getRanges(numbers);
     }
 
     /**
