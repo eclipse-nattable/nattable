@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -183,12 +184,14 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer implements 
 
     @Override
     public void showColumnIndexes(Collection<Integer> columnIndexes) {
-        // only handle column indexes that are hidden
-        columnIndexes.retainAll(this.hiddenColumnIndexes);
+        List<Integer> toProcess = new ArrayList<Integer>(columnIndexes);
 
-        this.hiddenColumnIndexes.removeAll(columnIndexes);
+        // only handle column indexes that are hidden
+        toProcess.retainAll(this.hiddenColumnIndexes);
+
+        this.hiddenColumnIndexes.removeAll(toProcess);
         invalidateCache();
-        Collection<Integer> positions = getColumnPositionsByIndexes(columnIndexes);
+        Collection<Integer> positions = getColumnPositionsByIndexes(toProcess);
         fireLayerEvent(new ShowColumnPositionsEvent(this, positions));
     }
 

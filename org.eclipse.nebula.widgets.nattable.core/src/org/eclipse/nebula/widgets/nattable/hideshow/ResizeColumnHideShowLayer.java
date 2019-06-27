@@ -239,8 +239,10 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
 
     @Override
     public void showColumnIndexes(Collection<Integer> columnIndexes) {
+        List<Integer> toProcess = new ArrayList<Integer>(columnIndexes);
+
         // only handle column indexes that are hidden
-        columnIndexes.retainAll(this.hiddenColumns.keySet());
+        toProcess.retainAll(this.hiddenColumns.keySet());
 
         // On show we expect that all visible columns share the free
         // space. To avoid that only the adjacent column is decreased, we
@@ -250,7 +252,7 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
         this.bodyDataLayer.setFixColumnPercentageValuesOnResize(false);
 
         List<Integer> processed = new ArrayList<Integer>();
-        for (Integer index : columnIndexes) {
+        for (Integer index : toProcess) {
             ColumnSizeInfo info = this.hiddenColumns.remove(index);
             if (info != null) {
                 processed.add(index);

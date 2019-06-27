@@ -1284,6 +1284,31 @@ public class ResizeColumnHideShowLayerTest {
         assertEquals(1, range.end);
     }
 
+    @Test
+    public void shouldNotFireEventForNotProcessedColumn() {
+        this.hideShowLayer.hideColumnPositions(0, 2);
+
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(0));
+        assertTrue(this.hideShowLayer.hiddenColumns.keySet().contains(0));
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertTrue(this.hideShowLayer.hiddenColumns.keySet().contains(2));
+
+        this.listener.clearReceivedEvents();
+
+        this.hideShowLayer.showColumnIndexes(0, 1);
+
+        assertEquals(0, this.hideShowLayer.getColumnWidthByPosition(2));
+        assertTrue(this.hideShowLayer.hiddenColumns.keySet().contains(2));
+
+        assertEquals(1, this.listener.getEventsCount());
+        assertTrue(this.listener.containsInstanceOf(ColumnResizeEvent.class));
+
+        ColumnResizeEvent event = (ColumnResizeEvent) this.listener.getReceivedEvents().get(0);
+        Collection<Range> ranges = event.getColumnPositionRanges();
+        assertEquals(1, ranges.size());
+        assertEquals(new Range(0, 1), ranges.iterator().next());
+    }
+
     private void prepareReorderAndHide() {
         // trigger reordering
         this.reorderLayer.reorderColumnPosition(4, 0); // 4 0 1 2 3

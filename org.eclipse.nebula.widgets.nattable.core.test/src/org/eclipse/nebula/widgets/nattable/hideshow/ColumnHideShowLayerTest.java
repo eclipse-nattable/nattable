@@ -15,12 +15,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowColumnPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorConstants;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ColumnHideShowLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
+import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -285,5 +289,31 @@ public class ColumnHideShowLayerTest {
         configLabels = this.columnHideShowLayer.getConfigLabelsByPosition(1, 0);
         assertFalse(configLabels.hasLabel(HideIndicatorConstants.COLUMN_LEFT_HIDDEN));
         assertTrue(configLabels.hasLabel(HideIndicatorConstants.COLUMN_RIGHT_HIDDEN));
+    }
+
+    @Test
+    public void shouldNotFireEventForNotProcessedColumn() {
+        this.columnHideShowLayer = new ColumnHideShowLayer(new DataLayerFixture(10, 10, 100, 40));
+        assertEquals(10, this.columnHideShowLayer.getColumnCount());
+
+        this.columnHideShowLayer.hideColumnPositions(0, 2);
+
+        assertEquals(8, this.columnHideShowLayer.getColumnCount());
+
+        LayerListenerFixture listener = new LayerListenerFixture();
+        this.columnHideShowLayer.addLayerListener(listener);
+
+        this.columnHideShowLayer.showColumnIndexes(0, 1);
+
+        assertEquals(9, this.columnHideShowLayer.getColumnCount());
+        assertTrue(this.columnHideShowLayer.isColumnIndexHidden(2));
+
+        assertEquals(1, listener.getEventsCount());
+        assertTrue(listener.containsInstanceOf(ShowColumnPositionsEvent.class));
+
+        ShowColumnPositionsEvent event = (ShowColumnPositionsEvent) listener.getReceivedEvents().get(0);
+        Collection<Range> ranges = event.getColumnPositionRanges();
+        assertEquals(1, ranges.size());
+        assertEquals(new Range(0, 1), ranges.iterator().next());
     }
 }
