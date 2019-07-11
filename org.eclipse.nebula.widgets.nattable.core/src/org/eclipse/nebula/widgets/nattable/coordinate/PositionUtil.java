@@ -194,10 +194,13 @@ public class PositionUtil {
 
             @Override
             public int compare(Range o1, Range o2) {
+                // TODO Java 8
                 if (o1.start == o2.start) {
-                    return Integer.compare(o1.end, o2.end);
+                    return (o1.end < o2.end) ? -1 : ((o1.end == o2.end) ? 0 : 1);
+                    // return Integer.compare(o1.end, o2.end);
                 } else {
-                    return Integer.compare(o1.start, o2.start);
+                    return (o1.start < o2.start) ? -1 : ((o1.start == o2.start) ? 0 : 1);
+                    // return Integer.compare(o1.start, o2.start);
                 }
             }
         });
@@ -209,7 +212,7 @@ public class PositionUtil {
             if (range.start > end) {
                 return null;
             }
-            end = Integer.max(end, range.end);
+            end = Math.max(end, range.end);
         }
 
         return new Range(start, end);
