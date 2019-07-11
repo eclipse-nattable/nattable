@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_c3AF0MjYEeSyMNYR5xypkQ" elementId="org.eclipse.e4.ide.application" bindingContexts="_c3AF2cjYEeSyMNYR5xypkQ">
+<application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmlns:ui="http://www.eclipse.org/ui/2010/UIModel/application/ui" xmi:id="_c3AF0MjYEeSyMNYR5xypkQ" elementId="org.eclipse.e4.ide.application" bindingContexts="_c3AF2cjYEeSyMNYR5xypkQ">
   <children xsi:type="basic:TrimmedWindow" xmi:id="_c3AF0cjYEeSyMNYR5xypkQ" label="NatTable Examples Application" iconURI="platform:/plugin/org.eclipse.nebula.widgets.nattable.examples.e4/icons/nebula_logo_64.png" width="800" height="600">
     <children xsi:type="basic:PartSashContainer" xmi:id="_DkI1YB-fEea1k6zOfJeC6Q" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.partsashcontainer.0" horizontal="true">
       <children xsi:type="basic:Part" xmi:id="_HLPe8B-fEea1k6zOfJeC6Q" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.part.0" containerData="3000" contributionURI="bundleclass://org.eclipse.nebula.widgets.nattable.examples.e4/org.eclipse.nebula.widgets.nattable.examples.e4.NavigationPart"/>
@@ -8,23 +8,31 @@
       </children>
     </children>
   </children>
+  <handlers xmi:id="_tBaN8Hq_EemBVu_CJtP-mA" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.handler.0" contributionURI="bundleclass://org.eclipse.nebula.widgets.nattable.examples.e4/org.eclipse.nebula.widgets.nattable.examples.e4.handler.MessageBoxCommandHandler" command="_p9d70Hq_EemBVu_CJtP-mA"/>
   <rootContext xmi:id="_c3AF2cjYEeSyMNYR5xypkQ" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
     <children xmi:id="_c3AF2sjYEeSyMNYR5xypkQ" elementId="org.eclipse.ui.contexts.window" name="In Windows"/>
     <children xmi:id="_c3AF28jYEeSyMNYR5xypkQ" elementId="org.eclipse.ui.contexts.dialog" name="In Dialogs"/>
   </rootContext>
   <descriptors xmi:id="_L5Ym0CBUEea8xJMAhFtzhA" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.partdescriptor.natexample" allowMultiple="true" closeable="true" contributionURI="bundleclass://org.eclipse.nebula.widgets.nattable.examples.e4/org.eclipse.nebula.widgets.nattable.examples.e4.NatExamplePart"/>
   <descriptors xmi:id="_V5rP4CEsEea1dZ8VV8UwFQ" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.part.CSSExample" closeable="true" contributionURI="bundleclass://org.eclipse.nebula.widgets.nattable.examples.e4/org.eclipse.nebula.widgets.nattable.examples.e4.part.CSSExample">
-    <menus xsi:type="menu:PopupMenu" xmi:id="_rr3w4CEsEea1dZ8VV8UwFQ" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.popupmenu.0">
-      <children xsi:type="menu:DirectMenuItem" xmi:id="_rr3w4SEsEea1dZ8VV8UwFQ" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.directmenuitem.toggleenabledstate" label="Toggle Enabled State" contributionURI="bundleclass://org.eclipse.nebula.widgets.nattable.examples.e4/org.eclipse.nebula.widgets.nattable.examples.e4.handler.ToggleEnabledHandler"/>
-      <children xsi:type="menu:DirectMenuItem" xmi:id="_rr3w4iEsEea1dZ8VV8UwFQ" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.directmenuitem.test" label="Test" contributionURI="bundleclass://org.eclipse.nebula.widgets.nattable.examples.e4/org.eclipse.nebula.widgets.nattable.examples.e4.handler.TestHandler"/>
-    </menus>
     <variables>enabled</variables>
-    <properties key="enabled" value="false"/>
   </descriptors>
   <descriptors xmi:id="_M_uXMCEtEea1dZ8VV8UwFQ" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.part.PercentageExample" closeable="true" contributionURI="bundleclass://org.eclipse.nebula.widgets.nattable.examples.e4/org.eclipse.nebula.widgets.nattable.examples.e4.part.PercentageExample"/>
   <descriptors xmi:id="_T4NR8CEtEea1dZ8VV8UwFQ" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.part.TreeExample" closeable="true" contributionURI="bundleclass://org.eclipse.nebula.widgets.nattable.examples.e4/org.eclipse.nebula.widgets.nattable.examples.e4.part.TreeExample"/>
   <descriptors xmi:id="_XzWR0CEtEea1dZ8VV8UwFQ" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.part.DarkExample" closeable="true" contributionURI="bundleclass://org.eclipse.nebula.widgets.nattable.examples.e4/org.eclipse.nebula.widgets.nattable.examples.e4.part.DarkExample"/>
   <descriptors xmi:id="_a-takCEtEea1dZ8VV8UwFQ" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.part.SelectionListenerExample" closeable="true" contributionURI="bundleclass://org.eclipse.nebula.widgets.nattable.examples.e4/org.eclipse.nebula.widgets.nattable.examples.e4.part.SelectionListenerExample"/>
+  <descriptors xmi:id="_kbVSAIg-EemS2sw7O1MdGA" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.part.MenuExample" closeable="true" contributionURI="bundleclass://org.eclipse.nebula.widgets.nattable.examples.e4/org.eclipse.nebula.widgets.nattable.examples.e4.part.MenuExample">
+    <menus xsi:type="menu:PopupMenu" xmi:id="_s25JEIg-EemS2sw7O1MdGA" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.popupmenu.0">
+      <children xsi:type="menu:DirectMenuItem" xmi:id="_rr3w4SEsEea1dZ8VV8UwFQ" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.directmenuitem.toggleenabledstate" label="Toggle Enabled State" contributionURI="bundleclass://org.eclipse.nebula.widgets.nattable.examples.e4/org.eclipse.nebula.widgets.nattable.examples.e4.handler.ToggleEnabledHandler"/>
+      <children xsi:type="menu:Menu" xmi:id="_mQ8agIgXEemS2sw7O1MdGA" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.menu.submenu" label="Submenu">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_1nTswHq_EemBVu_CJtP-mA" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.handledmenuitem.blubb" label="Show Message Box" command="_p9d70Hq_EemBVu_CJtP-mA">
+          <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_0lvYsHrYEemBVu_CJtP-mA" contributionURI="bundleclass://org.eclipse.nebula.widgets.nattable.examples.e4/org.eclipse.nebula.widgets.nattable.examples.e4.handler.ContextEnabledExpression"/>
+        </children>
+      </children>
+      <children xsi:type="menu:DirectMenuItem" xmi:id="_rr3w4iEsEea1dZ8VV8UwFQ" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.directmenuitem.test" label="Test" contributionURI="bundleclass://org.eclipse.nebula.widgets.nattable.examples.e4/org.eclipse.nebula.widgets.nattable.examples.e4.handler.TestHandler"/>
+    </menus>
+  </descriptors>
+  <commands xmi:id="_p9d70Hq_EemBVu_CJtP-mA" elementId="org.eclipse.nebula.widgets.nattable.examples.e4.command.messageboxcommand" commandName="MessageBoxCommand"/>
   <addons xmi:id="_c3AF0sjYEeSyMNYR5xypkQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_c3AF08jYEeSyMNYR5xypkQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_c3AF1MjYEeSyMNYR5xypkQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2019 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,7 +27,11 @@ public class TestHandler {
 
     @CanExecute
     public boolean canExecute(IEclipseContext context) {
-        return Boolean.valueOf(context.get("enabled").toString());
+        Boolean enabled = (Boolean) context.get("enabled");
+        if (enabled == null) {
+            enabled = Boolean.FALSE;
+        }
+        return enabled;
     }
 
 }

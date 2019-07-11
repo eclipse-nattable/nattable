@@ -1,0 +1,27 @@
+target "NatTable Target Definition"
+
+with source allEnvironments
+
+location "http://download.eclipse.org/releases/oxygen/" {
+	org.eclipse.equinox.executable.feature.group
+	org.eclipse.sdk.ide
+	org.eclipse.equinox.sdk.feature.group
+	org.eclipse.emf.sdk.feature.group
+}
+
+location "http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/" {
+	ca.odell.glazedlists [1.9.0,1.9.1)
+	ca.odell.glazedlists.source [1.9.0,1.9.1)
+	com.ibm.icu.base [56.1.0,56.1.1)
+	com.ibm.icu.base.source [56.1.0,56.1.1)
+	org.apache.commons.codec [1.6.0,1.6.1)
+	org.apache.commons.codec.source [1.6.0,1.6.1)
+	org.apache.poi [3.9.0,3.9.1)
+	org.apache.poi.source [3.9.0,3.9.1)
+}
+
+location "http://download.eclipse.org/nebula/releases/2.2.0" {
+	org.eclipse.nebula.cwt.feature.feature.group
+	org.eclipse.nebula.widgets.cdatetime.feature.feature.group
+	org.eclipse.nebula.widgets.richtext.feature.feature.group
+}

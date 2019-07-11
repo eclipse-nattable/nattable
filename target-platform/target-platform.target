@@ -1,33 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="NatTable Target" sequenceNumber="47">
-<locations>
-<location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="false" type="InstallableUnit">
-<unit id="org.eclipse.emf.sdk.feature.group" version="2.12.0.v20160526-0356"/>
-<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.300.v20161122-1740"/>
-<unit id="org.eclipse.equinox.sdk.feature.group" version="3.12.0.v20161122-1740"/>
-<unit id="org.eclipse.sdk.ide" version="4.6.2.M20161124-1400"/>
-<repository location="http://download.eclipse.org/releases/neon/"/>
-</location>
-<location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="false" type="InstallableUnit">
-<unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
-<unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
-<unit id="com.ibm.icu.base" version="56.1.0.v201601250100"/>
-<unit id="com.ibm.icu.base.source" version="56.1.0.v201601250100"/>
-<unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
-<unit id="org.apache.commons.codec.source" version="1.6.0.v201305230611"/>
-<unit id="org.apache.poi" version="3.9.0.v201405241750"/>
-<unit id="org.apache.poi.source" version="3.9.0.v201405241750"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/"/>
-</location>
-<location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="false" type="InstallableUnit">
-<unit id="org.eclipse.swt.dummyfragments.feature.group" version="1.0.0.v20161122-0613"/>
-<repository location="http://eclipseguru.github.io/missing-swt-fragments/"/>
-</location>
-<location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="false" type="InstallableUnit">
-<unit id="org.eclipse.nebula.cwt.feature.feature.group" version="1.0.0.201703081533"/>
-<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.0.0.201703081533"/>
-<unit id="org.eclipse.nebula.widgets.richtext.feature.feature.group" version="1.2.0.201703081533"/>
-<repository location="http://download.eclipse.org/nebula/releases/1.2.0"/>
-</location>
-</locations>
+<?pde?>
+<!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
+<target name="NatTable Target Definition" sequenceNumber="1562763532">
+  <locations>
+    <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.eclipse.equinox.executable.feature.group" version="3.7.2.v20171108-1834"/>
+      <unit id="org.eclipse.sdk.ide" version="4.7.3.M20180330-0640"/>
+      <unit id="org.eclipse.equinox.sdk.feature.group" version="3.13.4.v20180322-2228"/>
+      <unit id="org.eclipse.emf.sdk.feature.group" version="2.13.0.v20170609-0928"/>
+      <repository location="http://download.eclipse.org/releases/oxygen/"/>
+    </location>
+    <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
+      <unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
+      <unit id="com.ibm.icu.base" version="56.1.0.v201601250100"/>
+      <unit id="com.ibm.icu.base.source" version="56.1.0.v201601250100"/>
+      <unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
+      <unit id="org.apache.commons.codec.source" version="1.6.0.v201305230611"/>
+      <unit id="org.apache.poi" version="3.9.0.v201405241750"/>
+      <unit id="org.apache.poi.source" version="3.9.0.v201405241750"/>
+      <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/"/>
+    </location>
+    <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.eclipse.nebula.cwt.feature.feature.group" version="1.1.0.201906101644"/>
+      <unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.3.0.201906101644"/>
+      <unit id="org.eclipse.nebula.widgets.richtext.feature.feature.group" version="1.3.0.201906101644"/>
+      <repository location="http://download.eclipse.org/nebula/releases/2.2.0"/>
+    </location>
+  </locations>
 </target>

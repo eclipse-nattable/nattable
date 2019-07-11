@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2016 Dirk Fauth.
+ * Copyright (c) 2016, 2019 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -187,6 +187,7 @@ public class NavigationPart {
             examples.add(E4_EXAMPLES_PREFIX + "/org/eclipse/nebula/widgets/nattable/examples/e4/part/PercentageExample");
             examples.add(E4_EXAMPLES_PREFIX + "/org/eclipse/nebula/widgets/nattable/examples/e4/part/TreeExample");
             examples.add(E4_EXAMPLES_PREFIX + "/org/eclipse/nebula/widgets/nattable/examples/e4/part/SelectionListenerExample");
+            examples.add(E4_EXAMPLES_PREFIX + "/org/eclipse/nebula/widgets/nattable/examples/e4/part/MenuExample");
         } catch (IOException e) {
             e.printStackTrace();
         }

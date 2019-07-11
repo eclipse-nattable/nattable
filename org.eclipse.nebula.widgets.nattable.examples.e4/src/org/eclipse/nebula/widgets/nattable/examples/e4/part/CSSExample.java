@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2019 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,7 +23,6 @@ import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
-import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.EditableRule;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -40,7 +39,6 @@ import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditConfiguration;
 import org.eclipse.nebula.widgets.nattable.examples.e4.AbstractE4NatExamplePart;
 import org.eclipse.nebula.widgets.nattable.extension.e4.painterfactory.CellPainterFactory;
 import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillHandleConfiguration;
-import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -51,17 +49,11 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CustomLineBorderDecorator;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
-import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
-import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
-import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
-import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
 @SuppressWarnings("restriction")
@@ -74,7 +66,6 @@ public class CSSExample extends AbstractE4NatExamplePart {
     public void postConstruct(Composite parent, Shell shell) {
         parent.setLayout(new GridLayout());
 
-        // property names of the Person class
         // property names of the Person class
         String[] propertyNames = {
                 "firstName",
@@ -165,37 +156,6 @@ public class CSSExample extends AbstractE4NatExamplePart {
         });
 
         natTable.setData(CSSSWTConstants.CSS_CLASS_NAME_KEY, "basic");
-
-        // application model menu configuration
-        menuService.registerContextMenu(
-                natTable,
-                "org.eclipse.nebula.widgets.nattable.examples.e4.popupmenu.0");
-
-        // get the menu registered by EMenuService
-        final Menu e4Menu = natTable.getMenu();
-
-        // remove the menu reference from NatTable instance
-        natTable.setMenu(null);
-
-        natTable.addConfiguration(new AbstractUiBindingConfiguration() {
-
-            @Override
-            public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-                // add NatTable menu items
-                // and register the DisposeListener
-                new PopupMenuBuilder(natTable, e4Menu)
-                        .withInspectLabelsMenuItem()
-                        .build();
-
-                // register the UI binding
-                uiBindingRegistry.registerMouseDownBinding(
-                        new MouseEventMatcher(
-                                SWT.NONE,
-                                GridRegion.BODY,
-                                MouseEventMatcher.RIGHT_BUTTON),
-                        new PopupMenuAction(e4Menu));
-            }
-        });
 
         natTable.configure();
 
