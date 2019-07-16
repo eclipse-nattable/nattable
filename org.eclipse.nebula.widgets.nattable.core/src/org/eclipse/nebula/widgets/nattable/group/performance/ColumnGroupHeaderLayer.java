@@ -2221,6 +2221,20 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
             return true;
         }
 
+        // additional check if the group itself is part of an unbreakable higher
+        // level group
+        if (level < getLevelCount() - 1
+                && !ColumnGroupUtils.isReorderValid(
+                        this,
+                        level + 1,
+                        fromColumnPosition,
+                        toColumnPosition,
+                        toColumnPosition < getPositionLayer().getColumnCount())) {
+            // consume the command and avoid reordering that breaks an
+            // unbreakable group
+            return true;
+        }
+
         GroupModel groupModel = getGroupModel(level);
         if (groupModel != null) {
             Group group = groupModel.getGroupByPosition(fromColumnPosition);

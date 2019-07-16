@@ -2214,6 +2214,20 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
             return true;
         }
 
+        // additional check if the group itself is part of an unbreakable higher
+        // level group
+        if (level < getLevelCount() - 1
+                && !RowGroupUtils.isReorderValid(
+                        this,
+                        level + 1,
+                        fromRowPosition,
+                        toRowPosition,
+                        toRowPosition < getPositionLayer().getRowCount())) {
+            // consume the command and avoid reordering that breaks an
+            // unbreakable group
+            return true;
+        }
+
         GroupModel groupModel = getGroupModel(level);
         if (groupModel != null) {
             Group group = groupModel.getGroupByPosition(fromRowPosition);

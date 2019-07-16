@@ -123,9 +123,10 @@ public class RowGroupHeaderReorderDragMode extends RowReorderDragMode {
                 int toCheck = toPosition;
                 if (toPosition < 0 && toGridRowPosition == natLayer.getColumnCount()) {
                     toCheck = LayerUtil.convertRowPosition(natLayer, toGridRowPosition - 1, this.rowGroupHeaderLayer.getPositionLayer());
+                } else {
+                    MoveDirectionEnum moveDirection = PositionUtil.getVerticalMoveDirection(fromPosition, toCheck);
+                    toCheck = MoveDirectionEnum.DOWN == moveDirection ? toCheck - 1 : toCheck;
                 }
-                MoveDirectionEnum moveDirection = PositionUtil.getVerticalMoveDirection(fromPosition, toCheck);
-                toCheck = MoveDirectionEnum.DOWN == moveDirection ? toCheck - 1 : toCheck;
                 return RowGroupUtils.isInTheSameGroup(
                         this.rowGroupHeaderLayer,
                         lvl, fromPosition,
