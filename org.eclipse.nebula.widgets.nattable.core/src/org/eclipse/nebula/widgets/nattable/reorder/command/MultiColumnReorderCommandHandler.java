@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,19 +15,12 @@ import java.util.List;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 
-public class MultiColumnReorderCommandHandler extends
-        AbstractLayerCommandHandler<MultiColumnReorderCommand> {
+public class MultiColumnReorderCommandHandler extends AbstractLayerCommandHandler<MultiColumnReorderCommand> {
 
     private final ColumnReorderLayer columnReorderLayer;
 
-    public MultiColumnReorderCommandHandler(
-            ColumnReorderLayer columnReorderLayer) {
+    public MultiColumnReorderCommandHandler(ColumnReorderLayer columnReorderLayer) {
         this.columnReorderLayer = columnReorderLayer;
-    }
-
-    @Override
-    public Class<MultiColumnReorderCommand> getCommandClass() {
-        return MultiColumnReorderCommand.class;
     }
 
     @Override
@@ -36,10 +29,24 @@ public class MultiColumnReorderCommandHandler extends
         int toColumnPosition = command.getToColumnPosition();
         boolean reorderToLeftEdge = command.isReorderToLeftEdge();
 
-        this.columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions,
-                toColumnPosition, reorderToLeftEdge);
+        if (!command.isReorderByIndex()) {
+            this.columnReorderLayer.reorderMultipleColumnPositions(
+                    fromColumnPositions,
+                    toColumnPosition,
+                    reorderToLeftEdge);
+        } else {
+            this.columnReorderLayer.reorderMultipleColumnIndexes(
+                    fromColumnPositions,
+                    toColumnPosition,
+                    reorderToLeftEdge);
+        }
 
         return true;
+    }
+
+    @Override
+    public Class<MultiColumnReorderCommand> getCommandClass() {
+        return MultiColumnReorderCommand.class;
     }
 
 }

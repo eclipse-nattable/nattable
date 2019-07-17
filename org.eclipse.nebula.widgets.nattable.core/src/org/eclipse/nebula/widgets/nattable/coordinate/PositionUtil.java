@@ -110,6 +110,7 @@ public class PositionUtil {
 
     /**
      * Creates an array of positions from the given set of {@link Range}s.
+     * Negative values will be filtered.
      *
      * <p>
      * Example: [[Range(0 - 3)][Range(4 - 7)]] will return [0, 1, 2, 4, 5, 6].
@@ -132,13 +133,16 @@ public class PositionUtil {
         // return ranges
         // .stream()
         // .flatMapToInt(r -> IntStream.range(r.start, r.end))
+        // .filter(in -> in >= 0)
         // .sorted()
         // .toArray();
 
         Set<Integer> positions = new HashSet<Integer>();
         for (Range r : ranges) {
             for (int i = r.start; i < r.end; i++) {
-                positions.add(i);
+                if (i >= 0) {
+                    positions.add(i);
+                }
             }
         }
         int[] result = new int[positions.size()];
@@ -153,6 +157,7 @@ public class PositionUtil {
 
     /**
      * Creates an array of positions from the given set of {@link Range}s.
+     * Negative values will be filtered.
      *
      * <p>
      * Example: [[Range(0 - 3)][Range(4 - 7)]] will return [0, 1, 2, 4, 5, 6].

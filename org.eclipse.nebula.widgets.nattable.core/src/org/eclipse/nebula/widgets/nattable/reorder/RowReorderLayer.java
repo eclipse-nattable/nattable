@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder;
 
@@ -457,6 +457,31 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
         }
 
         fireLayerEvent(new RowReorderEvent(this, fromRowPositions, fromRowIndexes, toRowPosition, toRowIndex, reorderToTopEdge));
+    }
+
+    /**
+     * Reorders the given from-rows identified by index to the specified edge of
+     * the row to move to and fires a {@link RowReorderEvent}. This method can
+     * be used to reorder rows that are hidden in a higher level, e.g. to
+     * reorder a row group that has hidden rows.
+     *
+     * @param fromRowIndexes
+     *            row indexes to move
+     * @param toRowPosition
+     *            position to move the rows to
+     * @param reorderToTopEdge
+     *            whether the move should be done above the given to position or
+     *            not
+     *
+     * @since 1.6
+     */
+    public void reorderMultipleRowIndexes(List<Integer> fromRowIndexes, int toRowPosition, boolean reorderToTopEdge) {
+        // calculate positions from indexes
+        List<Integer> fromRownPositions = new ArrayList<Integer>(fromRowIndexes.size());
+        for (Integer index : fromRowIndexes) {
+            fromRownPositions.add(getRowPositionByIndex(index));
+        }
+        reorderMultipleRowPositions(fromRownPositions, toRowPosition, reorderToTopEdge);
     }
 
     /**

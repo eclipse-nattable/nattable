@@ -104,6 +104,21 @@ public class PositionUtilTest {
     }
 
     @Test
+    public void getPositionsFromRangesFilterNegative() {
+        Set<Range> ranges = new HashSet<>();
+        ranges.add(new Range(-1, 3));
+        ranges.add(new Range(4, 7));
+
+        int[] expected = new int[] { 0, 1, 2, 4, 5, 6 };
+        int[] result = PositionUtil.getPositions(ranges);
+
+        assertEquals(expected.length, result.length);
+        for (int i = 0; i < expected.length; i++) {
+            assertEquals(expected[i], result[i]);
+        }
+    }
+
+    @Test
     public void shouldJoinContiguousRanges() {
         Range r1 = new Range(2, 5);
         Range r2 = new Range(5, 9);

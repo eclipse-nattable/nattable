@@ -2260,13 +2260,18 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                 // we need to convert and fire the command on the underlying
                 // layer of the positionLayer as otherwise the special command
                 // handler is activated
-                List<Integer> underlyingFrom = new ArrayList<Integer>();
-                for (int from : group.getVisiblePositions()) {
-                    underlyingFrom.add(getPositionLayer().localToUnderlyingColumnPosition(from));
-                }
                 int underlyingTo = getPositionLayer().localToUnderlyingColumnPosition(toPosition);
-                return getPositionLayer().getUnderlyingLayerByPosition(0, 0).doCommand(
-                        new MultiColumnReorderCommand(getPositionLayer(), underlyingFrom, underlyingTo));
+
+                // we reorder by index so even hidden columns in a group are
+                // reordered
+                MultiColumnReorderCommand command =
+                        new MultiColumnReorderCommand(
+                                getPositionLayer(),
+                                new ArrayList<Integer>(group.getMembers()),
+                                underlyingTo);
+                command.setReorderByIndex(true);
+
+                return getPositionLayer().getUnderlyingLayerByPosition(0, 0).doCommand(command);
             }
         }
         return false;

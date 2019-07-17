@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2018 Dirk Fauth and others.
+ * Copyright (c) 2013, 2019 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder.command;
 
@@ -37,6 +37,11 @@ public class MultiRowReorderCommand implements ILayerCommand {
      * bottom edge.
      */
     private boolean reorderToTopEdge;
+    /**
+     * Flag to indicate if the carried from rows are treated as indexes, or if
+     * they are treated as positions.
+     */
+    private boolean reorderByIndex = false;
 
     /**
      *
@@ -123,16 +128,47 @@ public class MultiRowReorderCommand implements ILayerCommand {
         return this.reorderToTopEdge;
     }
 
+    /**
+     *
+     * @return <code>true</code> if the carried from rows are treated as
+     *         indexes, <code>false</code> if they are treated as positions.
+     *         Default is <code>false</code>.
+     * @since 1.6
+     */
+    public boolean isReorderByIndex() {
+        return this.reorderByIndex;
+    }
+
+    /**
+     * Configure how the carried rows should be treated. By default they are
+     * treated as positions and converted to the local layer. Setting this value
+     * to <code>true</code> will treat the rows as indexes which will avoid
+     * conversion. This can be useful to reorder hidden rows for example.
+     *
+     * @param reorderByIndex
+     *            <code>true</code> if the carried from columns should be
+     *            treated as indexes, <code>false</code> if they should be
+     *            treated as positions.
+     * @since 1.6
+     */
+    public void setReorderByIndex(boolean reorderByIndex) {
+        this.reorderByIndex = reorderByIndex;
+    }
+
     @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         List<RowPositionCoordinate> convertedFromRowPositionCoordinates =
                 new ArrayList<RowPositionCoordinate>(this.fromRowPositionCoordinates.size());
 
         for (RowPositionCoordinate fromRowPositionCoordinate : this.fromRowPositionCoordinates) {
-            RowPositionCoordinate convertedFromRowPositionCoordinate =
-                    LayerCommandUtil.convertRowPositionToTargetContext(fromRowPositionCoordinate, targetLayer);
-            if (convertedFromRowPositionCoordinate != null) {
-                convertedFromRowPositionCoordinates.add(convertedFromRowPositionCoordinate);
+            if (!this.reorderByIndex) {
+                RowPositionCoordinate convertedFromRowPositionCoordinate =
+                        LayerCommandUtil.convertRowPositionToTargetContext(fromRowPositionCoordinate, targetLayer);
+                if (convertedFromRowPositionCoordinate != null) {
+                    convertedFromRowPositionCoordinates.add(convertedFromRowPositionCoordinate);
+                }
+            } else {
+                convertedFromRowPositionCoordinates.add(fromRowPositionCoordinate);
             }
         }
 

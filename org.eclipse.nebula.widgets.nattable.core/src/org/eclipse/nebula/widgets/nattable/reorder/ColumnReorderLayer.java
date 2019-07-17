@@ -458,6 +458,32 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
     }
 
     /**
+     * Reorders the given from-columns identified by index to the specified edge
+     * of the column to move to and fires a {@link ColumnReorderEvent}. This
+     * method can be used to reorder columns that are hidden in a higher level,
+     * e.g. to reorder a column group that has hidden columns.
+     * 
+     * @param fromColumnIndexes
+     *            column indexes to move
+     * @param toColumnPosition
+     *            position to move the columns to
+     * @param reorderToLeftEdge
+     *            <code>true</code> if the columns should be moved to the left
+     *            of the given column to move to, <code>false</code> if they
+     *            should be positioned to the right
+     *
+     * @since 1.6
+     */
+    public void reorderMultipleColumnIndexes(List<Integer> fromColumnIndexes, int toColumnPosition, boolean reorderToLeftEdge) {
+        // calculate positions from indexes
+        List<Integer> fromColumnPositions = new ArrayList<Integer>(fromColumnIndexes.size());
+        for (Integer index : fromColumnIndexes) {
+            fromColumnPositions.add(getColumnPositionByIndex(index));
+        }
+        reorderMultipleColumnPositions(fromColumnPositions, toColumnPosition, reorderToLeftEdge);
+    }
+
+    /**
      * Clear the internal cache.
      */
     private void invalidateCache() {
