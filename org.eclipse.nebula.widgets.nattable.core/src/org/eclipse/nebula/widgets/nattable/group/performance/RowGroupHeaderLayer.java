@@ -2233,22 +2233,6 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
             Group group = groupModel.getGroupByPosition(fromRowPosition);
             if (group != null) {
                 int toPosition = toRowPosition;
-                if (group.isCollapsed()) {
-                    // if a collapsed row group is reordered, it needs to be
-                    // expanded first to be able to get all row positions of
-                    // that group that need to be reordered
-                    int toIndex = getPositionLayer().getRowIndexByPosition(toRowPosition);
-                    boolean toEnd = false;
-                    if (toPosition >= getPositionLayer().getRowCount()) {
-                        toEnd = true;
-                    }
-                    expandGroup(groupModel, group);
-                    if (toEnd) {
-                        toPosition = getPositionLayer().getRowCount();
-                    } else {
-                        toPosition = getPositionLayer().getRowPositionByIndex(toIndex);
-                    }
-                }
 
                 // we need to convert and fire the command on the underlying
                 // layer of the positionLayer as otherwise the special command
@@ -2620,7 +2604,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                             moveDirection);
                 } else if (fromRowGroup != null
                         && toRowGroup == null
-                        && (!ColumnGroupUtils.isGroupReordered(fromRowGroup, fromRowPositions) || fromRowGroup.isCollapsed())) {
+                        && !ColumnGroupUtils.isGroupReordered(fromRowGroup, fromRowPositions)) {
                     removePositionsFromGroup(
                             groupModel,
                             fromRowGroup,
@@ -2651,8 +2635,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                         && toRowGroup != null
                         && !fromRowGroup.equals(toRowGroup)
                         && (!RowGroupUtils.isGroupReordered(fromRowGroup, fromRowPositions)
-                                || fromRowGroup.isCollapsed()
-                                || fromRowGroup.getVisiblePositions().size() == 1)) {
+                                || (!fromRowGroup.isCollapsed() && fromRowGroup.getVisiblePositions().size() == 1))) {
 
                     removePositionsFromGroup(
                             groupModel,
