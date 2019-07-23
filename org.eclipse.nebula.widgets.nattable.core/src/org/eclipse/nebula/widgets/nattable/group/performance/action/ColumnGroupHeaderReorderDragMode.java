@@ -118,47 +118,122 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
 
         // Allow moving within the unbreakable group
         int fromPosition = this.columnGroupHeaderLayer.getReorderFromColumnPosition();
-        for (int lvl = (this.level + 1); lvl < this.columnGroupHeaderLayer.getLevelCount(); lvl++) {
-            GroupModel model = this.columnGroupHeaderLayer.getGroupModel(lvl);
-            if (model.isPartOfAnUnbreakableGroup(fromPosition)) {
-                int toCheck = toPosition;
-                if (toPosition < 0 && toGridColumnPosition == natLayer.getColumnCount()) {
-                    toCheck = LayerUtil.convertColumnPosition(natLayer, toGridColumnPosition - 1, this.columnGroupHeaderLayer.getPositionLayer());
-                } else {
-                    MoveDirectionEnum moveDirection = PositionUtil.getHorizontalMoveDirection(fromPosition, toCheck);
-                    toCheck = MoveDirectionEnum.RIGHT == moveDirection ? toCheck - 1 : toCheck;
+
+        if (this.level >= 0) {
+            for (int lvl = (this.level + 1); lvl < this.columnGroupHeaderLayer.getLevelCount(); lvl++) {
+                GroupModel model = this.columnGroupHeaderLayer.getGroupModel(lvl);
+                if (model.isPartOfAnUnbreakableGroup(fromPosition)) {
+                    int toCheck = toPosition;
+                    if (toPosition < 0 && toGridColumnPosition == natLayer.getColumnCount()) {
+                        toCheck = LayerUtil.convertColumnPosition(natLayer, toGridColumnPosition - 1, this.columnGroupHeaderLayer.getPositionLayer());
+                    } else {
+                        MoveDirectionEnum moveDirection = PositionUtil.getHorizontalMoveDirection(fromPosition, toCheck);
+                        toCheck = MoveDirectionEnum.RIGHT == moveDirection ? toCheck - 1 : toCheck;
+                    }
+                    return ColumnGroupUtils.isInTheSameGroup(
+                            this.columnGroupHeaderLayer,
+                            lvl, fromPosition,
+                            toCheck);
                 }
-                return ColumnGroupUtils.isInTheSameGroup(
-                        this.columnGroupHeaderLayer,
-                        lvl, fromPosition,
-                        toCheck);
-            }
-        }
-
-        // ensure that the target position is valid on every level above
-        for (int lvl = (this.level + 1); lvl < this.columnGroupHeaderLayer.getLevelCount(); lvl++) {
-            GroupModel model = this.columnGroupHeaderLayer.getGroupModel(lvl);
-
-            boolean betweenTwoGroups = false;
-            if (this.currentEvent != null) {
-                int minX = this.currentEvent.x - GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
-                int maxX = this.currentEvent.x + GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
-                betweenTwoGroups = ColumnGroupUtils.isBetweenTwoGroups(natLayer, minX, maxX, this.columnGroupHeaderLayer, lvl);
             }
 
-            if (!betweenTwoGroups) {
-                if (model.isPartOfAnUnbreakableGroup(toPosition)) {
+            // ensure that the target position is valid on every level above
+            for (int lvl = (this.level + 1); lvl < this.columnGroupHeaderLayer.getLevelCount(); lvl++) {
+                GroupModel model = this.columnGroupHeaderLayer.getGroupModel(lvl);
+
+                boolean betweenTwoGroups = false;
+                if (this.currentEvent != null) {
+                    int minX = this.currentEvent.x - GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
+                    int maxX = this.currentEvent.x + GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
+                    betweenTwoGroups = ColumnGroupUtils.isBetweenTwoGroups(natLayer, minX, maxX, this.columnGroupHeaderLayer, lvl);
+                }
+
+                if (!betweenTwoGroups) {
+                    if (model.isPartOfAnUnbreakableGroup(toPosition)) {
+                        return false;
+                    }
+                }
+            }
+
+            return ColumnGroupUtils.isBetweenTwoGroups(
+                    this.columnGroupHeaderLayer,
+                    this.level,
+                    toPosition,
+                    toPosition < this.columnGroupHeaderLayer.getColumnCount(),
+                    PositionUtil.getHorizontalMoveDirection(fromGridColumnPosition, toGridColumnPosition));
+        } else {
+            // we perform column reorder
+            // ensure that the target position is valid on every level
+            for (int level = 0; level < this.columnGroupHeaderLayer.getLevelCount(); level++) {
+                if (!isValidTargetColumnPosition(natLayer, fromGridColumnPosition, toGridColumnPosition, level, fromPosition, toPosition)) {
                     return false;
                 }
             }
+
+            return true;
+        }
+    }
+
+    /**
+     * Test if the reorder is valid for the given level.
+     *
+     * @param natLayer
+     *            The layer on which the drag operation is triggered, typically
+     *            the NatTable instance.
+     * @param fromGridColumnPosition
+     *            The from position related to the given natLayer.
+     * @param toGridColumnPosition
+     *            The to position related to the given natLayer.
+     * @param level
+     *            The grouping level for which the check should be performed.
+     * @param fromPosition
+     *            The from position related to the positionLayer of the
+     *            {@link ColumnGroupHeaderLayer}.
+     * @param toPosition
+     *            The to position related to the positionLayer of the
+     *            {@link ColumnGroupHeaderLayer}.
+     * @return <code>true</code> if the reorder would be valid on the specified
+     *         level, <code>false</code> if not.
+     */
+    protected boolean isValidTargetColumnPosition(
+            ILayer natLayer, int fromGridColumnPosition, int toGridColumnPosition,
+            int level, int fromPosition, int toPosition) {
+
+        GroupModel model = this.columnGroupHeaderLayer.getGroupModel(level);
+
+        // check only in case the group is an unbreakable group or the group
+        // contains only one column, as reordering a column in such a group
+        // is like reordering the whole group and does not break the group
+        if (model.isPartOfAnUnbreakableGroup(fromPosition)
+                && model.getGroupByPosition(fromPosition).getOriginalSpan() > 1) {
+            int toCheck = toPosition;
+            if (toPosition < 0 && toGridColumnPosition == natLayer.getColumnCount()) {
+                toCheck = LayerUtil.convertColumnPosition(natLayer, toGridColumnPosition - 1, this.columnGroupHeaderLayer.getPositionLayer());
+            }
+            MoveDirectionEnum moveDirection = PositionUtil.getHorizontalMoveDirection(fromPosition, toCheck);
+            toCheck = MoveDirectionEnum.RIGHT == moveDirection ? toCheck - 1 : toCheck;
+
+            // Allow moving within the unbreakable group
+            return ColumnGroupUtils.isInTheSameGroup(
+                    this.columnGroupHeaderLayer,
+                    level, fromPosition,
+                    toCheck);
         }
 
-        return ColumnGroupUtils.isBetweenTwoGroups(
-                this.columnGroupHeaderLayer,
-                this.level,
-                toPosition,
-                toPosition < this.columnGroupHeaderLayer.getColumnCount(),
-                PositionUtil.getHorizontalMoveDirection(fromGridColumnPosition, toGridColumnPosition));
+        boolean betweenTwoGroups = false;
+        if (this.currentEvent != null) {
+            int minX = this.currentEvent.x - GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
+            int maxX = this.currentEvent.x + GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
+            betweenTwoGroups = ColumnGroupUtils.isBetweenTwoGroups(natLayer, minX, maxX, this.columnGroupHeaderLayer, level);
+        }
+
+        if (!betweenTwoGroups) {
+            if (model.isPartOfAnUnbreakableGroup(toPosition)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @Override
@@ -228,6 +303,7 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
             // no group found, so we set the level to -1 and trigger column
             // reordering instead of column group reordering in further steps
             this.level = -1;
+            this.dragFromGridRowPosition = this.columnGroupHeaderLayer.getRowCount() - 1;
         }
     }
 }
