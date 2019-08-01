@@ -248,8 +248,10 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
 
     /**
      * Initially populate the index order to the local cache.
+     *
+     * @since 1.6
      */
-    private void populateIndexOrder() {
+    protected void populateIndexOrder() {
         this.rowIndexOrder.clear();
         ILayer underlyingLayer = getUnderlyingLayer();
         for (int rowPosition = 0; rowPosition < underlyingLayer.getRowCount(); rowPosition++) {
@@ -262,8 +264,10 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
     /**
      * Initializes the internal index-position-mapping to reflect the internal
      * row-index-order.
+     *
+     * @since 1.6
      */
-    private void refreshIndexPositionMapping() {
+    protected void refreshIndexPositionMapping() {
         this.indexPositionMapping.clear();
         for (int position = 0; position < this.rowIndexOrder.size(); position++) {
             int index = this.rowIndexOrder.get(position);
@@ -425,6 +429,10 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
      *            not
      */
     public void reorderMultipleRowPositions(List<Integer> fromRowPositions, int toRowPosition, boolean reorderToTopEdge) {
+        // the position collection needs to be sorted so the move works
+        // correctly
+        Collections.sort(fromRowPositions);
+
         // get the indexes before the move operation
         List<Integer> fromRowIndexes = new ArrayList<Integer>();
         for (int fromRowPosition : fromRowPositions) {
@@ -486,8 +494,10 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
 
     /**
      * Clear the caching of the starting Y positions
+     *
+     * @since 1.6
      */
-    private void invalidateCache() {
+    protected void invalidateCache() {
         this.startYCache.clear();
     }
 

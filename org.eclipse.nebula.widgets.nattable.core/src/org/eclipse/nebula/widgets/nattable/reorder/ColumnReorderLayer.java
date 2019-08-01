@@ -288,8 +288,10 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
     /**
      * Initialize the internal column index ordering from a clean state, which
      * means it reflects the ordering from the underlying layer.
+     *
+     * @since 1.6
      */
-    private void populateIndexOrder() {
+    protected void populateIndexOrder() {
         this.columnIndexOrder.clear();
         ILayer underlyingLayer = getUnderlyingLayer();
         for (int columnPosition = 0; columnPosition < underlyingLayer.getColumnCount(); columnPosition++) {
@@ -302,8 +304,10 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
     /**
      * Initializes the internal index-position-mapping to reflect the internal
      * column-index-order.
+     *
+     * @since 1.6
      */
-    private void refreshIndexPositionMapping() {
+    protected void refreshIndexPositionMapping() {
         this.indexPositionMapping.clear();
         for (int position = 0; position < this.columnIndexOrder.size(); position++) {
             int index = this.columnIndexOrder.get(position);
@@ -423,6 +427,10 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
      *            should be positioned to the right
      */
     public void reorderMultipleColumnPositions(List<Integer> fromColumnPositions, int toColumnPosition, boolean reorderToLeftEdge) {
+        // the position collection needs to be sorted so the move works
+        // correctly
+        Collections.sort(fromColumnPositions);
+
         // get the indexes before the move operation
         List<Integer> fromColumnIndexes = new ArrayList<Integer>();
         for (int fromColumnPosition : fromColumnPositions) {
@@ -462,7 +470,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
      * of the column to move to and fires a {@link ColumnReorderEvent}. This
      * method can be used to reorder columns that are hidden in a higher level,
      * e.g. to reorder a column group that has hidden columns.
-     * 
+     *
      * @param fromColumnIndexes
      *            column indexes to move
      * @param toColumnPosition
@@ -485,8 +493,10 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 
     /**
      * Clear the internal cache.
+     *
+     * @since 1.6
      */
-    private void invalidateCache() {
+    protected void invalidateCache() {
         this.startXCache.clear();
     }
 

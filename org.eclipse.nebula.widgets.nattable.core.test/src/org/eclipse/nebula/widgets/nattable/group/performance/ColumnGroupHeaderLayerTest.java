@@ -11980,6 +11980,40 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(0, this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(4));
     }
 
+    @Test
+    public void shouldReorderGroupWithReorderedColumns() {
+        // remove the first column group
+        this.columnGroupHeaderLayer.removeGroup(0);
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+
+        // reorder the first two columns in the second group to the end
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.selectionLayer, 4, 8));
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.selectionLayer, 4, 8));
+
+        assertEquals(6, this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(4));
+        assertEquals(7, this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(5));
+        assertEquals(4, this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(6));
+        assertEquals(5, this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(7));
+
+        // reorder second group to position 2
+        this.gridLayer.doCommand(new ColumnGroupReorderCommand(this.gridLayer, 0, 5, 3));
+
+        // we expect that the column group is intact
+        assertEquals(6, group2.getStartIndex());
+        assertEquals(6, group2.getVisibleStartIndex());
+        assertEquals(2, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(1, this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(1));
+        assertEquals(6, this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(2));
+        assertEquals(7, this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(3));
+        assertEquals(4, this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(4));
+        assertEquals(5, this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(5));
+        assertEquals(2, this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(6));
+    }
+
     // TODO testcases with compositions that have no scrolling
     // TODO testcases with hierarchical tree layer
     // TODO testcases with freeze composition
