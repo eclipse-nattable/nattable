@@ -209,9 +209,10 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
             int toCheck = toPosition;
             if (toPosition < 0 && toGridColumnPosition == natLayer.getColumnCount()) {
                 toCheck = LayerUtil.convertColumnPosition(natLayer, toGridColumnPosition - 1, this.columnGroupHeaderLayer.getPositionLayer());
+            } else {
+                MoveDirectionEnum moveDirection = PositionUtil.getHorizontalMoveDirection(fromPosition, toCheck);
+                toCheck = MoveDirectionEnum.RIGHT == moveDirection ? toCheck - 1 : toCheck;
             }
-            MoveDirectionEnum moveDirection = PositionUtil.getHorizontalMoveDirection(fromPosition, toCheck);
-            toCheck = MoveDirectionEnum.RIGHT == moveDirection ? toCheck - 1 : toCheck;
 
             // Allow moving within the unbreakable group
             return ColumnGroupUtils.isInTheSameGroup(
