@@ -2384,12 +2384,15 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                                                 // the right and if that group
                                                 // has the newStartIndex as
                                                 // member
-                                                g = groupModel.getGroupByPosition(diff.getAfterPositionRange().end);
-                                                if (g != null && g.getMembers().contains(newStartIndex)) {
-                                                    g.setStartIndex(newStartIndex);
-                                                    g.setVisibleStartIndex(newStartIndex);
-                                                    g.setVisibleSpan(g.getVisibleSpan() + 1);
-                                                    g.updateVisibleStartPosition();
+                                                for (int e = diff.getAfterPositionRange().end; e > diff.getAfterPositionRange().start; e--) {
+                                                    g = groupModel.getGroupByPosition(e);
+                                                    if (g != null && g.getMembers().contains(newStartIndex)) {
+                                                        g.setStartIndex(newStartIndex);
+                                                        g.setVisibleStartIndex(newStartIndex);
+                                                        g.setVisibleSpan(g.getVisibleSpan() + 1);
+                                                        g.updateVisibleStartPosition();
+                                                        break;
+                                                    }
                                                 }
                                             }
                                         }

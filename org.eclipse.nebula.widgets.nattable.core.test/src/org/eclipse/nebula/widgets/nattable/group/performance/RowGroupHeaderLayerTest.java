@@ -12028,6 +12028,36 @@ public class RowGroupHeaderLayerTest {
         assertEquals(2, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(6));
     }
 
+    @Test
+    public void shouldShowRowGroupOnReorderInHiddenState() {
+        // hide the last 3 rows in the first group
+        this.gridLayer.doCommand(new MultiRowHideCommand(this.gridLayer, 2, 3, 4));
+
+        // reorder the last remaining row down
+        // this will put the row at the end of the group
+        this.gridLayer.doCommand(new RowReorderCommand(this.gridLayer, 1, 2));
+
+        // hide the last remaining row
+        this.gridLayer.doCommand(new RowHideCommand(this.gridLayer, 1));
+
+        // show all rows again
+        this.gridLayer.doCommand(new ShowAllRowsCommand());
+
+        assertEquals(1, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(0));
+        assertEquals(2, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(1));
+        assertEquals(3, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(2));
+        assertEquals(0, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(3));
+        assertEquals(4, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(4));
+
+        Group group = this.rowGroupHeaderLayer.getGroupByPosition(0);
+        assertNotNull(group);
+        assertEquals(1, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(4, group.getVisibleSpan());
+    }
+
     // TODO testcases with compositions that have no scrolling
     // TODO testcases with hierarchical tree layer
     // TODO testcases with freeze composition

@@ -12014,6 +12014,36 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(2, this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(6));
     }
 
+    @Test
+    public void shouldShowColumnGroupOnReorderInHiddenState() {
+        // hide the last 3 columns in the first group
+        this.gridLayer.doCommand(new MultiColumnHideCommand(this.gridLayer, 2, 3, 4));
+
+        // reorder the last remaining column to the right
+        // this will put the column at the end of the group
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 1, 2));
+
+        // hide the last remaining column
+        this.gridLayer.doCommand(new ColumnHideCommand(this.gridLayer, 1));
+
+        // show all columns again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(1, this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(0));
+        assertEquals(2, this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(1));
+        assertEquals(3, this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(2));
+        assertEquals(0, this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(3));
+        assertEquals(4, this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(4));
+
+        Group group = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        assertNotNull(group);
+        assertEquals(1, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(4, group.getVisibleSpan());
+    }
+
     // TODO testcases with compositions that have no scrolling
     // TODO testcases with hierarchical tree layer
     // TODO testcases with freeze composition
