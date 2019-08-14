@@ -166,7 +166,7 @@ public class GroupModel implements IPersistable {
      * current visible state matches the position state. Should only be
      * triggered in case it is expected that the consistency is not given, e.g.
      * if hide events without details where triggered.
-     * 
+     *
      * @param updateStartIndex
      *            flag to indicate if the start index of the group should also
      *            be updated. Needed in case of complete structural refreshes to
@@ -638,7 +638,7 @@ public class GroupModel implements IPersistable {
      */
     public Group findGroupByMemberIndex(int memberIndex) {
         for (Group group : this.groups) {
-            if (group.members.contains(Integer.valueOf(memberIndex))) {
+            if (group.hasMember(memberIndex)) {
                 return group;
             }
         }
@@ -1184,7 +1184,7 @@ public class GroupModel implements IPersistable {
          * group member indexes. Needed in case events where not processed in
          * the corresponding header layer because of position transformations,
          * which then lead to an inconsistent group state.
-         * 
+         *
          * @param updateStartIndex
          *            flag to indicate if the start index of the group should
          *            also be updated. Needed in case of complete structural
@@ -1247,6 +1247,18 @@ public class GroupModel implements IPersistable {
          */
         void removeMembers(Collection<Integer> memberIndexes) {
             this.members.removeAll(memberIndexes);
+        }
+
+        /**
+         * Check if the given index is a member of this {@link Group} or not.
+         *
+         * @param memberIndex
+         *            The index to check.
+         * @return <code>true</code> if the given index is a member of this
+         *         {@link Group}, <code>false</code> if not.
+         */
+        public boolean hasMember(int memberIndex) {
+            return this.members.contains(Integer.valueOf(memberIndex));
         }
 
         /**

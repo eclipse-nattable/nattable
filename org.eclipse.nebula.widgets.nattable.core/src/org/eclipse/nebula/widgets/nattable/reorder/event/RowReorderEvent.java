@@ -208,6 +208,19 @@ public class RowReorderEvent extends RowStructuralChangeEvent {
     }
 
     /**
+     * Setter for the beforeToRowIndex that needs to be called used in case a
+     * reorder operation was performed to a hidden row.
+     *
+     * @param beforeIndex
+     *            The index of the row to which the reorder operation was
+     *            performed.
+     * @since 1.6
+     */
+    public void setBeforeToRowIndex(int beforeIndex) {
+        this.beforeToRowIndex = beforeIndex;
+    }
+
+    /**
      *
      * @return <code>true</code> if the rows were reordered to the top edge of
      *         the toRowPosition, <code>false</code> if the reorder operation

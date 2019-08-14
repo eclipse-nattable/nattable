@@ -86,6 +86,21 @@ public class RowReorderEndCommand implements ILayerCommand {
     }
 
     /**
+     * Toggles the coordinate from top edge to bottom edge and vice versa.
+     *
+     * @since 1.6
+     */
+    public void toggleCoordinateByEdge() {
+        if (this.reorderToTopEdge) {
+            this.toRowPositionCoordinate.rowPosition--;
+            this.reorderToTopEdge = false;
+        } else {
+            this.toRowPositionCoordinate.rowPosition++;
+            this.reorderToTopEdge = true;
+        }
+    }
+
+    /**
      * @return Flag to indicate if the row is dragged to the top edge of the
      *         layer.
      */

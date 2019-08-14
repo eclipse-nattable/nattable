@@ -28,9 +28,11 @@ public class MultiRowReorderCommand implements ILayerCommand {
      */
     private List<RowPositionCoordinate> fromRowPositionCoordinates;
     /**
-     * The coordinate of the row to which the dragged rows should be dropped
+     * The coordinate of the row to which the dragged rows should be dropped.
+     * 
+     * @since 1.6
      */
-    private RowPositionCoordinate toRowPositionCoordinate;
+    protected RowPositionCoordinate toRowPositionCoordinate;
     /**
      * Flag to indicate if the row is dragged to the top edge of the layer.
      * Needed for the special case when the reordering is performed to the
@@ -153,6 +155,21 @@ public class MultiRowReorderCommand implements ILayerCommand {
      */
     public void setReorderByIndex(boolean reorderByIndex) {
         this.reorderByIndex = reorderByIndex;
+    }
+
+    /**
+     * Toggles the coordinate from top edge to bottom edge and vice versa.
+     *
+     * @since 1.6
+     */
+    public void toggleCoordinateByEdge() {
+        if (this.reorderToTopEdge) {
+            this.toRowPositionCoordinate.rowPosition--;
+            this.reorderToTopEdge = false;
+        } else {
+            this.toRowPositionCoordinate.rowPosition++;
+            this.reorderToTopEdge = true;
+        }
     }
 
     @Override

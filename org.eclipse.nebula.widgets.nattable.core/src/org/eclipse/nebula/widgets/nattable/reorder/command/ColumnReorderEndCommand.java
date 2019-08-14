@@ -77,6 +77,21 @@ public class ColumnReorderEndCommand implements ILayerCommand {
     }
 
     /**
+     * Toggles the coordinate from left edge to right edge and vice versa.
+     * 
+     * @since 1.6
+     */
+    public void toggleCoordinateByEdge() {
+        if (this.reorderToLeftEdge) {
+            this.toColumnPositionCoordinate.columnPosition--;
+            this.reorderToLeftEdge = false;
+        } else {
+            this.toColumnPositionCoordinate.columnPosition++;
+            this.reorderToLeftEdge = true;
+        }
+    }
+
+    /**
      *
      * @return <code>true</code> if the reorder operation should be done on the
      *         left edge of the toColumnPosition, <code>false</code> if it

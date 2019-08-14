@@ -51,28 +51,35 @@ public class GroupColumnReorderCommandHandler extends AbstractLayerCommandHandle
             for (int level = 0; level < this.columnGroupHeaderLayer.getLevelCount(); level++) {
                 // as we are registered on the positionLayer, there is no need
                 // for transformation
+
+                int toPositionToCheck = toColumnPosition;
+                if (MoveDirectionEnum.RIGHT == moveDirection && reorderToLeftEdge) {
+                    toPositionToCheck--;
+                }
+
                 Group fromGroup = this.columnGroupHeaderLayer.getGroupByPosition(fromColumnPosition);
-                if (fromGroup != null && fromGroup.isCollapsed()) {
-
-                    int toPositionToCheck = toColumnPosition;
-                    if (MoveDirectionEnum.RIGHT == moveDirection && reorderToLeftEdge) {
-                        toPositionToCheck--;
-                    }
-
+                Group toGroup = this.columnGroupHeaderLayer.getGroupByPosition(toPositionToCheck);
+                if (fromGroup != null) {
                     // if we are not reordering inside a collapsed group we need
                     // to expand first to ensure consistency of the GroupModel
-                    if (!ColumnGroupUtils.isInTheSameGroup(this.columnGroupHeaderLayer, level, fromColumnPosition, toPositionToCheck)
-                            || (fromGroup.getStartIndex() != fromGroup.getVisibleStartIndex() && fromColumnPosition == toColumnPosition)) {
+                    if (fromGroup.isCollapsed()
+                            && (!ColumnGroupUtils.isInTheSameGroup(this.columnGroupHeaderLayer, level, fromColumnPosition, toPositionToCheck)
+                                    || fromColumnPosition == toPositionToCheck)) {
                         this.columnGroupHeaderLayer.expandGroup(this.columnGroupHeaderLayer.getGroupModel(level), fromGroup);
                         updateToPosition = true;
+                    } else if (MoveDirectionEnum.RIGHT == moveDirection && fromGroup.isGroupEnd(toPositionToCheck)) {
+                        command.toggleCoordinateByEdge();
                     }
+                } else if (toGroup != null && MoveDirectionEnum.RIGHT == moveDirection && toGroup.isGroupEnd(toPositionToCheck)) {
+                    command.toggleCoordinateByEdge();
                 }
             }
             if (updateToPosition) {
-                // we update the toColumnPosition because we expanded a group
+                // we update the column positions because we expanded a group
                 if (moveDirection != MoveDirectionEnum.RIGHT) {
                     command.updateFromColumnPosition(this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(fromIndex));
                 } else {
+                    command.updateFromColumnPosition(this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(fromIndex));
                     command.updateToColumnPosition(this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(toIndex));
                 }
             }

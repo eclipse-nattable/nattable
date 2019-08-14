@@ -51,21 +51,27 @@ public class GroupRowReorderEndCommandHandler extends AbstractLayerCommandHandle
             for (int level = 0; level < this.rowGroupHeaderLayer.getLevelCount(); level++) {
                 // as we are registered on the positionLayer, there is no need
                 // for transformation
+
+                int toPositionToCheck = toRowPosition;
+                if (MoveDirectionEnum.DOWN == moveDirection && reorderToTopEdge) {
+                    toPositionToCheck--;
+                }
+
                 Group fromGroup = this.rowGroupHeaderLayer.getGroupByPosition(fromRowPosition);
-                if (fromGroup != null && fromGroup.isCollapsed()) {
-
-                    int toPositionToCheck = toRowPosition;
-                    if (MoveDirectionEnum.DOWN == moveDirection && reorderToTopEdge) {
-                        toPositionToCheck--;
-                    }
-
+                Group toGroup = this.rowGroupHeaderLayer.getGroupByPosition(toPositionToCheck);
+                if (fromGroup != null) {
                     // if we are not reordering inside a collapsed group we need
                     // to expand first to ensure consistency of the GroupModel
-                    if (!RowGroupUtils.isInTheSameGroup(this.rowGroupHeaderLayer, level, fromRowPosition, toPositionToCheck)
-                            || (fromGroup.getStartIndex() != fromGroup.getVisibleStartIndex() && fromRowPosition == toRowPosition)) {
+                    if (fromGroup.isCollapsed()
+                            && (!RowGroupUtils.isInTheSameGroup(this.rowGroupHeaderLayer, level, fromRowPosition, toPositionToCheck)
+                                    || fromRowPosition == toPositionToCheck)) {
                         this.rowGroupHeaderLayer.expandGroup(this.rowGroupHeaderLayer.getGroupModel(level), fromGroup);
                         updateToPosition = true;
+                    } else if (MoveDirectionEnum.DOWN == moveDirection && fromGroup.isGroupEnd(toPositionToCheck)) {
+                        command.toggleCoordinateByEdge();
                     }
+                } else if (toGroup != null && MoveDirectionEnum.DOWN == moveDirection && toGroup.isGroupEnd(toPositionToCheck)) {
+                    command.toggleCoordinateByEdge();
                 }
             }
             if (updateToPosition) {

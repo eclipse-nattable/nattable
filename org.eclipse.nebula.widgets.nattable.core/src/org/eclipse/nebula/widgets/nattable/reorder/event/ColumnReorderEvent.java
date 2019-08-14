@@ -210,6 +210,19 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
     }
 
     /**
+     * Setter for the beforeToColumnIndex that needs to be called used in case a
+     * reorder operation was performed to a hidden column.
+     * 
+     * @param beforeIndex
+     *            The index of the column to which the reorder operation was
+     *            performed.
+     * @since 1.6
+     */
+    public void setBeforeToColumnIndex(int beforeIndex) {
+        this.beforeToColumnIndex = beforeIndex;
+    }
+
+    /**
      *
      * @return <code>true</code> if the columns were reordered to the left edge
      *         of the toColumnPosition, <code>false</code> if the reorder

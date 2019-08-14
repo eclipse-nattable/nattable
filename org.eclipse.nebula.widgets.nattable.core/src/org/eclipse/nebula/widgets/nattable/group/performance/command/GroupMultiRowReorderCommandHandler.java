@@ -15,8 +15,10 @@ import java.util.List;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.group.RowGroupUtils;
+import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
 import org.eclipse.nebula.widgets.nattable.group.performance.RowGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiRowReorderCommand;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 
 /**
  * Command handler for the {@link MultiRowReorderCommand} that is registered on
@@ -39,11 +41,13 @@ public class GroupMultiRowReorderCommandHandler extends AbstractLayerCommandHand
         int toRowPosition = command.getToRowPosition();
         boolean reorderToTopEdge = command.isReorderToTopEdge();
 
+        MoveDirectionEnum moveDirection = PositionUtil.getVerticalMoveDirection(fromRowPositions.get(0), toRowPosition);
+
         if (!RowGroupUtils.isBetweenTwoGroups(
                 this.rowGroupHeaderLayer,
                 toRowPosition,
                 reorderToTopEdge,
-                PositionUtil.getVerticalMoveDirection(fromRowPositions.get(0), toRowPosition))) {
+                moveDirection)) {
 
             for (int fromRowPosition : fromRowPositions) {
                 if (!RowGroupUtils.isReorderValid(this.rowGroupHeaderLayer, fromRowPosition, toRowPosition, reorderToTopEdge)) {
@@ -52,6 +56,22 @@ public class GroupMultiRowReorderCommandHandler extends AbstractLayerCommandHand
                 }
             }
         }
+
+        for (int level = 0; level < this.rowGroupHeaderLayer.getLevelCount(); level++) {
+            // as we are registered on the positionLayer, there is no need
+            // for transformation
+
+            int toPositionToCheck = toRowPosition;
+            if (MoveDirectionEnum.DOWN == moveDirection && reorderToTopEdge) {
+                toPositionToCheck--;
+            }
+
+            Group toGroup = this.rowGroupHeaderLayer.getGroupByPosition(toPositionToCheck);
+            if (toGroup != null && MoveDirectionEnum.DOWN == moveDirection && toGroup.isGroupEnd(toPositionToCheck)) {
+                command.toggleCoordinateByEdge();
+            }
+        }
+
         return false;
     }
 

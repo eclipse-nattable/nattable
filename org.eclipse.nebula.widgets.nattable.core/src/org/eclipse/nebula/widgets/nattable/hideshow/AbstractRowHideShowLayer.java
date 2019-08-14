@@ -59,7 +59,18 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
             }
             Collection<Range> fromRanges = PositionUtil.getRanges(fromPositions);
 
-            reorderEvent.setConvertedBeforePositions(this, fromRanges, getRowPositionByIndex(reorderEvent.getBeforeToRowIndex()));
+            int pos = -1;
+            if (!isRowIndexHidden(reorderEvent.getBeforeToRowIndex())) {
+                pos = getRowPositionByIndex(reorderEvent.getBeforeToRowIndex());
+            } else {
+                int i = 1;
+                while (pos < 0) {
+                    int next = reorderEvent.getBeforeToRowPosition() + i;
+                    pos = underlyingToLocalRowPosition(this.underlyingLayer, next);
+                }
+                reorderEvent.setBeforeToRowIndex(getRowIndexByPosition(pos));
+            }
+            reorderEvent.setConvertedBeforePositions(this, fromRanges, pos);
         }
 
         if (event instanceof IStructuralChangeEvent) {

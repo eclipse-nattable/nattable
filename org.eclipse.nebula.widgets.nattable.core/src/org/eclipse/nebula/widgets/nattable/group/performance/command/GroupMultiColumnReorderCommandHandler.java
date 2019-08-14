@@ -16,7 +16,9 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupUtils;
 import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 
 /**
  * Command handler for the {@link MultiColumnReorderCommand} that is registered
@@ -39,11 +41,13 @@ public class GroupMultiColumnReorderCommandHandler extends AbstractLayerCommandH
         int toColumnPosition = command.getToColumnPosition();
         boolean reorderToLeftEdge = command.isReorderToLeftEdge();
 
+        MoveDirectionEnum moveDirection = PositionUtil.getHorizontalMoveDirection(fromColumnPositions.get(0), toColumnPosition);
+
         if (!ColumnGroupUtils.isBetweenTwoGroups(
                 this.columnGroupHeaderLayer,
                 toColumnPosition,
                 reorderToLeftEdge,
-                PositionUtil.getHorizontalMoveDirection(fromColumnPositions.get(0), toColumnPosition))) {
+                moveDirection)) {
 
             for (int fromColumnPosition : fromColumnPositions) {
                 if (!ColumnGroupUtils.isReorderValid(this.columnGroupHeaderLayer, fromColumnPosition, toColumnPosition, reorderToLeftEdge)) {
@@ -52,6 +56,22 @@ public class GroupMultiColumnReorderCommandHandler extends AbstractLayerCommandH
                 }
             }
         }
+
+        for (int level = 0; level < this.columnGroupHeaderLayer.getLevelCount(); level++) {
+            // as we are registered on the positionLayer, there is no need
+            // for transformation
+
+            int toPositionToCheck = toColumnPosition;
+            if (MoveDirectionEnum.RIGHT == moveDirection && reorderToLeftEdge) {
+                toPositionToCheck--;
+            }
+
+            Group toGroup = this.columnGroupHeaderLayer.getGroupByPosition(toPositionToCheck);
+            if (toGroup != null && MoveDirectionEnum.RIGHT == moveDirection && toGroup.isGroupEnd(toPositionToCheck)) {
+                command.toggleCoordinateByEdge();
+            }
+        }
+
         return false;
     }
 

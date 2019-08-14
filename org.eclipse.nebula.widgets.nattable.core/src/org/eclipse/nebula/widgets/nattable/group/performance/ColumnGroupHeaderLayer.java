@@ -41,6 +41,7 @@ import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroup
 import org.eclipse.nebula.widgets.nattable.group.performance.command.GroupColumnReorderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.GroupColumnReorderEndCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.GroupColumnReorderStartCommandHandler;
+import org.eclipse.nebula.widgets.nattable.group.performance.command.GroupMultiColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.GroupMultiColumnReorderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.UpdateColumnGroupCollapseCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.config.DefaultColumnGroupHeaderLayerConfiguration;
@@ -67,7 +68,6 @@ import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
-import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiRowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
@@ -2248,11 +2248,12 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
                 // we reorder by index so even hidden columns in a group are
                 // reordered
-                MultiColumnReorderCommand command =
-                        new MultiColumnReorderCommand(
+                GroupMultiColumnReorderCommand command =
+                        new GroupMultiColumnReorderCommand(
                                 getPositionLayer(),
                                 new ArrayList<Integer>(group.getMembers()),
-                                underlyingTo);
+                                underlyingTo,
+                                groupModel.getGroupByPosition(toPosition));
                 command.setReorderByIndex(true);
 
                 return getPositionLayer().getUnderlyingLayerByPosition(0, 0).doCommand(command);

@@ -24,7 +24,10 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 public class MultiColumnReorderCommand implements ILayerCommand {
 
     private List<ColumnPositionCoordinate> fromColumnPositionCoordinates;
-    private ColumnPositionCoordinate toColumnPositionCoordinate;
+    /**
+     * @since 1.6
+     */
+    protected ColumnPositionCoordinate toColumnPositionCoordinate;
     private boolean reorderToLeftEdge;
     private boolean reorderByIndex = false;
 
@@ -148,6 +151,21 @@ public class MultiColumnReorderCommand implements ILayerCommand {
      */
     public void setReorderByIndex(boolean reorderByIndex) {
         this.reorderByIndex = reorderByIndex;
+    }
+
+    /**
+     * Toggles the coordinate from left edge to right edge and vice versa.
+     *
+     * @since 1.6
+     */
+    public void toggleCoordinateByEdge() {
+        if (this.reorderToLeftEdge) {
+            this.toColumnPositionCoordinate.columnPosition--;
+            this.reorderToLeftEdge = false;
+        } else {
+            this.toColumnPositionCoordinate.columnPosition++;
+            this.reorderToLeftEdge = true;
+        }
     }
 
     @Override
