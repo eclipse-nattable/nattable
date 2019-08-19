@@ -57,8 +57,8 @@ public class GroupColumnReorderEndCommandHandler extends AbstractLayerCommandHan
                     toPositionToCheck--;
                 }
 
-                Group fromGroup = this.columnGroupHeaderLayer.getGroupByPosition(fromColumnPosition);
-                Group toGroup = this.columnGroupHeaderLayer.getGroupByPosition(toPositionToCheck);
+                Group fromGroup = this.columnGroupHeaderLayer.getGroupByPosition(level, fromColumnPosition);
+                Group toGroup = this.columnGroupHeaderLayer.getGroupByPosition(level, toPositionToCheck);
                 if (fromGroup != null) {
                     // if we are not reordering inside a collapsed group we need
                     // to expand first to ensure consistency of the GroupModel

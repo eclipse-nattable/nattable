@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +45,9 @@ import org.eclipse.nebula.widgets.nattable.group.performance.command.RowGroupReo
 import org.eclipse.nebula.widgets.nattable.group.performance.command.RowGroupReorderStartCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.config.GroupHeaderConfigLabels;
 import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommand;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
@@ -54,7 +58,10 @@ import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand
 import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderEndCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderStartCommand;
+import org.eclipse.nebula.widgets.nattable.reorder.command.MultiRowReorderCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.RowReorderCommand;
+import org.eclipse.nebula.widgets.nattable.reorder.command.RowReorderEndCommand;
+import org.eclipse.nebula.widgets.nattable.reorder.command.RowReorderStartCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiColumnResizeCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -1766,4 +1773,407 @@ public class TwoLevelRowGroupHeaderLayerTest {
         assertEquals(20, cell.getBounds().width);
     }
 
+    // TODO
+    @Test
+    public void shouldShowRowGroupOnReorderInHiddenState() {
+        // configure the row groups
+        this.rowGroupHeaderLayer.clearAllGroups();
+
+        this.rowGroupHeaderLayer.addGroup(1, "Person", 0, 4);
+        this.rowGroupHeaderLayer.addGroup(1, "Address", 4, 4);
+        this.rowGroupHeaderLayer.addGroup(1, "Facts", 8, 3);
+        this.rowGroupHeaderLayer.addGroup(1, "Personal", 11, 3);
+
+        this.rowGroupHeaderLayer.addGroup(0, "Test", 7, 1);
+
+        // hide the last 3 rows in the first group
+        this.gridLayer.doCommand(new MultiRowHideCommand(this.gridLayer, 2, 3, 4));
+
+        // reorder the last remaining row down
+        // this will avoid reordering and not put the row at the end of the
+        // group
+        this.gridLayer.doCommand(new RowReorderCommand(this.gridLayer, 1, 2));
+
+        // hide the last remaining row
+        this.gridLayer.doCommand(new RowHideCommand(this.gridLayer, 1));
+
+        // show all rows again
+        this.gridLayer.doCommand(new ShowAllRowsCommand());
+
+        assertEquals(0, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(0));
+        assertEquals(1, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(1));
+        assertEquals(2, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(2));
+        assertEquals(3, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(3));
+        assertEquals(4, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(4));
+
+        Group group = this.rowGroupHeaderLayer.getGroupByPosition(1, 0);
+        assertNotNull(group);
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(4, group.getVisibleSpan());
+    }
+
+    @Test
+    public void shouldDragReorderToRightEndInsideGroupWithHidden() {
+        // configure the row groups
+        this.rowGroupHeaderLayer.clearAllGroups();
+
+        this.rowGroupHeaderLayer.addGroup(1, "Person", 0, 4);
+        this.rowGroupHeaderLayer.addGroup(1, "Address", 4, 4);
+        this.rowGroupHeaderLayer.addGroup(1, "Facts", 8, 3);
+        this.rowGroupHeaderLayer.addGroup(1, "Personal", 11, 3);
+
+        this.rowGroupHeaderLayer.addGroup(0, "Test", 7, 1);
+
+        // hide first row in second group and last row in first group
+        this.gridLayer.doCommand(new MultiRowHideCommand(this.gridLayer, 4, 5));
+
+        // reorder the first row in first group to the last position
+        this.gridLayer.doCommand(new RowReorderStartCommand(this.gridLayer, 1));
+        this.gridLayer.doCommand(new RowReorderEndCommand(this.gridLayer, 4));
+
+        // show all rows again
+        this.gridLayer.doCommand(new ShowAllRowsCommand());
+
+        assertEquals(1, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(0));
+        assertEquals(2, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(1));
+        assertEquals(0, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(2));
+        assertEquals(3, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(3));
+        assertEquals(4, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(4));
+
+        Group group1 = this.rowGroupHeaderLayer.getGroupByPosition(1, 0);
+        assertNotNull(group1);
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        Group group2 = this.rowGroupHeaderLayer.getGroupByPosition(1, 4);
+        assertNotNull(group2);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+    }
+
+    @Test
+    public void shouldReorderToRightEndInsideGroupWithHidden() {
+        // configure the row groups
+        this.rowGroupHeaderLayer.clearAllGroups();
+
+        this.rowGroupHeaderLayer.addGroup(1, "Person", 0, 4);
+        this.rowGroupHeaderLayer.addGroup(1, "Address", 4, 4);
+        this.rowGroupHeaderLayer.addGroup(1, "Facts", 8, 3);
+        this.rowGroupHeaderLayer.addGroup(1, "Personal", 11, 3);
+
+        this.rowGroupHeaderLayer.addGroup(0, "Test", 7, 1);
+
+        // hide first row in second group and last row in first group
+        this.gridLayer.doCommand(new MultiRowHideCommand(this.gridLayer, 4, 5));
+
+        // reorder the first row in first group to the last position
+        this.gridLayer.doCommand(new RowReorderCommand(this.gridLayer, 1, 4));
+
+        // show all columns again
+        this.gridLayer.doCommand(new ShowAllRowsCommand());
+
+        assertEquals(1, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(0));
+        assertEquals(2, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(1));
+        assertEquals(0, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(2));
+        assertEquals(3, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(3));
+        assertEquals(4, this.rowGroupHeaderLayer.getPositionLayer().getRowIndexByPosition(4));
+
+        Group group1 = this.rowGroupHeaderLayer.getGroupByPosition(1, 0);
+        assertNotNull(group1);
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        Group group2 = this.rowGroupHeaderLayer.getGroupByPosition(1, 4);
+        assertNotNull(group2);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+    }
+
+    @Test
+    public void shouldDragReorderUngroupedToRightWithFirstHidden() {
+        // configure the row groups
+        this.rowGroupHeaderLayer.clearAllGroups();
+
+        this.rowGroupHeaderLayer.addGroup(1, "Person", 0, 4);
+        this.rowGroupHeaderLayer.addGroup(1, "Address", 4, 4);
+        this.rowGroupHeaderLayer.addGroup(1, "Facts", 8, 3);
+        this.rowGroupHeaderLayer.addGroup(1, "Personal", 11, 3);
+
+        this.rowGroupHeaderLayer.addGroup(0, "Test", 7, 1);
+
+        // hide first row in third group
+        this.gridLayer.doCommand(new MultiRowHideCommand(this.gridLayer, 9));
+
+        // ungroup first group
+        this.rowGroupHeaderLayer.removeGroup(0);
+
+        // reorder ungrouped row to end of second group
+        this.gridLayer.doCommand(new RowReorderStartCommand(this.gridLayer, 1));
+        this.gridLayer.doCommand(new RowReorderEndCommand(this.gridLayer, 9));
+
+        Group group2 = this.rowGroupHeaderLayer.getGroupByPosition(1, 3);
+        assertNotNull(group2);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(5, group2.getOriginalSpan());
+        assertEquals(5, group2.getVisibleSpan());
+
+        Group group3 = this.rowGroupHeaderLayer.getGroupByPosition(1, 8);
+        assertNotNull(group3);
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(9, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(2, group3.getVisibleSpan());
+
+        // show all again
+        this.gridLayer.doCommand(new ShowAllRowsCommand());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(5, group2.getOriginalSpan());
+        assertEquals(5, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+    }
+
+    @Test
+    public void shouldReorderUngroupedToRightWithFirstHidden() {
+        // configure the row groups
+        this.rowGroupHeaderLayer.clearAllGroups();
+
+        this.rowGroupHeaderLayer.addGroup(1, "Person", 0, 4);
+        this.rowGroupHeaderLayer.addGroup(1, "Address", 4, 4);
+        this.rowGroupHeaderLayer.addGroup(1, "Facts", 8, 3);
+        this.rowGroupHeaderLayer.addGroup(1, "Personal", 11, 3);
+
+        this.rowGroupHeaderLayer.addGroup(0, "Test", 7, 1);
+
+        // hide first row in third group
+        this.gridLayer.doCommand(new MultiRowHideCommand(this.gridLayer, 9));
+
+        // ungroup first group
+        this.rowGroupHeaderLayer.removeGroup(0);
+
+        // reorder ungrouped row to end of second group
+        this.gridLayer.doCommand(new RowReorderCommand(this.gridLayer, 1, 9));
+
+        Group group2 = this.rowGroupHeaderLayer.getGroupByPosition(1, 3);
+        assertNotNull(group2);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(5, group2.getOriginalSpan());
+        assertEquals(5, group2.getVisibleSpan());
+
+        Group group3 = this.rowGroupHeaderLayer.getGroupByPosition(1, 8);
+        assertNotNull(group3);
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(9, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(2, group3.getVisibleSpan());
+
+        // show all again
+        this.gridLayer.doCommand(new ShowAllRowsCommand());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(5, group2.getOriginalSpan());
+        assertEquals(5, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+    }
+
+    @Test
+    public void shouldReorderGroupBetweenHiddenColumns() {
+        // configure the row groups
+        this.rowGroupHeaderLayer.clearAllGroups();
+
+        this.rowGroupHeaderLayer.addGroup(1, "Person", 0, 4);
+        this.rowGroupHeaderLayer.addGroup(1, "Address", 4, 4);
+        this.rowGroupHeaderLayer.addGroup(1, "Facts", 8, 3);
+        this.rowGroupHeaderLayer.addGroup(1, "Personal", 11, 3);
+
+        this.rowGroupHeaderLayer.addGroup(0, "Test", 7, 1);
+
+        // hide first row in third group and last row in second group
+        this.gridLayer.doCommand(new MultiRowHideCommand(this.gridLayer, 8, 9));
+
+        // try to reorder group 1 between 2 and 3
+        this.gridLayer.doCommand(new RowGroupReorderCommand(this.gridLayer, 1, 1, 8));
+
+        Group group1 = this.rowGroupHeaderLayer.getGroupModel(1).getGroupByPosition(0);
+        assertEquals(4, group1.getStartIndex());
+        assertEquals(4, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+        assertEquals("Address", group1.getName());
+
+        Group group2 = this.rowGroupHeaderLayer.getGroupModel(1).getGroupByPosition(3);
+        assertEquals(0, group2.getStartIndex());
+        assertEquals(0, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+        assertEquals("Person", group2.getName());
+
+        Group group3 = this.rowGroupHeaderLayer.getGroupModel(1).getGroupByPosition(7);
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(9, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(2, group3.getVisibleSpan());
+        assertEquals("Facts", group3.getName());
+
+        Group group4 = this.rowGroupHeaderLayer.getGroupModel(1).getGroupByPosition(9);
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(9, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+        assertEquals("Personal", group4.getName());
+
+        // show all again
+        this.gridLayer.doCommand(new ShowAllRowsCommand());
+
+        assertEquals(4, group1.getStartIndex());
+        assertEquals(4, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+        assertEquals("Address", group1.getName());
+
+        assertEquals(0, group2.getStartIndex());
+        assertEquals(0, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+        assertEquals("Person", group2.getName());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+        assertEquals("Facts", group3.getName());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(11, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+        assertEquals("Personal", group4.getName());
+    }
+
+    @Test
+    public void shouldReorderMultipleUngroupedToGroupOnRightEdgeWithHidden() {
+        // configure the row groups
+        this.rowGroupHeaderLayer.clearAllGroups();
+
+        this.rowGroupHeaderLayer.addGroup(1, "Address", 4, 4);
+        this.rowGroupHeaderLayer.addGroup(1, "Facts", 8, 3);
+        this.rowGroupHeaderLayer.addGroup(1, "Personal", 11, 3);
+
+        // hide first row in third group
+        this.gridLayer.doCommand(new MultiRowHideCommand(this.gridLayer, 9));
+
+        // reorder first and second row to second group end
+        this.gridLayer.doCommand(new MultiRowReorderCommand(this.gridLayer, Arrays.asList(1, 2), 9));
+
+        ILayerCell cell = this.rowGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginRowPosition());
+        assertEquals(0, cell.getRowPosition());
+        assertEquals(2, cell.getRowIndex());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals(3, cell.getColumnSpan());
+        assertEquals(3, cell.getDataValue());
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(20, cell.getBounds().height);
+        assertEquals(80, cell.getBounds().width);
+
+        cell = this.rowGroupHeaderLayer.getCellByPosition(0, 1);
+        assertEquals(1, cell.getOriginRowPosition());
+        assertEquals(1, cell.getRowPosition());
+        assertEquals(3, cell.getRowIndex());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals(3, cell.getColumnSpan());
+        assertEquals(4, cell.getDataValue());
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(20, cell.getBounds().y);
+        assertEquals(80, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        cell = this.rowGroupHeaderLayer.getCellByPosition(0, 2);
+        assertEquals(2, cell.getOriginRowPosition());
+        assertEquals(2, cell.getRowPosition());
+        assertEquals(4, cell.getRowIndex());
+        assertEquals(6, cell.getRowSpan());
+        assertEquals(1, cell.getColumnSpan());
+        assertEquals("Address", cell.getDataValue());
+        assertEquals(40, cell.getBounds().y);
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(20, cell.getBounds().width);
+        assertEquals(120, cell.getBounds().height);
+
+        assertNull(this.rowGroupHeaderLayer.getGroupModel(1).getGroupByPosition(0));
+        assertNull(this.rowGroupHeaderLayer.getGroupModel(1).getGroupByPosition(1));
+
+        Group group = this.rowGroupHeaderLayer.getGroupModel(1).getGroupByPosition(2);
+        assertEquals(4, group.getStartIndex());
+        assertEquals(4, group.getVisibleStartIndex());
+        assertEquals(2, group.getVisibleStartPosition());
+        assertEquals(6, group.getOriginalSpan());
+        assertEquals(6, group.getVisibleSpan());
+
+        Group group1 = this.rowGroupHeaderLayer.getGroupModel(1).getGroupByPosition(8);
+        assertEquals(8, group1.getStartIndex());
+        assertEquals(9, group1.getVisibleStartIndex());
+        assertEquals(8, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(2, group1.getVisibleSpan());
+
+        // show all again
+        this.gridLayer.doCommand(new ShowAllRowsCommand());
+
+        assertEquals(4, group.getStartIndex());
+        assertEquals(4, group.getVisibleStartIndex());
+        assertEquals(2, group.getVisibleStartPosition());
+        assertEquals(6, group.getOriginalSpan());
+        assertEquals(6, group.getVisibleSpan());
+
+        assertEquals(8, group1.getStartIndex());
+        assertEquals(8, group1.getVisibleStartIndex());
+        assertEquals(8, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+    }
 }

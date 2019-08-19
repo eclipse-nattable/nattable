@@ -66,7 +66,7 @@ public class GroupMultiColumnReorderCommandHandler extends AbstractLayerCommandH
                 toPositionToCheck--;
             }
 
-            Group toGroup = this.columnGroupHeaderLayer.getGroupByPosition(toPositionToCheck);
+            Group toGroup = this.columnGroupHeaderLayer.getGroupByPosition(level, toPositionToCheck);
             if (toGroup != null && MoveDirectionEnum.RIGHT == moveDirection && toGroup.isGroupEnd(toPositionToCheck)) {
                 command.toggleCoordinateByEdge();
             }
