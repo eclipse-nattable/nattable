@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2019 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists;
 
@@ -42,13 +42,10 @@ import ca.odell.glazedlists.event.ListEventListener;
  *
  * @param <T>
  *            Type of the bean in the backing list.
- *
- * @author Dirk Fauth
- *
  */
-public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
-        implements IUniqueIndexLayer, ListEventListener<T>,
-        PropertyChangeListener {
+public class DetailGlazedListsEventLayer<T>
+        extends AbstractLayerTransform
+        implements IUniqueIndexLayer, ListEventListener<T>, PropertyChangeListener {
 
     /**
      * The underlying layer of type {@link IUniqueIndexLayer} This is necessary
@@ -68,6 +65,12 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
     private EventList<T> eventList;
 
     /**
+     * Flag that indicates whether GlazedLists list change events are propagated
+     * to the NatTable or not.
+     */
+    private boolean active = true;
+
+    /**
      * Create a new {@link DetailGlazedListsEventLayer} which is in fact a
      * {@link ListEventListener} that listens to GlazedLists events and
      * translate them into events that are understandable by the NatTable.
@@ -77,8 +80,7 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
      * @param eventList
      *            The {@link EventList} this layer should be added as listener.
      */
-    public DetailGlazedListsEventLayer(IUniqueIndexLayer underlyingLayer,
-            EventList<T> eventList) {
+    public DetailGlazedListsEventLayer(IUniqueIndexLayer underlyingLayer, EventList<T> eventList) {
         super(underlyingLayer);
         this.underlyingLayer = underlyingLayer;
 
@@ -87,13 +89,8 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
         this.eventList.addListEventListener(this);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * ca.odell.glazedlists.event.ListEventListener#listChanged(ca.odell.glazedlists
-     * .event.ListEvent)
-     */
+    // GlazedLists ListEventListener
+
     /**
      * GlazedLists event handling. Will transform received GlazedLists
      * ListEvents into corresponding NatTable RowStructuralChangeEvents. Ensures
@@ -104,62 +101,58 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
      */
     @Override
     public void listChanged(final ListEvent<T> event) {
-        try {
-            this.eventList.getReadWriteLock().readLock().lock();
+        if (this.active) {
+            try {
+                this.eventList.getReadWriteLock().readLock().lock();
 
-            int currentEventType = -1;
+                int currentEventType = -1;
 
-            // as the delete events in GlazedLists are containing indexes that
-            // are related
-            // to prior deletes we need to ensure index consistency within
-            // NatTable,
-            // e.g. filtering so the complete list would be empty would result
-            // in getting
-            // events that all tell that index 0 is deleted
-            int deleteCount = 0;
+                // as the delete events in GlazedLists are containing indexes
+                // that are related to prior deletes we need to ensure index
+                // consistency within NatTable,
+                // e.g. filtering so the complete list would be empty would
+                // result in getting events that all tell that index 0 is
+                // deleted
+                int deleteCount = 0;
 
-            final List<Range> deleteRanges = new ArrayList<Range>();
-            final List<Range> insertRanges = new ArrayList<Range>();
-            while (event.next()) {
-                int eventType = event.getType();
+                final List<Range> deleteRanges = new ArrayList<Range>();
+                final List<Range> insertRanges = new ArrayList<Range>();
+                while (event.next()) {
+                    int eventType = event.getType();
 
-                // first event, go ahead
-                if (currentEventType == -1) {
-                    currentEventType = eventType;
-                } else if (currentEventType != eventType) {
-                    // there is a new event type, fire the collected events
-                    internalFireEvents(deleteRanges, insertRanges);
+                    // first event, go ahead
+                    if (currentEventType == -1) {
+                        currentEventType = eventType;
+                    } else if (currentEventType != eventType) {
+                        // there is a new event type, fire the collected events
+                        internalFireEvents(deleteRanges, insertRanges);
 
-                    // and clear for clean further processing
-                    deleteRanges.clear();
-                    deleteCount = 0;
-                    insertRanges.clear();
+                        // and clear for clean further processing
+                        deleteRanges.clear();
+                        deleteCount = 0;
+                        insertRanges.clear();
+                    }
+
+                    if (eventType == ListEvent.DELETE) {
+                        int index = event.getIndex() + deleteCount;
+                        deleteRanges.add(new Range(index, index + 1));
+                        deleteCount++;
+                    } else if (eventType == ListEvent.INSERT) {
+                        insertRanges.add(new Range(event.getIndex(), event.getIndex() + 1));
+                    }
                 }
 
-                if (eventType == ListEvent.DELETE) {
-                    int index = event.getIndex() + deleteCount;
-                    deleteRanges.add(new Range(index, index + 1));
-                    deleteCount++;
-                } else if (eventType == ListEvent.INSERT) {
-                    insertRanges.add(new Range(event.getIndex(), event
-                            .getIndex() + 1));
-                }
+                internalFireEvents(deleteRanges, insertRanges);
+            } finally {
+                this.eventList.getReadWriteLock().readLock().unlock();
             }
-
-            internalFireEvents(deleteRanges, insertRanges);
-        } finally {
-            this.eventList.getReadWriteLock().readLock().unlock();
         }
     }
 
     /**
-     * Fire events with detail informations to update the NatTable accordingly.
-     * <p>
-     * The RowStructuralChangeEvents will cause a repaint of the NatTable. We
-     * need to fire the event from the SWT Display thread, otherwise there will
-     * be an exception because painting can only be triggered from the SWT
-     * Display thread.
-     * </p>
+     * Create {@link RowDeleteEvent}s and {@link RowInsertEvent}s based on the
+     * given information and fire them synchronously to the UI thread to update
+     * and repaint the NatTable accordingly.
      * <p>
      * As there is a structural change, there need to be some processing for
      * indexes and positions in layers above this one. Therefore we need to
@@ -174,14 +167,12 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
      * @param insertRanges
      *            The ranges that were inserted and should be fired in an event.
      */
-    private void internalFireEvents(final List<Range> deleteRanges,
-            final List<Range> insertRanges) {
+    private void internalFireEvents(final List<Range> deleteRanges, final List<Range> insertRanges) {
         if (!deleteRanges.isEmpty()) {
             Display.getDefault().syncExec(new Runnable() {
                 @Override
                 public void run() {
-                    fireLayerEvent(new RowDeleteEvent(getUnderlyingLayer(),
-                            deleteRanges));
+                    fireLayerEvent(new RowDeleteEvent(getUnderlyingLayer(), deleteRanges));
                 }
             });
         }
@@ -190,29 +181,25 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
             Display.getDefault().syncExec(new Runnable() {
                 @Override
                 public void run() {
-                    fireLayerEvent(new RowInsertEvent(getUnderlyingLayer(),
-                            insertRanges));
+                    fireLayerEvent(new RowInsertEvent(getUnderlyingLayer(), insertRanges));
                 }
             });
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.
-     * PropertyChangeEvent)
-     */
-    /**
-     * Object property updated event
-     */
+    // PropertyChangeListener
+
     @SuppressWarnings("unchecked")
     @Override
     public void propertyChange(PropertyChangeEvent event) {
         // We can cast since we know that the EventList is of type T
-        final PropertyUpdateEvent<T> updateEvent = new PropertyUpdateEvent<T>(
-                this, (T) event.getSource(), event.getPropertyName(),
-                event.getOldValue(), event.getNewValue());
+        final PropertyUpdateEvent<T> updateEvent =
+                new PropertyUpdateEvent<T>(
+                        this,
+                        (T) event.getSource(),
+                        event.getPropertyName(),
+                        event.getOldValue(),
+                        event.getNewValue());
 
         // The PropertyUpdateEvent will cause a repaint of the NatTable.
         // We need to fire the event from the SWT Display thread, otherwise
@@ -229,6 +216,63 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
     }
 
     /**
+     * Activates the handling of GlazedLists events. By activating on receiving
+     * GlazedLists change events, there will be NatTable events fired to
+     * indicate that re-rendering is necessary.
+     * <p>
+     * This is usually necessary to perform huge updates of the data model to
+     * avoid concurrency issues. By default the
+     * {@link DetailGlazedListsEventLayer} is activated. You can deactivate it
+     * prior performing bulk updates and activate it again after the update is
+     * finished for a better event handling.
+     * </p>
+     * <p>
+     * <b>Note:</b> When activating the list change handling again, there will
+     * be no event fired in NatTable automatically. For bulk updates with
+     * deactivated internal handling it is therefore necessary to fire a custom
+     * event to trigger the NatTable refresh operation.
+     * </p>
+     *
+     * @since 1.6
+     */
+    public void activate() {
+        this.active = true;
+    }
+
+    /**
+     * Deactivates the handling of GlazedLists events. By deactivating there
+     * will be no NatTable events fired on GlazedLists change events.
+     * <p>
+     * This is usually necessary to perform huge updates of the data model to
+     * avoid concurrency issues. By default the
+     * {@link DetailGlazedListsEventLayer} is activated. You can deactivate it
+     * prior performing bulk updates and activate it again after the update is
+     * finished for a better event handling.
+     * </p>
+     * <p>
+     * <b>Note:</b> When activating the list change handling again, there will
+     * be no event fired in NatTable automatically. For bulk updates with
+     * deactivated internal handling it is therefore necessary to fire a custom
+     * event to trigger the NatTable refresh operation.
+     * </p>
+     *
+     * @since 1.6
+     */
+    public void deactivate() {
+        this.active = false;
+    }
+
+    /**
+     * @return Whether this {@link DetailGlazedListsEventLayer} will propagate
+     *         {@link ListEvent}s into NatTable or not.
+     *
+     * @since 1.6
+     */
+    public boolean isActive() {
+        return this.active;
+    }
+
+    /**
      * Change the underlying {@link EventList} this layer is listening to.
      *
      * @param newEventList
@@ -240,23 +284,11 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
         this.eventList.addListEventListener(this);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer#
-     * getColumnPositionByIndex(int)
-     */
     @Override
     public int getColumnPositionByIndex(int columnIndex) {
         return this.underlyingLayer.getColumnPositionByIndex(columnIndex);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer#
-     * getRowPositionByIndex(int)
-     */
     @Override
     public int getRowPositionByIndex(int rowIndex) {
         return this.underlyingLayer.getRowPositionByIndex(rowIndex);

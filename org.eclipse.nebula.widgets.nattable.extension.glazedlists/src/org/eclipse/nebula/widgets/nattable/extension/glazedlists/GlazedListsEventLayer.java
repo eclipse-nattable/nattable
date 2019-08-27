@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2015 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -45,8 +45,9 @@ import ca.odell.glazedlists.event.ListEventListener;
  * @param <T>
  *            Type of the bean in the backing list.
  */
-public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements
-IUniqueIndexLayer, ListEventListener<T>, PropertyChangeListener {
+public class GlazedListsEventLayer<T>
+        extends AbstractLayerTransform
+        implements IUniqueIndexLayer, ListEventListener<T>, PropertyChangeListener {
 
     private static final Scheduler scheduler = new Scheduler("GlazedListsEventLayer"); //$NON-NLS-1$
     private final IUniqueIndexLayer underlyingLayer;
@@ -71,7 +72,9 @@ IUniqueIndexLayer, ListEventListener<T>, PropertyChangeListener {
     }
 
     /**
-     * Fires a NatTable refresh event, if any glazed list events have occurred.
+     *
+     * @return The {@link Runnable} that is triggered all 100ms to fire a
+     *         NatTable refresh event.
      */
     protected Runnable getEventNotifier() {
         return new Runnable() {
@@ -93,9 +96,8 @@ IUniqueIndexLayer, ListEventListener<T>, PropertyChangeListener {
         };
     }
 
-    /**
-     * Glazed list event handling.
-     */
+    // GlazedLists ListEventListener
+
     @Override
     public void listChanged(ListEvent<T> event) {
         while (event.next()) {
@@ -107,9 +109,8 @@ IUniqueIndexLayer, ListEventListener<T>, PropertyChangeListener {
         this.eventsToProcess = true;
     }
 
-    /**
-     * Object property updated event
-     */
+    // PropertyChangeListener
+
     @Override
     @SuppressWarnings("unchecked")
     public void propertyChange(PropertyChangeEvent event) {
@@ -124,9 +125,14 @@ IUniqueIndexLayer, ListEventListener<T>, PropertyChangeListener {
     }
 
     /**
-     * These update events are likely to cause a repaint on NatTable. If these
-     * are not thrown from the SWT Display thread, SWT will throw an Exception.
-     * Painting can only be triggered from the SWT Display thread.
+     * Fires the given {@link ILayerEvent} on the SWT Display thread in case
+     * {@link #testMode} is <code>false</code>. Needed because the GlazedLists
+     * list change handling is done in a background thread, but NatTable event
+     * handling needs to be triggered in the UI thread to be able to trigger
+     * repainting.
+     *
+     * @param event
+     *            The event to fire
      */
     protected void fireEventFromSWTDisplayThread(final ILayerEvent event) {
         if (!this.testMode && Display.getCurrent() == null) {
@@ -150,6 +156,11 @@ IUniqueIndexLayer, ListEventListener<T>, PropertyChangeListener {
         return super.doCommand(command);
     }
 
+    /**
+     *
+     * @return <code>true</code> if this layer was terminated,
+     *         <code>false</code> if it is still active.
+     */
     public boolean isDisposed() {
         return this.terminated;
     }
@@ -164,6 +175,14 @@ IUniqueIndexLayer, ListEventListener<T>, PropertyChangeListener {
         this.eventList.addListEventListener(this);
     }
 
+    /**
+     * Activate the test mode, which is needed for unit testing. When enabling
+     * the test mode, the events are not fired in the UI thread.
+     *
+     * @param testMode
+     *            <code>true</code> to enable the test mode, <code>false</code>
+     *            for real mode.
+     */
     public void setTestMode(boolean testMode) {
         this.testMode = testMode;
     }
@@ -174,7 +193,7 @@ IUniqueIndexLayer, ListEventListener<T>, PropertyChangeListener {
      * indicate that re-rendering is necessary.
      * <p>
      * This is usually necessary to perform huge updates of the data model to
-     * avoid concurrency issues. By default the GlazedListsEventLayer is
+     * avoid concurrency issues. By default the {@link GlazedListsEventLayer} is
      * activated. You can deactivate it prior performing bulk updates and
      * activate it again after the update is finished for a better event
      * handling.
@@ -188,7 +207,7 @@ IUniqueIndexLayer, ListEventListener<T>, PropertyChangeListener {
      * will be no NatTable events fired on GlazedLists change events.
      * <p>
      * This is usually necessary to perform huge updates of the data model to
-     * avoid concurrency issues. By default the GlazedListsEventLayer is
+     * avoid concurrency issues. By default the {@link GlazedListsEventLayer} is
      * activated. You can deactivate it prior performing bulk updates and
      * activate it again after the update is finished for a better event
      * handling.
@@ -198,11 +217,29 @@ IUniqueIndexLayer, ListEventListener<T>, PropertyChangeListener {
     }
 
     /**
-     * @return Whether this GlazedListsEventLayer will propagate
+     * @return Whether this {@link GlazedListsEventLayer} will propagate
      *         {@link ListEvent}s into NatTable or not.
      */
     public boolean isActive() {
         return this.active;
+    }
+
+    /**
+     * This method can be used to discard event processing.
+     * <p>
+     * It is useful in cases scenarios where list changes are tracked while the
+     * handling is deactivated. By default list changes are also tracked while
+     * the handling is deactivated, so automatically a refresh is triggered on
+     * activation. For cases where a custom event is fired for updates, it could
+     * make sense to discard the events to process to avoid that a full refresh
+     * event is triggered.
+     * </p>
+     *
+     * @since 1.6
+     */
+    public void discardEventsToProcess() {
+        this.eventsToProcess = false;
+        this.structuralChangeEventsToProcess = false;
     }
 
     // Columns
