@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
+ * Copyright (c) 2018, 2019 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -61,6 +61,11 @@ public class HierarchicalHelper {
      *
      * @param input
      *            The collection of objects with a hierarchical object graph.
+     * @param addParentObject
+     *            <code>true</code> to add row objects for parent objects that
+     *            do no have object references for deeper levels,
+     *            <code>false</code> to have no dedicated row object for parent
+     *            objects.
      * @param propertyNames
      *            The property names to access the properties in the object
      *            graph.
@@ -89,6 +94,11 @@ public class HierarchicalHelper {
      *
      * @param input
      *            The collection of objects with a hierarchical object graph.
+     * @param addParentObject
+     *            <code>true</code> to add row objects for parent objects that
+     *            do no have object references for deeper levels,
+     *            <code>false</code> to have no dedicated row object for parent
+     *            objects.
      * @param propertyNames
      *            The property names to access the properties in the object
      *            graph.
@@ -137,6 +147,10 @@ public class HierarchicalHelper {
      * @param propertyDescriptorMap
      *            The map of already identified {@link PropertyDescriptor}s, to
      *            avoid multiple lookups via reflection.
+     * @param addParentObject
+     *            <code>true</code> if the already available
+     *            {@link HierarchicalWrapper} with the resolved parent levels
+     *            should be added to the result, <code>false</code> if not.
      * @return The flattened list of the object at the given level with regards
      *         to the nested objects, or a collection with only the given parent
      *         object if that object has not children.
