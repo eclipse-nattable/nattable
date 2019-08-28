@@ -77,6 +77,14 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
      */
     private DataLayer bodyDataLayer;
 
+    /**
+     *
+     * @param underlyingLayer
+     *            The underlying layer.
+     * @param bodyDataLayer
+     *            The {@link DataLayer} of the body region needed to retrieve
+     *            the configured column width.
+     */
     public ResizeColumnHideShowLayer(IUniqueIndexLayer underlyingLayer, DataLayer bodyDataLayer) {
         super(underlyingLayer);
 

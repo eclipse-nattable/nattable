@@ -129,8 +129,8 @@ public class _5017_DataChangeLayerTempStorageExample extends AbstractNatExample 
         bodyDataLayer.setConfigLabelAccumulator(columnLabelAccumulator);
         registerColumnLabels(columnLabelAccumulator);
 
-        // add a DataChangeLayer that tracks data changes but directly updates
-        // the underlying data model
+        // add a DataChangeLayer that temporarily tracks data changes without
+        // updating the underlying data model
         DataChangeLayer dataChangeLayer = new DataChangeLayer(bodyDataLayer, new PointKeyHandler(), true);
         ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(dataChangeLayer);
         ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
