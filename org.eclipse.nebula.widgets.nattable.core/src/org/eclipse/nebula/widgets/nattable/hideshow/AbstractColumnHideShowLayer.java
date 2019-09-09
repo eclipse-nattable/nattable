@@ -210,6 +210,10 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 
     @Override
     public int getWidth() {
+        if (getColumnCount() == 0) {
+            return 0;
+        }
+
         int lastColumnPosition = getColumnCount() - 1;
         return getStartXOfColumnPosition(lastColumnPosition)
                 + getColumnWidthByPosition(lastColumnPosition);

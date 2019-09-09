@@ -316,4 +316,30 @@ public class ColumnHideShowLayerTest {
         assertEquals(1, ranges.size());
         assertEquals(new Range(0, 1), ranges.iterator().next());
     }
+
+    @Test
+    public void shouldCalculateWidth() {
+        this.columnHideShowLayer = new ColumnHideShowLayer(new DataLayerFixture(5, 5, 100, 20));
+        assertEquals(5, this.columnHideShowLayer.getColumnCount());
+        assertEquals(500, this.columnHideShowLayer.getWidth());
+
+        this.columnHideShowLayer.hideColumnPositions(Arrays.asList(0, 1, 2, 3));
+
+        assertEquals(1, this.columnHideShowLayer.getColumnCount());
+        assertEquals(100, this.columnHideShowLayer.getWidth());
+
+        this.columnHideShowLayer.hideColumnPositions(Arrays.asList(0));
+
+        assertEquals(0, this.columnHideShowLayer.getColumnCount());
+        assertEquals(0, this.columnHideShowLayer.getWidth());
+    }
+
+    @Test
+    public void shouldCalculateWidthForEmptyDataset() {
+        this.columnHideShowLayer = new ColumnHideShowLayer(new DataLayerFixture(0, 0, 100, 20));
+
+        assertEquals(0, this.columnHideShowLayer.getColumnCount());
+        assertEquals(0, this.columnHideShowLayer.getWidth());
+    }
+
 }
