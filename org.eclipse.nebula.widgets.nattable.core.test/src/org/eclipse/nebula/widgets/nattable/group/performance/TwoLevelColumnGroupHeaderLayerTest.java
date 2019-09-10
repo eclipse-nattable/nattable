@@ -2175,4 +2175,92 @@ public class TwoLevelColumnGroupHeaderLayerTest {
         assertEquals(3, group1.getOriginalSpan());
         assertEquals(3, group1.getVisibleSpan());
     }
+
+    @Test
+    public void shouldDragReorderToEndWithLevel1AllAndNoLevel0() {
+        // increase the client area to show all columns
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1600, 250);
+            }
+
+        });
+        this.gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+
+        this.columnGroupHeaderLayer.clearAllGroups();
+
+        this.columnGroupHeaderLayer.addGroup("Person", 0, 4);
+        this.columnGroupHeaderLayer.addGroup("Address", 4, 4);
+
+        this.columnGroupHeaderLayer.addGroupingLevel();
+        this.columnGroupHeaderLayer.addGroup(1, "Person with Address", 0, 8);
+        this.columnGroupHeaderLayer.addGroup(1, "Additional Information", 8, 6);
+
+        // reorder column 10 to end
+        this.gridLayer.doCommand(new ColumnReorderStartCommand(this.gridLayer, 10));
+        this.gridLayer.doCommand(new ColumnReorderEndCommand(this.gridLayer, 15));
+
+        // check that reorder actually happened
+        assertEquals(9, this.selectionLayer.getColumnIndexByPosition(13));
+    }
+
+    @Test
+    public void shouldReorderToEndWithLevel1AllAndNoLevel0() {
+        // increase the client area to show all columns
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1600, 250);
+            }
+
+        });
+        this.gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+
+        this.columnGroupHeaderLayer.clearAllGroups();
+
+        this.columnGroupHeaderLayer.addGroup("Person", 0, 4);
+        this.columnGroupHeaderLayer.addGroup("Address", 4, 4);
+
+        this.columnGroupHeaderLayer.addGroupingLevel();
+        this.columnGroupHeaderLayer.addGroup(1, "Person with Address", 0, 8);
+        this.columnGroupHeaderLayer.addGroup(1, "Additional Information", 8, 6);
+
+        // reorder column 10 to end
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 10, 15));
+
+        // check that reorder actually happened
+        assertEquals(9, this.selectionLayer.getColumnIndexByPosition(13));
+    }
+
+    @Test
+    public void shouldMultiReorderToEndWithLevel1AllAndNoLevel0() {
+        // increase the client area to show all columns
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1600, 250);
+            }
+
+        });
+        this.gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+
+        this.columnGroupHeaderLayer.clearAllGroups();
+
+        this.columnGroupHeaderLayer.addGroup("Person", 0, 4);
+        this.columnGroupHeaderLayer.addGroup("Address", 4, 4);
+
+        this.columnGroupHeaderLayer.addGroupingLevel();
+        this.columnGroupHeaderLayer.addGroup(1, "Person with Address", 0, 8);
+        this.columnGroupHeaderLayer.addGroup(1, "Additional Information", 8, 6);
+
+        // reorder column 10 to end
+        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, Arrays.asList(10), 15));
+
+        // check that reorder actually happened
+        assertEquals(9, this.selectionLayer.getColumnIndexByPosition(13));
+    }
 }

@@ -108,15 +108,19 @@ public class RowReorderCommand implements ILayerCommand {
     }
 
     /**
-     * Toggles the coordinate from top edge to bottom edge and vice versa.
+     * Toggles the coordinate from top edge to bottom edge and vice versa. Will
+     * not toggle if the coordinate is bottom edge of the last row or the top
+     * edge of the first row.
      *
      * @since 1.6
      */
     public void toggleCoordinateByEdge() {
-        if (this.reorderToTopEdge) {
+        if (this.reorderToTopEdge
+                && this.toRowPositionCoordinate.rowPosition > 0) {
             this.toRowPositionCoordinate.rowPosition--;
             this.reorderToTopEdge = false;
-        } else {
+        } else if (!this.reorderToTopEdge
+                && this.toRowPositionCoordinate.rowPosition < this.toRowPositionCoordinate.getLayer().getRowCount() - 1) {
             this.toRowPositionCoordinate.rowPosition++;
             this.reorderToTopEdge = true;
         }
