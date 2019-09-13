@@ -477,7 +477,8 @@ public class RowGroupUtils {
         MoveDirectionEnum moveDirection = PositionUtil.getVerticalMoveDirection(fromPosition, toPosition);
 
         int toPositionToCheck = toPosition;
-        if (MoveDirectionEnum.DOWN == moveDirection && reorderToTopEdge) {
+        if (MoveDirectionEnum.DOWN == moveDirection && reorderToTopEdge
+                || toPosition == rowGroupHeaderLayer.getPositionLayer().getRowCount() && !reorderToTopEdge) {
             toPositionToCheck--;
         }
 

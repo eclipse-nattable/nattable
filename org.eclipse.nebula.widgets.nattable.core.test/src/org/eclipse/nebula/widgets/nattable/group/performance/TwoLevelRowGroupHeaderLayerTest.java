@@ -2273,4 +2273,66 @@ public class TwoLevelRowGroupHeaderLayerTest {
         // check that reorder actually happened
         assertEquals(9, this.selectionLayer.getRowIndexByPosition(13));
     }
+
+    @Test
+    public void shouldDragReorderGroupToEndWithLevel1AllAndNoLevel0() {
+        // increase the client area to show all rows
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1600, 300);
+            }
+
+        });
+        this.gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+
+        this.rowGroupHeaderLayer.clearAllGroups();
+
+        this.rowGroupHeaderLayer.addGroup("Person", 0, 4);
+        this.rowGroupHeaderLayer.addGroup("Address", 4, 4);
+        this.rowGroupHeaderLayer.addGroup("Test", 9, 1);
+
+        this.rowGroupHeaderLayer.addGroup(1, "Person with Address", 0, 8);
+        this.rowGroupHeaderLayer.addGroup(1, "Additional Information", 8, 6);
+
+        // reorder row 10 to end
+        this.gridLayer.doCommand(new RowGroupReorderStartCommand(this.gridLayer, 0, 10));
+        this.gridLayer.doCommand(new RowGroupReorderEndCommand(this.gridLayer, 0, 15));
+
+        // check that reorder actually happened
+        assertEquals(9, this.selectionLayer.getRowIndexByPosition(13));
+    }
+
+    @Test
+    public void shouldDragReorderUnbreakableGroupToEndWithLevel1AllAndNoLevel0() {
+        // increase the client area to show all rows
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1600, 300);
+            }
+
+        });
+        this.gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
+
+        this.rowGroupHeaderLayer.clearAllGroups();
+        this.rowGroupHeaderLayer.setDefaultUnbreakable(true);
+
+        this.rowGroupHeaderLayer.addGroup("Person", 0, 4);
+        this.rowGroupHeaderLayer.addGroup("Address", 4, 4);
+        this.rowGroupHeaderLayer.addGroup("Test", 9, 1);
+
+        this.rowGroupHeaderLayer.addGroup(1, "Person with Address", 0, 8);
+        this.rowGroupHeaderLayer.addGroup(1, "Additional Information", 8, 6);
+
+        // reorder column 10 to end
+        this.gridLayer.doCommand(new RowGroupReorderStartCommand(this.gridLayer, 0, 10));
+        this.gridLayer.doCommand(new RowGroupReorderEndCommand(this.gridLayer, 0, 15));
+
+        // check that reorder actually happened
+        assertEquals(9, this.selectionLayer.getRowIndexByPosition(13));
+    }
+
 }

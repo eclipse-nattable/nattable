@@ -455,7 +455,8 @@ public class ColumnGroupUtils {
         MoveDirectionEnum moveDirection = PositionUtil.getHorizontalMoveDirection(fromPosition, toPosition);
 
         int toPositionToCheck = toPosition;
-        if (MoveDirectionEnum.RIGHT == moveDirection && reorderToLeftEdge) {
+        if (MoveDirectionEnum.RIGHT == moveDirection && reorderToLeftEdge
+                || toPosition == columnGroupHeaderLayer.getPositionLayer().getColumnCount() && !reorderToLeftEdge) {
             toPositionToCheck--;
         }
 
