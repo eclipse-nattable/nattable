@@ -12317,4 +12317,34 @@ public class RowGroupHeaderLayerTest {
         assertEquals(3, group1.getOriginalSpan());
         assertEquals(3, group1.getVisibleSpan());
     }
+
+    @Test
+    public void shouldShowGroupHiddenByLoadState() {
+        this.rowGroupHeaderLayer.removeGroup(0);
+
+        this.rowGroupHeaderLayer.addGroup("Person", 1, 1);
+
+        Group group = this.rowGroupHeaderLayer.getGroupByPosition(1);
+
+        Properties properties = new Properties();
+        properties.put("test" +
+                RowHideShowLayer.PERSISTENCE_KEY_HIDDEN_ROW_INDEXES, "1");
+        this.rowGroupHeaderLayer.getPositionLayer().loadState("test", properties);
+
+        // state after refresh without details via loadState
+        assertEquals(-1, group.getStartIndex());
+        assertEquals(-1, group.getVisibleStartIndex());
+        assertEquals(-1, group.getVisibleStartPosition());
+        assertEquals(1, group.getOriginalSpan());
+        assertEquals(0, group.getVisibleSpan());
+
+        // show all again
+        this.gridLayer.doCommand(new ShowAllRowsCommand());
+
+        assertEquals(1, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(1, group.getVisibleStartPosition());
+        assertEquals(1, group.getOriginalSpan());
+        assertEquals(1, group.getVisibleSpan());
+    }
 }

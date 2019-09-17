@@ -1171,7 +1171,7 @@ public class GroupModel implements IPersistable {
             }
             this.visibleStartPosition = getPositionByIndex(this.visibleStartIndex);
 
-            if (this.visibleStartPosition == -1 && this.visibleSpan > 0) {
+            if (this.visibleStartPosition == -1) {
                 // if a multi hide command was triggered for non-contiguous
                 // column ranges, where one range is at the end, the group could
                 // be in an inconsistent state which needs to be corrected.
@@ -1209,7 +1209,8 @@ public class GroupModel implements IPersistable {
             setVisibleSpan(this.originalSpan - hidden);
 
             int smallestIndex = getIndexByPosition(smallestPosition);
-            if (updateStartIndex) {
+            if (updateStartIndex
+                    || (this.startIndex < 0 && smallestIndex >= 0)) {
                 setStartIndex(smallestIndex);
             }
             setVisibleStartIndex(smallestIndex);
