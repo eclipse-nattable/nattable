@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,9 +10,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -26,9 +26,9 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.DataLay
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.LayerListenerFixture;
 import org.eclipse.nebula.widgets.nattable.layer.event.PropertyUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
@@ -39,7 +39,7 @@ public class GlazedListsEventLayerTest {
     private GlazedListsEventLayer<RowDataFixture> layerUnderTest;
     private LayerListenerFixture listenerFixture;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.listFixture = GlazedLists.eventList(RowDataListFixture.getList());
 
@@ -50,7 +50,7 @@ public class GlazedListsEventLayerTest {
         this.layerUnderTest.addLayerListener(this.listenerFixture);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         this.layerUnderTest.doCommand(new DisposeResourcesCommand());
     }
