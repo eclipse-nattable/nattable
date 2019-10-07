@@ -66,11 +66,19 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
                 int i = 1;
                 while (pos < 0) {
                     int next = reorderEvent.getBeforeToRowPosition() + i;
+                    if (next >= this.underlyingLayer.getColumnCount()) {
+                        break;
+                    }
                     pos = underlyingToLocalRowPosition(this.underlyingLayer, next);
+                    i++;
                 }
-                reorderEvent.setBeforeToRowIndex(getRowIndexByPosition(pos));
+                if (pos >= 0) {
+                    reorderEvent.setBeforeToRowIndex(getRowIndexByPosition(pos));
+                }
             }
-            reorderEvent.setConvertedBeforePositions(this, fromRanges, pos);
+            if (pos >= 0) {
+                reorderEvent.setConvertedBeforePositions(this, fromRanges, pos);
+            }
         }
 
         if (event instanceof IStructuralChangeEvent) {

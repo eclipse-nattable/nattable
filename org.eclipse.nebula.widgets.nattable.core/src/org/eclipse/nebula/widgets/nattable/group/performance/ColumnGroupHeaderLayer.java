@@ -383,12 +383,12 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         this.indexPositionConverter = new GroupModel.IndexPositionConverter() {
 
             @Override
-            public int convertPositionToIndex(IUniqueIndexLayer positionLayer, int position) {
+            public int convertPositionToIndex(int position) {
                 return positionLayer.getColumnIndexByPosition(position);
             }
 
             @Override
-            public int convertIndexToPosition(IUniqueIndexLayer positionLayer, int index) {
+            public int convertIndexToPosition(int index) {
                 return positionLayer.getColumnPositionByIndex(index);
             }
         };
@@ -396,7 +396,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         this.model = new ArrayList<GroupModel>(numberOfGroupLevels);
         for (int i = 0; i < numberOfGroupLevels; i++) {
             GroupModel groupModel = new GroupModel();
-            groupModel.setPositionLayer(this.positionLayer, this.indexPositionConverter);
+            groupModel.setIndexPositionConverter(this.indexPositionConverter);
             this.model.add(groupModel);
             this.reorderSupportedOnLevel.put(i, Boolean.TRUE);
         }
@@ -480,7 +480,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      */
     public void addGroupingLevel() {
         GroupModel groupModel = new GroupModel();
-        groupModel.setPositionLayer(getPositionLayer(), this.indexPositionConverter);
+        groupModel.setIndexPositionConverter(this.indexPositionConverter);
         this.model.add(groupModel);
         this.reorderSupportedOnLevel.put(this.model.size() - 1, Boolean.TRUE);
     }
@@ -2251,9 +2251,18 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                 GroupMultiColumnReorderCommand command =
                         new GroupMultiColumnReorderCommand(
                                 getPositionLayer(),
-                                new ArrayList<Integer>(group.getMembers()),
-                                underlyingTo,
-                                groupModel.getGroupByPosition(toPosition));
+                                new ArrayList<>(group.getMembers()),
+                                underlyingTo);
+                Group toRight = groupModel.getGroupByPosition(toPosition);
+                if (toRight != null) {
+                    command.setGroupToRight(toRight);
+                } else {
+                    // check if there is a group to the left
+                    Group toLeft = groupModel.getGroupByPosition(toPosition - 1);
+                    if (toLeft != null) {
+                        command.setGroupToLeft(toLeft);
+                    }
+                }
                 command.setReorderByIndex(true);
 
                 return getPositionLayer().getUnderlyingLayerByPosition(0, 0).doCommand(command);

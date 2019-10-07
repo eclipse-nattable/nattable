@@ -1773,7 +1773,6 @@ public class TwoLevelRowGroupHeaderLayerTest {
         assertEquals(20, cell.getBounds().width);
     }
 
-    // TODO
     @Test
     public void shouldShowRowGroupOnReorderInHiddenState() {
         // configure the row groups
@@ -2333,6 +2332,196 @@ public class TwoLevelRowGroupHeaderLayerTest {
 
         // check that reorder actually happened
         assertEquals(9, this.selectionLayer.getRowIndexByPosition(13));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnReorderUngroupedToEndWithHiddenLastSpanningSecondLevel() {
+        // remove first position from first group
+        this.rowGroupHeaderLayer.removePositionsFromGroup(0, 0);
+
+        // make groups unbreakable
+        this.rowGroupHeaderLayer.setGroupUnbreakable(1, true);
+        this.rowGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.rowGroupHeaderLayer.setGroupUnbreakable(8, true);
+
+        // hide last position in second group
+        this.gridLayer.doCommand(new RowHideCommand(this.gridLayer, 8));
+
+        Group group1 = this.rowGroupHeaderLayer.getGroupByPosition(0, 1);
+        Group group2 = this.rowGroupHeaderLayer.getGroupByPosition(0, 4);
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(1, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+
+        // reorder first position between second and third group
+        this.gridLayer.doCommand(new RowReorderCommand(this.gridLayer, 1, 8));
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+
+        assertNull(this.rowGroupHeaderLayer.getGroupByPosition(0, 6));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllRowsCommand());
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertNull(this.rowGroupHeaderLayer.getGroupByPosition(0, 7));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnReorderUngroupedToEndWithHiddenLastSameGroupBorders() {
+        // remove second level group
+        this.rowGroupHeaderLayer.removeGroup(1, 4);
+
+        // specify two second level groups with same border as first level
+        this.rowGroupHeaderLayer.addGroup(1, "Test1", 4, 4);
+        this.rowGroupHeaderLayer.addGroup(1, "Test2", 8, 3);
+
+        // remove first position from first group
+        this.rowGroupHeaderLayer.removePositionsFromGroup(0, 0);
+
+        // make groups unbreakable
+        this.rowGroupHeaderLayer.setGroupUnbreakable(1, true);
+        this.rowGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.rowGroupHeaderLayer.setGroupUnbreakable(8, true);
+
+        // hide last position in second group
+        this.gridLayer.doCommand(new RowHideCommand(this.gridLayer, 8));
+
+        Group group1 = this.rowGroupHeaderLayer.getGroupByPosition(0, 1);
+        Group group2 = this.rowGroupHeaderLayer.getGroupByPosition(0, 4);
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(1, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+
+        // reorder first position between second and third group
+        this.gridLayer.doCommand(new RowReorderCommand(this.gridLayer, 1, 8));
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+
+        assertNull(this.rowGroupHeaderLayer.getGroupByPosition(0, 6));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllRowsCommand());
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertNull(this.rowGroupHeaderLayer.getGroupByPosition(0, 7));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnReorderUngroupedToEndWithHiddenLastSpanningFirstLevel() {
+        // remove second level group
+        this.rowGroupHeaderLayer.removeGroup(1, 4);
+
+        // specify two second level groups with same border as first level
+        this.rowGroupHeaderLayer.addGroup(1, "Test1", 4, 4);
+        this.rowGroupHeaderLayer.addGroup(1, "Test2", 8, 3);
+
+        // remove first level group
+        this.rowGroupHeaderLayer.removeGroup(0, 4);
+        this.rowGroupHeaderLayer.removeGroup(0, 8);
+
+        // specify spanning first level group
+        this.rowGroupHeaderLayer.addGroup(0, "FirstLevel", 4, 7);
+
+        // remove first position from first group
+        this.rowGroupHeaderLayer.removePositionsFromGroup(0, 0);
+
+        // make groups unbreakable
+        this.rowGroupHeaderLayer.setGroupUnbreakable(1, 4, true);
+        this.rowGroupHeaderLayer.setGroupUnbreakable(1, 8, true);
+
+        // hide last position in second group
+        this.gridLayer.doCommand(new RowHideCommand(this.gridLayer, 8));
+
+        Group group2 = this.rowGroupHeaderLayer.getGroupByPosition(1, 4);
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+
+        // reorder first position between second and third group
+        this.gridLayer.doCommand(new RowReorderCommand(this.gridLayer, 1, 8));
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+
+        assertNull(this.rowGroupHeaderLayer.getGroupByPosition(1, 6));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllRowsCommand());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertNull(this.rowGroupHeaderLayer.getGroupByPosition(1, 7));
     }
 
 }

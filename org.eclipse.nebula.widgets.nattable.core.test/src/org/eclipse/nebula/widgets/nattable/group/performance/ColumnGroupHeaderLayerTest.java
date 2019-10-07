@@ -79,7 +79,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ColumnGroupHeaderLayerTest {
@@ -10613,137 +10612,6 @@ public class ColumnGroupHeaderLayerTest {
         verifyCleanState();
     }
 
-    @Ignore
-    @Test
-    public void shouldReorderToFirstWithHiddenAndCollapsed() {
-        // hide first in third group
-        this.gridLayer.doCommand(new ColumnHideCommand(this.gridLayer, 9));
-
-        // collapse second group
-        this.columnGroupHeaderLayer.collapseGroup(4);
-
-        // reorder to remove last in second group
-        // this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 5,
-        // 6));
-        this.gridLayer.doCommand(new ColumnReorderStartCommand(this.gridLayer, 5));
-        this.gridLayer.doCommand(new ColumnReorderEndCommand(this.gridLayer, 6));
-
-        ILayerCell cell = this.columnGroupHeaderLayer.getCellByPosition(4, 0);
-        assertEquals(4, cell.getOriginColumnPosition());
-        assertEquals(4, cell.getColumnPosition());
-        assertEquals(5, cell.getColumnIndex());
-        assertEquals(1, cell.getColumnSpan());
-        assertEquals(1, cell.getRowSpan());
-        assertEquals("Address", cell.getDataValue());
-        assertEquals(400, cell.getBounds().x);
-        assertEquals(0, cell.getBounds().y);
-        assertEquals(100, cell.getBounds().width);
-        assertEquals(20, cell.getBounds().height);
-
-        cell = this.columnGroupHeaderLayer.getCellByPosition(5, 0);
-        assertEquals(5, cell.getOriginColumnPosition());
-        assertEquals(5, cell.getColumnPosition());
-        assertEquals(4, cell.getColumnIndex());
-        assertEquals(1, cell.getColumnSpan());
-        assertEquals(2, cell.getRowSpan());
-        assertEquals("Street", cell.getDataValue());
-        assertEquals(500, cell.getBounds().x);
-        assertEquals(0, cell.getBounds().y);
-        assertEquals(100, cell.getBounds().width);
-        assertEquals(40, cell.getBounds().height);
-
-        cell = this.columnGroupHeaderLayer.getCellByPosition(6, 0);
-        assertEquals(6, cell.getOriginColumnPosition());
-        assertEquals(6, cell.getColumnPosition());
-        assertEquals(9, cell.getColumnIndex());
-        assertEquals(2, cell.getColumnSpan());
-        assertEquals(1, cell.getRowSpan());
-        assertEquals("Facts", cell.getDataValue());
-        assertEquals(600, cell.getBounds().x);
-        assertEquals(0, cell.getBounds().y);
-        assertEquals(200, cell.getBounds().width);
-        assertEquals(20, cell.getBounds().height);
-
-        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
-        assertEquals(5, group2.getStartIndex());
-        assertEquals(5, group2.getVisibleStartIndex());
-        assertEquals(4, group2.getVisibleStartPosition());
-        assertEquals(3, group2.getOriginalSpan());
-        assertEquals(1, group2.getVisibleSpan());
-        assertTrue(group2.isCollapsed());
-
-        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(5));
-
-        Group group3 = this.columnGroupHeaderLayer.getGroupByPosition(6);
-        assertEquals(8, group3.getStartIndex());
-        assertEquals(9, group3.getVisibleStartIndex());
-        assertEquals(6, group3.getVisibleStartPosition());
-        assertEquals(3, group3.getOriginalSpan());
-        assertEquals(2, group3.getVisibleSpan());
-        assertFalse(group3.isCollapsed());
-
-        // show all again
-        this.gridLayer.doCommand(new ShowAllColumnsCommand());
-
-        assertEquals(12, this.selectionLayer.getColumnCount());
-
-        // FIXME Street should stay ungrouped left of the Facts group
-
-        cell = this.columnGroupHeaderLayer.getCellByPosition(4, 0);
-        assertEquals(4, cell.getOriginColumnPosition());
-        assertEquals(4, cell.getColumnPosition());
-        assertEquals(5, cell.getColumnIndex());
-        assertEquals(1, cell.getColumnSpan());
-        assertEquals(1, cell.getRowSpan());
-        assertEquals("Address", cell.getDataValue());
-        assertEquals(400, cell.getBounds().x);
-        assertEquals(0, cell.getBounds().y);
-        assertEquals(100, cell.getBounds().width);
-        assertEquals(20, cell.getBounds().height);
-
-        cell = this.columnGroupHeaderLayer.getCellByPosition(5, 0);
-        assertEquals(5, cell.getOriginColumnPosition());
-        assertEquals(5, cell.getColumnPosition());
-        assertEquals(4, cell.getColumnIndex());
-        assertEquals(1, cell.getColumnSpan());
-        assertEquals(2, cell.getRowSpan());
-        assertEquals("Street", cell.getDataValue());
-        assertEquals(500, cell.getBounds().x);
-        assertEquals(0, cell.getBounds().y);
-        assertEquals(100, cell.getBounds().width);
-        assertEquals(40, cell.getBounds().height);
-
-        cell = this.columnGroupHeaderLayer.getCellByPosition(6, 0);
-        assertEquals(6, cell.getOriginColumnPosition());
-        assertEquals(6, cell.getColumnPosition());
-        assertEquals(9, cell.getColumnIndex());
-        assertEquals(3, cell.getColumnSpan());
-        assertEquals(1, cell.getRowSpan());
-        assertEquals("Facts", cell.getDataValue());
-        assertEquals(600, cell.getBounds().x);
-        assertEquals(0, cell.getBounds().y);
-        assertEquals(200, cell.getBounds().width);
-        assertEquals(20, cell.getBounds().height);
-
-        group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
-        assertEquals(5, group2.getStartIndex());
-        assertEquals(5, group2.getVisibleStartIndex());
-        assertEquals(4, group2.getVisibleStartPosition());
-        assertEquals(3, group2.getOriginalSpan());
-        assertEquals(1, group2.getVisibleSpan());
-        assertTrue(group2.isCollapsed());
-
-        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(5));
-
-        group3 = this.columnGroupHeaderLayer.getGroupByPosition(6);
-        assertEquals(8, group3.getStartIndex());
-        assertEquals(9, group3.getVisibleStartIndex());
-        assertEquals(6, group3.getVisibleStartPosition());
-        assertEquals(3, group3.getOriginalSpan());
-        assertEquals(3, group3.getVisibleSpan());
-        assertFalse(group3.isCollapsed());
-    }
-
     @Test
     public void shouldCreateColumnGroup() {
         GroupModel groupModel = this.columnGroupHeaderLayer.getGroupModel();
@@ -12350,5 +12218,1723 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(1, group.getVisibleStartPosition());
         assertEquals(1, group.getOriginalSpan());
         assertEquals(1, group.getVisibleSpan());
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnReorderUngroupedToEndWithHiddenLast() {
+        // remove first position from first group
+        this.columnGroupHeaderLayer.removePositionsFromGroup(0, 0);
+
+        // make first and second group unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(1, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+
+        // hide last position in first group
+        this.gridLayer.doCommand(new ColumnHideCommand(this.gridLayer, 4));
+
+        Group group = this.columnGroupHeaderLayer.getGroupByPosition(1);
+        assertEquals(1, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(1, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        // reorder first position between first and second group
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 1, 4));
+
+        assertEquals(1, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(2));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(1, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(3, group.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(3));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnDragReorderUngroupedToEndWithHiddenLast() {
+        // remove first position from first group
+        this.columnGroupHeaderLayer.removePositionsFromGroup(0, 0);
+
+        // make first and second group unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(1, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+
+        // hide last position in first group
+        this.gridLayer.doCommand(new ColumnHideCommand(this.gridLayer, 4));
+
+        Group group = this.columnGroupHeaderLayer.getGroupByPosition(1);
+        assertEquals(1, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(1, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        // reorder first position between first and second group
+        this.gridLayer.doCommand(new ColumnReorderStartCommand(this.gridLayer, 1));
+        this.gridLayer.doCommand(new ColumnReorderEndCommand(this.gridLayer, 4));
+
+        assertEquals(1, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(2));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(1, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(3, group.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(3));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnMultiReorderUngroupedToEndWithHiddenLast() {
+        // remove first position from first group
+        this.columnGroupHeaderLayer.removePositionsFromGroup(0, 0);
+
+        // make first and second group unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(1, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+
+        // hide last position in first group
+        this.gridLayer.doCommand(new ColumnHideCommand(this.gridLayer, 4));
+
+        Group group = this.columnGroupHeaderLayer.getGroupByPosition(1);
+        assertEquals(1, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(1, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        // reorder first position between first and second group
+        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, Arrays.asList(1), 4));
+
+        assertEquals(1, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(2));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(1, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(3, group.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(3));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnReorderFromGroupToEndWithHiddenLast() {
+        // make second and third group unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+
+        // hide last position in second group
+        this.gridLayer.doCommand(new ColumnHideCommand(this.gridLayer, 8));
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupByPosition(8);
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        // reorder first position between second and third group
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 1, 8));
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(6));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(7));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnDragReorderFromGroupToEndWithHiddenLast() {
+        // make second and third group unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+
+        // hide last position in second group
+        this.gridLayer.doCommand(new ColumnHideCommand(this.gridLayer, 8));
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupByPosition(8);
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        // reorder first position between second and third group
+        this.gridLayer.doCommand(new ColumnReorderStartCommand(this.gridLayer, 1));
+        this.gridLayer.doCommand(new ColumnReorderEndCommand(this.gridLayer, 8));
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(6));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(7));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnMultiReorderFromGroupToEndWithHiddenLast() {
+        // make second and third group unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+
+        // hide last position in second group
+        this.gridLayer.doCommand(new ColumnHideCommand(this.gridLayer, 8));
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupByPosition(8);
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        // reorder first position between second and third group
+        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, Arrays.asList(1), 8));
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(6));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(7));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnReorderUngroupedToStartWithHiddenFirst() {
+        // remove last position from first group
+        this.columnGroupHeaderLayer.removePositionsFromGroup(0, 3);
+
+        // make first and second group unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(1, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+
+        // hide first position in first group
+        this.gridLayer.doCommand(new ColumnHideCommand(this.gridLayer, 1));
+
+        Group group = this.columnGroupHeaderLayer.getGroupByPosition(1);
+        assertEquals(0, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        // reorder fourth position to first position
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 3, 1));
+
+        assertEquals(0, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(1, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(1, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(3, group.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnDragReorderUngroupedToStartWithHiddenFirst() {
+        // remove last position from first group
+        this.columnGroupHeaderLayer.removePositionsFromGroup(0, 3);
+
+        // make first and second group unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(1, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+
+        // hide first position in first group
+        this.gridLayer.doCommand(new ColumnHideCommand(this.gridLayer, 1));
+
+        Group group = this.columnGroupHeaderLayer.getGroupByPosition(1);
+        assertEquals(0, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        // reorder fourth position to first position
+        this.gridLayer.doCommand(new ColumnReorderStartCommand(this.gridLayer, 3));
+        this.gridLayer.doCommand(new ColumnReorderEndCommand(this.gridLayer, 1));
+
+        assertEquals(0, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(1, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(1, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(3, group.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnMultiReorderUngroupedToStartWithHiddenFirst() {
+        // remove last position from first group
+        this.columnGroupHeaderLayer.removePositionsFromGroup(0, 3);
+
+        // make first and second group unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(1, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+
+        // hide first position in first group
+        this.gridLayer.doCommand(new ColumnHideCommand(this.gridLayer, 1));
+
+        Group group = this.columnGroupHeaderLayer.getGroupByPosition(1);
+        assertEquals(0, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        // reorder fourth position to first position
+        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, Arrays.asList(3), 1));
+
+        assertEquals(0, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(1, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(1, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(3, group.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnReorderFromGroupToStartWithHiddenFirst() {
+        // make first group unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(0, true);
+
+        // hide first position in first group
+        this.gridLayer.doCommand(new ColumnHideCommand(this.gridLayer, 1));
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(1);
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        // reorder first position in second group to first position in table
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 4, 1));
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(1, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(5, group2.getStartIndex());
+        assertEquals(5, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(3, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(1, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        assertEquals(5, group2.getStartIndex());
+        assertEquals(5, group2.getVisibleStartIndex());
+        assertEquals(5, group2.getVisibleStartPosition());
+        assertEquals(3, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0));
+        assertEquals(4, this.selectionLayer.getColumnIndexByPosition(0));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnDragReorderFromGroupToStartWithHiddenFirst() {
+        // make first group unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(0, true);
+
+        // hide first position in first group
+        this.gridLayer.doCommand(new ColumnHideCommand(this.gridLayer, 1));
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(1);
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        // reorder first position in second group to first position in table
+        this.gridLayer.doCommand(new ColumnReorderStartCommand(this.gridLayer, 4));
+        this.gridLayer.doCommand(new ColumnReorderEndCommand(this.gridLayer, 1));
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(1, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(5, group2.getStartIndex());
+        assertEquals(5, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(3, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(1, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        assertEquals(5, group2.getStartIndex());
+        assertEquals(5, group2.getVisibleStartIndex());
+        assertEquals(5, group2.getVisibleStartPosition());
+        assertEquals(3, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0));
+        assertEquals(4, this.selectionLayer.getColumnIndexByPosition(0));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnMultiReorderFromGroupToStartWithHiddenFirst() {
+        // make first group unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(0, true);
+
+        // hide first position in first group
+        this.gridLayer.doCommand(new ColumnHideCommand(this.gridLayer, 1));
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(1);
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        // reorder first position in second group to first position in table
+        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, Arrays.asList(4), 1));
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(1, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(5, group2.getStartIndex());
+        assertEquals(5, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(3, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(1, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        assertEquals(5, group2.getStartIndex());
+        assertEquals(5, group2.getVisibleStartIndex());
+        assertEquals(5, group2.getVisibleStartPosition());
+        assertEquals(3, group2.getOriginalSpan());
+        assertEquals(3, group2.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(0));
+        assertEquals(4, this.selectionLayer.getColumnIndexByPosition(0));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnDragReorderUngroupedToEndWithHiddenLastTableEnd() {
+        // increase visible area to show all
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1500, 250);
+            }
+
+        });
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+        Group group3 = this.columnGroupHeaderLayer.getGroupByPosition(8);
+        Group group4 = this.columnGroupHeaderLayer.getGroupByPosition(11);
+
+        // remove first column from first group
+        this.columnGroupHeaderLayer.removePositionsFromGroup(0, 0);
+
+        // make all groups unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(1, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(11, true);
+
+        // hide last column in table
+        if (!this.selectionLayer.doCommand(new ColumnHideCommand(this.selectionLayer, 13))) {
+            fail("Column not hidden");
+        }
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(1, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(4, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(8, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(11, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(2, group4.getVisibleSpan());
+
+        // reorder first position to last position in table
+        this.gridLayer.doCommand(new ColumnReorderStartCommand(this.gridLayer, 1));
+        this.gridLayer.doCommand(new ColumnReorderEndCommand(this.gridLayer, 14));
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(10, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(2, group4.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(12));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(10, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(13));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnReorderGroupToEndWithHiddenLast() {
+        // increase visible area to show all
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1500, 250);
+            }
+
+        });
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+        Group group3 = this.columnGroupHeaderLayer.getGroupByPosition(8);
+        Group group4 = this.columnGroupHeaderLayer.getGroupByPosition(11);
+
+        // make all groups unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(1, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(11, true);
+
+        // hide last column in table
+        if (!this.selectionLayer.doCommand(new ColumnHideCommand(this.selectionLayer, 13))) {
+            fail("Column not hidden");
+        }
+
+        // reorder first group to table end
+        this.gridLayer.doCommand(new ColumnGroupReorderCommand(this.gridLayer, 0, 1, 14));
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(9, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(0, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(4, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(7, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(2, group4.getVisibleSpan());
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(10, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(0, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(4, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(7, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnDragReorderGroupToEndWithHiddenLast() {
+        // increase visible area to show all
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1500, 250);
+            }
+
+        });
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+        Group group3 = this.columnGroupHeaderLayer.getGroupByPosition(8);
+        Group group4 = this.columnGroupHeaderLayer.getGroupByPosition(11);
+
+        // make all groups unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(1, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(11, true);
+
+        // hide last column in table
+        if (!this.selectionLayer.doCommand(new ColumnHideCommand(this.selectionLayer, 13))) {
+            fail("Column not hidden");
+        }
+
+        // reorder first group to table end
+        this.gridLayer.doCommand(new ColumnGroupReorderStartCommand(this.gridLayer, 0, 1));
+        this.gridLayer.doCommand(new ColumnGroupReorderEndCommand(this.gridLayer, 0, 14));
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(9, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(0, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(4, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(7, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(2, group4.getVisibleSpan());
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(10, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(0, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(4, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(7, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnReorderGroupToStartWithHiddenFirst() {
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+        Group group3 = this.columnGroupHeaderLayer.getGroupByPosition(8);
+
+        // make all groups unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(1, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+
+        // hide first column in table
+        if (!this.selectionLayer.doCommand(new ColumnHideCommand(this.selectionLayer, 0))) {
+            fail("Column not hidden");
+        }
+
+        // reorder third group to table start
+        this.gridLayer.doCommand(new ColumnGroupReorderCommand(this.gridLayer, 0, 9, 1));
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(3, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(6, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(0, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(3, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(7, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(0, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnDragReorderGroupToStartWithHiddenFirst() {
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+        Group group3 = this.columnGroupHeaderLayer.getGroupByPosition(8);
+
+        // make all groups unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(1, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+
+        // hide first column in table
+        if (!this.selectionLayer.doCommand(new ColumnHideCommand(this.selectionLayer, 0))) {
+            fail("Column not hidden");
+        }
+
+        // reorder third group to table start
+        this.gridLayer.doCommand(new ColumnGroupReorderStartCommand(this.gridLayer, 0, 9));
+        this.gridLayer.doCommand(new ColumnGroupReorderEndCommand(this.gridLayer, 0, 1));
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(3, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(6, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(0, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(3, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(7, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(0, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableCollapsedGroupOnReorderUngroupedToEndWithHiddenLast() {
+        // increase visible area to show all
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1500, 250);
+            }
+
+        });
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+        Group group3 = this.columnGroupHeaderLayer.getGroupByPosition(8);
+        Group group4 = this.columnGroupHeaderLayer.getGroupByPosition(11);
+
+        // remove first position from first group
+        this.columnGroupHeaderLayer.removePositionsFromGroup(0, 0);
+
+        // make all groups unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(1, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(11, true);
+
+        // hide last column in table
+        if (!this.selectionLayer.doCommand(new ColumnHideCommand(this.selectionLayer, 13))) {
+            fail("Column not hidden");
+        }
+
+        // collapse last group
+        this.columnGroupHeaderLayer.collapseGroup(11);
+
+        // reorder first position to table end
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 1, 13));
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(10, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(1, group4.getVisibleSpan());
+        assertTrue(group4.isCollapsed());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(11));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+        this.columnGroupHeaderLayer.expandGroup(10);
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(10, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+        assertFalse(group4.isCollapsed());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(13));
+        assertEquals(0, this.columnGroupHeaderLayer.getColumnIndexByPosition(13));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableCollapsedGroupOnDragReorderUngroupedToEndWithHiddenLast() {
+        // increase visible area to show all
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1500, 250);
+            }
+
+        });
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+        Group group3 = this.columnGroupHeaderLayer.getGroupByPosition(8);
+        Group group4 = this.columnGroupHeaderLayer.getGroupByPosition(11);
+
+        // remove first position from first group
+        this.columnGroupHeaderLayer.removePositionsFromGroup(0, 0);
+
+        // make all groups unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(1, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(11, true);
+
+        // hide last column in table
+        if (!this.selectionLayer.doCommand(new ColumnHideCommand(this.selectionLayer, 13))) {
+            fail("Column not hidden");
+        }
+
+        // collapse last group
+        this.columnGroupHeaderLayer.collapseGroup(11);
+
+        // reorder first position to table end
+        this.gridLayer.doCommand(new ColumnReorderStartCommand(this.gridLayer, 1));
+        this.gridLayer.doCommand(new ColumnReorderEndCommand(this.gridLayer, 13));
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(10, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(1, group4.getVisibleSpan());
+        assertTrue(group4.isCollapsed());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(11));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+        this.columnGroupHeaderLayer.expandGroup(10);
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(10, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+        assertFalse(group4.isCollapsed());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(13));
+        assertEquals(0, this.columnGroupHeaderLayer.getColumnIndexByPosition(13));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableCollapsedGroupOnMultiReorderUngroupedToEndWithHiddenLast() {
+        // increase visible area to show all
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1500, 250);
+            }
+
+        });
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+        Group group3 = this.columnGroupHeaderLayer.getGroupByPosition(8);
+        Group group4 = this.columnGroupHeaderLayer.getGroupByPosition(11);
+
+        // remove first position from first group
+        this.columnGroupHeaderLayer.removePositionsFromGroup(0, 0);
+
+        // make all groups unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(1, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(11, true);
+
+        // hide last column in table
+        if (!this.selectionLayer.doCommand(new ColumnHideCommand(this.selectionLayer, 13))) {
+            fail("Column not hidden");
+        }
+
+        // collapse last group
+        this.columnGroupHeaderLayer.collapseGroup(11);
+
+        // reorder first position to table end
+        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, Arrays.asList(1), 13));
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(10, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(1, group4.getVisibleSpan());
+        assertTrue(group4.isCollapsed());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(11));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+        this.columnGroupHeaderLayer.expandGroup(10);
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(10, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+        assertFalse(group4.isCollapsed());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(13));
+        assertEquals(0, this.columnGroupHeaderLayer.getColumnIndexByPosition(13));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnReorderFromCollapsedToEndWithHiddenLast() {
+        // increase visible area to show all
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1500, 250);
+            }
+
+        });
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+        Group group3 = this.columnGroupHeaderLayer.getGroupByPosition(8);
+        Group group4 = this.columnGroupHeaderLayer.getGroupByPosition(11);
+
+        // make group 2, 3 and 4 unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(11, true);
+
+        // hide last column in table
+        if (!this.selectionLayer.doCommand(new ColumnHideCommand(this.selectionLayer, 13))) {
+            fail("Column not hidden");
+        }
+
+        // collapse first group
+        this.columnGroupHeaderLayer.collapseGroup(0);
+
+        // reorder first position to table end
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 1, 11));
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+        // reorder from a collapsed group triggers expand
+        assertFalse(group1.isCollapsed());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(10, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(2, group4.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(12));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(10, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(13));
+        assertEquals(0, this.columnGroupHeaderLayer.getColumnIndexByPosition(13));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnDragReorderFromCollapsedToEndWithHiddenLast() {
+        // increase visible area to show all
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1500, 250);
+            }
+
+        });
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+        Group group3 = this.columnGroupHeaderLayer.getGroupByPosition(8);
+        Group group4 = this.columnGroupHeaderLayer.getGroupByPosition(11);
+
+        // make group 2, 3 and 4 unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(11, true);
+
+        // hide last column in table
+        if (!this.selectionLayer.doCommand(new ColumnHideCommand(this.selectionLayer, 13))) {
+            fail("Column not hidden");
+        }
+
+        // collapse first group
+        this.columnGroupHeaderLayer.collapseGroup(0);
+
+        // reorder first position to table end
+        this.gridLayer.doCommand(new ColumnReorderStartCommand(this.gridLayer, 1));
+        this.gridLayer.doCommand(new ColumnReorderEndCommand(this.gridLayer, 11));
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+        // reorder from a collapsed group triggers expand
+        assertFalse(group1.isCollapsed());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(10, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(2, group4.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(12));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(10, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(13));
+        assertEquals(0, this.columnGroupHeaderLayer.getColumnIndexByPosition(13));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnMultiReorderFromCollapsedToEndWithHiddenLast() {
+        // increase visible area to show all
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1500, 250);
+            }
+
+        });
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+        Group group3 = this.columnGroupHeaderLayer.getGroupByPosition(8);
+        Group group4 = this.columnGroupHeaderLayer.getGroupByPosition(11);
+
+        // make group 2, 3 and 4 unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(11, true);
+
+        // hide last column in table
+        if (!this.selectionLayer.doCommand(new ColumnHideCommand(this.selectionLayer, 13))) {
+            fail("Column not hidden");
+        }
+
+        // collapse first group
+        this.columnGroupHeaderLayer.collapseGroup(0);
+
+        // reorder first position to table end
+        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, Arrays.asList(1), 11));
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+        // reorder from a collapsed group triggers expand
+        assertFalse(group1.isCollapsed());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(10, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(2, group4.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(12));
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertEquals(1, group1.getStartIndex());
+        assertEquals(1, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(3, group1.getOriginalSpan());
+        assertEquals(3, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(3, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(7, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(10, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
+
+        assertNull(this.columnGroupHeaderLayer.getGroupByPosition(13));
+        assertEquals(0, this.columnGroupHeaderLayer.getColumnIndexByPosition(13));
+    }
+
+    @Test
+    public void shouldNotBreakUnbreakableGroupOnReorderCollapsedGroupToEndWithHiddenLast() {
+        // increase visible area to show all
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1500, 250);
+            }
+
+        });
+
+        Group group1 = this.columnGroupHeaderLayer.getGroupByPosition(0);
+        Group group2 = this.columnGroupHeaderLayer.getGroupByPosition(4);
+        Group group3 = this.columnGroupHeaderLayer.getGroupByPosition(8);
+        Group group4 = this.columnGroupHeaderLayer.getGroupByPosition(11);
+
+        // make group 2, 3 and 4 unbreakable
+        this.columnGroupHeaderLayer.setGroupUnbreakable(4, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(8, true);
+        this.columnGroupHeaderLayer.setGroupUnbreakable(11, true);
+
+        // hide last column in table
+        if (!this.selectionLayer.doCommand(new ColumnHideCommand(this.selectionLayer, 13))) {
+            fail("Column not hidden");
+        }
+
+        // collapse first group
+        this.columnGroupHeaderLayer.collapseGroup(0);
+
+        // reorder first group to table end
+        this.gridLayer.doCommand(new ColumnGroupReorderCommand(this.gridLayer, 0, 1, 11));
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(9, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(1, group1.getVisibleSpan());
+        assertTrue(group1.isCollapsed());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(0, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(4, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(7, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(2, group4.getVisibleSpan());
+
+        // show all positions again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+        this.columnGroupHeaderLayer.expandGroup(10);
+
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(10, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(4, group2.getVisibleStartIndex());
+        assertEquals(0, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(4, group2.getVisibleSpan());
+
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(8, group3.getVisibleStartIndex());
+        assertEquals(4, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(3, group3.getVisibleSpan());
+
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(11, group4.getVisibleStartIndex());
+        assertEquals(7, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(3, group4.getVisibleSpan());
     }
 }

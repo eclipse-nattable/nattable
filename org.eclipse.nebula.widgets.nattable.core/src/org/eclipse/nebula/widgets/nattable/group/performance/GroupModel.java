@@ -38,14 +38,6 @@ public class GroupModel implements IPersistable {
     private static final String PERSISTENCE_KEY_GROUP_MODEL = ".groupModel"; //$NON-NLS-1$
 
     /**
-     * The layer that should be used to match the group cell positions.
-     * Typically it needs to be the underlying scrollable layer below the
-     * ViewportLayer. Needed to render the group spanning correctly in scrolled
-     * state.
-     */
-    protected IUniqueIndexLayer positionLayer;
-
-    /**
      * Converter to support layer based position-index conversion.
      */
     protected IndexPositionConverter indexPositionConverter;
@@ -68,25 +60,6 @@ public class GroupModel implements IPersistable {
     private final List<Group> groups = new LinkedList<Group>();
 
     /**
-     * Creates a {@link GroupModel} without a positionLayer.
-     */
-    public GroupModel() {
-        this(null);
-    }
-
-    /**
-     *
-     * @param positionLayer
-     *            The layer that should be used to match the group cell
-     *            positions. Typically it needs to be the underlying scrollable
-     *            layer below the ViewportLayer. Needed to render the group
-     *            spanning correctly in scrolled state.
-     */
-    public GroupModel(IUniqueIndexLayer positionLayer) {
-        this.positionLayer = positionLayer;
-    }
-
-    /**
      *
      * @return The unmodifiable list of {@link Group}s contained in this
      *         {@link GroupModel}.
@@ -100,16 +73,10 @@ public class GroupModel implements IPersistable {
      * the cell positions match the underlying scrollable layer below the
      * ViewportLayer.
      *
-     * @param positionLayer
-     *            The layer that should be used to match the group cell
-     *            positions. Typically it needs to be the underlying scrollable
-     *            layer below the ViewportLayer. Needed to render the group
-     *            spanning correctly in scrolled state.
      * @param converter
      *            Converter to support layer based position-index conversion.
      */
-    void setPositionLayer(IUniqueIndexLayer positionLayer, IndexPositionConverter converter) {
-        this.positionLayer = positionLayer;
+    void setIndexPositionConverter(IndexPositionConverter converter) {
         this.indexPositionConverter = converter;
 
         // update the visible start positions of the already registered groups
@@ -117,9 +84,9 @@ public class GroupModel implements IPersistable {
     }
 
     /**
-     * Converts the given position to the corresponding index in case
-     * {@link #positionLayer} and {@link #indexPositionConverter} are set.
-     * Otherwise simply returns the given position.
+     * Converts the given position to the corresponding index in case the
+     * {@link #indexPositionConverter} is set. Otherwise simply returns the
+     * given position.
      *
      * @param position
      *            The position to convert.
@@ -127,26 +94,25 @@ public class GroupModel implements IPersistable {
      *         itself if a conversion is not possible.
      */
     int getIndexByPosition(int position) {
-        if (this.positionLayer != null && this.indexPositionConverter != null) {
-            return this.indexPositionConverter.convertPositionToIndex(this.positionLayer, position);
+        if (this.indexPositionConverter != null) {
+            return this.indexPositionConverter.convertPositionToIndex(position);
         }
         return position;
     }
 
     /**
-     * Converts the given index to the corresponding position on the
-     * {@link #positionLayer} in case {@link #positionLayer} and
-     * {@link #indexPositionConverter} are set. Otherwise simply returns the
+     * Converts the given index to the corresponding position in case the
+     * {@link #indexPositionConverter} is set. Otherwise simply returns the
      * given index.
      *
      * @param index
      *            The index to convert.
-     * @return The position on the {@link #positionLayer} for the given index or
-     *         the position itself if a conversion is not possible.
+     * @return The position for the given index or the position itself if a
+     *         conversion is not possible.
      */
     int getPositionByIndex(int index) {
-        if (this.positionLayer != null && this.indexPositionConverter != null) {
-            return this.indexPositionConverter.convertIndexToPosition(this.positionLayer, index);
+        if (this.indexPositionConverter != null) {
+            return this.indexPositionConverter.convertIndexToPosition(index);
         }
         return index;
     }
@@ -1350,7 +1316,7 @@ public class GroupModel implements IPersistable {
          *         position layer of the GroupModel.
          */
         public Collection<Integer> getVisiblePositions() {
-            List<Integer> groupPositions = new ArrayList<Integer>();
+            List<Integer> groupPositions = new ArrayList<>();
             for (int i = this.visibleStartPosition; i < (this.visibleStartPosition + this.visibleSpan); i++) {
                 groupPositions.add(i);
             }
@@ -1362,11 +1328,31 @@ public class GroupModel implements IPersistable {
          * @return The indexes of the positions that are currently visible.
          */
         public Collection<Integer> getVisibleIndexes() {
-            List<Integer> groupIndexes = new ArrayList<Integer>();
+            List<Integer> groupIndexes = new ArrayList<>();
             for (int i = this.visibleStartPosition; i < (this.visibleStartPosition + this.visibleSpan); i++) {
                 groupIndexes.add(getIndexByPosition(i));
             }
             return groupIndexes;
+        }
+
+        /**
+         * Searches for the position of the last item in this group for the
+         * given layer. Needed as the Group positions are based on the
+         * positionLayer, but on transporting commands down the layer stack the
+         * positions might need to be converted, e.g. to find the last item even
+         * if it is hidden.
+         *
+         * @param layer
+         *            The layer needed for index-position-transformation.
+         * @return The position of the last item in this group.
+         *
+         * @since 2.0
+         */
+        public int getGroupEndPosition(IUniqueIndexLayer layer) {
+            return this.members.stream()
+                    .mapToInt(layer::getColumnPositionByIndex)
+                    .max()
+                    .orElse(-1);
         }
 
         /**
@@ -1421,25 +1407,25 @@ public class GroupModel implements IPersistable {
          * Convert the given position on the given position layer to the
          * corresponding index.
          *
-         * @param positionLayer
-         *            The layer to which the position matches.
          * @param position
          *            The position to convert.
          * @return The index for the given position.
+         *
+         * @since 2.0
          */
-        int convertPositionToIndex(IUniqueIndexLayer positionLayer, int position);
+        int convertPositionToIndex(int position);
 
         /**
          * Convert the given index to the corresponding position on the given
          * position layer.
          *
-         * @param positionLayer
-         *            The layer to which the position should match.
          * @param index
          *            The index to convert.
          * @return The position on the position layer for the given index.
+         *
+         * @since 2.0
          */
-        int convertIndexToPosition(IUniqueIndexLayer positionLayer, int index);
+        int convertIndexToPosition(int index);
 
     }
 }

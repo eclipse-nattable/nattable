@@ -12,6 +12,7 @@ package org.eclipse.nebula.widgets.nattable.reorder.command;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.LayerCommandUtil;
@@ -66,8 +67,7 @@ public class MultiColumnReorderCommand implements ILayerCommand {
             int toColumnPosition,
             boolean reorderToLeftEdge) {
 
-        this.fromColumnPositionCoordinates =
-                new ArrayList<ColumnPositionCoordinate>(fromColumnPositions.size());
+        this.fromColumnPositionCoordinates = new ArrayList<>(fromColumnPositions.size());
         for (Integer fromColumnPosition : fromColumnPositions) {
             this.fromColumnPositionCoordinates.add(
                     new ColumnPositionCoordinate(layer, fromColumnPosition));
@@ -85,8 +85,7 @@ public class MultiColumnReorderCommand implements ILayerCommand {
      *            The command to clone.
      */
     protected MultiColumnReorderCommand(MultiColumnReorderCommand command) {
-        this.fromColumnPositionCoordinates =
-                new ArrayList<ColumnPositionCoordinate>(command.fromColumnPositionCoordinates);
+        this.fromColumnPositionCoordinates = new ArrayList<>(command.fromColumnPositionCoordinates);
         this.toColumnPositionCoordinate = command.toColumnPositionCoordinate;
         this.reorderToLeftEdge = command.reorderToLeftEdge;
         this.reorderByIndex = command.reorderByIndex;
@@ -100,12 +99,9 @@ public class MultiColumnReorderCommand implements ILayerCommand {
      * @return The column positions that should be reordered.
      */
     public List<Integer> getFromColumnPositions() {
-        List<Integer> fromColumnPositions =
-                new ArrayList<Integer>(this.fromColumnPositionCoordinates.size());
-        for (ColumnPositionCoordinate fromColumnPositionCoordinate : this.fromColumnPositionCoordinates) {
-            fromColumnPositions.add(fromColumnPositionCoordinate.getColumnPosition());
-        }
-        return fromColumnPositions;
+        return this.fromColumnPositionCoordinates.stream()
+                .map(ColumnPositionCoordinate::getColumnPosition)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -172,10 +168,35 @@ public class MultiColumnReorderCommand implements ILayerCommand {
         }
     }
 
+    /**
+     *
+     * @param fromPositions
+     *            The new fromColumnPositions.
+     *
+     * @since 2.0
+     */
+    public void updateFromColumnPositions(int... fromPositions) {
+        this.fromColumnPositionCoordinates = new ArrayList<>(fromPositions.length);
+        for (int fromColumnPosition : fromPositions) {
+            this.fromColumnPositionCoordinates.add(
+                    new ColumnPositionCoordinate(this.toColumnPositionCoordinate.getLayer(), fromColumnPosition));
+        }
+    }
+
+    /**
+     *
+     * @param toPosition
+     *            The new toColumnPosition.
+     *
+     * @since 2.0
+     */
+    public void updateToColumnPosition(int toPosition) {
+        this.toColumnPositionCoordinate.columnPosition = toPosition;
+    }
+
     @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
-        List<ColumnPositionCoordinate> convertedFromColumnPositionCoordinates =
-                new ArrayList<ColumnPositionCoordinate>(this.fromColumnPositionCoordinates.size());
+        List<ColumnPositionCoordinate> convertedFromColumnPositionCoordinates = new ArrayList<>(this.fromColumnPositionCoordinates.size());
 
         for (ColumnPositionCoordinate fromColumnPositionCoordinate : this.fromColumnPositionCoordinates) {
             if (!this.reorderByIndex) {

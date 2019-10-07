@@ -80,7 +80,7 @@ public class MultiRowReorderCommand implements ILayerCommand {
             int toRowPosition,
             boolean reorderToTopEdge) {
 
-        this.fromRowPositionCoordinates = new ArrayList<RowPositionCoordinate>(fromRowPositions.size());
+        this.fromRowPositionCoordinates = new ArrayList<>(fromRowPositions.size());
         for (Integer fromRowPosition : fromRowPositions) {
             this.fromRowPositionCoordinates.add(new RowPositionCoordinate(layer, fromRowPosition));
         }
@@ -98,7 +98,7 @@ public class MultiRowReorderCommand implements ILayerCommand {
      *            The command which is base for the new one
      */
     protected MultiRowReorderCommand(MultiRowReorderCommand command) {
-        this.fromRowPositionCoordinates = new ArrayList<RowPositionCoordinate>(command.fromRowPositionCoordinates);
+        this.fromRowPositionCoordinates = new ArrayList<>(command.fromRowPositionCoordinates);
         this.toRowPositionCoordinate = command.toRowPositionCoordinate;
         this.reorderToTopEdge = command.reorderToTopEdge;
     }
@@ -107,7 +107,7 @@ public class MultiRowReorderCommand implements ILayerCommand {
      * @return The positions of the rows that should be reordered
      */
     public List<Integer> getFromRowPositions() {
-        List<Integer> fromRowPositions = new ArrayList<Integer>(this.fromRowPositionCoordinates.size());
+        List<Integer> fromRowPositions = new ArrayList<>(this.fromRowPositionCoordinates.size());
         for (RowPositionCoordinate fromRowPositionCoordinate : this.fromRowPositionCoordinates) {
             fromRowPositions.add(fromRowPositionCoordinate.getRowPosition());
         }
@@ -176,10 +176,36 @@ public class MultiRowReorderCommand implements ILayerCommand {
         }
     }
 
+    /**
+     *
+     * @param fromPositions
+     *            The new fromRowPositions.
+     *
+     * @since 2.0
+     */
+    public void updateFromRowPositions(int... fromPositions) {
+        this.fromRowPositionCoordinates = new ArrayList<>(fromPositions.length);
+        for (int fromRowPosition : fromPositions) {
+            this.fromRowPositionCoordinates.add(
+                    new RowPositionCoordinate(this.toRowPositionCoordinate.getLayer(), fromRowPosition));
+        }
+    }
+
+    /**
+     *
+     * @param toPosition
+     *            The new toRowPosition.
+     *
+     * @since 2.0
+     */
+    public void updateToRowPosition(int toPosition) {
+        this.toRowPositionCoordinate.rowPosition = toPosition;
+    }
+
     @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         List<RowPositionCoordinate> convertedFromRowPositionCoordinates =
-                new ArrayList<RowPositionCoordinate>(this.fromRowPositionCoordinates.size());
+                new ArrayList<>(this.fromRowPositionCoordinates.size());
 
         for (RowPositionCoordinate fromRowPositionCoordinate : this.fromRowPositionCoordinates) {
             if (!this.reorderByIndex) {

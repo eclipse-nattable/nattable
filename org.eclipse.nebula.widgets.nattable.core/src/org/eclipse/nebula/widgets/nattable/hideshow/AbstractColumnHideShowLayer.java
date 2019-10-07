@@ -64,11 +64,19 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
                 int i = 1;
                 while (pos < 0) {
                     int next = reorderEvent.getBeforeToColumnPosition() + i;
+                    if (next >= this.underlyingLayer.getColumnCount()) {
+                        break;
+                    }
                     pos = underlyingToLocalColumnPosition(this.underlyingLayer, next);
+                    i++;
                 }
-                reorderEvent.setBeforeToColumnIndex(getColumnIndexByPosition(pos));
+                if (pos >= 0) {
+                    reorderEvent.setBeforeToColumnIndex(getColumnIndexByPosition(pos));
+                }
             }
-            reorderEvent.setConvertedBeforePositions(this, fromRanges, pos);
+            if (pos >= 0) {
+                reorderEvent.setConvertedBeforePositions(this, fromRanges, pos);
+            }
         }
 
         if (event instanceof IStructuralChangeEvent) {

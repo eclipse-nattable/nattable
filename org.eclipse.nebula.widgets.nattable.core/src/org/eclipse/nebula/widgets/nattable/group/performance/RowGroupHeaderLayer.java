@@ -379,12 +379,12 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
         this.indexPositionConverter = new GroupModel.IndexPositionConverter() {
 
             @Override
-            public int convertPositionToIndex(IUniqueIndexLayer positionLayer, int position) {
+            public int convertPositionToIndex(int position) {
                 return positionLayer.getRowIndexByPosition(position);
             }
 
             @Override
-            public int convertIndexToPosition(IUniqueIndexLayer positionLayer, int index) {
+            public int convertIndexToPosition(int index) {
                 return positionLayer.getRowPositionByIndex(index);
             }
         };
@@ -392,7 +392,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
         this.model = new ArrayList<GroupModel>(numberOfGroupLevels);
         for (int i = 0; i < numberOfGroupLevels; i++) {
             GroupModel groupModel = new GroupModel();
-            groupModel.setPositionLayer(this.positionLayer, this.indexPositionConverter);
+            groupModel.setIndexPositionConverter(this.indexPositionConverter);
             this.model.add(groupModel);
             this.reorderSupportedOnLevel.put(i, Boolean.TRUE);
         }
@@ -476,7 +476,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
      */
     public void addGroupingLevel() {
         GroupModel groupModel = new GroupModel();
-        groupModel.setPositionLayer(getPositionLayer(), this.indexPositionConverter);
+        groupModel.setIndexPositionConverter(this.indexPositionConverter);
         this.model.add(groupModel);
         this.reorderSupportedOnLevel.put(this.model.size() - 1, Boolean.TRUE);
     }
@@ -2245,8 +2245,17 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                         new GroupMultiRowReorderCommand(
                                 getPositionLayer(),
                                 new ArrayList<Integer>(group.getMembers()),
-                                underlyingTo,
-                                groupModel.getGroupByPosition(toPosition));
+                                underlyingTo);
+                Group toBottom = groupModel.getGroupByPosition(toPosition);
+                if (toBottom != null) {
+                    command.setGroupToBottom(toBottom);
+                } else {
+                    // check if there is a group to the top
+                    Group toTop = groupModel.getGroupByPosition(toPosition - 1);
+                    if (toTop != null) {
+                        command.setGroupToTop(toTop);
+                    }
+                }
                 command.setReorderByIndex(true);
 
                 return getPositionLayer().getUnderlyingLayerByPosition(0, 0).doCommand(command);
