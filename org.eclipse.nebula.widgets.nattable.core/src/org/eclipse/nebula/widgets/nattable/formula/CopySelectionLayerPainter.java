@@ -12,6 +12,8 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.formula;
 
+import java.util.function.Function;
+
 import org.eclipse.nebula.widgets.nattable.command.LayerCommandUtil;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
@@ -140,10 +142,10 @@ public class CopySelectionLayerPainter extends SelectionLayerPainter {
                 return;
             }
 
-            BorderCell[][] borderCells = getBorderCells(natLayer, xOffset, yOffset, positionRectangle, new ApplyBorderFunction() {
+            BorderCell[][] borderCells = getBorderCells(natLayer, xOffset, yOffset, positionRectangle, new Function<ILayerCell, Boolean>() {
 
                 @Override
-                public boolean applyBorder(ILayerCell cell) {
+                public Boolean apply(ILayerCell cell) {
                     if (cell.getColumnIndex() >= 0
                             && cell.getRowIndex() >= 0) {
                         ColumnPositionCoordinate convertedColumn = null;

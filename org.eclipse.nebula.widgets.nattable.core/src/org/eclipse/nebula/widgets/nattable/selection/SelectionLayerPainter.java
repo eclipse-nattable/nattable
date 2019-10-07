@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
+import java.util.function.Function;
+
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -119,10 +121,10 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 
         final int columnOffset = natLayer.getColumnPositionByX(xOffset);
         final int rowOffset = natLayer.getRowPositionByY(yOffset);
-        BorderCell[][] borderCells = getBorderCells(natLayer, xOffset, yOffset, positionRectangle, new ApplyBorderFunction() {
+        BorderCell[][] borderCells = getBorderCells(natLayer, xOffset, yOffset, positionRectangle, new Function<ILayerCell, Boolean>() {
 
             @Override
-            public boolean applyBorder(ILayerCell cell) {
+            public Boolean apply(ILayerCell cell) {
                 // only cells below the offset that are selected
                 return (cell.getColumnPosition() >= columnOffset
                         && cell.getRowPosition() >= rowOffset)
@@ -174,9 +176,9 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
      * @return The {@link BorderCell}s around which the border should be painted
      *         or <code>null</code> if no border rendering is necessary.
      *
-     * @since 1.6
+     * @since 2.0
      */
-    protected BorderCell[][] getBorderCells(ILayer natLayer, int xOffset, int yOffset, Rectangle positionRectangle, ApplyBorderFunction function) {
+    protected BorderCell[][] getBorderCells(ILayer natLayer, int xOffset, int yOffset, Rectangle positionRectangle, Function<ILayerCell, Boolean> function) {
 
         BorderCell[][] borderCells;
         boolean atLeastOne = false;
@@ -218,7 +220,7 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 
                     cellBounds = currentCell.getBounds();
 
-                    if (function.applyBorder(currentCell)) {
+                    if (function.apply(currentCell)) {
                         insideBorder = true;
                         atLeastOne = true;
                     }
@@ -419,18 +421,5 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
         }
 
         return borderStyle;
-    }
-
-    /**
-     * Functional interface whose implementations are used to determine if a
-     * border should be applied to a given cell or not.
-     *
-     * TODO replace with java.util.Function once BREE is updated to Java 1.8
-     *
-     * @since 1.6
-     */
-    protected interface ApplyBorderFunction {
-
-        boolean applyBorder(ILayerCell cell);
     }
 }

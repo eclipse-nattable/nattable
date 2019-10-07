@@ -13,6 +13,8 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.fillhandle;
 
+import java.util.function.Function;
+
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
@@ -367,10 +369,10 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
             return;
         }
 
-        BorderCell[][] borderCells = getBorderCells(natLayer, xOffset, yOffset, positionRectangle, new ApplyBorderFunction() {
+        BorderCell[][] borderCells = getBorderCells(natLayer, xOffset, yOffset, positionRectangle, new Function<ILayerCell, Boolean>() {
 
             @Override
-            public boolean applyBorder(ILayerCell cell) {
+            public Boolean apply(ILayerCell cell) {
                 for (ILayerCell[] cells : FillHandleLayerPainter.this.clipboard.getCopiedCells()) {
                     for (ILayerCell copyCell : cells) {
                         if (copyCell != null
