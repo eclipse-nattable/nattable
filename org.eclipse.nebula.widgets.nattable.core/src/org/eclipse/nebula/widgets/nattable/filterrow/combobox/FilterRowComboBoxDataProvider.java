@@ -13,14 +13,16 @@ package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
@@ -233,48 +235,27 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     protected List<?> collectValues(int columnIndex) {
-        Set uniqueValues = new HashSet();
+        List result = this.baseCollection.stream()
+                .unordered()
+                .parallel()
+                .map(x -> this.columnAccessor.getDataValue(x, columnIndex))
+                .distinct()
+                .collect(Collectors.toList());
 
-        boolean nullFound = false;
-        for (T rowObject : this.baseCollection) {
-            Object dataValue = this.columnAccessor.getDataValue(rowObject, columnIndex);
-            if (dataValue != null) {
-                uniqueValues.add(dataValue);
-            } else {
-                nullFound = true;
+        Object firstNonNull = result.stream()
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+        if (firstNonNull instanceof Comparable) {
+            result.sort(Comparator.nullsFirst(Comparator.naturalOrder()));
+        } else {
+            // always ensure that null is at the first position
+            int index = result.indexOf(null);
+            if (index >= 0) {
+                result.remove(index);
+                result.add(0, null);
             }
         }
-
-        List result = new ArrayList(uniqueValues);
-        if (!result.isEmpty() && result.get(0) instanceof Comparable) {
-            Collections.sort(result);
-        }
-
-        if (nullFound) {
-            result.add(0, null);
-        }
-
-        // TODO Java8
-        // List result = this.baseCollection.stream()
-        // .unordered()
-        // .parallel()
-        // .map(x -> this.bodyDataColumnAccessor.getDataValue(x,
-        // columnIndex))
-        // .distinct()
-        // .collect(Collectors.toList());
-        //
-        // Object firstNonNull =
-        // result.stream().filter(Objects::nonNull).findFirst().orElse(null);
-        // if (firstNonNull instanceof Comparable) {
-        // result.sort(nullsFirst(naturalOrder()));
-        // } else {
-        // // always ensure that null is at the first position
-        // int index = result.indexOf(null);
-        // if (index >= 0) {
-        // result.remove(index);
-        // result.add(0, null);
-        // }
-        // }
 
         return result;
     }

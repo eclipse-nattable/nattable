@@ -10,16 +10,12 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
-import static java.util.Comparator.naturalOrder;
-import static java.util.Comparator.nullsFirst;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
@@ -75,83 +71,11 @@ public class FilterRowComboBoxDataProviderTest {
     }
 
     @Test
-    public void shouldCollectUniqueValuesWithNull8() {
-        List<?> values = collectWithStream(1);
-        assertEquals(3, values.size());
-
-        assertNull(values.get(0));
-        assertEquals("Flanders", values.get(1));
-        assertEquals("Simpson", values.get(2));
-    }
-
-    @Test
     public void shouldCollectUniqueNonComparable() {
         List<?> values = this.provider.collectValues(4);
         assertEquals(5, values.size());
 
         assertNull(values.get(0));
-    }
-
-    @Test
-    public void shouldCollectUniqueNonComparable8() {
-        List<?> values = collectWithStream(4);
-        assertEquals(5, values.size());
-
-        assertNull(values.get(0));
-    }
-
-    @Test
-    public void shouldBenchmark() {
-        for (int i = 0; i < 9999; i++) {
-            this.persons.addAll(getObjects());
-        }
-
-        assertEquals(250000, this.persons.size());
-
-        long start1 = System.currentTimeMillis();
-        List<?> values = this.provider.collectValues(1);
-        long end1 = System.currentTimeMillis();
-
-        long start2 = System.currentTimeMillis();
-        List<?> values2 = collectWithStream(1);
-        long end2 = System.currentTimeMillis();
-
-        assertEquals(3, values.size());
-        assertNull(values.get(0));
-        assertEquals("Flanders", values.get(1));
-        assertEquals("Simpson", values.get(2));
-
-        assertEquals(3, values2.size());
-        assertNull(values2.get(0));
-        assertEquals("Flanders", values2.get(1));
-        assertEquals("Simpson", values2.get(2));
-
-        System.out.println("HashSet: " + (end1 - start1) + "ms");
-        System.out.println("Stream: " + (end2 - start2) + "ms");
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private List<?> collectWithStream(int columnIndex) {
-        List result = this.persons.stream()
-                .unordered()
-                .parallel()
-                .map(x -> this.bodyDataColumnAccessor.getDataValue(x, columnIndex))
-                .distinct()
-                .collect(Collectors.toList());
-
-        Object firstNonNull = result.stream().filter(Objects::nonNull).findFirst().orElse(null);
-        if (firstNonNull instanceof Comparable) {
-            result.sort(nullsFirst(naturalOrder()));
-        } else {
-            // always ensure that null is at the first position
-            int index = result.indexOf(null);
-            if (index >= 0) {
-                result.remove(index);
-                result.add(0, null);
-            }
-        }
-
-        return result;
     }
 
     private List<MyRowObject> getObjects() {

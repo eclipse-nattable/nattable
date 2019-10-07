@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,55 +12,74 @@ package org.eclipse.nebula.widgets.nattable.command;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.RowPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
+/**
+ * Abstract implementation for commands that should process multiple rows.
+ */
 public abstract class AbstractMultiRowCommand implements ILayerCommand {
 
     private Collection<RowPositionCoordinate> rowPositionCoordinates;
 
+    /**
+     *
+     * @param layer
+     *            The {@link ILayer} to which the positions match.
+     * @param rowPositions
+     *            The positions that should be processed by this command.
+     */
     protected AbstractMultiRowCommand(ILayer layer, int... rowPositions) {
         setRowPositions(layer, rowPositions);
     }
 
+    /**
+     * Clone constructor
+     *
+     * @param command
+     *            The command to clone.
+     */
     protected AbstractMultiRowCommand(AbstractMultiRowCommand command) {
-        this.rowPositionCoordinates = new HashSet<RowPositionCoordinate>(
-                command.rowPositionCoordinates);
+        this.rowPositionCoordinates = new HashSet<>(command.rowPositionCoordinates);
     }
 
+    /**
+     *
+     * @return The unique row positions that should be processed by this
+     *         command.
+     */
     public Collection<Integer> getRowPositions() {
-        Collection<Integer> rowPositions = new HashSet<Integer>();
-        for (RowPositionCoordinate rowPositionCoordinate : this.rowPositionCoordinates) {
-            rowPositions
-                    .add(Integer.valueOf(rowPositionCoordinate.rowPosition));
-        }
-        return rowPositions;
+        return this.rowPositionCoordinates.stream()
+                .map(RowPositionCoordinate::getRowPosition)
+                .collect(Collectors.toCollection(HashSet::new));
     }
 
+    /**
+     *
+     * @param layer
+     *            The {@link ILayer} to which the positions match.
+     * @param rowPositions
+     *            The positions that should be processed by this command.
+     */
     protected final void setRowPositions(ILayer layer, int... rowPositions) {
-        this.rowPositionCoordinates = new HashSet<RowPositionCoordinate>();
+        this.rowPositionCoordinates = new HashSet<>();
         for (int rowPosition : rowPositions) {
-            this.rowPositionCoordinates.add(new RowPositionCoordinate(layer,
-                    rowPosition));
+            this.rowPositionCoordinates.add(new RowPositionCoordinate(layer, rowPosition));
         }
     }
 
     @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
-        Collection<RowPositionCoordinate> convertedRowPositionCoordinates = new HashSet<RowPositionCoordinate>();
-        for (RowPositionCoordinate rowPositionCoordinate : this.rowPositionCoordinates) {
-            RowPositionCoordinate convertedRowPositionCoordinate = LayerCommandUtil
-                    .convertRowPositionToTargetContext(rowPositionCoordinate,
-                            targetLayer);
-            if (convertedRowPositionCoordinate != null) {
-                convertedRowPositionCoordinates
-                        .add(convertedRowPositionCoordinate);
-            }
-        }
+        Collection<RowPositionCoordinate> converted = this.rowPositionCoordinates.stream()
+                .map(coord -> LayerCommandUtil.convertRowPositionToTargetContext(coord, targetLayer))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toCollection(HashSet::new));
 
-        if (convertedRowPositionCoordinates.size() > 0) {
-            this.rowPositionCoordinates = convertedRowPositionCoordinates;
+        if (converted.size() > 0) {
+            this.rowPositionCoordinates = converted;
             return true;
         } else {
             return false;

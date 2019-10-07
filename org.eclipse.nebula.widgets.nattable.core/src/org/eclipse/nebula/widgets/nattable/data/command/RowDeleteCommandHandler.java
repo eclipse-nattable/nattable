@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.command;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,17 +52,11 @@ public class RowDeleteCommandHandler<T> implements ILayerCommandHandler<RowDelet
     public boolean doCommand(ILayer targetLayer, RowDeleteCommand command) {
         // convert the transported position to the target layer
         if (command.convertToTargetLayer(targetLayer)) {
-            // TODO convert to Java 8
-            // int[] positions =
-            // command.getRowPositions().stream().mapToInt(i -> i).toArray();
-            int[] positions = new int[command.getRowPositions().size()];
-            int idx = 0;
-            for (Integer pos : command.getRowPositions()) {
-                positions[idx] = pos;
-                idx++;
-            }
+            int[] positions = command.getRowPositions().stream()
+                    .sorted()
+                    .mapToInt(i -> i)
+                    .toArray();
 
-            Arrays.sort(positions);
             Map<Integer, T> deleted = new HashMap<Integer, T>();
             for (int i = positions.length - 1; i >= 0; i--) {
                 // remove the element

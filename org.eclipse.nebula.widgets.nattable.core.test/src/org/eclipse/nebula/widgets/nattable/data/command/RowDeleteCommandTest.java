@@ -117,7 +117,7 @@ public class RowDeleteCommandTest {
         Person toDelete3 = this.dataModel.get(10);
         Person toDelete4 = this.dataModel.get(12);
 
-        this.dataLayer.doCommand(new RowDeleteCommand(this.dataLayer, 5, 6, 10, 12));
+        this.dataLayer.doCommand(new RowDeleteCommand(this.dataLayer, 12, 5, 6, 10));
 
         // test that the object is deleted
         assertEquals(14, this.dataModel.size());
