@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.nebula.widgets.nattable.core.source.feature"
       label="NatTable Core Source Feature"
-      version="1.6.0.qualifier">
+      version="2.0.0.qualifier">
 
    <description url="http://nattable.org">
       NatTable Core Source

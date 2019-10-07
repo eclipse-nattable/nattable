@@ -2,7 +2,7 @@ target "NatTable Target Definition"
 
 with source allEnvironments
 
-location "http://download.eclipse.org/releases/oxygen/" {
+location "http://download.eclipse.org/releases/photon/" {
 	org.eclipse.equinox.executable.feature.group
 	org.eclipse.sdk.ide
 	org.eclipse.equinox.sdk.feature.group

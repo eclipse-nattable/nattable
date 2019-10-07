@@ -2,7 +2,8 @@
 <feature
       id="org.eclipse.nebula.widgets.nattable.examples.e4.rcp.feature"
       label="NatTable E4 RCP Feature"
-      version="1.0.0.qualifier">
+      version="2.0.0.qualifier"
+      provider-name="Eclipse Nebula NatTable">
 
    <description url="http://www.example.com/description">
       NatTable E4 RCP
@@ -47,13 +48,6 @@ Minimalistic E4 RCP feature with reduced set of bundles
          id="org.apache.batik.util"
          download-size="154"
          install-size="309"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.batik.util.gui"
-         download-size="207"
-         install-size="388"
          version="0.0.0"
          unpack="false"/>
 
@@ -359,32 +353,12 @@ Minimalistic E4 RCP feature with reduced set of bundles
          fragment="true"/>
 
    <plugin
-         id="org.eclipse.equinox.launcher.gtk.linux.x86"
-         os="linux"
-         ws="gtk"
-         arch="x86"
-         download-size="78"
-         install-size="184"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
          id="org.eclipse.equinox.launcher.gtk.linux.x86_64"
          os="linux"
          ws="gtk"
          arch="x86_64"
          download-size="82"
          install-size="208"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
-         id="org.eclipse.equinox.launcher.win32.win32.x86"
-         os="win32"
-         ws="win32"
-         arch="x86"
-         download-size="27"
-         install-size="63"
          version="0.0.0"
          fragment="true"/>
 
@@ -503,34 +477,12 @@ Minimalistic E4 RCP feature with reduced set of bundles
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.swt.gtk.linux.x86"
-         os="linux"
-         ws="gtk"
-         arch="x86"
-         download-size="2554"
-         install-size="5893"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.swt.gtk.linux.x86_64"
          os="linux"
          ws="gtk"
          arch="x86_64"
          download-size="2702"
          install-size="6544"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.swt.win32.win32.x86"
-         os="win32"
-         ws="win32"
-         arch="x86"
-         download-size="2801"
-         install-size="5798"
          version="0.0.0"
          fragment="true"
          unpack="false"/>
@@ -597,6 +549,34 @@ Minimalistic E4 RCP feature with reduced set of bundles
 
    <plugin
          id="org.eclipse.e4.core.di.extensions.supplier"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.batik.constants"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.batik.i18n"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.xmlgraphics"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.io"
          download-size="0"
          install-size="0"
          version="0.0.0"

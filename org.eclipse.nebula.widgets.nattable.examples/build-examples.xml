@@ -2,7 +2,7 @@
 <project default="prepare_jar" name="Create Runnable Jar for Project org.eclipse.nebula.widgets.nattable.examples">
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
-	
+
     <target name="prepare_jar">
         <jar destfile="target/NatTableExamples.jar" filesetmanifest="mergewithoutmain" duplicate="preserve">
             <manifest>
@@ -18,46 +18,46 @@
             <fileset dir="../org.eclipse.nebula.widgets.nattable.extension.poi/target/classes"/>
             <fileset dir="../org.eclipse.nebula.widgets.nattable.dataset/target/classes"/>
             <fileset dir="../org.eclipse.nebula.widgets.nattable.examples/target/classes"/>
+        	<zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.eclipse.nebula.cwt_1.1.0.201907151344.jar"/>
         	<zipfileset 
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
-            	src="lib/org.eclipse.nebula.cwt_1.0.0.201605312033.jar"/>
-        	<zipfileset 
-            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
-            	src="lib/org.eclipse.nebula.jface.cdatetime_1.0.0.201605312033.jar"/>
-        	<zipfileset 
-            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
-            	src="lib/org.eclipse.nebula.widgets.cdatetime_1.0.0.201605312033.jar"/>
-        	<zipfileset 
-            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
-            	src="lib/org.eclipse.nebula.widgets.richtext_1.0.0.201605312033.zip"/>
-            <zipfileset 
-            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
+            	src="lib/org.eclipse.nebula.jface.cdatetime_1.3.0.201907151344.jar"/>
+        	<zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.eclipse.nebula.widgets.cdatetime_1.4.0.201907151344.jar"/>
+        	<zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.eclipse.nebula.widgets.richtext_1.3.0.201907151344.jar"/>
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/ca.odell.glazedlists_1.9.0.v201303080712.jar"/>
-            <zipfileset 
-            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/org.apache.poi_3.9.0.v201303080712.jar"/>
-            <zipfileset 
-            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/org.apache.commons.logging_1.1.1.v201101211721.jar"/>
-            <zipfileset 
-            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/org.eclipse.core.commands_3.6.100.v20140528-1422.jar"/>
-            <zipfileset 
-            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/org.eclipse.core.runtime_3.10.0.v20140318-2214.jar"/>
-            <zipfileset 
-            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/org.eclipse.equinox.common_3.6.200.v20130402-1505.jar"/>
-            <zipfileset 
-            		excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
+            <zipfileset
+            		excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/org.eclipse.equinox.registry_3.5.400.v20140428-1507.jar"/>
-            <zipfileset 
-            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/org.eclipse.jface_3.10.2.v20141021-1035.jar"/>
-            <zipfileset 
-            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" 
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/org.eclipse.osgi_3.10.2.v20150203-1939.jar"/>
         </jar>
-    	
+
     </target>
 </project>

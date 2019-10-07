@@ -2,26 +2,26 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: NatTable GlazedLists Extensions Test
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.extension.glazedlists.tests
-Bundle-Version: 1.6.0.qualifier
+Bundle-Version: 2.0.0.qualifier
 Fragment-Host: org.eclipse.nebula.widgets.nattable.extension.glazedlists
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.eclipse.jface.viewers,
- org.eclipse.nebula.widgets.nattable.data.command;version="1.6.0",
- org.eclipse.nebula.widgets.nattable.datachange;version="1.6.0",
- org.eclipse.nebula.widgets.nattable.datachange.command;version="1.6.0",
- org.eclipse.nebula.widgets.nattable.dataset.car;version="1.5.0",
- org.eclipse.nebula.widgets.nattable.dataset.fixture.data;version="1.4.0",
- org.eclipse.nebula.widgets.nattable.dataset.person;version="1.4.0",
- org.eclipse.nebula.widgets.nattable.filterrow.event;version="1.4.0",
- org.eclipse.nebula.widgets.nattable.group;version="1.4.0",
- org.eclipse.nebula.widgets.nattable.reorder;version="1.4.0",
- org.eclipse.nebula.widgets.nattable.selection;version="1.4.0",
- org.eclipse.nebula.widgets.nattable.selection.command;version="1.4.0",
- org.eclipse.nebula.widgets.nattable.selection.event;version="1.4.0",
+ org.eclipse.nebula.widgets.nattable.data.command,
+ org.eclipse.nebula.widgets.nattable.datachange,
+ org.eclipse.nebula.widgets.nattable.datachange.command,
+ org.eclipse.nebula.widgets.nattable.dataset.car,
+ org.eclipse.nebula.widgets.nattable.dataset.fixture.data,
+ org.eclipse.nebula.widgets.nattable.dataset.person,
+ org.eclipse.nebula.widgets.nattable.filterrow.event,
+ org.eclipse.nebula.widgets.nattable.group,
+ org.eclipse.nebula.widgets.nattable.reorder,
+ org.eclipse.nebula.widgets.nattable.selection,
+ org.eclipse.nebula.widgets.nattable.selection.command,
+ org.eclipse.nebula.widgets.nattable.selection.event,
  org.eclipse.nebula.widgets.nattable.test.fixture.layer,
  org.eclipse.nebula.widgets.nattable.test.integration,
- org.eclipse.nebula.widgets.nattable.tree.command;version="1.6.0",
- org.eclipse.nebula.widgets.nattable.viewport;version="1.4.0",
+ org.eclipse.nebula.widgets.nattable.tree.command,
+ org.eclipse.nebula.widgets.nattable.viewport,
  org.hamcrest.core,
  org.junit
 Bundle-Vendor: Eclipse Nebula NatTable

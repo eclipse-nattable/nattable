@@ -2,7 +2,8 @@
 <feature
       id="org.eclipse.nebula.widgets.nattable.extension.e4.feature"
       label="NatTable Eclipse 4 Extension Feature"
-      version="1.2.0.qualifier">
+      version="2.0.0.qualifier"
+      provider-name="Eclipse Nebula NatTable">
 
    <description url="http://www.example.com/description">
       NatTable Eclipse 4 Extension
