@@ -17,10 +17,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.IntStream;
 
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 
@@ -129,30 +129,13 @@ public class PositionUtil {
         if ((ranges == null) || (ranges.size() == 0)) {
             return new int[0];
         }
-        // TODO change to Java 8 streams
-        // return ranges
-        // .stream()
-        // .flatMapToInt(r -> IntStream.range(r.start, r.end))
-        // .filter(in -> in >= 0)
-        // .sorted()
-        // .toArray();
 
-        Set<Integer> positions = new HashSet<Integer>();
-        for (Range r : ranges) {
-            for (int i = r.start; i < r.end; i++) {
-                if (i >= 0) {
-                    positions.add(i);
-                }
-            }
-        }
-        int[] result = new int[positions.size()];
-        int index = 0;
-        for (int pos : positions) {
-            result[index] = pos;
-            index++;
-        }
-        Arrays.sort(result);
-        return result;
+        return ranges
+                .stream()
+                .flatMapToInt(r -> IntStream.range(r.start, r.end))
+                .filter(in -> in >= 0)
+                .sorted()
+                .toArray();
     }
 
     /**
@@ -199,13 +182,10 @@ public class PositionUtil {
 
             @Override
             public int compare(Range o1, Range o2) {
-                // TODO Java 8
                 if (o1.start == o2.start) {
-                    return (o1.end < o2.end) ? -1 : ((o1.end == o2.end) ? 0 : 1);
-                    // return Integer.compare(o1.end, o2.end);
+                    return Integer.compare(o1.end, o2.end);
                 } else {
-                    return (o1.start < o2.start) ? -1 : ((o1.start == o2.start) ? 0 : 1);
-                    // return Integer.compare(o1.start, o2.start);
+                    return Integer.compare(o1.start, o2.start);
                 }
             }
         });
