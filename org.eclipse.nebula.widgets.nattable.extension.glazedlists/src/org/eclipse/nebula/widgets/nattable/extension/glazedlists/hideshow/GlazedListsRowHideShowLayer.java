@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2019 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.hideshow;
 
@@ -16,10 +16,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
@@ -27,10 +29,11 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
-import org.eclipse.nebula.widgets.nattable.hideshow.IRowHideShowCommandLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.IRowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowShowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommandHandler;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.RowPositionHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -53,7 +56,7 @@ import ca.odell.glazedlists.matchers.MatcherEditor;
  * {@link MatcherEditor}. Otherwise these two functions will not work correctly
  * together.
  */
-public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform implements IRowHideShowCommandLayer, IUniqueIndexLayer {
+public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform implements IRowHideShowLayer, IUniqueIndexLayer {
 
     private static final Log log = LogFactory.getLog(GlazedListsRowHideShowLayer.class);
 
@@ -213,6 +216,12 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
         registerCommandHandler(new MultiRowHideCommandHandler(this));
         registerCommandHandler(new ShowAllRowsCommandHandler(this));
         registerCommandHandler(new MultiRowShowCommandHandler(this));
+        registerCommandHandler(new RowPositionHideCommandHandler(this));
+    }
+
+    @Override
+    public void hideRowPositions(int... rowPositions) {
+        hideRowPositions(Arrays.stream(rowPositions).boxed().collect(Collectors.toList()));
     }
 
     /**
@@ -233,6 +242,11 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
         hideRows(rowIds);
     }
 
+    @Override
+    public void hideRowIndexes(int... rowIndexes) {
+        hideRowIndexes(Arrays.stream(rowIndexes).boxed().collect(Collectors.toList()));
+    }
+
     /**
      * Hide the rows at the given indexes. Will collect the id's of the rows at
      * the given positions as this layer operates on content rather than
@@ -248,6 +262,11 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
             rowIds.add(this.rowIdAccessor.getRowId(this.rowDataProvider.getRowObject(rowIndex)));
         }
         hideRows(rowIds);
+    }
+
+    @Override
+    public void showRowIndexes(int... rowIndexes) {
+        showRowIndexes(Arrays.stream(rowIndexes).boxed().collect(Collectors.toList()));
     }
 
     /**
@@ -288,6 +307,20 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
     public void showRows(Collection<Serializable> rowIds) {
         this.rowIdsToHide.removeAll(rowIds);
         this.hideRowByIdMatcherEditor.fireChange();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <b>This method is not supported by this layer as hidden rows are actually
+     * filtered from the content and therefore not next to another position on a
+     * deeper layer!</b>
+     * </p>
+     */
+    @Override
+    public void showRowPosition(int rowPosition, boolean showToTop, boolean showAll) {
+        throw new UnsupportedOperationException(
+                "Hidden rows are filtered from the content and therefore not next to any other row position"); //$NON-NLS-1$
     }
 
     /**

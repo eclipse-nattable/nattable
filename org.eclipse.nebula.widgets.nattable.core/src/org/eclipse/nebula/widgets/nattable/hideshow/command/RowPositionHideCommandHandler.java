@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
+ * Copyright (c) 2018, 2019 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,10 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow.command;
 
-import static java.util.Arrays.asList;
-
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
-import org.eclipse.nebula.widgets.nattable.hideshow.IRowHideShowCommandLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.IRowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalTreeLayer;
 
@@ -30,9 +28,16 @@ import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalTreeLayer;
  */
 public class RowPositionHideCommandHandler extends AbstractLayerCommandHandler<RowPositionHideCommand> {
 
-    private final IRowHideShowCommandLayer rowHideShowLayer;
+    private final IRowHideShowLayer rowHideShowLayer;
 
-    public RowPositionHideCommandHandler(IRowHideShowCommandLayer rowHideShowLayer) {
+    /**
+     *
+     * @param rowHideShowLayer
+     *            The {@link IRowHideShowLayer} to which this command handler
+     *            should be registered.
+     * @since 2.0
+     */
+    public RowPositionHideCommandHandler(IRowHideShowLayer rowHideShowLayer) {
         this.rowHideShowLayer = rowHideShowLayer;
     }
 
@@ -43,7 +48,7 @@ public class RowPositionHideCommandHandler extends AbstractLayerCommandHandler<R
 
     @Override
     protected boolean doCommand(RowPositionHideCommand command) {
-        this.rowHideShowLayer.hideRowPositions(asList(command.getRowPosition()));
+        this.rowHideShowLayer.hideRowPositions(command.getRowPosition());
         return true;
     }
 }

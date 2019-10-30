@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
+ * Copyright (c) 2018, 2019 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,8 +26,9 @@ public class RowShowCommandHandler extends AbstractLayerCommandHandler<RowShowCo
     /**
      *
      * @param rowHideShowLayer
-     *            The {@link IRowHideShowLayer} on which this command handler
-     *            should operate.
+     *            The {@link IRowHideShowLayer} to which this command handler
+     *            should be registered.
+     * @since 2.0
      */
     public RowShowCommandHandler(IRowHideShowLayer rowHideShowLayer) {
         this.rowHideShowLayer = rowHideShowLayer;

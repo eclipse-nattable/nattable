@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
+ * Copyright (c) 2018, 2019 Dirk Fauth.
 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.hideshow;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +21,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
@@ -47,14 +50,14 @@ import org.eclipse.nebula.widgets.nattable.sort.command.SortColumnCommand;
  *
  * @since 1.6
  */
-public class RowIdHideShowLayer<T> extends AbstractRowHideShowLayer implements IRowHideShowCommandLayer, IRowHideShowLayer {
+public class RowIdHideShowLayer<T> extends AbstractRowHideShowLayer implements IRowHideShowLayer {
 
     public static final String PERSISTENCE_KEY_HIDDEN_ROW_IDS = ".hiddenRowIDs"; //$NON-NLS-1$
 
     protected final IRowDataProvider<T> rowDataProvider;
     protected final IRowIdAccessor<T> rowIdAccessor;
 
-    protected Map<Serializable, T> hiddenRows = new HashMap<Serializable, T>();
+    protected Map<Serializable, T> hiddenRows = new TreeMap<Serializable, T>();
 
     protected IDisplayConverter idConverter;
 
@@ -169,6 +172,13 @@ public class RowIdHideShowLayer<T> extends AbstractRowHideShowLayer implements I
         return configLabels;
     }
 
+    @Override
+    public int getRowCount() {
+        // faster implementation than the super implementation because
+        // getHiddenRowIndexes() is calculating the row indexes everytime
+        return this.underlyingLayer.getRowCount() - this.hiddenRows.size();
+    }
+
     // Hide/show
 
     @Override
@@ -190,13 +200,25 @@ public class RowIdHideShowLayer<T> extends AbstractRowHideShowLayer implements I
     }
 
     @Override
+    public void hideRowPositions(int... rowPositions) {
+        hideRowPositions(Arrays.stream(rowPositions).boxed().collect(Collectors.toList()));
+    }
+
+    @Override
     public void hideRowPositions(Collection<Integer> rowPositions) {
+        Map<Serializable, T> toHide = new HashMap<Serializable, T>();
         for (Integer rowPosition : rowPositions) {
             T rowObject = getRowObjectByPosition(rowPosition);
-            this.hiddenRows.put(this.rowIdAccessor.getRowId(rowObject), rowObject);
+            toHide.put(this.rowIdAccessor.getRowId(rowObject), rowObject);
         }
+        this.hiddenRows.putAll(toHide);
         invalidateCache();
         fireLayerEvent(new HideRowPositionsEvent(this, rowPositions));
+    }
+
+    @Override
+    public void hideRowIndexes(int... rowIndexes) {
+        hideRowIndexes(Arrays.stream(rowIndexes).boxed().collect(Collectors.toList()));
     }
 
     @Override
@@ -209,6 +231,11 @@ public class RowIdHideShowLayer<T> extends AbstractRowHideShowLayer implements I
         }
         invalidateCache();
         fireLayerEvent(new HideRowPositionsEvent(this, rowPositions));
+    }
+
+    @Override
+    public void showRowIndexes(int... rowIndexes) {
+        showRowIndexes(Arrays.stream(rowIndexes).boxed().collect(Collectors.toList()));
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,12 +11,14 @@
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowShowCommandHandler;
@@ -35,7 +37,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralChangeEventHelp
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
-public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHideShowCommandLayer, IRowHideShowLayer {
+public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHideShowLayer {
 
     public static final String PERSISTENCE_KEY_HIDDEN_ROW_INDEXES = ".hiddenRowIndexes"; //$NON-NLS-1$
 
@@ -142,6 +144,11 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
     }
 
     @Override
+    public void hideRowPositions(int... rowPositions) {
+        hideRowPositions(Arrays.stream(rowPositions).boxed().collect(Collectors.toList()));
+    }
+
+    @Override
     public void hideRowPositions(Collection<Integer> rowPositions) {
         Set<Integer> rowIndexes = new HashSet<Integer>();
         for (Integer rowPosition : rowPositions) {
@@ -153,6 +160,11 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
     }
 
     @Override
+    public void hideRowIndexes(int... rowIndexes) {
+        hideRowIndexes(Arrays.stream(rowIndexes).boxed().collect(Collectors.toList()));
+    }
+
+    @Override
     public void hideRowIndexes(Collection<Integer> rowIndexes) {
         Set<Integer> rowPositions = new HashSet<Integer>();
         for (Integer rowIndex : rowIndexes) {
@@ -161,6 +173,11 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
         this.hiddenRowIndexes.addAll(rowIndexes);
         invalidateCache();
         fireLayerEvent(new HideRowPositionsEvent(this, rowPositions, rowIndexes));
+    }
+
+    @Override
+    public void showRowIndexes(int... rowIndexes) {
+        showRowIndexes(Arrays.stream(rowIndexes).boxed().collect(Collectors.toList()));
     }
 
     @Override

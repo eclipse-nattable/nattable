@@ -22,6 +22,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -166,8 +167,8 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
     }
 
     @Override
-    public void hideColumnPositions(Integer... columnPositions) {
-        hideColumnPositions(Arrays.asList(columnPositions));
+    public void hideColumnPositions(int... columnPositions) {
+        hideColumnPositions(Arrays.stream(columnPositions).boxed().collect(Collectors.toList()));
     }
 
     @Override
@@ -241,8 +242,20 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
     }
 
     @Override
-    public void showColumnIndexes(Integer... columnIndexes) {
-        showColumnIndexes(Arrays.asList(columnIndexes));
+    public void hideColumnIndexes(int... columnIndexes) {
+        hideColumnIndexes(Arrays.stream(columnIndexes).boxed().collect(Collectors.toList()));
+    }
+
+    @Override
+    public void hideColumnIndexes(Collection<Integer> columnIndexes) {
+        // transfer indexes to positions
+        List<Integer> columnPositions = columnIndexes.stream().map(this::getColumnPositionByIndex).collect(Collectors.toList());
+        hideColumnPositions(columnPositions);
+    }
+
+    @Override
+    public void showColumnIndexes(int... columnIndexes) {
+        showColumnIndexes(Arrays.stream(columnIndexes).boxed().collect(Collectors.toList()));
     }
 
     @Override

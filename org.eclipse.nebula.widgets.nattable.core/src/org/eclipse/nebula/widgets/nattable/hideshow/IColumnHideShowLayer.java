@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2017, 2018 Dirk Fauth.
+ * Copyright (c) 2017, 2019 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,8 +28,9 @@ public interface IColumnHideShowLayer {
      *
      * @param columnPositions
      *            The column positions to hide.
+     * @since 2.0
      */
-    void hideColumnPositions(Integer... columnPositions);
+    void hideColumnPositions(int... columnPositions);
 
     /**
      * Hide the columns at the specified positions. Note that the positions are
@@ -42,6 +43,24 @@ public interface IColumnHideShowLayer {
     void hideColumnPositions(Collection<Integer> columnPositions);
 
     /**
+     * Hide the columns with the given indexes.
+     *
+     * @param columnIndexes
+     *            The indexes of the columns to hide.
+     * @since 2.0
+     */
+    void hideColumnIndexes(int... columnIndexes);
+
+    /**
+     * Hide the columns with the given indexes.
+     *
+     * @param columnIndexes
+     *            The indexes of the columns to hide.
+     * @since 2.0
+     */
+    void hideColumnIndexes(Collection<Integer> columnIndexes);
+
+    /**
      * Show the columns with the given indexes again if they are hidden by this
      * layer. Note that the indexes are needed and not the positions. This is
      * because a user is not able to select the hidden column in the NatTable
@@ -49,8 +68,9 @@ public interface IColumnHideShowLayer {
      *
      * @param columnIndexes
      *            The column indexes to show again.
+     * @since 2.0
      */
-    void showColumnIndexes(Integer... columnIndexes);
+    void showColumnIndexes(int... columnIndexes);
 
     /**
      * Show the columns with the given indexes again if they are hidden by this
@@ -65,7 +85,7 @@ public interface IColumnHideShowLayer {
 
     /**
      * Show the column(s) that are hidden next to the given column position.
-     * 
+     *
      * @param columnPosition
      *            The column position whose neighbors should be shown again.
      * @param showToLeft

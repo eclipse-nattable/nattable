@@ -19,6 +19,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnShowCommandHandler;
@@ -157,8 +158,8 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer implements 
      * @since 1.6
      */
     @Override
-    public void hideColumnPositions(Integer... columnPositions) {
-        hideColumnPositions(Arrays.asList(columnPositions));
+    public void hideColumnPositions(int... columnPositions) {
+        hideColumnPositions(Arrays.stream(columnPositions).boxed().collect(Collectors.toList()));
     }
 
     @Override
@@ -172,14 +173,30 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer implements 
         fireLayerEvent(new HideColumnPositionsEvent(this, columnPositions, columnIndexes));
     }
 
+    @Override
+    public void hideColumnIndexes(int... columnIndexes) {
+        hideColumnIndexes(Arrays.stream(columnIndexes).boxed().collect(Collectors.toList()));
+    }
+
+    @Override
+    public void hideColumnIndexes(Collection<Integer> columnIndexes) {
+        Set<Integer> columnPositions = new HashSet<Integer>();
+        for (Integer columnIndex : columnIndexes) {
+            columnPositions.add(getColumnPositionByIndex(columnIndex));
+        }
+        this.hiddenColumnIndexes.addAll(columnIndexes);
+        invalidateCache();
+        fireLayerEvent(new HideColumnPositionsEvent(this, columnPositions, columnIndexes));
+    }
+
     /**
      * {@inheritDoc}
      *
      * @since 1.6
      */
     @Override
-    public void showColumnIndexes(Integer... columnIndexes) {
-        showColumnIndexes(Arrays.asList(columnIndexes));
+    public void showColumnIndexes(int... columnIndexes) {
+        showColumnIndexes(Arrays.stream(columnIndexes).boxed().collect(Collectors.toList()));
     }
 
     @Override
