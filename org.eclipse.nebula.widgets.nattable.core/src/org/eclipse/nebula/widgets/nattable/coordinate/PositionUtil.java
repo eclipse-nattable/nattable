@@ -18,8 +18,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.ObjIntConsumer;
 import java.util.stream.IntStream;
 
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
@@ -27,14 +27,46 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
 public class PositionUtil {
 
     /**
+     * Implementation to create Ranges from contiguous numbers.
+     *
+     * @since 2.0
+     */
+    private static class RangeAccumulator implements ObjIntConsumer<ArrayList<Range>> {
+
+        @Override
+        public void accept(ArrayList<Range> ranges, int i) {
+            Range lastGroup;
+            if (ranges.size() > 0) {
+                lastGroup = ranges.get(ranges.size() - 1);
+            } else {
+                lastGroup = new Range(i, i + 1);
+                ranges.add(lastGroup);
+            }
+
+            int last = lastGroup.end;
+            if (i > last) {
+                lastGroup = new Range(i, i + 1);
+                ranges.add(lastGroup);
+            } else {
+                lastGroup.end = i + 1;
+            }
+        }
+
+    }
+
+    /**
      * Finds contiguous numbers in a group of numbers.
+     *
+     * @param numberCollection
+     *            The numbers that should be grouped.
+     * @return Collection of groups with contiguous numbers.
      */
     public static List<List<Integer>> getGroupedByContiguous(Collection<Integer> numberCollection) {
         List<Integer> numbers = new ArrayList<Integer>(numberCollection);
         Collections.sort(numbers);
 
-        List<Integer> contiguous = new ArrayList<Integer>();
-        List<List<Integer>> grouped = new ArrayList<List<Integer>>();
+        ArrayList<Integer> contiguous = new ArrayList<Integer>();
+        ArrayList<List<Integer>> grouped = new ArrayList<List<Integer>>();
 
         for (int i = 0; i < numbers.size() - 1; i++) {
             if (numbers.get(i).intValue() + 1 != numbers.get(i + 1).intValue()) {
@@ -53,6 +85,31 @@ public class PositionUtil {
     }
 
     /**
+     * Finds contiguous numbers in a group of numbers.
+     *
+     * @param numbers
+     *            The numbers that should be grouped.
+     * @return A two-dimensional array that contains int arrays for contiguous
+     *         numbers.
+     *
+     * @since 2.0
+     */
+    public static int[][] getGroupedByContiguous(int... numbers) {
+        ArrayList<Range> ranges = Arrays.stream(numbers)
+                .sorted()
+                .collect(
+                        ArrayList<Range>::new,
+                        new RangeAccumulator(),
+                        (g1, g2) -> {
+                            g1.addAll(g2);
+                        });
+
+        return ranges.stream()
+                .map(r -> IntStream.range(r.start, r.end).toArray())
+                .toArray(size -> new int[size][]);
+    }
+
+    /**
      * Creates {@link Range}s out of list of numbers. The contiguous numbers are
      * grouped together in Ranges.
      * <p>
@@ -67,20 +124,16 @@ public class PositionUtil {
      * @return List of Ranges for the given Collection of numbers.
      */
     public static List<Range> getRanges(Collection<Integer> numbers) {
-        List<Range> ranges = null;
-
-        if (isNotEmpty(numbers)) {
-            List<List<Integer>> grouped = getGroupedByContiguous(numbers);
-            ranges = new ArrayList<Range>(grouped.size());
-            for (List<Integer> number : grouped) {
-                int start = number.get(0);
-                int end = number.get(number.size() - 1) + 1;
-
-                ranges.add(new Range(start, end));
-            }
-        }
-
-        return ranges != null ? ranges : new ArrayList<Range>();
+        return isNotEmpty(numbers)
+                ? numbers.stream().mapToInt(Integer::intValue)
+                        .sorted()
+                        .collect(
+                                ArrayList<Range>::new,
+                                new RangeAccumulator(),
+                                (g1, g2) -> {
+                                    g1.addAll(g2);
+                                })
+                : new ArrayList<Range>();
     }
 
     /**
@@ -99,13 +152,16 @@ public class PositionUtil {
      * @return List of Ranges for the given Collection of numbers.
      */
     public static List<Range> getRanges(int... numbers) {
-        List<Integer> numberCollection = new ArrayList<Integer>(numbers.length);
-
-        for (int number : numbers) {
-            numberCollection.add(number);
-        }
-
-        return getRanges(numberCollection);
+        return (numbers.length > 0)
+                ? Arrays.stream(numbers)
+                        .sorted()
+                        .collect(
+                                ArrayList<Range>::new,
+                                new RangeAccumulator(),
+                                (g1, g2) -> {
+                                    g1.addAll(g2);
+                                })
+                : new ArrayList<Range>();
     }
 
     /**
@@ -175,7 +231,7 @@ public class PositionUtil {
         }
 
         // put to list
-        List<Range> sortedRanges = new ArrayList<Range>(ranges);
+        ArrayList<Range> sortedRanges = new ArrayList<Range>(ranges);
 
         // sort by 1) start, 2) end position
         Collections.sort(sortedRanges, new Comparator<Range>() {
@@ -216,7 +272,7 @@ public class PositionUtil {
      * @since 1.6
      */
     public static List<Range> mergeRanges(Collection<Range> ranges) {
-        Set<Integer> numbers = new TreeSet<Integer>();
+        TreeSet<Integer> numbers = new TreeSet<Integer>();
         for (Range range : ranges) {
             for (int number = range.start; number < range.end; number++) {
                 numbers.add(number);

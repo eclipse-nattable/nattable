@@ -68,6 +68,47 @@ public class PositionUtilTest {
     }
 
     @Test
+    public void getGroupedByContiguousArray() {
+        int[][] groupedByContiguous =
+                PositionUtil.getGroupedByContiguous(new int[] { 0, 1, 2, 4, 5 });
+
+        assertEquals(2, groupedByContiguous.length);
+
+        assertEquals(0, groupedByContiguous[0][0]);
+        assertEquals(1, groupedByContiguous[0][1]);
+        assertEquals(2, groupedByContiguous[0][2]);
+
+        assertEquals(4, groupedByContiguous[1][0]);
+        assertEquals(5, groupedByContiguous[1][1]);
+    }
+
+    @Test
+    public void getGroupedByContiguousArray2() {
+        int[][] groupedByContiguous =
+                PositionUtil.getGroupedByContiguous(new int[] { 0, 1, 2, 5, 7, 8, 10 });
+
+        assertEquals(4, groupedByContiguous.length);
+        assertEquals(0, groupedByContiguous[0][0]);
+        assertEquals(1, groupedByContiguous[0][1]);
+        assertEquals(2, groupedByContiguous[0][2]);
+
+        assertEquals(5, groupedByContiguous[1][0]);
+
+        assertEquals(7, groupedByContiguous[2][0]);
+        assertEquals(8, groupedByContiguous[2][1]);
+
+        assertEquals(10, groupedByContiguous[3][0]);
+    }
+
+    @Test
+    public void groupByContinuousArrayForEmptyCollection() {
+        int[][] groupedByContiguous =
+                PositionUtil.getGroupedByContiguous(new int[0]);
+
+        assertEquals(0, groupedByContiguous.length);
+    }
+
+    @Test
     public void getRanges() {
         List<Range> ranges = PositionUtil.getRanges(Arrays.asList(0, 1, 2, 5, 8, 9, 10));
         assertEquals(3, ranges.size());
@@ -116,6 +157,30 @@ public class PositionUtilTest {
         for (int i = 0; i < expected.length; i++) {
             assertEquals(expected[i], result[i]);
         }
+    }
+
+    @Test
+    public void getRangesFromArray() {
+        List<Range> ranges = PositionUtil.getRanges(new int[] { 0, 1, 2, 5, 8, 9, 10 });
+        assertEquals(3, ranges.size());
+
+        assertEquals(0, ranges.get(0).start);
+        assertEquals(3, ranges.get(0).end);
+
+        assertEquals(5, ranges.get(1).start);
+        assertEquals(6, ranges.get(1).end);
+
+        assertEquals(8, ranges.get(2).start);
+        assertEquals(11, ranges.get(2).end);
+    }
+
+    @Test
+    public void getRangesForAnEmptyArray() {
+        List<Range> ranges = PositionUtil.getRanges(new int[0]);
+        assertEquals(0, ranges.size());
+
+        ranges = PositionUtil.getRanges();
+        assertEquals(0, ranges.size());
     }
 
     @Test
