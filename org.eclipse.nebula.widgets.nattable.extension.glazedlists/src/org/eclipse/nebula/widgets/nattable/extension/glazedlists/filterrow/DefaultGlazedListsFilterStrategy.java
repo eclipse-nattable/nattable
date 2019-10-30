@@ -172,10 +172,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
                         FilterRowConfigAttributes.TEXT_MATCHING_MODE,
                         DisplayMode.NORMAL,
                         FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
-                IDisplayConverter displayConverter = this.configRegistry.getConfigAttribute(
-                        FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
-                        DisplayMode.NORMAL,
-                        FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
+                IDisplayConverter displayConverter = getFilterContentDisplayConverter(columnIndex);
                 Comparator comparator = this.configRegistry.getConfigAttribute(
                         FilterRowConfigAttributes.FILTER_COMPARATOR,
                         DisplayMode.NORMAL,
@@ -260,6 +257,42 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
         } catch (Exception e) {
             LOG.error("Error on applying a filter", e); //$NON-NLS-1$
         }
+    }
+
+    /**
+     * Retrieves the {@link IDisplayConverter} that should be used for
+     * converting the body content to string for text match filter operations.
+     * <p>
+     * First checks if there is a converter registered for
+     * {@link FilterRowConfigAttributes#FILTER_CONTENT_DISPLAY_CONVERTER} which
+     * should be the same converter that is also registered in the body region.
+     * For backwards compatibility if no value is registered for that
+     * configuration attribute it will check for
+     * {@link FilterRowConfigAttributes#FILTER_DISPLAY_CONVERTER}.
+     * </p>
+     *
+     * @param columnIndex
+     *            The column index of the column for which a filter should be
+     *            applied.
+     * @return The {@link IDisplayConverter} to be used for converting the body
+     *         content to string for text match filter operations.
+     *
+     * @since 2.0
+     */
+    protected IDisplayConverter getFilterContentDisplayConverter(int columnIndex) {
+        IDisplayConverter displayConverter = this.configRegistry.getConfigAttribute(
+                FilterRowConfigAttributes.FILTER_CONTENT_DISPLAY_CONVERTER,
+                DisplayMode.NORMAL,
+                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
+
+        if (displayConverter == null) {
+            displayConverter = this.configRegistry.getConfigAttribute(
+                    FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
+        }
+
+        return displayConverter;
     }
 
     /**

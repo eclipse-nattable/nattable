@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,8 +31,17 @@ public interface FilterRowConfigAttributes {
 
     /**
      * Display converter used to convert the string typed by the user to the
-     * data type of the column
+     * data type of the column or in case of combo boxes to convert the filter
+     * object to string.
      */
     public static final ConfigAttribute<IDisplayConverter> FILTER_DISPLAY_CONVERTER = new ConfigAttribute<IDisplayConverter>();
 
+    /**
+     * Display converter that is used for text filter operations to convert the
+     * body cell content to a string. Typically the same converter that is used
+     * for rendering in the body.
+     *
+     * @since 2.0
+     */
+    public static final ConfigAttribute<IDisplayConverter> FILTER_CONTENT_DISPLAY_CONVERTER = new ConfigAttribute<IDisplayConverter>();
 }
