@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Dirk Fauth and others.
+ * Copyright (c) 2013, 2019 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,6 +25,7 @@ import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnProperty
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDateDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultIntegerDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.dataset.person.DataModelConstants;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
@@ -55,6 +56,7 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -222,6 +224,8 @@ public class _6031_GlazedListsFilterExample extends AbstractNatExample {
             DataLayer bodyDataLayer =
                     new DataLayer(getBodyDataProvider());
 
+            bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
+
             // layer for event handling of GlazedLists and PropertyChanges
             GlazedListsEventLayer<T> glazedListsEventLayer =
                     new GlazedListsEventLayer<>(bodyDataLayer, this.filterList);
@@ -319,6 +323,25 @@ public class _6031_GlazedListsFilterExample extends AbstractNatExample {
                     DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
                             + DataModelConstants.HOUSENUMBER_COLUMN_POSITION);
+
+            // register a date converter for the birthday column
+            DefaultDateDisplayConverter converter = new DefaultDateDisplayConverter("yyyy-MM-dd");
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    converter,
+                    DisplayMode.NORMAL,
+                    ColumnLabelAccumulator.COLUMN_LABEL_PREFIX
+                            + DataModelConstants.BIRTHDAY_COLUMN_POSITION);
+
+            // register the same converter in the filter row as content
+            // converter to support text based filtering on formatted Date
+            // objects (e.g. filter for "-08-" to get all birthdays in August)
+            configRegistry.registerConfigAttribute(
+                    FilterRowConfigAttributes.FILTER_CONTENT_DISPLAY_CONVERTER,
+                    converter,
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                            + DataModelConstants.BIRTHDAY_COLUMN_POSITION);
 
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.TEXT_DELIMITER, "&"); //$NON-NLS-1$
