@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2015 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,6 +18,10 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.eclipse.jface.bindings.keys.KeyStroke;
+import org.eclipse.jface.bindings.keys.ParseException;
+import org.eclipse.jface.fieldassist.SimpleContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -176,6 +180,7 @@ public class _447_EditorExample extends AbstractNatExample {
         }
 
         private void registerEditors(IConfigRegistry configRegistry) {
+            registerColumnOneTextEditor(configRegistry);
             registerColumnTwoTextEditor(configRegistry);
             registerColumnThreePasswordEditor(configRegistry);
             registerColumnFourMultiLineEditor(configRegistry);
@@ -189,6 +194,37 @@ public class _447_EditorExample extends AbstractNatExample {
             registerColumnTwelveComboBox(configRegistry);
             registerColumnThirteenComboBox(configRegistry);
             registerColumnFourteenFileDialogEditor(configRegistry);
+        }
+
+        private void registerColumnOneTextEditor(IConfigRegistry configRegistry) {
+            // register a TextCellEditor with content proposal support
+            TextCellEditor editor = new TextCellEditor();
+
+            SimpleContentProposalProvider contentProposalProvider = new SimpleContentProposalProvider(
+                    "Bart", "Carl", "Edna", "Helen", "Homer", "Jessica", "Lenny", "Lisa", "Maggie", "Marge", "Maude", "Ned", "Rodd", "Timothy", "Todd", "Waylon");
+            contentProposalProvider.setFiltering(true);
+            KeyStroke keystroke = null;
+            try {
+                keystroke = KeyStroke.getInstance("Ctrl+Space");
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            String backspace = "\b"; //$NON-NLS-1$
+            String delete = "\u007F"; //$NON-NLS-1$
+            char[] autoActivationChars = ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" + backspace //$NON-NLS-1$
+                    + delete).toCharArray();
+
+            editor.enableContentProposal(
+                    new TextContentAdapter(),
+                    contentProposalProvider,
+                    keystroke,
+                    autoActivationChars);
+
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITOR,
+                    editor,
+                    DisplayMode.NORMAL,
+                    _447_EditorExample.COLUMN_ONE_LABEL);
         }
 
         private void registerColumnTwoTextEditor(IConfigRegistry configRegistry) {

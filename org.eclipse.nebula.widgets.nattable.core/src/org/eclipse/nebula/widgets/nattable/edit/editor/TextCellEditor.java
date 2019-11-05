@@ -32,6 +32,7 @@ import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -165,6 +166,22 @@ public class TextCellEditor extends AbstractCellEditor {
      * @since 1.4
      */
     protected char[] autoActivationCharacters;
+    /**
+     * @see ContentProposalAdapter#setProposalAcceptanceStyle(int)
+     * @since 2.0
+     */
+    protected int proposalAcceptanceStyle = ContentProposalAdapter.PROPOSAL_REPLACE;
+    /**
+     * @see ContentProposalAdapter#setAutoActivationDelay(int)
+     * @since 2.0
+     */
+    protected int autoActivationDelay = 0;
+    /**
+     * The active {@link ContentProposalAdapter} if supported.
+     *
+     * @since 2.0
+     */
+    protected ContentProposalAdapter contentProposalAdapter;
 
     /**
      * Creates the default TextCellEditor that does not commit on pressing the
@@ -343,53 +360,57 @@ public class TextCellEditor extends AbstractCellEditor {
 
             @Override
             public void keyPressed(KeyEvent event) {
-                if (isCommitOnEnter()
-                        && (event.keyCode == SWT.CR || event.keyCode == SWT.KEYPAD_CR)) {
+                // if the proposal popup is open we do not handle keystrokes
+                // ourself to ensure proposal handling is working correctly
+                if (!isProposalPopupOpen()) {
+                    if (isCommitOnEnter()
+                            && (event.keyCode == SWT.CR || event.keyCode == SWT.KEYPAD_CR)) {
 
-                    boolean commit = (event.stateMask == SWT.MOD3) ? false : true;
-                    if (isCommitWithCtrlKey()) {
-                        commit = (event.stateMask == SWT.MOD1) ? true : false;
-                    }
-                    MoveDirectionEnum move = MoveDirectionEnum.NONE;
-                    if (TextCellEditor.this.moveSelectionOnEnter
-                            && TextCellEditor.this.editMode == EditModeEnum.INLINE) {
-                        if (event.stateMask == 0) {
-                            move = MoveDirectionEnum.DOWN;
-                        } else if (event.stateMask == SWT.MOD2) {
-                            move = MoveDirectionEnum.UP;
+                        boolean commit = (event.stateMask == SWT.MOD3) ? false : true;
+                        if (isCommitWithCtrlKey()) {
+                            commit = (event.stateMask == SWT.MOD1) ? true : false;
                         }
-                    }
+                        MoveDirectionEnum move = MoveDirectionEnum.NONE;
+                        if (TextCellEditor.this.moveSelectionOnEnter
+                                && TextCellEditor.this.editMode == EditModeEnum.INLINE) {
+                            if (event.stateMask == 0) {
+                                move = MoveDirectionEnum.DOWN;
+                            } else if (event.stateMask == SWT.MOD2) {
+                                move = MoveDirectionEnum.UP;
+                            }
+                        }
 
-                    if (commit) {
-                        commit(move);
-                    }
+                        if (commit) {
+                            commit(move);
+                        }
 
-                    if (TextCellEditor.this.editMode == EditModeEnum.DIALOG) {
-                        parent.forceFocus();
-                    }
-                } else if (event.keyCode == SWT.ESC && event.stateMask == 0) {
-                    close();
-                } else if ((TextCellEditor.this.commitOnUpDown || TextCellEditor.this.commitOnLeftRight)
-                        && TextCellEditor.this.editMode == EditModeEnum.INLINE) {
+                        if (TextCellEditor.this.editMode == EditModeEnum.DIALOG) {
+                            parent.forceFocus();
+                        }
+                    } else if (event.keyCode == SWT.ESC && event.stateMask == 0) {
+                        close();
+                    } else if ((TextCellEditor.this.commitOnUpDown || TextCellEditor.this.commitOnLeftRight)
+                            && TextCellEditor.this.editMode == EditModeEnum.INLINE) {
 
-                    Text control = (Text) event.widget;
+                        Text control = (Text) event.widget;
 
-                    if (TextCellEditor.this.commitOnUpDown
-                            && event.keyCode == SWT.ARROW_UP) {
-                        commit(MoveDirectionEnum.UP);
-                    } else if (TextCellEditor.this.commitOnUpDown
-                            && event.keyCode == SWT.ARROW_DOWN) {
-                        commit(MoveDirectionEnum.DOWN);
-                    } else if (TextCellEditor.this.commitOnLeftRight
-                            && control.getSelectionCount() == 0
-                            && event.keyCode == SWT.ARROW_LEFT
-                            && control.getCaretPosition() == 0) {
-                        commit(MoveDirectionEnum.LEFT);
-                    } else if (TextCellEditor.this.commitOnLeftRight
-                            && control.getSelectionCount() == 0
-                            && event.keyCode == SWT.ARROW_RIGHT
-                            && control.getCaretPosition() == control.getCharCount()) {
-                        commit(MoveDirectionEnum.RIGHT);
+                        if (TextCellEditor.this.commitOnUpDown
+                                && event.keyCode == SWT.ARROW_UP) {
+                            commit(MoveDirectionEnum.UP);
+                        } else if (TextCellEditor.this.commitOnUpDown
+                                && event.keyCode == SWT.ARROW_DOWN) {
+                            commit(MoveDirectionEnum.DOWN);
+                        } else if (TextCellEditor.this.commitOnLeftRight
+                                && control.getSelectionCount() == 0
+                                && event.keyCode == SWT.ARROW_LEFT
+                                && control.getCaretPosition() == 0) {
+                            commit(MoveDirectionEnum.LEFT);
+                        } else if (TextCellEditor.this.commitOnLeftRight
+                                && control.getSelectionCount() == 0
+                                && event.keyCode == SWT.ARROW_RIGHT
+                                && control.getCaretPosition() == control.getCharCount()) {
+                            commit(MoveDirectionEnum.RIGHT);
+                        }
                     }
                 }
             }
@@ -666,10 +687,78 @@ public class TextCellEditor extends AbstractCellEditor {
             KeyStroke keyStroke,
             char[] autoActivationCharacters) {
 
+        enableContentProposal(
+                controlContentAdapter,
+                proposalProvider,
+                keyStroke,
+                autoActivationCharacters,
+                ContentProposalAdapter.PROPOSAL_REPLACE,
+                0);
+    }
+
+    /**
+     * Configure the parameters necessary to create the content proposal adapter
+     * on opening an editor.
+     *
+     * @param controlContentAdapter
+     *            the <code>IControlContentAdapter</code> used to obtain and
+     *            update the control's contents as proposals are accepted. May
+     *            not be <code>null</code>.
+     * @param proposalProvider
+     *            the <code>IContentProposalProvider</code> used to obtain
+     *            content proposals for this control, or <code>null</code> if no
+     *            content proposal is available.
+     * @param keyStroke
+     *            the keystroke that will invoke the content proposal popup. If
+     *            this value is <code>null</code>, then proposals will be
+     *            activated automatically when any of the auto activation
+     *            characters are typed.
+     * @param autoActivationCharacters
+     *            An array of characters that trigger auto-activation of content
+     *            proposal. If specified, these characters will trigger
+     *            auto-activation of the proposal popup, regardless of whether
+     *            an explicit invocation keyStroke was specified. If this
+     *            parameter is <code>null</code>, then only a specified
+     *            keyStroke will invoke content proposal. If this parameter is
+     *            <code>null</code> and the keyStroke parameter is
+     *            <code>null</code>, then all alphanumeric characters will
+     *            auto-activate content proposal.
+     * @param proposalAcceptanceStyle
+     *            a constant indicating how an accepted proposal should affect
+     *            the control's content. Should be one of
+     *            <code>PROPOSAL_INSERT</code>, <code>PROPOSAL_REPLACE</code>,
+     *            or <code>PROPOSAL_IGNORE</code>
+     * @param autoActivationDelay
+     *            the time in milliseconds that will pass before a popup is
+     *            automatically opened
+     *
+     * @see ContentProposalAdapter
+     * @since 2.0
+     */
+    public void enableContentProposal(
+            IControlContentAdapter controlContentAdapter,
+            IContentProposalProvider proposalProvider,
+            KeyStroke keyStroke,
+            char[] autoActivationCharacters,
+            int proposalAcceptanceStyle,
+            int autoActivationDelay) {
+
         this.controlContentAdapter = controlContentAdapter;
         this.proposalProvider = proposalProvider;
         this.keyStroke = keyStroke;
         this.autoActivationCharacters = autoActivationCharacters;
+        this.proposalAcceptanceStyle = proposalAcceptanceStyle;
+        this.autoActivationDelay = autoActivationDelay;
+
+        this.traverseListener = new InlineTraverseListener() {
+            @Override
+            public void keyTraversed(TraverseEvent event) {
+                // only handle in case a content proposal popup is not open
+                if (!isProposalPopupOpen()) {
+                    super.keyTraversed(event);
+                }
+            }
+        };
     }
 
     /**
@@ -682,6 +771,8 @@ public class TextCellEditor extends AbstractCellEditor {
      * @since 1.4
      */
     protected void configureContentProposalAdapter(final ContentProposalAdapter contentProposalAdapter) {
+        this.contentProposalAdapter = contentProposalAdapter;
+
         // add the necessary listeners to support the interaction between the
         // content proposal and this text editor
         contentProposalAdapter.addContentProposalListener(new IContentProposalListener() {
@@ -689,6 +780,7 @@ public class TextCellEditor extends AbstractCellEditor {
             @Override
             public void proposalAccepted(IContentProposal proposal) {
                 commit(MoveDirectionEnum.NONE);
+                TextCellEditor.this.contentProposalAdapter = null;
             }
         });
 
@@ -706,12 +798,11 @@ public class TextCellEditor extends AbstractCellEditor {
                 if (TextCellEditor.this.focusListener instanceof InlineFocusListener) {
                     ((InlineFocusListener) TextCellEditor.this.focusListener).handleFocusChanges = false;
                 }
-                // set the focus to the popup so on enabling via keystroke the
-                // selection via keyboard is immediately possible
-                contentProposalAdapter.setProposalPopupFocus();
             }
         });
 
+        contentProposalAdapter.setProposalAcceptanceStyle(this.proposalAcceptanceStyle);
+        contentProposalAdapter.setAutoActivationDelay(this.autoActivationDelay);
     }
 
     /**
@@ -794,5 +885,14 @@ public class TextCellEditor extends AbstractCellEditor {
      */
     public void setCommitWithCtrlKey(boolean commitWithCtrlKey) {
         this.commitWithCtrlKey = commitWithCtrlKey;
+    }
+
+    /**
+     * @return <code>true</code> if a {@link ContentProposalAdapter} is active
+     *         and the proposal popup is open.
+     * @since 2.0
+     */
+    protected boolean isProposalPopupOpen() {
+        return this.contentProposalAdapter != null && this.contentProposalAdapter.isProposalPopupOpen();
     }
 }
