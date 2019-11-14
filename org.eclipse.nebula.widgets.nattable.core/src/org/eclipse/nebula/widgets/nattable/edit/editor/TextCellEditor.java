@@ -779,8 +779,10 @@ public class TextCellEditor extends AbstractCellEditor {
 
             @Override
             public void proposalAccepted(IContentProposal proposal) {
-                commit(MoveDirectionEnum.NONE);
-                TextCellEditor.this.contentProposalAdapter = null;
+                if (TextCellEditor.this.editMode == EditModeEnum.INLINE) {
+                    commit(MoveDirectionEnum.NONE);
+                    TextCellEditor.this.contentProposalAdapter = null;
+                }
             }
         });
 
