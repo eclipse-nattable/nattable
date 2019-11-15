@@ -220,7 +220,11 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 
                     cellBounds = currentCell.getBounds();
 
-                    if (function.apply(currentCell)) {
+                    // the cell should be considered only if it is in our
+                    // layer
+                    boolean toBeConsidered = isInCurrentLayer(ix, iy, xOffset, yOffset, cellBounds, borderCells);
+
+                    if (toBeConsidered && function.apply(currentCell)) {
                         insideBorder = true;
                         atLeastOne = true;
                     }
