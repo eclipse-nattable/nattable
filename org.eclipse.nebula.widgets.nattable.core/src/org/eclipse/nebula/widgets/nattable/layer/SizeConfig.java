@@ -694,10 +694,11 @@ public class SizeConfig implements IPersistable {
                         return 0;
                     }
                 } else {
-                    diff = diff - (currentValue + 1);
+                    diff = (diff - currentValue) + 1;
                     // never accept a percentage value < 1 as then the
                     // position would disappear
                     this.percentageSizeMap.put(position, 1d);
+                    return diff;
                 }
             }
 
@@ -1367,7 +1368,7 @@ public class SizeConfig implements IPersistable {
      *            The value that should be down scaled.
      * @return The scaled value if a {@link IDpiConverter} is configured, the
      *         value itself if no {@link IDpiConverter} is set.
-     * 
+     *
      * @see IDpiConverter#convertDpiToPixel(int)
      * @since 1.6
      */

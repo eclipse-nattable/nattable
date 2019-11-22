@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -66,7 +66,6 @@ public class SizeConfigPercentageTest {
 
     @Test
     public void sizeOverrideCalculationMode() {
-        // this.sizeConfigCalculationMode.setDistributeRemainingSpace(true);
         this.sizeConfigCalculationMode.setSize(5, 200);
 
         // - we increase position 5 to 200, which means 20%
@@ -74,9 +73,27 @@ public class SizeConfigPercentageTest {
         // - the adjacent position 6 then needs to decrease by 10%
         // as fixDynamicPercentageValues is enabled by default
         // - as a reduction to 0 is not allowed, position 6 is set to 1%
-        // - the value of 1% (10 pixels) are afterwards reduced in the other
-        // positions
-        assertEquals(198, this.sizeConfigCalculationMode.getSize(5));
+        // - the value of 1% (10 pixels) is reduced in the other next
+        // position
+        assertEquals(200, this.sizeConfigCalculationMode.getSize(5));
+        assertEquals(10, this.sizeConfigCalculationMode.getSize(6));
+        assertEquals(90, this.sizeConfigCalculationMode.getSize(7));
+    }
+
+    @Test
+    public void sizeOverrideCalculationModeLeft() {
+        this.sizeConfigCalculationMode.setSize(9, 200);
+
+        // - we increase position 9 to 200, which means 20%
+        // - this is an increase by 10%
+        // - the adjacent position 8 then needs to decrease by 10%
+        // as fixDynamicPercentageValues is enabled by default
+        // - as a reduction to 0 is not allowed, position 8 is set to 1%
+        // - the value of 1% (10 pixels) is reduced in the previous
+        // position
+        assertEquals(200, this.sizeConfigCalculationMode.getSize(9));
+        assertEquals(10, this.sizeConfigCalculationMode.getSize(8));
+        assertEquals(90, this.sizeConfigCalculationMode.getSize(7));
     }
 
     @Test
