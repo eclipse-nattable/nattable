@@ -12,8 +12,6 @@
 package org.eclipse.nebula.widgets.nattable.columnChooser;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -36,13 +34,6 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
 import org.eclipse.swt.widgets.Shell;
 
 public class ColumnChooser {
-
-    private static final Comparator<ColumnEntry> COLUMN_ENTRY_LABEL_COMPARATOR = new Comparator<ColumnEntry>() {
-        @Override
-        public int compare(ColumnEntry o1, ColumnEntry o2) {
-            return o1.getLabel().compareToIgnoreCase(o2.getLabel());
-        }
-    };
 
     protected final ColumnChooserDialog columnChooserDialog;
     protected final ColumnHideShowLayer columnHideShowLayer;
@@ -209,9 +200,9 @@ public class ColumnChooser {
 
         this.hiddenColumnEntries = getHiddenColumnEntries();
         if (this.columnGroupHeaderLayer != null) {
-            this.columnChooserDialog.populateAvailableTree(this.hiddenColumnEntries, this.columnGroupHeaderLayer);
+            this.columnChooserDialog.populateAvailableTree(this.hiddenColumnEntries, this.columnGroupHeaderLayer, this.sortAvailableColumns);
         } else {
-            this.columnChooserDialog.populateAvailableTree(this.hiddenColumnEntries, this.columnGroupModel);
+            this.columnChooserDialog.populateAvailableTree(this.hiddenColumnEntries, this.columnGroupModel, this.sortAvailableColumns);
         }
 
         this.visibleColumnsEntries = getVisibleColumnEntries();
@@ -350,10 +341,10 @@ public class ColumnChooser {
 
         if (this.columnGroupHeaderLayer != null) {
             this.columnChooserDialog.populateSelectedTree(this.visibleColumnsEntries, this.columnGroupHeaderLayer);
-            this.columnChooserDialog.populateAvailableTree(this.hiddenColumnEntries, this.columnGroupHeaderLayer);
+            this.columnChooserDialog.populateAvailableTree(this.hiddenColumnEntries, this.columnGroupHeaderLayer, this.sortAvailableColumns);
         } else {
             this.columnChooserDialog.populateSelectedTree(this.visibleColumnsEntries, this.columnGroupModel);
-            this.columnChooserDialog.populateAvailableTree(this.hiddenColumnEntries, this.columnGroupModel);
+            this.columnChooserDialog.populateAvailableTree(this.hiddenColumnEntries, this.columnGroupModel, this.sortAvailableColumns);
         }
         this.columnChooserDialog.expandAllLeaves();
     }
@@ -368,10 +359,6 @@ public class ColumnChooser {
                     it.remove();
                 }
             }
-        }
-
-        if (this.sortAvailableColumns) {
-            Collections.sort(columnEntries, COLUMN_ENTRY_LABEL_COMPARATOR);
         }
 
         return columnEntries;

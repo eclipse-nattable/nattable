@@ -335,7 +335,25 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
      *            supported in the underlying table composition.
      */
     public void populateAvailableTree(List<ColumnEntry> columnEntries, ColumnGroupModel columnGroupModel) {
-        populateModel(this.availableTree, columnEntries, columnGroupModel);
+        populateModel(this.availableTree, columnEntries, columnGroupModel, false);
+    }
+
+    /**
+     * Populates the available item tree with the given column entries for the
+     * given {@link ColumnGroupModel}.
+     *
+     * @param columnEntries
+     *            The column entries to add as available items.
+     * @param columnGroupModel
+     *            The {@link ColumnGroupModel} needed to inspect the column
+     *            groups, can be <code>null</code> if no column grouping is
+     *            supported in the underlying table composition.
+     * @param sort
+     *            Whether the tree should be sorted or not.
+     * @since 2.0
+     */
+    public void populateAvailableTree(List<ColumnEntry> columnEntries, ColumnGroupModel columnGroupModel, boolean sort) {
+        populateModel(this.availableTree, columnEntries, columnGroupModel, sort);
     }
 
     /**
@@ -350,7 +368,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
      *            supported in the underlying table composition.
      */
     public void populateSelectedTree(List<ColumnEntry> columnEntries, ColumnGroupModel columnGroupModel) {
-        populateModel(this.selectedTree, columnEntries, columnGroupModel);
+        populateModel(this.selectedTree, columnEntries, columnGroupModel, false);
     }
 
     /**
@@ -369,9 +387,41 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
      *            The {@link ColumnGroupModel} needed to inspect the column
      *            groups, can be <code>null</code> if no column grouping is
      *            supported in the underlying table composition.
+     * @param sort
+     *            Whether the tree should be sorted or not.
      */
-    private void populateModel(Tree tree, List<ColumnEntry> columnEntries, ColumnGroupModel columnGroupModel) {
+    private void populateModel(Tree tree, List<ColumnEntry> columnEntries, ColumnGroupModel columnGroupModel, boolean sort) {
         this.columnGroupModel = columnGroupModel;
+
+        if (sort) {
+            Collections.sort(columnEntries, (o1, o2) -> o1.getLabel().compareToIgnoreCase(o2.getLabel()));
+        }
+
+        // Only pre-create the tree nodes for column groups if sorting is
+        // enabled. If the order is managed by some other mechanism (e.g. column
+        // order) the pre-creation causes issues on reorder via up/down
+        if (columnGroupModel != null && sort) {
+            ArrayList<ColumnGroup> groups = new ArrayList<>();
+            for (ColumnEntry columnEntry : columnEntries) {
+                int columnEntryIndex = columnEntry.getIndex().intValue();
+                if (columnGroupModel.isPartOfAGroup(columnEntryIndex)) {
+                    ColumnGroup columnGroup = columnGroupModel.getColumnGroupByIndex(columnEntryIndex);
+                    groups.add(columnGroup);
+                }
+            }
+
+            Collections.sort(groups, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+
+            groups.forEach(columnGroup -> {
+                String columnGroupName = columnGroup.getName();
+                TreeItem columnGroupTreeItem = getTreeItem(tree, columnGroupName);
+
+                if (columnGroupTreeItem == null) {
+                    columnGroupTreeItem = new TreeItem(tree, SWT.NONE);
+                    columnGroupTreeItem.setText(columnGroupName);
+                }
+            });
+        }
 
         for (ColumnEntry columnEntry : columnEntries) {
             TreeItem treeItem;
@@ -386,10 +436,15 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 
                 if (columnGroupTreeItem == null) {
                     columnGroupTreeItem = new TreeItem(tree, SWT.NONE);
+                    columnGroupTreeItem.setText(columnGroupName);
+                }
+
+                if (columnGroupTreeItem != null && columnGroupTreeItem.getData() == null) {
+                    // ensure that the data is set for the first item in the
+                    // column group
                     ColumnGroupEntry columnGroupEntry =
                             new ColumnGroupEntry(columnGroupName, columnEntry.getPosition(), columnEntry.getIndex(), columnGroup.isCollapsed());
                     columnGroupTreeItem.setData(columnGroupEntry);
-                    columnGroupTreeItem.setText(columnGroupEntry.getLabel());
                 }
                 treeItem = new TreeItem(columnGroupTreeItem, SWT.NONE);
             } else {
@@ -414,7 +469,26 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
      * @since 1.6
      */
     public void populateAvailableTree(List<ColumnEntry> columnEntries, ColumnGroupHeaderLayer columnGroupHeaderLayer) {
-        populateModel(this.availableTree, columnEntries, columnGroupHeaderLayer);
+        populateModel(this.availableTree, columnEntries, columnGroupHeaderLayer, false);
+    }
+
+    /**
+     * Populates the available item tree with the given column entries for the
+     * new performance {@link ColumnGroupHeaderLayer}.
+     *
+     * @param columnEntries
+     *            The column entries to add as available items.
+     * @param columnGroupHeaderLayer
+     *            The new performance {@link ColumnGroupHeaderLayer} needed to
+     *            inspect the column groups, can be <code>null</code> if no
+     *            column grouping is supported in the underlying table
+     *            composition.
+     * @param sort
+     *            Whether the tree should be sorted or not.
+     * @since 2.0
+     */
+    public void populateAvailableTree(List<ColumnEntry> columnEntries, ColumnGroupHeaderLayer columnGroupHeaderLayer, boolean sort) {
+        populateModel(this.availableTree, columnEntries, columnGroupHeaderLayer, sort);
     }
 
     /**
@@ -431,7 +505,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
      * @since 1.6
      */
     public void populateSelectedTree(List<ColumnEntry> columnEntries, ColumnGroupHeaderLayer columnGroupHeaderLayer) {
-        populateModel(this.selectedTree, columnEntries, columnGroupHeaderLayer);
+        populateModel(this.selectedTree, columnEntries, columnGroupHeaderLayer, false);
     }
 
     /**
@@ -451,10 +525,61 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
      *            inspect the column groups, can be <code>null</code> if no
      *            column grouping is supported in the underlying table
      *            composition.
+     * @param sort
+     *            Whether the tree should be sorted or not.
      * @since 1.6
      */
-    private void populateModel(Tree tree, List<ColumnEntry> columnEntries, ColumnGroupHeaderLayer columnGroupHeaderLayer) {
+    private void populateModel(Tree tree, List<ColumnEntry> columnEntries, ColumnGroupHeaderLayer columnGroupHeaderLayer, boolean sort) {
         this.columnGroupHeaderLayer = columnGroupHeaderLayer;
+
+        if (sort) {
+            Collections.sort(columnEntries, (o1, o2) -> o1.getLabel().compareToIgnoreCase(o2.getLabel()));
+        }
+
+        // Only pre-create the tree nodes for column groups if sorting is
+        // enabled. If the order is managed by some other mechanism (e.g. column
+        // order) the pre-creation causes issues on reorder via up/down
+        if (columnGroupHeaderLayer != null && sort) {
+            ArrayList<Group> groups = new ArrayList<>();
+            for (ColumnEntry columnEntry : columnEntries) {
+                int columnEntryPosition = columnEntry.getPosition();
+
+                // Create a node for the column group - if needed
+                // Operate on the GroupModel so we can handle also positions not
+                // visible
+                // TODO check for multi level
+                GroupModel groupModel = null;
+                if (columnGroupHeaderLayer != null) {
+                    groupModel = columnGroupHeaderLayer.getGroupModel(0);
+                    columnEntryPosition = columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(columnEntry.getIndex());
+                }
+
+                Group columnGroup = null;
+                if (groupModel != null && columnEntryPosition < 0) {
+                    // try to find the collapsed column group that contains the
+                    // index of the column entry
+                    columnGroup = groupModel.findGroupByMemberIndex(columnEntry.getIndex());
+                } else if (groupModel != null && groupModel.isPartOfAGroup(columnEntryPosition)) {
+                    columnGroup = groupModel.getGroupByPosition(columnEntryPosition);
+                }
+
+                if (columnGroup != null) {
+                    groups.add(columnGroup);
+                }
+            }
+
+            Collections.sort(groups, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+
+            groups.forEach(g -> {
+                TreeItem columnGroupTreeItem = getTreeItem(tree, g);
+                if (columnGroupTreeItem == null) {
+                    columnGroupTreeItem = new TreeItem(tree, SWT.NONE);
+                    ColumnGroupEntry columnGroupEntry = new ColumnGroupEntry(g);
+                    columnGroupTreeItem.setData(columnGroupEntry);
+                    columnGroupTreeItem.setText(columnGroupEntry.getLabel());
+                }
+            });
+        }
 
         for (ColumnEntry columnEntry : columnEntries) {
             TreeItem treeItem = null;
@@ -471,12 +596,12 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
             }
 
             Group columnGroup = null;
-            if (groupModel != null && groupModel.isPartOfAGroup(columnEntryPosition)) {
-                columnGroup = groupModel.getGroupByPosition(columnEntryPosition);
-            } else if (groupModel != null && columnEntryPosition < 0) {
+            if (groupModel != null && columnEntryPosition < 0) {
                 // try to find the collapsed column group that contains the
                 // index of the column entry
                 columnGroup = groupModel.findGroupByMemberIndex(columnEntry.getIndex());
+            } else if (groupModel != null && groupModel.isPartOfAGroup(columnEntryPosition)) {
+                columnGroup = groupModel.getGroupByPosition(columnEntryPosition);
             }
 
             if (columnGroup != null) {
