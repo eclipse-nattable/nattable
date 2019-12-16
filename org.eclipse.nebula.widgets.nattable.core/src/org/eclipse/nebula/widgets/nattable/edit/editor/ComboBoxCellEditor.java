@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -316,7 +316,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 
             // Item selected from list
             if (selectionIndices.length > 0) {
-                result = new ArrayList<Object>(selectionIndices.length);
+                result = new ArrayList<>(selectionIndices.length);
                 for (int i : selectionIndices) {
                     result.add(this.currentCanonicalValues.get(i));
                 }
@@ -325,7 +325,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
                 // there is a free edit in the NatCombo control
                 String[] comboSelection = this.combo.getSelection();
                 if (comboSelection.length > 0) {
-                    result = new ArrayList<Object>(comboSelection.length);
+                    result = new ArrayList<>(comboSelection.length);
                     for (String selection : comboSelection) {
                         result.add(handleConversion(selection, this.conversionEditErrorHandler));
                     }
@@ -334,7 +334,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 
             // if nothing is selected and there is no free edit, we return an
             // empty Collection
-            return result != null ? result : new ArrayList<Object>();
+            return result != null ? result : new ArrayList<>();
         }
 
         return null;
@@ -355,17 +355,24 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
             String[] editorValues = null;
             if (canonicalValue instanceof List<?>) {
                 List<?> temp = (List<?>) canonicalValue;
-                String[] result = new String[temp.size()];
-                for (int i = 0; i < temp.size(); i++) {
-                    result[i] = (String) this.displayConverter.canonicalToDisplayValue(
-                            this.layerCell, this.configRegistry, temp.get(i));
+                if (this.displayConverter != null) {
+                    editorValues = temp.stream()
+                            .map(canonical -> (String) this.displayConverter.canonicalToDisplayValue(
+                                    this.layerCell,
+                                    this.configRegistry,
+                                    canonical))
+                            .toArray(size -> new String[size]);
+                } else {
+                    editorValues = temp.stream()
+                            .map(canonical -> canonical != null ? canonical.toString() : "") //$NON-NLS-1$
+                            .toArray(size -> new String[size]);
                 }
-                editorValues = result;
             } else {
                 // in case the SELECT_ALL value is set for selecting all values
                 // in the combo we don't need a conversion and use the value
-                if (EditConstants.SELECT_ALL_ITEMS_VALUE.equals(canonicalValue)) {
-                    editorValues = new String[] { canonicalValue.toString() };
+                if (EditConstants.SELECT_ALL_ITEMS_VALUE.equals(canonicalValue)
+                        || this.displayConverter == null) {
+                    editorValues = new String[] { canonicalValue != null ? canonicalValue.toString() : "" }; //$NON-NLS-1$
                 } else {
                     editorValues = new String[] {
                             (String) this.displayConverter.canonicalToDisplayValue(
@@ -385,7 +392,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
      * canonical values, the values are converted in here too.
      */
     private void fillCombo() {
-        List<String> displayValues = new ArrayList<String>();
+        List<String> displayValues = new ArrayList<>();
 
         if (this.dataProvider != null) {
             this.currentCanonicalValues = this.dataProvider.getValues(getColumnIndex(), getRowIndex());
@@ -394,8 +401,12 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
         }
 
         for (Object canonicalValue : this.currentCanonicalValues) {
-            Object displayValue = this.displayConverter.canonicalToDisplayValue(
-                    this.layerCell, this.configRegistry, canonicalValue);
+            Object displayValue = this.displayConverter != null
+                    ? this.displayConverter.canonicalToDisplayValue(
+                            this.layerCell,
+                            this.configRegistry,
+                            canonicalValue)
+                    : canonicalValue;
             displayValues.add(displayValue != null ? displayValue.toString() : ""); //$NON-NLS-1$
         }
 
