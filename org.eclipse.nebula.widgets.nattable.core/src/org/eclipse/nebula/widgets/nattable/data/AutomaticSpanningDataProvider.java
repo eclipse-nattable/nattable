@@ -23,7 +23,7 @@ import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 /**
  * This implementation of ISpanningDataProvider will automatically span cells if
  * the containing cell values are equal. It supports configuration whether the
- * automatic spanning should be performed for columns or cells. It is even
+ * automatic spanning should be performed for columns or rows. It is even
  * possible to configure which columns/rows should be checked for auto spanning.
  * <p>
  * It wraps the IDataProvider that is used for providing the data to the
@@ -31,7 +31,7 @@ import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
  * the auto spanning feature.
  * <p>
  * To use the auto spanning feature you simply need to exchange the DataLayer in
- * your layer composition with the SpanningDataLayer and wrap the exising
+ * your layer composition with the SpanningDataLayer and wrap the existing
  * IDataProvider with this AutomaticSpanningDataProvider.
  * <p>
  * <b>Note: </b><br>
@@ -121,14 +121,18 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
     @Override
     public DataCell getCellByPosition(int columnPosition, int rowPosition) {
         int cellColumnPosition = isAutoSpanEnabledForColumn(columnPosition, rowPosition)
-                ? getStartColumnPosition(columnPosition, rowPosition) : columnPosition;
+                ? getStartColumnPosition(columnPosition, rowPosition)
+                : columnPosition;
         int cellRowPosition = isAutoSpanEnabledForRow(columnPosition, rowPosition)
-                ? getStartRowPosition(columnPosition, rowPosition) : rowPosition;
+                ? getStartRowPosition(columnPosition, rowPosition)
+                : rowPosition;
 
         int columnSpan = isAutoSpanEnabledForColumn(columnPosition, rowPosition)
-                ? getColumnSpan(cellColumnPosition, cellRowPosition) : 1;
+                ? getColumnSpan(cellColumnPosition, cellRowPosition)
+                : 1;
         int rowSpan = isAutoSpanEnabledForRow(columnPosition, rowPosition)
-                ? getRowSpan(cellColumnPosition, cellRowPosition) : 1;
+                ? getRowSpan(cellColumnPosition, cellRowPosition)
+                : 1;
 
         return new DataCell(cellColumnPosition, cellRowPosition, columnSpan, rowSpan);
     }
