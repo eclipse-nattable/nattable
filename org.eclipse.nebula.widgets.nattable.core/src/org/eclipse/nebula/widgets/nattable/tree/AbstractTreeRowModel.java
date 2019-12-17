@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,13 +12,12 @@
 package org.eclipse.nebula.widgets.nattable.tree;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
 public abstract class AbstractTreeRowModel<T> implements ITreeRowModel<T> {
 
-    private final Collection<ITreeRowModelListener> listeners = new HashSet<ITreeRowModelListener>();
+    private final HashSet<ITreeRowModelListener> listeners = new HashSet<>();
 
     private final ITreeData<T> treeData;
 
@@ -38,7 +37,7 @@ public abstract class AbstractTreeRowModel<T> implements ITreeRowModel<T> {
 
     @Override
     public int depth(int index) {
-        return this.treeData.getDepthOfData(this.treeData.getDataAtIndex(index));
+        return getTreeData().getDepthOfData(index);
     }
 
     @Override
@@ -90,7 +89,7 @@ public abstract class AbstractTreeRowModel<T> implements ITreeRowModel<T> {
 
     @Override
     public List<Integer> getChildIndexes(int parentIndex) {
-        List<Integer> result = new ArrayList<Integer>();
+        List<Integer> result = new ArrayList<>();
         List<T> children = getDirectChildren(parentIndex);
         for (T child : children) {
             int index = this.treeData.indexOf(child);
@@ -107,7 +106,7 @@ public abstract class AbstractTreeRowModel<T> implements ITreeRowModel<T> {
     @Override
     public List<Integer> getDirectChildIndexes(int parentIndex) {
         List<T> children = getDirectChildren(parentIndex);
-        List<Integer> result = new ArrayList<Integer>(children.size());
+        List<Integer> result = new ArrayList<>(children.size());
         for (T child : children) {
             int index = this.treeData.indexOf(child);
             // if the index is -1 the element is not found
@@ -125,7 +124,7 @@ public abstract class AbstractTreeRowModel<T> implements ITreeRowModel<T> {
     }
 
     protected List<T> getChildren(T parent) {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         List<T> children = getDirectChildren(parent);
         for (T child : children) {
             result.add(child);

@@ -461,7 +461,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      *         underlying layer <code>false</code> if not.
      */
     private boolean isHiddenInUnderlyingLayer(int rowIndex) {
-        IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
+        IUniqueIndexLayer underlyingLayer = getUnderlyingLayer();
         return (underlyingLayer.getRowPositionByIndex(rowIndex) == -1);
     }
 
