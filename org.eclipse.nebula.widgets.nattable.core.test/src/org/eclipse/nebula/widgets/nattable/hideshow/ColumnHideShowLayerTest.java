@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2019 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -340,6 +340,28 @@ public class ColumnHideShowLayerTest {
 
         assertEquals(0, this.columnHideShowLayer.getColumnCount());
         assertEquals(0, this.columnHideShowLayer.getWidth());
+    }
+
+    @Test
+    public void shouldTransformLocalToUnderlyingColumnPositionHidden() {
+        assertEquals(-1, this.columnHideShowLayer.localToUnderlyingColumnPosition(-1));
+        assertEquals(0, this.columnHideShowLayer.localToUnderlyingColumnPosition(0));
+        assertEquals(1, this.columnHideShowLayer.localToUnderlyingColumnPosition(1));
+        assertEquals(3, this.columnHideShowLayer.localToUnderlyingColumnPosition(2));
+        assertEquals(-1, this.columnHideShowLayer.localToUnderlyingColumnPosition(3));
+    }
+
+    @Test
+    public void shouldTransformLocalToUnderlyingColumnPositionNothingHidden() {
+        this.columnHideShowLayer.showAllColumns();
+
+        assertEquals(-1, this.columnHideShowLayer.localToUnderlyingColumnPosition(-1));
+        assertEquals(0, this.columnHideShowLayer.localToUnderlyingColumnPosition(0));
+        assertEquals(1, this.columnHideShowLayer.localToUnderlyingColumnPosition(1));
+        assertEquals(2, this.columnHideShowLayer.localToUnderlyingColumnPosition(2));
+        assertEquals(3, this.columnHideShowLayer.localToUnderlyingColumnPosition(3));
+        assertEquals(4, this.columnHideShowLayer.localToUnderlyingColumnPosition(4));
+        assertEquals(-1, this.columnHideShowLayer.localToUnderlyingColumnPosition(5));
     }
 
 }
