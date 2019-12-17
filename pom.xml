@@ -88,6 +88,7 @@
 							<version>${nattable-version}</version>
 						</artifact>
 					</target>
+					<targetDefinitionIncludeSource>honor</targetDefinitionIncludeSource>
 					<environments>
 						<environment>
 							<os>win32</os>

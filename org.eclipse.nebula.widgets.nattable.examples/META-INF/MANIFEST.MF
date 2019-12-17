@@ -4,10 +4,10 @@ Bundle-Name: NatTable Examples
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.examples
 Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: ca.odell.glazedlists;bundle-version="1.9.0",
- org.eclipse.swt;bundle-version="3.5.1",
- org.eclipse.jface;bundle-version="3.5.1",
- org.eclipse.nebula.widgets.richtext;bundle-version="0.1.0",
+Require-Bundle: ca.odell.glazedlists,
+ org.eclipse.swt,
+ org.eclipse.jface,
+ org.eclipse.nebula.widgets.richtext,
  org.eclipse.nebula.widgets.nattable.core,
  org.eclipse.nebula.widgets.nattable.dataset,
  org.eclipse.nebula.widgets.nattable.extension.glazedlists,
