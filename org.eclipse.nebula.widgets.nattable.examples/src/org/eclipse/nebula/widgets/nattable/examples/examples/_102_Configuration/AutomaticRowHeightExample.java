@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Dirk Fauth and others.
+ * Copyright (c) 2012, 2019 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -47,6 +47,8 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageDataProvider;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -153,19 +155,32 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
 
             int IMAGE_SIZE = GUIHelper.convertHorizontalPixelToDpi(16);
 
-            this.errorImage = this.resManager.createImage(ImageDescriptor.createFromImageData(
-                    DISPLAY.getSystemImage(SWT.ICON_ERROR).getImageData()
-                            .scaledTo(IMAGE_SIZE, IMAGE_SIZE)));
+            this.errorImage = this.resManager.createImage(ImageDescriptor.createFromImageDataProvider(new ImageDataProvider() {
 
-            this.warningImage = this.resManager.createImage(
-                    ImageDescriptor.createFromImageData(
-                            DISPLAY.getSystemImage(SWT.ICON_WARNING).getImageData()
-                                    .scaledTo(IMAGE_SIZE, IMAGE_SIZE)));
+                @Override
+                public ImageData getImageData(int zoom) {
+                    return DISPLAY.getSystemImage(SWT.ICON_ERROR)
+                            .getImageData(zoom).scaledTo(IMAGE_SIZE, IMAGE_SIZE);
+                }
+            }));
 
-            this.infoImage = this.resManager.createImage(
-                    ImageDescriptor.createFromImageData(
-                            DISPLAY.getSystemImage(SWT.ICON_INFORMATION).getImageData()
-                                    .scaledTo(IMAGE_SIZE, IMAGE_SIZE)));
+            this.warningImage = this.resManager.createImage(ImageDescriptor.createFromImageDataProvider(new ImageDataProvider() {
+
+                @Override
+                public ImageData getImageData(int zoom) {
+                    return DISPLAY.getSystemImage(SWT.ICON_WARNING)
+                            .getImageData(zoom).scaledTo(IMAGE_SIZE, IMAGE_SIZE);
+                }
+            }));
+
+            this.infoImage = this.resManager.createImage(ImageDescriptor.createFromImageDataProvider(new ImageDataProvider() {
+
+                @Override
+                public ImageData getImageData(int zoom) {
+                    return DISPLAY.getSystemImage(SWT.ICON_INFORMATION)
+                            .getImageData(zoom).scaledTo(IMAGE_SIZE, IMAGE_SIZE);
+                }
+            }));
 
             this.hAlign = HorizontalAlignmentEnum.LEFT;
             this.cellPainter = new LineBorderDecorator(
