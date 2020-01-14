@@ -16,8 +16,12 @@ location "http://download.eclipse.org/tools/orbit/downloads/drops/R2019112622324
 	org.apache.poi [3.9.0,3.9.1)
 }
 
-location "http://download.eclipse.org/nebula/releases/2.2.0" {
+location "http://download.eclipse.org/nebula/releases/2.3.0" {
 	org.eclipse.nebula.cwt.feature.feature.group
 	org.eclipse.nebula.widgets.cdatetime.feature.feature.group
 	org.eclipse.nebula.widgets.richtext.feature.feature.group
+}
+
+location "http://download.eclipse.org/collections/10.1.0/repository" {
+	org.eclipse.collections.feature.feature.group
 }
