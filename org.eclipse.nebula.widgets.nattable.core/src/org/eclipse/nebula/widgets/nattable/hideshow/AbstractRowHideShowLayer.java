@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,12 +12,11 @@ package org.eclipse.nebula.widgets.nattable.hideshow;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.TreeSet;
 
+import org.eclipse.collections.api.map.primitive.IntIntMap;
+import org.eclipse.collections.api.map.primitive.MutableIntIntMap;
+import org.eclipse.collections.impl.factory.primitive.IntIntMaps;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
@@ -31,15 +30,22 @@ import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.reorder.event.RowReorderEvent;
 
+/**
+ * Abstract implementation for row hide/show operations.
+ */
 public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
 
-    private Map<Integer, Integer> cachedVisibleRowIndexPositionMapping;
-    private Map<Integer, Integer> cachedVisibleRowPositionIndexMapping;
+    private MutableIntIntMap cachedVisibleRowIndexPositionMapping;
+    private MutableIntIntMap cachedVisibleRowPositionIndexMapping;
+    private MutableIntIntMap cachedHiddenRowIndexPositionMapping;
+    private final MutableIntIntMap startYCache = IntIntMaps.mutable.empty();
 
-    private Map<Integer, Integer> cachedHiddenRowIndexPositionMapping;
-
-    private final Map<Integer, Integer> startYCache = new HashMap<>();
-
+    /**
+     * Constructor.
+     *
+     * @param underlyingLayer
+     *            The underlying layer.
+     */
     public AbstractRowHideShowLayer(IUniqueIndexLayer underlyingLayer) {
         super(underlyingLayer);
     }
@@ -62,10 +68,10 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
             // incorrect values
             RowReorderEvent reorderEvent = (RowReorderEvent) event;
 
-            Collection<Integer> fromPositions = new TreeSet<>();
-            for (int pos : reorderEvent.getBeforeFromRowIndexes()) {
-                fromPositions.add(getRowPositionByIndex(pos));
-            }
+            int[] fromPositions = reorderEvent.getBeforeFromRowIndexes().stream()
+                    .mapToInt(Integer::intValue)
+                    .map(this::getRowPositionByIndex)
+                    .toArray();
             Collection<Range> fromRanges = PositionUtil.getRanges(fromPositions);
 
             int pos = -1;
@@ -135,8 +141,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
             return super.getRowIndexByPosition(rowPosition);
         }
 
-        Integer rowIndex = getCachedVisibleRowPositionIndexMapping().get(rowPosition);
-        return (rowIndex != null) ? rowIndex : -1;
+        return getCachedVisibleRowPositionIndexMapping().getIfAbsent(rowPosition, -1);
     }
 
     @Override
@@ -145,8 +150,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
             return getUnderlyingLayer().getRowPositionByIndex(rowIndex);
         }
 
-        Integer position = getCachedVisibleRowIndexPositionMapping().get(rowIndex);
-        return (position != null) ? position : -1;
+        return getCachedVisibleRowIndexPositionMapping().getIfAbsent(rowIndex, -1);
     }
 
     public Collection<Integer> getRowPositionsByIndexes(Collection<Integer> rowIndexes) {
@@ -182,8 +186,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
         if (rowPosition >= 0) {
             return rowPosition;
         } else {
-            Integer hiddenRowPosition = getCachedHiddenRowIndexPositionMapping().get(rowIndex);
-            return (hiddenRowPosition != null) ? hiddenRowPosition : -1;
+            return getCachedHiddenRowIndexPositionMapping().getIfAbsent(rowIndex, -1);
         }
     }
 
@@ -264,8 +267,8 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 
     @Override
     public int getStartYOfRowPosition(int localRowPosition) {
-        Integer cachedStartY = this.startYCache.get(localRowPosition);
-        if (cachedStartY != null) {
+        int cachedStartY = this.startYCache.getIfAbsent(localRowPosition, -1);
+        if (cachedStartY != -1) {
             return cachedStartY;
         }
 
@@ -279,7 +282,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
             return -1;
         }
 
-        for (Integer hiddenIndex : getHiddenRowIndexes()) {
+        for (int hiddenIndex : getHiddenRowIndexes()) {
             int hiddenPosition = underlyingLayer.getRowPositionByIndex(hiddenIndex);
             // if the hidden position is -1, it is hidden in the underlying
             // layer therefore the underlying layer should handle the
@@ -352,31 +355,34 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
         this.startYCache.clear();
     }
 
-    private synchronized Map<Integer, Integer> getCachedVisibleRowIndexPositionMapping() {
+    private synchronized IntIntMap getCachedVisibleRowIndexPositionMapping() {
         if (this.cachedVisibleRowIndexPositionMapping == null) {
             cacheVisibleRowIndexes();
         }
-        return Collections.unmodifiableMap(this.cachedVisibleRowIndexPositionMapping);
+        return this.cachedVisibleRowIndexPositionMapping;
     }
 
-    private synchronized Map<Integer, Integer> getCachedVisibleRowPositionIndexMapping() {
+    private synchronized IntIntMap getCachedVisibleRowPositionIndexMapping() {
         if (this.cachedVisibleRowPositionIndexMapping == null) {
             cacheVisibleRowIndexes();
         }
-        return Collections.unmodifiableMap(this.cachedVisibleRowPositionIndexMapping);
+        return this.cachedVisibleRowPositionIndexMapping;
     }
 
-    private synchronized Map<Integer, Integer> getCachedHiddenRowIndexPositionMapping() {
+    private synchronized IntIntMap getCachedHiddenRowIndexPositionMapping() {
         if (this.cachedHiddenRowIndexPositionMapping == null) {
             cacheVisibleRowIndexes();
         }
-        return Collections.unmodifiableMap(this.cachedHiddenRowIndexPositionMapping);
+        return this.cachedHiddenRowIndexPositionMapping;
     }
 
+    /**
+     * Build up the row caches.
+     */
     protected synchronized void cacheVisibleRowIndexes() {
-        this.cachedVisibleRowIndexPositionMapping = new HashMap<>();
-        this.cachedVisibleRowPositionIndexMapping = new HashMap<>();
-        this.cachedHiddenRowIndexPositionMapping = new HashMap<>();
+        this.cachedVisibleRowIndexPositionMapping = IntIntMaps.mutable.empty();
+        this.cachedVisibleRowPositionIndexMapping = IntIntMaps.mutable.empty();
+        this.cachedHiddenRowIndexPositionMapping = IntIntMaps.mutable.empty();
         this.startYCache.clear();
 
         // only build up a cache if it is necessary

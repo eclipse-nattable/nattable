@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,12 +12,11 @@ package org.eclipse.nebula.widgets.nattable.hideshow;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.TreeSet;
 
+import org.eclipse.collections.api.map.primitive.IntIntMap;
+import org.eclipse.collections.api.map.primitive.MutableIntIntMap;
+import org.eclipse.collections.impl.factory.primitive.IntIntMaps;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
@@ -32,15 +31,22 @@ import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
 
+/**
+ * Abstract implementation for column hide/show operations.
+ */
 public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
 
-    private Map<Integer, Integer> cachedVisibleColumnIndexPositionMapping;
-    private Map<Integer, Integer> cachedVisibleColumnPositionIndexMapping;
+    private MutableIntIntMap cachedVisibleColumnIndexPositionMapping;
+    private MutableIntIntMap cachedVisibleColumnPositionIndexMapping;
+    private MutableIntIntMap cachedHiddenColumnIndexPositionMapping;
+    private final MutableIntIntMap startXCache = IntIntMaps.mutable.empty();
 
-    private Map<Integer, Integer> cachedHiddenColumnIndexPositionMapping;
-
-    private final Map<Integer, Integer> startXCache = new HashMap<>();
-
+    /**
+     * Constructor.
+     *
+     * @param underlyingLayer
+     *            The underlying layer.
+     */
     public AbstractColumnHideShowLayer(IUniqueIndexLayer underlyingLayer) {
         super(underlyingLayer);
     }
@@ -63,10 +69,10 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
             // incorrect values
             ColumnReorderEvent reorderEvent = (ColumnReorderEvent) event;
 
-            Collection<Integer> fromPositions = new TreeSet<Integer>();
-            for (int pos : reorderEvent.getBeforeFromColumnIndexes()) {
-                fromPositions.add(getColumnPositionByIndex(pos));
-            }
+            int[] fromPositions = reorderEvent.getBeforeFromColumnIndexes().stream()
+                    .mapToInt(Integer::intValue)
+                    .map(this::getColumnPositionByIndex)
+                    .toArray();
             Collection<Range> fromRanges = PositionUtil.getRanges(fromPositions);
 
             int pos = -1;
@@ -126,8 +132,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
             return super.getColumnIndexByPosition(columnPosition);
         }
 
-        Integer columnIndex = getCachedVisibleColumnPositionIndexMapping().get(columnPosition);
-        return (columnIndex != null) ? columnIndex : -1;
+        return getCachedVisibleColumnPositionIndexMapping().getIfAbsent(columnPosition, -1);
     }
 
     @Override
@@ -136,8 +141,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
             return getUnderlyingLayer().getColumnPositionByIndex(columnIndex);
         }
 
-        Integer position = getCachedVisibleColumnIndexPositionMapping().get(columnIndex);
-        return (position != null) ? position : -1;
+        return getCachedVisibleColumnIndexPositionMapping().getIfAbsent(columnIndex, -1);
     }
 
     public Collection<Integer> getColumnPositionsByIndexes(Collection<Integer> columnIndexes) {
@@ -173,8 +177,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
         if (columnPosition >= 0) {
             return columnPosition;
         } else {
-            Integer hiddenColumnPosition = getCachedHiddenColumnIndexPositionMapping().get(columnIndex);
-            return (hiddenColumnPosition != null) ? hiddenColumnPosition : -1;
+            return getCachedHiddenColumnIndexPositionMapping().getIfAbsent(columnIndex, -1);
         }
     }
 
@@ -267,8 +270,8 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 
     @Override
     public int getStartXOfColumnPosition(int localColumnPosition) {
-        Integer cachedStartX = this.startXCache.get(localColumnPosition);
-        if (cachedStartX != null) {
+        int cachedStartX = this.startXCache.getIfAbsent(localColumnPosition, -1);
+        if (cachedStartX != -1) {
             return cachedStartX;
         }
 
@@ -282,7 +285,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
             return -1;
         }
 
-        for (Integer hiddenIndex : getHiddenColumnIndexes()) {
+        for (int hiddenIndex : getHiddenColumnIndexes()) {
             int hiddenPosition = underlyingLayer.getColumnPositionByIndex(hiddenIndex);
             // if the hidden position is -1, it is hidden in the underlying
             // layer therefore the underlying layer should handle the
@@ -359,38 +362,43 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
     /**
      * Invalidate the cache to ensure that information is rebuild.
      */
-    protected void invalidateCache() {
+    protected synchronized void invalidateCache() {
         this.cachedVisibleColumnIndexPositionMapping = null;
         this.cachedVisibleColumnPositionIndexMapping = null;
         this.cachedHiddenColumnIndexPositionMapping = null;
         this.startXCache.clear();
     }
 
-    private synchronized Map<Integer, Integer> getCachedVisibleColumnIndexPositionMapping() {
+    private synchronized IntIntMap getCachedVisibleColumnIndexPositionMapping() {
         if (this.cachedVisibleColumnIndexPositionMapping == null) {
             cacheVisibleColumnIndexes();
         }
-        return Collections.unmodifiableMap(this.cachedVisibleColumnIndexPositionMapping);
+        return this.cachedVisibleColumnIndexPositionMapping;
     }
 
-    private synchronized Map<Integer, Integer> getCachedVisibleColumnPositionIndexMapping() {
+    private synchronized IntIntMap getCachedVisibleColumnPositionIndexMapping() {
         if (this.cachedVisibleColumnPositionIndexMapping == null) {
             cacheVisibleColumnIndexes();
         }
-        return Collections.unmodifiableMap(this.cachedVisibleColumnPositionIndexMapping);
+        return this.cachedVisibleColumnPositionIndexMapping;
     }
 
-    private synchronized Map<Integer, Integer> getCachedHiddenColumnIndexPositionMapping() {
+    private synchronized IntIntMap getCachedHiddenColumnIndexPositionMapping() {
         if (this.cachedHiddenColumnIndexPositionMapping == null) {
             cacheVisibleColumnIndexes();
         }
-        return Collections.unmodifiableMap(this.cachedHiddenColumnIndexPositionMapping);
+        return this.cachedHiddenColumnIndexPositionMapping;
     }
 
-    private void cacheVisibleColumnIndexes() {
-        this.cachedVisibleColumnIndexPositionMapping = new HashMap<>();
-        this.cachedVisibleColumnPositionIndexMapping = new HashMap<>();
-        this.cachedHiddenColumnIndexPositionMapping = new HashMap<>();
+    /**
+     * Build up the column caches.
+     *
+     * @since 2.0
+     */
+    protected synchronized void cacheVisibleColumnIndexes() {
+        this.cachedVisibleColumnIndexPositionMapping = IntIntMaps.mutable.empty();
+        this.cachedVisibleColumnPositionIndexMapping = IntIntMaps.mutable.empty();
+        this.cachedHiddenColumnIndexPositionMapping = IntIntMaps.mutable.empty();
         this.startXCache.clear();
 
         // only build up a cache if it is necessary

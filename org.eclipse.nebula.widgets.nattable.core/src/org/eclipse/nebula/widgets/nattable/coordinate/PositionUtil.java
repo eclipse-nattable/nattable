@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -152,7 +152,7 @@ public class PositionUtil {
      * @return List of Ranges for the given Collection of numbers.
      */
     public static List<Range> getRanges(int... numbers) {
-        return (numbers.length > 0)
+        return (numbers != null && numbers.length > 0)
                 ? Arrays.stream(numbers)
                         .sorted()
                         .collect(
