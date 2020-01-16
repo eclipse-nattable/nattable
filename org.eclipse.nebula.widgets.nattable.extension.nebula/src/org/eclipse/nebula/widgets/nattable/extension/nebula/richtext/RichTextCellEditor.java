@@ -12,11 +12,6 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.nebula.richtext;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.edit.editor.AbstractCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
@@ -36,8 +31,6 @@ import org.eclipse.swt.widgets.Control;
  */
 public class RichTextCellEditor extends AbstractCellEditor {
 
-    private static final Log LOG = LogFactory.getLog(RichTextCellEditor.class);
-
     /**
      * The rich text editor control, initially <code>null</code>.
      */
@@ -53,14 +46,6 @@ public class RichTextCellEditor extends AbstractCellEditor {
     protected RichTextEditorConfiguration editorConfiguration;
 
     /**
-     * @deprecated Only exists for backwards compatibility to avoid API
-     *             breakage. The {@link RichTextEditorConfiguration} should be
-     *             used instead!
-     */
-    @Deprecated
-    protected org.eclipse.nebula.widgets.richtext.toolbar.ToolbarConfiguration toolbarConfiguration;
-
-    /**
      * The style bits that are used to create the rich text editor control.
      */
     protected int style;
@@ -71,22 +56,6 @@ public class RichTextCellEditor extends AbstractCellEditor {
      */
     public RichTextCellEditor() {
         this((RichTextEditorConfiguration) null, SWT.RESIZE);
-    }
-
-    /**
-     * Create a new resizable {@link RichTextCellEditor} with the given
-     * configuration.
-     *
-     * @param toolbarConfiguration
-     *            The
-     *            {@link org.eclipse.nebula.widgets.richtext.toolbar.ToolbarConfiguration}
-     *            that should be used for creating the {@link RichTextEditor}.
-     * @deprecated Use a constructor with {@link RichTextEditorConfiguration}
-     *             parameter
-     */
-    @Deprecated
-    public RichTextCellEditor(org.eclipse.nebula.widgets.richtext.toolbar.ToolbarConfiguration toolbarConfiguration) {
-        this(toolbarConfiguration, SWT.RESIZE);
     }
 
     /**
@@ -113,35 +82,6 @@ public class RichTextCellEditor extends AbstractCellEditor {
      */
     public RichTextCellEditor(int style) {
         this((RichTextEditorConfiguration) null, style);
-    }
-
-    /**
-     * Create a new {@link RichTextCellEditor} with the given configuration and
-     * the given style bits.
-     *
-     * @param toolbarConfiguration
-     *            The
-     *            {@link org.eclipse.nebula.widgets.richtext.toolbar.ToolbarConfiguration}
-     *            that should be used for creating the {@link RichTextEditor}.
-     * @param style
-     *            The style bits that should be used to create the rich text
-     *            editor control.
-     * @deprecated Use a constructor with {@link RichTextEditorConfiguration}
-     *             parameter
-     */
-    @Deprecated
-    public RichTextCellEditor(org.eclipse.nebula.widgets.richtext.toolbar.ToolbarConfiguration toolbarConfiguration, int style) {
-        this((RichTextEditorConfiguration) null, style);
-        this.toolbarConfiguration = toolbarConfiguration;
-
-        try {
-            Constructor<RichTextEditorConfiguration> declaredConstructor =
-                    RichTextEditorConfiguration.class.getDeclaredConstructor(org.eclipse.nebula.widgets.richtext.toolbar.ToolbarConfiguration.class);
-            declaredConstructor.setAccessible(true);
-            this.editorConfiguration = declaredConstructor.newInstance(toolbarConfiguration);
-        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            LOG.error("Error on creating RichTextCellEditor with ToolbarConfiguration", e);
-        }
     }
 
     /**
