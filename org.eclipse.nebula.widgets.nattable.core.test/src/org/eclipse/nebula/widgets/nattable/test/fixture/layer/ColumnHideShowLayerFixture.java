@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,7 +27,6 @@ public class ColumnHideShowLayerFixture extends ColumnHideShowLayer {
 
     private ILayerCommand lastCommand;
 
-    @SuppressWarnings("boxing")
     public ColumnHideShowLayerFixture() {
         // Column reorder fixture index positions: 4 1 0 2 3
         super(new ColumnReorderLayerFixture());

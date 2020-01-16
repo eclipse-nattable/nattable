@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,7 +30,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-@SuppressWarnings("boxing")
 public class ColumnChooserDialogTest {
 
     ColumnEntry entry1 = new ColumnEntry("one", 1, 1);
@@ -303,7 +302,8 @@ public class ColumnChooserDialogTest {
     }
 
     /**
-     * item string format: position:index{,position:index}* --> e.g. 0:0,1:1,2:2<br>
+     * item string format: position:index{,position:index}* --> e.g.
+     * 0:0,1:1,2:2<br>
      * column group string format: (index{,index}*) --> e.g. (0,1)<br>
      *
      * @param availableItems
@@ -400,15 +400,18 @@ public class ColumnChooserDialogTest {
         }
 
         @Override
-        public void itemsCollapsed(ColumnGroupEntry columnGroupEntry) {}
+        public void itemsCollapsed(ColumnGroupEntry columnGroupEntry) {
+        }
 
         @Override
-        public void itemsExpanded(ColumnGroupEntry columnGroupEntry) {}
+        public void itemsExpanded(ColumnGroupEntry columnGroupEntry) {
+        }
 
         public void itemsMoved(
                 List<ColumnGroupEntry> selectedColumnGroupEntries,
                 List<ColumnEntry> movedColumnEntries,
-                List<List<Integer>> fromPositions, List<Integer> toPositions) {}
+                List<List<Integer>> fromPositions, List<Integer> toPositions) {
+        }
 
         @Override
         public void itemsMoved(MoveDirectionEnum direction,

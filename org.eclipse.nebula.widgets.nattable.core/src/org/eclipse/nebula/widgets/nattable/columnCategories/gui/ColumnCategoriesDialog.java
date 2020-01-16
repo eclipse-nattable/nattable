@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,7 @@ import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ListViewer;
@@ -59,6 +60,8 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
     private ListViewer listViewer;
     private ISelection lastListSelection;
 
+    private ListenerList<IColumnCategoriesDialogListener> listeners = new ListenerList<>();
+
     public ColumnCategoriesDialog(Shell shell, ColumnCategoriesModel model,
             List<ColumnEntry> hiddenColumnEntries,
             List<ColumnEntry> visibleColumnsEntries) {
@@ -66,8 +69,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
         this.model = model;
         this.hiddenColumnEntries = hiddenColumnEntries;
         this.visibleColumnsEntries = visibleColumnsEntries;
-        setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.BORDER
-                | SWT.APPLICATION_MODAL | SWT.RESIZE);
+        setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL | SWT.RESIZE);
     }
 
     @Override
@@ -78,9 +80,9 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
         // Labels
         createLabels(
                 parent,
-                Messages.getString("ColumnChooser.availableColumns"), Messages.getString("ColumnChooser.selectedColumns")); //$NON-NLS-1$ //$NON-NLS-2$
-        GridData gridData = GridDataFactory.fillDefaults().grab(true, true)
-                .create();
+                Messages.getString("ColumnChooser.availableColumns"), //$NON-NLS-1$
+                Messages.getString("ColumnChooser.selectedColumns")); //$NON-NLS-1$
+        GridData gridData = GridDataFactory.fillDefaults().grab(true, true).create();
 
         // Left tree - column categories
         this.treeViewer = new TreeViewer(parent);
@@ -96,8 +98,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
         addListenersToTreeViewer();
 
         // Right list - selected columns
-        this.listViewer = new ListViewer(parent, SWT.MULTI | SWT.BORDER
-                | SWT.H_SCROLL | SWT.V_SCROLL);
+        this.listViewer = new ListViewer(parent, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
         populateSelectedList();
         addListenersToListViewer();
 
@@ -109,15 +110,16 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
     }
 
     private void populateSelectedList() {
-        VisibleColumnsProvider listProvider = new VisibleColumnsProvider(
-                this.visibleColumnsEntries);
+        VisibleColumnsProvider listProvider = new VisibleColumnsProvider(this.visibleColumnsEntries);
         this.listViewer.setContentProvider(listProvider);
         this.listViewer.setLabelProvider(listProvider);
         this.listViewer.setInput(listProvider);
 
         this.listViewer.setContentProvider(listProvider);
-        this.listViewer.getControl().setLayoutData(
-                GridDataFactory.fillDefaults().grab(true, true).create());
+        this.listViewer.getControl().setLayoutData(GridDataFactory
+                .fillDefaults()
+                .grab(true, true)
+                .create());
     }
 
     private void addListenersToTreeViewer() {
@@ -159,21 +161,22 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
     }
 
     private void populateAvailableTree() {
-        AvailableColumnCategoriesProvider provider = new AvailableColumnCategoriesProvider(
-                this.model);
+        AvailableColumnCategoriesProvider provider = new AvailableColumnCategoriesProvider(this.model);
         provider.hideEntries(this.visibleColumnsEntries);
 
         this.treeViewer.setContentProvider(provider);
-        this.treeViewer.setLabelProvider(new ColumnCategoriesLabelProvider(
-                this.hiddenColumnEntries));
+        this.treeViewer.setLabelProvider(new ColumnCategoriesLabelProvider(this.hiddenColumnEntries));
         this.treeViewer.setInput(provider);
     }
 
     private Button createDownButton(Composite upDownbuttonComposite) {
         Button downButton = new Button(upDownbuttonComposite, SWT.PUSH);
         downButton.setImage(GUIHelper.getImage("arrow_down")); //$NON-NLS-1$
-        downButton.setLayoutData(GridDataFactory.fillDefaults()
-                .grab(false, true).align(SWT.CENTER, SWT.CENTER).create());
+        downButton.setLayoutData(GridDataFactory
+                .fillDefaults()
+                .grab(false, true)
+                .align(SWT.CENTER, SWT.CENTER)
+                .create());
         downButton.addSelectionListener(new SelectionListener() {
 
             @Override
@@ -192,8 +195,11 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
     private Button createUpButton(Composite upDownbuttonComposite) {
         Button upButton = new Button(upDownbuttonComposite, SWT.PUSH);
         upButton.setImage(GUIHelper.getImage("arrow_up")); //$NON-NLS-1$
-        upButton.setLayoutData(GridDataFactory.fillDefaults().grab(false, true)
-                .align(SWT.CENTER, SWT.CENTER).create());
+        upButton.setLayoutData(GridDataFactory
+                .fillDefaults()
+                .grab(false, true)
+                .align(SWT.CENTER, SWT.CENTER)
+                .create());
         upButton.addSelectionListener(new SelectionListener() {
 
             @Override
@@ -213,8 +219,11 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
     private Button createRemoveButton(Composite buttonComposite) {
         Button removeButton = new Button(buttonComposite, SWT.PUSH);
         removeButton.setImage(GUIHelper.getImage("arrow_left")); //$NON-NLS-1$
-        removeButton.setLayoutData(GridDataFactory.fillDefaults()
-                .grab(false, true).align(SWT.CENTER, SWT.CENTER).create());
+        removeButton.setLayoutData(GridDataFactory
+                .fillDefaults()
+                .grab(false, true)
+                .align(SWT.CENTER, SWT.CENTER)
+                .create());
         removeButton.addSelectionListener(new SelectionListener() {
 
             @Override
@@ -233,8 +242,11 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
     private Button createAddButton(Composite buttonComposite) {
         Button addButton = new Button(buttonComposite, SWT.PUSH);
         addButton.setImage(GUIHelper.getImage("arrow_right")); //$NON-NLS-1$
-        addButton.setLayoutData(GridDataFactory.fillDefaults()
-                .grab(false, true).align(SWT.CENTER, SWT.CENTER).create());
+        addButton.setLayoutData(GridDataFactory
+                .fillDefaults()
+                .grab(false, true)
+                .align(SWT.CENTER, SWT.CENTER)
+                .create());
         addButton.addSelectionListener(new SelectionListener() {
 
             @Override
@@ -261,29 +273,49 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
         fireItemsSelected(getColumnIndexesFromTreeNodes());
     }
 
+    /**
+     * Add a {@link IColumnCategoriesDialogListener} that is triggered for
+     * modifications in the selected tree.
+     *
+     * @param listener
+     *            the listener to add.
+     * @since 2.0
+     */
+    public void addListener(IColumnCategoriesDialogListener listener) {
+        this.listeners.add(listener);
+    }
+
+    /**
+     * Remove a {@link IColumnCategoriesDialogListener} that is triggered for
+     * modifications in the selected tree.
+     *
+     * @param listener
+     *            the listener to remove.
+     * @since 2.0
+     */
+    public void removeListener(IColumnCategoriesDialogListener listener) {
+        this.listeners.remove(listener);
+    }
+
     protected final void fireItemsSelected(List<Integer> addedColumnIndexes) {
         if (isNotEmpty(addedColumnIndexes)) {
-            for (Object listener : this.listeners.getListeners()) {
-                ((IColumnCategoriesDialogListener) listener)
-                        .itemsSelected(addedColumnIndexes);
+            for (IColumnCategoriesDialogListener listener : this.listeners) {
+                listener.itemsSelected(addedColumnIndexes);
             }
         }
     }
 
     protected final void fireItemsRemoved(List<Integer> removedColumnPositions) {
         if (isNotEmpty(removedColumnPositions)) {
-            for (Object listener : this.listeners.getListeners()) {
-                ((IColumnCategoriesDialogListener) listener)
-                        .itemsRemoved(removedColumnPositions);
+            for (IColumnCategoriesDialogListener listener : this.listeners) {
+                listener.itemsRemoved(removedColumnPositions);
             }
         }
     }
 
-    protected final void fireItemsMoved(MoveDirectionEnum direction,
-            List<Integer> toPositions) {
-        for (Object listener : this.listeners.getListeners()) {
-            ((IColumnCategoriesDialogListener) listener).itemsMoved(direction,
-                    toPositions);
+    protected final void fireItemsMoved(MoveDirectionEnum direction, List<Integer> toPositions) {
+        for (IColumnCategoriesDialogListener listener : this.listeners) {
+            listener.itemsMoved(direction, toPositions);
         }
     }
 
@@ -339,8 +371,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
         return indexes;
     }
 
-    public void refresh(List<ColumnEntry> hiddenColumnEntries,
-            List<ColumnEntry> visibleColumnsEntries) {
+    public void refresh(List<ColumnEntry> hiddenColumnEntries, List<ColumnEntry> visibleColumnsEntries) {
         this.hiddenColumnEntries = hiddenColumnEntries;
         this.visibleColumnsEntries = visibleColumnsEntries;
         populateAvailableTree();

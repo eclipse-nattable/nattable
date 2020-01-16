@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
+ * Copyright (c) 2018, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,6 +39,7 @@ public class RowInsertCommand<T> extends AbstractContextFreeCommand {
      * @param objects
      *            The object(s) to add.
      */
+    @SafeVarargs
     public RowInsertCommand(ILayer layer, int rowPosition, T... objects) {
         this.rowIndex = layer.getRowIndexByPosition(rowPosition);
         this.objects = Arrays.asList(objects);

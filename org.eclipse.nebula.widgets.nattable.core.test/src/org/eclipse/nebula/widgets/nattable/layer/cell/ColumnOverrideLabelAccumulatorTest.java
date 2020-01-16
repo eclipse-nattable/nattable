@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -171,7 +171,6 @@ public class ColumnOverrideLabelAccumulatorTest {
                         + ColumnOverrideLabelAccumulator.ALL_COLUMN_KEY));
     }
 
-    @SuppressWarnings("boxing")
     @Test
     public void testLoadLabelsFromProperties() throws Exception {
         this.testProperties.setProperty(TEST_PREFIX + PERSISTENCE_KEY + ".0",
@@ -191,7 +190,6 @@ public class ColumnOverrideLabelAccumulatorTest {
         Assert.assertEquals(TEST_LABEL2, overrides.get(1));
     }
 
-    @SuppressWarnings("boxing")
     @Test
     public void testLoadMixedLabelsFromProperties() throws Exception {
         this.testProperties.setProperty(TEST_PREFIX + PERSISTENCE_KEY + "."

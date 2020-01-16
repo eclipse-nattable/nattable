@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,7 +26,7 @@ import org.junit.Test;
 public class RangeTest {
 
     @Test
-    public void range() throws Exception {
+    public void range() {
         // 1 cell
         Range range = new Range(2, 3);
 
@@ -35,14 +35,14 @@ public class RangeTest {
     }
 
     @Test
-    public void testEquality() throws Exception {
+    public void testEquality() {
         assertTrue(new Range(3, 10).equals(new Range(3, 10)));
         assertFalse(new Range(3, 10).equals(new Range(3, 11)));
     }
 
     @Test
-    public void sortByStart() throws Exception {
-        List<Range> ranges = new ArrayList<Range>();
+    public void sortByStart() {
+        List<Range> ranges = new ArrayList<>();
         ranges.add(new Range(3, 5));
         ranges.add(new Range(3, 7));
         ranges.add(new Range(20, 25));
@@ -56,14 +56,12 @@ public class RangeTest {
         assertTrue(ranges.get(3).start == 20);
     }
 
-    @SuppressWarnings("boxing")
     @Test
-    public void getMembers() throws Exception {
+    public void getMembers() {
         Set<Integer> members = new Range(3, 10).getMembers();
 
         assertEquals(7, members.size());
-        HashSet<Integer> expectedMembes = new HashSet<Integer>(Arrays.asList(3,
-                4, 5, 6, 7, 8, 9));
+        HashSet<Integer> expectedMembes = new HashSet<>(Arrays.asList(3, 4, 5, 6, 7, 8, 9));
         assertEquals(expectedMembes, members);
     }
 }

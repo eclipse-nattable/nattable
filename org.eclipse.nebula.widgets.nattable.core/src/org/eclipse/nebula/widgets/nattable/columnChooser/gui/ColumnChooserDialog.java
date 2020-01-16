@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnChooserUtils;
 import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnEntry;
@@ -67,6 +68,8 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 
     private ColumnGroupModel columnGroupModel;
     private ColumnGroupHeaderLayer columnGroupHeaderLayer;
+
+    private ListenerList<ISelectionTreeListener> listeners = new ListenerList<>();
 
     /**
      *
@@ -289,15 +292,39 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
         });
     }
 
+    /**
+     * Add a {@link ISelectionTreeListener} that is triggered for modifications
+     * in the selected tree.
+     *
+     * @param listener
+     *            the listener to add.
+     * @since 2.0
+     */
+    public void addListener(ISelectionTreeListener listener) {
+        this.listeners.add(listener);
+    }
+
+    /**
+     * Remove a {@link ISelectionTreeListener} that is triggered for
+     * modifications in the selected tree.
+     *
+     * @param listener
+     *            the listener to remove.
+     * @since 2.0
+     */
+    public void removeListener(ISelectionTreeListener listener) {
+        this.listeners.remove(listener);
+    }
+
     protected final void fireItemsSelected(List<ColumnEntry> addedItems) {
-        for (Object listener : this.listeners.getListeners()) {
-            ((ISelectionTreeListener) listener).itemsSelected(addedItems);
+        for (ISelectionTreeListener listener : this.listeners) {
+            listener.itemsSelected(addedItems);
         }
     }
 
     protected final void fireItemsRemoved(List<ColumnEntry> removedItems) {
-        for (Object listener : this.listeners.getListeners()) {
-            ((ISelectionTreeListener) listener).itemsRemoved(removedItems);
+        for (ISelectionTreeListener listener : this.listeners) {
+            listener.itemsRemoved(removedItems);
         }
     }
 
@@ -306,20 +333,20 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
             List<ColumnEntry> selectedColumnEntries,
             List<List<Integer>> fromPositions, List<Integer> toPositions) {
 
-        for (Object listener : this.listeners.getListeners()) {
-            ((ISelectionTreeListener) listener).itemsMoved(direction, selectedColumnGroupEntries, selectedColumnEntries, fromPositions, toPositions);
+        for (ISelectionTreeListener listener : this.listeners) {
+            listener.itemsMoved(direction, selectedColumnGroupEntries, selectedColumnEntries, fromPositions, toPositions);
         }
     }
 
     private void fireGroupExpanded(ColumnGroupEntry columnGroupEntry) {
-        for (Object listener : this.listeners.getListeners()) {
-            ((ISelectionTreeListener) listener).itemsExpanded(columnGroupEntry);
+        for (ISelectionTreeListener listener : this.listeners) {
+            listener.itemsExpanded(columnGroupEntry);
         }
     }
 
     private void fireGroupCollapsed(ColumnGroupEntry columnGroupEntry) {
-        for (Object listener : this.listeners.getListeners()) {
-            ((ISelectionTreeListener) listener).itemsCollapsed(columnGroupEntry);
+        for (ISelectionTreeListener listener : this.listeners) {
+            listener.itemsCollapsed(columnGroupEntry);
         }
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,7 +27,6 @@ public class RowHideShowLayerFixture extends RowHideShowLayer {
 
     private ILayerCommand lastCommand;
 
-    @SuppressWarnings("boxing")
     public RowHideShowLayerFixture() {
         // Row reorder fixture index positions: 4 1 0 2 3 5 6
         super(new RowReorderLayerFixture());

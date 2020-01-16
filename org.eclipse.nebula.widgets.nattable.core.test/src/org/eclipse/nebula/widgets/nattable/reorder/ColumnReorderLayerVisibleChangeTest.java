@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,7 +19,6 @@ import java.util.Set;
 
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
-import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.BaseDataLayerFixture;
 import org.eclipse.swt.graphics.Rectangle;
@@ -27,7 +26,6 @@ import org.junit.Test;
 
 public class ColumnReorderLayerVisibleChangeTest {
 
-    @SuppressWarnings("boxing")
     @Test
     /**
      * 	Index		10	11	12	13 ... 20
@@ -69,7 +67,6 @@ public class ColumnReorderLayerVisibleChangeTest {
         reorderLayer.reorderMultipleColumnPositions(fromColumnPositions, 10);
     }
 
-    @SuppressWarnings("boxing")
     @Test
     /**
      * 	Index		2	3	0	1 ... 20

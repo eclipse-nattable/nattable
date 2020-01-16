@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,7 +32,6 @@ import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.CheckBoxStateEnum;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
-import org.eclipse.nebula.widgets.nattable.edit.action.CellEditDragMode;
 import org.eclipse.nebula.widgets.nattable.edit.action.MouseEditAction;
 import org.eclipse.nebula.widgets.nattable.edit.action.ToggleCheckBoxColumnAction;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
@@ -277,13 +276,6 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
                                 MouseEventMatcher.LEFT_BUTTON,
                                 checkBoxPainter),
                         new MouseEditAction());
-
-                uiBindingRegistry.registerFirstMouseDragMode(
-                        new CellPainterMouseEventMatcher(
-                                GridRegion.BODY,
-                                MouseEventMatcher.LEFT_BUTTON,
-                                checkBoxPainter),
-                        new CellEditDragMode());
             }
         });
 
@@ -332,7 +324,8 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
 
         @Override
         public void setExpanded(Datum element, List<Datum> path,
-                boolean expanded) {}
+                boolean expanded) {
+        }
     }
 
     protected void printTree(TreeList<Datum> treeList, ITreeData<Datum> treeData) {

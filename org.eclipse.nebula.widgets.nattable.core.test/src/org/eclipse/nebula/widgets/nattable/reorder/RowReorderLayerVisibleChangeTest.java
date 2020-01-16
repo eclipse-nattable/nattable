@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,7 +26,6 @@ import org.junit.Test;
 
 public class RowReorderLayerVisibleChangeTest {
 
-    @SuppressWarnings("boxing")
     @Test
     /**
      * 	Index		10	11	12	13 ... 20
@@ -68,7 +67,6 @@ public class RowReorderLayerVisibleChangeTest {
         reorderLayer.reorderMultipleRowPositions(fromRowPositions, 10);
     }
 
-    @SuppressWarnings("boxing")
     @Test
     /**
      * 	Index		2	3	0	1 ... 20

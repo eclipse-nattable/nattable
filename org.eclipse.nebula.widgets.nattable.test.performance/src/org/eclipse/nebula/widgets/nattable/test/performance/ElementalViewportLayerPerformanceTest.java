@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,7 +27,7 @@ public class ElementalViewportLayerPerformanceTest extends
 
     @Test
     public void testViewportDataLayerPerformance() {
-        layer = new ViewportLayer(new DataLayer(new DummyBodyDataProvider(
+        this.layer = new ViewportLayer(new DataLayer(new DummyBodyDataProvider(
                 1000000, 1000000)));
     }
 
@@ -36,22 +36,21 @@ public class ElementalViewportLayerPerformanceTest extends
         ColumnReorderLayer reorderLayer = new ColumnReorderLayer(new DataLayer(
                 new DummyBodyDataProvider(1000000, 1000000)));
         reorderLayer.reorderColumnPosition(1, 2);
-        layer = new ViewportLayer(reorderLayer);
+        this.layer = new ViewportLayer(reorderLayer);
     }
 
-    @SuppressWarnings("boxing")
     @Test
     public void testViewportHideShowDataLayerPerformance() {
         ColumnHideShowLayer hideShowLayer = new ColumnHideShowLayer(
                 new DataLayer(new DummyBodyDataProvider(1000000, 1000000)));
         hideShowLayer
                 .hideColumnPositions(Arrays.asList(new Integer[] { 3, 5 }));
-        layer = new ViewportLayer(hideShowLayer);
+        this.layer = new ViewportLayer(hideShowLayer);
     }
 
     @Test
     public void testViewportSelectionDataLayerPerformance() {
-        layer = new ViewportLayer(new SelectionLayer(new DataLayer(
+        this.layer = new ViewportLayer(new SelectionLayer(new DataLayer(
                 new DummyBodyDataProvider(1000000, 1000000))));
     }
 
@@ -62,7 +61,7 @@ public class ElementalViewportLayerPerformanceTest extends
                 new DataLayer(new DummyBodyDataProvider(1000000, 1000000))), 0,
                 0);
 
-        layer = compositeLayer;
+        this.layer = compositeLayer;
     }
 
 }

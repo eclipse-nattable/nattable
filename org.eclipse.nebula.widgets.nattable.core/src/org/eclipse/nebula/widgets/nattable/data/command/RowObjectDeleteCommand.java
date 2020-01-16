@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
+ * Copyright (c) 2018, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,6 +34,7 @@ public class RowObjectDeleteCommand<T> extends AbstractContextFreeCommand {
      * @param rowObjects
      *            The row objects to delete.
      */
+    @SafeVarargs
     public RowObjectDeleteCommand(T... rowObjects) {
         this(Arrays.asList(rowObjects));
     }

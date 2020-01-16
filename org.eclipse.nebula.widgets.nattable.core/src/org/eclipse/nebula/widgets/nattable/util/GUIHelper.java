@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -195,7 +195,7 @@ public class GUIHelper {
                 } catch (IOException e) {
                     // if there is no upscaled image available, we upscale
                     // ourself
-                    ImageData imageData = ImageDescriptor.createFromURL(url).getImageData();
+                    ImageData imageData = ImageDescriptor.createFromURL(url).getImageData(100);
                     imageData = imageData.scaledTo(
                             convertHorizontalPixelToDpi(imageData.width),
                             convertVerticalPixelToDpi(imageData.height));
@@ -235,7 +235,7 @@ public class GUIHelper {
                     // we need to upscale the image but we have no scaled
                     // version, therefore we manually perform an upscale
                     // it won't look nice but at least it is upscaled
-                    ImageData imageData = imageDescriptor.getImageData();
+                    ImageData imageData = imageDescriptor.getImageData(100);
                     imageData = imageData.scaledTo(
                             convertHorizontalPixelToDpi(imageData.width),
                             convertVerticalPixelToDpi(imageData.height));
@@ -297,7 +297,7 @@ public class GUIHelper {
      * @return The URL of the internal NatTable image or <code>null</code> if
      *         there is no image found for the given name at the internal image
      *         resource location.
-     * 
+     *
      * @since 1.5
      */
     public static URL getInternalImageUrl(String imageName, boolean needScaling) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -47,7 +47,7 @@ public class ColumnHeaderLayerSelectionTest {
         this.gridLayer.doCommand(new SelectCellCommand(this.gridLayer, 2, 2, false, false));
 
         // Get column header cell corresponding to the selected body cell
-        ColumnHeaderLayer columnHeaderLayer = (ColumnHeaderLayer) this.gridLayer.getChildLayerByLayoutCoordinate(1, 0);
+        ColumnHeaderLayer columnHeaderLayer = this.gridLayer.getColumnHeaderLayer();
         // The column position is 1 because it takes into account the offset of
         // the row header
         ILayerCell cell = columnHeaderLayer.getCellByPosition(1, 0);
@@ -61,22 +61,23 @@ public class ColumnHeaderLayerSelectionTest {
         // Select full column
         this.gridLayer.doCommand(new ViewportSelectColumnCommand(this.gridLayer, 2, false, false));
 
-        ColumnHeaderLayer columnHeaderLayer = (ColumnHeaderLayer) this.gridLayer.getChildLayerByLayoutCoordinate(1, 0);
+        ColumnHeaderLayer columnHeaderLayer = this.gridLayer.getColumnHeaderLayer();
 
         // Since I selected using grid coordinates, the column position should
         // be 1 rather than 2
         int columnPosition = this.gridLayer.localToUnderlyingColumnPosition(2);
-        final LabelStack labelStack = columnHeaderLayer.getConfigLabelsByPosition(columnPosition, 0);
+        LabelStack labelStack = columnHeaderLayer.getConfigLabelsByPosition(columnPosition, 0);
 
         assertTrue(labelStack.hasLabel(SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE));
 
         columnPosition = this.gridLayer.localToUnderlyingColumnPosition(3);
-        assertFalse(SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE.equals(labelStack));
+        labelStack = columnHeaderLayer.getConfigLabelsByPosition(columnPosition, 0);
+        assertFalse(labelStack.hasLabel(SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE));
     }
 
     @Test
     public void shouldReturnAdditionalLabels() {
-        ColumnHeaderLayer columnHeaderLayer = (ColumnHeaderLayer) this.gridLayer.getChildLayerByLayoutCoordinate(1, 0);
+        ColumnHeaderLayer columnHeaderLayer = this.gridLayer.getColumnHeaderLayer();
 
         columnHeaderLayer.setConfigLabelAccumulator(new IConfigLabelProvider() {
 
@@ -89,7 +90,7 @@ public class ColumnHeaderLayerSelectionTest {
 
             @Override
             public Collection<String> getProvidedLabels() {
-                Set<String> result = new HashSet<String>();
+                Set<String> result = new HashSet<>();
                 result.add("test");
                 return result;
             }
@@ -103,7 +104,7 @@ public class ColumnHeaderLayerSelectionTest {
 
     @Test
     public void shouldReturnProvidedLabels() {
-        ColumnHeaderLayer columnHeaderLayer = (ColumnHeaderLayer) this.gridLayer.getChildLayerByLayoutCoordinate(1, 0);
+        ColumnHeaderLayer columnHeaderLayer = this.gridLayer.getColumnHeaderLayer();
 
         columnHeaderLayer.setConfigLabelAccumulator(new IConfigLabelProvider() {
 

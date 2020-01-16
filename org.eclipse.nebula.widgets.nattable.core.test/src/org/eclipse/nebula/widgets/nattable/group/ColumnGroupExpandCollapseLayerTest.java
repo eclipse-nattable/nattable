@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,16 +17,12 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.nebula.widgets.nattable.group.ColumnGroupExpandCollapseLayer;
-import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
-import org.eclipse.nebula.widgets.nattable.group.ColumnGroupUtils;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ColumnHideShowLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ColumnReorderLayerFixture;
 import org.junit.Before;
 import org.junit.Test;
 
-@SuppressWarnings("boxing")
 public class ColumnGroupExpandCollapseLayerTest {
 
     private static final String TEST_GROUP_NAME = "G1";

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.columnChooser.gui;
 
-import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -27,7 +26,6 @@ import org.eclipse.swt.widgets.Shell;
 
 public abstract class AbstractColumnChooserDialog extends Dialog {
 
-    protected ListenerList listeners = new ListenerList();
     private IDialogSettings dialogSettings;;
 
     public AbstractColumnChooserDialog(Shell parent) {
@@ -90,14 +88,6 @@ public abstract class AbstractColumnChooserDialog extends Dialog {
                 GridDataFactory.swtDefaults().span(2, 1).applyTo(selectedLabel);
             }
         }
-    }
-
-    public void addListener(Object listener) {
-        this.listeners.add(listener);
-    }
-
-    public void removeListener(Object listener) {
-        this.listeners.remove(listener);
     }
 
     @Override
