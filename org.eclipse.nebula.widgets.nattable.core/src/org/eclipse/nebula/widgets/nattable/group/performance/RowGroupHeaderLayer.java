@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Dirk Fauth.
+ * Copyright (c) 2019, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -539,6 +539,15 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
         }
         if (result == null && this.underlyingLayer instanceof DimensionallyDependentIndexLayer) {
             result = findLayerPath(((DimensionallyDependentIndexLayer) layer).getVerticalLayerDependency(), rowPosition);
+        }
+
+        // in case of the CompositeFreezeLayer it can happen that for the last
+        // rows in scrolled state the path cannot be determined as
+        // getUnderlyingLayersByPosition() returns an empty collection because
+        // it is above the ViewportLayer. We therefore need a special handling
+        // to check additionally below the ViewportLayer.
+        if (result == null && layer instanceof CompositeFreezeLayer) {
+            result = findLayerPath(this.compositeFreezeLayer.getChildLayerByLayoutCoordinate(1, 1), rowPosition);
         }
 
         if (result != null) {

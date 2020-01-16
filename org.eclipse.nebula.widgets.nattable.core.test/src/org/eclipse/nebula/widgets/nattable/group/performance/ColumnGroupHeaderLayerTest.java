@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Dirk Fauth.
+ * Copyright (c) 2019, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10728,6 +10728,76 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(0, cell.getBounds().y);
         assertEquals(400, cell.getBounds().width);
         assertEquals(20, cell.getBounds().height);
+    }
+
+    @Test
+    public void shouldCreateGroupFromSingleColumn() {
+        GroupModel groupModel = this.columnGroupHeaderLayer.getGroupModel();
+        groupModel.clear();
+
+        assertTrue(groupModel.isEmpty());
+
+        this.selectionLayer.doCommand(new SelectColumnCommand(this.selectionLayer, 0, 0, false, false));
+        this.selectionLayer.doCommand(new SelectColumnCommand(this.selectionLayer, 1, 0, false, true));
+        this.selectionLayer.doCommand(new SelectColumnCommand(this.selectionLayer, 2, 0, false, true));
+        this.selectionLayer.doCommand(new SelectColumnCommand(this.selectionLayer, 3, 0, false, true));
+
+        assertEquals(4, this.selectionLayer.getSelectedColumnPositions().length);
+
+        this.gridLayer.doCommand(new CreateColumnGroupCommand("Person"));
+
+        assertEquals(1, groupModel.size());
+
+        Group group = groupModel.getGroupByPosition(0);
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(4, group.getVisibleSpan());
+        assertFalse(group.isCollapsed());
+
+        Collection<Integer> members = group.getMembers();
+        assertEquals(4, members.size());
+        assertTrue(members.contains(0));
+        assertTrue(members.contains(1));
+        assertTrue(members.contains(2));
+        assertTrue(members.contains(3));
+
+        ILayerCell cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginColumnPosition());
+        assertEquals(0, cell.getColumnPosition());
+        assertEquals(0, cell.getColumnIndex());
+        assertEquals(4, cell.getColumnSpan());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(400, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
+
+        // select a single column next to the previous
+        this.selectionLayer.doCommand(new SelectColumnCommand(this.selectionLayer, 4, 0, false, false));
+
+        assertEquals(1, this.selectionLayer.getSelectedColumnPositions().length);
+
+        this.gridLayer.doCommand(new CreateColumnGroupCommand("Test"));
+
+        assertEquals(2, groupModel.size());
+
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(4, group.getVisibleSpan());
+        assertFalse(group.isCollapsed());
+
+        group = groupModel.getGroupByPosition(4);
+        assertEquals(4, group.getStartIndex());
+        assertEquals(4, group.getVisibleStartIndex());
+        assertEquals(4, group.getVisibleStartPosition());
+        assertEquals(1, group.getOriginalSpan());
+        assertEquals(1, group.getVisibleSpan());
+        assertFalse(group.isCollapsed());
     }
 
     @Test

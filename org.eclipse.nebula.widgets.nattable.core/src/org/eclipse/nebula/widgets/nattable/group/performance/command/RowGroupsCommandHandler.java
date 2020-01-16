@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Dirk Fauth.
+ * Copyright (c) 2019, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -141,10 +141,12 @@ public class RowGroupsCommandHandler extends AbstractLayerCommandHandler<IRowGro
 
             List<Integer> selectedPositions = new ArrayList<Integer>(positionsToGroup);
 
-            // reorder so the positions are consecutive which is necessary for
-            // grouping
-            this.selectionLayer.doCommand(
-                    new MultiRowReorderCommand(this.selectionLayer, selectedPositions, selectedPositions.get(0)));
+            if (selectedPositions.size() > 1) {
+                // if a group is created for more than one row, reorder so
+                // the positions are consecutive which is necessary for grouping
+                this.selectionLayer.doCommand(
+                        new MultiRowReorderCommand(this.selectionLayer, selectedPositions, selectedPositions.get(0)));
+            }
 
             // create the row group
             this.contextLayer.addGroup(rowGroupName, this.selectionLayer.getRowIndexByPosition(selectedPositions.get(0)), positionsToGroup.size());
