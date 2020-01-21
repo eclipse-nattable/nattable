@@ -11,7 +11,7 @@
       <all-permissions/>
    </security>
    <resources>
-      <jar href="org.eclipse.swt_3.103.2.v20150203-1313.jar"/>
+      <jar href="org.eclipse.swt_3.107.0.v20180611-0422.jar"/>
    </resources>
    <component-desc/>
 </jnlp> 

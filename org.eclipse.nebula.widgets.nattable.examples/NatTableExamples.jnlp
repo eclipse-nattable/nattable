@@ -5,7 +5,7 @@
       codebase="http://download.eclipse.org/nattable/webstart">
    <information> 
       <title>NatTable Examples</title> 
-      <vendor>Open Source Software</vendor>
+      <vendor>Eclipse Foundation</vendor>
       <homepage href="http://www.eclipse.org/nattable"/>
       <description>Examples demonstrating the NatTable feature set</description>
       <description kind="short">NatTable Examples</description>
@@ -19,7 +19,7 @@
       <j2se version="1.7+" href="http://java.sun.com/products/autodl/j2se"/>
       <extension name="SWT" href="SWT.jnlp"/>
       <extension name="SWT-native" href="SWT-native.jnlp"/>
-      <jar href="../releases/1.4.0/NatTableExamples.jar" main="true"/>
+      <jar href="../releases/1.6.0/NatTableExamples.jar" main="true"/>
    </resources>
    <application-desc main-class="org.eclipse.nebula.widgets.nattable.examples.NatTableExamples"/>
 </jnlp> 
