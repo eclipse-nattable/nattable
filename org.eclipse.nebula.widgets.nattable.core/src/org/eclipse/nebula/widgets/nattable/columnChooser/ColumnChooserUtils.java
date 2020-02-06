@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.columnChooser;
 import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.asIntArray;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
@@ -26,44 +25,39 @@ public class ColumnChooserUtils {
 
     public static final String RENAMED_COLUMN_INDICATOR = "*"; //$NON-NLS-1$
 
-    public static void hideColumnEntries(List<ColumnEntry> removedItems,
-            ColumnHideShowLayer hideShowLayer) {
+    public static void hideColumnEntries(List<ColumnEntry> removedItems, ColumnHideShowLayer hideShowLayer) {
         MultiColumnHideCommand hideCommand = new MultiColumnHideCommand(
                 hideShowLayer,
                 asIntArray(getColumnEntryPositions(removedItems)));
         hideShowLayer.doCommand(hideCommand);
     }
 
-    public static void hideColumnPositions(List<Integer> removedPositions,
-            ColumnHideShowLayer hideShowLayer) {
+    public static void hideColumnPositions(List<Integer> removedPositions, ColumnHideShowLayer hideShowLayer) {
         MultiColumnHideCommand hideCommand = new MultiColumnHideCommand(
-                hideShowLayer, asIntArray(removedPositions));
+                hideShowLayer,
+                asIntArray(removedPositions));
         hideShowLayer.doCommand(hideCommand);
     }
 
-    public static void showColumnEntries(List<ColumnEntry> addedItems,
-            ColumnHideShowLayer hideShowLayer) {
-        hideShowLayer.doCommand(new MultiColumnShowCommand(
-                getColumnEntryIndexes(addedItems)));
+    public static void showColumnEntries(List<ColumnEntry> addedItems, ColumnHideShowLayer hideShowLayer) {
+        hideShowLayer.doCommand(new MultiColumnShowCommand(getColumnEntryIndexes(addedItems)));
     }
 
-    public static void showColumnIndexes(List<Integer> addedColumnIndexes,
-            ColumnHideShowLayer hideShowLayer) {
+    public static void showColumnIndexes(List<Integer> addedColumnIndexes, ColumnHideShowLayer hideShowLayer) {
         hideShowLayer.doCommand(new MultiColumnShowCommand(addedColumnIndexes));
     }
 
     public static List<ColumnEntry> getHiddenColumnEntries(
             ColumnHideShowLayer columnHideShowLayer,
-            ColumnHeaderLayer columnHeaderLayer, DataLayer columnHeaderDataLayer) {
-        Collection<Integer> hiddenColumnIndexes = columnHideShowLayer
-                .getHiddenColumnIndexes();
-        ArrayList<ColumnEntry> hiddenColumnEntries = new ArrayList<ColumnEntry>();
+            ColumnHeaderLayer columnHeaderLayer,
+            DataLayer columnHeaderDataLayer) {
 
-        for (Integer hiddenColumnIndex : hiddenColumnIndexes) {
-            String label = getColumnLabel(columnHeaderLayer,
-                    columnHeaderDataLayer, hiddenColumnIndex);
-            ColumnEntry columnEntry = new ColumnEntry(label, hiddenColumnIndex,
-                    Integer.valueOf(-1));
+        int[] hiddenColumnIndexes = columnHideShowLayer.getHiddenColumnIndexesArray();
+        ArrayList<ColumnEntry> hiddenColumnEntries = new ArrayList<>();
+
+        for (int hiddenColumnIndex : hiddenColumnIndexes) {
+            String label = getColumnLabel(columnHeaderLayer, columnHeaderDataLayer, hiddenColumnIndex);
+            ColumnEntry columnEntry = new ColumnEntry(label, hiddenColumnIndex, -1);
             hiddenColumnEntries.add(columnEntry);
         }
 
@@ -118,7 +112,7 @@ public class ColumnChooserUtils {
      */
     public static ColumnEntry find(List<ColumnEntry> entries, int indexToFind) {
         for (ColumnEntry columnEntry : entries) {
-            if (columnEntry.getIndex().equals(indexToFind)) {
+            if (columnEntry.getIndex() == indexToFind) {
                 return columnEntry;
             }
         }

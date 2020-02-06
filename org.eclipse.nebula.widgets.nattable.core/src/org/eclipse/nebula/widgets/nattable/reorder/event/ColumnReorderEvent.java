@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,10 +11,12 @@
 package org.eclipse.nebula.widgets.nattable.reorder.event;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.eclipse.collections.api.list.primitive.MutableIntList;
+import org.eclipse.collections.impl.factory.primitive.IntLists;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -30,7 +32,7 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
     private ILayer beforeLayer;
 
     private Collection<Range> beforeFromColumnPositionRanges;
-    private Collection<Integer> beforeFromColumnIndexes;
+    private MutableIntList beforeFromColumnIndexes;
 
     private int beforeToColumnPosition;
     private int beforeToColumnIndex;
@@ -86,8 +88,8 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
             int beforeToColumnIndex,
             boolean reorderToLeftEdge) {
         this(layer,
-                Arrays.asList(new Integer[] { Integer.valueOf(beforeFromColumnPosition) }),
-                Arrays.asList(new Integer[] { Integer.valueOf(beforeFromColumnIndex) }),
+                new int[] { beforeFromColumnPosition },
+                new int[] { beforeFromColumnIndex },
                 beforeToColumnPosition,
                 beforeToColumnIndex,
                 reorderToLeftEdge);
@@ -144,17 +146,53 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
             int beforeToColumnPosition,
             int beforeToColumnIndex,
             boolean reorderToLeftEdge) {
+
+        this(layer,
+                beforeFromColumnPositions.stream().mapToInt(Integer::intValue).toArray(),
+                beforeFromColumnIndexes.stream().mapToInt(Integer::intValue).toArray(),
+                beforeToColumnPosition,
+                beforeToColumnIndex,
+                reorderToLeftEdge);
+    }
+
+    /**
+     *
+     * @param layer
+     *            The layer to which the column positions match.
+     * @param beforeFromColumnPositions
+     *            The column positions that were reordered, before the reorder
+     *            operation was performed.
+     * @param beforeFromColumnIndexes
+     *            The indexes of the reordered positions.
+     * @param beforeToColumnPosition
+     *            The position of the column to which the reorder operation was
+     *            performed, before the reorder operation was performed
+     * @param beforeToColumnIndex
+     *            The index of the column to which the reorder operation was
+     *            performed.
+     * @param reorderToLeftEdge
+     *            whether the reorder operation was performed to the left or the
+     *            right edge.
+     *
+     * @since 2.0
+     */
+    public ColumnReorderEvent(ILayer layer,
+            int[] beforeFromColumnPositions,
+            int[] beforeFromColumnIndexes,
+            int beforeToColumnPosition,
+            int beforeToColumnIndex,
+            boolean reorderToLeftEdge) {
         super(layer);
         this.beforeLayer = layer;
         this.beforeFromColumnPositionRanges = PositionUtil.getRanges(beforeFromColumnPositions);
-        this.beforeFromColumnIndexes = beforeFromColumnIndexes;
+        this.beforeFromColumnIndexes = IntLists.mutable.of(beforeFromColumnIndexes);
         this.beforeToColumnPosition = beforeToColumnPosition;
         this.beforeToColumnIndex = beforeToColumnIndex;
         this.reorderToLeftEdge = reorderToLeftEdge;
 
-        List<Integer> allColumnPositions = new ArrayList<Integer>(beforeFromColumnPositions);
-        allColumnPositions.add(Integer.valueOf(beforeToColumnPosition));
-        setColumnPositionRanges(PositionUtil.getRanges(allColumnPositions));
+        MutableIntList allColumnPositions = IntLists.mutable.of(beforeFromColumnPositions);
+        allColumnPositions.add(beforeToColumnPosition);
+        setColumnPositionRanges(PositionUtil.getRanges(allColumnPositions.toSortedArray()));
     }
 
     /**
@@ -167,7 +205,7 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
         super(event);
         this.beforeLayer = event.beforeLayer;
         this.beforeFromColumnPositionRanges = new ArrayList<Range>(event.beforeFromColumnPositionRanges);
-        this.beforeFromColumnIndexes = new ArrayList<Integer>(event.beforeFromColumnIndexes);
+        this.beforeFromColumnIndexes = IntLists.mutable.ofAll(event.beforeFromColumnIndexes);
         this.beforeToColumnPosition = event.beforeToColumnPosition;
         this.beforeToColumnIndex = event.beforeToColumnIndex;
         this.reorderToLeftEdge = event.reorderToLeftEdge;
@@ -179,7 +217,16 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
      * @since 1.6
      */
     public Collection<Integer> getBeforeFromColumnIndexes() {
-        return this.beforeFromColumnIndexes;
+        return this.beforeFromColumnIndexes.primitiveStream().boxed().collect(Collectors.toList());
+    }
+
+    /**
+     *
+     * @return The indexes of the reordered columns.
+     * @since 2.0
+     */
+    public int[] getBeforeFromColumnIndexesArray() {
+        return this.beforeFromColumnIndexes.toSortedArray();
     }
 
     /**
@@ -212,7 +259,7 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
     /**
      * Setter for the beforeToColumnIndex that needs to be called used in case a
      * reorder operation was performed to a hidden column.
-     * 
+     *
      * @param beforeIndex
      *            The index of the column to which the reorder operation was
      *            performed.

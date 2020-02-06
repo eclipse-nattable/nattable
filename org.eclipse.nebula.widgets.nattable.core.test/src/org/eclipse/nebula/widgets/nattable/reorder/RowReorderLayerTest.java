@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2019 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -89,9 +89,7 @@ public class RowReorderLayerTest {
      *  Position 	0 	1	2	3
      */
     public void reorderMultipleRowsTopToBottom() throws Exception {
-        List<Integer> fromRowsPositions = Arrays.asList(new Integer[] { 0, 1 });
-
-        this.rowReorderLayer.reorderMultipleRowPositions(fromRowsPositions, 3);
+        this.rowReorderLayer.reorderMultipleRowPositions(new int[] { 0, 1 }, 3);
 
         assertEquals(2, this.rowReorderLayer.getRowIndexByPosition(0));
         assertEquals(0, this.rowReorderLayer.getRowIndexByPosition(1));
@@ -106,9 +104,7 @@ public class RowReorderLayerTest {
      *  Position 	0 	1	2	3
      */
     public void reorderMultipleRowsTopToBottomToTheEnd() throws Exception {
-        List<Integer> fromRowPositions = Arrays.asList(new Integer[] { 0, 1 });
-
-        this.rowReorderLayer.reorderMultipleRowPositions(fromRowPositions, 4);
+        this.rowReorderLayer.reorderMultipleRowPositions(new int[] { 0, 1 }, 4);
 
         assertEquals(2, this.rowReorderLayer.getRowPositionByIndex(0));
         assertEquals(3, this.rowReorderLayer.getRowPositionByIndex(1));

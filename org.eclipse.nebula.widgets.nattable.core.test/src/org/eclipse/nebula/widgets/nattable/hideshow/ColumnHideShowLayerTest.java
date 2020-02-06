@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -69,17 +69,16 @@ public class ColumnHideShowLayerTest {
 
     @Test
     public void hideAllColumns() {
-        this.columnHideShowLayer.hideColumnPositions(Arrays.asList(0, 1, 2));
+        this.columnHideShowLayer.hideColumnPositions(0, 1, 2);
 
         assertEquals(0, this.columnHideShowLayer.getColumnCount());
     }
 
     @Test
     public void hideAllColumns2() {
-        List<Integer> columnPositions = Arrays.asList(0);
-        this.columnHideShowLayer.hideColumnPositions(columnPositions);
-        this.columnHideShowLayer.hideColumnPositions(columnPositions);
-        this.columnHideShowLayer.hideColumnPositions(columnPositions);
+        this.columnHideShowLayer.hideColumnPositions(0);
+        this.columnHideShowLayer.hideColumnPositions(0);
+        this.columnHideShowLayer.hideColumnPositions(0);
         assertEquals(0, this.columnHideShowLayer.getColumnCount());
     }
 
@@ -149,6 +148,25 @@ public class ColumnHideShowLayerTest {
         assertEquals(9, this.columnHideShowLayer.getColumnCount());
         assertEquals(3, this.columnHideShowLayer.getColumnPositionByIndex(3));
         assertEquals(4, this.columnHideShowLayer.getColumnPositionByIndex(4));
+    }
+
+    @Test
+    public void showColumnIndexesPrimitive() {
+        this.columnHideShowLayer = new ColumnHideShowLayerFixture(
+                new DataLayerFixture(10, 10, 100, 20));
+
+        assertEquals(10, this.columnHideShowLayer.getColumnCount());
+
+        this.columnHideShowLayer.hideColumnPositions(3, 4, 5);
+        assertEquals(7, this.columnHideShowLayer.getColumnCount());
+        assertEquals(-1, this.columnHideShowLayer.getColumnPositionByIndex(3));
+        assertEquals(-1, this.columnHideShowLayer.getColumnPositionByIndex(4));
+
+        this.columnHideShowLayer.showColumnIndexes(3, 4);
+        assertEquals(9, this.columnHideShowLayer.getColumnCount());
+        assertEquals(3, this.columnHideShowLayer.getColumnPositionByIndex(3));
+        assertEquals(4, this.columnHideShowLayer.getColumnPositionByIndex(4));
+
     }
 
     @Test
@@ -362,6 +380,34 @@ public class ColumnHideShowLayerTest {
         assertEquals(3, this.columnHideShowLayer.localToUnderlyingColumnPosition(3));
         assertEquals(4, this.columnHideShowLayer.localToUnderlyingColumnPosition(4));
         assertEquals(-1, this.columnHideShowLayer.localToUnderlyingColumnPosition(5));
+    }
+
+    @Test
+    public void shouldReturnHiddenColumnIndexes() {
+        // test initialization hides column indexes 0 and 3
+        // happens due to reordering and hiding
+
+        Collection<Integer> hiddenColumnIndexes = this.columnHideShowLayer.getHiddenColumnIndexes();
+        assertEquals(2, hiddenColumnIndexes.size());
+        assertTrue(hiddenColumnIndexes.contains(Integer.valueOf(0)));
+        assertTrue(hiddenColumnIndexes.contains(Integer.valueOf(3)));
+
+        int[] hiddenColumnIndexesArray = this.columnHideShowLayer.getHiddenColumnIndexesArray();
+        assertEquals(2, hiddenColumnIndexesArray.length);
+        assertEquals(0, hiddenColumnIndexesArray[0]);
+        assertEquals(3, hiddenColumnIndexesArray[1]);
+
+        assertTrue(this.columnHideShowLayer.hasHiddenColumns());
+
+        this.columnHideShowLayer.showAllColumns();
+
+        hiddenColumnIndexes = this.columnHideShowLayer.getHiddenColumnIndexes();
+        assertEquals(0, hiddenColumnIndexes.size());
+
+        hiddenColumnIndexesArray = this.columnHideShowLayer.getHiddenColumnIndexesArray();
+        assertEquals(0, hiddenColumnIndexesArray.length);
+
+        assertFalse(this.columnHideShowLayer.hasHiddenColumns());
     }
 
 }

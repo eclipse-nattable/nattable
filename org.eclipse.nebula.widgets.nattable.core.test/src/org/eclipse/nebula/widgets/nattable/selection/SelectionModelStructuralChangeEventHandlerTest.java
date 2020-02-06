@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Original authors and others.
+ * Copyright (c) 2014, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,9 +11,9 @@
 package org.eclipse.nebula.widgets.nattable.selection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
@@ -34,7 +34,6 @@ import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.GridLayerFixture;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,7 +58,7 @@ public class SelectionModelStructuralChangeEventHandlerTest {
 
         this.selectionModel.handleLayerEvent(new RowDeleteEvent(this.dataLayer, 3));
 
-        Assert.assertTrue(this.selectionModel.isEmpty());
+        assertTrue(this.selectionModel.isEmpty());
     }
 
     @Test
@@ -68,8 +67,8 @@ public class SelectionModelStructuralChangeEventHandlerTest {
 
         this.selectionModel.handleLayerEvent(new RowDeleteEvent(this.dataLayer, 5));
 
-        Assert.assertFalse(this.selectionModel.isEmpty());
-        Assert.assertTrue(this.selectionModel.isRowPositionSelected(3));
+        assertFalse(this.selectionModel.isEmpty());
+        assertTrue(this.selectionModel.isRowPositionSelected(3));
     }
 
     @Test
@@ -78,78 +77,65 @@ public class SelectionModelStructuralChangeEventHandlerTest {
 
         this.selectionModel.handleLayerEvent(new RowDeleteEvent(this.dataLayer, 5));
 
-        Assert.assertFalse(this.selectionModel.isEmpty());
-        Assert.assertTrue(this.selectionModel.isRowPositionSelected(4));
+        assertFalse(this.selectionModel.isEmpty());
+        assertTrue(this.selectionModel.isRowPositionSelected(4));
     }
 
     @Test
     public void shouldClearSelectionIfListIsCleared() {
         this.selectionModel.addSelection(3, 4);
 
-        this.selectionModel.handleLayerEvent(new RowDeleteEvent(this.dataLayer, new Range(0, 9)));
+        this.selectionModel.handleLayerEvent(
+                new RowDeleteEvent(this.dataLayer, new Range(0, 9)));
 
-        Assert.assertTrue(this.selectionModel.isEmpty());
+        assertTrue(this.selectionModel.isEmpty());
     }
 
     @Test
     public void shouldClearSelectionOnStructuralChanges() {
         this.selectionModel.addSelection(3, 4);
-        Assert.assertFalse(this.selectionModel.isEmpty());
+        assertFalse(this.selectionModel.isEmpty());
 
         this.selectionModel.handleLayerEvent(new StructuralRefreshEvent(this.dataLayer));
-        Assert.assertTrue(this.selectionModel.isEmpty());
+        assertTrue(this.selectionModel.isEmpty());
     }
 
     @Test
     public void shouldNotClearSelectionOnStructuralChanges() {
         ((SelectionModel) this.selectionModel).setClearSelectionOnChange(false);
         this.selectionModel.addSelection(3, 4);
-        Assert.assertFalse(this.selectionModel.isEmpty());
+        assertFalse(this.selectionModel.isEmpty());
 
         this.selectionModel.handleLayerEvent(new StructuralRefreshEvent(this.dataLayer));
-        Assert.assertFalse(this.selectionModel.isEmpty());
+        assertFalse(this.selectionModel.isEmpty());
     }
 
     @Test
     public void shouldClearSelectionIfAllRowsAreHidden() {
         this.selectionModel.addSelection(3, 4);
 
-        List<Integer> rows = new ArrayList<Integer>();
-        rows.add(0);
-        rows.add(1);
-        rows.add(2);
-        rows.add(3);
-        rows.add(4);
-        rows.add(5);
-        rows.add(6);
-        rows.add(7);
-        rows.add(8);
-        rows.add(9);
-        this.selectionModel.handleLayerEvent(new HideRowPositionsEvent(this.dataLayer, rows));
+        this.selectionModel.handleLayerEvent(
+                new HideRowPositionsEvent(this.dataLayer, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 
-        Assert.assertTrue(this.selectionModel.isEmpty());
+        assertTrue(this.selectionModel.isEmpty());
     }
 
     @Test
     public void shouldClearSelectionIfSelectedColumnIsHidden() {
         this.selectionModel.addSelection(3, 4);
 
-        List<Integer> columns = new ArrayList<Integer>();
-        columns.add(3);
-        this.selectionModel.handleLayerEvent(new HideColumnPositionsEvent(this.dataLayer, columns));
+        this.selectionModel.handleLayerEvent(new HideColumnPositionsEvent(this.dataLayer, 3));
 
-        Assert.assertTrue(this.selectionModel.isEmpty());
+        assertTrue(this.selectionModel.isEmpty());
     }
 
     @Test
     public void shouldNotClearSelectionIfOtherColumnIsHidden() {
         this.selectionModel.addSelection(3, 4);
 
-        List<Integer> columns = new ArrayList<Integer>();
-        columns.add(2);
-        this.selectionModel.handleLayerEvent(new HideColumnPositionsEvent(this.dataLayer, columns));
+        this.selectionModel.handleLayerEvent(new HideColumnPositionsEvent(this.dataLayer, 2));
 
-        Assert.assertTrue(this.selectionModel.isEmpty());
+        assertTrue(this.selectionModel.isEmpty());
     }
 
     @Test

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -564,7 +563,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
             boolean withShiftMask, boolean withControlMask) {
         this.selectRowCommandHandler.selectRows(
                 columnPosition,
-                Arrays.asList(Integer.valueOf(rowPosition)),
+                new int[] { rowPosition },
                 withShiftMask,
                 withControlMask,
                 rowPosition);
@@ -731,7 +730,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      *         <code>false</code> otherwise
      */
     protected boolean handleMultiColumnHideCommand(MultiColumnHideCommand command) {
-        for (int columnPosition : command.getColumnPositions()) {
+        for (int columnPosition : command.getColumnPositionsArray()) {
             if (isColumnPositionFullySelected(columnPosition)) {
                 Rectangle selection = new Rectangle(
                         columnPosition,
@@ -783,7 +782,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      *         <code>false</code> otherwise
      */
     protected boolean handleMultiRowHideCommand(MultiRowHideCommand command) {
-        for (int rowPosition : command.getRowPositions()) {
+        for (int rowPosition : command.getRowPositionsArray()) {
             if (isRowPositionFullySelected(rowPosition)) {
                 Rectangle selection = new Rectangle(
                         0,

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -69,9 +69,38 @@ public class RowSelectionEvent extends RowVisualChangeEvent implements ISelectio
      * @param withControlMask
      *            Boolean to determinate if the control mask is used.
      * @since 1.4
+     * @deprecated Replaced by
+     *             {@link #RowSelectionEvent(SelectionLayer, int[], int, boolean, boolean)}
+     *             with primitive values.
      */
+    @Deprecated
     public RowSelectionEvent(SelectionLayer selectionLayer,
             Collection<Integer> rowPositions, int rowPositionToMoveIntoViewport,
+            boolean withShiftMask, boolean withControlMask) {
+        super(selectionLayer, PositionUtil.getRanges(rowPositions));
+        this.selectionLayer = selectionLayer;
+        this.rowPositionToMoveIntoViewport = rowPositionToMoveIntoViewport;
+        this.withShiftMask = withShiftMask;
+        this.withControlMask = withControlMask;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param selectionLayer
+     *            The selection layer.
+     * @param rowPositions
+     *            The positions of the rows.
+     * @param rowPositionToMoveIntoViewport
+     *            The row position to move into the viewport.
+     * @param withShiftMask
+     *            Boolean to determinate if the shift mask is used.
+     * @param withControlMask
+     *            Boolean to determinate if the control mask is used.
+     * @since 2.0
+     */
+    public RowSelectionEvent(SelectionLayer selectionLayer,
+            int[] rowPositions, int rowPositionToMoveIntoViewport,
             boolean withShiftMask, boolean withControlMask) {
         super(selectionLayer, PositionUtil.getRanges(rowPositions));
         this.selectionLayer = selectionLayer;

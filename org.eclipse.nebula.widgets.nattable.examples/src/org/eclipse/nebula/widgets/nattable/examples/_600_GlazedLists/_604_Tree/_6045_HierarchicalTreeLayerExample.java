@@ -11,7 +11,6 @@
 package org.eclipse.nebula.widgets.nattable.examples._600_GlazedLists._604_Tree;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -349,8 +348,7 @@ public class _6045_HierarchicalTreeLayerExample extends AbstractNatExample {
         multiReorderButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                List<Integer> fromColumnPositions = Arrays.asList(4, 5);
-                natTable.doCommand(new MultiColumnReorderCommand(natTable, fromColumnPositions, 8));
+                natTable.doCommand(new MultiColumnReorderCommand(natTable, new int[] { 4, 5 }, 8));
             }
         });
 

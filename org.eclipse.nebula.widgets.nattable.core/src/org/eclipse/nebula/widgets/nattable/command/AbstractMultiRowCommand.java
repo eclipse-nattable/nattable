@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -55,6 +55,20 @@ public abstract class AbstractMultiRowCommand implements ILayerCommand {
         return this.rowPositionCoordinates.stream()
                 .map(RowPositionCoordinate::getRowPosition)
                 .collect(Collectors.toCollection(HashSet::new));
+    }
+
+    /**
+     *
+     * @return The unique row positions that should be processed by this
+     *         command.
+     *
+     * @since 2.0
+     */
+    public int[] getRowPositionsArray() {
+        return this.rowPositionCoordinates.stream()
+                .mapToInt(RowPositionCoordinate::getRowPosition)
+                .sorted()
+                .toArray();
     }
 
     /**

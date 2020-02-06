@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -60,8 +60,28 @@ public abstract class RowStructuralChangeEvent extends RowVisualChangeEvent impl
      *            The indexes of the rows that have changed.
      *
      * @since 1.6
+     * @deprecated Use
+     *             {@link #RowStructuralChangeEvent(ILayer, Collection, int...)}
+     *             with primitive types for row indexes to avoid autoboxing.
      */
+    @Deprecated
     public RowStructuralChangeEvent(ILayer layer, Collection<Range> rowPositionRanges, Collection<Integer> rowIndexes) {
+        super(layer, rowPositionRanges, rowIndexes);
+    }
+
+    /**
+     * Creates a new RowStructuralChangeEvent based on the given information.
+     *
+     * @param layer
+     *            The ILayer to which the given row positions match.
+     * @param rowPositionRanges
+     *            The row position ranges for the rows that have changed.
+     * @param rowIndexes
+     *            The indexes of the rows that have changed.
+     *
+     * @since 2.0
+     */
+    public RowStructuralChangeEvent(ILayer layer, Collection<Range> rowPositionRanges, int... rowIndexes) {
         super(layer, rowPositionRanges, rowIndexes);
     }
 
@@ -79,7 +99,7 @@ public abstract class RowStructuralChangeEvent extends RowVisualChangeEvent impl
 
     @Override
     public Collection<Rectangle> getChangedPositionRectangles() {
-        Collection<Rectangle> changedPositionRectangles = new ArrayList<Rectangle>();
+        Collection<Rectangle> changedPositionRectangles = new ArrayList<>();
 
         Collection<Range> ranges = getRowPositionRanges();
         if (ranges != null && ranges.size() > 0) {

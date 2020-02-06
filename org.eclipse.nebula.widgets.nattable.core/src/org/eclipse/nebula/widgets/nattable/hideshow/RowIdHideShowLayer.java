@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 2019 Dirk Fauth.
+ * Copyright (c) 2018, 2020 Dirk Fauth.
 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,8 +12,6 @@
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +22,8 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import org.eclipse.collections.api.set.primitive.MutableIntSet;
+import org.eclipse.collections.impl.factory.primitive.IntSets;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
@@ -192,22 +192,28 @@ public class RowIdHideShowLayer<T> extends AbstractRowHideShowLayer implements I
 
     @Override
     public Collection<Integer> getHiddenRowIndexes() {
-        Set<Integer> result = new HashSet<Integer>();
-        for (Map.Entry<Serializable, T> entry : this.hiddenRows.entrySet()) {
-            result.add(getRowIndexById(entry.getKey()));
-        }
-        return result;
+        return this.hiddenRows.entrySet().stream()
+                .map(entry -> getRowIndexById(entry.getKey()))
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public int[] getHiddenRowIndexesArray() {
+        return this.hiddenRows.entrySet().stream()
+                .mapToInt(entry -> getRowIndexById(entry.getKey()))
+                .sorted()
+                .toArray();
+    }
+
+    @Override
+    public boolean hasHiddenRows() {
+        return !this.hiddenRows.isEmpty();
     }
 
     @Override
     public void hideRowPositions(int... rowPositions) {
-        hideRowPositions(Arrays.stream(rowPositions).boxed().collect(Collectors.toList()));
-    }
-
-    @Override
-    public void hideRowPositions(Collection<Integer> rowPositions) {
         Map<Serializable, T> toHide = new HashMap<Serializable, T>();
-        for (Integer rowPosition : rowPositions) {
+        for (int rowPosition : rowPositions) {
             T rowObject = getRowObjectByPosition(rowPosition);
             toHide.put(this.rowIdAccessor.getRowId(rowObject), rowObject);
         }
@@ -217,30 +223,30 @@ public class RowIdHideShowLayer<T> extends AbstractRowHideShowLayer implements I
     }
 
     @Override
-    public void hideRowIndexes(int... rowIndexes) {
-        hideRowIndexes(Arrays.stream(rowIndexes).boxed().collect(Collectors.toList()));
+    public void hideRowPositions(Collection<Integer> rowPositions) {
+        hideRowPositions(rowPositions.stream().mapToInt(Integer::intValue).toArray());
     }
 
     @Override
-    public void hideRowIndexes(Collection<Integer> rowIndexes) {
-        Set<Integer> rowPositions = new HashSet<Integer>();
-        for (Integer rowIndex : rowIndexes) {
+    public void hideRowIndexes(int... rowIndexes) {
+        MutableIntSet rowPositions = IntSets.mutable.empty();
+        for (int rowIndex : rowIndexes) {
             rowPositions.add(getRowPositionByIndex(rowIndex));
             T rowObject = getRowObjectByIndex(rowIndex);
             this.hiddenRows.put(this.rowIdAccessor.getRowId(rowObject), rowObject);
         }
         invalidateCache();
-        fireLayerEvent(new HideRowPositionsEvent(this, rowPositions));
+        fireLayerEvent(new HideRowPositionsEvent(this, rowPositions.toArray()));
+    }
+
+    @Override
+    public void hideRowIndexes(Collection<Integer> rowIndexes) {
+        hideRowIndexes(rowIndexes.stream().mapToInt(Integer::intValue).toArray());
     }
 
     @Override
     public void showRowIndexes(int... rowIndexes) {
-        showRowIndexes(Arrays.stream(rowIndexes).boxed().collect(Collectors.toList()));
-    }
-
-    @Override
-    public void showRowIndexes(Collection<Integer> rowIndexes) {
-        for (Integer rowIndex : rowIndexes) {
+        for (int rowIndex : rowIndexes) {
             T rowObject = getRowObjectByIndex(rowIndex);
             this.hiddenRows.remove(this.rowIdAccessor.getRowId(rowObject));
         }
@@ -249,8 +255,13 @@ public class RowIdHideShowLayer<T> extends AbstractRowHideShowLayer implements I
     }
 
     @Override
+    public void showRowIndexes(Collection<Integer> rowIndexes) {
+        showRowIndexes(rowIndexes.stream().mapToInt(Integer::intValue).toArray());
+    }
+
+    @Override
     public void showRowPosition(int rowPosition, boolean showToTop, boolean showAll) {
-        Set<Integer> rowIndexes = new HashSet<Integer>();
+        MutableIntSet rowIndexes = IntSets.mutable.empty();
         int underlyingPosition = localToUnderlyingRowPosition(rowPosition);
         if (showToTop) {
             int topRowIndex = this.underlyingLayer.getRowIndexByPosition(underlyingPosition - 1);
@@ -279,16 +290,16 @@ public class RowIdHideShowLayer<T> extends AbstractRowHideShowLayer implements I
         }
 
         if (!rowIndexes.isEmpty()) {
-            showRowIndexes(rowIndexes);
+            showRowIndexes(rowIndexes.toArray());
         }
     }
 
     @Override
     public void showAllRows() {
-        Collection<Integer> hiddenRows = new ArrayList<Integer>(getHiddenRowIndexes());
+        int[] hidden = getHiddenRowIndexesArray();
         this.hiddenRows.clear();
         invalidateCache();
-        fireLayerEvent(new ShowRowPositionsEvent(this, hiddenRows));
+        fireLayerEvent(new ShowRowPositionsEvent(this, hidden));
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -144,7 +144,7 @@ public class PersistenceIntegrationTest {
         assertEquals("true",
                 this.properties
                         .get("testPrefix.BODY.columnWidth.resizableByDefault"));
-        assertEquals("1,2,3,0,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,",
+        assertEquals("1,2,3,0,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
                 this.properties.get("testPrefix.BODY.columnIndexOrder"));
         assertEquals("1:100,",
                 this.properties.get("testPrefix.BODY.rowHeight.sizes"));

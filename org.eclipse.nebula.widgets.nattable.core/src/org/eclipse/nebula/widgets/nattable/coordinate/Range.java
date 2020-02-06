@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Represents an Range of numbers. Example a Range of selected rows: 1 - 100
- * Ranges are inclusive of their start value and not inclusive of their end
+ * Represents a consecutive range of numbers, e.g. a range of selected rows: 1 -
+ * 100. Ranges are inclusive of their start value and exclusive of their end
  * value, i.e. start &lt;= x &lt; end
  */
 public class Range {
@@ -26,22 +26,44 @@ public class Range {
     public int start = 0;
     public int end = 0;
 
+    /**
+     * Create a new {@link Range}.
+     *
+     * @param start
+     *            The start position inclusive.
+     * @param end
+     *            The end position exclusive.
+     */
     public Range(int start, int end) {
         this.start = start;
         this.end = end;
     }
 
+    /**
+     *
+     * @return The size of this range.
+     */
     public int size() {
         return this.end - this.start;
     }
 
     /**
-     * @return TRUE if the range contains the given row position
+     * Check if the given position is contained in this {@link Range}.
+     *
+     * @return <code>true</code> if the range contains the given position.
      */
     public boolean contains(int position) {
         return position >= this.start && position < this.end;
     }
 
+    /**
+     * Check if the given {@link Range} overlaps this {@link Range}.
+     *
+     * @param range
+     *            The {@link Range} to check.
+     * @return <code>true</code> if the given {@link Range} contains positions
+     *         that are also contained in this {@link Range}.
+     */
     public boolean overlap(Range range) {
         return (this.start < this.end) && // this is a non-empty range
                 (range.start < range.end) && // range parameter is non-empty
@@ -49,12 +71,33 @@ public class Range {
                         || range.contains(this.start) || range.contains(this.end - 1));
     }
 
+    /**
+     *
+     * @return The values represented by this {@link Range}.
+     */
     public Set<Integer> getMembers() {
         Set<Integer> members = new HashSet<Integer>();
         for (int i = this.start; i < this.end; i++) {
             members.add(Integer.valueOf(i));
         }
         return members;
+    }
+
+    /**
+     *
+     * @return The values represented by this {@link Range}.
+     * @since 2.0
+     */
+    public int[] getMembersArray() {
+        // iterating this way is faster than using IntStream.range()
+        int[] result = new int[this.end - this.start];
+        int i = 0;
+        for (int pos = this.start; pos < this.end; pos++) {
+            result[i] = pos;
+            i++;
+        }
+
+        return result;
     }
 
     @Override
@@ -87,14 +130,15 @@ public class Range {
         return result;
     }
 
+    /**
+     * Helper method to sort a list of {@link Range} objects by their start
+     * position.
+     *
+     * @param ranges
+     *            The {@link Range} list to sort.
+     */
     public static void sortByStart(List<Range> ranges) {
-        Collections.sort(ranges, new Comparator<Range>() {
-            @Override
-            public int compare(Range range1, Range range2) {
-                return Integer.valueOf(range1.start).compareTo(
-                        Integer.valueOf(range2.start));
-            }
-        });
+        Collections.sort(ranges, Comparator.comparing(r -> r.start));
     }
 
 }

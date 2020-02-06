@@ -1,20 +1,22 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2019 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder.event;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.eclipse.collections.api.list.primitive.MutableIntList;
+import org.eclipse.collections.impl.factory.primitive.IntLists;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -30,7 +32,7 @@ public class RowReorderEvent extends RowStructuralChangeEvent {
     private ILayer beforeLayer;
 
     private Collection<Range> beforeFromRowPositionRanges;
-    private Collection<Integer> beforeFromRowIndexes;
+    private MutableIntList beforeFromRowIndexes;
 
     private int beforeToRowPosition;
     private int beforeToRowIndex;
@@ -85,8 +87,8 @@ public class RowReorderEvent extends RowStructuralChangeEvent {
             int beforeToRowIndex,
             boolean reorderToTopEdge) {
         this(layer,
-                Arrays.asList(new Integer[] { Integer.valueOf(beforeFromRowPosition) }),
-                Arrays.asList(new Integer[] { Integer.valueOf(beforeFromRowIndex) }),
+                new int[] { beforeFromRowPosition },
+                new int[] { beforeFromRowIndex },
                 beforeToRowPosition,
                 beforeToRowIndex,
                 reorderToTopEdge);
@@ -142,17 +144,53 @@ public class RowReorderEvent extends RowStructuralChangeEvent {
             int beforeToRowPosition,
             int beforeToRowIndex,
             boolean reorderToTopEdge) {
+
+        this(layer,
+                beforeFromRowPositions.stream().mapToInt(Integer::intValue).toArray(),
+                beforeFromRowIndexes.stream().mapToInt(Integer::intValue).toArray(),
+                beforeToRowPosition,
+                beforeToRowIndex,
+                reorderToTopEdge);
+    }
+
+    /**
+     *
+     * @param layer
+     *            The layer to which the row positions match.
+     * @param beforeFromRowPositions
+     *            The row positions that were reordered, before the reorder
+     *            operation was performed.
+     * @param beforeFromRowIndexes
+     *            The indexes of the reordered positions.
+     * @param beforeToRowPosition
+     *            The position of the row to which the reorder operation was
+     *            performed, before the reorder operation was performed
+     * @param beforeToRowIndex
+     *            The index of the row to which the reorder operation was
+     *            performed.
+     * @param reorderToTopEdge
+     *            whether the reorder operation was performed to the top or the
+     *            bottom edge.
+     *
+     * @since 2.0
+     */
+    public RowReorderEvent(ILayer layer,
+            int[] beforeFromRowPositions,
+            int[] beforeFromRowIndexes,
+            int beforeToRowPosition,
+            int beforeToRowIndex,
+            boolean reorderToTopEdge) {
         super(layer);
         this.beforeLayer = layer;
         this.beforeFromRowPositionRanges = PositionUtil.getRanges(beforeFromRowPositions);
-        this.beforeFromRowIndexes = beforeFromRowIndexes;
+        this.beforeFromRowIndexes = IntLists.mutable.of(beforeFromRowIndexes);
         this.beforeToRowPosition = beforeToRowPosition;
         this.beforeToRowIndex = beforeToRowIndex;
         this.reorderToTopEdge = reorderToTopEdge;
 
-        List<Integer> allColumnPositions = new ArrayList<Integer>(beforeFromRowPositions);
-        allColumnPositions.add(Integer.valueOf(beforeToRowPosition));
-        setRowPositionRanges(PositionUtil.getRanges(allColumnPositions));
+        MutableIntList allColumnPositions = IntLists.mutable.of(beforeFromRowPositions);
+        allColumnPositions.add(beforeToRowPosition);
+        setRowPositionRanges(PositionUtil.getRanges(allColumnPositions.toSortedArray()));
     }
 
     /**
@@ -165,7 +203,7 @@ public class RowReorderEvent extends RowStructuralChangeEvent {
         super(event);
         this.beforeLayer = event.beforeLayer;
         this.beforeFromRowPositionRanges = event.beforeFromRowPositionRanges;
-        this.beforeFromRowIndexes = new ArrayList<Integer>(event.beforeFromRowIndexes);
+        this.beforeFromRowIndexes = IntLists.mutable.ofAll(event.beforeFromRowIndexes);
         this.beforeToRowPosition = event.beforeToRowPosition;
         this.beforeToRowIndex = event.beforeToRowIndex;
         this.reorderToTopEdge = event.reorderToTopEdge;
@@ -177,7 +215,16 @@ public class RowReorderEvent extends RowStructuralChangeEvent {
      * @since 1.6
      */
     public Collection<Integer> getBeforeFromRowIndexes() {
-        return this.beforeFromRowIndexes;
+        return this.beforeFromRowIndexes.primitiveStream().boxed().collect(Collectors.toList());
+    }
+
+    /**
+     *
+     * @return The indexes of the reordered rows.
+     * @since 2.0
+     */
+    public int[] getBeforeFromRowIndexesArray() {
+        return this.beforeFromRowIndexes.toSortedArray();
     }
 
     /**

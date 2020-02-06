@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,8 +29,24 @@ public class HideColumnPositionsEvent extends ColumnStructuralChangeEvent {
      *            The ILayer to which the given column positions match.
      * @param columnPositions
      *            The positions of the columns that have changed.
+     * @deprecated Use {@link #HideColumnPositionsEvent(ILayer, int...)} with
+     *             primitive types to avoid autoboxing.
      */
+    @Deprecated
     public HideColumnPositionsEvent(ILayer layer, Collection<Integer> columnPositions) {
+        super(layer, PositionUtil.getRanges(columnPositions));
+    }
+
+    /**
+     * Creates a new HideColumnPositionsEvent based on the given information.
+     *
+     * @param layer
+     *            The ILayer to which the given column positions match.
+     * @param columnPositions
+     *            The positions of the columns that have changed.
+     * @since 2.0
+     */
+    public HideColumnPositionsEvent(ILayer layer, int... columnPositions) {
         super(layer, PositionUtil.getRanges(columnPositions));
     }
 
@@ -45,14 +61,33 @@ public class HideColumnPositionsEvent extends ColumnStructuralChangeEvent {
      *            The indexes of the columns that have changed.
      *
      * @since 1.6
+     * @deprecated Use {@link #HideColumnPositionsEvent(ILayer, int[], int[])}
+     *             with primitive types to avoid autoboxing.
      */
+    @Deprecated
     public HideColumnPositionsEvent(ILayer layer, Collection<Integer> columnPositions, Collection<Integer> columnIndexes) {
         super(layer, PositionUtil.getRanges(columnPositions), columnIndexes);
     }
 
     /**
+     * Creates a new HideColumnPositionsEvent based on the given information.
+     *
+     * @param layer
+     *            The ILayer to which the given column positions match.
+     * @param columnPositions
+     *            The positions of the columns that have changed.
+     * @param columnIndexes
+     *            The indexes of the columns that have changed.
+     *
+     * @since 2.0
+     */
+    public HideColumnPositionsEvent(ILayer layer, int[] columnPositions, int[] columnIndexes) {
+        super(layer, PositionUtil.getRanges(columnPositions), columnIndexes);
+    }
+
+    /**
      * Clone constructor.
-     * 
+     *
      * @param event
      *            The event to clone.
      */
@@ -68,7 +103,7 @@ public class HideColumnPositionsEvent extends ColumnStructuralChangeEvent {
     @Override
     public Collection<StructuralDiff> getColumnDiffs() {
         Collection<StructuralDiff> columnDiffs =
-                new ArrayList<StructuralDiff>(getColumnPositionRanges().size());
+                new ArrayList<>(getColumnPositionRanges().size());
 
         for (Range range : getColumnPositionRanges()) {
             StructuralDiff diff = new StructuralDiff(

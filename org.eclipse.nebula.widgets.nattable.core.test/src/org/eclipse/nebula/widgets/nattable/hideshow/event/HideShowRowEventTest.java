@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2019 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -46,7 +46,7 @@ public class HideShowRowEventTest {
 
     @Test
     public void shouldFireHideColumnPositionsEventOnHide() {
-        this.hideShowLayer.hideRowPositions(Arrays.asList(1, 4));
+        this.hideShowLayer.hideRowPositions(1, 4);
 
         assertTrue(this.hideShowLayer.isRowIndexHidden(1));
         assertTrue(this.hideShowLayer.isRowIndexHidden(4));
@@ -67,7 +67,7 @@ public class HideShowRowEventTest {
         // reorder first two rows to the end
         this.reorderLayer.reorderMultipleRowPositions(Arrays.asList(0, 1), 4, false);
 
-        this.hideShowLayer.hideRowPositions(Arrays.asList(1, 4));
+        this.hideShowLayer.hideRowPositions(1, 4);
 
         assertTrue(this.hideShowLayer.isRowIndexHidden(3));
         assertTrue(this.hideShowLayer.isRowIndexHidden(1));
@@ -85,7 +85,7 @@ public class HideShowRowEventTest {
 
     @Test
     public void shouldFireShowColumnPositionsEventOnShowIndexes() {
-        this.hideShowLayer.hideRowPositions(Arrays.asList(1, 4));
+        this.hideShowLayer.hideRowPositions(1, 4);
 
         // hide is tested in another test, so clear the test initialization
         this.layerListener.clearReceivedEvents();
@@ -93,7 +93,7 @@ public class HideShowRowEventTest {
         assertTrue(this.hideShowLayer.isRowIndexHidden(1));
         assertTrue(this.hideShowLayer.isRowIndexHidden(4));
 
-        this.hideShowLayer.showRowIndexes(Arrays.asList(1, 4));
+        this.hideShowLayer.showRowIndexes(1, 4);
         assertFalse(this.hideShowLayer.isRowIndexHidden(1));
         assertFalse(this.hideShowLayer.isRowIndexHidden(4));
 
@@ -113,12 +113,12 @@ public class HideShowRowEventTest {
         // reorder first two columns to the end
         this.reorderLayer.reorderMultipleRowPositions(Arrays.asList(0, 1), 4, false);
 
-        this.hideShowLayer.hideRowPositions(Arrays.asList(1, 4));
+        this.hideShowLayer.hideRowPositions(1, 4);
 
         assertTrue(this.hideShowLayer.isRowIndexHidden(3));
         assertTrue(this.hideShowLayer.isRowIndexHidden(1));
 
-        this.hideShowLayer.showRowIndexes(Arrays.asList(3, 1));
+        this.hideShowLayer.showRowIndexes(3, 1);
         assertFalse(this.hideShowLayer.isRowIndexHidden(3));
         assertFalse(this.hideShowLayer.isRowIndexHidden(1));
 
@@ -135,7 +135,7 @@ public class HideShowRowEventTest {
 
     @Test
     public void shouldFireShowColumnPositionsEventOnShowAll() {
-        this.hideShowLayer.hideRowPositions(Arrays.asList(1, 4));
+        this.hideShowLayer.hideRowPositions(1, 4);
 
         // hide is tested in another test, so clear the test initialization
         this.layerListener.clearReceivedEvents();
@@ -163,7 +163,7 @@ public class HideShowRowEventTest {
         // reorder first two columns to the end
         this.reorderLayer.reorderMultipleRowPositions(Arrays.asList(0, 1), 4, false);
 
-        this.hideShowLayer.hideRowPositions(Arrays.asList(1, 4));
+        this.hideShowLayer.hideRowPositions(1, 4);
 
         assertTrue(this.hideShowLayer.isRowIndexHidden(3));
         assertTrue(this.hideShowLayer.isRowIndexHidden(1));

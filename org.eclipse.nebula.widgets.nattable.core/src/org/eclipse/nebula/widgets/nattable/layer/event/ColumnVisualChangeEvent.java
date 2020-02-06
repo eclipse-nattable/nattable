@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.layer.event;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -38,7 +37,7 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
     /**
      * The indexes of the columns that have changed.
      */
-    private Collection<Integer> columnIndexes;
+    private int[] columnIndexes;
 
     /**
      * Creates a new ColumnVisualChangeEvent based on the given information.
@@ -87,8 +86,29 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
      * @param columnIndexes
      *            The indexes of the columns that have changed.
      * @since 1.6
+     * @deprecated Use
+     *             {@link #ColumnVisualChangeEvent(ILayer, Collection, int...)}
+     *             to avoid autoboxing of row indexes.
      */
+    @Deprecated
     public ColumnVisualChangeEvent(ILayer layer, Collection<Range> columnPositionRanges, Collection<Integer> columnIndexes) {
+        this.layer = layer;
+        this.columnPositionRanges = columnPositionRanges;
+        this.columnIndexes = columnIndexes.stream().mapToInt(Integer::intValue).toArray();
+    }
+
+    /**
+     * Creates a new ColumnVisualChangeEvent based on the given information.
+     *
+     * @param layer
+     *            The ILayer to which the given column positions match.
+     * @param columnPositionRanges
+     *            The column position ranges for the columns that have changed.
+     * @param columnIndexes
+     *            The indexes of the columns that have changed.
+     * @since 2.0
+     */
+    public ColumnVisualChangeEvent(ILayer layer, Collection<Range> columnPositionRanges, int... columnIndexes) {
         this.layer = layer;
         this.columnPositionRanges = columnPositionRanges;
         this.columnIndexes = columnIndexes;
@@ -135,14 +155,15 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
     /**
      *
      * @return The indexes of the columns that have changed.
-     * @since 1.6
+     * @since 2.0
      */
-    public Collection<Integer> getColumnIndexes() {
+    public int[] getColumnIndexes() {
         if (this.columnIndexes == null) {
-            this.columnIndexes = new HashSet<Integer>();
             int[] positions = PositionUtil.getPositions(this.columnPositionRanges);
-            for (int pos : positions) {
-                this.columnIndexes.add(this.layer.getColumnIndexByPosition(pos));
+            this.columnIndexes = new int[positions.length];
+            for (int i = 0; i < positions.length; i++) {
+                int pos = positions[i];
+                this.columnIndexes[i] = this.layer.getColumnIndexByPosition(pos);
             }
         }
         return this.columnIndexes;
@@ -160,7 +181,7 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
     @Override
     public Collection<Rectangle> getChangedPositionRectangles() {
         Collection<Rectangle> changedPositionRectangles =
-                new ArrayList<Rectangle>(this.columnPositionRanges.size());
+                new ArrayList<>(this.columnPositionRanges.size());
 
         int rowCount = this.layer.getRowCount();
         for (Range range : this.columnPositionRanges) {

@@ -10,15 +10,12 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group.performance.command;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
+import org.eclipse.collections.api.iterator.MutableIntIterator;
+import org.eclipse.collections.api.list.primitive.MutableIntList;
+import org.eclipse.collections.impl.factory.primitive.IntLists;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.command.CreateRowGroupCommand;
@@ -101,7 +98,7 @@ public class RowGroupsCommandHandler extends AbstractLayerCommandHandler<IRowGro
         // transformation
         GroupModel model = this.contextLayer.getGroupModel();
 
-        Set<Integer> positionsToGroup = new TreeSet<Integer>();
+        MutableIntList positionsToGroup = IntLists.mutable.empty();
         if (fullySelectedRows != null && fullySelectedRows.length > 0) {
             for (int row : fullySelectedRows) {
                 // convert to position layer
@@ -113,8 +110,8 @@ public class RowGroupsCommandHandler extends AbstractLayerCommandHandler<IRowGro
                 }
             }
 
-            Set<Group> existingGroups = new HashSet<Group>();
-            for (Iterator<Integer> it = positionsToGroup.iterator(); it.hasNext();) {
+            HashSet<Group> existingGroups = new HashSet<Group>();
+            for (MutableIntIterator it = positionsToGroup.intIterator(); it.hasNext();) {
                 int row = it.next();
                 Group group = model.getGroupByPosition(row);
                 if (group != null) {
@@ -139,17 +136,18 @@ public class RowGroupsCommandHandler extends AbstractLayerCommandHandler<IRowGro
                 }
             }
 
-            List<Integer> selectedPositions = new ArrayList<Integer>(positionsToGroup);
+            positionsToGroup.sortThis();
+            MutableIntList selectedPositions = IntLists.mutable.ofAll(positionsToGroup.distinct());
 
             if (selectedPositions.size() > 1) {
                 // if a group is created for more than one row, reorder so
                 // the positions are consecutive which is necessary for grouping
                 this.selectionLayer.doCommand(
-                        new MultiRowReorderCommand(this.selectionLayer, selectedPositions, selectedPositions.get(0)));
+                        new MultiRowReorderCommand(this.selectionLayer, selectedPositions.toArray(), selectedPositions.get(0)));
             }
 
             // create the row group
-            this.contextLayer.addGroup(rowGroupName, this.selectionLayer.getRowIndexByPosition(selectedPositions.get(0)), positionsToGroup.size());
+            this.contextLayer.addGroup(rowGroupName, this.selectionLayer.getRowIndexByPosition(selectedPositions.get(0)), selectedPositions.size());
 
             this.selectionLayer.clear();
 
@@ -190,7 +188,7 @@ public class RowGroupsCommandHandler extends AbstractLayerCommandHandler<IRowGro
         int[] fullySelectedRows = this.selectionLayer.getFullySelectedRowPositions();
 
         if (fullySelectedRows != null && fullySelectedRows.length > 0) {
-            Set<Integer> positionsToUngroup = new TreeSet<Integer>();
+            MutableIntList positionsToUngroup = IntLists.mutable.empty();
             for (int row : fullySelectedRows) {
                 // convert to position layer
                 // needed because the group model takes the positions based on
@@ -204,16 +202,16 @@ public class RowGroupsCommandHandler extends AbstractLayerCommandHandler<IRowGro
             // we operate on the GroupModel directly to avoid the position
             // transformation
             GroupModel model = this.contextLayer.getGroupModel();
-            Map<Group, List<Integer>> toRemove = new HashMap<Group, List<Integer>>();
-            for (int pos : positionsToUngroup) {
+            HashMap<Group, MutableIntList> toRemove = new HashMap<>();
+            positionsToUngroup.forEach(pos -> {
                 Group group = model.getGroupByPosition(pos);
                 if (group != null) {
                     int endPos = group.getVisibleStartPosition() + group.getVisibleSpan();
                     if (pos < endPos && !group.isGroupStart(pos)) {
                         // remember position to remove
-                        List<Integer> remove = toRemove.get(group);
+                        MutableIntList remove = toRemove.get(group);
                         if (remove == null) {
-                            remove = new ArrayList<Integer>();
+                            remove = IntLists.mutable.empty();
                             toRemove.put(group, remove);
                         }
                         remove.add(pos);
@@ -221,16 +219,16 @@ public class RowGroupsCommandHandler extends AbstractLayerCommandHandler<IRowGro
                         model.removePositionsFromGroup(group, pos);
                     }
                 }
-            }
+            });
 
             if (!toRemove.isEmpty()) {
-                for (Map.Entry<Group, List<Integer>> entry : toRemove.entrySet()) {
+                toRemove.entrySet().forEach(entry -> {
                     Group group = entry.getKey();
                     int endPos = group.getVisibleStartPosition() + group.getVisibleSpan();
 
-                    this.selectionLayer.doCommand(new MultiRowReorderCommand(this.selectionLayer, entry.getValue(), endPos));
+                    this.selectionLayer.doCommand(new MultiRowReorderCommand(this.selectionLayer, entry.getValue().toArray(), endPos));
 
-                    List<Integer> value = entry.getValue();
+                    MutableIntList value = entry.getValue();
                     int start = endPos - value.size();
                     int[] positionsToRemove = new int[value.size()];
                     for (int i = 0; i < entry.getValue().size(); i++) {
@@ -238,7 +236,7 @@ public class RowGroupsCommandHandler extends AbstractLayerCommandHandler<IRowGro
                     }
 
                     model.removePositionsFromGroup(group, positionsToRemove);
-                }
+                });
             }
 
             this.selectionLayer.clear();

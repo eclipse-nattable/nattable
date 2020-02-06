@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
+ * Copyright (c) 2018, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.data.command;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -52,12 +51,9 @@ public class RowDeleteCommandHandler<T> implements ILayerCommandHandler<RowDelet
     public boolean doCommand(ILayer targetLayer, RowDeleteCommand command) {
         // convert the transported position to the target layer
         if (command.convertToTargetLayer(targetLayer)) {
-            int[] positions = command.getRowPositions().stream()
-                    .sorted()
-                    .mapToInt(i -> i)
-                    .toArray();
+            int[] positions = command.getRowPositionsArray();
 
-            Map<Integer, T> deleted = new HashMap<Integer, T>();
+            HashMap<Integer, T> deleted = new HashMap<Integer, T>();
             for (int i = positions.length - 1; i >= 0; i--) {
                 // remove the element
                 int pos = positions[i];

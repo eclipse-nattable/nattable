@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -60,8 +60,28 @@ public abstract class ColumnStructuralChangeEvent extends ColumnVisualChangeEven
      *            The indexes of the columns that have changed.
      *
      * @since 1.6
+     * @deprecated Use
+     *             {@link #ColumnStructuralChangeEvent(ILayer, Collection, int...)}
+     *             with primitive types for row indexes to avoid autoboxing.
      */
+    @Deprecated
     public ColumnStructuralChangeEvent(ILayer layer, Collection<Range> columnPositionRanges, Collection<Integer> columnIndexes) {
+        super(layer, columnPositionRanges, columnIndexes);
+    }
+
+    /**
+     * Creates a new ColumnStructuralChangeEvent based on the given information.
+     *
+     * @param layer
+     *            The ILayer to which the given column positions match.
+     * @param columnPositionRanges
+     *            The column position ranges for the columns that have changed.
+     * @param columnIndexes
+     *            The indexes of the columns that have changed.
+     *
+     * @since 2.0
+     */
+    public ColumnStructuralChangeEvent(ILayer layer, Collection<Range> columnPositionRanges, int... columnIndexes) {
         super(layer, columnPositionRanges, columnIndexes);
     }
 
@@ -79,7 +99,7 @@ public abstract class ColumnStructuralChangeEvent extends ColumnVisualChangeEven
 
     @Override
     public Collection<Rectangle> getChangedPositionRectangles() {
-        Collection<Rectangle> changedPositionRectangles = new ArrayList<Rectangle>();
+        Collection<Rectangle> changedPositionRectangles = new ArrayList<>();
 
         Collection<Range> ranges = getColumnPositionRanges();
         if (ranges != null && ranges.size() > 0) {

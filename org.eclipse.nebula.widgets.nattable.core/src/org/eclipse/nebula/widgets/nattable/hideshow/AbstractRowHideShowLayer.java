@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -38,7 +39,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
     private MutableIntIntMap cachedVisibleRowIndexPositionMapping;
     private MutableIntIntMap cachedVisibleRowPositionIndexMapping;
     private MutableIntIntMap cachedHiddenRowIndexPositionMapping;
-    private final MutableIntIntMap startYCache = IntIntMaps.mutable.empty();
+    private MutableIntIntMap startYCache = IntIntMaps.mutable.empty();
 
     /**
      * Constructor.
@@ -61,7 +62,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 
     @Override
     public void handleLayerEvent(ILayerEvent event) {
-        if (!getHiddenRowIndexes().isEmpty() && event instanceof RowReorderEvent) {
+        if (hasHiddenRows() && event instanceof RowReorderEvent) {
             // we need to convert the before positions in the event BEFORE the
             // local states are changed, otherwise we are not able to convert
             // the before positions as the changed layer states would return
@@ -105,7 +106,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
         } else if (event instanceof VisualRefreshEvent) {
             // visual change, e.g. font change, the startYCache needs to be
             // cleared in order to re-render correctly
-            this.startYCache.clear();
+            this.startYCache = IntIntMaps.mutable.empty();
         }
         super.handleLayerEvent(event);
     }
@@ -125,7 +126,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 
     @Override
     public int getRowCount() {
-        if (getHiddenRowIndexes().isEmpty()) {
+        if (!hasHiddenRows()) {
             return super.getRowCount();
         }
         return getCachedVisibleRowIndexPositionMapping().size();
@@ -137,7 +138,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
             return -1;
         }
 
-        if (getHiddenRowIndexes().isEmpty()) {
+        if (!hasHiddenRows()) {
             return super.getRowIndexByPosition(rowPosition);
         }
 
@@ -146,13 +147,24 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 
     @Override
     public int getRowPositionByIndex(int rowIndex) {
-        if (getHiddenRowIndexes().isEmpty()) {
+        if (!hasHiddenRows()) {
             return getUnderlyingLayer().getRowPositionByIndex(rowIndex);
         }
 
         return getCachedVisibleRowIndexPositionMapping().getIfAbsent(rowIndex, -1);
     }
 
+    /**
+     * Get the local row positions for the given row indexes.
+     *
+     * @param rowIndexes
+     *            The row indexes for which the local row positions are
+     *            requested.
+     * @return The local row positions for the given row indexes.
+     * @deprecated Use {@link #getRowPositionsByIndexes(int...)} using primitive
+     *             values to avoid unnecessary boxing.
+     */
+    @Deprecated
     public Collection<Integer> getRowPositionsByIndexes(Collection<Integer> rowIndexes) {
         Collection<Integer> rowPositions = new HashSet<>();
         for (int rowIndex : rowIndexes) {
@@ -161,13 +173,29 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
         return rowPositions;
     }
 
+    /**
+     * Get the local row positions for the given row indexes.
+     *
+     * @param rowIndexes
+     *            The row indexes for which the local row positions are
+     *            requested.
+     * @return The local row positions for the given row indexes.
+     *
+     * @since 2.0
+     */
+    public int[] getRowPositionsByIndexes(int... rowIndexes) {
+        return (rowIndexes != null && rowIndexes.length > 0)
+                ? Arrays.stream(rowIndexes).map(this::getRowPositionByIndex).toArray()
+                : new int[0];
+    }
+
     @Override
     public int localToUnderlyingRowPosition(int localRowPosition) {
         if (localRowPosition < 0 || localRowPosition >= getRowCount()) {
             return -1;
         }
 
-        if (getHiddenRowIndexes().isEmpty()) {
+        if (!hasHiddenRows()) {
             return localRowPosition;
         }
 
@@ -177,7 +205,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 
     @Override
     public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, int underlyingRowPosition) {
-        if (getHiddenRowIndexes().isEmpty()) {
+        if (!hasHiddenRows()) {
             return underlyingRowPosition;
         }
 
@@ -282,7 +310,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
             return -1;
         }
 
-        for (int hiddenIndex : getHiddenRowIndexes()) {
+        for (int hiddenIndex : getHiddenRowIndexesArray()) {
             int hiddenPosition = underlyingLayer.getRowPositionByIndex(hiddenIndex);
             // if the hidden position is -1, it is hidden in the underlying
             // layer therefore the underlying layer should handle the
@@ -312,13 +340,45 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 
     /**
      * Will collect and return all indexes of the rows that are hidden in this
-     * layer. Note: It is not intended that it also collects the row indexes of
-     * underlying layers. This would cause issues on calculating positions as
+     * layer.
+     * <p>
+     * <b>Note:</b> It is not intended that it also collects the row indexes of
+     * underlying layers. This would cause issues on calculating positions, as
      * every layer is responsible for those calculations itself.
+     * </p>
+     * <p>
+     * Since 2.0 it is recommended to use {@link #getHiddenRowIndexesArray()} to
+     * avoid unnecessary autoboxing operations.
+     * </p>
      *
      * @return Collection of all row indexes that are hidden in this layer.
      */
     public abstract Collection<Integer> getHiddenRowIndexes();
+
+    /**
+     * Will collect and return all indexes of the rows that are hidden in this
+     * layer.
+     * <p>
+     * <b>Note:</b> It is not intended that it also collects the row indexes of
+     * underlying layers. This would cause issues on calculating positions, as
+     * every layer is responsible for those calculations itself.
+     * </p>
+     *
+     * @return All row indexes that are hidden in this layer.
+     *
+     * @since 2.0
+     */
+    public abstract int[] getHiddenRowIndexesArray();
+
+    /**
+     * Check if this layer actively hides rows.
+     *
+     * @return <code>true</code> if rows are hidden by this layer,
+     *         <code>false</code> if not.
+     *
+     * @since 2.0
+     */
+    public abstract boolean hasHiddenRows();
 
     @Override
     public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
@@ -352,7 +412,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
         this.cachedVisibleRowIndexPositionMapping = null;
         this.cachedVisibleRowPositionIndexMapping = null;
         this.cachedHiddenRowIndexPositionMapping = null;
-        this.startYCache.clear();
+        this.startYCache = IntIntMaps.mutable.empty();
     }
 
     private synchronized IntIntMap getCachedVisibleRowIndexPositionMapping() {
@@ -380,13 +440,14 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
      * Build up the row caches.
      */
     protected synchronized void cacheVisibleRowIndexes() {
+
         this.cachedVisibleRowIndexPositionMapping = IntIntMaps.mutable.empty();
         this.cachedVisibleRowPositionIndexMapping = IntIntMaps.mutable.empty();
         this.cachedHiddenRowIndexPositionMapping = IntIntMaps.mutable.empty();
-        this.startYCache.clear();
+        this.startYCache = IntIntMaps.mutable.empty();
 
         // only build up a cache if it is necessary
-        if (!getHiddenRowIndexes().isEmpty()) {
+        if (hasHiddenRows()) {
             ILayer underlyingLayer = getUnderlyingLayer();
             int rowPosition = 0;
             for (int parentRowPosition = 0; parentRowPosition < underlyingLayer.getRowCount(); parentRowPosition++) {

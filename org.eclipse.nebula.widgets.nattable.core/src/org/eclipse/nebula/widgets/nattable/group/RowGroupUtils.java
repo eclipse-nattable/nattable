@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,12 +10,14 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.eclipse.collections.api.list.primitive.MutableIntList;
+import org.eclipse.collections.impl.factory.primitive.IntLists;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.group.model.IRowGroup;
 import org.eclipse.nebula.widgets.nattable.group.model.IRowGroupModel;
@@ -26,7 +28,6 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
-import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
 /**
  * The utility methods in this class bridge the divide between the world of row
@@ -180,8 +181,7 @@ public class RowGroupUtils {
         return false;
     }
 
-    public static boolean isRowIndexHiddenInUnderLyingLayer(
-            final int rowIndex, final ILayer layer, final IUniqueIndexLayer underlyingLayer) {
+    public static boolean isRowIndexHiddenInUnderLyingLayer(int rowIndex, ILayer layer, IUniqueIndexLayer underlyingLayer) {
         return underlyingLayer.getRowPositionByIndex(rowIndex) == -1;
     }
 
@@ -198,17 +198,12 @@ public class RowGroupUtils {
      *            The row indexes for which the positions are requested.
      * @return Unmodifiable list of the row positions for the given layer
      */
-    public static List<Integer> getRowPositionsInGroup(
-            final IUniqueIndexLayer layer, final Collection<Integer> bodyRowIndexes) {
-
-        final List<Integer> rowPositions = new ArrayList<Integer>();
-        for (Integer bodyRowIndex : bodyRowIndexes) {
-            final int rowPosition = layer.getRowPositionByIndex(bodyRowIndex);
-            if (rowPosition != -1) {
-                rowPositions.add(rowPosition);
-            }
-        }
-        return Collections.unmodifiableList(rowPositions);
+    public static List<Integer> getRowPositionsInGroup(IUniqueIndexLayer layer, Collection<Integer> bodyRowIndexes) {
+        return Collections.unmodifiableList(bodyRowIndexes.stream()
+                .map(layer::getRowPositionByIndex)
+                .filter(pos -> pos != -1)
+                .sorted()
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -220,20 +215,89 @@ public class RowGroupUtils {
      * @return Unmodifiable list of row indexes and static row indexes in the
      *         same group as this index
      */
-    public static <T> List<Integer> getRowIndexesInGroup(final IRowGroupModel<T> model, final int rowIndex) {
+    public static <T> List<Integer> getRowIndexesInGroup(IRowGroupModel<T> model, int rowIndex) {
         final IRowGroup<T> group = getRowGroupForRowIndex(model, rowIndex);
         return getRowIndexesInGroup(model, group, true);
     }
 
-    public static <T> List<Integer> getRowIndexesInGroup(
-            final IRowGroupModel<T> model, final IRowGroup<T> group, final boolean includeStatic) {
-        List<Integer> indexes = new ArrayList<Integer>();
+    /**
+     * Return the row indexes of the rows that belong to a group.
+     *
+     * @param <T>
+     *            The type of the objects in the backing data.
+     * @param model
+     *            The {@link IRowGroupModel} to check.
+     * @param group
+     *            The {@link IRowGroup} to check.
+     * @param includeStatic
+     *            <code>true</code> if static rows should be included,
+     *            <code>false</code> if not.
+     * @return The row indexes of the rows that belong to the given group.
+     */
+    public static <T> List<Integer> getRowIndexesInGroup(IRowGroupModel<T> model, IRowGroup<T> group, boolean includeStatic) {
+        return Collections.unmodifiableList(group.getMemberRows(includeStatic).stream()
+                .map(model::getIndexFromRowCache)
+                .sorted()
+                .collect(Collectors.toList()));
+    }
 
-        for (T row : group.getMemberRows(includeStatic)) {
-            indexes.add(model.getIndexFromRowCache(row));
-        }
+    /**
+     * Helper method to get the row positions for a specified layer
+     *
+     * If a row is currently invisible (-1) it will not be returned within the
+     * collection
+     *
+     * @param layer
+     *            The layer for which the position transformation should be
+     *            performed.
+     * @param bodyRowIndexes
+     *            The row indexes for which the positions are requested.
+     * @return The row positions for the given layer.
+     * @since 2.0
+     */
+    public static int[] getRowPositionsInGroup(IUniqueIndexLayer layer, int... bodyRowIndexes) {
+        return Arrays.stream(bodyRowIndexes)
+                .map(layer::getRowPositionByIndex)
+                .filter(pos -> pos != -1)
+                .sorted()
+                .toArray();
+    }
 
-        return indexes;
+    /**
+     *
+     * @param model
+     *            The {@link IRowGroupModel} to check.
+     * @param rowIndex
+     *            The index of a row whose row group should be inspected.
+     * @return The row indexes and static row indexes in the same group as this
+     *         index.
+     * @since 2.0
+     */
+    public static <T> int[] getRowIndexesInGroupAsArray(IRowGroupModel<T> model, int rowIndex) {
+        final IRowGroup<T> group = getRowGroupForRowIndex(model, rowIndex);
+        return getRowIndexesInGroupAsArray(model, group, true);
+    }
+
+    /**
+     * Return the row indexes of the rows that belong to a group.
+     *
+     * @param <T>
+     *            The type of the objects in the backing data.
+     * @param model
+     *            The {@link IRowGroupModel} to check.
+     * @param group
+     *            The {@link IRowGroup} to check.
+     * @param includeStatic
+     *            <code>true</code> if static rows should be included,
+     *            <code>false</code> if not.
+     * @return The row indexes of the rows that belong to the given group.
+     * @since 2.0
+     */
+    public static <T> int[] getRowIndexesInGroupAsArray(IRowGroupModel<T> model, IRowGroup<T> group, boolean includeStatic) {
+        return group.getMemberRows(includeStatic).stream()
+                .mapToInt(model::getIndexFromRowCache)
+                .sorted()
+                .toArray();
     }
 
     public static <T> String getRowGroupNameForIndex(IRowGroupModel<T> model, int bodyRowIndex) {
@@ -528,15 +592,14 @@ public class RowGroupUtils {
      * @since 1.6
      */
     public static boolean isGroupReordered(Group fromGroup, int[] fromPositions) {
-        Collection<Integer> visiblePositions = fromGroup.getVisiblePositions();
-        if (visiblePositions.size() > fromPositions.length) {
+        int[] visiblePositions = fromGroup.getVisiblePositions();
+        if (visiblePositions.length > fromPositions.length) {
             return false;
-        } else if (visiblePositions.size() < fromPositions.length) {
-            List<Integer> from = ArrayUtil.asIntegerList(fromPositions);
+        } else if (visiblePositions.length < fromPositions.length) {
+            MutableIntList from = IntLists.mutable.of(fromPositions);
             return from.containsAll(visiblePositions);
         } else {
-            int[] positionsArray = ArrayUtil.asIntArray(visiblePositions);
-            return Arrays.equals(positionsArray, fromPositions);
+            return Arrays.equals(visiblePositions, fromPositions);
         }
     }
 }

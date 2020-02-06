@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -94,9 +94,7 @@ public class ColumnReorderLayerTest {
      *  Position 	0 	1	2	3
      */
     public void reorderMultipleColumnsLeftToRight() throws Exception {
-        List<Integer> fromColumnPositions = Arrays.asList(new Integer[] { 0, 1 });
-
-        this.columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions, 3);
+        this.columnReorderLayer.reorderMultipleColumnPositions(new int[] { 0, 1 }, 3);
 
         assertEquals(2, this.columnReorderLayer.getColumnIndexByPosition(0));
         assertEquals(0, this.columnReorderLayer.getColumnIndexByPosition(1));
@@ -111,9 +109,7 @@ public class ColumnReorderLayerTest {
      *  Position 	0 	1	2	3
      */
     public void reorderMultipleColumnsLeftToRightToTheEnd() throws Exception {
-        List<Integer> fromColumnPositions = Arrays.asList(new Integer[] { 0, 1 });
-
-        this.columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions, 4);
+        this.columnReorderLayer.reorderMultipleColumnPositions(new int[] { 0, 1 }, 4);
 
         assertEquals(2, this.columnReorderLayer.getColumnIndexByPosition(0));
         assertEquals(3, this.columnReorderLayer.getColumnIndexByPosition(1));

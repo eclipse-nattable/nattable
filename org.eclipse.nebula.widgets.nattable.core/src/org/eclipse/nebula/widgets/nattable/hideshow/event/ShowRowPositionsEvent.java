@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,13 +20,45 @@ import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 
+/**
+ * Structural change event to indicate that rows are made visible again.
+ */
 public class ShowRowPositionsEvent extends RowStructuralChangeEvent {
 
+    /**
+     * Constructor.
+     *
+     * @param layer
+     *            The layer to which the given row positions match.
+     * @param rowPositions
+     *            The row positions that are made visible again.
+     * @deprecated Use {@link #ShowRowPositionsEvent(ILayer, int...)} with
+     *             primitive types to avoid autoboxing.
+     */
+    @Deprecated
     public ShowRowPositionsEvent(ILayer layer, Collection<Integer> rowPositions) {
         super(layer, PositionUtil.getRanges(rowPositions));
     }
 
-    // Copy constructor
+    /**
+     * Constructor.
+     *
+     * @param layer
+     *            The layer to which the given row positions match.
+     * @param rowPositions
+     *            The row positions that are made visible again.
+     * @since 2.0
+     */
+    public ShowRowPositionsEvent(ILayer layer, int... rowPositions) {
+        super(layer, PositionUtil.getRanges(rowPositions));
+    }
+
+    /**
+     * Clone constructor.
+     *
+     * @param event
+     *            The {@link ShowRowPositionsEvent} to clone.
+     */
     protected ShowRowPositionsEvent(ShowRowPositionsEvent event) {
         super(event);
     }
@@ -34,7 +66,7 @@ public class ShowRowPositionsEvent extends RowStructuralChangeEvent {
     @Override
     public Collection<StructuralDiff> getRowDiffs() {
         Collection<StructuralDiff> rowDiffs =
-                new ArrayList<StructuralDiff>(getRowPositionRanges().size());
+                new ArrayList<>(getRowPositionRanges().size());
 
         int offset = 0;
         for (Range range : getRowPositionRanges()) {

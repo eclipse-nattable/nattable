@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,7 +43,7 @@ public class MultiColumnReorderCommand implements ILayerCommand {
      */
     public MultiColumnReorderCommand(ILayer layer, List<Integer> fromColumnPositions, int toColumnPosition) {
         this(layer,
-                fromColumnPositions,
+                fromColumnPositions.stream().mapToInt(Integer::intValue).toArray(),
                 toColumnPosition < layer.getColumnCount() ? toColumnPosition : toColumnPosition - 1,
                 toColumnPosition < layer.getColumnCount());
     }
@@ -67,10 +67,54 @@ public class MultiColumnReorderCommand implements ILayerCommand {
             int toColumnPosition,
             boolean reorderToLeftEdge) {
 
-        this.fromColumnPositionCoordinates = new ArrayList<>(fromColumnPositions.size());
+        this(layer,
+                fromColumnPositions.stream().mapToInt(Integer::intValue).toArray(),
+                toColumnPosition,
+                reorderToLeftEdge);
+    }
+
+    /**
+     *
+     * @param layer
+     *            The layer to which the column positions match.
+     * @param fromColumnPositions
+     *            The column positions to reorder.
+     * @param toColumnPosition
+     *            The target column position to reorder to.
+     *
+     * @since 2.0
+     */
+    public MultiColumnReorderCommand(ILayer layer, int[] fromColumnPositions, int toColumnPosition) {
+        this(layer,
+                fromColumnPositions,
+                toColumnPosition < layer.getColumnCount() ? toColumnPosition : toColumnPosition - 1,
+                toColumnPosition < layer.getColumnCount());
+    }
+
+    /**
+     *
+     * @param layer
+     *            The layer to which the column positions match.
+     * @param fromColumnPositions
+     *            The column positions to reorder.
+     * @param toColumnPosition
+     *            The target column position to reorder to.
+     * @param reorderToLeftEdge
+     *            <code>true</code> if the reorder operation should be done on
+     *            the left edge of the toColumnPosition, <code>false</code> if
+     *            it should be reordered to the right edge.
+     *
+     * @since 2.0
+     */
+    public MultiColumnReorderCommand(
+            ILayer layer,
+            int[] fromColumnPositions,
+            int toColumnPosition,
+            boolean reorderToLeftEdge) {
+
+        this.fromColumnPositionCoordinates = new ArrayList<>(fromColumnPositions.length);
         for (Integer fromColumnPosition : fromColumnPositions) {
-            this.fromColumnPositionCoordinates.add(
-                    new ColumnPositionCoordinate(layer, fromColumnPosition));
+            this.fromColumnPositionCoordinates.add(new ColumnPositionCoordinate(layer, fromColumnPosition));
         }
 
         this.toColumnPositionCoordinate = new ColumnPositionCoordinate(layer, toColumnPosition);
@@ -102,6 +146,21 @@ public class MultiColumnReorderCommand implements ILayerCommand {
         return this.fromColumnPositionCoordinates.stream()
                 .map(ColumnPositionCoordinate::getColumnPosition)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns the column positions that should be reordered on the layer where
+     * this command is processed. Can be the column indexes if
+     * {@link #reorderByIndex} is set to <code>true</code>.
+     *
+     * @return The column positions that should be reordered.
+     * @since 2.0
+     */
+    public int[] getFromColumnPositionsArray() {
+        return this.fromColumnPositionCoordinates.stream()
+                .mapToInt(ColumnPositionCoordinate::getColumnPosition)
+                .sorted()
+                .toArray();
     }
 
     /**

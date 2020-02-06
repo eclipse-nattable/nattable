@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,7 +22,7 @@ import static org.eclipse.nebula.widgets.nattable.selection.SelectionUtils.noShi
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.stream.IntStream;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -47,7 +47,7 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
         if (command.convertToTargetLayer(this.selectionLayer)) {
             selectRows(
                     command.getColumnPosition(),
-                    command.getRowPositions(),
+                    command.getRowPositionsArray(),
                     command.isWithShiftMask(),
                     command.isWithControlMask(),
                     command.getRowPositionToMoveIntoViewport());
@@ -71,13 +71,50 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
      * @param rowPositionToMoveIntoViewport
      *            Information which row should be moved to the viewport,
      *            transported by the {@link SelectRowsCommand}.
+     *
+     * @deprecated Use {@link #selectRows(int, int[], boolean, boolean, int)}
+     *             with primitive values.
      */
+    @Deprecated
     protected void selectRows(
             int columnPosition, Collection<Integer> rowPositions,
             boolean withShiftMask, boolean withControlMask,
             int rowPositionToMoveIntoViewport) {
 
-        Set<Range> changedRowRanges = new HashSet<Range>();
+        selectRows(
+                columnPosition,
+                rowPositions.stream().mapToInt(Integer::intValue).toArray(),
+                withShiftMask,
+                withControlMask,
+                rowPositionToMoveIntoViewport);
+    }
+
+    /**
+     * Performs row selection based on the given informations and fires a
+     * {@link RowSelectionEvent} for the changed selection.
+     *
+     * @param columnPosition
+     *            The column position of the {@link SelectRowsCommand}.
+     * @param rowPositions
+     *            The row position of the {@link SelectRowsCommand}.
+     * @param withShiftMask
+     *            The shift mask information of the {@link SelectRowsCommand}.
+     * @param withControlMask
+     *            The control mask information of the {@link SelectRowsCommand}.
+     * @param rowPositionToMoveIntoViewport
+     *            Information which row should be moved to the viewport,
+     *            transported by the {@link SelectRowsCommand}.
+     *
+     * @since 2.0
+     */
+    protected void selectRows(
+            int columnPosition,
+            int[] rowPositions,
+            boolean withShiftMask,
+            boolean withControlMask,
+            int rowPositionToMoveIntoViewport) {
+
+        HashSet<Range> changedRowRanges = new HashSet<Range>();
 
         for (int rowPosition : rowPositions) {
             changedRowRanges.addAll(
@@ -86,12 +123,10 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
                             withShiftMask, withControlMask));
         }
 
-        Set<Integer> changedRows = new HashSet<Integer>();
-        for (Range range : changedRowRanges) {
-            for (int i = range.start; i < range.end; i++) {
-                changedRows.add(Integer.valueOf(i));
-            }
-        }
+        int[] changedRows = changedRowRanges.stream()
+                .flatMapToInt(range -> IntStream.range(range.start, range.end))
+                .toArray();
+
         this.selectionLayer.fireLayerEvent(
                 new RowSelectionEvent(
                         this.selectionLayer, changedRows, rowPositionToMoveIntoViewport, withShiftMask, withControlMask));
@@ -111,11 +146,11 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
      *            The control mask information of the {@link SelectRowsCommand}.
      * @return The changed selection.
      */
-    private Set<Range> internalSelectRow(
+    private HashSet<Range> internalSelectRow(
             int columnPosition, int rowPosition,
             boolean withShiftMask, boolean withControlMask) {
 
-        Set<Range> changedRowRanges = new HashSet<Range>();
+        HashSet<Range> changedRowRanges = new HashSet<Range>();
 
         if (noShiftOrControl(withShiftMask, withControlMask)) {
             changedRowRanges.addAll(this.selectionLayer.getSelectedRowPositions());

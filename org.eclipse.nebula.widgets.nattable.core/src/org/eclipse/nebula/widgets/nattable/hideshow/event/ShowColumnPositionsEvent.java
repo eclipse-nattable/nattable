@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,13 +21,45 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralChangeEve
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 
+/**
+ * Structural change event to indicate that columns are made visible again.
+ */
 public class ShowColumnPositionsEvent extends ColumnStructuralChangeEvent {
 
+    /**
+     * Constructor.
+     *
+     * @param layer
+     *            The layer to which the given column positions match.
+     * @param columnPositions
+     *            The column positions that are made visible again.
+     * @deprecated Use {@link #ShowColumnPositionsEvent(ILayer, int...)} with
+     *             primitive types to avoid autoboxing.
+     */
+    @Deprecated
     public ShowColumnPositionsEvent(IUniqueIndexLayer layer, Collection<Integer> columnPositions) {
         super(layer, PositionUtil.getRanges(columnPositions));
     }
 
-    // Copy constructor
+    /**
+     * Constructor.
+     *
+     * @param layer
+     *            The layer to which the given column positions match.
+     * @param columnPositions
+     *            The column positions that are made visible again.
+     * @since 2.0
+     */
+    public ShowColumnPositionsEvent(ILayer layer, int... columnPositions) {
+        super(layer, PositionUtil.getRanges(columnPositions));
+    }
+
+    /**
+     * Clone constructor.
+     *
+     * @param event
+     *            The {@link ShowColumnPositionsEvent} to clone.
+     */
     public ShowColumnPositionsEvent(ShowColumnPositionsEvent event) {
         super(event);
     }
@@ -35,7 +67,7 @@ public class ShowColumnPositionsEvent extends ColumnStructuralChangeEvent {
     @Override
     public Collection<StructuralDiff> getColumnDiffs() {
         Collection<StructuralDiff> columnDiffs =
-                new ArrayList<StructuralDiff>(getColumnPositionRanges().size());
+                new ArrayList<>(getColumnPositionRanges().size());
 
         int offset = 0;
         for (Range range : getColumnPositionRanges()) {

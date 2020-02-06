@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -46,7 +46,7 @@ public class MultiColumnHideCommandHandler extends AbstractLayerCommandHandler<M
 
     @Override
     protected boolean doCommand(MultiColumnHideCommand command) {
-        this.columnHideShowLayer.hideColumnPositions(command.getColumnPositions());
+        this.columnHideShowLayer.hideColumnPositions(command.getColumnPositionsArray());
         return true;
     }
 

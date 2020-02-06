@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -300,7 +300,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
             }
         } else if (command instanceof MultiRowResizeCommand && command.convertToTargetLayer(this)) {
             MultiRowResizeCommand rowResizeCommand = (MultiRowResizeCommand) command;
-            for (int row : rowResizeCommand.getRowPositions()) {
+            for (int row : rowResizeCommand.getRowPositionsArray()) {
                 if (isSummaryRowPosition(row)) {
                     if (rowResizeCommand.downScaleValue() && this.dpiConverter != null) {
                         this.summaryRowHeight = this.dpiConverter.convertDpiToPixel(rowResizeCommand.getRowHeight(row));

@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -39,7 +40,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
     private MutableIntIntMap cachedVisibleColumnIndexPositionMapping;
     private MutableIntIntMap cachedVisibleColumnPositionIndexMapping;
     private MutableIntIntMap cachedHiddenColumnIndexPositionMapping;
-    private final MutableIntIntMap startXCache = IntIntMaps.mutable.empty();
+    private MutableIntIntMap startXCache = IntIntMaps.mutable.empty();
 
     /**
      * Constructor.
@@ -62,7 +63,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 
     @Override
     public void handleLayerEvent(ILayerEvent event) {
-        if (!getHiddenColumnIndexes().isEmpty() && event instanceof ColumnReorderEvent) {
+        if (hasHiddenColumns() && event instanceof ColumnReorderEvent) {
             // we need to convert the before positions in the event BEFORE the
             // local states are changed, otherwise we are not able to convert
             // the before positions as the changed layer states would return
@@ -105,7 +106,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
         } else if (event instanceof VisualRefreshEvent) {
             // visual change, e.g. font change, the startXCache needs to be
             // cleared in order to re-render correctly
-            this.startXCache.clear();
+            this.startXCache = IntIntMaps.mutable.empty();
         }
         super.handleLayerEvent(event);
     }
@@ -116,7 +117,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 
     @Override
     public int getColumnCount() {
-        if (getHiddenColumnIndexes().isEmpty()) {
+        if (!hasHiddenColumns()) {
             return super.getColumnCount();
         }
         return getCachedVisibleColumnIndexPositionMapping().size();
@@ -128,7 +129,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
             return -1;
         }
 
-        if (getHiddenColumnIndexes().isEmpty()) {
+        if (!hasHiddenColumns()) {
             return super.getColumnIndexByPosition(columnPosition);
         }
 
@@ -137,13 +138,24 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 
     @Override
     public int getColumnPositionByIndex(int columnIndex) {
-        if (getHiddenColumnIndexes().isEmpty()) {
+        if (!hasHiddenColumns()) {
             return getUnderlyingLayer().getColumnPositionByIndex(columnIndex);
         }
 
         return getCachedVisibleColumnIndexPositionMapping().getIfAbsent(columnIndex, -1);
     }
 
+    /**
+     * Get the local column positions for the given column indexes.
+     *
+     * @param columnIndexes
+     *            The column indexes for which the local column positions are
+     *            requested.
+     * @return The local column positions for the given column indexes.
+     * @deprecated Use {@link #getColumnPositionsByIndexes(int...)} using
+     *             primitive values to avoid unnecessary boxing.
+     */
+    @Deprecated
     public Collection<Integer> getColumnPositionsByIndexes(Collection<Integer> columnIndexes) {
         Collection<Integer> columnPositions = new HashSet<>();
         for (int columnIndex : columnIndexes) {
@@ -152,13 +164,29 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
         return columnPositions;
     }
 
+    /**
+     * Get the local column positions for the given column indexes.
+     *
+     * @param columnIndexes
+     *            The column indexes for which the local column positions are
+     *            requested.
+     * @return The local column positions for the given column indexes.
+     *
+     * @since 2.0
+     */
+    public int[] getColumnPositionsByIndexes(int... columnIndexes) {
+        return (columnIndexes != null && columnIndexes.length > 0)
+                ? Arrays.stream(columnIndexes).map(this::getColumnPositionByIndex).toArray()
+                : new int[0];
+    }
+
     @Override
     public int localToUnderlyingColumnPosition(int localColumnPosition) {
         if (localColumnPosition < 0 || localColumnPosition >= getColumnCount()) {
             return -1;
         }
 
-        if (getHiddenColumnIndexes().isEmpty()) {
+        if (!hasHiddenColumns()) {
             return localColumnPosition;
         }
 
@@ -168,7 +196,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 
     @Override
     public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
-        if (getHiddenColumnIndexes().isEmpty()) {
+        if (!hasHiddenColumns()) {
             return underlyingColumnPosition;
         }
 
@@ -285,7 +313,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
             return -1;
         }
 
-        for (int hiddenIndex : getHiddenColumnIndexes()) {
+        for (int hiddenIndex : getHiddenColumnIndexesArray()) {
             int hiddenPosition = underlyingLayer.getColumnPositionByIndex(hiddenIndex);
             // if the hidden position is -1, it is hidden in the underlying
             // layer therefore the underlying layer should handle the
@@ -326,13 +354,45 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 
     /**
      * Will collect and return all indexes of the columns that are hidden in
-     * this layer. Note: It is not intended that it also collects the column
-     * indexes of underlying layers. This would cause issues on calculating
-     * positions as every layer is responsible for those calculations itself.
+     * this layer.
+     * <p>
+     * <b>Note:</b> It is not intended that it also collects the column indexes
+     * of underlying layers. This would cause issues on calculating positions,
+     * as every layer is responsible for those calculations itself.
+     * </p>
+     * <p>
+     * Since 2.0 it is recommended to use {@link #getHiddenColumnIndexesArray()}
+     * to avoid unnecessary autoboxing operations.
+     * </p>
      *
      * @return Collection of all column indexes that are hidden in this layer.
      */
     public abstract Collection<Integer> getHiddenColumnIndexes();
+
+    /**
+     * Will collect and return all indexes of the columns that are hidden in
+     * this layer.
+     * <p>
+     * <b>Note:</b> It is not intended that it also collects the column indexes
+     * of underlying layers. This would cause issues on calculating positions,
+     * as every layer is responsible for those calculations itself.
+     * </p>
+     *
+     * @return All column indexes that are hidden in this layer.
+     *
+     * @since 2.0
+     */
+    public abstract int[] getHiddenColumnIndexesArray();
+
+    /**
+     * Check if this layer actively hides columns.
+     *
+     * @return <code>true</code> if columns are hidden by this layer,
+     *         <code>false</code> if not.
+     *
+     * @since 2.0
+     */
+    public abstract boolean hasHiddenColumns();
 
     @Override
     public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
@@ -366,7 +426,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
         this.cachedVisibleColumnIndexPositionMapping = null;
         this.cachedVisibleColumnPositionIndexMapping = null;
         this.cachedHiddenColumnIndexPositionMapping = null;
-        this.startXCache.clear();
+        this.startXCache = IntIntMaps.mutable.empty();
     }
 
     private synchronized IntIntMap getCachedVisibleColumnIndexPositionMapping() {
@@ -399,10 +459,10 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
         this.cachedVisibleColumnIndexPositionMapping = IntIntMaps.mutable.empty();
         this.cachedVisibleColumnPositionIndexMapping = IntIntMaps.mutable.empty();
         this.cachedHiddenColumnIndexPositionMapping = IntIntMaps.mutable.empty();
-        this.startXCache.clear();
+        this.startXCache = IntIntMaps.mutable.empty();
 
         // only build up a cache if it is necessary
-        if (!getHiddenColumnIndexes().isEmpty()) {
+        if (hasHiddenColumns()) {
             ILayer underlyingLayer = getUnderlyingLayer();
             int columnPosition = 0;
             for (int parentColumnPosition = 0; parentColumnPosition < underlyingLayer.getColumnCount(); parentColumnPosition++) {

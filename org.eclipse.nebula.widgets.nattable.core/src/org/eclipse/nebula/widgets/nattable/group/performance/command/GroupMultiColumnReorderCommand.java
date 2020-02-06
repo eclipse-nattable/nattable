@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Dirk Fauth.
+ * Copyright (c) 2019, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -62,6 +62,46 @@ public class GroupMultiColumnReorderCommand extends MultiColumnReorderCommand {
     public GroupMultiColumnReorderCommand(
             ILayer layer,
             List<Integer> fromColumnPositions,
+            int toColumnPosition,
+            boolean reorderToLeftEdge) {
+
+        super(layer, fromColumnPositions.stream().mapToInt(Integer::intValue).toArray(), toColumnPosition, reorderToLeftEdge);
+    }
+
+    /**
+     *
+     * @param layer
+     *            The layer to which the column positions match.
+     * @param fromColumnPositions
+     *            The column positions to reorder.
+     * @param toColumnPosition
+     *            The target column position to reorder to.
+     * @since 2.0
+     */
+    public GroupMultiColumnReorderCommand(ILayer layer, int[] fromColumnPositions, int toColumnPosition) {
+        this(layer,
+                fromColumnPositions,
+                toColumnPosition < layer.getColumnCount() ? toColumnPosition : toColumnPosition - 1,
+                toColumnPosition < layer.getColumnCount());
+    }
+
+    /**
+     *
+     * @param layer
+     *            The layer to which the column positions match.
+     * @param fromColumnPositions
+     *            The column positions to reorder.
+     * @param toColumnPosition
+     *            The target column position to reorder to.
+     * @param reorderToLeftEdge
+     *            <code>true</code> if the reorder operation should be done on
+     *            the left edge of the toColumnPosition, <code>false</code> if
+     *            it should be reordered to the right edge.
+     * @since 2.0
+     */
+    public GroupMultiColumnReorderCommand(
+            ILayer layer,
+            int[] fromColumnPositions,
             int toColumnPosition,
             boolean reorderToLeftEdge) {
 

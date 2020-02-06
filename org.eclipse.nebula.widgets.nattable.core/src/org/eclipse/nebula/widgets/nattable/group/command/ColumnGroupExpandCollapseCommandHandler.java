@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.group.command;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupExpandCollapseLayer;
@@ -22,13 +21,11 @@ import org.eclipse.nebula.widgets.nattable.hideshow.event.HideColumnPositionsEve
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowColumnPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 
-public class ColumnGroupExpandCollapseCommandHandler extends
-        AbstractLayerCommandHandler<ColumnGroupExpandCollapseCommand> {
+public class ColumnGroupExpandCollapseCommandHandler extends AbstractLayerCommandHandler<ColumnGroupExpandCollapseCommand> {
 
     private final ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer;
 
-    public ColumnGroupExpandCollapseCommandHandler(
-            ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer) {
+    public ColumnGroupExpandCollapseCommandHandler(ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer) {
         this.columnGroupExpandCollapseLayer = columnGroupExpandCollapseLayer;
     }
 
@@ -40,10 +37,8 @@ public class ColumnGroupExpandCollapseCommandHandler extends
     @Override
     protected boolean doCommand(ColumnGroupExpandCollapseCommand command) {
 
-        int columnIndex = this.columnGroupExpandCollapseLayer
-                .getColumnIndexByPosition(command.getColumnPosition());
-        ColumnGroupModel model = this.columnGroupExpandCollapseLayer
-                .getModel(command.getRowPosition());
+        int columnIndex = this.columnGroupExpandCollapseLayer.getColumnIndexByPosition(command.getColumnPosition());
+        ColumnGroupModel model = this.columnGroupExpandCollapseLayer.getModel(command.getRowPosition());
         ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
 
         // if group of columnIndex is not collapseable return without any
@@ -52,8 +47,7 @@ public class ColumnGroupExpandCollapseCommandHandler extends
             return true;
         }
 
-        List<Integer> columnIndexes = new ArrayList<Integer>(
-                columnGroup.getMembers());
+        ArrayList<Integer> columnIndexes = new ArrayList<>(columnGroup.getMembers());
         columnIndexes.removeAll(columnGroup.getStaticColumnIndexes());
 
         boolean wasCollapsed = columnGroup.isCollapsed();
@@ -76,10 +70,12 @@ public class ColumnGroupExpandCollapseCommandHandler extends
         ILayerEvent event;
         if (wasCollapsed) {
             event = new ShowColumnPositionsEvent(
-                    this.columnGroupExpandCollapseLayer, columnIndexes);
+                    this.columnGroupExpandCollapseLayer,
+                    columnIndexes.stream().mapToInt(Integer::intValue).toArray());
         } else {
             event = new HideColumnPositionsEvent(
-                    this.columnGroupExpandCollapseLayer, columnIndexes);
+                    this.columnGroupExpandCollapseLayer,
+                    columnIndexes.stream().mapToInt(Integer::intValue).toArray());
         }
 
         this.columnGroupExpandCollapseLayer.fireLayerEvent(event);
@@ -95,12 +91,11 @@ public class ColumnGroupExpandCollapseCommandHandler extends
      * @param columnIndexes
      *            The column indexes to cleanup.
      */
-    private void cleanupColumnIndexes(List<Integer> columnIndexes) {
+    private void cleanupColumnIndexes(ArrayList<Integer> columnIndexes) {
         for (Iterator<Integer> it = columnIndexes.iterator(); it.hasNext();) {
             Integer columnIndex = it.next();
 
-            if (!this.columnGroupExpandCollapseLayer
-                    .isColumnIndexHidden(columnIndex)) {
+            if (!this.columnGroupExpandCollapseLayer.isColumnIndexHidden(columnIndex)) {
                 it.remove();
             }
         }

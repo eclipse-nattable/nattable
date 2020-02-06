@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,10 +12,11 @@ package org.eclipse.nebula.widgets.nattable.group;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.collections.api.list.primitive.MutableIntList;
+import org.eclipse.collections.impl.factory.primitive.IntLists;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer;
@@ -25,7 +26,6 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
-import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
 public class ColumnGroupUtils {
 
@@ -506,15 +506,14 @@ public class ColumnGroupUtils {
      * @since 1.6
      */
     public static boolean isGroupReordered(Group fromGroup, int[] fromColumnPositions) {
-        Collection<Integer> visiblePositions = fromGroup.getVisiblePositions();
-        if (visiblePositions.size() > fromColumnPositions.length) {
+        int[] visiblePositions = fromGroup.getVisiblePositions();
+        if (visiblePositions.length > fromColumnPositions.length) {
             return false;
-        } else if (visiblePositions.size() < fromColumnPositions.length) {
-            List<Integer> fromPositions = ArrayUtil.asIntegerList(fromColumnPositions);
+        } else if (visiblePositions.length < fromColumnPositions.length) {
+            MutableIntList fromPositions = IntLists.mutable.of(fromColumnPositions);
             return fromPositions.containsAll(visiblePositions);
         } else {
-            int[] positionsArray = ArrayUtil.asIntArray(visiblePositions);
-            return Arrays.equals(positionsArray, fromColumnPositions);
+            return Arrays.equals(visiblePositions, fromColumnPositions);
         }
     }
 }

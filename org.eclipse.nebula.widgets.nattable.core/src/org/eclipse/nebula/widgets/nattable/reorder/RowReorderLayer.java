@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2019 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,17 +10,19 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.collections.api.list.primitive.MutableIntList;
+import org.eclipse.collections.api.map.primitive.MutableIntIntMap;
+import org.eclipse.collections.impl.factory.primitive.IntIntMaps;
+import org.eclipse.collections.impl.factory.primitive.IntLists;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
@@ -59,7 +61,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
      * performed by this layer. Position Y in the List contains the index of row
      * at position Y.
      */
-    protected final List<Integer> rowIndexOrder = new ArrayList<Integer>();
+    protected final MutableIntList rowIndexOrder = IntLists.mutable.empty();
 
     /**
      * The internal mapping of index to position values. Used for performance
@@ -68,13 +70,13 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
      *
      * @since 1.5
      */
-    protected final Map<Integer, Integer> indexPositionMapping = new HashMap<Integer, Integer>();
+    protected final MutableIntIntMap indexPositionMapping = IntIntMaps.mutable.empty();
 
     /**
      * Caching of the starting y positions of the rows. Used to reduce
      * calculation time on rendering
      */
-    private final Map<Integer, Integer> startYCache = new HashMap<Integer, Integer>();
+    private final MutableIntIntMap startYCache = IntIntMaps.mutable.empty();
 
     /**
      * Local cached position of the row that is currently reordered.
@@ -157,12 +159,9 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
     public void saveState(String prefix, Properties properties) {
         super.saveState(prefix, properties);
         if (this.rowIndexOrder.size() > 0) {
-            StringBuilder strBuilder = new StringBuilder();
-            for (Integer index : this.rowIndexOrder) {
-                strBuilder.append(index);
-                strBuilder.append(IPersistable.VALUE_SEPARATOR);
-            }
-            properties.setProperty(prefix + PERSISTENCE_KEY_ROW_INDEX_ORDER, strBuilder.toString());
+            properties.setProperty(
+                    prefix + PERSISTENCE_KEY_ROW_INDEX_ORDER,
+                    this.rowIndexOrder.makeString(IPersistable.VALUE_SEPARATOR));
         }
     }
 
@@ -172,14 +171,14 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
         String property = properties.getProperty(prefix + PERSISTENCE_KEY_ROW_INDEX_ORDER);
 
         if (property != null) {
-            List<Integer> newRowIndexOrder = new ArrayList<Integer>();
+            MutableIntList newRowIndexOrder = IntLists.mutable.empty();
             StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
             while (tok.hasMoreTokens()) {
                 String index = tok.nextToken();
-                newRowIndexOrder.add(Integer.valueOf(index));
+                newRowIndexOrder.add(Integer.parseInt(index));
             }
 
-            if (isRestoredStateValid(newRowIndexOrder)) {
+            if (isRestoredStateValid(newRowIndexOrder.toArray())) {
                 this.rowIndexOrder.clear();
                 this.rowIndexOrder.addAll(newRowIndexOrder);
                 // refresh index-position mapping
@@ -196,17 +195,18 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
      *
      * @param newRowIndexOrder
      *            restored from the properties file.
+     * @since 2.0
      */
-    protected boolean isRestoredStateValid(List<Integer> newRowIndexOrder) {
-        if (newRowIndexOrder.size() != getRowCount()) {
-            LOG.error("Number of persisted rows (" + newRowIndexOrder.size() + ") " + //$NON-NLS-1$ //$NON-NLS-2$
+    protected boolean isRestoredStateValid(int[] newRowIndexOrder) {
+        if (newRowIndexOrder.length != getRowCount()) {
+            LOG.error("Number of persisted rows (" + newRowIndexOrder.length + ") " + //$NON-NLS-1$ //$NON-NLS-2$
                     "is not the same as the number of rows in the data source (" //$NON-NLS-1$
                     + getRowCount() + ").\n" + //$NON-NLS-1$
                     "Skipping restore of row ordering"); //$NON-NLS-1$
             return false;
         }
 
-        for (Integer index : newRowIndexOrder) {
+        for (int index : newRowIndexOrder) {
             if (!this.indexPositionMapping.containsKey(index)) {
                 LOG.error("Row index: " + index + " being restored, is not a available in the data soure.\n" + //$NON-NLS-1$ //$NON-NLS-2$
                         "Skipping restore of row ordering"); //$NON-NLS-1$
@@ -232,8 +232,8 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
 
     @Override
     public int getStartYOfRowPosition(int targetRowPosition) {
-        Integer cachedStartY = this.startYCache.get(targetRowPosition);
-        if (cachedStartY != null) {
+        int cachedStartY = this.startYCache.getIfAbsent(targetRowPosition, -1);
+        if (cachedStartY != -1) {
             return cachedStartY;
         }
 
@@ -282,13 +282,21 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
      * @return The local cache of the row index order.
      */
     public List<Integer> getRowIndexOrder() {
-        return this.rowIndexOrder;
+        return this.rowIndexOrder.primitiveStream().boxed().collect(Collectors.toList());
+    }
+
+    /**
+     * @return The local cache of the row index order.
+     * @since 2.0
+     */
+    public int[] getRowIndexOrderArray() {
+        return this.rowIndexOrder.toArray();
     }
 
     @Override
     public int getRowIndexByPosition(int rowPosition) {
         if (rowPosition >= 0 && rowPosition < this.rowIndexOrder.size()) {
-            return this.rowIndexOrder.get(rowPosition).intValue();
+            return this.rowIndexOrder.get(rowPosition);
         } else {
             return -1;
         }
@@ -296,8 +304,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
 
     @Override
     public int getRowPositionByIndex(int rowIndex) {
-        Integer result = this.indexPositionMapping.get(rowIndex);
-        return (result != null) ? result : -1;
+        return this.indexPositionMapping.getIfAbsent(rowIndex, -1);
     }
 
     @Override
@@ -314,16 +321,15 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
 
     @Override
     public Collection<Range> underlyingToLocalRowPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingRowPositionRanges) {
-        List<Integer> reorderedRowPositions = new ArrayList<Integer>();
+        MutableIntList reorderedRowPositions = IntLists.mutable.empty();
         for (Range underlyingRowPositionRange : underlyingRowPositionRanges) {
             for (int underlyingRowPosition = underlyingRowPositionRange.start; underlyingRowPosition < underlyingRowPositionRange.end; underlyingRowPosition++) {
                 int localRowPosition = underlyingToLocalRowPosition(sourceUnderlyingLayer, underlyingRowPositionRange.start);
                 reorderedRowPositions.add(localRowPosition);
             }
         }
-        Collections.sort(reorderedRowPositions);
 
-        return PositionUtil.getRanges(reorderedRowPositions);
+        return PositionUtil.getRanges(reorderedRowPositions.toSortedArray());
     }
 
     /**
@@ -344,9 +350,9 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
             toRowPosition++;
         }
 
-        Integer fromRowIndex = this.rowIndexOrder.get(fromRowPosition);
-        this.rowIndexOrder.add(toRowPosition, fromRowIndex);
-        this.rowIndexOrder.remove(fromRowPosition + (fromRowPosition > toRowPosition ? 1 : 0));
+        int fromRowIndex = this.rowIndexOrder.get(fromRowPosition);
+        this.rowIndexOrder.addAtIndex(toRowPosition, fromRowIndex);
+        this.rowIndexOrder.removeAtIndex(fromRowPosition + (fromRowPosition > toRowPosition ? 1 : 0));
 
         // update index-position mapping
         refreshIndexPositionMapping();
@@ -406,6 +412,23 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
      *            position to move the rows to
      */
     public void reorderMultipleRowPositions(List<Integer> fromRowPositions, int toRowPosition) {
+        reorderMultipleRowPositions(
+                fromRowPositions.stream().mapToInt(Integer::intValue).toArray(),
+                toRowPosition);
+    }
+
+    /**
+     * Reorders the rows at the given from positions to the <i>TOP</i> of the of
+     * the given to position. Will calculate whether the move is done above the
+     * to position or not regarding the position in the NatTable.
+     *
+     * @param fromRowPositions
+     *            row positions to move
+     * @param toRowPosition
+     *            position to move the rows to
+     * @since 2.0
+     */
+    public void reorderMultipleRowPositions(int[] fromRowPositions, int toRowPosition) {
         boolean reorderToTopEdge;
         if (toRowPosition < getRowCount()) {
             reorderToTopEdge = true;
@@ -429,36 +452,53 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
      *            not
      */
     public void reorderMultipleRowPositions(List<Integer> fromRowPositions, int toRowPosition, boolean reorderToTopEdge) {
+        reorderMultipleRowPositions(
+                fromRowPositions.stream().mapToInt(Integer::intValue).toArray(),
+                toRowPosition,
+                reorderToTopEdge);
+    }
+
+    /**
+     * Reorders the rows at the given from positions to the <i>TOP</i> of the of
+     * the given to position.
+     *
+     * @param fromRowPositions
+     *            row positions to move
+     * @param toRowPosition
+     *            position to move the rows to
+     * @param reorderToTopEdge
+     *            whether the move should be done above the given to position or
+     *            not
+     * @since 2.0
+     */
+    public void reorderMultipleRowPositions(int[] fromRowPositions, int toRowPosition, boolean reorderToTopEdge) {
         // the position collection needs to be sorted so the move works
         // correctly
-        Collections.sort(fromRowPositions);
+        Arrays.sort(fromRowPositions);
 
         // get the indexes before the move operation
-        List<Integer> fromRowIndexes = new ArrayList<Integer>();
-        for (int fromRowPosition : fromRowPositions) {
-            fromRowIndexes.add(getRowIndexByPosition(fromRowPosition));
-        }
+        int[] fromRowIndexes = Arrays.stream(fromRowPositions).map(this::getRowIndexByPosition).toArray();
         int toRowIndex = getRowIndexByPosition(toRowPosition);
 
-        final int fromRowPositionsCount = fromRowPositions.size();
+        final int fromRowPositionsCount = fromRowPositions.length;
 
-        if (toRowPosition > fromRowPositions.get(fromRowPositionsCount - 1)) {
+        if (toRowPosition > fromRowPositions[fromRowPositionsCount - 1]) {
             // Moving from top to bottom
-            int firstRowPosition = fromRowPositions.get(0);
+            int firstRowPosition = fromRowPositions[0];
 
             int moved = 0;
             for (int rowCount = 0; rowCount < fromRowPositionsCount; rowCount++) {
-                final int fromRowPosition = fromRowPositions.get(rowCount) - moved;
+                final int fromRowPosition = fromRowPositions[rowCount] - moved;
                 moveRow(fromRowPosition, toRowPosition, reorderToTopEdge);
                 moved++;
                 if (fromRowPosition < firstRowPosition) {
                     firstRowPosition = fromRowPosition;
                 }
             }
-        } else if (toRowPosition < fromRowPositions.get(fromRowPositionsCount - 1)) {
+        } else if (toRowPosition < fromRowPositions[fromRowPositionsCount - 1]) {
             // Moving from bottom to top
             int targetRowPosition = toRowPosition;
-            for (Integer fromRowPosition : fromRowPositions) {
+            for (int fromRowPosition : fromRowPositions) {
                 final int fromRowPositionInt = fromRowPosition;
                 moveRow(fromRowPositionInt, targetRowPosition++, reorderToTopEdge);
             }
@@ -484,12 +524,32 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
      * @since 1.6
      */
     public void reorderMultipleRowIndexes(List<Integer> fromRowIndexes, int toRowPosition, boolean reorderToTopEdge) {
+        reorderMultipleRowIndexes(
+                fromRowIndexes.stream().mapToInt(Integer::intValue).toArray(),
+                toRowPosition,
+                reorderToTopEdge);
+    }
+
+    /**
+     * Reorders the given from-rows identified by index to the specified edge of
+     * the row to move to and fires a {@link RowReorderEvent}. This method can
+     * be used to reorder rows that are hidden in a higher level, e.g. to
+     * reorder a row group that has hidden rows.
+     *
+     * @param fromRowIndexes
+     *            row indexes to move
+     * @param toRowPosition
+     *            position to move the rows to
+     * @param reorderToTopEdge
+     *            whether the move should be done above the given to position or
+     *            not
+     *
+     * @since 2.0
+     */
+    public void reorderMultipleRowIndexes(int[] fromRowIndexes, int toRowPosition, boolean reorderToTopEdge) {
         // calculate positions from indexes
-        List<Integer> fromRownPositions = new ArrayList<Integer>(fromRowIndexes.size());
-        for (Integer index : fromRowIndexes) {
-            fromRownPositions.add(getRowPositionByIndex(index));
-        }
-        reorderMultipleRowPositions(fromRownPositions, toRowPosition, reorderToTopEdge);
+        int[] fromRowPositions = Arrays.stream(fromRowIndexes).map(this::getRowPositionByIndex).toArray();
+        reorderMultipleRowPositions(fromRowPositions, toRowPosition, reorderToTopEdge);
     }
 
     /**

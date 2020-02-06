@@ -430,7 +430,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
         if (columnGroupModel != null && sort) {
             ArrayList<ColumnGroup> groups = new ArrayList<>();
             for (ColumnEntry columnEntry : columnEntries) {
-                int columnEntryIndex = columnEntry.getIndex().intValue();
+                int columnEntryIndex = columnEntry.getIndex();
                 if (columnGroupModel.isPartOfAGroup(columnEntryIndex)) {
                     ColumnGroup columnGroup = columnGroupModel.getColumnGroupByIndex(columnEntryIndex);
                     groups.add(columnGroup);
@@ -452,7 +452,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 
         for (ColumnEntry columnEntry : columnEntries) {
             TreeItem treeItem;
-            int columnEntryIndex = columnEntry.getIndex().intValue();
+            int columnEntryIndex = columnEntry.getIndex();
 
             // Create a node for the column group - if needed
             if (columnGroupModel != null
@@ -1210,7 +1210,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
         List<ColumnEntry> allColumnEntries = getColumnEntriesIncludingNested(this.selectedTree.getItems());
 
         for (ColumnEntry columnEntry : allColumnEntries) {
-            if (columnEntry.getPosition().intValue() == columnEntryPosition) {
+            if (columnEntry.getPosition() == columnEntryPosition) {
                 return columnEntry;
             }
         }
@@ -1362,7 +1362,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 
         for (TreeItem leaf : allLeaves) {
             if (!isColumnGroupLeaf(leaf)) {
-                int index = getColumnEntryInLeaf(leaf).getIndex().intValue();
+                int index = getColumnEntryInLeaf(leaf).getIndex();
                 if (columnEntryIndexes.contains(Integer.valueOf(index))) {
                     selectedLeaves.add(leaf);
                 }
@@ -1370,7 +1370,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
                 // Check all children in column groups
                 Collection<TreeItem> columnGroupLeaves = ArrayUtil.asCollection(leaf.getItems());
                 for (TreeItem columnGroupLeaf : columnGroupLeaves) {
-                    int index = getColumnEntryInLeaf(columnGroupLeaf).getIndex().intValue();
+                    int index = getColumnEntryInLeaf(columnGroupLeaf).getIndex();
                     if (columnEntryIndexes.contains(Integer.valueOf(index))) {
                         selectedLeaves.add(columnGroupLeaf);
                     }

@@ -10,11 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.fixture.layer;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
@@ -31,8 +26,7 @@ public class ColumnHideShowLayerFixture extends ColumnHideShowLayer {
         // Column reorder fixture index positions: 4 1 0 2 3
         super(new ColumnReorderLayerFixture());
 
-        List<Integer> columnPositions = Arrays.asList(2, 4);
-        hideColumnPositions(columnPositions);
+        hideColumnPositions(2, 4);
     }
 
     public ColumnHideShowLayerFixture(IUniqueIndexLayer underlyingLayerFixture) {
@@ -42,12 +36,7 @@ public class ColumnHideShowLayerFixture extends ColumnHideShowLayer {
     public ColumnHideShowLayerFixture(int... columnPositionsToHide) {
         super(new DataLayerFixture(10, 10, 20, 5));
 
-        Collection<Integer> columnPositions = new HashSet<Integer>();
-        for (int columnPosition : columnPositionsToHide) {
-            columnPositions.add(Integer.valueOf(columnPosition));
-        }
-
-        hideColumnPositions(columnPositions);
+        hideColumnPositions(columnPositionsToHide);
     }
 
     @Override

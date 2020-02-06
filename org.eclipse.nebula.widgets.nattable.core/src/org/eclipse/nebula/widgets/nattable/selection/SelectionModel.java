@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -567,7 +567,7 @@ public class SelectionModel implements ISelectionModel {
         Collections.sort(selectionRectanglesInRow, new Comparator<Rectangle>() {
             @Override
             public int compare(Rectangle rectangle1, Rectangle rectangle2) {
-                return new Integer(rectangle1.x).compareTo(new Integer(rectangle2.x));
+                return Integer.valueOf(rectangle1.x).compareTo(Integer.valueOf(rectangle2.x));
             }
         });
     }
@@ -577,7 +577,7 @@ public class SelectionModel implements ISelectionModel {
                 new Comparator<Rectangle>() {
                     @Override
                     public int compare(Rectangle rectangle1, Rectangle rectangle2) {
-                        return new Integer(rectangle1.y).compareTo(new Integer(rectangle2.y));
+                        return Integer.valueOf(rectangle1.y).compareTo(Integer.valueOf(rectangle2.y));
                     }
                 });
     }

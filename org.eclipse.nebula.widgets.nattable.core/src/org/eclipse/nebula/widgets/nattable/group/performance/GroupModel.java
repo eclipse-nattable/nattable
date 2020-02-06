@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Dirk Fauth.
+ * Copyright (c) 2019, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group.performance;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,9 +20,13 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.eclipse.collections.api.list.primitive.MutableIntList;
+import org.eclipse.collections.api.set.primitive.IntSet;
+import org.eclipse.collections.api.set.primitive.MutableIntSet;
+import org.eclipse.collections.impl.factory.primitive.IntLists;
+import org.eclipse.collections.impl.factory.primitive.IntSets;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
-import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
 /**
  * Model implementation to track groups of columns/rows.
@@ -177,11 +180,7 @@ public class GroupModel implements IPersistable {
             strBuilder.append(group.unbreakable ? "unbreakable" : "breakable"); //$NON-NLS-1$ //$NON-NLS-2$
 
             if (!group.staticIndexes.isEmpty()) {
-                strBuilder.append(':');
-                for (Integer member : group.staticIndexes) {
-                    strBuilder.append(member);
-                    strBuilder.append(',');
-                }
+                strBuilder.append(':').append(group.staticIndexes.toSortedList().makeString(IPersistable.VALUE_SEPARATOR));
             }
 
             strBuilder.append('|');
@@ -208,19 +207,19 @@ public class GroupModel implements IPersistable {
                 String[] groupProperties = groupToken.substring(separatorIndex + 1).split(":"); //$NON-NLS-1$
 
                 String state = groupProperties[0];
-                int startIndex = Integer.valueOf(state);
+                int startIndex = Integer.parseInt(state);
 
                 state = groupProperties[1];
-                int visibleStartIndex = Integer.valueOf(state);
+                int visibleStartIndex = Integer.parseInt(state);
 
                 state = groupProperties[2];
-                int visibleStartPosition = Integer.valueOf(state);
+                int visibleStartPosition = Integer.parseInt(state);
 
                 state = groupProperties[3];
-                int originalSpan = Integer.valueOf(state);
+                int originalSpan = Integer.parseInt(state);
 
                 state = groupProperties[4];
-                int visibleSpan = Integer.valueOf(state);
+                int visibleSpan = Integer.parseInt(state);
 
                 Group group = new Group(groupName, startIndex, originalSpan);
                 this.groups.add(group);
@@ -263,7 +262,7 @@ public class GroupModel implements IPersistable {
                     String statics = groupProperties[8];
                     StringTokenizer staticTokenizer = new StringTokenizer(statics, ","); //$NON-NLS-1$
                     while (staticTokenizer.hasMoreTokens()) {
-                        Integer index = Integer.valueOf(staticTokenizer.nextToken());
+                        int index = Integer.parseInt(staticTokenizer.nextToken());
                         group.staticIndexes.add(index);
                     }
                 }
@@ -285,8 +284,8 @@ public class GroupModel implements IPersistable {
             Arrays.sort(positions);
 
             // separate position arrays by start position
-            List<Integer> beforeStartPosition = new ArrayList<Integer>();
-            List<Integer> afterStartPosition = new ArrayList<Integer>();
+            MutableIntList beforeStartPosition = IntLists.mutable.empty();
+            MutableIntList afterStartPosition = IntLists.mutable.empty();
             for (int pos : positions) {
                 if (pos < group.getVisibleStartPosition()) {
                     beforeStartPosition.add(pos);
@@ -320,7 +319,7 @@ public class GroupModel implements IPersistable {
             }
 
             // iterate forward after group end
-            for (int pos : afterStartPosition) {
+            for (int pos : afterStartPosition.toArray()) {
                 int nextPos = group.getVisibleStartPosition() + group.getVisibleSpan();
                 // check for gap
                 if (pos == nextPos) {
@@ -359,18 +358,19 @@ public class GroupModel implements IPersistable {
     public void removePositionsFromGroup(Group group, int... positions) {
         if (group != null && !group.isUnbreakable()) {
             Arrays.sort(positions);
+            IntSet visiblePositions = IntSets.immutable.of(group.getVisiblePositions());
             for (int i = positions.length - 1; i >= 0; i--) {
                 int pos = positions[i];
-                if (group.getVisiblePositions().contains(Integer.valueOf(pos))) {
+                if (visiblePositions.contains(pos)) {
                     int index = getIndexByPosition(pos);
                     if (index == group.getStartIndex()) {
                         // the start index was removed, we need to update the
                         // start index
                         group.setStartIndex(getIndexByPosition(pos + 1));
-                        group.members.remove(Integer.valueOf(index));
-                        group.staticIndexes.remove(Integer.valueOf(index));
+                        group.members.remove(index);
+                        group.staticIndexes.remove(index);
                     } else {
-                        Integer memberIndex = getIndexByPosition(Integer.valueOf(group.getVisibleStartPosition() + group.getVisibleSpan() - 1));
+                        int memberIndex = getIndexByPosition(group.getVisibleStartPosition() + group.getVisibleSpan() - 1);
                         group.members.remove(memberIndex);
                         group.staticIndexes.remove(memberIndex);
                     }
@@ -429,10 +429,10 @@ public class GroupModel implements IPersistable {
                     // the start index was removed, we need to update the
                     // start index
                     group.setStartIndex(getIndexByPosition(pos + 1));
-                    group.members.remove(Integer.valueOf(index));
-                    group.staticIndexes.remove(Integer.valueOf(index));
+                    group.members.remove(index);
+                    group.staticIndexes.remove(index);
                 } else {
-                    Integer memberIndex = getIndexByPosition(Integer.valueOf(group.getVisibleStartPosition() + group.getVisibleSpan() - 1));
+                    int memberIndex = getIndexByPosition(group.getVisibleStartPosition() + group.getVisibleSpan() - 1);
                     group.members.remove(memberIndex);
                     group.staticIndexes.remove(memberIndex);
                 }
@@ -511,18 +511,15 @@ public class GroupModel implements IPersistable {
      */
     public void addStaticIndexesToGroup(Group group, int... indexes) {
 
-        LinkedList<Integer> staticIndexes = new LinkedList<Integer>();
+        int[] staticIndexes = Arrays.stream(indexes)
+                .map(this::getPositionByIndex)
+                .filter(pos -> {
+                    return (pos >= group.getVisibleStartPosition()
+                            && pos < (group.getVisibleStartPosition() + group.getVisibleSpan()));
+                })
+                .toArray();
 
-        for (int index : indexes) {
-            int pos = getPositionByIndex(index);
-            // Check if the index belongs to the group
-            if (pos >= group.getVisibleStartPosition()
-                    && (pos < group.getVisibleStartPosition() + group.getVisibleSpan())) {
-                staticIndexes.add(index);
-            }
-        }
-
-        if (!staticIndexes.isEmpty()) {
+        if (staticIndexes.length > 0) {
             group.staticIndexes.addAll(staticIndexes);
         }
     }
@@ -582,7 +579,7 @@ public class GroupModel implements IPersistable {
      */
     public Group getGroupByStaticIndex(int staticIndex) {
         for (Group group : this.groups) {
-            if (group.staticIndexes.contains(Integer.valueOf(staticIndex))) {
+            if (group.staticIndexes.contains(staticIndex)) {
                 return group;
             }
         }
@@ -930,7 +927,7 @@ public class GroupModel implements IPersistable {
         /**
          * The indexes that remain visible when collapsing this group.
          */
-        private final Collection<Integer> staticIndexes = new HashSet<Integer>();
+        private final MutableIntSet staticIndexes = IntSets.mutable.empty();
 
         /**
          * Flag to configure whether this group can be collapsed or not.
@@ -955,7 +952,7 @@ public class GroupModel implements IPersistable {
          * hide operations performed at the end of a table lead to an
          * inconsistent group state.
          */
-        private final Collection<Integer> members = new HashSet<Integer>();
+        private final MutableIntSet members = IntSets.mutable.empty();
 
         /**
          *
@@ -1158,20 +1155,12 @@ public class GroupModel implements IPersistable {
          */
         void consistencyCheck(boolean updateStartIndex) {
             // check if the member indexes are all visible
-            int hidden = 0;
-            int smallestPosition = -1;
-            for (int member : this.members) {
-                int pos = getPositionByIndex(member);
-                if (pos == -1) {
-                    hidden++;
-                } else {
-                    if (smallestPosition == -1) {
-                        smallestPosition = pos;
-                    } else {
-                        smallestPosition = Math.min(smallestPosition, pos);
-                    }
-                }
-            }
+            MutableIntList memberPositions = this.members
+                    .collectInt(member -> getPositionByIndex(member), IntLists.mutable.empty());
+
+            int hidden = memberPositions.count(pos -> pos == -1);
+            int smallestPosition = memberPositions.select(pos -> pos >= 0).minIfEmpty(-1);
+
             setVisibleSpan(this.originalSpan - hidden);
 
             int smallestIndex = getIndexByPosition(smallestPosition);
@@ -1188,8 +1177,8 @@ public class GroupModel implements IPersistable {
          * @return The indexes of the members in this collection. Not modifiable
          *         to avoid side effects from the outside of the GroupModel.
          */
-        Collection<Integer> getMembers() {
-            return Collections.unmodifiableCollection(this.members);
+        int[] getMembers() {
+            return this.members.toSortedArray();
         }
 
         /**
@@ -1200,7 +1189,7 @@ public class GroupModel implements IPersistable {
          *            The indexes of the positions that should be added to the
          *            local group members.
          */
-        void addMembers(Collection<Integer> memberIndexes) {
+        void addMembers(int... memberIndexes) {
             this.members.addAll(memberIndexes);
         }
 
@@ -1212,7 +1201,7 @@ public class GroupModel implements IPersistable {
          *            The indexes of the positions that should be removed from
          *            the local group members.
          */
-        void removeMembers(Collection<Integer> memberIndexes) {
+        void removeMembers(int... memberIndexes) {
             this.members.removeAll(memberIndexes);
         }
 
@@ -1225,7 +1214,7 @@ public class GroupModel implements IPersistable {
          *         {@link Group}, <code>false</code> if not.
          */
         public boolean hasMember(int memberIndex) {
-            return this.members.contains(Integer.valueOf(memberIndex));
+            return this.members.contains(memberIndex);
         }
 
         /**
@@ -1286,9 +1275,7 @@ public class GroupModel implements IPersistable {
          *            The static indexes to add.
          */
         public void addStaticIndexes(int... indexes) {
-            for (int index : indexes) {
-                this.staticIndexes.add(Integer.valueOf(index));
-            }
+            this.staticIndexes.addAll(indexes);
         }
 
         /**
@@ -1298,27 +1285,42 @@ public class GroupModel implements IPersistable {
          *            The static indexes to remove.
          */
         public void removeStaticIndexes(int... indexes) {
-            for (int index : indexes) {
-                this.staticIndexes.remove(Integer.valueOf(index));
-            }
+            this.staticIndexes.removeAll(indexes);
+        }
+
+        /**
+         * Checks if the given index is a static index of this group.
+         *
+         * @param index
+         *            The index to check.
+         * @return <code>true</code> if the given index is configured as static
+         *         index of this group, <code>false</code> if not.
+         * @since 2.0
+         */
+        public boolean containsStaticIndex(int index) {
+            return this.staticIndexes.contains(index);
         }
 
         /**
          * @return The indexes that remain visible when collapsing this group.
+         * @since 2.0
          */
-        public Collection<Integer> getStaticIndexes() {
-            return Collections.unmodifiableCollection(this.staticIndexes);
+        public int[] getStaticIndexes() {
+            return this.staticIndexes.toSortedArray();
         }
 
         /**
          *
          * @return The positions of the visible items in the group matching the
          *         position layer of the GroupModel.
+         * @since 2.0
          */
-        public Collection<Integer> getVisiblePositions() {
-            List<Integer> groupPositions = new ArrayList<>();
-            for (int i = this.visibleStartPosition; i < (this.visibleStartPosition + this.visibleSpan); i++) {
-                groupPositions.add(i);
+        public int[] getVisiblePositions() {
+            int[] groupPositions = new int[this.visibleSpan];
+            int i = 0;
+            for (int pos = this.visibleStartPosition; pos < (this.visibleStartPosition + this.visibleSpan); pos++) {
+                groupPositions[i] = pos;
+                i++;
             }
             return groupPositions;
         }
@@ -1326,11 +1328,14 @@ public class GroupModel implements IPersistable {
         /**
          *
          * @return The indexes of the positions that are currently visible.
+         * @since 2.0
          */
-        public Collection<Integer> getVisibleIndexes() {
-            List<Integer> groupIndexes = new ArrayList<>();
-            for (int i = this.visibleStartPosition; i < (this.visibleStartPosition + this.visibleSpan); i++) {
-                groupIndexes.add(getIndexByPosition(i));
+        public int[] getVisibleIndexes() {
+            int[] groupIndexes = new int[this.visibleSpan];
+            int i = 0;
+            for (int pos = this.visibleStartPosition; pos < (this.visibleStartPosition + this.visibleSpan); pos++) {
+                groupIndexes[i] = getIndexByPosition(pos);
+                i++;
             }
             return groupIndexes;
         }
@@ -1349,10 +1354,9 @@ public class GroupModel implements IPersistable {
          * @since 2.0
          */
         public int getGroupEndPosition(IUniqueIndexLayer layer) {
-            return this.members.stream()
-                    .mapToInt(layer::getColumnPositionByIndex)
-                    .max()
-                    .orElse(-1);
+            return this.members
+                    .collectInt(layer::getColumnPositionByIndex, IntSets.mutable.empty())
+                    .maxIfEmpty(-1);
         }
 
         /**
@@ -1394,7 +1398,7 @@ public class GroupModel implements IPersistable {
                     + "\n\t collapseable: " + this.collapseable //$NON-NLS-1$
                     + "\n\t collapsed: " + this.collapsed //$NON-NLS-1$
                     + "\n\t unbreakable: " + this.unbreakable //$NON-NLS-1$
-                    + "\n\t staticIndexes: " + ObjectUtils.toString(this.staticIndexes) + "\n"; //$NON-NLS-1$ //$NON-NLS-2$
+                    + "\n\t staticIndexes: [ " + this.staticIndexes.makeString(", ") + " ]\n"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
     }
 

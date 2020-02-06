@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2019 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
@@ -15,6 +15,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorConstants;
@@ -69,19 +70,18 @@ public class RowHideShowLayerTest {
 
     @Test
     public void hideAllRows() {
-        this.rowHideShowLayer.hideRowPositions(Arrays.asList(0, 1, 2, 3, 4));
+        this.rowHideShowLayer.hideRowPositions(0, 1, 2, 3, 4);
 
         assertEquals(0, this.rowHideShowLayer.getRowCount());
     }
 
     @Test
     public void hideAllRows2() {
-        List<Integer> rowPositions = Arrays.asList(0);
-        this.rowHideShowLayer.hideRowPositions(rowPositions);
-        this.rowHideShowLayer.hideRowPositions(rowPositions);
-        this.rowHideShowLayer.hideRowPositions(rowPositions);
-        this.rowHideShowLayer.hideRowPositions(rowPositions);
-        this.rowHideShowLayer.hideRowPositions(rowPositions);
+        this.rowHideShowLayer.hideRowPositions(0);
+        this.rowHideShowLayer.hideRowPositions(0);
+        this.rowHideShowLayer.hideRowPositions(0);
+        this.rowHideShowLayer.hideRowPositions(0);
+        this.rowHideShowLayer.hideRowPositions(0);
         assertEquals(0, this.rowHideShowLayer.getRowCount());
     }
 
@@ -145,6 +145,24 @@ public class RowHideShowLayerTest {
         assertEquals(-1, this.rowHideShowLayer.getRowPositionByIndex(4));
 
         this.rowHideShowLayer.showRowIndexes(Arrays.asList(3, 4));
+        assertEquals(9, this.rowHideShowLayer.getRowCount());
+        assertEquals(3, this.rowHideShowLayer.getRowPositionByIndex(3));
+        assertEquals(4, this.rowHideShowLayer.getRowPositionByIndex(4));
+    }
+
+    @Test
+    public void showRowIndexesPrimitive() {
+        this.rowHideShowLayer = new RowHideShowLayerFixture(
+                new DataLayerFixture(2, 10, 100, 20));
+
+        assertEquals(10, this.rowHideShowLayer.getRowCount());
+
+        this.rowHideShowLayer.hideRowPositions(3, 4, 5);
+        assertEquals(7, this.rowHideShowLayer.getRowCount());
+        assertEquals(-1, this.rowHideShowLayer.getRowPositionByIndex(3));
+        assertEquals(-1, this.rowHideShowLayer.getRowPositionByIndex(4));
+
+        this.rowHideShowLayer.showRowIndexes(3, 4);
         assertEquals(9, this.rowHideShowLayer.getRowCount());
         assertEquals(3, this.rowHideShowLayer.getRowPositionByIndex(3));
         assertEquals(4, this.rowHideShowLayer.getRowPositionByIndex(4));
@@ -360,5 +378,33 @@ public class RowHideShowLayerTest {
         assertEquals(5, this.rowHideShowLayer.localToUnderlyingRowPosition(5));
         assertEquals(6, this.rowHideShowLayer.localToUnderlyingRowPosition(6));
         assertEquals(-1, this.rowHideShowLayer.localToUnderlyingRowPosition(7));
+    }
+
+    @Test
+    public void shouldReturnHiddenRowIndexes() {
+        // test initialization hides row indexes 0 and 3
+        // happens due to reordering and hiding
+
+        Collection<Integer> hiddenRowIndexes = this.rowHideShowLayer.getHiddenRowIndexes();
+        assertEquals(2, hiddenRowIndexes.size());
+        assertTrue(hiddenRowIndexes.contains(Integer.valueOf(0)));
+        assertTrue(hiddenRowIndexes.contains(Integer.valueOf(3)));
+
+        int[] hiddenRowIndexesArray = this.rowHideShowLayer.getHiddenRowIndexesArray();
+        assertEquals(2, hiddenRowIndexesArray.length);
+        assertEquals(0, hiddenRowIndexesArray[0]);
+        assertEquals(3, hiddenRowIndexesArray[1]);
+
+        assertTrue(this.rowHideShowLayer.hasHiddenRows());
+
+        this.rowHideShowLayer.showAllRows();
+
+        hiddenRowIndexes = this.rowHideShowLayer.getHiddenRowIndexes();
+        assertEquals(0, hiddenRowIndexes.size());
+
+        hiddenRowIndexesArray = this.rowHideShowLayer.getHiddenRowIndexesArray();
+        assertEquals(0, hiddenRowIndexesArray.length);
+
+        assertFalse(this.rowHideShowLayer.hasHiddenRows());
     }
 }

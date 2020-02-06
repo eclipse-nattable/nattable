@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,6 @@ import org.eclipse.nebula.widgets.nattable.resize.command.AutoResizeRowsCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.InitializeAutoResizeRowsCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiRowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
 /**
  * This command is triggered by the {@link InitializeAutoResizeRowsCommand}. The
@@ -80,7 +79,7 @@ public class AutoResizeRowCommandHandler implements ILayerCommandHandler<AutoRes
         // Need to resize selected rows even if they are outside the viewport
         targetLayer.doCommand(new TurnViewportOffCommand());
 
-        int[] rowPositions = ObjectUtils.asIntArray(command.getRowPositions());
+        int[] rowPositions = command.getRowPositionsArray();
         int[] gridRowPositions =
                 command.doPositionTransformation() ? convertFromPositionToCommandLayer(rowPositions) : rowPositions;
 

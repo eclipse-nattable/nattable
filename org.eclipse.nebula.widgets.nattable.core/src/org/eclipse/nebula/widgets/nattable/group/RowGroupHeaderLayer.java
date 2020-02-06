@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -255,8 +255,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
         int rowIndex = getRowIndexByPosition(rowPosition);
 
         // Get the row and the group from our cache and model.
-        final IRowGroup<T> rowGroup =
-                RowGroupUtils.getRowGroupForRowIndex(this.model, rowIndex);
+        IRowGroup<T> rowGroup = RowGroupUtils.getRowGroupForRowIndex(this.model, rowIndex);
 
         int sizeOfGroup = RowGroupUtils.sizeOfGroup(this.model, rowIndex);
 
@@ -271,13 +270,19 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 
         int startPositionOfGroup = getStartPositionOfGroup(rowPosition);
         int endPositionOfGroup = startPositionOfGroup + sizeOfGroup;
-        List<Integer> rowIndexesInGroup =
-                RowGroupUtils.getRowIndexesInGroup(this.model, rowIndex);
+        int[] rowIndexesInGroup = RowGroupUtils.getRowIndexesInGroupAsArray(this.model, rowIndex);
 
         for (int i = startPositionOfGroup; i < endPositionOfGroup; i++) {
             int index = getRowIndexByPosition(i);
-            if (!rowIndexesInGroup.contains(Integer.valueOf(index))) {
-                sizeOfGroup--;
+            for (int j = 0; j < rowIndexesInGroup.length; j++) {
+                boolean contained = false;
+                if (rowIndexesInGroup[j] == index) {
+                    contained = true;
+                    break;
+                }
+                if (contained) {
+                    sizeOfGroup--;
+                }
             }
         }
 

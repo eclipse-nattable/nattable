@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -41,6 +42,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowPositionHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommand;
@@ -48,6 +50,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorConstants;
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalTreeLayer.HierarchicalTreeNode;
+import org.eclipse.nebula.widgets.nattable.hierarchical.command.HierarchicalTreeExpandCollapseCommand;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
@@ -1557,6 +1560,9 @@ public class HierarchicalTreeLayerTest {
         Collection<Range> rowPositionRanges = hideEvent.getRowPositionRanges();
         assertEquals(1, rowPositionRanges.size());
         assertEquals(new Range(1, 2), rowPositionRanges.iterator().next());
+        int[] rowIndexes = hideEvent.getRowIndexes();
+        assertEquals(1, rowIndexes.length);
+        assertEquals(1, rowIndexes[0]);
         this.layerListener.clearReceivedEvents();
 
         // collapse first node in first level
@@ -1574,7 +1580,14 @@ public class HierarchicalTreeLayerTest {
         hideEvent = (HideRowPositionsEvent) this.layerListener.getReceivedEvent(HideRowPositionsEvent.class);
         rowPositionRanges = hideEvent.getRowPositionRanges();
         assertEquals(1, rowPositionRanges.size());
-        assertEquals(new Range(1, 5), rowPositionRanges.iterator().next());
+        // only range 1 to 4 because one row is already hidden through previous
+        // collapse
+        assertEquals(new Range(1, 4), rowPositionRanges.iterator().next());
+        rowIndexes = hideEvent.getRowIndexes();
+        assertEquals(3, rowIndexes.length);
+        assertEquals(2, rowIndexes[0]);
+        assertEquals(3, rowIndexes[1]);
+        assertEquals(4, rowIndexes[2]);
 
         // expand first node in first level again
         this.treeLayer.doCommand(new TreeExpandCollapseCommand(0, 0));
@@ -1593,7 +1606,19 @@ public class HierarchicalTreeLayerTest {
         ShowRowPositionsEvent showEvent = (ShowRowPositionsEvent) this.layerListener.getReceivedEvent(ShowRowPositionsEvent.class);
         rowPositionRanges = showEvent.getRowPositionRanges();
         assertEquals(1, rowPositionRanges.size());
-        assertEquals(new Range(2, 5), rowPositionRanges.iterator().next());
+        assertEquals(new Range(1, 4), rowPositionRanges.iterator().next());
+
+        // first sub node is still collapsed, the indexes 2, 3, 4 are shown
+        // again, 1 stays hidden
+        rowIndexes = showEvent.getRowIndexes();
+        assertEquals(3, rowIndexes.length);
+        assertEquals(2, rowIndexes[0]);
+        assertEquals(3, rowIndexes[1]);
+        assertEquals(4, rowIndexes[2]);
+
+        int[] hiddenRowIndexesArray = this.treeLayer.getHiddenRowIndexesArray();
+        assertEquals(1, hiddenRowIndexesArray.length);
+        assertEquals(1, hiddenRowIndexesArray[0]);
     }
 
     // collapse second - collapse first - expand first to level 1 - second also
@@ -1652,7 +1677,24 @@ public class HierarchicalTreeLayerTest {
         ShowRowPositionsEvent showEvent = (ShowRowPositionsEvent) this.layerListener.getReceivedEvent(ShowRowPositionsEvent.class);
         rowPositionRanges = showEvent.getRowPositionRanges();
         assertEquals(1, rowPositionRanges.size());
-        assertEquals(new Range(2, 4), rowPositionRanges.iterator().next());
+        // row positions 1 and 2 are made visible again
+        assertEquals(new Range(1, 3), rowPositionRanges.iterator().next());
+
+        // as sub nodes are still collapsed, the indexes 2 and 3 are shown
+        // again, 1 and 4 stay hidden
+        int[] rowIndexes = showEvent.getRowIndexes();
+        assertEquals(2, rowIndexes.length);
+        assertEquals(2, rowIndexes[0]);
+        assertEquals(3, rowIndexes[1]);
+
+        int[] hiddenRowIndexesArray = this.treeLayer.getHiddenRowIndexesArray();
+        assertEquals(6, hiddenRowIndexesArray.length);
+        assertEquals(1, hiddenRowIndexesArray[0]);
+        assertEquals(4, hiddenRowIndexesArray[1]);
+        assertEquals(7, hiddenRowIndexesArray[2]);
+        assertEquals(8, hiddenRowIndexesArray[3]);
+        assertEquals(9, hiddenRowIndexesArray[4]);
+        assertEquals(10, hiddenRowIndexesArray[5]);
     }
 
     @Test
@@ -2112,5 +2154,160 @@ public class HierarchicalTreeLayerTest {
 
         assertTrue(EditUtils.allCellsEditable(this.selectionLayer, configRegistry));
         assertFalse(EditUtils.allCellsEditable(this.selectionLayer, this.treeLayer, configRegistry));
+    }
+
+    @Test
+    public void shouldHideAndCollapse() {
+        this.treeLayer.doCommand(new RowHideCommand(this.treeLayer, 2));
+
+        assertEquals(10, this.treeLayer.getRowCount());
+        assertTrue(this.treeLayer.isRowIndexHidden(2));
+
+        this.layerListener.clearReceivedEvents();
+
+        this.treeLayer.doCommand(new HierarchicalTreeExpandCollapseCommand(0, 0));
+
+        assertEquals(7, this.treeLayer.getRowCount());
+
+        assertTrue(this.treeLayer.hasHiddenRows());
+
+        int[] hiddenRowIndexes = this.treeLayer.getHiddenRowIndexesArray();
+        assertEquals(4, hiddenRowIndexes.length);
+        assertEquals(1, hiddenRowIndexes[0]);
+        assertEquals(2, hiddenRowIndexes[1]);
+        assertEquals(3, hiddenRowIndexes[2]);
+        assertEquals(4, hiddenRowIndexes[3]);
+
+        assertEquals(1, this.layerListener.getEventsCount());
+        assertTrue(this.layerListener.containsInstanceOf(HideRowPositionsEvent.class));
+
+        HideRowPositionsEvent receivedEvent = (HideRowPositionsEvent) this.layerListener.getReceivedEvent(HideRowPositionsEvent.class);
+        Collection<Range> rowPositionRanges = receivedEvent.getRowPositionRanges();
+        assertEquals(1, rowPositionRanges.size());
+        assertEquals(new Range(1, 4), rowPositionRanges.iterator().next());
+
+        int[] rowIndexes = receivedEvent.getRowIndexes();
+        // only 3 indexes hidden as 1 index was already hidden in an underlying
+        // layer before
+        assertEquals(3, rowIndexes.length);
+        assertEquals(1, rowIndexes[0]);
+        assertEquals(3, rowIndexes[1]);
+        assertEquals(4, rowIndexes[2]);
+    }
+
+    @Test
+    public void shouldCollapseAllWithHidden() {
+        this.treeLayer.doCommand(new RowHideCommand(this.treeLayer, 2));
+
+        assertEquals(10, this.treeLayer.getRowCount());
+
+        this.layerListener.clearReceivedEvents();
+
+        this.treeLayer.doCommand(new TreeCollapseAllCommand());
+
+        assertEquals(3, this.treeLayer.getRowCount());
+
+        int[] hiddenRowIndexes = this.treeLayer.getHiddenRowIndexesArray();
+        assertEquals(8, hiddenRowIndexes.length);
+
+        assertEquals(1, this.layerListener.getEventsCount());
+        assertTrue(this.layerListener.containsInstanceOf(HideRowPositionsEvent.class));
+
+        HideRowPositionsEvent receivedEvent = (HideRowPositionsEvent) this.layerListener.getReceivedEvent(HideRowPositionsEvent.class);
+        Collection<Range> rowPositionRanges = receivedEvent.getRowPositionRanges();
+        assertEquals(2, rowPositionRanges.size());
+        Iterator<Range> iterator = rowPositionRanges.iterator();
+        assertEquals(new Range(1, 4), iterator.next());
+        assertEquals(new Range(6, 10), iterator.next());
+
+        int[] rowIndexes = receivedEvent.getRowIndexes();
+        // 7 because 1 row was already hidden
+        assertEquals(7, rowIndexes.length);
+        assertEquals(1, rowIndexes[0]);
+        assertEquals(3, rowIndexes[1]);
+        assertEquals(4, rowIndexes[2]);
+        assertEquals(7, rowIndexes[3]);
+        assertEquals(8, rowIndexes[4]);
+        assertEquals(9, rowIndexes[5]);
+        assertEquals(10, rowIndexes[6]);
+    }
+
+    @Test
+    public void shouldExpandWithHidden() {
+        this.treeLayer.doCommand(new RowHideCommand(this.treeLayer, 2));
+
+        // collapse
+        this.treeLayer.doCommand(new HierarchicalTreeExpandCollapseCommand(0, 0));
+
+        this.layerListener.clearReceivedEvents();
+
+        // expand again
+        this.treeLayer.doCommand(new HierarchicalTreeExpandCollapseCommand(0, 0));
+
+        assertEquals(10, this.treeLayer.getRowCount());
+
+        assertFalse(this.treeLayer.hasHiddenRows());
+
+        assertTrue(this.treeLayer.isRowIndexHidden(2));
+
+        int[] hiddenRowIndexes = this.treeLayer.getHiddenRowIndexesArray();
+        assertEquals(0, hiddenRowIndexes.length);
+
+        assertEquals(1, this.layerListener.getEventsCount());
+        assertTrue(this.layerListener.containsInstanceOf(ShowRowPositionsEvent.class));
+
+        ShowRowPositionsEvent receivedEvent = (ShowRowPositionsEvent) this.layerListener.getReceivedEvent(ShowRowPositionsEvent.class);
+        Collection<Range> rowPositionRanges = receivedEvent.getRowPositionRanges();
+        assertEquals(1, rowPositionRanges.size());
+        assertEquals(new Range(1, 4), rowPositionRanges.iterator().next());
+
+        int[] rowIndexes = receivedEvent.getRowIndexes();
+        // only 3 indexes shown again as 1 index is still hidden in an
+        // underlying layer
+        assertEquals(3, rowIndexes.length);
+        assertEquals(1, rowIndexes[0]);
+        assertEquals(3, rowIndexes[1]);
+        assertEquals(4, rowIndexes[2]);
+    }
+
+    @Test
+    public void shouldExpandAllWithHidden() {
+        this.treeLayer.doCommand(new RowHideCommand(this.treeLayer, 2));
+
+        // collapse
+        this.treeLayer.doCommand(new TreeCollapseAllCommand());
+
+        this.layerListener.clearReceivedEvents();
+
+        // expand again
+        this.treeLayer.doCommand(new TreeExpandAllCommand());
+
+        assertEquals(10, this.treeLayer.getRowCount());
+
+        assertTrue(this.treeLayer.isRowIndexHidden(2));
+        assertFalse(this.treeLayer.hasHiddenRows());
+
+        int[] hiddenRowIndexes = this.treeLayer.getHiddenRowIndexesArray();
+        assertEquals(0, hiddenRowIndexes.length);
+
+        assertEquals(1, this.layerListener.getEventsCount());
+        assertTrue(this.layerListener.containsInstanceOf(ShowRowPositionsEvent.class));
+
+        ShowRowPositionsEvent receivedEvent = (ShowRowPositionsEvent) this.layerListener.getReceivedEvent(ShowRowPositionsEvent.class);
+        Collection<Range> rowPositionRanges = receivedEvent.getRowPositionRanges();
+        Iterator<Range> iterator = rowPositionRanges.iterator();
+        assertEquals(new Range(1, 4), iterator.next());
+        assertEquals(new Range(6, 10), iterator.next());
+
+        int[] rowIndexes = receivedEvent.getRowIndexes();
+        // 7 because 1 row was already hidden
+        assertEquals(7, rowIndexes.length);
+        assertEquals(1, rowIndexes[0]);
+        assertEquals(3, rowIndexes[1]);
+        assertEquals(4, rowIndexes[2]);
+        assertEquals(7, rowIndexes[3]);
+        assertEquals(8, rowIndexes[4]);
+        assertEquals(9, rowIndexes[5]);
+        assertEquals(10, rowIndexes[6]);
     }
 }

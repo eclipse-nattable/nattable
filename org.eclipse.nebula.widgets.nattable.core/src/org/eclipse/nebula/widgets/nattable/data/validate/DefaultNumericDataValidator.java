@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,8 +15,9 @@ public class DefaultNumericDataValidator extends DataValidator {
     @Override
     public boolean validate(int columnIndex, int rowIndex, Object newValue) {
         try {
-            if (newValue != null)
-                new Double(newValue.toString());
+            if (newValue != null) {
+                Double.valueOf(newValue.toString());
+            }
         } catch (Exception e) {
             return false;
         }

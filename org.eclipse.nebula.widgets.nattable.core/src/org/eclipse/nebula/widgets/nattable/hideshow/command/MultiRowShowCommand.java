@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,8 +10,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow.command;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 
@@ -23,7 +24,7 @@ public class MultiRowShowCommand extends AbstractContextFreeCommand {
     /**
      * The indexes of the rows that should be showed again.
      */
-    private final Collection<Integer> rowIndexes;
+    private final int[] rowIndexes;
 
     /**
      *
@@ -31,6 +32,16 @@ public class MultiRowShowCommand extends AbstractContextFreeCommand {
      *            The indexes of the rows that should be showed again.
      */
     public MultiRowShowCommand(Collection<Integer> rowIndexes) {
+        this.rowIndexes = rowIndexes.stream().mapToInt(Integer::intValue).toArray();
+    }
+
+    /**
+     *
+     * @param rowIndexes
+     *            The indexes of the rows that should be showed again.
+     * @since 2.0
+     */
+    public MultiRowShowCommand(int... rowIndexes) {
         this.rowIndexes = rowIndexes;
     }
 
@@ -39,11 +50,21 @@ public class MultiRowShowCommand extends AbstractContextFreeCommand {
      * @return The indexes of the rows that should be showed again.
      */
     public Collection<Integer> getRowIndexes() {
+        return Arrays.stream(this.rowIndexes).boxed().collect(Collectors.toList());
+    }
+
+    /**
+     *
+     * @return The indexes of the rows that should be showed again.
+     *
+     * @since 2.0
+     */
+    public int[] getRowIndexesArray() {
         return this.rowIndexes;
     }
 
     @Override
     public MultiRowShowCommand cloneCommand() {
-        return new MultiRowShowCommand(new ArrayList<Integer>(this.rowIndexes));
+        return new MultiRowShowCommand(Arrays.copyOf(this.rowIndexes, this.rowIndexes.length));
     }
 }

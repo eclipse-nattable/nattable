@@ -225,6 +225,7 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(0, group1.getVisibleStartPosition());
         assertEquals(4, group1.getOriginalSpan());
         assertEquals(4, group1.getVisibleSpan());
+        assertEquals(3, group1.getGroupEndPosition(this.selectionLayer));
 
         Group group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
         assertEquals(4, group2.getStartIndex());
@@ -232,6 +233,7 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(4, group2.getVisibleStartPosition());
         assertEquals(4, group2.getOriginalSpan());
         assertEquals(4, group2.getVisibleSpan());
+        assertEquals(7, group2.getGroupEndPosition(this.selectionLayer));
 
         Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(8);
         assertEquals(8, group3.getStartIndex());
@@ -239,6 +241,7 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(8, group3.getVisibleStartPosition());
         assertEquals(3, group3.getOriginalSpan());
         assertEquals(3, group3.getVisibleSpan());
+        assertEquals(10, group3.getGroupEndPosition(this.selectionLayer));
 
         Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(11);
         assertEquals(11, group4.getStartIndex());
@@ -246,6 +249,7 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(11, group4.getVisibleStartPosition());
         assertEquals(3, group4.getOriginalSpan());
         assertEquals(3, group4.getVisibleSpan());
+        assertEquals(13, group4.getGroupEndPosition(this.selectionLayer));
     }
 
     @Test
@@ -1144,6 +1148,7 @@ public class ColumnGroupHeaderLayerTest {
             assertEquals(-1, group2.getVisibleStartPosition());
             assertEquals(4, group2.getOriginalSpan());
             assertEquals(0, group2.getVisibleSpan());
+            assertEquals(-1, group2.getGroupEndPosition(this.selectionLayer));
         } else {
             fail("Column not hidden");
         }
@@ -1404,6 +1409,17 @@ public class ColumnGroupHeaderLayerTest {
         // collapse group with no static indexes
         this.columnGroupHeaderLayer.collapseGroup(0);
 
+        int[] hiddenColumnIndexes = this.columnGroupExpandCollapseLayer.getHiddenColumnIndexesArray();
+        assertEquals(3, hiddenColumnIndexes.length);
+        assertEquals(1, hiddenColumnIndexes[0]);
+        assertEquals(2, hiddenColumnIndexes[1]);
+        assertEquals(3, hiddenColumnIndexes[2]);
+
+        assertTrue(this.columnGroupExpandCollapseLayer.isColumnIndexHidden(1));
+        assertTrue(this.columnGroupExpandCollapseLayer.isColumnIndexHidden(2));
+        assertTrue(this.columnGroupExpandCollapseLayer.isColumnIndexHidden(3));
+        assertTrue(this.columnGroupExpandCollapseLayer.hasHiddenColumns());
+
         assertEquals(11, this.columnGroupExpandCollapseLayer.getColumnCount());
 
         Group group = this.columnGroupHeaderLayer.getGroupByPosition(0);
@@ -1422,6 +1438,14 @@ public class ColumnGroupHeaderLayerTest {
 
         // expand group with no static indexes
         this.columnGroupHeaderLayer.expandGroup(0);
+
+        hiddenColumnIndexes = this.columnGroupExpandCollapseLayer.getHiddenColumnIndexesArray();
+        assertEquals(0, hiddenColumnIndexes.length);
+
+        assertFalse(this.columnGroupExpandCollapseLayer.isColumnIndexHidden(1));
+        assertFalse(this.columnGroupExpandCollapseLayer.isColumnIndexHidden(2));
+        assertFalse(this.columnGroupExpandCollapseLayer.isColumnIndexHidden(3));
+        assertFalse(this.columnGroupExpandCollapseLayer.hasHiddenColumns());
 
         assertEquals(14, this.columnGroupExpandCollapseLayer.getColumnCount());
 
@@ -8387,10 +8411,10 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(3, group.getVisibleSpan());
         assertFalse(group.isCollapsed());
 
-        assertEquals(3, group.getMembers().size());
-        assertTrue(group.getMembers().contains(5));
-        assertTrue(group.getMembers().contains(6));
-        assertTrue(group.getMembers().contains(7));
+        assertEquals(3, group.getMembers().length);
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+        assertTrue(group.hasMember(7));
     }
 
     @Test
@@ -8470,11 +8494,11 @@ public class ColumnGroupHeaderLayerTest {
         // expand again
         this.columnGroupHeaderLayer.expandGroup(4);
 
-        assertEquals(4, group.getMembers().size());
-        assertTrue(group.getMembers().contains(4));
-        assertTrue(group.getMembers().contains(5));
-        assertTrue(group.getMembers().contains(6));
-        assertTrue(group.getMembers().contains(7));
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(4));
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+        assertTrue(group.hasMember(7));
 
         verifyCleanState();
     }
@@ -8558,11 +8582,11 @@ public class ColumnGroupHeaderLayerTest {
         // expand again
         this.columnGroupHeaderLayer.expandGroup(4);
 
-        assertEquals(4, group.getMembers().size());
-        assertTrue(group.getMembers().contains(4));
-        assertTrue(group.getMembers().contains(5));
-        assertTrue(group.getMembers().contains(6));
-        assertTrue(group.getMembers().contains(7));
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(4));
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+        assertTrue(group.hasMember(7));
 
         verifyCleanState();
     }
@@ -8606,11 +8630,11 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(4, group.getVisibleSpan());
         assertFalse(group.isCollapsed());
 
-        assertEquals(4, group.getMembers().size());
-        assertTrue(group.getMembers().contains(5));
-        assertTrue(group.getMembers().contains(6));
-        assertTrue(group.getMembers().contains(7));
-        assertTrue(group.getMembers().contains(4));
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+        assertTrue(group.hasMember(7));
+        assertTrue(group.hasMember(4));
     }
 
     @Test
@@ -8792,11 +8816,11 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(3, group4.getOriginalSpan());
         assertEquals(3, group4.getVisibleSpan());
 
-        assertEquals(4, group.getMembers().size());
-        assertTrue(group.getMembers().contains(4));
-        assertTrue(group.getMembers().contains(5));
-        assertTrue(group.getMembers().contains(6));
-        assertTrue(group.getMembers().contains(7));
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(4));
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+        assertTrue(group.hasMember(7));
     }
 
     @Test
@@ -8925,17 +8949,17 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(3, group4.getOriginalSpan());
         assertEquals(3, group4.getVisibleSpan());
 
-        assertEquals(5, group1.getMembers().size());
-        assertTrue(group1.getMembers().contains(0));
-        assertTrue(group1.getMembers().contains(1));
-        assertTrue(group1.getMembers().contains(2));
-        assertTrue(group1.getMembers().contains(3));
-        assertTrue(group1.getMembers().contains(4));
+        assertEquals(5, group1.getMembers().length);
+        assertTrue(group1.hasMember(0));
+        assertTrue(group1.hasMember(1));
+        assertTrue(group1.hasMember(2));
+        assertTrue(group1.hasMember(3));
+        assertTrue(group1.hasMember(4));
 
-        assertEquals(3, group2.getMembers().size());
-        assertTrue(group2.getMembers().contains(5));
-        assertTrue(group2.getMembers().contains(6));
-        assertTrue(group2.getMembers().contains(7));
+        assertEquals(3, group2.getMembers().length);
+        assertTrue(group2.hasMember(5));
+        assertTrue(group2.hasMember(6));
+        assertTrue(group2.hasMember(7));
     }
 
     @Test
@@ -9065,17 +9089,17 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(3, group4.getOriginalSpan());
         assertEquals(3, group4.getVisibleSpan());
 
-        assertEquals(5, group1.getMembers().size());
-        assertTrue(group1.getMembers().contains(0));
-        assertTrue(group1.getMembers().contains(1));
-        assertTrue(group1.getMembers().contains(2));
-        assertTrue(group1.getMembers().contains(3));
-        assertTrue(group1.getMembers().contains(4));
+        assertEquals(5, group1.getMembers().length);
+        assertTrue(group1.hasMember(0));
+        assertTrue(group1.hasMember(1));
+        assertTrue(group1.hasMember(2));
+        assertTrue(group1.hasMember(3));
+        assertTrue(group1.hasMember(4));
 
-        assertEquals(3, group2.getMembers().size());
-        assertTrue(group2.getMembers().contains(5));
-        assertTrue(group2.getMembers().contains(6));
-        assertTrue(group2.getMembers().contains(7));
+        assertEquals(3, group2.getMembers().length);
+        assertTrue(group2.hasMember(5));
+        assertTrue(group2.hasMember(6));
+        assertTrue(group2.hasMember(7));
     }
 
     @Test
@@ -9201,16 +9225,16 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(3, group4.getOriginalSpan());
         assertEquals(3, group4.getVisibleSpan());
 
-        assertEquals(4, group3.getMembers().size());
-        assertTrue(group3.getMembers().contains(8));
-        assertTrue(group3.getMembers().contains(9));
-        assertTrue(group3.getMembers().contains(10));
-        assertTrue(group3.getMembers().contains(4));
+        assertEquals(4, group3.getMembers().length);
+        assertTrue(group3.hasMember(8));
+        assertTrue(group3.hasMember(9));
+        assertTrue(group3.hasMember(10));
+        assertTrue(group3.hasMember(4));
 
-        assertEquals(3, group2.getMembers().size());
-        assertTrue(group2.getMembers().contains(5));
-        assertTrue(group2.getMembers().contains(6));
-        assertTrue(group2.getMembers().contains(7));
+        assertEquals(3, group2.getMembers().length);
+        assertTrue(group2.hasMember(5));
+        assertTrue(group2.hasMember(6));
+        assertTrue(group2.hasMember(7));
     }
 
     @Test
@@ -9336,16 +9360,16 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(3, group4.getOriginalSpan());
         assertEquals(3, group4.getVisibleSpan());
 
-        assertEquals(4, group3.getMembers().size());
-        assertTrue(group3.getMembers().contains(8));
-        assertTrue(group3.getMembers().contains(9));
-        assertTrue(group3.getMembers().contains(10));
-        assertTrue(group3.getMembers().contains(4));
+        assertEquals(4, group3.getMembers().length);
+        assertTrue(group3.hasMember(8));
+        assertTrue(group3.hasMember(9));
+        assertTrue(group3.hasMember(10));
+        assertTrue(group3.hasMember(4));
 
-        assertEquals(3, group2.getMembers().size());
-        assertTrue(group2.getMembers().contains(5));
-        assertTrue(group2.getMembers().contains(6));
-        assertTrue(group2.getMembers().contains(7));
+        assertEquals(3, group2.getMembers().length);
+        assertTrue(group2.hasMember(5));
+        assertTrue(group2.hasMember(6));
+        assertTrue(group2.hasMember(7));
     }
 
     @Test
@@ -9435,11 +9459,11 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(3, group4.getOriginalSpan());
         assertEquals(3, group4.getVisibleSpan());
 
-        assertEquals(4, group2.getMembers().size());
-        assertTrue(group2.getMembers().contains(4));
-        assertTrue(group2.getMembers().contains(5));
-        assertTrue(group2.getMembers().contains(6));
-        assertTrue(group2.getMembers().contains(7));
+        assertEquals(4, group2.getMembers().length);
+        assertTrue(group2.hasMember(4));
+        assertTrue(group2.hasMember(5));
+        assertTrue(group2.hasMember(6));
+        assertTrue(group2.hasMember(7));
     }
 
     @Test
@@ -9530,11 +9554,11 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(3, group4.getOriginalSpan());
         assertEquals(3, group4.getVisibleSpan());
 
-        assertEquals(4, group2.getMembers().size());
-        assertTrue(group2.getMembers().contains(4));
-        assertTrue(group2.getMembers().contains(5));
-        assertTrue(group2.getMembers().contains(6));
-        assertTrue(group2.getMembers().contains(7));
+        assertEquals(4, group2.getMembers().length);
+        assertTrue(group2.hasMember(4));
+        assertTrue(group2.hasMember(5));
+        assertTrue(group2.hasMember(6));
+        assertTrue(group2.hasMember(7));
     }
 
     @Test
@@ -9682,13 +9706,13 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(3, group4.getOriginalSpan());
         assertEquals(3, group4.getVisibleSpan());
 
-        assertEquals(3, group2.getMembers().size());
-        assertTrue(group2.getMembers().contains(4));
-        assertTrue(group2.getMembers().contains(5));
-        assertTrue(group2.getMembers().contains(7));
+        assertEquals(3, group2.getMembers().length);
+        assertTrue(group2.hasMember(4));
+        assertTrue(group2.hasMember(5));
+        assertTrue(group2.hasMember(7));
 
-        assertEquals(1, group2.getStaticIndexes().size());
-        assertTrue(group2.getStaticIndexes().contains(5));
+        assertEquals(1, group2.getStaticIndexes().length);
+        assertTrue(group2.containsStaticIndex(5));
     }
 
     @Test
@@ -9838,13 +9862,13 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(3, group4.getOriginalSpan());
         assertEquals(3, group4.getVisibleSpan());
 
-        assertEquals(3, group2.getMembers().size());
-        assertTrue(group2.getMembers().contains(4));
-        assertTrue(group2.getMembers().contains(5));
-        assertTrue(group2.getMembers().contains(7));
+        assertEquals(3, group2.getMembers().length);
+        assertTrue(group2.hasMember(4));
+        assertTrue(group2.hasMember(5));
+        assertTrue(group2.hasMember(7));
 
-        assertEquals(1, group2.getStaticIndexes().size());
-        assertTrue(group2.getStaticIndexes().contains(5));
+        assertEquals(1, group2.getStaticIndexes().length);
+        assertTrue(group2.containsStaticIndex(5));
     }
 
     @Test
@@ -10475,11 +10499,11 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(4, group2.getOriginalSpan());
         assertEquals(4, group2.getVisibleSpan());
 
-        assertEquals(4, group2.getMembers().size());
-        assertTrue(group2.getMembers().contains(4));
-        assertTrue(group2.getMembers().contains(5));
-        assertTrue(group2.getMembers().contains(6));
-        assertTrue(group2.getMembers().contains(7));
+        assertEquals(4, group2.getMembers().length);
+        assertTrue(group2.hasMember(4));
+        assertTrue(group2.hasMember(5));
+        assertTrue(group2.hasMember(6));
+        assertTrue(group2.hasMember(7));
     }
 
     @Test
@@ -10705,12 +10729,12 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(4, group.getVisibleSpan());
         assertFalse(group.isCollapsed());
 
-        Collection<Integer> members = group.getMembers();
-        assertEquals(4, members.size());
-        assertTrue(members.contains(0));
-        assertTrue(members.contains(2));
-        assertTrue(members.contains(4));
-        assertTrue(members.contains(6));
+        int[] members = group.getMembers();
+        assertEquals(4, members.length);
+        assertEquals(0, members[0]);
+        assertEquals(2, members[1]);
+        assertEquals(4, members[2]);
+        assertEquals(6, members[3]);
 
         assertEquals(0, this.columnGroupHeaderLayer.getColumnIndexByPosition(0));
         assertEquals(2, this.columnGroupHeaderLayer.getColumnIndexByPosition(1));
@@ -10756,12 +10780,12 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(4, group.getVisibleSpan());
         assertFalse(group.isCollapsed());
 
-        Collection<Integer> members = group.getMembers();
-        assertEquals(4, members.size());
-        assertTrue(members.contains(0));
-        assertTrue(members.contains(1));
-        assertTrue(members.contains(2));
-        assertTrue(members.contains(3));
+        int[] members = group.getMembers();
+        assertEquals(4, members.length);
+        assertEquals(0, members[0]);
+        assertEquals(1, members[1]);
+        assertEquals(2, members[2]);
+        assertEquals(3, members[3]);
 
         ILayerCell cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
         assertEquals(0, cell.getOriginColumnPosition());
@@ -10820,11 +10844,11 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(3, group.getVisibleSpan());
         assertFalse(group.isCollapsed());
 
-        Collection<Integer> members = group.getMembers();
-        assertEquals(3, members.size());
-        assertTrue(members.contains(0));
-        assertTrue(members.contains(1));
-        assertTrue(members.contains(2));
+        int[] members = group.getMembers();
+        assertEquals(3, members.length);
+        assertEquals(0, members[0]);
+        assertEquals(1, members[1]);
+        assertEquals(2, members[2]);
 
         assertNull(groupModel.getGroupByPosition(3));
 
@@ -10861,12 +10885,12 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(4, group1.getVisibleSpan());
         assertFalse(group1.isCollapsed());
 
-        Collection<Integer> members = group1.getMembers();
-        assertEquals(4, members.size());
-        assertTrue(members.contains(0));
-        assertTrue(members.contains(1));
-        assertTrue(members.contains(2));
-        assertTrue(members.contains(3));
+        int[] members = group1.getMembers();
+        assertEquals(4, members.length);
+        assertEquals(0, members[0]);
+        assertEquals(1, members[1]);
+        assertEquals(2, members[2]);
+        assertEquals(3, members[3]);
 
         Group group2 = groupModel.getGroupByPosition(5);
         assertEquals(5, group2.getStartIndex());
@@ -10877,10 +10901,10 @@ public class ColumnGroupHeaderLayerTest {
         assertFalse(group2.isCollapsed());
 
         members = group2.getMembers();
-        assertEquals(3, members.size());
-        assertTrue(members.contains(5));
-        assertTrue(members.contains(6));
-        assertTrue(members.contains(7));
+        assertEquals(3, members.length);
+        assertEquals(5, members[0]);
+        assertEquals(6, members[1]);
+        assertEquals(7, members[2]);
 
         assertNull(groupModel.getGroupByPosition(4));
 
@@ -10941,11 +10965,11 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(3, group.getVisibleSpan());
         assertFalse(group.isCollapsed());
 
-        Collection<Integer> members = group.getMembers();
-        assertEquals(3, members.size());
-        assertTrue(members.contains(0));
-        assertTrue(members.contains(1));
-        assertTrue(members.contains(3));
+        int[] members = group.getMembers();
+        assertEquals(3, members.length);
+        assertEquals(0, members[0]);
+        assertEquals(1, members[1]);
+        assertEquals(3, members[2]);
 
         assertNull(groupModel.getGroupByPosition(3));
 
@@ -10995,12 +11019,12 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(4, group1.getVisibleSpan());
         assertFalse(group1.isCollapsed());
 
-        Collection<Integer> members = group1.getMembers();
-        assertEquals(4, members.size());
-        assertTrue(members.contains(0));
-        assertTrue(members.contains(1));
-        assertTrue(members.contains(2));
-        assertTrue(members.contains(3));
+        int[] members = group1.getMembers();
+        assertEquals(4, members.length);
+        assertEquals(0, members[0]);
+        assertEquals(1, members[1]);
+        assertEquals(2, members[2]);
+        assertEquals(3, members[3]);
 
         assertNull(groupModel.getGroupByPosition(4));
         assertNull(groupModel.getGroupByPosition(5));
@@ -11014,9 +11038,9 @@ public class ColumnGroupHeaderLayerTest {
         assertFalse(group2.isCollapsed());
 
         members = group2.getMembers();
-        assertEquals(2, members.size());
-        assertTrue(members.contains(6));
-        assertTrue(members.contains(7));
+        assertEquals(2, members.length);
+        assertEquals(6, members[0]);
+        assertEquals(7, members[1]);
 
         ILayerCell cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
         assertEquals(0, cell.getOriginColumnPosition());
@@ -11088,10 +11112,10 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(2, group1.getVisibleSpan());
         assertFalse(group1.isCollapsed());
 
-        Collection<Integer> members = group1.getMembers();
-        assertEquals(2, members.size());
-        assertTrue(members.contains(0));
-        assertTrue(members.contains(1));
+        int[] members = group1.getMembers();
+        assertEquals(2, members.length);
+        assertEquals(0, members[0]);
+        assertEquals(1, members[1]);
 
         assertNull(groupModel.getGroupByPosition(2));
         assertNull(groupModel.getGroupByPosition(3));
@@ -11105,11 +11129,11 @@ public class ColumnGroupHeaderLayerTest {
         assertFalse(group2.isCollapsed());
 
         members = group2.getMembers();
-        assertEquals(4, members.size());
-        assertTrue(members.contains(4));
-        assertTrue(members.contains(5));
-        assertTrue(members.contains(6));
-        assertTrue(members.contains(7));
+        assertEquals(4, members.length);
+        assertEquals(4, members[0]);
+        assertEquals(5, members[1]);
+        assertEquals(6, members[2]);
+        assertEquals(7, members[3]);
 
         ILayerCell cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
         assertEquals(0, cell.getOriginColumnPosition());
@@ -11181,10 +11205,10 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(2, group1.getVisibleSpan());
         assertFalse(group1.isCollapsed());
 
-        Collection<Integer> members = group1.getMembers();
-        assertEquals(2, members.size());
-        assertTrue(members.contains(0));
-        assertTrue(members.contains(3));
+        int[] members = group1.getMembers();
+        assertEquals(2, members.length);
+        assertEquals(0, members[0]);
+        assertEquals(3, members[1]);
 
         assertNull(groupModel.getGroupByPosition(2));
         assertNull(groupModel.getGroupByPosition(3));
@@ -11198,11 +11222,11 @@ public class ColumnGroupHeaderLayerTest {
         assertFalse(group2.isCollapsed());
 
         members = group2.getMembers();
-        assertEquals(4, members.size());
-        assertTrue(members.contains(4));
-        assertTrue(members.contains(5));
-        assertTrue(members.contains(6));
-        assertTrue(members.contains(7));
+        assertEquals(4, members.length);
+        assertEquals(4, members[0]);
+        assertEquals(5, members[1]);
+        assertEquals(6, members[2]);
+        assertEquals(7, members[3]);
 
         ILayerCell cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
         assertEquals(0, cell.getOriginColumnPosition());
@@ -11276,10 +11300,10 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(2, group1.getVisibleSpan());
         assertFalse(group1.isCollapsed());
 
-        Collection<Integer> members = group1.getMembers();
-        assertEquals(2, members.size());
-        assertTrue(members.contains(1));
-        assertTrue(members.contains(2));
+        int[] members = group1.getMembers();
+        assertEquals(2, members.length);
+        assertEquals(1, members[0]);
+        assertEquals(2, members[1]);
 
         assertNull(groupModel.getGroupByPosition(3));
 
@@ -11292,11 +11316,11 @@ public class ColumnGroupHeaderLayerTest {
         assertFalse(group2.isCollapsed());
 
         members = group2.getMembers();
-        assertEquals(4, members.size());
-        assertTrue(members.contains(4));
-        assertTrue(members.contains(5));
-        assertTrue(members.contains(6));
-        assertTrue(members.contains(7));
+        assertEquals(4, members.length);
+        assertEquals(4, members[0]);
+        assertEquals(5, members[1]);
+        assertEquals(6, members[2]);
+        assertEquals(7, members[3]);
 
         ILayerCell cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
         assertEquals(0, cell.getOriginColumnPosition());
@@ -11485,6 +11509,20 @@ public class ColumnGroupHeaderLayerTest {
         assertNull(this.columnGroupHeaderLayer.getGroupByName("Address"));
 
         assertEquals(3, this.columnGroupHeaderLayer.getGroupModel().size());
+    }
+
+    @Test
+    public void shouldRemoveAllFromColumnGroup() {
+        Group group = this.groupModel.getGroupByPosition(0);
+        group.removeMembers(0, 1, 2, 3);
+
+        assertEquals(0, group.getMembers().length);
+        assertFalse(group.hasMember(0));
+        assertFalse(group.hasMember(1));
+        assertFalse(group.hasMember(2));
+        assertFalse(group.hasMember(3));
+
+        assertEquals(-1, group.getGroupEndPosition(this.selectionLayer));
     }
 
     @Test
@@ -12189,7 +12227,7 @@ public class ColumnGroupHeaderLayerTest {
         this.gridLayer.doCommand(new MultiColumnHideCommand(this.gridLayer, 9));
 
         // reorder first and second column to second group end
-        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, Arrays.asList(1, 2), 9));
+        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, new int[] { 1, 2 }, 9));
 
         ILayerCell cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
         assertEquals(0, cell.getOriginColumnPosition());
@@ -12395,7 +12433,7 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(2, group.getVisibleSpan());
 
         // reorder first position between first and second group
-        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, Arrays.asList(1), 4));
+        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, new int[] { 1 }, 4));
 
         assertEquals(1, group.getStartIndex());
         assertEquals(1, group.getVisibleStartIndex());
@@ -12603,7 +12641,7 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(3, group3.getVisibleSpan());
 
         // reorder first position between second and third group
-        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, Arrays.asList(1), 8));
+        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, new int[] { 1 }, 8));
 
         assertEquals(1, group1.getStartIndex());
         assertEquals(1, group1.getVisibleStartIndex());
@@ -12754,7 +12792,7 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(2, group.getVisibleSpan());
 
         // reorder fourth position to first position
-        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, Arrays.asList(3), 1));
+        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, new int[] { 3 }, 1));
 
         assertEquals(0, group.getStartIndex());
         assertEquals(1, group.getVisibleStartIndex());
@@ -12916,7 +12954,7 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(4, group2.getVisibleSpan());
 
         // reorder first position in second group to first position in table
-        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, Arrays.asList(4), 1));
+        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, new int[] { 4 }, 1));
 
         assertEquals(0, group1.getStartIndex());
         assertEquals(1, group1.getVisibleStartIndex());
@@ -13582,7 +13620,7 @@ public class ColumnGroupHeaderLayerTest {
         this.columnGroupHeaderLayer.collapseGroup(11);
 
         // reorder first position to table end
-        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, Arrays.asList(1), 13));
+        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, new int[] { 1 }, 13));
 
         assertEquals(1, group1.getStartIndex());
         assertEquals(1, group1.getVisibleStartIndex());
@@ -13860,7 +13898,7 @@ public class ColumnGroupHeaderLayerTest {
         this.columnGroupHeaderLayer.collapseGroup(0);
 
         // reorder first position to table end
-        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, Arrays.asList(1), 11));
+        this.gridLayer.doCommand(new MultiColumnReorderCommand(this.gridLayer, new int[] { 1 }, 11));
 
         assertEquals(1, group1.getStartIndex());
         assertEquals(1, group1.getVisibleStartIndex());

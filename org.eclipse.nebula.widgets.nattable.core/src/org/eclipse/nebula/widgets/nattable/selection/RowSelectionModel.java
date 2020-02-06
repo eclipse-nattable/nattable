@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.IntStream;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
@@ -106,7 +107,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
                 range.height = 1;
             }
 
-            Map<Serializable, R> rowsToSelect = new HashMap<Serializable, R>();
+            HashMap<Serializable, R> rowsToSelect = new HashMap<>();
 
             int maxY = Math.min(range.y + range.height, this.selectionLayer.getRowCount());
             for (int rowPosition = range.y; rowPosition < maxY; rowPosition++) {
@@ -193,7 +194,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 
     @Override
     public List<Rectangle> getSelections() {
-        List<Rectangle> selectionRectangles = new ArrayList<Rectangle>(this.selectedRows.size());
+        ArrayList<Rectangle> selectionRectangles = new ArrayList<>(this.selectedRows.size());
 
         this.selectionsLock.readLock().lock();
 
@@ -277,8 +278,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
     }
 
     @Override
-    public boolean isColumnPositionFullySelected(
-            int columnPosition, int fullySelectedColumnRowCount) {
+    public boolean isColumnPositionFullySelected(int columnPosition, int fullySelectedColumnRowCount) {
         this.selectionsLock.readLock().lock();
 
         try {
@@ -298,7 +298,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 
     @Override
     public List<R> getSelectedRowObjects() {
-        final List<R> rowObjects = new ArrayList<R>(this.selectedRows.size());
+    	ArrayList<R> rowObjects = new ArrayList<>(this.selectedRows.size());
 
         this.selectionsLock.readLock().lock();
         try {
@@ -323,7 +323,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 
     @Override
     public Set<Range> getSelectedRowPositions() {
-        Set<Range> selectedRowRanges = new HashSet<Range>();
+        HashSet<Range> selectedRowRanges = new HashSet<>();
 
         this.selectionsLock.readLock().lock();
 
@@ -425,7 +425,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
         if (event.isVerticalStructureChanged()) {
             // the change is already done and we don't know about indexes, so we
             // need to check if the selected objects still exist
-            Collection<Serializable> keysToRemove = new ArrayList<Serializable>();
+            ArrayList<Serializable> keysToRemove = new ArrayList<>();
             for (Map.Entry<Serializable, R> entry : this.selectedRows.entrySet()) {
                 int rowIndex = this.rowDataProvider.indexOfRowObject(entry.getValue());
                 if (rowIndex == -1) {
@@ -447,19 +447,19 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
             // selection we use all rows in the event to indicate the selection
             // change for all deleted rows
             if (!keysToRemove.isEmpty()) {
-                Collection<Integer> rowPositions = new HashSet<Integer>();
                 Collection<StructuralDiff> diffs = event.getRowDiffs();
+
+                int[] rowPositions = null;
                 if (diffs != null) {
-                    for (StructuralDiff rowDiff : diffs) {
-                        if (rowDiff.getDiffType() != null
-                                && rowDiff.getDiffType().equals(DiffTypeEnum.DELETE)) {
-                            Range beforePositionRange = rowDiff.getBeforePositionRange();
-                            for (int i = beforePositionRange.start; i < beforePositionRange.end; i++) {
-                                rowPositions.add(i);
-                            }
-                        }
-                    }
+                    rowPositions = diffs.stream()
+                            .filter(diff -> diff.getDiffType() != null && diff.getDiffType().equals(DiffTypeEnum.DELETE))
+                            .map(rowDiff -> rowDiff.getBeforePositionRange())
+                            .flatMapToInt(range -> IntStream.range(range.start, range.end))
+                            .toArray();
+                } else {
+                    rowPositions = new int[0];
                 }
+
                 // if there is no diff in the event we assume everything has
                 // changed, in such a case we are not able to fire an
                 // appropriate event the layer stack upwards since it will be

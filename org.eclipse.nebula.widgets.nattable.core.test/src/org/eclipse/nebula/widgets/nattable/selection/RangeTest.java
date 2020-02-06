@@ -17,7 +17,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -26,23 +25,39 @@ import org.junit.Test;
 public class RangeTest {
 
     @Test
-    public void range() {
+    public void shouldContainStartPosition() {
         // 1 cell
         Range range = new Range(2, 3);
-
         assertTrue(range.contains(2));
+    }
+
+    @Test
+    public void shouldNotContainEndPosition() {
+        // 1 cell
+        Range range = new Range(2, 3);
         assertFalse(range.contains(3));
     }
 
     @Test
-    public void testEquality() {
+    public void shouldContainPosition() {
+        // 1 cell
+        Range range = new Range(2, 4);
+        assertTrue(range.contains(3));
+    }
+
+    @Test
+    public void shouldIdentifyEquality() {
         assertTrue(new Range(3, 10).equals(new Range(3, 10)));
+    }
+
+    @Test
+    public void shouldIdentifyNonEquality() {
         assertFalse(new Range(3, 10).equals(new Range(3, 11)));
     }
 
     @Test
-    public void sortByStart() {
-        List<Range> ranges = new ArrayList<>();
+    public void shouldSortRangesByStart() {
+        ArrayList<Range> ranges = new ArrayList<>();
         ranges.add(new Range(3, 5));
         ranges.add(new Range(3, 7));
         ranges.add(new Range(20, 25));
@@ -57,11 +72,20 @@ public class RangeTest {
     }
 
     @Test
-    public void getMembers() {
+    public void shouldReturnMemberCollection() {
         Set<Integer> members = new Range(3, 10).getMembers();
 
         assertEquals(7, members.size());
         HashSet<Integer> expectedMembes = new HashSet<>(Arrays.asList(3, 4, 5, 6, 7, 8, 9));
         assertEquals(expectedMembes, members);
+    }
+
+    @Test
+    public void shouldReturnMemberArray() {
+        int[] members = new Range(3, 10).getMembersArray();
+
+        assertEquals(7, members.length);
+        int[] expectedMembes = new int[] { 3, 4, 5, 6, 7, 8, 9 };
+        assertTrue("Expected member array is not the same as the returned member array", Arrays.equals(expectedMembes, members));
     }
 }

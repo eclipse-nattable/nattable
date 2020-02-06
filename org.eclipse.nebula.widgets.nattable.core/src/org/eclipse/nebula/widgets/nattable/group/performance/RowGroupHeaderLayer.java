@@ -11,9 +11,8 @@
 package org.eclipse.nebula.widgets.nattable.group.performance;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +20,8 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.collections.api.list.primitive.MutableIntList;
+import org.eclipse.collections.impl.factory.primitive.IntLists;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
@@ -28,7 +29,6 @@ import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentIndexLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentLayer;
-import org.eclipse.nebula.widgets.nattable.group.ColumnGroupUtils;
 import org.eclipse.nebula.widgets.nattable.group.RowGroupUtils;
 import org.eclipse.nebula.widgets.nattable.group.command.RowGroupExpandCollapseCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
@@ -75,7 +75,6 @@ import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
@@ -620,7 +619,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
             return true;
         } else if (command instanceof MultiColumnResizeCommand && command.convertToTargetLayer(this)) {
             MultiColumnResizeCommand columnResizeCommand = (MultiColumnResizeCommand) command;
-            for (int column : columnResizeCommand.getColumnPositions()) {
+            for (int column : columnResizeCommand.getColumnPositionsArray()) {
                 int newColumnWidth = columnResizeCommand.downScaleValue()
                         ? this.columnWidthConfig.downScale(columnResizeCommand.getColumnWidth(column))
                         : columnResizeCommand.getColumnWidth(column);
@@ -1194,7 +1193,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
         int sizeOfGroup = group.getVisibleSpan();
 
         if (group.isCollapsed()) {
-            int sizeOfStaticRows = group.getStaticIndexes().size();
+            int sizeOfStaticRows = group.getStaticIndexes().length;
             if (sizeOfStaticRows == 0) {
                 return 1;
             } else {
@@ -2253,7 +2252,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                 GroupMultiRowReorderCommand command =
                         new GroupMultiRowReorderCommand(
                                 getPositionLayer(),
-                                new ArrayList<Integer>(group.getMembers()),
+                                group.getMembers(),
                                 underlyingTo);
                 Group toBottom = groupModel.getGroupByPosition(toPosition);
                 if (toBottom != null) {
@@ -2311,7 +2310,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                 Collection<StructuralDiff> rowDiffs = changeEvent.getRowDiffs();
                 if (rowDiffs != null && !rowDiffs.isEmpty()) {
 
-                    List<Integer> deletedPositions = getDeletedPositions(rowDiffs);
+                    int[] deletedPositions = getDeletedPositions(rowDiffs);
                     if (deletedPositions != null) {
                         // check if the number of positions are the same as the
                         // number of indexes, otherwise trigger a consistency
@@ -2319,9 +2318,9 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                         // always in a valid range, and that could cause a loss
                         // of hidden positions on conversion
                         if (event instanceof RowStructuralChangeEvent
-                                && ((RowStructuralChangeEvent) event).getRowIndexes().size() > deletedPositions.size()) {
+                                && ((RowStructuralChangeEvent) event).getRowIndexes().length > deletedPositions.length) {
                             // this triggers a consistency check
-                            handleDeleteDiffs(new ArrayList<Integer>());
+                            handleDeleteDiffs(new int[0]);
                         } else {
                             handleDeleteDiffs(deletedPositions);
                         }
@@ -2349,9 +2348,9 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                                                 cmd = new UpdateRowGroupCollapseCommand(groupModel, group);
                                                 collapseUpdates.put(group, cmd);
                                             }
-                                            if (!group.getStaticIndexes().contains(Integer.valueOf(newStartIndex))) {
-                                                cmd.getIndexesToShow().add(newStartIndex);
-                                                cmd.getIndexesToHide().add(getPositionLayer().getRowIndexByPosition(i) + 1);
+                                            if (!group.containsStaticIndex(newStartIndex)) {
+                                                cmd.addIndexesToShow(newStartIndex);
+                                                cmd.addIndexesToHide(getPositionLayer().getRowIndexByPosition(i) + 1);
                                             }
                                             if (group.getVisibleSpan() == 0) {
                                                 group.setVisibleSpan(1);
@@ -2366,18 +2365,18 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                                         Group topGroup = groupModel.getGroupByPosition(i - 1);
                                         if (topGroup != null
                                                 && topGroup.getVisibleSpan() < topGroup.getOriginalSpan()
-                                                && topGroup.getMembers().contains(Integer.valueOf(newStartIndex))) {
+                                                && topGroup.hasMember(newStartIndex)) {
                                             if (!topGroup.isCollapsed()) {
                                                 topGroup.setVisibleSpan(topGroup.getVisibleSpan() + 1);
                                             } else {
-                                                if (!topGroup.getStaticIndexes().contains(Integer.valueOf(newStartIndex))) {
+                                                if (!topGroup.containsStaticIndex(newStartIndex)) {
                                                     // update collapsed state
                                                     UpdateRowGroupCollapseCommand cmd = collapseUpdates.get(topGroup);
                                                     if (cmd == null) {
                                                         cmd = new UpdateRowGroupCollapseCommand(groupModel, topGroup);
                                                         collapseUpdates.put(topGroup, cmd);
                                                     }
-                                                    cmd.getIndexesToHide().add(getPositionLayer().getRowIndexByPosition(i));
+                                                    cmd.addIndexesToHide(getPositionLayer().getRowIndexByPosition(i));
                                                 } else {
                                                     topGroup.setVisibleSpan(topGroup.getVisibleSpan() + 1);
                                                 }
@@ -2398,7 +2397,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                                                 // member
                                                 for (int e = diff.getAfterPositionRange().end; e > diff.getAfterPositionRange().start; e--) {
                                                     g = groupModel.getGroupByPosition(e);
-                                                    if (g != null && g.getMembers().contains(newStartIndex)) {
+                                                    if (g != null && g.hasMember(newStartIndex)) {
                                                         g.setStartIndex(newStartIndex);
                                                         g.setVisibleStartIndex(newStartIndex);
                                                         g.setVisibleSpan(g.getVisibleSpan() + 1);
@@ -2431,55 +2430,48 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
             }
         }
 
-        private List<Integer> getDeletedPositions(Collection<StructuralDiff> rowDiffs) {
-            List<Integer> result = new ArrayList<Integer>();
+        private int[] getDeletedPositions(Collection<StructuralDiff> rowDiffs) {
+            MutableIntList result = IntLists.mutable.empty();
             boolean deleteDiffFound = false;
             for (StructuralDiff diff : rowDiffs) {
                 if (diff.getDiffType() == DiffTypeEnum.DELETE) {
                     deleteDiffFound = true;
                     int[] positions = PositionUtil.getPositions(diff.getBeforePositionRange());
-                    result.addAll(ArrayUtil.asIntegerList(positions));
+                    result.addAll(positions);
                 }
             }
             if (deleteDiffFound) {
                 // we need to handle the deleted positions backwards
-                Collections.sort(result, new Comparator<Integer>() {
-                    @Override
-                    public int compare(Integer o1, Integer o2) {
-                        return o2.compareTo(o1);
-                    }
-                });
-                return result;
+                return result.sortThis().reverseThis().toArray();
             } else {
                 // there was no DELETE diff, so we return null
                 return null;
             }
         }
 
-        private void handleDeleteDiffs(List<Integer> positionList) {
-            if (positionList.size() > 0) {
+        private void handleDeleteDiffs(int[] positionList) {
+            if (positionList.length > 0) {
                 for (GroupModel groupModel : RowGroupHeaderLayer.this.model) {
-                    List<Integer> groupPositionList = new ArrayList<Integer>(positionList);
+                    // we need to create the MutableIntList on a copy of the
+                    // positionList array, because modifications on the
+                    // MutableIntList will be traversed to the the underlying
+                    // array
+                    MutableIntList groupPositionList = IntLists.mutable.of(Arrays.copyOf(positionList, positionList.length));
                     while (!groupPositionList.isEmpty()) {
                         // find group and update visible span
                         // we need to iterate because one could hide the
                         // last row in one group and the first of
                         // another group at once
-                        Integer pos = groupPositionList.get(0);
+                        int pos = groupPositionList.get(0);
                         Group group = groupModel.getGroupByPosition(pos);
                         if (group != null) {
                             // find all positions belonging to
                             // the group
-                            List<Integer> groupPositions = new ArrayList<Integer>(group.getVisiblePositions());
+                            MutableIntList groupPositions = IntLists.mutable.of(group.getVisiblePositions());
 
                             // find the positions in the group
                             // that are hidden
-                            List<Integer> hiddenGroupPositions = new ArrayList<Integer>();
-                            for (int groupPos : groupPositions) {
-                                if (groupPositionList.contains(groupPos)) {
-                                    hiddenGroupPositions.add(groupPos);
-                                }
-                            }
+                            MutableIntList hiddenGroupPositions = groupPositions.select(groupPos -> groupPositionList.contains(groupPos));
 
                             // update the positionList as we
                             // handled the hidden rows
@@ -2488,11 +2480,11 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                             groupPositions.removeAll(hiddenGroupPositions);
                             if (groupPositions.size() > 0) {
                                 group.setVisibleSpan(groupPositions.size());
-                                for (int i : hiddenGroupPositions) {
+                                hiddenGroupPositions.forEach(i -> {
                                     if (group.getVisibleStartPosition() == i) {
                                         group.setVisibleStartIndex(getPositionLayer().getRowIndexByPosition(i - groupPositionList.size()));
                                     }
-                                }
+                                });
                             } else {
                                 group.setVisibleStartIndex(-1);
                                 group.setVisibleSpan(0);
@@ -2569,7 +2561,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                     // position from the group
                     if (fromRowPosition == toRowPosition
                             && (!RowGroupUtils.isGroupReordered(fromRowGroup, fromRowPositions)
-                                    || (fromRowGroup.isCollapsed() && fromRowGroup.getMembers().size() > 1))
+                                    || (fromRowGroup.isCollapsed() && fromRowGroup.getMembers().length > 1))
                             && (fromRowGroup.isGroupStart(fromRowPosition)
                                     || fromRowGroup.isGroupEnd(fromRowPosition))) {
                         if (MoveDirectionEnum.DOWN == moveDirection) {
@@ -2583,7 +2575,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                                     groupModel,
                                     fromRowGroup,
                                     pos,
-                                    reorderEvent.getBeforeFromRowIndexes(),
+                                    reorderEvent.getBeforeFromRowIndexesArray(),
                                     fromRowPosition,
                                     moveDirection);
                         } else {
@@ -2591,7 +2583,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                                     groupModel,
                                     fromRowGroup,
                                     fromRowPositions,
-                                    reorderEvent.getBeforeFromRowIndexes(),
+                                    reorderEvent.getBeforeFromRowIndexesArray(),
                                     fromRowPosition,
                                     moveDirection);
                         }
@@ -2607,7 +2599,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                         int newStartIndex = getPositionLayer().getRowIndexByPosition(fromRowGroup.getVisibleStartPosition());
                         fromRowGroup.setVisibleStartIndex(newStartIndex);
                         if (!fromRowGroup.isCollapsed()
-                                || fromRowGroup.getStaticIndexes().contains(Integer.valueOf(fromRowGroup.getStartIndex()))) {
+                                || fromRowGroup.containsStaticIndex(fromRowGroup.getStartIndex())) {
                             // if we move inside a collapsed group, there are
                             // static indexes, and therefore we do not update
                             // the start index, as the start index should be the
@@ -2621,17 +2613,17 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                             groupModel,
                             toRowGroup,
                             fromRowPositions,
-                            reorderEvent.getBeforeFromRowIndexes(),
+                            reorderEvent.getBeforeFromRowIndexesArray(),
                             toRowPosition,
                             moveDirection);
                 } else if (fromRowGroup != null
                         && toRowGroup == null
-                        && !ColumnGroupUtils.isGroupReordered(fromRowGroup, fromRowPositions)) {
+                        && !RowGroupUtils.isGroupReordered(fromRowGroup, fromRowPositions)) {
                     removePositionsFromGroup(
                             groupModel,
                             fromRowGroup,
                             fromRowPositions,
-                            reorderEvent.getBeforeFromRowIndexes(),
+                            reorderEvent.getBeforeFromRowIndexesArray(),
                             fromRowPosition,
                             moveDirection);
                 } else if (fromRowGroup == null
@@ -2649,7 +2641,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                                 groupModel,
                                 adjacentRowGroup,
                                 fromRowPositions,
-                                reorderEvent.getBeforeFromRowIndexes(),
+                                reorderEvent.getBeforeFromRowIndexesArray(),
                                 (adjacentRowGroup.isCollapsed() && moveDirection != MoveDirectionEnum.DOWN) ? toRowPosition : adjacentPos,
                                 moveDirection);
                     }
@@ -2657,20 +2649,20 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                         && toRowGroup != null
                         && !fromRowGroup.equals(toRowGroup)
                         && (!RowGroupUtils.isGroupReordered(fromRowGroup, fromRowPositions)
-                                || (!fromRowGroup.isCollapsed() && fromRowGroup.getVisiblePositions().size() == 1))) {
+                                || (!fromRowGroup.isCollapsed() && fromRowGroup.getVisiblePositions().length == 1))) {
 
                     removePositionsFromGroup(
                             groupModel,
                             fromRowGroup,
                             fromRowPositions,
-                            reorderEvent.getBeforeFromRowIndexes(),
+                            reorderEvent.getBeforeFromRowIndexesArray(),
                             fromRowPositions[0],
                             moveDirection);
                     addPositionsToGroup(
                             groupModel,
                             toRowGroup,
                             fromRowPositions,
-                            reorderEvent.getBeforeFromRowIndexes(),
+                            reorderEvent.getBeforeFromRowIndexesArray(),
                             toRowPosition,
                             moveDirection);
                 }
@@ -2683,7 +2675,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                 GroupModel groupModel,
                 Group group,
                 int[] fromRowPositions,
-                Collection<Integer> fromRowIndexes,
+                int[] fromRowIndexes,
                 int toPosition,
                 MoveDirectionEnum moveDirection) {
 
@@ -2711,9 +2703,9 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                     // update collapsed state
                     UpdateRowGroupCollapseCommand cmd = new UpdateRowGroupCollapseCommand(groupModel, group);
                     if (group.isGroupStart(toPosition)) {
-                        cmd.getIndexesToHide().addAll(group.getMembers());
+                        cmd.addIndexesToHide(group.getMembers());
 
-                        if (!group.getStaticIndexes().isEmpty()) {
+                        if (group.getStaticIndexes().length > 0) {
                             group.setVisibleSpan(group.getVisibleSpan() + fromRowPositions.length);
                         }
 
@@ -2724,7 +2716,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                         // on the correct positions
                         group.updateVisibleStartPosition();
                     } else {
-                        cmd.getIndexesToHide().addAll(fromRowIndexes);
+                        cmd.addIndexesToHide(fromRowIndexes);
                         group.setVisibleSpan(group.getVisibleSpan() + fromRowPositions.length);
                     }
                     getPositionLayer().doCommand(cmd);
@@ -2740,7 +2732,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                 GroupModel groupModel,
                 Group group,
                 int[] fromRowPositions,
-                Collection<Integer> fromRowIndexes,
+                int[] fromRowIndexes,
                 int fromRowPosition,
                 MoveDirectionEnum moveDirection) {
 
@@ -2770,7 +2762,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                 group.removeMembers(fromRowIndexes);
 
                 // remove static index if removed position was a static index
-                group.removeStaticIndexes(ArrayUtil.asIntArray(fromRowIndexes));
+                group.removeStaticIndexes(fromRowIndexes);
 
                 if (group.getOriginalSpan() > 0) {
                     group.updateVisibleStartPosition();

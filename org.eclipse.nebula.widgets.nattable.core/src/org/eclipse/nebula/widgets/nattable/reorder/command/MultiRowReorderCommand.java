@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2019 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -57,7 +57,7 @@ public class MultiRowReorderCommand implements ILayerCommand {
      */
     public MultiRowReorderCommand(ILayer layer, List<Integer> fromRowPositions, int toRowPosition) {
         this(layer,
-                fromRowPositions,
+                fromRowPositions.stream().mapToInt(Integer::intValue).toArray(),
                 toRowPosition < layer.getRowCount() ? toRowPosition : toRowPosition - 1,
                 toRowPosition < layer.getRowCount());
     }
@@ -80,13 +80,57 @@ public class MultiRowReorderCommand implements ILayerCommand {
             int toRowPosition,
             boolean reorderToTopEdge) {
 
-        this.fromRowPositionCoordinates = new ArrayList<>(fromRowPositions.size());
-        for (Integer fromRowPosition : fromRowPositions) {
+        this(layer,
+                fromRowPositions.stream().mapToInt(Integer::intValue).toArray(),
+                toRowPosition,
+                reorderToTopEdge);
+    }
+
+    /**
+     *
+     * @param layer
+     *            The layer the positions are related to
+     * @param fromRowPositions
+     *            The positions of the rows that should be reordered
+     * @param toRowPosition
+     *            The position of the row to which the dragged row should be
+     *            dropped
+     *
+     * @since 2.0
+     */
+    public MultiRowReorderCommand(ILayer layer, int[] fromRowPositions, int toRowPosition) {
+        this(layer,
+                fromRowPositions,
+                toRowPosition < layer.getRowCount() ? toRowPosition : toRowPosition - 1,
+                toRowPosition < layer.getRowCount());
+    }
+
+    /**
+     *
+     * @param layer
+     *            The layer the positions are related to
+     * @param fromRowPositions
+     *            The positions of the rows that should be reordered
+     * @param toRowPosition
+     *            The position of the row to which the dragged row should be
+     *            dropped
+     * @param reorderToTopEdge
+     *            Flag to indicate if the row is dragged to the top edge of the
+     *            layer
+     *
+     * @since 2.0
+     */
+    public MultiRowReorderCommand(ILayer layer,
+            int[] fromRowPositions,
+            int toRowPosition,
+            boolean reorderToTopEdge) {
+
+        this.fromRowPositionCoordinates = new ArrayList<>(fromRowPositions.length);
+        for (int fromRowPosition : fromRowPositions) {
             this.fromRowPositionCoordinates.add(new RowPositionCoordinate(layer, fromRowPosition));
         }
 
-        this.toRowPositionCoordinate = new RowPositionCoordinate(layer,
-                toRowPosition);
+        this.toRowPositionCoordinate = new RowPositionCoordinate(layer, toRowPosition);
 
         this.reorderToTopEdge = reorderToTopEdge;
     }
@@ -112,6 +156,17 @@ public class MultiRowReorderCommand implements ILayerCommand {
             fromRowPositions.add(fromRowPositionCoordinate.getRowPosition());
         }
         return fromRowPositions;
+    }
+
+    /**
+     * @return The positions of the rows that should be reordered
+     * @since 2.0
+     */
+    public int[] getFromRowPositionsArray() {
+        return this.fromRowPositionCoordinates.stream()
+                .mapToInt(RowPositionCoordinate::getRowPosition)
+                .sorted()
+                .toArray();
     }
 
     /**

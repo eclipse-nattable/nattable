@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,8 +29,24 @@ public class HideRowPositionsEvent extends RowStructuralChangeEvent {
      *            The ILayer to which the given row positions match.
      * @param rowPositions
      *            The positions of the rows that have changed.
+     * @deprecated Use {@link #HideRowPositionsEvent(ILayer, int...)} with
+     *             primitive types to avoid autoboxing.
      */
+    @Deprecated
     public HideRowPositionsEvent(ILayer layer, Collection<Integer> rowPositions) {
+        super(layer, PositionUtil.getRanges(rowPositions));
+    }
+
+    /**
+     * Creates a new HideRowPositionsEvent based on the given information.
+     *
+     * @param layer
+     *            The ILayer to which the given row positions match.
+     * @param rowPositions
+     *            The positions of the rows that have changed.
+     * @since 2.0
+     */
+    public HideRowPositionsEvent(ILayer layer, int... rowPositions) {
         super(layer, PositionUtil.getRanges(rowPositions));
     }
 
@@ -45,8 +61,27 @@ public class HideRowPositionsEvent extends RowStructuralChangeEvent {
      *            The indexes of the rows that have changed.
      *
      * @since 1.6
+     * @deprecated Use {@link #HideRowPositionsEvent(ILayer, int[], int[])} with
+     *             primitive types to avoid autoboxing.
      */
+    @Deprecated
     public HideRowPositionsEvent(ILayer layer, Collection<Integer> rowPositions, Collection<Integer> rowIndexes) {
+        super(layer, PositionUtil.getRanges(rowPositions), rowIndexes);
+    }
+
+    /**
+     * Creates a new HideRowPositionsEvent based on the given information.
+     *
+     * @param layer
+     *            The ILayer to which the given row positions match.
+     * @param rowPositions
+     *            The positions of the rows that have changed.
+     * @param rowIndexes
+     *            The indexes of the rows that have changed.
+     *
+     * @since 2.0
+     */
+    public HideRowPositionsEvent(ILayer layer, int[] rowPositions, int[] rowIndexes) {
         super(layer, PositionUtil.getRanges(rowPositions), rowIndexes);
     }
 
@@ -68,7 +103,7 @@ public class HideRowPositionsEvent extends RowStructuralChangeEvent {
     @Override
     public Collection<StructuralDiff> getRowDiffs() {
         Collection<StructuralDiff> rowDiffs =
-                new ArrayList<StructuralDiff>(getRowPositionRanges().size());
+                new ArrayList<>(getRowPositionRanges().size());
 
         for (Range range : getRowPositionRanges()) {
             StructuralDiff diff = new StructuralDiff(

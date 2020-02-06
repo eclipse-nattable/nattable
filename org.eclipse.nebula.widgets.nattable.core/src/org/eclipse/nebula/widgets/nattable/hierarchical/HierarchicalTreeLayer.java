@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2018, 2019 Dirk Fauth.
+ * Copyright (c) 2018, 2020 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,10 +21,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.collections.api.list.primitive.MutableIntList;
+import org.eclipse.collections.api.set.primitive.MutableIntSet;
+import org.eclipse.collections.impl.factory.primitive.IntLists;
+import org.eclipse.collections.impl.factory.primitive.IntSets;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
@@ -138,7 +142,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
      * Collection of all row indexes that are hidden if tree nodes are
      * collapsed.
      */
-    private final Set<Integer> hiddenRowIndexes = new TreeSet<Integer>();
+    private MutableIntSet hiddenRowIndexes = IntSets.mutable.empty();
     /**
      * The index of the first column that shows the leaf level.
      */
@@ -436,7 +440,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
                     // we need to increase the column position by 1 to handle
                     // the tree level header
                     return super.doCommand(
-                            new MultiColumnReorderCommand(this, crCommand.getFromColumnPositions(), crCommand.getToColumnPosition() + 1));
+                            new MultiColumnReorderCommand(this, crCommand.getFromColumnPositionsArray(), crCommand.getToColumnPosition() + 1));
                 }
             } else if (command instanceof ColumnHideCommand) {
                 if (isLevelHeaderColumn(((ColumnHideCommand) command).getColumnPosition())) {
@@ -518,12 +522,12 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
                 this.collapsedNodes.addAll(updatedCollapsedNodes);
 
                 // recalculate hidden rows based on updated collapsed nodes
-                Set<Integer> updatedHiddenRows = new HashSet<Integer>();
-                for (HierarchicalTreeNode node : this.collapsedNodes) {
-                    updatedHiddenRows.addAll(getChildIndexes(node.columnIndex, node.rowIndex));
-                }
-                getHiddenRowIndexes().clear();
-                getHiddenRowIndexes().addAll(updatedHiddenRows);
+                int[] updatedHiddenRows = this.collapsedNodes.stream()
+                        .map(node -> getChildIndexes(node.columnIndex, node.rowIndex))
+                        .flatMapToInt(children -> Arrays.stream(children))
+                        .toArray();
+
+                this.hiddenRowIndexes = IntSets.mutable.of(updatedHiddenRows);
             } else if (structuralChangeEvent.isHorizontalStructureChanged()) {
                 // if the column structure was changed we need to recalculate
                 // the header positions, e.g. on column hide or show
@@ -532,9 +536,9 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
         } else if (event instanceof SearchEvent) {
             PositionCoordinate coord = ((SearchEvent) event).getCellCoordinate();
             if (coord != null) {
-                Integer foundIndex = coord.getLayer().getRowIndexByPosition(coord.rowPosition);
+                int foundIndex = coord.getLayer().getRowIndexByPosition(coord.rowPosition);
 
-                if (getHiddenRowIndexes().contains(foundIndex)) {
+                if (this.hiddenRowIndexes.contains(foundIndex)) {
                     if (this.expandOnSearch) {
                         // level header positions - 2 because the leaf level is
                         // not collapsible
@@ -551,7 +555,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
                         }
                     } else {
                         // only make the single row visible again
-                        getHiddenRowIndexes().remove(foundIndex);
+                        this.hiddenRowIndexes.remove(foundIndex);
                     }
                 } else {
                     int lvl = getLevelByColumnIndex(coord.getLayer().getColumnIndexByPosition(coord.columnPosition));
@@ -569,7 +573,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
                 }
 
                 invalidateCache();
-                fireLayerEvent(new ShowRowPositionsEvent(this, Arrays.asList(foundIndex)));
+                fireLayerEvent(new ShowRowPositionsEvent(this, foundIndex));
             }
         }
         super.handleLayerEvent(event);
@@ -956,13 +960,22 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
 
     @Override
     public boolean isRowIndexHidden(int rowIndex) {
-        return this.hiddenRowIndexes.contains(Integer.valueOf(rowIndex))
-                || isHiddenInUnderlyingLayer(rowIndex);
+        return this.hiddenRowIndexes.contains(rowIndex) || isHiddenInUnderlyingLayer(rowIndex);
     }
 
     @Override
     public Collection<Integer> getHiddenRowIndexes() {
-        return this.hiddenRowIndexes;
+        return this.hiddenRowIndexes.toSortedList().primitiveStream().boxed().collect(Collectors.toList());
+    }
+
+    @Override
+    public int[] getHiddenRowIndexesArray() {
+        return this.hiddenRowIndexes.toSortedArray();
+    }
+
+    @Override
+    public boolean hasHiddenRows() {
+        return !this.hiddenRowIndexes.isEmpty();
     }
 
     /**
@@ -1013,7 +1026,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
      *            </p>
      */
     public void expandOrCollapse(int columnIndex, int rowIndex, int toLevel) {
-        List<Integer> toProcess = getChildIndexes(columnIndex, rowIndex);
+        MutableIntList toProcess = IntLists.mutable.of(getChildIndexes(columnIndex, rowIndex)).sortThis();
 
         HierarchicalTreeNode coord = new HierarchicalTreeNode(columnIndex, rowIndex, null);
         if (this.collapsedNodes.contains(coord)) {
@@ -1036,15 +1049,36 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
                 }
             }
 
-            this.getHiddenRowIndexes().removeAll(toProcess);
+            this.hiddenRowIndexes.removeAll(toProcess);
             invalidateCache();
-            fireLayerEvent(new ShowRowPositionsEvent(this, toProcess));
+            fireLayerEvent(new ShowRowPositionsEvent(
+                    this,
+                    toProcess.primitiveStream()
+                            .map(this::getRowPositionByIndex)
+                            .filter(r -> r >= 0)
+                            .sorted()
+                            .toArray()));
         } else {
+
+            // if the rowPos is negative, it is not visible because of hidden
+            // state in an underlying layer
+            int[] rowPositions = toProcess.primitiveStream()
+                    .map(this::getRowPositionByIndex)
+                    .filter(rowPos -> rowPos >= 0)
+                    .sorted()
+                    .toArray();
+
+            // collect the indexes that where really hidden in this layer
+            int[] hiddenIndexes = Arrays.stream(rowPositions)
+                    .map(this::getRowIndexByPosition)
+                    .sorted()
+                    .toArray();
+
             coord.rowObject = this.underlyingList.get(coord.rowIndex);
             this.collapsedNodes.add(coord);
-            this.getHiddenRowIndexes().addAll(toProcess);
+            this.hiddenRowIndexes.addAll(toProcess);
             invalidateCache();
-            fireLayerEvent(new HideRowPositionsEvent(this, toProcess));
+            fireLayerEvent(new HideRowPositionsEvent(this, rowPositions, hiddenIndexes));
         }
     }
 
@@ -1052,10 +1086,12 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
      * Collapses all tree nodes.
      */
     public void collapseAll() {
-        List<Integer> rowsToHide = new ArrayList<Integer>();
+        MutableIntList rowsToHide = IntLists.mutable.empty();
 
-        Integer[] nodeColumns = this.nodeColumnMapping.values().toArray(new Integer[0]);
-        Arrays.sort(nodeColumns);
+        int[] nodeColumns = this.nodeColumnMapping.values().stream()
+                .sorted()
+                .mapToInt(Integer::intValue)
+                .toArray();
 
         int columnIndex = nodeColumns[0];
         int columnPosition = getColumnPositionByIndex(columnIndex);
@@ -1086,20 +1122,38 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
             }
         }
 
-        this.getHiddenRowIndexes().addAll(rowsToHide);
+        // if the rowPos is negative, it is not visible because of hidden
+        // state in an underlying layer
+        int[] rowPositions = rowsToHide.primitiveStream()
+                .map(this::getRowPositionByIndex)
+                .filter(rowPos -> rowPos >= 0)
+                .sorted()
+                .toArray();
+
+        // collect the indexes that where really hidden in this layer
+        int[] hiddenIndexes = Arrays.stream(rowPositions)
+                .map(this::getRowIndexByPosition)
+                .sorted()
+                .toArray();
+
+        this.hiddenRowIndexes.addAll(rowsToHide);
         invalidateCache();
-        fireLayerEvent(new HideRowPositionsEvent(this, rowsToHide));
+        fireLayerEvent(new HideRowPositionsEvent(this, rowPositions, hiddenIndexes));
     }
 
     /**
      * Expands all tree nodes.
      */
     public void expandAll() {
-        List<Integer> rowsToShow = new ArrayList<Integer>(this.hiddenRowIndexes);
-        this.hiddenRowIndexes.clear();
+        MutableIntList rowsToShow = IntLists.mutable.ofAll(this.hiddenRowIndexes);
+        this.hiddenRowIndexes = IntSets.mutable.empty();
         this.collapsedNodes.clear();
         invalidateCache();
-        fireLayerEvent(new ShowRowPositionsEvent(this, rowsToShow));
+        fireLayerEvent(new ShowRowPositionsEvent(this, rowsToShow.primitiveStream()
+                .map(this::getRowPositionByIndex)
+                .filter(r -> r >= 0)
+                .sorted()
+                .toArray()));
     }
 
     /**
@@ -1125,22 +1179,21 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
         }
 
         // collect all rows of coords that are still collapsed
-        Set<Integer> remain = new HashSet<Integer>();
-        for (HierarchicalTreeNode coord : this.collapsedNodes) {
-            remain.addAll(getChildIndexes(coord.columnIndex, coord.rowIndex));
-        }
+        int[] remain = this.collapsedNodes.stream()
+                .map(node -> getChildIndexes(node.columnIndex, node.rowIndex))
+                .flatMapToInt(children -> Arrays.stream(children))
+                .toArray();
 
         // calculate the indexes that get visible afterwards
-        List<Integer> toProcess = new ArrayList<Integer>(this.hiddenRowIndexes);
+        MutableIntSet toProcess = IntSets.mutable.ofAll(this.hiddenRowIndexes);
         toProcess.removeAll(remain);
 
         // set still collapsed as hidden row indexes
-        this.hiddenRowIndexes.clear();
-        this.hiddenRowIndexes.addAll(remain);
+        this.hiddenRowIndexes = IntSets.mutable.of(remain);
 
         // invalidate cache and fire event for rows that got visible
         invalidateCache();
-        fireLayerEvent(new ShowRowPositionsEvent(this, toProcess));
+        fireLayerEvent(new ShowRowPositionsEvent(this, toProcess.toSortedArray()));
     }
 
     /**
@@ -1152,15 +1205,17 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
      *            The row index of the node whose children are requested.
      * @return The row indexes for the children of the node at the given
      *         coordinates.
+     *
+     * @since 2.0
      */
-    protected List<Integer> getChildIndexes(int columnIndex, int rowIndex) {
-        List<Integer> children = new ArrayList<Integer>();
+    protected int[] getChildIndexes(int columnIndex, int rowIndex) {
         if (rowIndex >= 0) {
             HierarchicalWrapper rowObject = this.underlyingList.get(rowIndex);
             // find children with same parents and same level object
             int level = getLevelByColumnIndex(columnIndex);
             Object levelObject = rowObject.getObject(level);
 
+            MutableIntList children = IntLists.mutable.empty();
             for (int i = rowIndex + 1; i < this.underlyingList.size(); i++) {
                 HierarchicalWrapper child = this.underlyingList.get(i);
                 // as long as the level objects are the same, we have found a
@@ -1173,8 +1228,9 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
                     break;
                 }
             }
+            return children.toArray();
         }
-        return children;
+        return new int[0];
     }
 
     /**

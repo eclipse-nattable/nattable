@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,9 +10,12 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.stream.Collectors;
 
+import org.eclipse.collections.api.set.primitive.MutableIntSet;
+import org.eclipse.collections.impl.factory.primitive.IntSets;
 import org.eclipse.nebula.widgets.nattable.group.command.RowGroupExpandCollapseCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.model.IRowGroup;
 import org.eclipse.nebula.widgets.nattable.group.model.IRowGroupModel;
@@ -20,13 +23,11 @@ import org.eclipse.nebula.widgets.nattable.group.model.IRowGroupModelListener;
 import org.eclipse.nebula.widgets.nattable.hideshow.AbstractRowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 
-public class RowGroupExpandCollapseLayer<T> extends AbstractRowHideShowLayer
-        implements IRowGroupModelListener {
+public class RowGroupExpandCollapseLayer<T> extends AbstractRowHideShowLayer implements IRowGroupModelListener {
 
     private final IRowGroupModel<T> model;
 
-    public RowGroupExpandCollapseLayer(IUniqueIndexLayer underlyingLayer,
-            IRowGroupModel<T> model) {
+    public RowGroupExpandCollapseLayer(IUniqueIndexLayer underlyingLayer, IRowGroupModel<T> model) {
         super(underlyingLayer);
         this.model = model;
 
@@ -49,11 +50,10 @@ public class RowGroupExpandCollapseLayer<T> extends AbstractRowHideShowLayer
             return true;
         }
 
-        IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
+        IUniqueIndexLayer underlyingLayer = getUnderlyingLayer();
 
-        boolean isHiddeninUnderlyingLayer = RowGroupUtils
-                .isRowIndexHiddenInUnderLyingLayer(rowIndex, this,
-                        underlyingLayer);
+        boolean isHiddeninUnderlyingLayer =
+                RowGroupUtils.isRowIndexHiddenInUnderLyingLayer(rowIndex, this, underlyingLayer);
 
         // Get the row and the group from our cache and model.
         final T row = this.model.getRowFromIndexCache(rowIndex);
@@ -63,26 +63,41 @@ public class RowGroupExpandCollapseLayer<T> extends AbstractRowHideShowLayer
             return false;
         }
 
-        boolean isCollapsedAndNotStaticRow = RowGroupUtils.isCollapsed(this.model,
-                rowGroup) && !rowGroup.getOwnStaticMemberRows().contains(row);
+        boolean isCollapsedAndNotStaticRow = RowGroupUtils.isCollapsed(this.model, rowGroup)
+                && !rowGroup.getOwnStaticMemberRows().contains(row);
 
         return isHiddeninUnderlyingLayer || isCollapsedAndNotStaticRow;
     }
 
     @Override
     public Collection<Integer> getHiddenRowIndexes() {
-        Collection<Integer> hiddenRowIndexes = new HashSet<Integer>();
+        return Arrays.stream(getHiddenRowIndexesArray()).boxed().collect(Collectors.toList());
+    }
 
-        IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
+    @Override
+    public int[] getHiddenRowIndexesArray() {
+        MutableIntSet hiddenRowIndexes = IntSets.mutable.empty();
+
+        IUniqueIndexLayer underlyingLayer = getUnderlyingLayer();
         int underlyingColumnCount = underlyingLayer.getRowCount();
         for (int i = 0; i < underlyingColumnCount; i++) {
             int rowIndex = underlyingLayer.getRowIndexByPosition(i);
             if (isRowIndexHidden(rowIndex)) {
-                hiddenRowIndexes.add(Integer.valueOf(rowIndex));
+                hiddenRowIndexes.add(rowIndex);
             }
         }
 
-        return hiddenRowIndexes;
+        return hiddenRowIndexes.toSortedArray();
+    }
+
+    @Override
+    public boolean hasHiddenRows() {
+        for (IRowGroup<T> rowGroup : this.model.getRowGroups()) {
+            if (rowGroup.isCollapsed()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

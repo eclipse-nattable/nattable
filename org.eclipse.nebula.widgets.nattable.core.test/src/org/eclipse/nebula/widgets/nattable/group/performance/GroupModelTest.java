@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Dirk Fauth.
+ * Copyright (c) 2019, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
@@ -162,22 +162,22 @@ public class GroupModelTest {
     @Test
     public void shouldFillInternalMemberIndexes() {
         Group group1 = this.model.getGroupByPosition(0);
-        assertEquals(4, group1.getMembers().size());
-        assertTrue(group1.getMembers().contains(0));
-        assertTrue(group1.getMembers().contains(1));
-        assertTrue(group1.getMembers().contains(2));
-        assertTrue(group1.getMembers().contains(3));
+        assertEquals(4, group1.getMembers().length);
+        assertTrue(group1.hasMember(0));
+        assertTrue(group1.hasMember(1));
+        assertTrue(group1.hasMember(2));
+        assertTrue(group1.hasMember(3));
 
         Group group2 = this.model.getGroupByPosition(5);
-        assertEquals(3, group2.getMembers().size());
-        assertTrue(group2.getMembers().contains(5));
-        assertTrue(group2.getMembers().contains(6));
-        assertTrue(group2.getMembers().contains(7));
+        assertEquals(3, group2.getMembers().length);
+        assertTrue(group2.hasMember(5));
+        assertTrue(group2.hasMember(6));
+        assertTrue(group2.hasMember(7));
 
         Group group3 = this.model.getGroupByPosition(12);
-        assertEquals(2, group3.getMembers().size());
-        assertTrue(group3.getMembers().contains(12));
-        assertTrue(group3.getMembers().contains(13));
+        assertEquals(2, group3.getMembers().length);
+        assertTrue(group3.hasMember(12));
+        assertTrue(group3.hasMember(13));
     }
 
     @Test
@@ -191,10 +191,10 @@ public class GroupModelTest {
         assertEquals(3, group.getVisibleSpan());
         assertTrue(this.model.isPartOfAGroup(7));
 
-        assertEquals(3, group.getMembers().size());
-        assertTrue(group.getMembers().contains(5));
-        assertTrue(group.getMembers().contains(6));
-        assertTrue(group.getMembers().contains(7));
+        assertEquals(3, group.getMembers().length);
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+        assertTrue(group.hasMember(7));
 
         this.model.removePositionsFromGroup(6);
 
@@ -205,9 +205,9 @@ public class GroupModelTest {
         assertEquals(2, group.getVisibleSpan());
         assertFalse(this.model.isPartOfAGroup(7));
 
-        assertEquals(2, group.getMembers().size());
-        assertTrue(group.getMembers().contains(5));
-        assertTrue(group.getMembers().contains(6));
+        assertEquals(2, group.getMembers().length);
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
     }
 
     @Test
@@ -221,10 +221,10 @@ public class GroupModelTest {
         assertEquals(3, group.getVisibleSpan());
         assertTrue(this.model.isPartOfAGroup(7));
 
-        assertEquals(3, group.getMembers().size());
-        assertTrue(group.getMembers().contains(5));
-        assertTrue(group.getMembers().contains(6));
-        assertTrue(group.getMembers().contains(7));
+        assertEquals(3, group.getMembers().length);
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+        assertTrue(group.hasMember(7));
 
         this.model.removePositionsFromGroup(7);
 
@@ -235,9 +235,9 @@ public class GroupModelTest {
         assertEquals(2, group.getVisibleSpan());
         assertFalse(this.model.isPartOfAGroup(7));
 
-        assertEquals(2, group.getMembers().size());
-        assertTrue(group.getMembers().contains(5));
-        assertTrue(group.getMembers().contains(6));
+        assertEquals(2, group.getMembers().length);
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
     }
 
     @Test
@@ -251,10 +251,10 @@ public class GroupModelTest {
         assertEquals(3, group.getVisibleSpan());
         assertTrue(this.model.isPartOfAGroup(7));
 
-        assertEquals(3, group.getMembers().size());
-        assertTrue(group.getMembers().contains(5));
-        assertTrue(group.getMembers().contains(6));
-        assertTrue(group.getMembers().contains(7));
+        assertEquals(3, group.getMembers().length);
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+        assertTrue(group.hasMember(7));
 
         this.model.removePositionsFromGroup(5);
 
@@ -266,9 +266,9 @@ public class GroupModelTest {
         assertFalse(this.model.isPartOfAGroup(5));
         assertTrue(this.model.isPartOfAGroup(7));
 
-        assertEquals(2, group.getMembers().size());
-        assertTrue(group.getMembers().contains(6));
-        assertTrue(group.getMembers().contains(7));
+        assertEquals(2, group.getMembers().length);
+        assertTrue(group.hasMember(6));
+        assertTrue(group.hasMember(7));
     }
 
     @Test
@@ -285,10 +285,10 @@ public class GroupModelTest {
         assertEquals(3, group.getVisibleSpan());
         assertTrue(this.model.isPartOfAGroup(7));
 
-        assertEquals(3, group.getMembers().size());
-        assertTrue(group.getMembers().contains(5));
-        assertTrue(group.getMembers().contains(6));
-        assertTrue(group.getMembers().contains(7));
+        assertEquals(3, group.getMembers().length);
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+        assertTrue(group.hasMember(7));
 
         this.model.removePositionsFromGroup(7);
 
@@ -299,10 +299,10 @@ public class GroupModelTest {
         assertEquals(3, group.getVisibleSpan());
         assertTrue(this.model.isPartOfAGroup(7));
 
-        assertEquals(3, group.getMembers().size());
-        assertTrue(group.getMembers().contains(5));
-        assertTrue(group.getMembers().contains(6));
-        assertTrue(group.getMembers().contains(7));
+        assertEquals(3, group.getMembers().length);
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+        assertTrue(group.hasMember(7));
     }
 
     @Test
@@ -406,21 +406,21 @@ public class GroupModelTest {
         assertEquals(0, group.getStartIndex());
         assertEquals(4, group.getOriginalSpan());
 
-        assertEquals(4, group.getMembers().size());
-        assertTrue(group.getMembers().contains(0));
-        assertTrue(group.getMembers().contains(1));
-        assertTrue(group.getMembers().contains(2));
-        assertTrue(group.getMembers().contains(3));
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+        assertTrue(group.hasMember(2));
+        assertTrue(group.hasMember(3));
 
         this.model.removePositionsFromGroup(group, 2);
 
         assertEquals(0, group.getStartIndex());
         assertEquals(3, group.getOriginalSpan());
 
-        assertEquals(3, group.getMembers().size());
-        assertTrue(group.getMembers().contains(0));
-        assertTrue(group.getMembers().contains(1));
-        assertTrue(group.getMembers().contains(2));
+        assertEquals(3, group.getMembers().length);
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+        assertTrue(group.hasMember(2));
     }
 
     @Test
@@ -430,20 +430,20 @@ public class GroupModelTest {
         assertEquals(0, group.getStartIndex());
         assertEquals(4, group.getOriginalSpan());
 
-        assertEquals(4, group.getMembers().size());
-        assertTrue(group.getMembers().contains(0));
-        assertTrue(group.getMembers().contains(1));
-        assertTrue(group.getMembers().contains(2));
-        assertTrue(group.getMembers().contains(3));
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+        assertTrue(group.hasMember(2));
+        assertTrue(group.hasMember(3));
 
         this.model.removePositionsFromGroup(group, 0, 3);
 
         assertEquals(1, group.getStartIndex());
         assertEquals(2, group.getOriginalSpan());
 
-        assertEquals(2, group.getMembers().size());
-        assertTrue(group.getMembers().contains(1));
-        assertTrue(group.getMembers().contains(2));
+        assertEquals(2, group.getMembers().length);
+        assertTrue(group.hasMember(1));
+        assertTrue(group.hasMember(2));
     }
 
     @Test
@@ -453,20 +453,20 @@ public class GroupModelTest {
         assertEquals(0, group.getStartIndex());
         assertEquals(4, group.getOriginalSpan());
 
-        assertEquals(4, group.getMembers().size());
-        assertTrue(group.getMembers().contains(0));
-        assertTrue(group.getMembers().contains(1));
-        assertTrue(group.getMembers().contains(2));
-        assertTrue(group.getMembers().contains(3));
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+        assertTrue(group.hasMember(2));
+        assertTrue(group.hasMember(3));
 
         this.model.removePositionsFromGroup(0, 3);
 
         assertEquals(1, group.getStartIndex());
         assertEquals(2, group.getOriginalSpan());
 
-        assertEquals(2, group.getMembers().size());
-        assertTrue(group.getMembers().contains(1));
-        assertTrue(group.getMembers().contains(2));
+        assertEquals(2, group.getMembers().length);
+        assertTrue(group.hasMember(1));
+        assertTrue(group.hasMember(2));
     }
 
     @Test
@@ -476,11 +476,11 @@ public class GroupModelTest {
         assertEquals(0, group.getStartIndex());
         assertEquals(4, group.getOriginalSpan());
 
-        assertEquals(4, group.getMembers().size());
-        assertTrue(group.getMembers().contains(0));
-        assertTrue(group.getMembers().contains(1));
-        assertTrue(group.getMembers().contains(2));
-        assertTrue(group.getMembers().contains(3));
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+        assertTrue(group.hasMember(2));
+        assertTrue(group.hasMember(3));
 
         this.model.removePositionsFromGroup(0, 1, 2, 3);
 
@@ -490,7 +490,7 @@ public class GroupModelTest {
         assertEquals(0, group.getOriginalSpan());
         assertEquals(0, group.getVisibleSpan());
 
-        assertEquals(0, group.getMembers().size());
+        assertEquals(0, group.getMembers().length);
 
         assertNull(this.model.getGroupByPosition(0));
         assertNull(this.model.getGroupByPosition(1));
@@ -508,11 +508,11 @@ public class GroupModelTest {
         assertEquals(0, group.getStartIndex());
         assertEquals(4, group.getOriginalSpan());
 
-        assertEquals(4, group.getMembers().size());
-        assertTrue(group.getMembers().contains(0));
-        assertTrue(group.getMembers().contains(1));
-        assertTrue(group.getMembers().contains(2));
-        assertTrue(group.getMembers().contains(3));
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+        assertTrue(group.hasMember(2));
+        assertTrue(group.hasMember(3));
 
         this.model.removePositionsFromGroup(group, 0, 1, 2, 3);
 
@@ -522,7 +522,7 @@ public class GroupModelTest {
         assertEquals(0, group.getOriginalSpan());
         assertEquals(0, group.getVisibleSpan());
 
-        assertEquals(0, group.getMembers().size());
+        assertEquals(0, group.getMembers().length);
 
         assertNull(this.model.getGroupByPosition(0));
         assertNull(this.model.getGroupByPosition(1));
@@ -571,10 +571,10 @@ public class GroupModelTest {
         assertEquals(3, group.getOriginalSpan());
         assertEquals(3, group.getVisibleSpan());
 
-        assertEquals(3, group.getMembers().size());
-        assertTrue(group.getMembers().contains(5));
-        assertTrue(group.getMembers().contains(6));
-        assertTrue(group.getMembers().contains(7));
+        assertEquals(3, group.getMembers().length);
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+        assertTrue(group.hasMember(7));
 
         this.model.addPositionsToGroup(group, 8);
 
@@ -584,11 +584,11 @@ public class GroupModelTest {
         assertEquals(4, group.getOriginalSpan());
         assertEquals(4, group.getVisibleSpan());
 
-        assertEquals(4, group.getMembers().size());
-        assertTrue(group.getMembers().contains(5));
-        assertTrue(group.getMembers().contains(6));
-        assertTrue(group.getMembers().contains(7));
-        assertTrue(group.getMembers().contains(8));
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+        assertTrue(group.hasMember(7));
+        assertTrue(group.hasMember(8));
     }
 
     @Test
@@ -601,10 +601,10 @@ public class GroupModelTest {
         assertEquals(3, group.getOriginalSpan());
         assertEquals(3, group.getVisibleSpan());
 
-        assertEquals(3, group.getMembers().size());
-        assertTrue(group.getMembers().contains(5));
-        assertTrue(group.getMembers().contains(6));
-        assertTrue(group.getMembers().contains(7));
+        assertEquals(3, group.getMembers().length);
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+        assertTrue(group.hasMember(7));
 
         this.model.addPositionsToGroup(group, 8, 9, 10);
 
@@ -614,13 +614,13 @@ public class GroupModelTest {
         assertEquals(6, group.getOriginalSpan());
         assertEquals(6, group.getVisibleSpan());
 
-        assertEquals(6, group.getMembers().size());
-        assertTrue(group.getMembers().contains(5));
-        assertTrue(group.getMembers().contains(6));
-        assertTrue(group.getMembers().contains(7));
-        assertTrue(group.getMembers().contains(8));
-        assertTrue(group.getMembers().contains(9));
-        assertTrue(group.getMembers().contains(10));
+        assertEquals(6, group.getMembers().length);
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+        assertTrue(group.hasMember(7));
+        assertTrue(group.hasMember(8));
+        assertTrue(group.hasMember(9));
+        assertTrue(group.hasMember(10));
     }
 
     @Test
@@ -671,9 +671,9 @@ public class GroupModelTest {
         assertEquals(2, group.getOriginalSpan());
         assertEquals(2, group.getVisibleSpan());
 
-        assertEquals(2, group.getMembers().size());
-        assertTrue(group.getMembers().contains(12));
-        assertTrue(group.getMembers().contains(13));
+        assertEquals(2, group.getMembers().length);
+        assertTrue(group.hasMember(12));
+        assertTrue(group.hasMember(13));
 
         this.model.addPositionsToGroup(group, 11);
 
@@ -683,10 +683,10 @@ public class GroupModelTest {
         assertEquals(3, group.getOriginalSpan());
         assertEquals(3, group.getVisibleSpan());
 
-        assertEquals(3, group.getMembers().size());
-        assertTrue(group.getMembers().contains(11));
-        assertTrue(group.getMembers().contains(12));
-        assertTrue(group.getMembers().contains(13));
+        assertEquals(3, group.getMembers().length);
+        assertTrue(group.hasMember(11));
+        assertTrue(group.hasMember(12));
+        assertTrue(group.hasMember(13));
     }
 
     @Test
@@ -699,9 +699,9 @@ public class GroupModelTest {
         assertEquals(2, group.getOriginalSpan());
         assertEquals(2, group.getVisibleSpan());
 
-        assertEquals(2, group.getMembers().size());
-        assertTrue(group.getMembers().contains(12));
-        assertTrue(group.getMembers().contains(13));
+        assertEquals(2, group.getMembers().length);
+        assertTrue(group.hasMember(12));
+        assertTrue(group.hasMember(13));
 
         this.model.addPositionsToGroup(group, 11, 10);
 
@@ -711,11 +711,11 @@ public class GroupModelTest {
         assertEquals(4, group.getOriginalSpan());
         assertEquals(4, group.getVisibleSpan());
 
-        assertEquals(4, group.getMembers().size());
-        assertTrue(group.getMembers().contains(10));
-        assertTrue(group.getMembers().contains(11));
-        assertTrue(group.getMembers().contains(12));
-        assertTrue(group.getMembers().contains(13));
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(10));
+        assertTrue(group.hasMember(11));
+        assertTrue(group.hasMember(12));
+        assertTrue(group.hasMember(13));
     }
 
     @Test
@@ -812,8 +812,8 @@ public class GroupModelTest {
         Group group2 = this.model.getGroupByPosition(5);
         this.model.addStaticIndexesToGroup(group2, 5, 6);
 
-        assertEquals(2, group1.getStaticIndexes().size());
-        assertEquals(2, group2.getStaticIndexes().size());
+        assertEquals(2, group1.getStaticIndexes().length);
+        assertEquals(2, group2.getStaticIndexes().length);
 
         assertTrue(this.model.isStatic(1));
         assertTrue(this.model.isStatic(2));
@@ -827,7 +827,7 @@ public class GroupModelTest {
         Group group = this.model.getGroupByPosition(0);
         this.model.addStaticIndexesToGroup(group, 4);
 
-        assertEquals(0, group.getStaticIndexes().size());
+        assertEquals(0, group.getStaticIndexes().length);
 
         assertFalse(this.model.isStatic(4));
     }
@@ -837,7 +837,7 @@ public class GroupModelTest {
         Group group = this.model.getGroupByPosition(0);
         this.model.addStaticIndexesToGroup(group, 3, 4);
 
-        assertEquals(1, group.getStaticIndexes().size());
+        assertEquals(1, group.getStaticIndexes().length);
 
         assertTrue(this.model.isStatic(3));
         assertFalse(this.model.isStatic(4));
@@ -849,7 +849,7 @@ public class GroupModelTest {
         // set last two columns as static
         this.model.addStaticIndexesToGroup(group, 2, 3);
 
-        assertEquals(2, group.getStaticIndexes().size());
+        assertEquals(2, group.getStaticIndexes().length);
 
         assertTrue(this.model.isStatic(2));
         assertTrue(this.model.isStatic(3));
@@ -863,13 +863,13 @@ public class GroupModelTest {
         assertEquals(3, group.getOriginalSpan());
         assertEquals(3, group.getVisibleSpan());
 
-        Collection<Integer> members = group.getMembers();
-        assertEquals(3, members.size());
-        assertTrue(members.contains(Integer.valueOf(0)));
-        assertTrue(members.contains(Integer.valueOf(1)));
-        assertTrue(members.contains(Integer.valueOf(2)));
+        int[] members = group.getMembers();
+        assertEquals(3, members.length);
+        assertEquals(0, members[0]);
+        assertEquals(1, members[1]);
+        assertEquals(2, members[2]);
 
-        assertEquals(1, group.getStaticIndexes().size());
+        assertEquals(1, group.getStaticIndexes().length);
 
         assertTrue(this.model.isStatic(2));
         assertFalse(this.model.isStatic(3));
@@ -881,7 +881,7 @@ public class GroupModelTest {
         // set first and last column as static
         this.model.addStaticIndexesToGroup(group, 0, 3);
 
-        assertEquals(2, group.getStaticIndexes().size());
+        assertEquals(2, group.getStaticIndexes().length);
 
         assertTrue(this.model.isStatic(0));
         assertFalse(this.model.isStatic(1));
@@ -897,13 +897,13 @@ public class GroupModelTest {
         assertEquals(3, group.getOriginalSpan());
         assertEquals(3, group.getVisibleSpan());
 
-        Collection<Integer> members = group.getMembers();
-        assertEquals(3, members.size());
-        assertTrue(members.contains(Integer.valueOf(1)));
-        assertTrue(members.contains(Integer.valueOf(2)));
-        assertTrue(members.contains(Integer.valueOf(3)));
+        int[] members = group.getMembers();
+        assertEquals(3, members.length);
+        assertEquals(1, members[0]);
+        assertEquals(2, members[1]);
+        assertEquals(3, members[2]);
 
-        assertEquals(1, group.getStaticIndexes().size());
+        assertEquals(1, group.getStaticIndexes().length);
 
         assertFalse(this.model.isStatic(0));
         assertFalse(this.model.isStatic(1));
@@ -917,7 +917,7 @@ public class GroupModelTest {
         // set last two columns as static
         this.model.addStaticIndexesToGroup(group, 2, 3);
 
-        assertEquals(2, group.getStaticIndexes().size());
+        assertEquals(2, group.getStaticIndexes().length);
 
         assertTrue(this.model.isStatic(2));
         assertTrue(this.model.isStatic(3));
@@ -931,13 +931,13 @@ public class GroupModelTest {
         assertEquals(3, group.getOriginalSpan());
         assertEquals(3, group.getVisibleSpan());
 
-        Collection<Integer> members = group.getMembers();
-        assertEquals(3, members.size());
-        assertTrue(members.contains(Integer.valueOf(0)));
-        assertTrue(members.contains(Integer.valueOf(1)));
-        assertTrue(members.contains(Integer.valueOf(2)));
+        int[] members = group.getMembers();
+        assertEquals(3, members.length);
+        assertEquals(0, members[0]);
+        assertEquals(1, members[1]);
+        assertEquals(2, members[2]);
 
-        assertEquals(1, group.getStaticIndexes().size());
+        assertEquals(1, group.getStaticIndexes().length);
 
         assertTrue(this.model.isStatic(2));
         assertFalse(this.model.isStatic(3));
@@ -949,7 +949,7 @@ public class GroupModelTest {
         // set first and last column as static
         this.model.addStaticIndexesToGroup(group, 0, 3);
 
-        assertEquals(2, group.getStaticIndexes().size());
+        assertEquals(2, group.getStaticIndexes().length);
 
         assertTrue(this.model.isStatic(0));
         assertFalse(this.model.isStatic(1));
@@ -965,13 +965,13 @@ public class GroupModelTest {
         assertEquals(3, group.getOriginalSpan());
         assertEquals(3, group.getVisibleSpan());
 
-        Collection<Integer> members = group.getMembers();
-        assertEquals(3, members.size());
-        assertTrue(members.contains(Integer.valueOf(1)));
-        assertTrue(members.contains(Integer.valueOf(2)));
-        assertTrue(members.contains(Integer.valueOf(3)));
+        int[] members = group.getMembers();
+        assertEquals(3, members.length);
+        assertEquals(1, members[0]);
+        assertEquals(2, members[1]);
+        assertEquals(3, members[2]);
 
-        assertEquals(1, group.getStaticIndexes().size());
+        assertEquals(1, group.getStaticIndexes().length);
 
         assertFalse(this.model.isStatic(0));
         assertFalse(this.model.isStatic(1));
@@ -981,40 +981,40 @@ public class GroupModelTest {
 
     @Test
     public void shouldReturnVisiblePositionCollection() {
-        Collection<Integer> positions1 = this.model.getGroupByPosition(0).getVisiblePositions();
-        Collection<Integer> positions2 = this.model.getGroupByPosition(5).getVisiblePositions();
-        Collection<Integer> positions3 = this.model.getGroupByPosition(12).getVisiblePositions();
+        int[] positions1 = this.model.getGroupByPosition(0).getVisiblePositions();
+        int[] positions2 = this.model.getGroupByPosition(5).getVisiblePositions();
+        int[] positions3 = this.model.getGroupByPosition(12).getVisiblePositions();
 
-        assertTrue(positions1.contains(Integer.valueOf(0)));
-        assertTrue(positions1.contains(Integer.valueOf(1)));
-        assertTrue(positions1.contains(Integer.valueOf(2)));
-        assertTrue(positions1.contains(Integer.valueOf(3)));
+        assertTrue(Arrays.stream(positions1).anyMatch(x -> x == 0));
+        assertTrue(Arrays.stream(positions1).anyMatch(x -> x == 1));
+        assertTrue(Arrays.stream(positions1).anyMatch(x -> x == 2));
+        assertTrue(Arrays.stream(positions1).anyMatch(x -> x == 3));
 
-        assertTrue(positions2.contains(Integer.valueOf(5)));
-        assertTrue(positions2.contains(Integer.valueOf(6)));
-        assertTrue(positions2.contains(Integer.valueOf(7)));
+        assertTrue(Arrays.stream(positions2).anyMatch(x -> x == 5));
+        assertTrue(Arrays.stream(positions2).anyMatch(x -> x == 6));
+        assertTrue(Arrays.stream(positions2).anyMatch(x -> x == 7));
 
-        assertTrue(positions3.contains(Integer.valueOf(12)));
-        assertTrue(positions3.contains(Integer.valueOf(13)));
+        assertTrue(Arrays.stream(positions3).anyMatch(x -> x == 12));
+        assertTrue(Arrays.stream(positions3).anyMatch(x -> x == 13));
     }
 
     @Test
     public void shouldReturnVisibleIndexCollection() {
-        Collection<Integer> indexes1 = this.model.getGroupByPosition(0).getVisibleIndexes();
-        Collection<Integer> indexes2 = this.model.getGroupByPosition(5).getVisibleIndexes();
-        Collection<Integer> indexes3 = this.model.getGroupByPosition(12).getVisibleIndexes();
+        int[] indexes1 = this.model.getGroupByPosition(0).getVisibleIndexes();
+        int[] indexes2 = this.model.getGroupByPosition(5).getVisibleIndexes();
+        int[] indexes3 = this.model.getGroupByPosition(12).getVisibleIndexes();
 
-        assertTrue(indexes1.contains(Integer.valueOf(0)));
-        assertTrue(indexes1.contains(Integer.valueOf(1)));
-        assertTrue(indexes1.contains(Integer.valueOf(2)));
-        assertTrue(indexes1.contains(Integer.valueOf(3)));
+        assertTrue(Arrays.stream(indexes1).anyMatch(x -> x == 0));
+        assertTrue(Arrays.stream(indexes1).anyMatch(x -> x == 1));
+        assertTrue(Arrays.stream(indexes1).anyMatch(x -> x == 2));
+        assertTrue(Arrays.stream(indexes1).anyMatch(x -> x == 3));
 
-        assertTrue(indexes2.contains(Integer.valueOf(5)));
-        assertTrue(indexes2.contains(Integer.valueOf(6)));
-        assertTrue(indexes2.contains(Integer.valueOf(7)));
+        assertTrue(Arrays.stream(indexes2).anyMatch(x -> x == 5));
+        assertTrue(Arrays.stream(indexes2).anyMatch(x -> x == 6));
+        assertTrue(Arrays.stream(indexes2).anyMatch(x -> x == 7));
 
-        assertTrue(indexes3.contains(Integer.valueOf(12)));
-        assertTrue(indexes3.contains(Integer.valueOf(13)));
+        assertTrue(Arrays.stream(indexes3).anyMatch(x -> x == 12));
+        assertTrue(Arrays.stream(indexes3).anyMatch(x -> x == 13));
     }
 
     @Test
@@ -1137,7 +1137,7 @@ public class GroupModelTest {
 
         assertEquals(1, properties.size());
         assertEquals(
-                "testGroupName=0:0:0:4:4:expanded:uncollapseable:breakable:1,2,|"
+                "testGroupName=0:0:0:4:4:expanded:uncollapseable:breakable:1,2|"
                         + "testGroupName2=5:6:5:3:2:expanded:collapseable:unbreakable|"
                         + "testGroupName3=12:12:12:2:2:collapsed:collapseable:breakable|",
                 properties.getProperty("prefix.groupModel"));
@@ -1172,9 +1172,9 @@ public class GroupModelTest {
         assertFalse(group1.isCollapsed());
         assertFalse(group1.isCollapseable());
         assertFalse(group1.isUnbreakable());
-        assertEquals(2, group1.getStaticIndexes().size());
-        assertTrue(group1.getStaticIndexes().contains(1));
-        assertTrue(group1.getStaticIndexes().contains(2));
+        assertEquals(2, group1.getStaticIndexes().length);
+        assertTrue(group1.containsStaticIndex(1));
+        assertTrue(group1.containsStaticIndex(2));
 
         assertEquals("testGroupName2", group2.getName());
         assertEquals(5, group2.getStartIndex());
@@ -1185,7 +1185,7 @@ public class GroupModelTest {
         assertFalse(group2.isCollapsed());
         assertTrue(group2.isCollapseable());
         assertTrue(group2.isUnbreakable());
-        assertEquals(0, group2.getStaticIndexes().size());
+        assertEquals(0, group2.getStaticIndexes().length);
 
         assertEquals("testGroupName3", group3.getName());
         assertEquals(12, group3.getStartIndex());
@@ -1196,6 +1196,6 @@ public class GroupModelTest {
         assertTrue(group3.isCollapsed());
         assertTrue(group3.isCollapseable());
         assertFalse(group3.isUnbreakable());
-        assertEquals(0, group3.getStaticIndexes().size());
+        assertEquals(0, group3.getStaticIndexes().length);
     }
 }

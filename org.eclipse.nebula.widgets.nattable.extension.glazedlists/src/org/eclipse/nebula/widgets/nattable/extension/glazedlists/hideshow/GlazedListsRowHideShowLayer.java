@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2019 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Properties;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.codec.binary.Base64;
@@ -58,7 +57,7 @@ import ca.odell.glazedlists.matchers.MatcherEditor;
  */
 public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform implements IRowHideShowLayer, IUniqueIndexLayer {
 
-    private static final Log log = LogFactory.getLog(GlazedListsRowHideShowLayer.class);
+    private static final Log LOG = LogFactory.getLog(GlazedListsRowHideShowLayer.class);
 
     /**
      * Key for persisting the number of hidden row id's. This is necessary
@@ -71,7 +70,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
     /**
      * The collection of row id's that are hidden.
      */
-    private final Set<Serializable> rowIdsToHide = new HashSet<Serializable>();
+    private final HashSet<Serializable> rowIdsToHide = new HashSet<Serializable>();
 
     /**
      * The {@link IRowIdAccessor} that is used to extract the id out of the row
@@ -219,9 +218,23 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
         registerCommandHandler(new RowPositionHideCommandHandler(this));
     }
 
+    /**
+     *
+     * @return The {@link MatcherEditor} that is used to filter rows via row
+     *         id's.
+     *
+     * @since 2.0
+     */
+    public MatcherEditor<T> getHideRowMatcherEditor() {
+        return this.hideRowByIdMatcherEditor;
+    }
+
     @Override
     public void hideRowPositions(int... rowPositions) {
-        hideRowPositions(Arrays.stream(rowPositions).boxed().collect(Collectors.toList()));
+        hideRows(Arrays.stream(rowPositions)
+                .map(this::getRowIndexByPosition)
+                .mapToObj(rowIndex -> this.rowIdAccessor.getRowId(this.rowDataProvider.getRowObject(rowIndex)))
+                .collect(Collectors.toSet()));
     }
 
     /**
@@ -234,17 +247,14 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
      */
     @Override
     public void hideRowPositions(Collection<Integer> rowPositions) {
-        Collection<Serializable> rowIds = new HashSet<Serializable>();
-        for (Integer rowPos : rowPositions) {
-            int rowIndex = getRowIndexByPosition(rowPos);
-            rowIds.add(this.rowIdAccessor.getRowId(this.rowDataProvider.getRowObject(rowIndex)));
-        }
-        hideRows(rowIds);
+        hideRowPositions(rowPositions.stream().mapToInt(Integer::intValue).toArray());
     }
 
     @Override
     public void hideRowIndexes(int... rowIndexes) {
-        hideRowIndexes(Arrays.stream(rowIndexes).boxed().collect(Collectors.toList()));
+        hideRows(Arrays.stream(rowIndexes)
+                .mapToObj(rowIndex -> this.rowIdAccessor.getRowId(this.rowDataProvider.getRowObject(rowIndex)))
+                .collect(Collectors.toSet()));
     }
 
     /**
@@ -257,16 +267,14 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
      */
     @Override
     public void hideRowIndexes(Collection<Integer> rowIndexes) {
-        Collection<Serializable> rowIds = new HashSet<Serializable>();
-        for (Integer rowIndex : rowIndexes) {
-            rowIds.add(this.rowIdAccessor.getRowId(this.rowDataProvider.getRowObject(rowIndex)));
-        }
-        hideRows(rowIds);
+        hideRowPositions(rowIndexes.stream().mapToInt(Integer::intValue).toArray());
     }
 
     @Override
     public void showRowIndexes(int... rowIndexes) {
-        showRowIndexes(Arrays.stream(rowIndexes).boxed().collect(Collectors.toList()));
+        showRows(Arrays.stream(rowIndexes)
+                .mapToObj(rowIndex -> this.rowIdAccessor.getRowId(this.rowDataProvider.getRowObject(rowIndex)))
+                .collect(Collectors.toSet()));
     }
 
     /**
@@ -279,11 +287,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
      */
     @Override
     public void showRowIndexes(Collection<Integer> rowIndexes) {
-        Collection<Serializable> rowIds = new HashSet<Serializable>();
-        for (Integer rowIndex : rowIndexes) {
-            rowIds.add(this.rowIdAccessor.getRowId(this.rowDataProvider.getRowObject(rowIndex)));
-        }
-        showRows(rowIds);
+        showRowIndexes(rowIndexes.stream().mapToInt(Integer::intValue).toArray());
     }
 
     /**
@@ -368,13 +372,13 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
                 properties.setProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_IDS,
                         new String(Base64.encodeBase64(bos.toByteArray())));
             } catch (Exception e) {
-                log.error("Error while persisting GlazedListsRowHideShowLayer state", e); //$NON-NLS-1$
+                LOG.error("Error while persisting GlazedListsRowHideShowLayer state", e); //$NON-NLS-1$
             } finally {
                 if (out != null) {
                     try {
                         out.close();
                     } catch (IOException e) {
-                        log.error("Error on closing the output stream", e); //$NON-NLS-1$
+                        LOG.error("Error on closing the output stream", e); //$NON-NLS-1$
                     }
                 }
             }
@@ -400,13 +404,13 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
                     this.rowIdsToHide.add(ser);
                 }
             } catch (Exception e) {
-                log.error("Error while restoring GlazedListsRowHideShowLayer state", e); //$NON-NLS-1$
+                LOG.error("Error while restoring GlazedListsRowHideShowLayer state", e); //$NON-NLS-1$
             } finally {
                 if (in != null) {
                     try {
                         in.close();
                     } catch (IOException e) {
-                        log.error("Error on closing the input stream", e); //$NON-NLS-1$
+                        LOG.error("Error on closing the input stream", e); //$NON-NLS-1$
                     }
                 }
             }

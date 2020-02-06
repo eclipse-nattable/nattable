@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Dirk Fauth.
+ * Copyright (c) 2019, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -68,8 +67,8 @@ public class MultiRowReorderEventDiffTest {
     public void testReorderRightRowDiffs() {
         this.event = new RowReorderEvent(
                 this.dataLayer,
-                Arrays.asList(new Integer[] { 2, 3, 4 }),
-                Arrays.asList(new Integer[] { 2, 3, 4 }),
+                new int[] { 2, 3, 4 },
+                new int[] { 2, 3, 4 },
                 7,
                 7,
                 true);
@@ -89,8 +88,8 @@ public class MultiRowReorderEventDiffTest {
     public void testReorderRightConvertToLocal() {
         this.event = new RowReorderEvent(
                 this.dataLayer,
-                Arrays.asList(new Integer[] { 2, 3, 4 }),
-                Arrays.asList(new Integer[] { 2, 3, 4 }),
+                new int[] { 2, 3, 4 },
+                new int[] { 2, 3, 4 },
                 7,
                 7,
                 true);
@@ -112,8 +111,8 @@ public class MultiRowReorderEventDiffTest {
     public void testReorderLeftRowDiffs() {
         this.event = new RowReorderEvent(
                 this.dataLayer,
-                Arrays.asList(new Integer[] { 7, 8, 9 }),
-                Arrays.asList(new Integer[] { 7, 8, 9 }),
+                new int[] { 7, 8, 9 },
+                new int[] { 7, 8, 9 },
                 2,
                 2,
                 true);
@@ -134,8 +133,8 @@ public class MultiRowReorderEventDiffTest {
     public void testReorderLeftConvertToLocal() {
         this.event = new RowReorderEvent(
                 this.dataLayer,
-                Arrays.asList(new Integer[] { 7, 8, 9 }),
-                Arrays.asList(new Integer[] { 7, 8, 9 }),
+                new int[] { 7, 8, 9 },
+                new int[] { 7, 8, 9 },
                 2,
                 2,
                 true);

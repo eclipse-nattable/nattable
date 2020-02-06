@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,16 +10,16 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Properties;
-import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.eclipse.collections.api.list.primitive.MutableIntList;
+import org.eclipse.collections.api.set.primitive.MutableIntSet;
+import org.eclipse.collections.impl.factory.primitive.IntLists;
+import org.eclipse.collections.impl.factory.primitive.IntSets;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowShowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommandHandler;
@@ -41,11 +41,10 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
 
     public static final String PERSISTENCE_KEY_HIDDEN_ROW_INDEXES = ".hiddenRowIndexes"; //$NON-NLS-1$
 
-    private final Set<Integer> hiddenRowIndexes;
+    private MutableIntSet hiddenRowIndexes = IntSets.mutable.empty();
 
     public RowHideShowLayer(IUniqueIndexLayer underlyingLayer) {
         super(underlyingLayer);
-        this.hiddenRowIndexes = new TreeSet<Integer>();
 
         registerCommandHandler(new MultiRowHideCommandHandler(this));
         registerCommandHandler(new RowHideCommandHandler(this));
@@ -84,12 +83,9 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
     @Override
     public void saveState(String prefix, Properties properties) {
         if (this.hiddenRowIndexes.size() > 0) {
-            StringBuilder strBuilder = new StringBuilder();
-            for (Integer index : this.hiddenRowIndexes) {
-                strBuilder.append(index);
-                strBuilder.append(IPersistable.VALUE_SEPARATOR);
-            }
-            properties.setProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_INDEXES, strBuilder.toString());
+            properties.setProperty(
+                    prefix + PERSISTENCE_KEY_HIDDEN_ROW_INDEXES,
+                    this.hiddenRowIndexes.toSortedList().makeString(IPersistable.VALUE_SEPARATOR));
         }
 
         super.saveState(prefix, properties);
@@ -97,13 +93,13 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
 
     @Override
     public void loadState(String prefix, Properties properties) {
-        this.hiddenRowIndexes.clear();
+        this.hiddenRowIndexes = IntSets.mutable.empty();
         String property = properties.getProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_INDEXES);
         if (property != null) {
             StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
             while (tok.hasMoreTokens()) {
                 String index = tok.nextToken();
-                this.hiddenRowIndexes.add(Integer.valueOf(index));
+                this.hiddenRowIndexes.add(Integer.parseInt(index));
             }
         }
 
@@ -135,62 +131,77 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
 
     @Override
     public boolean isRowIndexHidden(int rowIndex) {
-        return this.hiddenRowIndexes.contains(Integer.valueOf(rowIndex));
+        return this.hiddenRowIndexes.contains(rowIndex);
     }
 
     @Override
     public Collection<Integer> getHiddenRowIndexes() {
-        return this.hiddenRowIndexes;
+        return this.hiddenRowIndexes.toSortedList().primitiveStream().boxed().collect(Collectors.toList());
+    }
+
+    @Override
+    public int[] getHiddenRowIndexesArray() {
+        return this.hiddenRowIndexes.toSortedArray();
+    }
+
+    @Override
+    public boolean hasHiddenRows() {
+        return !this.hiddenRowIndexes.isEmpty();
     }
 
     @Override
     public void hideRowPositions(int... rowPositions) {
-        hideRowPositions(Arrays.stream(rowPositions).boxed().collect(Collectors.toList()));
+        int[] rowIndexes = Arrays.stream(rowPositions)
+                .map(this::getRowIndexByPosition)
+                .sorted()
+                .toArray();
+        this.hiddenRowIndexes.addAll(rowIndexes);
+        invalidateCache();
+        fireLayerEvent(new HideRowPositionsEvent(this, rowPositions, rowIndexes));
     }
 
     @Override
     public void hideRowPositions(Collection<Integer> rowPositions) {
-        Set<Integer> rowIndexes = new HashSet<Integer>();
-        for (Integer rowPosition : rowPositions) {
-            rowIndexes.add(getRowIndexByPosition(rowPosition));
-        }
-        this.hiddenRowIndexes.addAll(rowIndexes);
-        invalidateCache();
-        fireLayerEvent(new HideRowPositionsEvent(this, rowPositions, rowIndexes));
+        hideRowPositions(rowPositions.stream().mapToInt(Integer::intValue).toArray());
     }
 
     @Override
     public void hideRowIndexes(int... rowIndexes) {
-        hideRowIndexes(Arrays.stream(rowIndexes).boxed().collect(Collectors.toList()));
-    }
-
-    @Override
-    public void hideRowIndexes(Collection<Integer> rowIndexes) {
-        Set<Integer> rowPositions = new HashSet<Integer>();
-        for (Integer rowIndex : rowIndexes) {
-            rowPositions.add(getRowPositionByIndex(rowIndex));
-        }
+        int[] rowPositions = Arrays.stream(rowIndexes)
+                .map(this::getRowPositionByIndex)
+                .sorted()
+                .toArray();
         this.hiddenRowIndexes.addAll(rowIndexes);
         invalidateCache();
         fireLayerEvent(new HideRowPositionsEvent(this, rowPositions, rowIndexes));
     }
 
     @Override
-    public void showRowIndexes(int... rowIndexes) {
-        showRowIndexes(Arrays.stream(rowIndexes).boxed().collect(Collectors.toList()));
+    public void hideRowIndexes(Collection<Integer> rowIndexes) {
+        hideRowIndexes(rowIndexes.stream().mapToInt(Integer::intValue).toArray());
     }
 
     @Override
-    public void showRowIndexes(Collection<Integer> rowIndexes) {
-        this.hiddenRowIndexes.removeAll(rowIndexes);
+    public void showRowIndexes(int... rowIndexes) {
+        MutableIntList toProcess = IntLists.mutable.of(rowIndexes);
+
+        // only handle row indexes that are hidden
+        toProcess.retainAll(this.hiddenRowIndexes);
+
+        this.hiddenRowIndexes.removeAll(toProcess);
         invalidateCache();
-        Collection<Integer> positions = getRowPositionsByIndexes(rowIndexes);
+        int[] positions = getRowPositionsByIndexes(toProcess.toArray());
         fireLayerEvent(new ShowRowPositionsEvent(this, positions));
     }
 
     @Override
+    public void showRowIndexes(Collection<Integer> rowIndexes) {
+        showRowIndexes(rowIndexes.stream().mapToInt(Integer::intValue).toArray());
+    }
+
+    @Override
     public void showRowPosition(int rowPosition, boolean showToTop, boolean showAll) {
-        Set<Integer> rowIndexes = new HashSet<Integer>();
+        MutableIntSet rowIndexes = IntSets.mutable.empty();
         int underlyingPosition = localToUnderlyingRowPosition(rowPosition);
         if (showToTop) {
             int topRowIndex = this.underlyingLayer.getRowIndexByPosition(underlyingPosition - 1);
@@ -219,16 +230,16 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
         }
 
         if (!rowIndexes.isEmpty()) {
-            showRowIndexes(rowIndexes);
+            showRowIndexes(rowIndexes.toArray());
         }
     }
 
     @Override
     public void showAllRows() {
-        Collection<Integer> hiddenRows = new ArrayList<Integer>(this.hiddenRowIndexes);
-        this.hiddenRowIndexes.clear();
+        int[] hidden = this.hiddenRowIndexes.toSortedArray();
+        this.hiddenRowIndexes = IntSets.mutable.empty();
         invalidateCache();
-        fireLayerEvent(new ShowRowPositionsEvent(this, getRowPositionsByIndexes(hiddenRows)));
+        fireLayerEvent(new ShowRowPositionsEvent(this, getRowPositionsByIndexes(hidden)));
     }
 
     @Override

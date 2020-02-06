@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,13 +12,15 @@
 package org.eclipse.nebula.widgets.nattable.tree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.collections.api.set.primitive.MutableIntSet;
+import org.eclipse.collections.impl.factory.primitive.IntSets;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.hideshow.AbstractRowHideShowLayer;
@@ -71,7 +73,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      * where the hide/show approach is not used (e.g. GlazedListTreeRowModel)
      * </p>
      */
-    private final Set<Integer> hiddenRowIndexes = new TreeSet<Integer>();
+    private MutableIntSet hiddenRowIndexes = IntSets.mutable.empty();
 
     /**
      * The IndentedTreeImagePainter that paints indentation to the left of the
@@ -319,13 +321,22 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 
     @Override
     public boolean isRowIndexHidden(int rowIndex) {
-        return this.hiddenRowIndexes.contains(Integer.valueOf(rowIndex))
-                || isHiddenInUnderlyingLayer(rowIndex);
+        return this.hiddenRowIndexes.contains(rowIndex) || isHiddenInUnderlyingLayer(rowIndex);
     }
 
     @Override
     public Collection<Integer> getHiddenRowIndexes() {
-        return this.hiddenRowIndexes;
+        return this.hiddenRowIndexes.toSortedList().primitiveStream().boxed().collect(Collectors.toList());
+    }
+
+    @Override
+    public int[] getHiddenRowIndexesArray() {
+        return this.hiddenRowIndexes.toSortedArray();
+    }
+
+    @Override
+    public boolean hasHiddenRows() {
+        return !this.hiddenRowIndexes.isEmpty();
     }
 
     /**
@@ -352,38 +363,56 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      *            collapsed
      */
     public void collapseTreeRow(int parentIndex) {
-        List<Integer> rowIndexes = this.treeRowModel.collapse(parentIndex);
-        List<Integer> rowPositions = new ArrayList<Integer>(rowIndexes.size());
-        for (Integer rowIndex : rowIndexes) {
-            int rowPos = getRowPositionByIndex(rowIndex);
-            // if the rowPos is negative, it is not visible because of hidden
-            // state in an underlying layer
-            if (rowPos >= 0) {
-                rowPositions.add(rowPos);
-            }
-        }
+        int[] rowIndexes = this.treeRowModel.collapse(parentIndex).stream()
+                .mapToInt(Integer::intValue)
+                .sorted()
+                .toArray();
+
+        // if the rowPos is negative, it is not visible because of hidden
+        // state in an underlying layer
+        int[] rowPositions = Arrays.stream(rowIndexes)
+                .map(this::getRowPositionByIndex)
+                .filter(rowPos -> rowPos >= 0)
+                .sorted()
+                .toArray();
+
+        // collect the indexes that where really hidden in this layer
+        int[] hiddenIndexes = Arrays.stream(rowPositions)
+                .map(this::getRowIndexByPosition)
+                .sorted()
+                .toArray();
+
         this.hiddenRowIndexes.addAll(rowIndexes);
         invalidateCache();
-        fireLayerEvent(new HideRowPositionsEvent(this, rowPositions));
+        fireLayerEvent(new HideRowPositionsEvent(this, rowPositions, hiddenIndexes));
     }
 
     /**
      * Collapses all tree nodes in the tree.
      */
     public void collapseAll() {
-        List<Integer> rowIndexes = this.treeRowModel.collapseAll();
-        List<Integer> rowPositions = new ArrayList<Integer>(rowIndexes.size());
-        for (Integer rowIndex : rowIndexes) {
-            int rowPos = getRowPositionByIndex(rowIndex);
-            // if the rowPos is negative, it is not visible because of hidden
-            // state in an underlying layer
-            if (rowPos >= 0) {
-                rowPositions.add(rowPos);
-            }
-        }
+        int[] rowIndexes = this.treeRowModel.collapseAll().stream()
+                .mapToInt(Integer::intValue)
+                .sorted()
+                .toArray();
+
+        // if the rowPos is negative, it is not visible because of hidden
+        // state in an underlying layer
+        int[] rowPositions = Arrays.stream(rowIndexes)
+                .map(this::getRowPositionByIndex)
+                .filter(rowPos -> rowPos >= 0)
+                .sorted()
+                .toArray();
+
+        // collect the indexes that where really hidden in this layer
+        int[] hiddenIndexes = Arrays.stream(rowPositions)
+                .map(this::getRowIndexByPosition)
+                .sorted()
+                .toArray();
+
         this.hiddenRowIndexes.addAll(rowIndexes);
         invalidateCache();
-        fireLayerEvent(new HideRowPositionsEvent(this, rowPositions));
+        fireLayerEvent(new HideRowPositionsEvent(this, rowPositions, hiddenIndexes));
     }
 
     /**
@@ -394,14 +423,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      *            expanded
      */
     public void expandTreeRow(int parentIndex) {
-        List<Integer> rowIndexes = this.treeRowModel.expand(parentIndex);
-        // Bug 432865: iterating and removing every single item is faster than
-        // removeAll()
-        for (final Integer expandedChildRowIndex : rowIndexes) {
-            this.hiddenRowIndexes.remove(expandedChildRowIndex);
-        }
-        invalidateCache();
-        fireLayerEvent(new ShowRowPositionsEvent(this, rowIndexes));
+        internalExpand(this.treeRowModel.expand(parentIndex));
     }
 
     /**
@@ -415,14 +437,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      *            The level to which the tree node should be expanded.
      */
     public void expandTreeRowToLevel(int parentIndex, int level) {
-        List<Integer> rowIndexes = this.treeRowModel.expandToLevel(parentIndex, level);
-        // Bug 432865: iterating and removing every single item is faster than
-        // removeAll()
-        for (final Integer expandedChildRowIndex : rowIndexes) {
-            this.hiddenRowIndexes.remove(expandedChildRowIndex);
-        }
-        invalidateCache();
-        fireLayerEvent(new ShowRowPositionsEvent(this, rowIndexes));
+        internalExpand(this.treeRowModel.expandToLevel(parentIndex, level));
     }
 
     /**
@@ -430,9 +445,16 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      */
     public void expandAll() {
         List<Integer> rowIndexes = this.treeRowModel.expandAll();
-        this.hiddenRowIndexes.clear();
+        // optimization to avoid huge empty collections in memory after clear
+        this.hiddenRowIndexes = IntSets.mutable.empty();
         invalidateCache();
-        fireLayerEvent(new ShowRowPositionsEvent(this, rowIndexes));
+        fireLayerEvent(new ShowRowPositionsEvent(
+                this,
+                rowIndexes.stream()
+                        .mapToInt(this::getRowPositionByIndex)
+                        .filter(r -> r >= 0)
+                        .sorted()
+                        .toArray()));
     }
 
     /**
@@ -442,14 +464,26 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      *            The level to which the tree node should be expanded.
      */
     public void expandAllToLevel(int level) {
-        List<Integer> rowIndexes = this.treeRowModel.expandToLevel(level);
-        // Bug 432865: iterating and removing every single item is faster than
-        // removeAll()
-        for (final Integer expandedChildRowIndex : rowIndexes) {
-            this.hiddenRowIndexes.remove(expandedChildRowIndex);
-        }
+        internalExpand(this.treeRowModel.expandToLevel(level));
+    }
+
+    /**
+     * Remove the given row indexes from the local collection of hidden row
+     * indexes, invalidate the cache and fire a {@link ShowRowPositionsEvent}.
+     *
+     * @param rowIndexes
+     *            The row indexes to show again.
+     */
+    private void internalExpand(List<Integer> rowIndexes) {
+        this.hiddenRowIndexes.removeAll(rowIndexes.stream().mapToInt(Integer::intValue).toArray());
         invalidateCache();
-        fireLayerEvent(new ShowRowPositionsEvent(this, rowIndexes));
+        fireLayerEvent(new ShowRowPositionsEvent(
+                this,
+                rowIndexes.stream()
+                        .mapToInt(this::getRowPositionByIndex)
+                        .filter(r -> r >= 0)
+                        .sorted()
+                        .toArray()));
     }
 
     /**
@@ -519,7 +553,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
         // transform position to index
         if (command.convertToTargetLayer(this)) {
             List<Integer> rowPositionsToHide = new ArrayList<Integer>();
-            for (Integer rowPos : command.getRowPositions()) {
+            for (int rowPos : command.getRowPositionsArray()) {
                 rowPositionsToHide.add(rowPos);
                 int rowIndex = getRowIndexByPosition(rowPos);
                 if (this.treeRowModel.hasChildren(rowIndex)

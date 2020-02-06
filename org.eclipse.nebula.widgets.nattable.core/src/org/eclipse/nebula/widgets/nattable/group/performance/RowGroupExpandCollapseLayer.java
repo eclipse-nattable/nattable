@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Dirk Fauth.
+ * Copyright (c) 2019, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,13 +12,15 @@ package org.eclipse.nebula.widgets.nattable.group.performance;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
+import org.eclipse.collections.api.factory.Maps;
+import org.eclipse.collections.api.list.primitive.MutableIntList;
+import org.eclipse.collections.api.map.MutableMap;
+import org.eclipse.collections.api.set.primitive.MutableIntSet;
+import org.eclipse.collections.impl.factory.primitive.IntLists;
+import org.eclipse.collections.impl.factory.primitive.IntSets;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.group.RowGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
@@ -39,7 +41,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
  */
 public class RowGroupExpandCollapseLayer extends AbstractRowHideShowLayer {
 
-    private final Map<Group, Collection<Integer>> hidden = new HashMap<Group, Collection<Integer>>();
+    private final MutableMap<Group, MutableIntSet> hidden = Maps.mutable.empty();
 
     public RowGroupExpandCollapseLayer(IUniqueIndexLayer underlyingLayer) {
         super(underlyingLayer);
@@ -50,7 +52,7 @@ public class RowGroupExpandCollapseLayer extends AbstractRowHideShowLayer {
         if (command instanceof RowGroupExpandCommand) {
             List<Group> groups = ((RowGroupExpandCommand) command).getGroups();
 
-            Set<Integer> shownIndexes = new TreeSet<Integer>();
+            MutableIntSet shownIndexes = IntSets.mutable.empty();
 
             for (Group group : groups) {
                 // if group is not collapseable return without any further
@@ -61,7 +63,7 @@ public class RowGroupExpandCollapseLayer extends AbstractRowHideShowLayer {
 
                 if (group.isCollapsed()) {
                     group.setCollapsed(false);
-                    Collection<Integer> rowIndexes = this.hidden.get(group);
+                    MutableIntSet rowIndexes = this.hidden.get(group);
                     this.hidden.remove(group);
                     shownIndexes.addAll(rowIndexes);
                 }
@@ -69,7 +71,7 @@ public class RowGroupExpandCollapseLayer extends AbstractRowHideShowLayer {
 
             if (!shownIndexes.isEmpty()) {
                 invalidateCache();
-                fireLayerEvent(new ShowRowPositionsEvent(this, getRowPositionsByIndexes(shownIndexes)));
+                fireLayerEvent(new ShowRowPositionsEvent(this, getRowPositionsByIndexes(shownIndexes.toArray())));
             } else {
                 fireLayerEvent(new VisualRefreshEvent(this));
             }
@@ -78,16 +80,12 @@ public class RowGroupExpandCollapseLayer extends AbstractRowHideShowLayer {
         } else if (command instanceof RowGroupCollapseCommand) {
             GroupModel groupModel = ((RowGroupCollapseCommand) command).getGroupModel();
             List<Group> groups = ((RowGroupCollapseCommand) command).getGroups();
-            Collections.sort(groups, new Comparator<Group>() {
-
-                @Override
-                public int compare(Group o1, Group o2) {
-                    return o2.getVisibleStartPosition() - o1.getVisibleStartPosition();
-                }
+            Collections.sort(groups, (Group o1, Group o2) -> {
+                return o2.getVisibleStartPosition() - o1.getVisibleStartPosition();
             });
 
-            Set<Integer> hiddenPositions = new TreeSet<Integer>();
-            Set<Integer> hiddenIndexes = new TreeSet<Integer>();
+            MutableIntSet hiddenPositions = IntSets.mutable.empty();
+            MutableIntSet hiddenIndexes = IntSets.mutable.empty();
 
             for (Group group : groups) {
                 // if group is not collapseable return without any further
@@ -96,7 +94,7 @@ public class RowGroupExpandCollapseLayer extends AbstractRowHideShowLayer {
                     continue;
                 }
 
-                Set<Integer> rowIndexes = new TreeSet<Integer>();
+                MutableIntSet rowIndexes = IntSets.mutable.empty();
                 if (!group.isCollapsed()) {
                     rowIndexes.addAll(group.getVisibleIndexes());
                     group.setCollapsed(true);
@@ -112,13 +110,13 @@ public class RowGroupExpandCollapseLayer extends AbstractRowHideShowLayer {
                 modifyForVisible(group, rowIndexes);
                 this.hidden.put(group, rowIndexes);
 
-                hiddenPositions.addAll(getRowPositionsByIndexes(rowIndexes));
+                hiddenPositions.addAll(getRowPositionsByIndexes(rowIndexes.toArray()));
                 hiddenIndexes.addAll(rowIndexes);
             }
 
             if (!hiddenPositions.isEmpty()) {
                 invalidateCache();
-                fireLayerEvent(new HideRowPositionsEvent(this, hiddenPositions, hiddenIndexes));
+                fireLayerEvent(new HideRowPositionsEvent(this, hiddenPositions.toArray(), hiddenIndexes.toArray()));
             } else {
                 fireLayerEvent(new VisualRefreshEvent(this));
             }
@@ -127,10 +125,10 @@ public class RowGroupExpandCollapseLayer extends AbstractRowHideShowLayer {
         } else if (command instanceof UpdateRowGroupCollapseCommand) {
             UpdateRowGroupCollapseCommand cmd = (UpdateRowGroupCollapseCommand) command;
             Group group = cmd.getGroup();
-            Collection<Integer> hiddenRowIndexes = this.hidden.get(group);
-            if (group.getVisibleIndexes().size() + hiddenRowIndexes.size() <= group.getOriginalSpan()) {
-                Collection<Integer> indexesToHide = cmd.getIndexesToHide();
-                Collection<Integer> indexesToShow = cmd.getIndexesToShow();
+            MutableIntSet hiddenRowIndexes = this.hidden.get(group);
+            if (group.getVisibleIndexes().length + hiddenRowIndexes.size() <= group.getOriginalSpan()) {
+                MutableIntSet indexesToHide = IntSets.mutable.of(cmd.getIndexesToHide());
+                MutableIntSet indexesToShow = IntSets.mutable.of(cmd.getIndexesToShow());
 
                 // remove already hidden indexes
                 indexesToHide.removeAll(hiddenRowIndexes);
@@ -138,14 +136,14 @@ public class RowGroupExpandCollapseLayer extends AbstractRowHideShowLayer {
                 // remove static indexes
                 modifyForVisible(group, indexesToHide);
 
-                Collection<Integer> hiddenPositions = getRowPositionsByIndexes(indexesToHide);
+                int[] hiddenPositions = getRowPositionsByIndexes(indexesToHide.toArray());
 
                 hiddenRowIndexes.addAll(indexesToHide);
                 hiddenRowIndexes.removeAll(indexesToShow);
 
                 invalidateCache();
 
-                fireLayerEvent(new HideRowPositionsEvent(this, hiddenPositions, indexesToHide));
+                fireLayerEvent(new HideRowPositionsEvent(this, hiddenPositions, indexesToHide.toArray()));
             }
 
             return true;
@@ -163,9 +161,9 @@ public class RowGroupExpandCollapseLayer extends AbstractRowHideShowLayer {
      * @param rowIndexes
      *            The collection of indexes that should be hidden.
      */
-    private void modifyForVisible(Group group, Collection<Integer> rowIndexes) {
-        Collection<Integer> staticIndexes = group.getStaticIndexes();
-        if (staticIndexes.isEmpty()) {
+    private void modifyForVisible(Group group, MutableIntSet rowIndexes) {
+        int[] staticIndexes = group.getStaticIndexes();
+        if (staticIndexes.length == 0) {
             // keep the first row
             rowIndexes.remove(group.getVisibleStartIndex());
         } else {
@@ -176,21 +174,30 @@ public class RowGroupExpandCollapseLayer extends AbstractRowHideShowLayer {
 
     @Override
     public boolean isRowIndexHidden(int rowIndex) {
-        for (Collection<Integer> indexes : this.hidden.values()) {
-            if (indexes.contains(Integer.valueOf(rowIndex))) {
-                return true;
-            }
-        }
-        return false;
+        MutableIntSet found = this.hidden.detect(indexes -> indexes.contains(rowIndex));
+        return found != null;
     }
 
     @Override
     public Collection<Integer> getHiddenRowIndexes() {
-        Set<Integer> hiddenRowIndexes = new TreeSet<Integer>();
-        for (Collection<Integer> indexes : this.hidden.values()) {
+        MutableIntList hiddenRowIndexes = IntLists.mutable.empty();
+        for (MutableIntSet indexes : this.hidden.values()) {
             hiddenRowIndexes.addAll(indexes);
         }
-        return hiddenRowIndexes;
+        return hiddenRowIndexes.distinct().toSortedList().primitiveStream().boxed().collect(Collectors.toList());
     }
 
+    @Override
+    public int[] getHiddenRowIndexesArray() {
+        MutableIntList hiddenRowIndexes = IntLists.mutable.empty();
+        for (MutableIntSet indexes : this.hidden.values()) {
+            hiddenRowIndexes.addAll(indexes);
+        }
+        return hiddenRowIndexes.distinct().toSortedArray();
+    }
+
+    @Override
+    public boolean hasHiddenRows() {
+        return !this.hidden.isEmpty();
+    }
 }

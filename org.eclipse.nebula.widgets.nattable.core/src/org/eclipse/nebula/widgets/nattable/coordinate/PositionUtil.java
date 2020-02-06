@@ -105,7 +105,7 @@ public class PositionUtil {
                         });
 
         return ranges.stream()
-                .map(r -> IntStream.range(r.start, r.end).toArray())
+                .map(r -> r.getMembersArray())
                 .toArray(size -> new int[size][]);
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,8 +9,6 @@
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder.command;
-
-import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
@@ -25,7 +23,7 @@ public class MultiColumnReorderCommandHandler extends AbstractLayerCommandHandle
 
     @Override
     protected boolean doCommand(MultiColumnReorderCommand command) {
-        List<Integer> fromColumnPositions = command.getFromColumnPositions();
+        int[] fromColumnPositions = command.getFromColumnPositionsArray();
         int toColumnPosition = command.getToColumnPosition();
         boolean reorderToLeftEdge = command.isReorderToLeftEdge();
 

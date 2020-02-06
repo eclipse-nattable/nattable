@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Dirk Fauth.
+ * Copyright (c) 2019, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,13 +12,15 @@ package org.eclipse.nebula.widgets.nattable.group.performance;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
+import org.eclipse.collections.api.factory.Maps;
+import org.eclipse.collections.api.list.primitive.MutableIntList;
+import org.eclipse.collections.api.map.MutableMap;
+import org.eclipse.collections.api.set.primitive.MutableIntSet;
+import org.eclipse.collections.impl.factory.primitive.IntLists;
+import org.eclipse.collections.impl.factory.primitive.IntSets;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroupCollapseCommand;
@@ -38,7 +40,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
  */
 public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer {
 
-    private final Map<Group, Collection<Integer>> hidden = new HashMap<Group, Collection<Integer>>();
+    private final MutableMap<Group, MutableIntSet> hidden = Maps.mutable.empty();
 
     public ColumnGroupExpandCollapseLayer(IUniqueIndexLayer underlyingLayer) {
         super(underlyingLayer);
@@ -49,7 +51,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
         if (command instanceof ColumnGroupExpandCommand) {
             List<Group> groups = ((ColumnGroupExpandCommand) command).getGroups();
 
-            Set<Integer> shownIndexes = new TreeSet<Integer>();
+            MutableIntSet shownIndexes = IntSets.mutable.empty();
 
             for (Group group : groups) {
                 // if group is not collapseable return without any further
@@ -60,7 +62,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
 
                 if (group.isCollapsed()) {
                     group.setCollapsed(false);
-                    Collection<Integer> columnIndexes = this.hidden.get(group);
+                    MutableIntSet columnIndexes = this.hidden.get(group);
                     this.hidden.remove(group);
                     shownIndexes.addAll(columnIndexes);
                 }
@@ -68,7 +70,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
 
             if (!shownIndexes.isEmpty()) {
                 invalidateCache();
-                fireLayerEvent(new ShowColumnPositionsEvent(this, getColumnPositionsByIndexes(shownIndexes)));
+                fireLayerEvent(new ShowColumnPositionsEvent(this, getColumnPositionsByIndexes(shownIndexes.toArray())));
             } else {
                 fireLayerEvent(new VisualRefreshEvent(this));
             }
@@ -77,16 +79,12 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
         } else if (command instanceof ColumnGroupCollapseCommand) {
             GroupModel groupModel = ((ColumnGroupCollapseCommand) command).getGroupModel();
             List<Group> groups = ((ColumnGroupCollapseCommand) command).getGroups();
-            Collections.sort(groups, new Comparator<Group>() {
-
-                @Override
-                public int compare(Group o1, Group o2) {
-                    return o2.getVisibleStartPosition() - o1.getVisibleStartPosition();
-                }
+            Collections.sort(groups, (Group o1, Group o2) -> {
+                return o2.getVisibleStartPosition() - o1.getVisibleStartPosition();
             });
 
-            Set<Integer> hiddenPositions = new TreeSet<Integer>();
-            Set<Integer> hiddenIndexes = new TreeSet<Integer>();
+            MutableIntSet hiddenPositions = IntSets.mutable.empty();
+            MutableIntSet hiddenIndexes = IntSets.mutable.empty();
 
             for (Group group : groups) {
                 // if group is not collapseable return without any further
@@ -95,7 +93,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
                     continue;
                 }
 
-                Set<Integer> columnIndexes = new TreeSet<Integer>();
+                MutableIntSet columnIndexes = IntSets.mutable.empty();
                 if (!group.isCollapsed()) {
                     columnIndexes.addAll(group.getVisibleIndexes());
                     group.setCollapsed(true);
@@ -111,13 +109,13 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
                 modifyForVisible(group, columnIndexes);
                 this.hidden.put(group, columnIndexes);
 
-                hiddenPositions.addAll(getColumnPositionsByIndexes(columnIndexes));
+                hiddenPositions.addAll(getColumnPositionsByIndexes(columnIndexes.toArray()));
                 hiddenIndexes.addAll(columnIndexes);
             }
 
             if (!hiddenPositions.isEmpty()) {
                 invalidateCache();
-                fireLayerEvent(new HideColumnPositionsEvent(this, hiddenPositions, hiddenIndexes));
+                fireLayerEvent(new HideColumnPositionsEvent(this, hiddenPositions.toArray(), hiddenIndexes.toArray()));
             } else {
                 fireLayerEvent(new VisualRefreshEvent(this));
             }
@@ -126,10 +124,10 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
         } else if (command instanceof UpdateColumnGroupCollapseCommand) {
             UpdateColumnGroupCollapseCommand cmd = (UpdateColumnGroupCollapseCommand) command;
             Group group = cmd.getGroup();
-            Collection<Integer> hiddenColumnIndexes = this.hidden.get(group);
-            if (group.getVisibleIndexes().size() + hiddenColumnIndexes.size() <= group.getOriginalSpan()) {
-                Collection<Integer> indexesToHide = cmd.getIndexesToHide();
-                Collection<Integer> indexesToShow = cmd.getIndexesToShow();
+            MutableIntSet hiddenColumnIndexes = this.hidden.get(group);
+            if (group.getVisibleIndexes().length + hiddenColumnIndexes.size() <= group.getOriginalSpan()) {
+                MutableIntSet indexesToHide = IntSets.mutable.of(cmd.getIndexesToHide());
+                MutableIntSet indexesToShow = IntSets.mutable.of(cmd.getIndexesToShow());
 
                 // remove already hidden indexes
                 indexesToHide.removeAll(hiddenColumnIndexes);
@@ -137,14 +135,14 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
                 // remove static indexes
                 modifyForVisible(group, indexesToHide);
 
-                Collection<Integer> hiddenPositions = getColumnPositionsByIndexes(indexesToHide);
+                int[] hiddenPositions = getColumnPositionsByIndexes(indexesToHide.toArray());
 
                 hiddenColumnIndexes.addAll(indexesToHide);
                 hiddenColumnIndexes.removeAll(indexesToShow);
 
                 invalidateCache();
 
-                fireLayerEvent(new HideColumnPositionsEvent(this, hiddenPositions, indexesToHide));
+                fireLayerEvent(new HideColumnPositionsEvent(this, hiddenPositions, indexesToHide.toArray()));
             }
 
             return true;
@@ -162,9 +160,9 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
      * @param columnIndexes
      *            The collection of indexes that should be hidden.
      */
-    private void modifyForVisible(Group group, Collection<Integer> columnIndexes) {
-        Collection<Integer> staticIndexes = group.getStaticIndexes();
-        if (staticIndexes.isEmpty()) {
+    private void modifyForVisible(Group group, MutableIntSet columnIndexes) {
+        int[] staticIndexes = group.getStaticIndexes();
+        if (staticIndexes.length == 0) {
             // keep the first column
             columnIndexes.remove(group.getVisibleStartIndex());
         } else {
@@ -175,21 +173,31 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
 
     @Override
     public boolean isColumnIndexHidden(int columnIndex) {
-        for (Collection<Integer> indexes : this.hidden.values()) {
-            if (indexes.contains(Integer.valueOf(columnIndex))) {
-                return true;
-            }
-        }
-        return false;
+        MutableIntSet found = this.hidden.detect(indexes -> indexes.contains(columnIndex));
+        return found != null;
     }
 
     @Override
     public Collection<Integer> getHiddenColumnIndexes() {
-        Set<Integer> hiddenColumnIndexes = new TreeSet<Integer>();
-        for (Collection<Integer> indexes : this.hidden.values()) {
+        MutableIntList hiddenColumnIndexes = IntLists.mutable.empty();
+        for (MutableIntSet indexes : this.hidden.values()) {
             hiddenColumnIndexes.addAll(indexes);
         }
-        return hiddenColumnIndexes;
+        return hiddenColumnIndexes.distinct().toSortedList().primitiveStream().boxed().collect(Collectors.toList());
+    }
+
+    @Override
+    public int[] getHiddenColumnIndexesArray() {
+        MutableIntList hiddenColumnIndexes = IntLists.mutable.empty();
+        for (MutableIntSet indexes : this.hidden.values()) {
+            hiddenColumnIndexes.addAll(indexes);
+        }
+        return hiddenColumnIndexes.distinct().toSortedArray();
+    }
+
+    @Override
+    public boolean hasHiddenColumns() {
+        return !this.hidden.isEmpty();
     }
 
 }

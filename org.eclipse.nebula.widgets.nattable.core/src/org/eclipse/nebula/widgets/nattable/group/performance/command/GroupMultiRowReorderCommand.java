@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Dirk Fauth.
+ * Copyright (c) 2019, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -62,6 +62,46 @@ public class GroupMultiRowReorderCommand extends MultiRowReorderCommand {
     public GroupMultiRowReorderCommand(
             ILayer layer,
             List<Integer> fromRowPositions,
+            int toRowPosition,
+            boolean reorderToTopEdge) {
+
+        super(layer, fromRowPositions.stream().mapToInt(Integer::intValue).toArray(), toRowPosition, reorderToTopEdge);
+    }
+
+    /**
+     *
+     * @param layer
+     *            The layer to which the row positions match.
+     * @param fromRowPositions
+     *            The row positions to reorder.
+     * @param toRowPosition
+     *            The target row position to reorder to.
+     * @since 2.0
+     */
+    public GroupMultiRowReorderCommand(ILayer layer, int[] fromRowPositions, int toRowPosition) {
+        this(layer,
+                fromRowPositions,
+                toRowPosition < layer.getRowCount() ? toRowPosition : toRowPosition - 1,
+                toRowPosition < layer.getRowCount());
+    }
+
+    /**
+     *
+     * @param layer
+     *            The layer to which the row positions match.
+     * @param fromRowPositions
+     *            The row positions to reorder.
+     * @param toRowPosition
+     *            The target row position to reorder to.
+     * @param reorderToTopEdge
+     *            <code>true</code> if the reorder operation should be done on
+     *            the top edge of the toRowPosition, <code>false</code> if it
+     *            should be reordered to the bottom edge.
+     * @since 2.0
+     */
+    public GroupMultiRowReorderCommand(
+            ILayer layer,
+            int[] fromRowPositions,
             int toRowPosition,
             boolean reorderToTopEdge) {
 

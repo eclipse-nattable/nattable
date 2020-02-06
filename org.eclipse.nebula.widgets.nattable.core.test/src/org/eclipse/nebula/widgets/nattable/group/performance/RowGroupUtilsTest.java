@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Dirk Fauth.
+ * Copyright (c) 2019, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,6 +34,7 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.RowGroupUtils;
+import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -450,5 +451,19 @@ public class RowGroupUtilsTest {
         // 1, 12, true, MoveDirectionEnum.LEFT));
         // assertTrue(RowGroupUtils.isBetweenTwoGroups(this.columnGroupHeaderLayer,
         // 1, 13, true, MoveDirectionEnum.RIGHT));
+    }
+
+    @Test
+    public void shouldTestIsGroupReordered() {
+        Group group = this.rowGroupHeaderLayer.getGroupByPosition(0);
+
+        // test all group positions
+        assertTrue(RowGroupUtils.isGroupReordered(group, new int[] { 0, 1, 2, 3 }));
+
+        // test less group positions
+        assertFalse(RowGroupUtils.isGroupReordered(group, new int[] { 1, 2, 3 }));
+
+        // test more group positions
+        assertTrue(RowGroupUtils.isGroupReordered(group, new int[] { 0, 1, 2, 3, 4, 5 }));
     }
 }

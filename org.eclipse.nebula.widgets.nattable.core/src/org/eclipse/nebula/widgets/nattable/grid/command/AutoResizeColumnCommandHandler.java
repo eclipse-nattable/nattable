@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,6 @@ import org.eclipse.nebula.widgets.nattable.resize.command.AutoResizeColumnsComma
 import org.eclipse.nebula.widgets.nattable.resize.command.InitializeAutoResizeColumnsCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiColumnResizeCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
 /**
  * This command is triggered by the {@link InitializeAutoResizeColumnsCommand}.
@@ -83,7 +82,7 @@ public class AutoResizeColumnCommandHandler implements ILayerCommandHandler<Auto
         // NatTable itself
         targetLayer.doCommand(new TurnViewportOffCommand());
 
-        int[] columnPositions = ObjectUtils.asIntArray(command.getColumnPositions());
+        int[] columnPositions = command.getColumnPositionsArray();
         int[] gridColumnPositions =
                 command.doPositionTransformation() ? convertFromPositionToCommandLayer(columnPositions) : columnPositions;
 

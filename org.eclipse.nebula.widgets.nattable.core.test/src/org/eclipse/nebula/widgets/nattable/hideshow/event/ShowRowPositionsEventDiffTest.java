@@ -1,16 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow.event;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -50,8 +49,7 @@ public class ShowRowPositionsEventDiffTest {
         this.viewportLayer.setOriginX(this.viewportLayer.getStartXOfColumnPosition(2));
         this.viewportLayer.setOriginY(this.viewportLayer.getStartYOfRowPosition(2));
 
-        this.event = new ShowRowPositionsEvent(this.dataLayer,
-                Arrays.asList(new Integer[] { 2, 4, 7, 8, 9 }));
+        this.event = new ShowRowPositionsEvent(this.dataLayer, 2, 4, 7, 8, 9);
     }
 
     @After

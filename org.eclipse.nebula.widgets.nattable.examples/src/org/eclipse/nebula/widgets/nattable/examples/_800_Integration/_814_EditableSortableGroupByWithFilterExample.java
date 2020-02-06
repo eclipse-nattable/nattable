@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -72,7 +72,7 @@ import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsStaticFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.DarkGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.DefaultGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigAttributes;
@@ -84,6 +84,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupBy
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.ModernGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.SummationGroupBySummaryProvider;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.hideshow.GlazedListsRowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowHeaderComposite;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -247,12 +248,16 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
                 true);
 
         // add the filter row functionality
+        DefaultGlazedListsStaticFilterStrategy<ExtendedPersonWithAddress> filterStrategy =
+                new DefaultGlazedListsStaticFilterStrategy<>(
+                        bodyLayerStack.getFilterList(),
+                        columnPropertyAccessor,
+                        configRegistry);
+        filterStrategy.addStaticFilter(bodyLayerStack.getRowHideShowLayer().getHideRowMatcherEditor());
+
         final FilterRowHeaderComposite<ExtendedPersonWithAddress> filterRowHeaderLayer =
                 new FilterRowHeaderComposite<>(
-                        new DefaultGlazedListsFilterStrategy<>(
-                                bodyLayerStack.getFilterList(),
-                                columnPropertyAccessor,
-                                configRegistry),
+                        filterStrategy,
                         sortHeaderLayer,
                         columnHeaderDataLayer.getDataProvider(),
                         configRegistry);
@@ -463,9 +468,17 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
             }
 
             @Override
+            protected PopupMenuBuilder createRowHeaderMenu(NatTable natTable) {
+                return new PopupMenuBuilder(natTable)
+                        .withHideRowMenuItem()
+                        .withShowAllRowsMenuItem();
+            }
+
+            @Override
             protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
                 return super.createCornerMenu(natTable)
                         .withShowAllColumnsMenuItem()
+                        .withShowAllRowsMenuItem()
                         .withStateManagerMenuItemProvider()
                         .withMenuItemProvider(new IMenuItemProvider() {
 
@@ -743,6 +756,8 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
 
         private final GroupByDataLayer<T> bodyDataLayer;
 
+        private final GlazedListsRowHideShowLayer<T> rowHideShowLayer;
+
         private final SelectionLayer selectionLayer;
 
         private final TreeLayer treeLayer;
@@ -819,8 +834,12 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
                     new ColumnReorderLayer(changeLayer);
             ColumnHideShowLayer columnHideShowLayer =
                     new ColumnHideShowLayer(columnReorderLayer);
+
+            this.rowHideShowLayer =
+                    new GlazedListsRowHideShowLayer<>(columnHideShowLayer, this.bodyDataProvider, rowIdAccessor, this.filterList);
+
             this.selectionLayer =
-                    new SelectionLayer(columnHideShowLayer);
+                    new SelectionLayer(this.rowHideShowLayer);
 
             // add a tree layer to visualize the grouping
             this.treeLayer = new TreeLayer(this.selectionLayer, this.bodyDataLayer.getTreeRowModel());
@@ -864,6 +883,10 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
 
         public GroupByModel getGroupByModel() {
             return this.groupByModel;
+        }
+
+        public GlazedListsRowHideShowLayer<T> getRowHideShowLayer() {
+            return this.rowHideShowLayer;
         }
     }
 

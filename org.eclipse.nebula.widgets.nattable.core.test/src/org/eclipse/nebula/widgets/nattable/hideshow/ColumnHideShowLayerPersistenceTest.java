@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -50,7 +50,7 @@ public class ColumnHideShowLayerPersistenceTest {
         this.layer.saveState("prefix", properties);
 
         assertEquals(1, properties.size());
-        assertEquals("3,5,6,", properties.getProperty("prefix" + ColumnHideShowLayer.PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES));
+        assertEquals("3,5,6", properties.getProperty("prefix" + ColumnHideShowLayer.PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES));
     }
 
     @Test
@@ -82,7 +82,7 @@ public class ColumnHideShowLayerPersistenceTest {
         this.layer.saveState("prefix", properties);
 
         assertEquals(1, properties.size());
-        assertEquals("1,", properties.getProperty("prefix" + ColumnHideShowLayer.PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES));
+        assertEquals("1", properties.getProperty("prefix" + ColumnHideShowLayer.PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES));
 
         this.layer.showColumnIndexes(Arrays.asList(new Integer[] { 1 }));
 

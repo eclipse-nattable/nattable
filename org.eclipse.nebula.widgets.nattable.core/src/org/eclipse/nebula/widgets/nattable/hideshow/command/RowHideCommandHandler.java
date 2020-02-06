@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,8 +9,6 @@
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow.command;
-
-import static java.util.Arrays.asList;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.IRowHideShowLayer;
@@ -37,7 +35,7 @@ public class RowHideCommandHandler extends AbstractLayerCommandHandler<RowHideCo
 
     @Override
     protected boolean doCommand(RowHideCommand command) {
-        this.rowHideShowLayer.hideRowPositions(asList(command.getRowPosition()));
+        this.rowHideShowLayer.hideRowPositions(command.getRowPosition());
         return true;
     }
 }
