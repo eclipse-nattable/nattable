@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
+ * Copyright (c) 2018, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -113,7 +113,7 @@ public class CompositeFreezeLayerPainter extends CompositeLayerPainter {
      *            <code>false</code> if not. Default is <code>true</code>.
      *            Remember to add nested layers to manually configure the freeze
      *            border shift when setting this value to <code>false</code>.
-     * 
+     *
      * @see #addNestedVerticalLayer(ILayer)
      * @see #addNestedHorizontalLayer(ILayer)
      */
@@ -151,7 +151,7 @@ public class CompositeFreezeLayerPainter extends CompositeLayerPainter {
         Color oldFg = gc.getForeground();
         int oldWidth = gc.getLineWidth();
         gc.setForeground(separatorColor);
-        gc.setLineWidth(GUIHelper.convertHorizontalPixelToDpi(separatorWidth));
+        gc.setLineWidth(GUIHelper.convertHorizontalPixelToDpi(separatorWidth, configRegistry));
         final int freezeWidth = this.freezeLayer.getWidth() - 1;
         if (freezeWidth > 0) {
             int x = getFreezeX(xOffset);

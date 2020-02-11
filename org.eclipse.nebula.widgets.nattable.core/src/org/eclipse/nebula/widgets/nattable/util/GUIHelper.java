@@ -19,6 +19,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.config.NatTableConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -434,7 +438,7 @@ public class GUIHelper {
      * @return The converted pixels.
      */
     public static int convertHorizontalPixelToDpi(int pixel) {
-        return (int) Math.round(Double.valueOf(pixel * (double) getDpiFactor(getDpiX())));
+        return Math.round(pixel * getDpiFactor(getDpiX()));
     }
 
     /**
@@ -446,7 +450,7 @@ public class GUIHelper {
      * @return The pixel value related to the given DPI
      */
     public static int convertHorizontalDpiToPixel(int dpi) {
-        return (int) Math.round(Double.valueOf(dpi / (double) getDpiFactor(getDpiY())));
+        return Math.round(dpi / getDpiFactor(getDpiY()));
     }
 
     /**
@@ -458,7 +462,7 @@ public class GUIHelper {
      * @return The converted pixels.
      */
     public static int convertVerticalPixelToDpi(int pixel) {
-        return (int) Math.round(Double.valueOf(pixel * (double) getDpiFactor(getDpiX())));
+        return Math.round(pixel * getDpiFactor(getDpiX()));
     }
 
     /**
@@ -470,7 +474,115 @@ public class GUIHelper {
      * @return The pixel value related to the given DPI
      */
     public static int convertVerticalDpiToPixel(int dpi) {
-        return (int) Math.round(Double.valueOf(dpi / (double) getDpiFactor(getDpiY())));
+        return Math.round(dpi / getDpiFactor(getDpiY()));
+    }
+
+    /**
+     * Default method to convert the given amount of pixels to a horizontal dots
+     * per inch value. The conversion is performed on the {@link IDpiConverter}
+     * registered via {@link NatTableConfigAttributes#HORIZONTAL_DPI_CONVERTER}.
+     * If no converter is registered, a fallback to
+     * {@link GUIHelper#convertHorizontalPixelToDpi(int)} is used.
+     *
+     * @param pixel
+     *            The pixel value to convert to dpi.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} to get the {@link IDpiConverter}.
+     * @return The dpi converted value.
+     * @since 2.0
+     */
+    public static int convertHorizontalPixelToDpi(int pixel, IConfigRegistry configRegistry) {
+        if (configRegistry != null) {
+            IDpiConverter converter = configRegistry.getConfigAttribute(
+                    NatTableConfigAttributes.HORIZONTAL_DPI_CONVERTER,
+                    DisplayMode.NORMAL);
+            if (converter != null) {
+                return converter.convertPixelToDpi(pixel);
+            }
+        }
+
+        return GUIHelper.convertHorizontalPixelToDpi(pixel);
+    }
+
+    /**
+     * Default method to convert the given amount of horizontal dots per inch to
+     * a pixel value. The conversion is performed on the {@link IDpiConverter}
+     * registered via {@link NatTableConfigAttributes#HORIZONTAL_DPI_CONVERTER}.
+     * If no converter is registered, a fallback to
+     * {@link GUIHelper#convertHorizontalDpiToPixel(int)} is used.
+     *
+     * @param dpi
+     *            The dpi value to convert to pixel.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} to get the {@link IDpiConverter}.
+     * @return The converted value.
+     * @since 2.0
+     */
+    public static int convertHorizontalDpiToPixel(int dpi, IConfigRegistry configRegistry) {
+        if (configRegistry != null) {
+            IDpiConverter converter = configRegistry.getConfigAttribute(
+                    NatTableConfigAttributes.HORIZONTAL_DPI_CONVERTER,
+                    DisplayMode.NORMAL);
+            if (converter != null) {
+                return converter.convertDpiToPixel(dpi);
+            }
+        }
+
+        return GUIHelper.convertHorizontalDpiToPixel(dpi);
+    }
+
+    /**
+     * Default method to convert the given amount of pixels to a vertical dots
+     * per inch value. The conversion is performed on the {@link IDpiConverter}
+     * registered via {@link NatTableConfigAttributes#VERTICAL_DPI_CONVERTER}.
+     * If no converter is registered, a fallback to
+     * {@link GUIHelper#convertVerticalPixelToDpi(int)} is used.
+     *
+     * @param pixel
+     *            The pixel value to convert to dpi.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} to get the {@link IDpiConverter}.
+     * @return The dpi converted value.
+     * @since 2.0
+     */
+    public static int convertVerticalPixelToDpi(int pixel, IConfigRegistry configRegistry) {
+        if (configRegistry != null) {
+            IDpiConverter converter = configRegistry.getConfigAttribute(
+                    NatTableConfigAttributes.VERTICAL_DPI_CONVERTER,
+                    DisplayMode.NORMAL);
+            if (converter != null) {
+                return converter.convertPixelToDpi(pixel);
+            }
+        }
+
+        return GUIHelper.convertVerticalPixelToDpi(pixel);
+    }
+
+    /**
+     * Default method to convert the given amount of vertical dots per inch to
+     * pixel. The conversion is performed on the {@link IDpiConverter}
+     * registered via {@link NatTableConfigAttributes#VERTICAL_DPI_CONVERTER}.
+     * If no converter is registered, a fallback to
+     * {@link GUIHelper#convertVerticalDpiToPixel(int)} is used.
+     *
+     * @param dpi
+     *            The dpi value to convert to pixel.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} to get the {@link IDpiConverter}.
+     * @return The converted value.
+     * @since 2.0
+     */
+    public static int convertVerticalDpiToPixel(int dpi, IConfigRegistry configRegistry) {
+        if (configRegistry != null) {
+            IDpiConverter converter = configRegistry.getConfigAttribute(
+                    NatTableConfigAttributes.VERTICAL_DPI_CONVERTER,
+                    DisplayMode.NORMAL);
+            if (converter != null) {
+                return converter.convertDpiToPixel(dpi);
+            }
+        }
+
+        return GUIHelper.convertVerticalDpiToPixel(dpi);
     }
 
 }

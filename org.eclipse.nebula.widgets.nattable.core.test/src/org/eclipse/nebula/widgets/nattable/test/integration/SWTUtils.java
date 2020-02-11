@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.integration;
 
+import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
@@ -22,15 +25,13 @@ public class SWTUtils {
     public static final int RIGHT_MOUSE_BUTTON = 3;
     public static final int ONE_CLICK = 1;
 
-    public static void leftClickOnCombo(int x, int y, int stateMask,
-            Control control) {
+    public static void leftClickOnCombo(int x, int y, int stateMask, Control control) {
         Event leftClickEvent = getLeftClickEvent(x, y, stateMask, control);
         control.notifyListeners(SWT.MouseDown, leftClickEvent);
         control.notifyListeners(SWT.MouseUp, leftClickEvent);
     }
 
-    public static void selectInCombo(int x, int y, int stateMask,
-            Control control) {
+    public static void selectInCombo(int x, int y, int stateMask, Control control) {
         Event leftClickEvent = getLeftClickEvent(x, y, stateMask, control);
         control.notifyListeners(SWT.Selection, leftClickEvent);
     }
@@ -42,14 +43,18 @@ public class SWTUtils {
         nattable.notifyListeners(SWT.MouseUp, leftClickEvent);
     }
 
-    public static Event getLeftClickEvent(int x, int y, int stateMask,
-            Widget nattable) {
+    public static Event getLeftClickEvent(int x, int y, int stateMask, Widget nattable) {
         Event event = new Event();
         event.time = (int) System.currentTimeMillis();
         event.widget = nattable;
         event.display = nattable.getDisplay();
-        event.x = x;
-        event.y = y;
+
+        IConfigRegistry configRegistry = (nattable instanceof NatTable)
+                ? ((NatTable) nattable).getConfigRegistry()
+                : null;
+
+        event.x = GUIHelper.convertHorizontalPixelToDpi(x, configRegistry);
+        event.y = GUIHelper.convertVerticalPixelToDpi(y, configRegistry);
         event.button = LEFT_MOUSE_BUTTON;
         event.stateMask = stateMask;
         event.count = ONE_CLICK;

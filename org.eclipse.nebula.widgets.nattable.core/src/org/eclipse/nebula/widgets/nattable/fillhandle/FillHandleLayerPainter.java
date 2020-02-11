@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2019 CEA LIST and others.
+ * Copyright (c) 2015, 2020 CEA LIST and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -318,18 +318,19 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
 
         Rectangle bounds = fillHandleCell.getBounds();
 
-        int fillHandleSize = GUIHelper.convertHorizontalPixelToDpi(7);
+        int fillHandleWidth = GUIHelper.convertHorizontalPixelToDpi(7, configRegistry);
+        int fillHandleHeight = GUIHelper.convertVerticalPixelToDpi(7, configRegistry);
 
         // positions offset starting from the lower right corner of the fill
         // handle cell
-        int fillHandleOffsetX = -GUIHelper.convertHorizontalPixelToDpi(4);
-        int fillHandleOffsetY = -GUIHelper.convertHorizontalPixelToDpi(4);
+        int fillHandleOffsetX = -GUIHelper.convertHorizontalPixelToDpi(4, configRegistry);
+        int fillHandleOffsetY = -GUIHelper.convertVerticalPixelToDpi(4, configRegistry);
 
         Rectangle handleInterior = new Rectangle(
                 bounds.x + bounds.width + fillHandleOffsetX,
                 bounds.y + bounds.height + fillHandleOffsetY,
-                fillHandleSize,
-                fillHandleSize);
+                fillHandleWidth,
+                fillHandleHeight);
 
         BorderStyle borderStyle = getHandleBorderStyle(configRegistry);
 

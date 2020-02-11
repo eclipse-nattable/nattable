@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,9 +13,8 @@ package org.eclipse.nebula.widgets.nattable.resize.command;
 import static org.junit.Assert.assertEquals;
 
 import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
+import org.eclipse.nebula.widgets.nattable.layer.FixedScalingDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,15 +40,7 @@ public class RowResizeCommandTest {
 
     @Test
     public void testResizeWithoutDownscale() {
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 120;
-            }
-
-        };
-        this.dataLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        this.dataLayer.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(120)));
 
         // scaling enabled, therefore default height of 20 pixels is up scaled
         // to 25
@@ -65,15 +56,7 @@ public class RowResizeCommandTest {
 
     @Test
     public void testResizeWithDownscale() {
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 120;
-            }
-
-        };
-        this.dataLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        this.dataLayer.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(120)));
 
         // scaling enabled, therefore default height of 20 pixels is up scaled
         // to 25

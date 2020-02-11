@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Dirk Fauth.
+ * Copyright (c) 2017, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,6 +33,10 @@ public abstract class AutoScrollDragMode implements IDragMode {
     private AutoScrollRunnable runnable;
 
     protected int horizontalBorderOffset = GUIHelper.convertHorizontalPixelToDpi(25);
+    /**
+     * @since 2.0
+     */
+    protected int verticalBorderOffset = GUIHelper.convertVerticalPixelToDpi(25);
 
     /**
      *
@@ -70,11 +74,11 @@ public abstract class AutoScrollDragMode implements IDragMode {
         int verticalDiff = 0;
         MoveDirectionEnum vertical = MoveDirectionEnum.NONE;
         if (this.vertical) {
-            if (event.y < 0) {
+            if (event.y < this.verticalBorderOffset) {
                 vertical = MoveDirectionEnum.UP;
                 y = 0;
                 verticalDiff = -event.y;
-            } else if (event.y > clientArea.height) {
+            } else if (event.y > clientArea.height - this.verticalBorderOffset) {
                 vertical = MoveDirectionEnum.DOWN;
                 y = clientArea.height - 1;
                 verticalDiff = event.y - clientArea.height;

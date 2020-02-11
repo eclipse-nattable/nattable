@@ -53,9 +53,8 @@ import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommand;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
+import org.eclipse.nebula.widgets.nattable.layer.FixedScalingDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
@@ -11735,15 +11734,7 @@ public class ColumnGroupHeaderLayerTest {
 
     @Test
     public void shouldResizeColumnGroupHeaderRowWithoutDownScale() {
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 120;
-            }
-
-        };
-        this.gridLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        this.gridLayer.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(120)));
 
         // scaling enabled, therefore default height of 20 pixels is up scaled
         // to 25
@@ -11755,15 +11746,7 @@ public class ColumnGroupHeaderLayerTest {
 
     @Test
     public void shouldResizeColumnGroupHeaderRowWithDownScale() {
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 120;
-            }
-
-        };
-        this.gridLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        this.gridLayer.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(120)));
 
         // scaling enabled, therefore default height of 20 pixels is up scaled
         // to 25
@@ -11791,15 +11774,7 @@ public class ColumnGroupHeaderLayerTest {
 
     @Test
     public void shouldMultiResizeColumnGroupHeaderRowWithoutDownScale() {
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 120;
-            }
-
-        };
-        this.gridLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        this.gridLayer.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(120)));
 
         // scaling enabled, therefore default height of 20 pixels is up scaled
         // to 25
@@ -11811,15 +11786,7 @@ public class ColumnGroupHeaderLayerTest {
 
     @Test
     public void shouldMultiResizeColumnGroupHeaderRowWithDownScale() {
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 120;
-            }
-
-        };
-        this.gridLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        this.gridLayer.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(120)));
 
         // scaling enabled, therefore default height of 20 pixels is up scaled
         // to 25

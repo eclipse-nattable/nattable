@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,6 +31,7 @@ import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.NatTableConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.conflation.EventConflaterChain;
 import org.eclipse.nebula.widgets.nattable.conflation.IEventConflater;
 import org.eclipse.nebula.widgets.nattable.conflation.VisualChangeEventConflater;
@@ -41,8 +42,9 @@ import org.eclipse.nebula.widgets.nattable.edit.CellEditorCreatedEvent;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeGridCommand;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
+import org.eclipse.nebula.widgets.nattable.layer.DefaultHorizontalDpiConverter;
+import org.eclipse.nebula.widgets.nattable.layer.DefaultVerticalDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
@@ -90,7 +92,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
@@ -350,34 +351,11 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
             });
             this.underlyingLayer.addLayerListener(this);
 
-            // register the DPI scaling
-            this.underlyingLayer.doCommand(new ConfigureScalingCommand(
-                    new AbstractDpiConverter() {
-
-                        @Override
-                        protected void readDpiFromDisplay() {
-                            Display.getDefault().syncExec(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    dpi = Display.getDefault().getDPI().x;
-                                }
-                            });
-                        }
-                    },
-                    new AbstractDpiConverter() {
-
-                        @Override
-                        protected void readDpiFromDisplay() {
-                            Display.getDefault().syncExec(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    dpi = Display.getDefault().getDPI().y;
-                                }
-                            });
-                        }
-                    }));
+            // register the DPI scaling on the layers
+            this.underlyingLayer.doCommand(
+                    new ConfigureScalingCommand(
+                            new DefaultHorizontalDpiConverter(),
+                            new DefaultVerticalDpiConverter()));
         }
     }
 
@@ -401,17 +379,28 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
     }
 
     /**
-     * @return {@link IConfigRegistry} used to hold the configuration bindings
-     *         by Layer, DisplayMode and Config labels.
+     * @return {@link IConfigRegistry} used to hold the configurations.
      */
     public IConfigRegistry getConfigRegistry() {
         if (this.configRegistry == null) {
             this.configRegistry = new ConfigRegistry();
             this.themeManager = new ThemeManager(this.configRegistry);
+            setDefaultTopLevelConfigurations();
         }
         return this.configRegistry;
     }
 
+    /**
+     * Sets the {@link IConfigRegistry} that should be used to hold the
+     * configurations. Can only be used if autoconfigure is turned off at
+     * NatTable creation. Should only be used in cases where an
+     * {@link IConfigRegistry} is needed for {@link ILayer} creation
+     * <b>BEFORE</b> the NatTable can be created.
+     *
+     * @param configRegistry
+     *            The {@link IConfigRegistry} that should be used to hold the
+     *            configurations.
+     */
     public void setConfigRegistry(IConfigRegistry configRegistry) {
         if (this.autoconfigure) {
             throw new IllegalStateException("May only set config registry post construction if autoconfigure is turned off"); //$NON-NLS-1$
@@ -419,6 +408,22 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
         this.configRegistry = configRegistry;
         this.themeManager = new ThemeManager(configRegistry);
+        setDefaultTopLevelConfigurations();
+    }
+
+    /**
+     * Populate the {@link IConfigRegistry} with some top level default
+     * configurations that are not set via {@link IConfiguration}.
+     *
+     * @since 2.0
+     */
+    protected void setDefaultTopLevelConfigurations() {
+        this.configRegistry.registerConfigAttribute(
+                NatTableConfigAttributes.HORIZONTAL_DPI_CONVERTER,
+                new DefaultHorizontalDpiConverter());
+        this.configRegistry.registerConfigAttribute(
+                NatTableConfigAttributes.VERTICAL_DPI_CONVERTER,
+                new DefaultVerticalDpiConverter());
     }
 
     /**
@@ -445,7 +450,8 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
     }
 
     @Override
-    protected void checkSubclass() {}
+    protected void checkSubclass() {
+    }
 
     protected void initInternalListener() {
         this.modeSupport = new ModeSupport(this);
@@ -827,6 +833,18 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
     @Override
     public boolean doCommand(ILayerCommand command) {
+        if (command instanceof ConfigureScalingCommand) {
+            // place the dpi converter in the ConfigRegistry for consistent
+            // scaling behavior
+            ConfigureScalingCommand cmd = (ConfigureScalingCommand) command;
+            getConfigRegistry().registerConfigAttribute(
+                    NatTableConfigAttributes.HORIZONTAL_DPI_CONVERTER,
+                    cmd.getHorizontalDpiConverter());
+            getConfigRegistry().registerConfigAttribute(
+                    NatTableConfigAttributes.VERTICAL_DPI_CONVERTER,
+                    cmd.getVerticalDpiConverter());
+        }
+
         return this.underlyingLayer.doCommand(command);
     }
 

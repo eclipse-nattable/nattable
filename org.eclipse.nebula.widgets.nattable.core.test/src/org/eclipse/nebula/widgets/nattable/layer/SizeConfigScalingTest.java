@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2016 Original authors and others.
+ * Copyright (c) 2014, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,15 +26,8 @@ public class SizeConfigScalingTest {
     @Before
     public void setup() {
         this.sizeConfig = new SizeConfig(DEFAULT_SIZE);
-        this.sizeConfig.setDpiConverter(new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                // use dpi of 144 which will result in a dpi factor of 1.5
-                this.dpi = 144;
-            }
-
-        });
+        // use dpi of 144 which will result in a dpi factor of 1.5
+        this.sizeConfig.setDpiConverter(new FixedScalingDpiConverter(144));
     }
 
     @Test
@@ -90,15 +83,8 @@ public class SizeConfigScalingTest {
     @Test
     public void testAggregateSize() {
         final SizeConfig sc = new SizeConfig(50); // Global default of 50
-        sc.setDpiConverter(new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                // use dpi of 144 which will result in a dpi factor of 1.5
-                this.dpi = 144;
-            }
-
-        });
+        // use dpi of 144 which will result in a dpi factor of 1.5
+        sc.setDpiConverter(new FixedScalingDpiConverter(144));
 
         sc.setSize(0, 30);
         sc.setSize(1, 30);
@@ -110,15 +96,8 @@ public class SizeConfigScalingTest {
     @Test
     public void testAggregateSizeWithPositionDefaults() {
         final SizeConfig sc = new SizeConfig(50); // Global default of 50
-        sc.setDpiConverter(new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                // use dpi of 144 which will result in a dpi factor of 1.5
-                this.dpi = 144;
-            }
-
-        });
+        // use dpi of 144 which will result in a dpi factor of 1.5
+        sc.setDpiConverter(new FixedScalingDpiConverter(144));
 
         sc.setSize(0, 30);
         sc.setSize(1, 30);
@@ -137,15 +116,8 @@ public class SizeConfigScalingTest {
     @Test
     public void testAggregateSizeCache() {
         final SizeConfig sc = new SizeConfig(100);
-        sc.setDpiConverter(new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                // use dpi of 144 which will result in a dpi factor of 1.5
-                this.dpi = 144;
-            }
-
-        });
+        // use dpi of 144 which will result in a dpi factor of 1.5
+        sc.setDpiConverter(new FixedScalingDpiConverter(144));
 
         assertEquals(750, sc.getAggregateSize(5));
         sc.setSize(0, 75);
@@ -164,15 +136,8 @@ public class SizeConfigScalingTest {
     public void testRounding() {
         // results in 128 upscaled because of rounding
         final SizeConfig sc = new SizeConfig(102);
-        sc.setDpiConverter(new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                // use dpi of 120 which will result in a dpi factor of 1.25
-                this.dpi = 120;
-            }
-
-        });
+        // use dpi of 120 which will result in a dpi factor of 1.25
+        sc.setDpiConverter(new FixedScalingDpiConverter(120));
 
         assertEquals(178, sc.downScale(222));
         assertEquals(223, sc.upScale(178));
@@ -187,15 +152,8 @@ public class SizeConfigScalingTest {
     @Test
     public void testRoundingAllCustomSize() {
         final SizeConfig sc = new SizeConfig(100);
-        sc.setDpiConverter(new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                // use dpi of 120 which will result in a dpi factor of 1.25
-                this.dpi = 120;
-            }
-
-        });
+        // use dpi of 120 which will result in a dpi factor of 1.25
+        sc.setDpiConverter(new FixedScalingDpiConverter(120));
 
         sc.setSize(0, 102);
         sc.setSize(1, 102);
@@ -211,15 +169,8 @@ public class SizeConfigScalingTest {
     @Test
     public void testRoundingMixedSize() {
         final SizeConfig sc = new SizeConfig(102);
-        sc.setDpiConverter(new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                // use dpi of 120 which will result in a dpi factor of 1.25
-                this.dpi = 120;
-            }
-
-        });
+        // use dpi of 120 which will result in a dpi factor of 1.25
+        sc.setDpiConverter(new FixedScalingDpiConverter(120));
 
         // results because of scaling in 223
         sc.setSize(1, 178);

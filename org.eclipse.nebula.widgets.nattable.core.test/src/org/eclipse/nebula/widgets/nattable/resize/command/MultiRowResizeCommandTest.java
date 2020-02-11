@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Original authors and others.
+ * Copyright (c) 2017, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractDpiConverter;
-import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
+import org.eclipse.nebula.widgets.nattable.layer.FixedScalingDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
@@ -59,15 +58,7 @@ public class MultiRowResizeCommandTest {
     public void testMultiResizeWithoutDownscale() {
         GridLayer gridLayer = new DummyGridLayerStack();
 
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 120;
-            }
-
-        };
-        gridLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        gridLayer.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(120)));
 
         setClientAreaProvider(gridLayer);
 
@@ -96,15 +87,7 @@ public class MultiRowResizeCommandTest {
     public void testMultiResizeWithDownscale() {
         GridLayer gridLayer = new DummyGridLayerStack();
 
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 120;
-            }
-
-        };
-        gridLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        gridLayer.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(120)));
 
         setClientAreaProvider(gridLayer);
 
@@ -134,15 +117,7 @@ public class MultiRowResizeCommandTest {
     public void testMultiResizeWithoutDownscaleOnSelection() {
         DummyGridLayerStack gridLayer = new DummyGridLayerStack();
 
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 120;
-            }
-
-        };
-        gridLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        gridLayer.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(120)));
 
         setClientAreaProvider(gridLayer);
 
@@ -174,15 +149,7 @@ public class MultiRowResizeCommandTest {
     public void testMultiResizeWithDownscaleOnSelection() {
         GridLayer gridLayer = new DummyGridLayerStack();
 
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 120;
-            }
-
-        };
-        gridLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        gridLayer.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(120)));
 
         setClientAreaProvider(gridLayer);
 

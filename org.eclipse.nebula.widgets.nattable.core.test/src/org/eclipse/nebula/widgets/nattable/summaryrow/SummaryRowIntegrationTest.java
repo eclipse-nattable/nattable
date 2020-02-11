@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,9 +26,8 @@ import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.PricingTypeBean;
 import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
+import org.eclipse.nebula.widgets.nattable.layer.FixedScalingDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
@@ -216,15 +215,7 @@ public class SummaryRowIntegrationTest {
 
     @Test
     public void shouldResizeSummaryRowWithoutDownScale() {
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 120;
-            }
-
-        };
-        this.natTable.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        this.natTable.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(120)));
 
         // scaling enabled, therefore default height of 20 pixels is up scaled
         // to 25
@@ -240,15 +231,7 @@ public class SummaryRowIntegrationTest {
 
     @Test
     public void shouldResizeSummaryRowWithDownScale() {
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 120;
-            }
-
-        };
-        this.natTable.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        this.natTable.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(120)));
 
         // scaling enabled, therefore default height of 20 pixels is up scaled
         // to 25
@@ -281,15 +264,7 @@ public class SummaryRowIntegrationTest {
 
     @Test
     public void shouldHandleMultiRowResizeForSummaryRowAndOthersWithoutDownScale() {
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 120;
-            }
-
-        };
-        this.natTable.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        this.natTable.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(120)));
 
         this.natTable.doCommand(new MultiRowResizeCommand(this.natTable, new int[] { 0, 2, 4 }, new int[] { 40, 60, 100 }));
 
@@ -302,15 +277,7 @@ public class SummaryRowIntegrationTest {
 
     @Test
     public void shouldHandleMultiRowResizeForSummaryRowAndOthersWithDownScale() {
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 120;
-            }
-
-        };
-        this.natTable.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        this.natTable.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(120)));
 
         this.natTable.doCommand(new MultiRowResizeCommand(this.natTable, new int[] { 0, 2, 4 }, new int[] { 40, 60, 100 }, true));
 

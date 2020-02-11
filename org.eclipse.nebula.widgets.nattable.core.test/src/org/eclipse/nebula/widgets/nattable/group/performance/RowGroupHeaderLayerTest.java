@@ -54,9 +54,8 @@ import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommand;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
+import org.eclipse.nebula.widgets.nattable.layer.FixedScalingDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
@@ -11714,15 +11713,7 @@ public class RowGroupHeaderLayerTest {
 
     @Test
     public void shouldResizeRowGroupHeaderColumnWithoutDownScale() {
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 120;
-            }
-
-        };
-        this.gridLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        this.gridLayer.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(120)));
 
         // scaling enabled, therefore default height of 20 pixels is up scaled
         // to 25
@@ -11734,15 +11725,7 @@ public class RowGroupHeaderLayerTest {
 
     @Test
     public void shouldResizeRowGroupHeaderColumnWithDownScale() {
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 120;
-            }
-
-        };
-        this.gridLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        this.gridLayer.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(120)));
 
         // scaling enabled, therefore default width of 20 pixels is up scaled
         // to 25
@@ -11770,15 +11753,7 @@ public class RowGroupHeaderLayerTest {
 
     @Test
     public void shouldMultiResizeRowGroupHeaderColumnWithoutDownScale() {
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 120;
-            }
-
-        };
-        this.gridLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        this.gridLayer.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(120)));
 
         // scaling enabled, therefore default height of 20 pixels is up scaled
         // to 25
@@ -11790,15 +11765,7 @@ public class RowGroupHeaderLayerTest {
 
     @Test
     public void shouldMultiResizeRowGroupHeaderColumnWithDownScale() {
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 120;
-            }
-
-        };
-        this.gridLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        this.gridLayer.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(120)));
 
         // scaling enabled, therefore default width of 20 pixels is up scaled
         // to 25

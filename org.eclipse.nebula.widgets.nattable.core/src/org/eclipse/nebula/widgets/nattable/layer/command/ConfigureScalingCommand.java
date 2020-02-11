@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth.
+ * Copyright (c) 2014, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,6 +43,17 @@ public class ConfigureScalingCommand extends AbstractContextFreeCommand {
 
     private final IDpiConverter horizontalDpiConverter;
     private final IDpiConverter verticalDpiConverter;
+
+    /**
+     * @param dpiConverter
+     *            The {@link IDpiConverter} that should be registered for
+     *            horizontal and vertical DPI conversion.
+     * @since 2.0
+     */
+    public ConfigureScalingCommand(IDpiConverter dpiConverter) {
+        this.horizontalDpiConverter = dpiConverter;
+        this.verticalDpiConverter = dpiConverter;
+    }
 
     /**
      * @param horizontalDpiConverter

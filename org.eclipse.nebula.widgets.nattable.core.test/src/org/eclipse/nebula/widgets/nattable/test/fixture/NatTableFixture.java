@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,12 +11,13 @@
 package org.eclipse.nebula.widgets.nattable.test.fixture;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.NoScalingDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -47,8 +48,7 @@ public class NatTableFixture extends NatTable {
         initClientArea();
     }
 
-    public NatTableFixture(Shell shell, ILayer underlyingLayer, int width,
-            int height) {
+    public NatTableFixture(Shell shell, ILayer underlyingLayer, int width, int height) {
         super(shell, underlyingLayer, true);
         initClientArea(width, height);
     }
@@ -58,8 +58,7 @@ public class NatTableFixture extends NatTable {
         initClientArea();
     }
 
-    public NatTableFixture(ILayer underlyingLayer, int width, int height,
-            boolean autoconfigure) {
+    public NatTableFixture(ILayer underlyingLayer, int width, int height, boolean autoconfigure) {
         super(new Shell(Display.getDefault()), underlyingLayer, autoconfigure);
         initClientArea(width, height);
     }
@@ -71,6 +70,9 @@ public class NatTableFixture extends NatTable {
     private void initClientArea(int width, int height) {
         setSize(width, height);
         doCommand(new InitializeClientAreaCommandFixture());
+
+        // disable scaling for the tests
+        doCommand(new ConfigureScalingCommand(new NoScalingDpiConverter()));
     }
 
     @Override
@@ -94,57 +96,40 @@ public class NatTableFixture extends NatTable {
 
     // Convenience methods for tests
 
-    public void registerLabelOnColumn(DataLayer bodyDataLayer, int columnIndex,
-            String columnLabel) {
-        getColumnLabelAccumulator(bodyDataLayer).registerColumnOverrides(
-                columnIndex, columnLabel);
+    public void registerLabelOnColumn(DataLayer bodyDataLayer, int columnIndex, String columnLabel) {
+        getColumnLabelAccumulator(bodyDataLayer).registerColumnOverrides(columnIndex, columnLabel);
     }
 
-    public void registerLabelOnColumnHeader(DataLayer columnHeaderDataLayer,
-            int columnIndex, String columnLabel) {
-        getColumnLabelAccumulator(columnHeaderDataLayer)
-                .registerColumnOverrides(columnIndex, columnLabel);
+    public void registerLabelOnColumnHeader(DataLayer columnHeaderDataLayer, int columnIndex, String columnLabel) {
+        getColumnLabelAccumulator(columnHeaderDataLayer).registerColumnOverrides(columnIndex, columnLabel);
     }
 
-    private ColumnOverrideLabelAccumulator getColumnLabelAccumulator(
-            DataLayer dataLayer) {
+    private ColumnOverrideLabelAccumulator getColumnLabelAccumulator(DataLayer dataLayer) {
         if (this.columnLabelAccumulator == null) {
-            this.columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
-                    dataLayer);
+            this.columnLabelAccumulator = new ColumnOverrideLabelAccumulator(dataLayer);
             dataLayer.setConfigLabelAccumulator(this.columnLabelAccumulator);
         }
         return this.columnLabelAccumulator;
     }
 
     public void scrollToColumn(int gridColumnPosition) {
-        DummyGridLayerStack gridLayer = (DummyGridLayerStack) getUnderlyingLayerByPosition(
-                1, 1);
-        ViewportLayer viewportLayer = gridLayer.getBodyLayer()
-                .getViewportLayer();
+        DummyGridLayerStack gridLayer = (DummyGridLayerStack) getUnderlyingLayerByPosition(1, 1);
+        ViewportLayer viewportLayer = gridLayer.getBodyLayer().getViewportLayer();
         viewportLayer.invalidateHorizontalStructure();
-        viewportLayer.setOriginX(viewportLayer
-                .getStartXOfColumnPosition(gridColumnPosition));
+        viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(gridColumnPosition));
     }
 
     public void scrollToRow(int gridRowPosition) {
-        DummyGridLayerStack gridLayer = (DummyGridLayerStack) getUnderlyingLayerByPosition(
-                1, 1);
-        ViewportLayer viewportLayer = gridLayer.getBodyLayer()
-                .getViewportLayer();
+        DummyGridLayerStack gridLayer = (DummyGridLayerStack) getUnderlyingLayerByPosition(1, 1);
+        ViewportLayer viewportLayer = gridLayer.getBodyLayer().getViewportLayer();
         viewportLayer.invalidateVerticalStructure();
-        viewportLayer.setOriginY(viewportLayer
-                .getStartYOfRowPosition(gridRowPosition));
+        viewportLayer.setOriginY(viewportLayer.getStartYOfRowPosition(gridRowPosition));
     }
 
     public void enableEditingOnAllCells() {
         getConfigRegistry().registerConfigAttribute(
                 EditConfigAttributes.CELL_EDITABLE_RULE,
                 IEditableRule.ALWAYS_EDITABLE, DisplayMode.EDIT);
-    }
-
-    @Override
-    public ConfigRegistry getConfigRegistry() {
-        return (ConfigRegistry) super.getConfigRegistry();
     }
 
 }

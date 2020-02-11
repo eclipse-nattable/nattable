@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
+ * Copyright (c) 2018, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,6 +32,8 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.CornerLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.NoScalingDpiConverter;
+import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowInsertEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
@@ -224,6 +226,10 @@ public class RowInsertCommandTest {
         GridLayer grid = new GridLayer(this.viewportLayer, colHeader, rowHeaderLayer, cornerLayer);
 
         NatTable natTable = new NatTable(new Shell(), grid);
+
+        // disable scaling for the tests
+        natTable.doCommand(new ConfigureScalingCommand(new NoScalingDpiConverter()));
+
         // height 10 x 20 height + 20 column header
         natTable.setSize(500, 220);
 

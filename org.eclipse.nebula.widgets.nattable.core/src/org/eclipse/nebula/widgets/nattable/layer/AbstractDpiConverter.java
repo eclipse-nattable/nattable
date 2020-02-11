@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2016 Dirk Fauth.
+ * Copyright (c) 2014, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,7 +18,11 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
  */
 public abstract class AbstractDpiConverter implements IDpiConverter {
 
-    protected Integer dpi;
+    protected int dpi = -1;
+    /**
+     * @since 2.0
+     */
+    protected float scaleFactor = -1;
 
     /**
      * Sets the value for the dpi member variable.
@@ -31,24 +35,34 @@ public abstract class AbstractDpiConverter implements IDpiConverter {
 
     @Override
     public int getDpi() {
-        if (this.dpi == null) {
+        if (this.dpi < 0) {
             readDpiFromDisplay();
+            this.scaleFactor = GUIHelper.getDpiFactor(getDpi());
         }
         return this.dpi;
     }
 
     @Override
     public float getCurrentDpiFactor() {
-        return GUIHelper.getDpiFactor(getDpi());
+        if (this.scaleFactor < 0) {
+            this.scaleFactor = GUIHelper.getDpiFactor(getDpi());
+        }
+        return this.scaleFactor;
     }
 
     @Override
     public int convertPixelToDpi(int pixel) {
-        return (int) Math.round(Double.valueOf(pixel * (double) getCurrentDpiFactor()));
+        if (getCurrentDpiFactor() == 1) {
+            return pixel;
+        }
+        return Math.round(pixel * this.scaleFactor);
     }
 
     @Override
     public int convertDpiToPixel(int dpi) {
-        return (int) Math.round(Double.valueOf(dpi / (double) getCurrentDpiFactor()));
+        if (getCurrentDpiFactor() == 1) {
+            return dpi;
+        }
+        return Math.round(dpi / this.scaleFactor);
     }
 }

@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2017 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -119,7 +119,7 @@ public class RichTextCellPainter extends AbstractCellPainter {
                     new RowResizeCommand(
                             cell.getLayer(),
                             cell.getRowPosition(),
-                            GUIHelper.convertVerticalDpiToPixel(height) + (cell.getBounds().height - bounds.height)));
+                            GUIHelper.convertVerticalDpiToPixel(height, configRegistry) + (cell.getBounds().height - bounds.height)));
         }
 
         if (performColumnResize(this.richTextPainter.getPreferredSize().x, painterBounds)) {
@@ -127,7 +127,7 @@ public class RichTextCellPainter extends AbstractCellPainter {
                     new ColumnResizeCommand(
                             cell.getLayer(),
                             cell.getColumnPosition(),
-                            GUIHelper.convertHorizontalDpiToPixel(this.richTextPainter.getPreferredSize().x) + (cell.getBounds().width - bounds.width)));
+                            GUIHelper.convertHorizontalDpiToPixel(this.richTextPainter.getPreferredSize().x, configRegistry) + (cell.getBounds().width - bounds.width)));
         }
     }
 

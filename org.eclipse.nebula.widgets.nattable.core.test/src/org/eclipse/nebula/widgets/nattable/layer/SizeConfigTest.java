@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -157,13 +157,8 @@ public class SizeConfigTest {
         int cachedAggregateSize = sc.getAggregateSize(nCols - 1);
 
         // this is done when the NatTable itself is initialized
-        sc.setDpiConverter(new AbstractDpiConverter() {
-            @Override
-            protected void readDpiFromDisplay() {
-                // programatically set a dpi > 96
-                this.dpi = (int) (96 * 1.25);
-            }
-        });
+        // programatically set a dpi > 96
+        sc.setDpiConverter(new FixedScalingDpiConverter((int) (96 * 1.25)));
 
         int aggregateSize = sc.getAggregateSize(nCols - 1);
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -365,7 +365,7 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
     public Rectangle getWrappedPainterBounds(
             ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
         int depth = getDepth(cell);
-        int indent = getIndent(depth);
+        int indent = getIndent(depth, configRegistry);
 
         return new Rectangle(
                 bounds.x + indent,
@@ -386,7 +386,7 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
     @Override
     public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
         int depth = getDepth(cell);
-        int indent = getIndent(depth);
+        int indent = getIndent(depth, configRegistry);
         return indent + super.getPreferredWidth(cell, gc, configRegistry);
     }
 
@@ -394,10 +394,14 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      * @param depth
      *            The depth/level in the tree structure for which the indent is
      *            requested.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed for accessing the dpi
+     *            converter.
      * @return The number of pixels the content should be indented.
+     * @since 2.0
      */
-    protected int getIndent(int depth) {
-        return GUIHelper.convertHorizontalPixelToDpi(this.treeIndent * depth);
+    protected int getIndent(int depth, IConfigRegistry configRegistry) {
+        return GUIHelper.convertHorizontalPixelToDpi(this.treeIndent * depth, configRegistry);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -173,21 +173,21 @@ public class PaddingDecorator extends CellPainterWrapper {
 
     @Override
     public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
-        return GUIHelper.convertHorizontalPixelToDpi(this.leftPadding)
+        return GUIHelper.convertHorizontalPixelToDpi(this.leftPadding, configRegistry)
                 + super.getPreferredWidth(cell, gc, configRegistry)
-                + GUIHelper.convertHorizontalPixelToDpi(this.rightPadding);
+                + GUIHelper.convertHorizontalPixelToDpi(this.rightPadding, configRegistry);
     }
 
     @Override
     public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
-        return GUIHelper.convertHorizontalPixelToDpi(this.topPadding)
+        return GUIHelper.convertVerticalPixelToDpi(this.topPadding, configRegistry)
                 + super.getPreferredHeight(cell, gc, configRegistry)
-                + GUIHelper.convertHorizontalPixelToDpi(this.bottomPadding);
+                + GUIHelper.convertVerticalPixelToDpi(this.bottomPadding, configRegistry);
     }
 
     @Override
     public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
-        Rectangle interiorBounds = getInteriorBounds(adjustedCellBounds);
+        Rectangle interiorBounds = getInteriorBounds(adjustedCellBounds, configRegistry);
 
         if (this.paintBg) {
             Color originalBg = gc.getBackground();
@@ -209,18 +209,22 @@ public class PaddingDecorator extends CellPainterWrapper {
      *
      * @param adjustedCellBounds
      *            The cell bounds of the cell to render.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed for accessing the dpi
+     *            converter.
      * @return The cell bounds that are available for the interior painter.
+     * @since 2.0
      */
-    public Rectangle getInteriorBounds(Rectangle adjustedCellBounds) {
+    public Rectangle getInteriorBounds(Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
         return new Rectangle(
-                adjustedCellBounds.x + GUIHelper.convertHorizontalPixelToDpi(this.leftPadding),
-                adjustedCellBounds.y + GUIHelper.convertHorizontalPixelToDpi(this.topPadding),
+                adjustedCellBounds.x + GUIHelper.convertHorizontalPixelToDpi(this.leftPadding, configRegistry),
+                adjustedCellBounds.y + GUIHelper.convertVerticalPixelToDpi(this.topPadding, configRegistry),
                 adjustedCellBounds.width
-                        - GUIHelper.convertHorizontalPixelToDpi(this.leftPadding)
-                        - GUIHelper.convertHorizontalPixelToDpi(this.rightPadding),
+                        - GUIHelper.convertHorizontalPixelToDpi(this.leftPadding, configRegistry)
+                        - GUIHelper.convertHorizontalPixelToDpi(this.rightPadding, configRegistry),
                 adjustedCellBounds.height
-                        - GUIHelper.convertHorizontalPixelToDpi(this.topPadding)
-                        - GUIHelper.convertHorizontalPixelToDpi(this.bottomPadding));
+                        - GUIHelper.convertVerticalPixelToDpi(this.topPadding, configRegistry)
+                        - GUIHelper.convertVerticalPixelToDpi(this.bottomPadding, configRegistry));
     }
 
     /**
@@ -252,10 +256,10 @@ public class PaddingDecorator extends CellPainterWrapper {
         int horizontalAlignmentPadding = 0;
         switch (horizontalAlignment) {
             case LEFT:
-                horizontalAlignmentPadding = GUIHelper.convertHorizontalPixelToDpi(this.leftPadding);
+                horizontalAlignmentPadding = GUIHelper.convertHorizontalPixelToDpi(this.leftPadding, configRegistry);
                 break;
             case CENTER:
-                horizontalAlignmentPadding = GUIHelper.convertHorizontalPixelToDpi(this.leftPadding) / 2;
+                horizontalAlignmentPadding = GUIHelper.convertHorizontalPixelToDpi(this.leftPadding, configRegistry) / 2;
                 break;
         }
 
@@ -264,10 +268,10 @@ public class PaddingDecorator extends CellPainterWrapper {
         int verticalAlignmentPadding = 0;
         switch (verticalAlignment) {
             case TOP:
-                verticalAlignmentPadding = GUIHelper.convertHorizontalPixelToDpi(this.topPadding);
+                verticalAlignmentPadding = GUIHelper.convertVerticalPixelToDpi(this.topPadding, configRegistry);
                 break;
             case MIDDLE:
-                verticalAlignmentPadding = GUIHelper.convertHorizontalPixelToDpi(this.topPadding) / 2;
+                verticalAlignmentPadding = GUIHelper.convertVerticalPixelToDpi(this.topPadding, configRegistry) / 2;
                 break;
         }
 

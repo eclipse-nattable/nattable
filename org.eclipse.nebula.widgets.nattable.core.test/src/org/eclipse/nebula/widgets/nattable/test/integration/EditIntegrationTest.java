@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,8 +19,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
-import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
@@ -584,7 +584,8 @@ public class EditIntegrationTest {
         layer.setChildLayer(GridRegion.COLUMN_HEADER, new DataLayer(new IDataProvider() {
 
             @Override
-            public void setDataValue(int columnIndex, int rowIndex, Object newValue) {}
+            public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+            }
 
             @Override
             public int getRowCount() {
@@ -721,7 +722,7 @@ public class EditIntegrationTest {
     // The sane fixtures are used to ensure that the example keeps working
     // without fail
 
-    private static void registerComboBox(ConfigRegistry configRegistry,
+    private static void registerComboBox(IConfigRegistry configRegistry,
             ICellPainter comboBoxCellPainter, ICellEditor comboBoxCellEditor) {
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_PAINTER, comboBoxCellPainter,
@@ -739,7 +740,7 @@ public class EditIntegrationTest {
                 TEST_LABEL);
     }
 
-    private static void registerCheckBoxEditor(ConfigRegistry configRegistry,
+    private static void registerCheckBoxEditor(IConfigRegistry configRegistry,
             ICellPainter checkBoxCellPainter, ICellEditor checkBoxCellEditor) {
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_PAINTER, checkBoxCellPainter,

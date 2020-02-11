@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2018, 2019 Dirk Fauth.
+ * Copyright (c) 2018, 2020 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -51,9 +51,8 @@ import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorConstants;
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalTreeLayer.HierarchicalTreeNode;
 import org.eclipse.nebula.widgets.nattable.hierarchical.command.HierarchicalTreeExpandCollapseCommand;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
+import org.eclipse.nebula.widgets.nattable.layer.FixedScalingDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.SpanningDataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
@@ -1407,16 +1406,7 @@ public class HierarchicalTreeLayerTest {
     }
 
     private void scaleTo150() {
-        IDpiConverter dpiConverter = new AbstractDpiConverter() {
-
-            @Override
-            protected void readDpiFromDisplay() {
-                this.dpi = 144;
-            }
-
-        };
-
-        this.treeLayer.doCommand(new ConfigureScalingCommand(dpiConverter, dpiConverter));
+        this.treeLayer.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(144)));
     }
 
     @Test

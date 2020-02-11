@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
+ * Copyright (c) 2018, 2020 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -80,7 +80,7 @@ public class HideIndicatorOverlayPainter implements IOverlayPainter2 {
         int originalLineWidth = gc.getLineWidth();
 
         gc.setForeground(getIndicatorColor());
-        gc.setLineWidth(GUIHelper.convertHorizontalPixelToDpi(getIndicatorLineWidth()));
+        gc.setLineWidth(GUIHelper.convertHorizontalPixelToDpi(getIndicatorLineWidth(), this.configRegistry));
 
         paintHiddenColumnIndicator(layer, gc, xOffset, yOffset, rectangle);
         paintHiddenRowIndicator(layer, gc, xOffset, yOffset, rectangle);
@@ -263,6 +263,7 @@ public class HideIndicatorOverlayPainter implements IOverlayPainter2 {
             Integer width = this.configRegistry.getConfigAttribute(
                     HideIndicatorConfigAttributes.HIDE_INDICATOR_LINE_WIDTH,
                     DisplayMode.NORMAL);
+
             if (width != null) {
                 return width;
             }
