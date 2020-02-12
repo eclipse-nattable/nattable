@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2018 Jonas Hugo, Markus Wahl.
+ * Copyright (c) 2014, 2020 Jonas Hugo, Markus Wahl.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,6 +17,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashSet;
 
 import org.eclipse.nebula.widgets.nattable.selection.preserve.Selections.CellPosition;
@@ -74,7 +75,7 @@ public class SelectionsTest {
         assertFalse(this.testee.isSelected(this.rowB, this.columnPosition2));
 
         assertTrue(this.testee.getRows().isEmpty());
-        assertTrue(this.testee.getColumnPositions().isEmpty());
+        assertTrue(this.testee.getColumnPositions().length == 0);
     }
 
     @Test
@@ -158,14 +159,11 @@ public class SelectionsTest {
         this.testee.select(this.rowA, this.rowObjectA, this.columnPosition3);
         this.testee.select(this.rowB, this.rowObjectB, this.columnPosition1);
 
-        HashSet<Integer> actualColumns = new HashSet<>(this.testee.getColumnPositions());
+        int[] actualColumns = this.testee.getColumnPositions();
 
-        HashSet<Integer> expectedColumns = new HashSet<>();
-        expectedColumns.add(this.columnPosition2);
-        expectedColumns.add(this.columnPosition1);
-        expectedColumns.add(this.columnPosition3);
+        int[] expectedColumns = new int[] { this.columnPosition1, this.columnPosition2, this.columnPosition3 };
 
-        assertEquals(expectedColumns, actualColumns);
+        assertTrue(Arrays.equals(expectedColumns, actualColumns));
     }
 
 }

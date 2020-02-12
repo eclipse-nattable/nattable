@@ -86,11 +86,7 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
      * @param columnIndexes
      *            The indexes of the columns that have changed.
      * @since 1.6
-     * @deprecated Use
-     *             {@link #ColumnVisualChangeEvent(ILayer, Collection, int...)}
-     *             to avoid autoboxing of row indexes.
      */
-    @Deprecated
     public ColumnVisualChangeEvent(ILayer layer, Collection<Range> columnPositionRanges, Collection<Integer> columnIndexes) {
         this.layer = layer;
         this.columnPositionRanges = columnPositionRanges;

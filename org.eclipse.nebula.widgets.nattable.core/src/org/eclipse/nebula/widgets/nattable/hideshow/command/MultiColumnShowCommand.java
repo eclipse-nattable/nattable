@@ -12,9 +12,9 @@ package org.eclipse.nebula.widgets.nattable.hideshow.command;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
 /**
  * Command for showing hidden columns again via index.
@@ -50,7 +50,7 @@ public class MultiColumnShowCommand extends AbstractContextFreeCommand {
      * @return The indexes of the columns that should be showed again.
      */
     public Collection<Integer> getColumnIndexes() {
-        return Arrays.stream(this.columnIndexes).boxed().collect(Collectors.toList());
+        return ArrayUtil.asIntegerList(this.columnIndexes);
     }
 
     /**

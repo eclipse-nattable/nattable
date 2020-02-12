@@ -69,11 +69,7 @@ public class RowSelectionEvent extends RowVisualChangeEvent implements ISelectio
      * @param withControlMask
      *            Boolean to determinate if the control mask is used.
      * @since 1.4
-     * @deprecated Replaced by
-     *             {@link #RowSelectionEvent(SelectionLayer, int[], int, boolean, boolean)}
-     *             with primitive values.
      */
-    @Deprecated
     public RowSelectionEvent(SelectionLayer selectionLayer,
             Collection<Integer> rowPositions, int rowPositionToMoveIntoViewport,
             boolean withShiftMask, boolean withControlMask) {

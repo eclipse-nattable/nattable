@@ -29,10 +29,7 @@ public class HideRowPositionsEvent extends RowStructuralChangeEvent {
      *            The ILayer to which the given row positions match.
      * @param rowPositions
      *            The positions of the rows that have changed.
-     * @deprecated Use {@link #HideRowPositionsEvent(ILayer, int...)} with
-     *             primitive types to avoid autoboxing.
      */
-    @Deprecated
     public HideRowPositionsEvent(ILayer layer, Collection<Integer> rowPositions) {
         super(layer, PositionUtil.getRanges(rowPositions));
     }
@@ -61,10 +58,7 @@ public class HideRowPositionsEvent extends RowStructuralChangeEvent {
      *            The indexes of the rows that have changed.
      *
      * @since 1.6
-     * @deprecated Use {@link #HideRowPositionsEvent(ILayer, int[], int[])} with
-     *             primitive types to avoid autoboxing.
      */
-    @Deprecated
     public HideRowPositionsEvent(ILayer layer, Collection<Integer> rowPositions, Collection<Integer> rowIndexes) {
         super(layer, PositionUtil.getRanges(rowPositions), rowIndexes);
     }

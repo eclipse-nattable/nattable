@@ -33,10 +33,7 @@ public class ShowColumnPositionsEvent extends ColumnStructuralChangeEvent {
      *            The layer to which the given column positions match.
      * @param columnPositions
      *            The column positions that are made visible again.
-     * @deprecated Use {@link #ShowColumnPositionsEvent(ILayer, int...)} with
-     *             primitive types to avoid autoboxing.
      */
-    @Deprecated
     public ShowColumnPositionsEvent(IUniqueIndexLayer layer, Collection<Integer> columnPositions) {
         super(layer, PositionUtil.getRanges(columnPositions));
     }

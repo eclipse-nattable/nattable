@@ -152,10 +152,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
      *            The column indexes for which the local column positions are
      *            requested.
      * @return The local column positions for the given column indexes.
-     * @deprecated Use {@link #getColumnPositionsByIndexes(int...)} using
-     *             primitive values to avoid unnecessary boxing.
      */
-    @Deprecated
     public Collection<Integer> getColumnPositionsByIndexes(Collection<Integer> columnIndexes) {
         Collection<Integer> columnPositions = new HashSet<>();
         for (int columnIndex : columnIndexes) {

@@ -60,11 +60,7 @@ public abstract class RowStructuralChangeEvent extends RowVisualChangeEvent impl
      *            The indexes of the rows that have changed.
      *
      * @since 1.6
-     * @deprecated Use
-     *             {@link #RowStructuralChangeEvent(ILayer, Collection, int...)}
-     *             with primitive types for row indexes to avoid autoboxing.
      */
-    @Deprecated
     public RowStructuralChangeEvent(ILayer layer, Collection<Range> rowPositionRanges, Collection<Integer> rowIndexes) {
         super(layer, rowPositionRanges, rowIndexes);
     }

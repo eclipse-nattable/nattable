@@ -85,10 +85,7 @@ public abstract class RowVisualChangeEvent implements IVisualChangeEvent {
      * @param rowIndexes
      *            The indexes of the rows that have changed.
      * @since 1.6
-     * @deprecated Use {@link #RowVisualChangeEvent(ILayer, Collection, int...)}
-     *             to avoid autoboxing of row indexes.
      */
-    @Deprecated
     public RowVisualChangeEvent(ILayer layer, Collection<Range> rowPositionRanges, Collection<Integer> rowIndexes) {
         this.layer = layer;
         this.rowPositionRanges = rowPositionRanges;

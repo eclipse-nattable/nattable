@@ -32,10 +32,7 @@ public class ShowRowPositionsEvent extends RowStructuralChangeEvent {
      *            The layer to which the given row positions match.
      * @param rowPositions
      *            The row positions that are made visible again.
-     * @deprecated Use {@link #ShowRowPositionsEvent(ILayer, int...)} with
-     *             primitive types to avoid autoboxing.
      */
-    @Deprecated
     public ShowRowPositionsEvent(ILayer layer, Collection<Integer> rowPositions) {
         super(layer, PositionUtil.getRanges(rowPositions));
     }

@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,6 +41,7 @@ import org.eclipse.nebula.widgets.nattable.reorder.command.RowReorderEndCommandH
 import org.eclipse.nebula.widgets.nattable.reorder.command.RowReorderStartCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.config.DefaultRowReorderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.reorder.event.RowReorderEvent;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
 /**
  * Layer that is used to add the functionality for row reordering.
@@ -282,7 +282,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
      * @return The local cache of the row index order.
      */
     public List<Integer> getRowIndexOrder() {
-        return this.rowIndexOrder.primitiveStream().boxed().collect(Collectors.toList());
+        return ArrayUtil.asIntegerList(this.rowIndexOrder.toArray());
     }
 
     /**

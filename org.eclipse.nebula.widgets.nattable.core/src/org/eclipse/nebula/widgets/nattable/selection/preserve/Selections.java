@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2018 Jonas Hugo, Markus Wahl.
+ * Copyright (c) 2014, 2020 Jonas Hugo, Markus Wahl.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,11 +16,15 @@ package org.eclipse.nebula.widgets.nattable.selection.preserve;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
+
+import org.eclipse.collections.api.map.primitive.MutableIntObjectMap;
+import org.eclipse.collections.api.set.primitive.MutableIntSet;
+import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
+import org.eclipse.collections.impl.factory.primitive.IntObjectMaps;
+import org.eclipse.collections.impl.factory.primitive.IntSets;
 
 /**
  * The selected cells of columns and rows
@@ -33,12 +37,12 @@ class Selections<T> {
     /**
      * A map for looking up rows given their row IDs
      */
-    private Map<Serializable, Row<T>> selectedRows = new HashMap<Serializable, Row<T>>();
+    private HashMap<Serializable, Row<T>> selectedRows = new HashMap<Serializable, Row<T>>();
 
     /**
      * A map for looking up columns given their column positions
      */
-    private Map<Integer, Column> selectedColumns = new HashMap<Integer, Column>();
+    private MutableIntObjectMap<Column> selectedColumns = IntObjectMaps.mutable.empty();
 
     /**
      * Select the cell at the intersection of the specified row and column.
@@ -93,17 +97,16 @@ class Selections<T> {
             this.selectedRows.remove(rowId);
         }
 
-        Collection<Integer> toRemove = new HashSet<Integer>();
-        for (Map.Entry<Integer, Column> entry : this.selectedColumns.entrySet()) {
-            entry.getValue().removeItem(rowId);
-            if (!entry.getValue().hasSelection()) {
-                toRemove.add(entry.getKey());
+        MutableIntSet toRemove = IntSets.mutable.empty();
+        for (IntObjectPair<Column> pair : this.selectedColumns.keyValuesView()) {
+            Column column = pair.getTwo();
+            column.removeItem(rowId);
+            if (!column.hasSelection()) {
+                toRemove.add(pair.getOne());
             }
         }
 
-        for (Integer key : toRemove) {
-            this.selectedColumns.remove(key);
-        }
+        toRemove.forEach(this.selectedColumns::remove);
     }
 
     /**
@@ -118,7 +121,7 @@ class Selections<T> {
             this.selectedColumns.remove(columnPosition);
         }
 
-        Collection<Serializable> toRemove = new HashSet<Serializable>();
+        HashSet<Serializable> toRemove = new HashSet<Serializable>();
         for (Map.Entry<Serializable, Row<T>> entry : this.selectedRows.entrySet()) {
             entry.getValue().removeItem(columnPosition);
             if (!entry.getValue().hasSelection()) {
@@ -133,10 +136,7 @@ class Selections<T> {
 
     void updateColumnsForRemoval(int columnPosition) {
         // find maximum selected column
-        int maxColumn = 0;
-        for (Integer pos : this.selectedColumns.keySet()) {
-            maxColumn = Math.max(maxColumn, pos);
-        }
+        int maxColumn = this.selectedColumns.keySet().maxIfEmpty(0);
 
         for (int i = columnPosition + 1; i <= maxColumn; i++) {
             Column column = this.selectedColumns.get(i);
@@ -146,8 +146,8 @@ class Selections<T> {
 
                 // also update the row references
                 for (Row<T> row : this.selectedRows.values()) {
-                    Collection<Integer> toRemove = new HashSet<Integer>();
-                    Collection<Integer> toAdd = new HashSet<Integer>();
+                    HashSet<Integer> toRemove = new HashSet<Integer>();
+                    HashSet<Integer> toAdd = new HashSet<Integer>();
                     for (Integer col : row.getItems()) {
                         if (col <= i) {
                             toRemove.add(i);
@@ -163,10 +163,7 @@ class Selections<T> {
 
     void updateColumnsForAddition(int columnPosition) {
         // find maximum selected column
-        int maxColumn = 0;
-        for (Integer pos : this.selectedColumns.keySet()) {
-            maxColumn = Math.max(maxColumn, pos);
-        }
+        int maxColumn = this.selectedColumns.keySet().maxIfEmpty(0);
 
         for (int i = maxColumn; i >= columnPosition; i--) {
             Column column = this.selectedColumns.get(i);
@@ -176,8 +173,8 @@ class Selections<T> {
 
                 // also update the row references
                 for (Row<T> row : this.selectedRows.values()) {
-                    Collection<Integer> toRemove = new HashSet<Integer>();
-                    Collection<Integer> toAdd = new HashSet<Integer>();
+                    HashSet<Integer> toRemove = new HashSet<Integer>();
+                    HashSet<Integer> toAdd = new HashSet<Integer>();
                     for (Integer col : row.getItems()) {
                         if (col >= i) {
                             toRemove.add(i);
@@ -214,10 +211,8 @@ class Selections<T> {
      *
      * @return all columns positions with selected cells
      */
-    List<Integer> getColumnPositions() {
-        List<Integer> keys = new ArrayList<Integer>(this.selectedColumns.keySet());
-        Collections.sort(keys);
-        return keys;
+    int[] getColumnPositions() {
+        return this.selectedColumns.keySet().toSortedArray();
     }
 
     /**
@@ -254,7 +249,7 @@ class Selections<T> {
     Collection<CellPosition<T>> getSelections() {
         ArrayList<CellPosition<T>> selectedCells = new ArrayList<CellPosition<T>>();
         for (Row<T> row : this.selectedRows.values()) {
-            for (Integer columnPosition : row.getItems()) {
+            for (int columnPosition : row.getItems()) {
                 CellPosition<T> cell = new CellPosition<T>(row.getRowObject(), columnPosition);
                 selectedCells.add(cell);
             }

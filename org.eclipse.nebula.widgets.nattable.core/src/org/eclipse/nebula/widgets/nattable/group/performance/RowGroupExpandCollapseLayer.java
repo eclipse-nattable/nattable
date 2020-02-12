@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.group.performance;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.collections.api.factory.Maps;
 import org.eclipse.collections.api.list.primitive.MutableIntList;
@@ -32,6 +31,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
 /**
  * Layer that is used in combination with the performance
@@ -184,7 +184,7 @@ public class RowGroupExpandCollapseLayer extends AbstractRowHideShowLayer {
         for (MutableIntSet indexes : this.hidden.values()) {
             hiddenRowIndexes.addAll(indexes);
         }
-        return hiddenRowIndexes.distinct().toSortedList().primitiveStream().boxed().collect(Collectors.toList());
+        return ArrayUtil.asIntegerList(hiddenRowIndexes.distinct().toSortedArray());
     }
 
     @Override

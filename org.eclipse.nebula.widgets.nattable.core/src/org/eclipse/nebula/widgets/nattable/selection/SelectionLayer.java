@@ -17,12 +17,14 @@ package org.eclipse.nebula.widgets.nattable.selection;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.IntStream;
 
+import org.eclipse.collections.api.list.primitive.MutableIntList;
+import org.eclipse.collections.impl.factory.primitive.IntLists;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinateComparator;
@@ -53,7 +55,6 @@ import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionLaye
 import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
-import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
@@ -812,10 +813,8 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     protected boolean handleRowPositionHideCommand(RowPositionHideCommand command) {
         ILayerCell cell = getCellByPosition(command.getColumnPosition(), command.getRowPosition());
         // first consider spanning
-        Set<Integer> positions = new HashSet<Integer>();
-        for (int p = cell.getOriginRowPosition(); p < (cell.getOriginRowPosition() + cell.getRowSpan()); p++) {
-            positions.add(p);
-        }
+        MutableIntList positions = IntLists.mutable.ofAll(
+                IntStream.range(cell.getOriginRowPosition(), (cell.getOriginRowPosition() + cell.getRowSpan())));
 
         // then consider selection
         if (isCellPositionSelected(cell.getColumnPosition(), cell.getOriginRowPosition())) {
@@ -830,7 +829,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
             }
         }
 
-        return doCommand(new MultiRowHideCommand(this, ArrayUtil.asIntArray(positions)));
+        return doCommand(new MultiRowHideCommand(this, positions.distinct().toSortedArray()));
     }
 
     /**

@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.stream.Collectors;
 
 import org.eclipse.collections.api.list.primitive.MutableIntList;
 import org.eclipse.collections.api.set.primitive.MutableIntSet;
@@ -35,6 +34,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralChangeEventHelper;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
 /**
  * Layer to add support for column hide/show feature to a NatTable. Technically
@@ -148,7 +148,7 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer implements 
 
     @Override
     public Collection<Integer> getHiddenColumnIndexes() {
-        return this.hiddenColumnIndexes.toSortedList().primitiveStream().boxed().collect(Collectors.toList());
+        return ArrayUtil.asIntegerList(this.hiddenColumnIndexes.toSortedArray());
     }
 
     @Override

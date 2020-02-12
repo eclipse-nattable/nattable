@@ -10,9 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import org.eclipse.collections.api.set.primitive.MutableIntSet;
 import org.eclipse.collections.impl.factory.primitive.IntSets;
@@ -20,6 +18,7 @@ import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.group.command.ColumnGroupExpandCollapseCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.AbstractColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
 /**
  * Tracks the Expand/Collapse of a Column Group header NOTE: Only relevant when
@@ -86,7 +85,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
 
     @Override
     public Collection<Integer> getHiddenColumnIndexes() {
-        return Arrays.stream(getHiddenColumnIndexesArray()).boxed().collect(Collectors.toList());
+        return ArrayUtil.asIntegerList(getHiddenColumnIndexesArray());
     }
 
     @Override

@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.reorder.event;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.collections.api.list.primitive.MutableIntList;
 import org.eclipse.collections.impl.factory.primitive.IntLists;
@@ -23,6 +22,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
 /**
  * Event indicating that one or multiple columns are moved to a new position.
@@ -217,7 +217,7 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
      * @since 1.6
      */
     public Collection<Integer> getBeforeFromColumnIndexes() {
-        return this.beforeFromColumnIndexes.primitiveStream().boxed().collect(Collectors.toList());
+        return ArrayUtil.asIntegerList(this.beforeFromColumnIndexes.toSortedArray());
     }
 
     /**

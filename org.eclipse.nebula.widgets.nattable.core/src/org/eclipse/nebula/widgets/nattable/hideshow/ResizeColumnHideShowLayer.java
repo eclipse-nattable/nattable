@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2017, 2019 Dirk Fauth.
+ * Copyright (c) 2017, 2020 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,18 +12,17 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
 
+import org.eclipse.collections.api.list.primitive.MutableIntList;
+import org.eclipse.collections.api.map.primitive.MutableIntObjectMap;
+import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
+import org.eclipse.collections.impl.factory.primitive.IntLists;
+import org.eclipse.collections.impl.factory.primitive.IntObjectMaps;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommandHandler;
@@ -38,6 +37,7 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 import org.eclipse.nebula.widgets.nattable.search.strategy.ISearchStrategy;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
 /**
  * Layer to add support for column hide/show feature to a NatTable. Technically
@@ -69,7 +69,7 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
      * Map that contains the columns hidden by this layer with the initial width
      * so it can be shown again with the previous width.
      */
-    protected final Map<Integer, ColumnSizeInfo> hiddenColumns = new TreeMap<Integer, ColumnSizeInfo>();
+    protected MutableIntObjectMap<ColumnSizeInfo> hiddenColumns = IntObjectMaps.mutable.empty();
 
     /**
      * The {@link DataLayer} of the body region needed to retrieve the
@@ -102,48 +102,39 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
 
     @Override
     public void saveState(String prefix, Properties properties) {
-        saveMap(this.hiddenColumns, prefix + PERSISTENCE_KEY_HIDDEN_COLUMNS, properties);
+        if (!this.hiddenColumns.isEmpty()) {
+            StringBuilder strBuilder = new StringBuilder();
+            for (IntObjectPair<ColumnSizeInfo> pair : this.hiddenColumns.keyValuesView()) {
+                strBuilder.append(pair.getOne());
+                strBuilder.append(':');
+                strBuilder.append(pair.getTwo());
+                strBuilder.append(',');
+            }
+            properties.setProperty(prefix + PERSISTENCE_KEY_HIDDEN_COLUMNS, strBuilder.toString());
+        }
 
         super.saveState(prefix, properties);
     }
 
-    private void saveMap(Map<?, ?> map, String key, Properties properties) {
-        if (map.size() > 0) {
-            StringBuilder strBuilder = new StringBuilder();
-            for (Object index : map.keySet()) {
-                strBuilder.append(index);
-                strBuilder.append(':');
-                strBuilder.append(map.get(index));
-                strBuilder.append(',');
-            }
-            properties.setProperty(key, strBuilder.toString());
-        }
-    }
-
     @Override
     public void loadState(String prefix, Properties properties) {
-        this.hiddenColumns.clear();
-        loadMap(prefix + PERSISTENCE_KEY_HIDDEN_COLUMNS, properties, this.hiddenColumns);
+        this.hiddenColumns = IntObjectMaps.mutable.empty();
+        String property = properties.getProperty(prefix + PERSISTENCE_KEY_HIDDEN_COLUMNS);
+        if (property != null) {
+            StringTokenizer tok = new StringTokenizer(property, ","); //$NON-NLS-1$
+            while (tok.hasMoreTokens()) {
+                String token = tok.nextToken();
+                int separatorIndex = token.indexOf(':');
+                this.hiddenColumns.put(
+                        Integer.parseInt(token.substring(0, separatorIndex)),
+                        ColumnSizeInfo.valueOf(token.substring(separatorIndex + 1)));
+            }
+        }
 
         // there is no need to actually perform additional actions because the
         // width configuration is persisted by the DataLayer itself
 
         super.loadState(prefix, properties);
-    }
-
-    private void loadMap(String key, Properties properties, Map<Integer, ColumnSizeInfo> map) {
-        String property = properties.getProperty(key);
-        if (property != null) {
-            map.clear();
-
-            StringTokenizer tok = new StringTokenizer(property, ","); //$NON-NLS-1$
-            while (tok.hasMoreTokens()) {
-                String token = tok.nextToken();
-                int separatorIndex = token.indexOf(':');
-                map.put(Integer.valueOf(token.substring(0, separatorIndex)),
-                        ColumnSizeInfo.valueOf(token.substring(separatorIndex + 1)));
-            }
-        }
     }
 
     @Override
@@ -163,17 +154,17 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
 
     @Override
     public Collection<Integer> getHiddenColumnIndexes() {
-        return this.hiddenColumns.keySet();
+        return ArrayUtil.asIntegerList(this.hiddenColumns.keySet().toSortedArray());
+    }
+
+    @Override
+    public int[] getHiddenColumnIndexesArray() {
+        return this.hiddenColumns.keySet().toSortedArray();
     }
 
     @Override
     public void hideColumnPositions(int... columnPositions) {
-        hideColumnPositions(Arrays.stream(columnPositions).boxed().collect(Collectors.toList()));
-    }
-
-    @Override
-    public void hideColumnPositions(Collection<Integer> columnPositions) {
-        Map<Integer, ColumnSizeInfo> positionsToHide = new TreeMap<Integer, ColumnSizeInfo>();
+        MutableIntObjectMap<ColumnSizeInfo> positionsToHide = IntObjectMaps.mutable.empty();
 
         // On hide we expect that all remaining visible columns share the free
         // space. To avoid that only the adjacent column is increased, we
@@ -182,7 +173,7 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
         boolean fix = this.bodyDataLayer.isFixColumnPercentageValuesOnResize();
         this.bodyDataLayer.setFixColumnPercentageValuesOnResize(false);
 
-        for (Integer columnPosition : columnPositions) {
+        for (int columnPosition : columnPositions) {
             // transform the position to index
             int columnIndex = getColumnIndexByPosition(columnPosition);
             if (!this.hiddenColumns.containsKey(columnIndex)) {
@@ -209,7 +200,7 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
             }
         }
 
-        for (Integer columnIndex : positionsToHide.keySet()) {
+        positionsToHide.keySet().forEach(columnIndex -> {
             // if column is not resizable we need to make it resizable for the
             // moment to make hiding work
             if (!this.bodyDataLayer.isColumnPositionResizable(columnIndex)) {
@@ -227,7 +218,7 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
             }
             // make that column not resizable
             this.bodyDataLayer.setColumnPositionResizable(columnIndex, false);
-        }
+        });
 
         this.hiddenColumns.putAll(positionsToHide);
 
@@ -235,32 +226,31 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
         this.bodyDataLayer.setFixColumnPercentageValuesOnResize(fix);
 
         // fire events
-        List<Range> ranges = PositionUtil.getRanges(positionsToHide.keySet());
+        List<Range> ranges = PositionUtil.getRanges(positionsToHide.keySet().toSortedArray());
         for (Range range : ranges) {
             this.bodyDataLayer.fireLayerEvent(new ColumnResizeEvent(this.bodyDataLayer, range));
         }
     }
 
     @Override
+    public void hideColumnPositions(Collection<Integer> columnPositions) {
+        hideColumnPositions(columnPositions.stream().mapToInt(Integer::intValue).toArray());
+    }
+
+    @Override
     public void hideColumnIndexes(int... columnIndexes) {
-        hideColumnIndexes(Arrays.stream(columnIndexes).boxed().collect(Collectors.toList()));
+        // transfer indexes to positions
+        hideColumnPositions(Arrays.stream(columnIndexes).map(this::getColumnPositionByIndex).toArray());
     }
 
     @Override
     public void hideColumnIndexes(Collection<Integer> columnIndexes) {
-        // transfer indexes to positions
-        List<Integer> columnPositions = columnIndexes.stream().map(this::getColumnPositionByIndex).collect(Collectors.toList());
-        hideColumnPositions(columnPositions);
+        hideColumnIndexes(columnIndexes.stream().mapToInt(Integer::intValue).toArray());
     }
 
     @Override
     public void showColumnIndexes(int... columnIndexes) {
-        showColumnIndexes(Arrays.stream(columnIndexes).boxed().collect(Collectors.toList()));
-    }
-
-    @Override
-    public void showColumnIndexes(Collection<Integer> columnIndexes) {
-        List<Integer> toProcess = new ArrayList<Integer>(columnIndexes);
+        MutableIntList toProcess = IntLists.mutable.of(columnIndexes);
 
         // only handle column indexes that are hidden
         toProcess.retainAll(this.hiddenColumns.keySet());
@@ -272,8 +262,8 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
         boolean fix = this.bodyDataLayer.isFixColumnPercentageValuesOnResize();
         this.bodyDataLayer.setFixColumnPercentageValuesOnResize(false);
 
-        List<Integer> processed = new ArrayList<Integer>();
-        for (Integer index : toProcess) {
+        MutableIntList processed = IntLists.mutable.empty();
+        toProcess.forEach(index -> {
             ColumnSizeInfo info = this.hiddenColumns.remove(index);
             if (info != null) {
                 processed.add(index);
@@ -297,13 +287,13 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
                     this.bodyDataLayer.setMinColumnWidth(index, info.configuredMinWidth);
                 }
             }
-        }
+        });
 
         // reset the fixColumnPercentageValuesOnResize flag
         this.bodyDataLayer.setFixColumnPercentageValuesOnResize(fix);
 
         if (!processed.isEmpty()) {
-            List<Range> ranges = PositionUtil.getRanges(processed);
+            List<Range> ranges = PositionUtil.getRanges(processed.distinct().toSortedArray());
 
             // fire events
             for (Range range : ranges) {
@@ -313,8 +303,13 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
     }
 
     @Override
+    public void showColumnIndexes(Collection<Integer> columnIndexes) {
+        showColumnIndexes(columnIndexes.stream().mapToInt(Integer::intValue).toArray());
+    }
+
+    @Override
     public void showColumnPosition(int columnPosition, boolean showToLeft, boolean showAll) {
-        Set<Integer> columnIndexes = new HashSet<Integer>();
+        MutableIntList columnIndexes = IntLists.mutable.empty();
         if (showToLeft) {
             int leftColumnIndex = getColumnIndexByPosition(columnPosition - 1);
             if (showAll) {
@@ -342,7 +337,7 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
         }
 
         if (!columnIndexes.isEmpty()) {
-            showColumnIndexes(columnIndexes);
+            showColumnIndexes(columnIndexes.distinct().toSortedArray());
         }
     }
 
@@ -355,9 +350,9 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
         boolean fix = this.bodyDataLayer.isFixColumnPercentageValuesOnResize();
         this.bodyDataLayer.setFixColumnPercentageValuesOnResize(false);
 
-        for (Map.Entry<Integer, ColumnSizeInfo> entry : this.hiddenColumns.entrySet()) {
-            Integer index = entry.getKey();
-            ColumnSizeInfo info = entry.getValue();
+        for (IntObjectPair<ColumnSizeInfo> pair : this.hiddenColumns.keyValuesView()) {
+            int index = pair.getOne();
+            ColumnSizeInfo info = pair.getTwo();
             // first make the column resizable
             this.bodyDataLayer.setColumnPositionResizable(index, true);
 
@@ -381,7 +376,7 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
             this.bodyDataLayer.setColumnPositionResizable(index, info.configuredResizable);
         }
 
-        List<Range> ranges = PositionUtil.getRanges(this.hiddenColumns.keySet());
+        List<Range> ranges = PositionUtil.getRanges(this.hiddenColumns.keySet().toSortedArray());
 
         this.hiddenColumns.clear();
 

@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,6 +43,7 @@ import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCom
 import org.eclipse.nebula.widgets.nattable.reorder.command.ResetColumnReorderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.config.DefaultColumnReorderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
 /**
  * Layer that is used to add the functionality for column reordering.
@@ -218,7 +218,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
      * @return the internal kept ordering of column indexes.
      */
     public List<Integer> getColumnIndexOrder() {
-        return this.columnIndexOrder.primitiveStream().boxed().collect(Collectors.toList());
+        return ArrayUtil.asIntegerList(this.columnIndexOrder.toArray());
     }
 
     /**

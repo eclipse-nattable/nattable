@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2018 Jonas Hugo, Markus Wahl, Dirk Fauth.
+ * Copyright (c) 2014, 2020 Jonas Hugo, Markus Wahl, Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,12 +14,12 @@ package org.eclipse.nebula.widgets.nattable.selection.preserve;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -40,7 +40,6 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionUtils;
 import org.eclipse.nebula.widgets.nattable.selection.preserve.Selections.CellPosition;
 import org.eclipse.nebula.widgets.nattable.selection.preserve.Selections.Row;
-import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
@@ -342,8 +341,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public int[] getSelectedColumnPositions() {
         this.selectionsLock.readLock().lock();
         try {
-            Collection<Integer> columnPositions = this.selections.getColumnPositions();
-            return ArrayUtil.asIntArray(columnPositions);
+            return this.selections.getColumnPositions();
         } finally {
             this.selectionsLock.readLock().unlock();
         }
@@ -369,13 +367,9 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public int[] getFullySelectedColumnPositions(int columnHeight) {
         this.selectionsLock.readLock().lock();
         try {
-            List<Integer> fullySelectedColumnPositions = new ArrayList<Integer>();
-            for (Integer selectedColumn : this.selections.getColumnPositions()) {
-                if (isColumnPositionFullySelected(selectedColumn, columnHeight)) {
-                    fullySelectedColumnPositions.add(selectedColumn);
-                }
-            }
-            return ArrayUtil.asIntArray(fullySelectedColumnPositions);
+            return Arrays.stream(this.selections.getColumnPositions())
+                    .filter(selectedColumn -> isColumnPositionFullySelected(selectedColumn, columnHeight))
+                    .toArray();
         } finally {
             this.selectionsLock.readLock().unlock();
         }
@@ -449,17 +443,13 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public int[] getFullySelectedRowPositions(int rowWidth) {
         this.selectionsLock.readLock().lock();
         try {
-            List<Integer> fullySelectedRows = new ArrayList<Integer>();
-            for (Selections.Row<T> selectedRow : this.selections.getRows()) {
-                T rowObject = selectedRow.getRowObject();
-                int rowPosition = getRowPositionByRowObject(rowObject);
-                if (isRowVisible(rowPosition)
-                        && isRowPositionFullySelected(rowPosition, rowWidth)) {
-                    fullySelectedRows.add(rowPosition);
-                }
-            }
-            Collections.sort(fullySelectedRows);
-            return ArrayUtil.asIntArray(fullySelectedRows);
+            return this.selections.getRows().stream()
+                    .map(Selections.Row::getRowObject)
+                    .mapToInt(this::getRowPositionByRowObject)
+                    .filter(rowPosition -> (isRowVisible(rowPosition)
+                            && isRowPositionFullySelected(rowPosition, rowWidth)))
+                    .sorted()
+                    .toArray();
         } finally {
             this.selectionsLock.readLock().unlock();
         }
@@ -467,7 +457,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
 
     @Override
     public boolean isRowPositionFullySelected(int rowPosition, int rowWidth) {
-        TreeSet<Integer> selectedColumnPositions = new TreeSet<Integer>();
+        int[] selectedColumnPositions = null;
 
         this.selectionsLock.readLock().lock();
         try {
@@ -475,18 +465,18 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
             if (rowId != null) {
                 Selections.Row<T> selectedColumnsInRow = this.selections.getSelectedColumns(rowId);
                 if (hasRowSelectedColumns(selectedColumnsInRow)) {
-                    for (Integer columnPosition : selectedColumnsInRow.getItems()) {
-                        selectedColumnPositions.add(columnPosition);
-                    }
+                    selectedColumnPositions = selectedColumnsInRow.getItems().stream()
+                            .mapToInt(Integer::intValue)
+                            .toArray();
                 }
             }
         } finally {
             this.selectionsLock.readLock().unlock();
         }
 
-        return (selectedColumnPositions.size() < rowWidth)
+        return (selectedColumnPositions == null || selectedColumnPositions.length < rowWidth)
                 ? false
-                : SelectionUtils.isConsecutive(ArrayUtil.asIntArray(selectedColumnPositions));
+                : SelectionUtils.isConsecutive(selectedColumnPositions);
     }
 
     /**
@@ -782,7 +772,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
      * for example would make sense for selections that are stored for rows that
      * have no row data in the backing data structure, e.g. a summary row
      * selection.
-     * 
+     *
      * @param row
      *            The internal selected row representation.
      * @return <code>false</code> if the default handling for vertical changes

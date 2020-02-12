@@ -10,9 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import org.eclipse.collections.api.set.primitive.MutableIntSet;
 import org.eclipse.collections.impl.factory.primitive.IntSets;
@@ -22,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.group.model.IRowGroupModel;
 import org.eclipse.nebula.widgets.nattable.group.model.IRowGroupModelListener;
 import org.eclipse.nebula.widgets.nattable.hideshow.AbstractRowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
 public class RowGroupExpandCollapseLayer<T> extends AbstractRowHideShowLayer implements IRowGroupModelListener {
 
@@ -71,7 +70,7 @@ public class RowGroupExpandCollapseLayer<T> extends AbstractRowHideShowLayer imp
 
     @Override
     public Collection<Integer> getHiddenRowIndexes() {
-        return Arrays.stream(getHiddenRowIndexesArray()).boxed().collect(Collectors.toList());
+        return ArrayUtil.asIntegerList(getHiddenRowIndexesArray());
     }
 
     @Override

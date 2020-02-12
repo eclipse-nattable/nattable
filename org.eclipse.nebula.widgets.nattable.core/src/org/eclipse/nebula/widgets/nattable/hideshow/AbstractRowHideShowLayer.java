@@ -161,10 +161,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
      *            The row indexes for which the local row positions are
      *            requested.
      * @return The local row positions for the given row indexes.
-     * @deprecated Use {@link #getRowPositionsByIndexes(int...)} using primitive
-     *             values to avoid unnecessary boxing.
      */
-    @Deprecated
     public Collection<Integer> getRowPositionsByIndexes(Collection<Integer> rowIndexes) {
         Collection<Integer> rowPositions = new HashSet<>();
         for (int rowIndex : rowIndexes) {

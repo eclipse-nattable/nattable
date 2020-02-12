@@ -31,6 +31,7 @@ import org.eclipse.collections.api.list.primitive.MutableIntList;
 import org.eclipse.collections.impl.factory.primitive.IntLists;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
 public class PositionUtilBenchmark {
 
@@ -43,6 +44,8 @@ public class PositionUtilBenchmark {
     public static void main(String[] args) {
         PositionUtilBenchmark benchmark = new PositionUtilBenchmark();
         benchmark.startGrouping();
+
+        benchmark.startBoxingUnboxing();
 
         System.out.println();
         System.out.println();
@@ -63,6 +66,92 @@ public class PositionUtilBenchmark {
         if (!this.valuesWrapper.equals(wrapperFromStream)) {
             System.err.println("Wrapper input not equal");
         }
+    }
+
+    @SuppressWarnings("unused")
+    void startBoxingUnboxing() {
+
+        System.out.println();
+        System.out.println("start boxing/unboxing");
+        System.out.println();
+
+        List<Integer> boxed1 = getBoxedViaIteration();
+        List<Integer> boxed2 = getBoxedViaStream();
+
+        int[] unboxed1 = getUnBoxedViaIteration();
+        int[] unboxed2 = getUnBoxedViaStream();
+    }
+
+    List<Integer> getBoxedViaIteration() {
+        int sum = 0;
+        List<Integer> values = null;
+        for (int j = 0; j < ITERATIONS; j++) {
+            long start = System.currentTimeMillis();
+
+            values = ArrayUtil.asIntegerList(this.valuesPrimitive);
+
+            long end = System.currentTimeMillis();
+
+            sum += (end - start);
+        }
+
+        System.out.println("boxing int[] to List<Integer> via for-loop\t" + (sum / ITERATIONS) + " ms"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        return values;
+    }
+
+    List<Integer> getBoxedViaStream() {
+        int sum = 0;
+        List<Integer> values = null;
+        for (int j = 0; j < ITERATIONS; j++) {
+            long start = System.currentTimeMillis();
+
+            values = Arrays.stream(this.valuesPrimitive).boxed().collect(Collectors.toList());
+
+            long end = System.currentTimeMillis();
+
+            sum += (end - start);
+        }
+
+        System.out.println("boxing int[] to List<Integer> via Stream\t" + (sum / ITERATIONS) + " ms"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        return values;
+    }
+
+    int[] getUnBoxedViaIteration() {
+        int sum = 0;
+        int[] values = null;
+        for (int j = 0; j < ITERATIONS; j++) {
+            long start = System.currentTimeMillis();
+
+            values = ArrayUtil.asIntArray(this.valuesWrapper);
+
+            long end = System.currentTimeMillis();
+
+            sum += (end - start);
+        }
+
+        System.out.println("unboxing List<Integer> to int[] via for-loop\t" + (sum / ITERATIONS) + " ms"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        return values;
+    }
+
+    int[] getUnBoxedViaStream() {
+        int sum = 0;
+        int[] values = null;
+        for (int j = 0; j < ITERATIONS; j++) {
+            long start = System.currentTimeMillis();
+
+            values = this.valuesWrapper.stream().mapToInt(Integer::intValue).toArray();
+
+            long end = System.currentTimeMillis();
+
+            sum += (end - start);
+        }
+
+        System.out.println("unboxing List<Integer> to int[] via Stream\t" + (sum / ITERATIONS) + " ms"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        return values;
     }
 
     @SuppressWarnings("unused")

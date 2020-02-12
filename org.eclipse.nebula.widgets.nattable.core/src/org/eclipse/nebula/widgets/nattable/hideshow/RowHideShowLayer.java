@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.stream.Collectors;
 
 import org.eclipse.collections.api.list.primitive.MutableIntList;
 import org.eclipse.collections.api.set.primitive.MutableIntSet;
@@ -36,6 +35,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralChangeEventHelper;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
 public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHideShowLayer {
 
@@ -136,7 +136,7 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
 
     @Override
     public Collection<Integer> getHiddenRowIndexes() {
-        return this.hiddenRowIndexes.toSortedList().primitiveStream().boxed().collect(Collectors.toList());
+        return ArrayUtil.asIntegerList(this.hiddenRowIndexes.toSortedArray());
     }
 
     @Override

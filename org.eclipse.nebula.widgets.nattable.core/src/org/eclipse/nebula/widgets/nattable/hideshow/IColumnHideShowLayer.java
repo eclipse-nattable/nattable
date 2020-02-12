@@ -113,4 +113,19 @@ public interface IColumnHideShowLayer {
      * @return The indexes of the columns that are hidden in this layer.
      */
     Collection<Integer> getHiddenColumnIndexes();
+
+    /**
+     * Will collect and return all indexes of the columns that are hidden in
+     * this layer.
+     * <p>
+     * <b>Note:</b> It is not intended that it also collects the column indexes
+     * of underlying layers. This would cause issues on calculating positions,
+     * as every layer is responsible for those calculations itself.
+     * </p>
+     *
+     * @return All column indexes that are hidden in this layer.
+     *
+     * @since 2.0
+     */
+    int[] getHiddenColumnIndexesArray();
 }

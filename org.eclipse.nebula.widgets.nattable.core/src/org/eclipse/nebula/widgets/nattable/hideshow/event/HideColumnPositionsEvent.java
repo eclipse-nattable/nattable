@@ -29,10 +29,7 @@ public class HideColumnPositionsEvent extends ColumnStructuralChangeEvent {
      *            The ILayer to which the given column positions match.
      * @param columnPositions
      *            The positions of the columns that have changed.
-     * @deprecated Use {@link #HideColumnPositionsEvent(ILayer, int...)} with
-     *             primitive types to avoid autoboxing.
      */
-    @Deprecated
     public HideColumnPositionsEvent(ILayer layer, Collection<Integer> columnPositions) {
         super(layer, PositionUtil.getRanges(columnPositions));
     }
@@ -61,10 +58,7 @@ public class HideColumnPositionsEvent extends ColumnStructuralChangeEvent {
      *            The indexes of the columns that have changed.
      *
      * @since 1.6
-     * @deprecated Use {@link #HideColumnPositionsEvent(ILayer, int[], int[])}
-     *             with primitive types to avoid autoboxing.
      */
-    @Deprecated
     public HideColumnPositionsEvent(ILayer layer, Collection<Integer> columnPositions, Collection<Integer> columnIndexes) {
         super(layer, PositionUtil.getRanges(columnPositions), columnIndexes);
     }

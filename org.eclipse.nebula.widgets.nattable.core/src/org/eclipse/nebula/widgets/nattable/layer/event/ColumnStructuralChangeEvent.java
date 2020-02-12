@@ -60,11 +60,7 @@ public abstract class ColumnStructuralChangeEvent extends ColumnVisualChangeEven
      *            The indexes of the columns that have changed.
      *
      * @since 1.6
-     * @deprecated Use
-     *             {@link #ColumnStructuralChangeEvent(ILayer, Collection, int...)}
-     *             with primitive types for row indexes to avoid autoboxing.
      */
-    @Deprecated
     public ColumnStructuralChangeEvent(ILayer layer, Collection<Range> columnPositionRanges, Collection<Integer> columnIndexes) {
         super(layer, columnPositionRanges, columnIndexes);
     }

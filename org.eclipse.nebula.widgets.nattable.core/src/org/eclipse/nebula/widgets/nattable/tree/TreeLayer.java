@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,6 +41,7 @@ import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandToLevelCommand
 import org.eclipse.nebula.widgets.nattable.tree.config.DefaultTreeLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.tree.config.TreeConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
 public class TreeLayer extends AbstractRowHideShowLayer {
 
@@ -326,7 +326,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 
     @Override
     public Collection<Integer> getHiddenRowIndexes() {
-        return this.hiddenRowIndexes.toSortedList().primitiveStream().boxed().collect(Collectors.toList());
+        return ArrayUtil.asIntegerList(this.hiddenRowIndexes.toSortedArray());
     }
 
     @Override
