@@ -29,6 +29,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
@@ -111,6 +112,28 @@ public class GUIHelper {
         return JFaceResources.getFont(key);
     }
 
+    /**
+     * Return a scaled version of the configured font if font scaling is needed.
+     * If no font scaling is needed, the given font is returned.
+     *
+     * @param font
+     *            The font to scale.
+     * @return The font with the updated height if font scaling is needed,
+     *         otherwise the given font.
+     * @since 2.0
+     */
+    public static Font getScaledFont(Font font, float fontScalingFactor) {
+        if (fontScalingFactor != 1) {
+            int fontHeight = (int) (font.getFontData()[0].getHeight() * fontScalingFactor);
+            FontData[] fontData = font.getFontData();
+            for (FontData data : fontData) {
+                data.setHeight(fontHeight);
+            }
+            return getFont(fontData);
+        }
+        return font;
+    }
+
     // Image
 
     private static final String[] IMAGE_DIRS = new String[] { "org/eclipse/nebula/widgets/nattable/images/", "" }; //$NON-NLS-1$ //$NON-NLS-2$
@@ -177,9 +200,129 @@ public class GUIHelper {
      *         NatTable.
      */
     public static Image getImageByURL(String key, URL url) {
-        Image image = JFaceResources.getImage(key);
+        return getImageByURL(key, url, needScaling(), false);
+    }
+
+    /**
+     * This method extracts the base filename out of the given {@link URL} and
+     * uses it as key to search for the {@link Image} in the
+     * {@link ImageRegistry}. If the {@link Image} is not yet present it will
+     * create the {@link Image} instance and register it automatically. On
+     * creating and registering it will respect display dpi scaling.
+     *
+     * @param url
+     *            The {@link URL} of the image for initial loading.
+     * @return The {@link Image} representation of an image external to
+     *         NatTable.
+     *
+     * @see #getImageByURL(String, URL)
+     * @since 2.0
+     */
+    public static Image getDisplayImageByURL(URL url) {
+        String basename = url.toString();
+        basename = basename.substring(basename.lastIndexOf('/') + 1, basename.lastIndexOf('.'));
+        return getDisplayImageByURL(basename, url);
+    }
+
+    /**
+     * This method returns the {@link Image} that is registered for the given
+     * key. If there is no {@link Image} registered for that key already, it
+     * will create and register the {@link Image} that can be loaded by the
+     * given {@link URL}.
+     * <p>
+     * This method returns an {@link Image} that matches the display dpi
+     * settings. If the dpi of an axis is bigger than 96 it will search for an
+     * image for the bigger dpi. For this the filenames need to carry the dpi
+     * information.
+     * </p>
+     * <p>
+     * For example if you request <i>checkbox.png</i> this method will search
+     * for a scaled version relative to the requested image. The following will
+     * give an example on the scaled files:
+     * </p>
+     * <ul>
+     * <li>checkbox.png</li>
+     * <li>checkbox_120_120.png</li>
+     * <li>checkbox_128_128.png</li>
+     * <li>checkbox_144_144.png</li>
+     * <li>checkbox_192_192.png</li>
+     * <li>checkbox_288_288.png</li>
+     * </ul>
+     * <p>
+     * If the matching scaled version is not found, it will automatically
+     * upscale the base image.
+     * </p>
+     * <p>
+     * Note: If you want to get the image later again you can directly use
+     * <code>JFaceResources.getImage(key)</code>.
+     * </p>
+     *
+     * @param key
+     *            The key under which the resource is registered in the image
+     *            registry.
+     * @param url
+     *            The {@link URL} of the image for initial loading.
+     * @return The {@link Image} representation of an image external to
+     *         NatTable.
+     * @since 2.0
+     */
+    public static Image getDisplayImageByURL(String key, URL url) {
+        return getImageByURL(key, url, needScaling(true), true);
+    }
+
+    /**
+     * This method returns the {@link Image} that is registered for the given
+     * key. If there is no {@link Image} registered for that key already, it
+     * will create and register the {@link Image} that can be loaded by the
+     * given {@link URL}.
+     * <p>
+     * This method returns an {@link Image} that matches the dpi settings. If
+     * the dpi of an axis is bigger than 96 it will search for an image for the
+     * bigger dpi. For this the filenames need to carry the dpi information.
+     * </p>
+     * <p>
+     * For example if you request <i>checkbox.png</i> this method will search
+     * for a scaled version relative to the requested image. The following will
+     * give an example on the scaled files:
+     * </p>
+     * <ul>
+     * <li>checkbox.png</li>
+     * <li>checkbox_120_120.png</li>
+     * <li>checkbox_128_128.png</li>
+     * <li>checkbox_144_144.png</li>
+     * <li>checkbox_192_192.png</li>
+     * <li>checkbox_288_288.png</li>
+     * </ul>
+     * <p>
+     * If the matching scaled version is not found, it will automatically
+     * upscale the base image.
+     * </p>
+     * <p>
+     * Note: If you want to get the image later again you can directly use
+     * <code>JFaceResources.getImage(key)</code>.
+     * </p>
+     *
+     * @param key
+     *            The key under which the resource is registered in the image
+     *            registry.
+     * @param url
+     *            The {@link URL} of the image for initial loading.
+     * @param considerScaling
+     *            <code>true</code> if image scaling according to the scaling
+     *            settings should be performed, <code>false</code> if only the
+     *            existing file should be considered without scaling.
+     * @param forDisplayDPI
+     *            Whether the display DPI or the configured DPI should be
+     *            considered.
+     * @return The {@link Image} representation of an image external to
+     *         NatTable.
+     * @since 2.0
+     */
+    public static Image getImageByURL(String key, URL url, boolean considerScaling, boolean forDisplayDPI) {
+        String internalKey = getImageKey(key, considerScaling, forDisplayDPI);
+        Image image = JFaceResources.getImage(internalKey);
         if (image == null) {
-            if (needScaling()) {
+            if (considerScaling) {
                 // modify url to contain scaling information in filename
                 // create the matching URL for the scaled image
                 String urlString = url.toString();
@@ -193,9 +336,9 @@ public class GUIHelper {
                     URLConnection con = scaleURL.openConnection();
                     con.connect();
                     // as the connection could be established, the file exists
-                    // this check is working in plain SWT aswell as in the OSGi
+                    // this check is working in plain SWT as well as in the OSGi
                     // context
-                    JFaceResources.getImageRegistry().put(key, ImageDescriptor.createFromURL(scaleURL));
+                    JFaceResources.getImageRegistry().put(internalKey, ImageDescriptor.createFromURL(scaleURL));
                 } catch (IOException e) {
                     // if there is no upscaled image available, we upscale
                     // ourself
@@ -203,19 +346,19 @@ public class GUIHelper {
                     imageData = imageData.scaledTo(
                             convertHorizontalPixelToDpi(imageData.width),
                             convertVerticalPixelToDpi(imageData.height));
-                    JFaceResources.getImageRegistry().put(key, new Image(Display.getDefault(), imageData));
+                    JFaceResources.getImageRegistry().put(internalKey, new Image(Display.getDefault(), imageData));
                 }
             } else {
-                JFaceResources.getImageRegistry().put(key, ImageDescriptor.createFromURL(url));
+                JFaceResources.getImageRegistry().put(internalKey, ImageDescriptor.createFromURL(url));
             }
-            image = JFaceResources.getImage(key);
+            image = JFaceResources.getImage(internalKey);
         }
         return image;
     }
 
     /**
      * Returns the {@link Image} representation of a NatTable internal image
-     * resource.
+     * resource. Will handle scaling if needed.
      * <p>
      * For upscaling this method checks whether there is a upscaled version of
      * the image available, otherwise it will upscale the existing image and
@@ -229,29 +372,99 @@ public class GUIHelper {
      *         given name at the internal image resource location.
      */
     public static Image getImage(String imageName) {
-        Image image = JFaceResources.getImage(imageName);
+        return getImage(imageName, needScaling(), false);
+    }
+
+    /**
+     * Returns the {@link Image} representation of a NatTable internal image
+     * resource. Will apply scaling for the current display scaling factor if
+     * needed.
+     * <p>
+     * For upscaling this method checks whether there is a upscaled version of
+     * the image available, otherwise it will upscale the existing image and
+     * store that in the registry for further use.
+     * </p>
+     *
+     * @param imageName
+     *            The filename of the image (without extension).
+     * @return The {@link Image} representation of the internal NatTable image
+     *         resource or <code>null</code> if there is no image found for the
+     *         given name at the internal image resource location.
+     * @since 2.0
+     */
+    public static Image getDisplayImage(String imageName) {
+        return getImage(imageName, needScaling(true), true);
+    }
+
+    /**
+     * Returns the {@link Image} representation of a NatTable internal image
+     * resource.
+     * <p>
+     * For upscaling this method checks whether there is a upscaled version of
+     * the image available, otherwise it will upscale the existing image and
+     * store that in the registry for further use.
+     * </p>
+     *
+     * @param imageName
+     *            The filename of the image (without extension).
+     * @param considerScaling
+     *            <code>true</code> if image scaling according to the scaling
+     *            settings should be performed, <code>false</code> if only the
+     *            existing file should be considered without scaling.
+     * @param forDisplayDPI
+     *            Whether the display DPI or the configured DPI should be
+     *            considered.
+     * @return The {@link Image} representation of the internal NatTable image
+     *         resource or <code>null</code> if there is no image found for the
+     *         given name at the internal image resource location.
+     * @since 2.0
+     */
+    public static Image getImage(String imageName, boolean considerScaling, boolean forDisplayDPI) {
+        String key = getImageKey(imageName, considerScaling, forDisplayDPI);
+        Image image = JFaceResources.getImage(key);
         if (image == null) {
-            URL imageUrl = getInternalImageUrl(imageName, needScaling());
+            URL imageUrl = getInternalImageUrl(imageName, considerScaling, forDisplayDPI);
             if (imageUrl != null) {
                 ImageDescriptor imageDescriptor = ImageDescriptor.createFromURL(imageUrl);
 
-                if (needScaling() && !imageUrl.getFile().contains(getScalingImageSuffix())) {
+                if (considerScaling && !imageUrl.getFile().contains(getScalingImageSuffix(forDisplayDPI))) {
                     // we need to upscale the image but we have no scaled
                     // version, therefore we manually perform an upscale
                     // it won't look nice but at least it is upscaled
                     ImageData imageData = imageDescriptor.getImageData(100);
                     imageData = imageData.scaledTo(
-                            convertHorizontalPixelToDpi(imageData.width),
-                            convertVerticalPixelToDpi(imageData.height));
-                    JFaceResources.getImageRegistry().put(imageName, new Image(Display.getDefault(), imageData));
+                            convertHorizontalPixelToDpi(imageData.width, forDisplayDPI),
+                            convertVerticalPixelToDpi(imageData.height, forDisplayDPI));
+                    JFaceResources.getImageRegistry().put(key, new Image(Display.getDefault(), imageData));
                 } else {
-                    JFaceResources.getImageRegistry().put(imageName, imageDescriptor.createImage());
+                    JFaceResources.getImageRegistry().put(key, imageDescriptor.createImage());
                 }
 
-                image = JFaceResources.getImage(imageName);
+                image = JFaceResources.getImage(key);
             }
         }
         return image;
+    }
+
+    /**
+     * Checks if scaling is needed and if so the key is extended to reflect the
+     * scaling information.
+     *
+     * @param key
+     *            The key under which an image is requested.
+     * @param needScaling
+     *            <code>true</code> in case the scaled version is requested,
+     *            <code>false</code> if the original version is requested.
+     * @param forDisplayDPI
+     *            Whether the display DPI or the configured DPI should be
+     *            considered.
+     * @return The key under which the image is stored internally.
+     */
+    private static String getImageKey(String key, boolean needScaling, boolean forDisplayDPI) {
+        if (needScaling) {
+            return key + getScalingImageSuffix(forDisplayDPI);
+        }
+        return key;
     }
 
     /**
@@ -294,10 +507,10 @@ public class GUIHelper {
      * image resource folder with file extensions <i>.png</i> and <i>.gif</i>.
      *
      * @param imageName
-     *            The filename of the image (without extension)
+     *            The filename of the image (without extension).
      * @param needScaling
      *            <code>true</code> in case the scaled version is requested,
-     *            <code>false</code> if the original version is requested
+     *            <code>false</code> if the original version is requested.
      * @return The URL of the internal NatTable image or <code>null</code> if
      *         there is no image found for the given name at the internal image
      *         resource location.
@@ -305,6 +518,28 @@ public class GUIHelper {
      * @since 1.5
      */
     public static URL getInternalImageUrl(String imageName, boolean needScaling) {
+        return getInternalImageUrl(imageName, needScaling, false);
+    }
+
+    /**
+     * Searches for the image with the given filename in the NatTable internal
+     * image resource folder with file extensions <i>.png</i> and <i>.gif</i>.
+     *
+     * @param imageName
+     *            The filename of the image (without extension)
+     * @param needScaling
+     *            <code>true</code> in case the scaled version is requested,
+     *            <code>false</code> if the original version is requested.
+     * @param forDisplayDPI
+     *            Whether the display DPI or the configured DPI should be
+     *            considered.
+     * @return The URL of the internal NatTable image or <code>null</code> if
+     *         there is no image found for the given name at the internal image
+     *         resource location.
+     *
+     * @since 2.0
+     */
+    public static URL getInternalImageUrl(String imageName, boolean needScaling, boolean forDisplayDPI) {
         for (String dir : IMAGE_DIRS) {
             for (String ext : IMAGE_EXTENSIONS) {
                 // add search for scaled image
@@ -313,7 +548,7 @@ public class GUIHelper {
                 URL url = null;
                 if (needScaling) {
                     url = GUIHelper.class.getClassLoader().getResource(
-                            dir + imageName + getScalingImageSuffix() + ext);
+                            dir + imageName + getScalingImageSuffix(forDisplayDPI) + ext);
                 }
 
                 // no scaling needed or no already scaled image found
@@ -396,8 +631,22 @@ public class GUIHelper {
      * @return The factor for dpi scaling calculations.
      */
     public static float getDpiFactor(int dpi) {
-        // never scale below 96 dpi
-        return Math.max(1.0f, Math.round((dpi / 96f) * 100) / 100f);
+        return Math.max(0.1f, Math.round((dpi / 96f) * 100) / 100f);
+    }
+
+    private static Point dpi;
+
+    /**
+     * Set the dpi values that are used for image scaling.
+     *
+     * @param x
+     *            The horizontal dots per inch.
+     * @param y
+     *            The vertical dots per inch.
+     * @since 2.0
+     */
+    public static void setDpi(int x, int y) {
+        GUIHelper.dpi = new Point(x, y);
     }
 
     /**
@@ -405,20 +654,64 @@ public class GUIHelper {
      *         value is bigger than 96.
      */
     public static boolean needScaling() {
-        return (getDpiX() > 96 || getDpiY() > 96);
+        return (getDpiX() != 96 || getDpiY() != 96);
     }
 
     /**
-     * @return The horizontal dots per inch of the default display.
+     * @param forDisplay
+     *            if the check should be performed against the display scaling
+     *            or the configured scaling.
+     * @return <code>true</code> if either the horizontal or the vertical DPI
+     *         value is bigger than 96.
+     * @since 2.0
+     */
+    public static boolean needScaling(boolean forDisplay) {
+        return (getDpiX(forDisplay) != 96 || getDpiY(forDisplay) != 96);
+    }
+
+    /**
+     * @return The horizontal dots per inch.
      */
     public static int getDpiX() {
+        return getDpiX(false);
+    }
+
+    /**
+     * Returns the horizontal dots per inch configured locally. If no local dpi
+     * configuration is set, it falls back to the display dpi.
+     *
+     * @param displayDPI
+     *            If the display dpi should be returned always.
+     * @return The horizontal dots per inch.
+     * @since 2.0
+     */
+    public static int getDpiX(boolean displayDPI) {
+        if (!displayDPI && GUIHelper.dpi != null) {
+            return GUIHelper.dpi.x;
+        }
         return Display.getDefault().getDPI().x;
     }
 
     /**
-     * @return The vertical dots per inch of the default display.
+     * @return The vertical dots per inch.
      */
     public static int getDpiY() {
+        return getDpiY(false);
+    }
+
+    /**
+     * Returns the vertical dots per inch configured locally. If no local dpi
+     * configuration is set, it falls back to the display dpi.
+     *
+     * @param displayDPI
+     *            If the display dpi should be returned always.
+     * @return The vertical dots per inch.
+     * @since 2.0
+     */
+    public static int getDpiY(boolean displayDPI) {
+        if (!displayDPI && GUIHelper.dpi != null) {
+            return GUIHelper.dpi.y;
+        }
         return Display.getDefault().getDPI().y;
     }
 
@@ -427,6 +720,18 @@ public class GUIHelper {
      */
     public static String getScalingImageSuffix() {
         return "_" + getDpiX() + "_" + getDpiY(); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
+     *
+     * @param forDisplayDPI
+     *            Whether the display DPI or the configured DPI should be
+     *            considered.
+     * @return The suffix that is used to mark an image as upscaled image.
+     * @since 2.0
+     */
+    public static String getScalingImageSuffix(boolean forDisplayDPI) {
+        return "_" + getDpiX(forDisplayDPI) + "_" + getDpiY(forDisplayDPI); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -442,6 +747,22 @@ public class GUIHelper {
     }
 
     /**
+     * Converts the given amount of pixels to a DPI scaled value using the
+     * factor for the horizontal DPI value.
+     *
+     * @param pixel
+     *            the amount of pixels to convert.
+     * @param forDisplayDPI
+     *            Whether the display DPI or the configured DPI should be
+     *            considered.
+     * @return The converted pixels.
+     * @since 2.0
+     */
+    public static int convertHorizontalPixelToDpi(int pixel, boolean forDisplayDPI) {
+        return Math.round(pixel * getDpiFactor(getDpiX(forDisplayDPI)));
+    }
+
+    /**
      * Converts the given DPI scaled value to a pixel value using the factor for
      * the horizontal DPI.
      *
@@ -450,7 +771,23 @@ public class GUIHelper {
      * @return The pixel value related to the given DPI
      */
     public static int convertHorizontalDpiToPixel(int dpi) {
-        return Math.round(dpi / getDpiFactor(getDpiY()));
+        return Math.round(dpi / getDpiFactor(getDpiX()));
+    }
+
+    /**
+     * Converts the given DPI scaled value to a pixel value using the factor for
+     * the horizontal DPI.
+     *
+     * @param dpi
+     *            the DPI value to convert.
+     * @param forDisplayDPI
+     *            Whether the display DPI or the configured DPI should be
+     *            considered.
+     * @return The pixel value related to the given DPI
+     * @since 2.0
+     */
+    public static int convertHorizontalDpiToPixel(int dpi, boolean forDisplayDPI) {
+        return Math.round(dpi / getDpiFactor(getDpiX(forDisplayDPI)));
     }
 
     /**
@@ -462,7 +799,23 @@ public class GUIHelper {
      * @return The converted pixels.
      */
     public static int convertVerticalPixelToDpi(int pixel) {
-        return Math.round(pixel * getDpiFactor(getDpiX()));
+        return Math.round(pixel * getDpiFactor(getDpiY()));
+    }
+
+    /**
+     * Converts the given amount of pixels to a DPI scaled value using the
+     * factor for the vertical DPI.
+     *
+     * @param pixel
+     *            the amount of pixels to convert.
+     * @param forDisplayDPI
+     *            Whether the display DPI or the configured DPI should be
+     *            considered.
+     * @return The converted pixels.
+     * @since 2.0
+     */
+    public static int convertVerticalPixelToDpi(int pixel, boolean forDisplayDPI) {
+        return Math.round(pixel * getDpiFactor(getDpiY(forDisplayDPI)));
     }
 
     /**
@@ -475,6 +828,22 @@ public class GUIHelper {
      */
     public static int convertVerticalDpiToPixel(int dpi) {
         return Math.round(dpi / getDpiFactor(getDpiY()));
+    }
+
+    /**
+     * Converts the given DPI scaled value to a pixel value using the factor for
+     * the vertical DPI.
+     *
+     * @param dpi
+     *            the DPI value to convert.
+     * @param forDisplayDPI
+     *            Whether the display DPI or the configured DPI should be
+     *            considered.
+     * @return The pixel value related to the given DPI
+     * @since 2.0
+     */
+    public static int convertVerticalDpiToPixel(int dpi, boolean forDisplayDPI) {
+        return Math.round(dpi / getDpiFactor(getDpiY(forDisplayDPI)));
     }
 
     /**

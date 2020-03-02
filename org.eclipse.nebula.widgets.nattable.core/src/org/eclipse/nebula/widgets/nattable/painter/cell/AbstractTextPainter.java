@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -192,7 +192,9 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      * Setup the GC by the values defined in the given cell style.
      *
      * @param gc
+     *            The {@link GC} that is used for rendering.
      * @param cellStyle
+     *            The {@link IStyle} to retrieve the styling options.
      */
     public void setupGCFromConfig(GC gc, IStyle cellStyle) {
         Color fg = cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR);

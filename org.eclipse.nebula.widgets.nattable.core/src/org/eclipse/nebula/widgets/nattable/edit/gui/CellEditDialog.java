@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2017 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -126,14 +126,13 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
         super.configureShell(newShell);
 
         String shellTitle = Messages.getString("CellEditDialog.shellTitle"); //$NON-NLS-1$
-        Image shellIcon = GUIHelper.getImage("editor"); //$NON-NLS-1$
+        Image shellIcon = GUIHelper.getDisplayImage("editor"); //$NON-NLS-1$
         if (this.editDialogSettings != null) {
             if (this.editDialogSettings.containsKey(DIALOG_SHELL_TITLE)) {
                 String settingsShellTitle = this.editDialogSettings.get(DIALOG_SHELL_TITLE).toString();
                 shellTitle = settingsShellTitle;
             }
-            Object settingsShellImage = this.editDialogSettings
-                    .get(DIALOG_SHELL_ICON);
+            Object settingsShellImage = this.editDialogSettings.get(DIALOG_SHELL_ICON);
             if (settingsShellImage != null && settingsShellImage instanceof Image) {
                 shellIcon = (Image) settingsShellImage;
             }

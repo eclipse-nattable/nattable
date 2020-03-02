@@ -45,6 +45,7 @@ import org.eclipse.nebula.widgets.nattable.grid.command.InitializeGridCommand;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DefaultHorizontalDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.DefaultVerticalDpiConverter;
+import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
@@ -92,6 +93,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
@@ -100,7 +102,7 @@ import org.eclipse.swt.widgets.ScrollBar;
 @SuppressWarnings("deprecation")
 public class NatTable extends Canvas implements ILayer, PaintListener, IClientAreaProvider, ILayerListener, IPersistable {
 
-    private static final Log log = LogFactory.getLog(NatTable.class);
+    private static final Log LOG = LogFactory.getLog(NatTable.class);
 
     public static final int DEFAULT_STYLE_OPTIONS = SWT.NO_BACKGROUND
             | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.V_SCROLL
@@ -385,7 +387,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
         if (this.configRegistry == null) {
             this.configRegistry = new ConfigRegistry();
             this.themeManager = new ThemeManager(this.configRegistry);
-            setDefaultTopLevelConfigurations();
+            configureScaling(new DefaultHorizontalDpiConverter(), new DefaultVerticalDpiConverter());
         }
         return this.configRegistry;
     }
@@ -408,22 +410,39 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
         this.configRegistry = configRegistry;
         this.themeManager = new ThemeManager(configRegistry);
-        setDefaultTopLevelConfigurations();
+        configureScaling(new DefaultHorizontalDpiConverter(), new DefaultVerticalDpiConverter());
     }
 
     /**
-     * Populate the {@link IConfigRegistry} with some top level default
-     * configurations that are not set via {@link IConfiguration}.
+     * Add the given {@link IDpiConverter} to the {@link IConfigRegistry} so
+     * they can be used by painters and set the system properties to use the
+     * configured scaling for images.
      *
+     * @param horizontalConverter
+     *            The {@link IDpiConverter} for horizontal scaling.
+     * @param verticalConverter
+     *            The {@link IDpiConverter} for vertical scaling.
      * @since 2.0
      */
-    protected void setDefaultTopLevelConfigurations() {
-        this.configRegistry.registerConfigAttribute(
+    protected void configureScaling(IDpiConverter horizontalConverter, IDpiConverter verticalConverter) {
+        // set the converter to the registry
+        getConfigRegistry().registerConfigAttribute(
                 NatTableConfigAttributes.HORIZONTAL_DPI_CONVERTER,
-                new DefaultHorizontalDpiConverter());
-        this.configRegistry.registerConfigAttribute(
+                horizontalConverter);
+        getConfigRegistry().registerConfigAttribute(
                 NatTableConfigAttributes.VERTICAL_DPI_CONVERTER,
-                new DefaultVerticalDpiConverter());
+                verticalConverter);
+
+        // set the dpi values to the GUIHelper to reflect scaling for images
+        GUIHelper.setDpi(horizontalConverter.getDpi(), verticalConverter.getDpi());
+
+        // register the font scaling factor
+        float dpiFactor = GUIHelper.getDpiFactor(GUIHelper.getDpiX());
+        float displayDpiFactor = GUIHelper.getDpiFactor(Display.getDefault().getDPI().x);
+        float fontScalingFactor = (dpiFactor / displayDpiFactor);
+        getConfigRegistry().registerConfigAttribute(
+                NatTableConfigAttributes.FONT_SCALING_FACTOR,
+                fontScalingFactor);
     }
 
     /**
@@ -735,7 +754,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
                 try {
                     notifyListeners(SWT.Selection, e);
                 } catch (RuntimeException re) {
-                    log.error("Error on SWT selection processing", re); //$NON-NLS-1$
+                    LOG.error("Error on SWT selection processing", re); //$NON-NLS-1$
                 }
             }
 
@@ -837,12 +856,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
             // place the dpi converter in the ConfigRegistry for consistent
             // scaling behavior
             ConfigureScalingCommand cmd = (ConfigureScalingCommand) command;
-            getConfigRegistry().registerConfigAttribute(
-                    NatTableConfigAttributes.HORIZONTAL_DPI_CONVERTER,
-                    cmd.getHorizontalDpiConverter());
-            getConfigRegistry().registerConfigAttribute(
-                    NatTableConfigAttributes.VERTICAL_DPI_CONVERTER,
-                    cmd.getVerticalDpiConverter());
+            configureScaling(cmd.getHorizontalDpiConverter(), cmd.getVerticalDpiConverter());
         }
 
         return this.underlyingLayer.doCommand(command);

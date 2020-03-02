@@ -16,7 +16,7 @@ import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 /**
  * Configuration attributes to configure top level NatTable configurations, e.g.
  * dpi converter for scaling.
- * 
+ *
  * @since 2.0
  */
 public final class NatTableConfigAttributes {
@@ -32,6 +32,12 @@ public final class NatTableConfigAttributes {
      * convert dimensions vertically.
      */
     public static final ConfigAttribute<IDpiConverter> VERTICAL_DPI_CONVERTER = new ConfigAttribute<IDpiConverter>();
+
+    /**
+     * Configuration attribute for registering the font scaling factor in case
+     * scaling is active.
+     */
+    public static final ConfigAttribute<Float> FONT_SCALING_FACTOR = new ConfigAttribute<Float>();
 
     private NatTableConfigAttributes() {
         // empty default constructor

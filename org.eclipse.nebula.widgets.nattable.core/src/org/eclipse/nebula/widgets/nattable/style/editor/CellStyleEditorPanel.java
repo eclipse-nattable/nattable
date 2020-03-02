@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,7 +19,6 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -51,28 +50,20 @@ public class CellStyleEditorPanel extends AbstractEditorPanel<Style> {
         gridLayout.marginLeft = 10;
         setLayout(gridLayout);
 
-        new Label(this, SWT.NONE).setText(Messages
-                .getString("CellStyleEditorPanel.backgroundColor")); //$NON-NLS-1$
+        new Label(this, SWT.NONE).setText(Messages.getString("CellStyleEditorPanel.backgroundColor")); //$NON-NLS-1$
         this.backgroundColorPicker = new ColorPicker(this, DEFAULT_BG_COLOR);
 
-        new Label(this, SWT.NONE).setText(Messages
-                .getString("CellStyleEditorPanel.foregroundColor")); //$NON-NLS-1$
+        new Label(this, SWT.NONE).setText(Messages.getString("CellStyleEditorPanel.foregroundColor")); //$NON-NLS-1$
         this.foregroundColorPicker = new ColorPicker(this, DEFAULT_FG_COLOR);
 
-        new Label(this, SWT.NONE).setText(Messages
-                .getString("CellStyleEditorPanel.font")); //$NON-NLS-1$
+        new Label(this, SWT.NONE).setText(Messages.getString("CellStyleEditorPanel.font")); //$NON-NLS-1$
         this.fontPicker = new FontPicker(this, GUIHelper.DEFAULT_FONT);
-        this.fontPicker.setLayoutData(new GridData(80, 20));
 
-        new Label(this, SWT.NONE).setText(Messages
-                .getString("CellStyleEditorPanel.horizontalAlignment")); //$NON-NLS-1$
-        this.horizontalAlignmentPicker = new HorizontalAlignmentPicker(this,
-                HorizontalAlignmentEnum.CENTER);
+        new Label(this, SWT.NONE).setText(Messages.getString("CellStyleEditorPanel.horizontalAlignment")); //$NON-NLS-1$
+        this.horizontalAlignmentPicker = new HorizontalAlignmentPicker(this, HorizontalAlignmentEnum.CENTER);
 
-        new Label(this, SWT.NONE).setText(Messages
-                .getString("CellStyleEditorPanel.verticalAlignment")); //$NON-NLS-1$
-        this.verticalAlignmentPicker = new VerticalAlignmentPicker(this,
-                VerticalAlignmentEnum.MIDDLE);
+        new Label(this, SWT.NONE).setText(Messages.getString("CellStyleEditorPanel.verticalAlignment")); //$NON-NLS-1$
+        this.verticalAlignmentPicker = new VerticalAlignmentPicker(this, VerticalAlignmentEnum.MIDDLE);
     }
 
     @Override
@@ -82,35 +73,18 @@ public class CellStyleEditorPanel extends AbstractEditorPanel<Style> {
 
     @Override
     public void edit(Style style) throws Exception {
-        this.origBgColor = style
-                .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
-        if (this.origBgColor == null) {
-            this.origBgColor = GUIHelper.COLOR_WHITE;
-        }
+        this.origBgColor = style.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_WHITE);
         this.backgroundColorPicker.setSelectedColor(this.origBgColor);
 
-        this.origFgColor = style
-                .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR);
-        if (this.origFgColor == null) {
-            this.origFgColor = GUIHelper.COLOR_BLACK;
-        }
+        this.origFgColor = style.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, GUIHelper.COLOR_BLACK);
         this.foregroundColorPicker.setSelectedColor(this.origFgColor);
 
-        this.fontPicker.setOriginalFont(style
-                .getAttributeValue(CellStyleAttributes.FONT));
+        this.fontPicker.setOriginalFont(style.getAttributeValue(CellStyleAttributes.FONT));
 
-        this.origHAlign = style
-                .getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT);
-        if (this.origHAlign == null) {
-            this.origHAlign = HorizontalAlignmentEnum.CENTER;
-        }
+        this.origHAlign = style.getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.CENTER);
         this.horizontalAlignmentPicker.setSelectedAlignment(this.origHAlign);
 
-        this.origVAlign = style
-                .getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT);
-        if (this.origVAlign == null) {
-            this.origVAlign = VerticalAlignmentEnum.MIDDLE;
-        }
+        this.origVAlign = style.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, VerticalAlignmentEnum.MIDDLE);
         this.verticalAlignmentPicker.setSelectedAlignment(this.origVAlign);
     }
 
@@ -119,25 +93,19 @@ public class CellStyleEditorPanel extends AbstractEditorPanel<Style> {
         Style newStyle = new Style();
 
         Color bgColor = this.backgroundColorPicker.getSelectedColor();
-        newStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                bgColor);
+        newStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, bgColor);
 
         Color fgColor = this.foregroundColorPicker.getSelectedColor();
-        newStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                fgColor);
+        newStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, fgColor);
 
         Font font = this.fontPicker.getSelectedFont();
         newStyle.setAttributeValue(CellStyleAttributes.FONT, font);
 
-        HorizontalAlignmentEnum hAlign = this.horizontalAlignmentPicker
-                .getSelectedAlignment();
-        newStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                hAlign);
+        HorizontalAlignmentEnum hAlign = this.horizontalAlignmentPicker.getSelectedAlignment();
+        newStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, hAlign);
 
-        VerticalAlignmentEnum vAlign = this.verticalAlignmentPicker
-                .getSelectedAlignment();
-        newStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                vAlign);
+        VerticalAlignmentEnum vAlign = this.verticalAlignmentPicker.getSelectedAlignment();
+        newStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, vAlign);
 
         return newStyle;
     }

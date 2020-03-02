@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2016 CEA LIST.
+ * Copyright (c) 2016, 2020 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,7 +34,7 @@ public class VerticalResizeCursorAction implements IMouseAction {
     @Override
     public void run(NatTable natTable, MouseEvent event) {
         if (this.resizeCursor == null) {
-            this.resizeCursor = new Cursor(Display.getDefault(), GUIHelper.getImage("vertical_resize").getImageData(), 15, 15); //$NON-NLS-1$
+            this.resizeCursor = new Cursor(Display.getDefault(), GUIHelper.getDisplayImage("vertical_resize").getImageData(), 15, 15); //$NON-NLS-1$
 
             natTable.addDisposeListener(new DisposeListener() {
 

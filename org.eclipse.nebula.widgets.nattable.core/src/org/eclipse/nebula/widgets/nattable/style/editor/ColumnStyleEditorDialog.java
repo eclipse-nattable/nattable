@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public class ColumnStyleEditorDialog extends AbstractStyleEditorDialog {
 
-    private static final Log log = LogFactory.getLog(ColumnStyleEditorDialog.class);
+    private static final Log LOG = LogFactory.getLog(ColumnStyleEditorDialog.class);
 
     // Tabs in the dialog
     private CellStyleEditorPanel cellStyleEditorPanel;
@@ -45,7 +45,7 @@ public class ColumnStyleEditorDialog extends AbstractStyleEditorDialog {
         super(parent);
         this.columnStyle = columnCellStyle;
 
-        this.newColumnCellStyle = columnCellStyle;
+        this.newColumnCellStyle = this.columnStyle;
         if (columnCellStyle != null) {
             this.newBorderStyle = this.columnStyle.getAttributeValue(CellStyleAttributes.BORDER_STYLE);
         }
@@ -80,35 +80,17 @@ public class ColumnStyleEditorDialog extends AbstractStyleEditorDialog {
 
         CTabItem columnTab = new CTabItem(tabFolder, SWT.NONE);
         columnTab.setText(Messages.getString("ColumnStyleEditorDialog.column")); //$NON-NLS-1$
-        columnTab.setImage(GUIHelper.getImage("column")); //$NON-NLS-1$
+        columnTab.setImage(GUIHelper.getDisplayImage("column")); //$NON-NLS-1$
         columnTab.setControl(createColumnPanel(tabFolder));
 
         try {
             this.cellStyleEditorPanel.edit(this.columnStyle);
             this.borderStyleEditorPanel.edit(this.columnStyle.getAttributeValue(CellStyleAttributes.BORDER_STYLE));
         } catch (Exception e) {
-            log.error("Error on style editing", e); //$NON-NLS-1$
+            LOG.error("Error on style editing", e); //$NON-NLS-1$
         }
     }
 
-    /*
-     * Grid level styling private Composite createBlotterPanel(Composite parent)
-     * { Composite blotterPanel = new Composite(parent, SWT.NONE); GridLayout
-     * panelLayout = new GridLayout(); blotterPanel.setLayout(panelLayout);
-     *
-     * GridData panelLayoutData = new GridData();
-     * panelLayoutData.grabExcessHorizontalSpace = true;
-     * panelLayoutData.grabExcessVerticalSpace = true;
-     * panelLayoutData.verticalAlignment = GridData.VERTICAL_ALIGN_BEGINNING;
-     * panelLayoutData.horizontalAlignment =
-     * GridData.HORIZONTAL_ALIGN_BEGINNING; panelLayoutData.horizontalIndent =
-     * 20; blotterPanel.setLayoutData(panelLayoutData);
-     *
-     * new SeparatorPanel(blotterPanel, "Styling"); gridColorsEditorPanel = new
-     * GridColorsEditorPanel(blotterPanel, gridStyle);
-     *
-     * return blotterPanel; }
-     */
     private Composite createColumnPanel(Composite parent) {
         Composite columnPanel = new Composite(parent, SWT.NONE);
         columnPanel.setLayout(new GridLayout());

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -138,7 +138,7 @@ public class MenuItemProviders {
             public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
                 menuItem.setText(Messages.getLocalizedMessage(menuLabel));
-                menuItem.setImage(GUIHelper.getImage("hide_column")); //$NON-NLS-1$
+                menuItem.setImage(GUIHelper.getDisplayImage("hide_column")); //$NON-NLS-1$
                 menuItem.setEnabled(true);
 
                 menuItem.addSelectionListener(new SelectionAdapter() {
@@ -183,7 +183,7 @@ public class MenuItemProviders {
      *         executes the {@link ShowAllColumnsCommand}.
      */
     public static IMenuItemProvider showAllColumnsMenuItemProvider(final String menuLabel) {
-        return showAllColumnsMenuItemProvider(menuLabel, GUIHelper.getImage("show_column")); //$NON-NLS-1$
+        return showAllColumnsMenuItemProvider(menuLabel, GUIHelper.getDisplayImage("show_column")); //$NON-NLS-1$
     }
 
     /**
@@ -262,7 +262,7 @@ public class MenuItemProviders {
      * @since 1.6
      */
     public static IMenuItemProvider showColumnMenuItemProvider(final boolean showAll, final String menuLabel) {
-        return showColumnMenuItemProvider(showAll, menuLabel, GUIHelper.getImage("show_column")); //$NON-NLS-1$
+        return showColumnMenuItemProvider(showAll, menuLabel, GUIHelper.getDisplayImage("show_column")); //$NON-NLS-1$
     }
 
     /**
@@ -350,7 +350,7 @@ public class MenuItemProviders {
             public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
                 menuItem.setText(Messages.getLocalizedMessage(menuLabel));
-                menuItem.setImage(GUIHelper.getImage("hide_row")); //$NON-NLS-1$
+                menuItem.setImage(GUIHelper.getDisplayImage("hide_row")); //$NON-NLS-1$
                 menuItem.setEnabled(true);
 
                 menuItem.addSelectionListener(new SelectionAdapter() {
@@ -413,7 +413,7 @@ public class MenuItemProviders {
             public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
                 menuItem.setText(Messages.getLocalizedMessage(menuLabel));
-                menuItem.setImage(GUIHelper.getImage("hide_row")); //$NON-NLS-1$
+                menuItem.setImage(GUIHelper.getDisplayImage("hide_row")); //$NON-NLS-1$
                 menuItem.setEnabled(true);
 
                 menuItem.addSelectionListener(new SelectionAdapter() {
@@ -460,7 +460,7 @@ public class MenuItemProviders {
      *         executes the {@link ShowAllRowsCommand}.
      */
     public static IMenuItemProvider showAllRowsMenuItemProvider(final String menuLabel) {
-        return showAllRowsMenuItemProvider(menuLabel, GUIHelper.getImage("show_row")); //$NON-NLS-1$
+        return showAllRowsMenuItemProvider(menuLabel, GUIHelper.getDisplayImage("show_row")); //$NON-NLS-1$
     }
 
     /**
@@ -539,7 +539,7 @@ public class MenuItemProviders {
      * @since 1.6
      */
     public static IMenuItemProvider showRowMenuItemProvider(final boolean showAll, final String menuLabel) {
-        return showRowMenuItemProvider(showAll, menuLabel, GUIHelper.getImage("show_row")); //$NON-NLS-1$
+        return showRowMenuItemProvider(showAll, menuLabel, GUIHelper.getDisplayImage("show_row")); //$NON-NLS-1$
     }
 
     /**
@@ -604,7 +604,7 @@ public class MenuItemProviders {
             public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem autoResizeColumns = new MenuItem(popupMenu, SWT.PUSH);
                 autoResizeColumns.setText(Messages.getLocalizedMessage(menuLabel));
-                autoResizeColumns.setImage(GUIHelper.getImage("auto_resize")); //$NON-NLS-1$
+                autoResizeColumns.setImage(GUIHelper.getDisplayImage("auto_resize")); //$NON-NLS-1$
                 autoResizeColumns.setEnabled(true);
 
                 autoResizeColumns.addSelectionListener(new SelectionAdapter() {
@@ -634,6 +634,7 @@ public class MenuItemProviders {
             public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem autoResizeRows = new MenuItem(popupMenu, SWT.PUSH);
                 autoResizeRows.setText(Messages.getLocalizedMessage(menuLabel));
+                autoResizeRows.setImage(GUIHelper.getDisplayImage("auto_resize_row")); //$NON-NLS-1$
                 autoResizeRows.setEnabled(true);
 
                 autoResizeRows.addSelectionListener(new SelectionAdapter() {
@@ -693,7 +694,7 @@ public class MenuItemProviders {
             public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem columnChooser = new MenuItem(popupMenu, SWT.PUSH);
                 columnChooser.setText(Messages.getLocalizedMessage(menuLabel));
-                columnChooser.setImage(GUIHelper.getImage("column_chooser")); //$NON-NLS-1$
+                columnChooser.setImage(GUIHelper.getDisplayImage("column_chooser")); //$NON-NLS-1$
                 columnChooser.setEnabled(true);
 
                 columnChooser.addSelectionListener(new SelectionAdapter() {
@@ -718,7 +719,7 @@ public class MenuItemProviders {
             public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem columnStyleEditor = new MenuItem(popupMenu, SWT.PUSH);
                 columnStyleEditor.setText(Messages.getLocalizedMessage(menuLabel));
-                columnStyleEditor.setImage(GUIHelper.getImage("preferences")); //$NON-NLS-1$
+                columnStyleEditor.setImage(GUIHelper.getDisplayImage("preferences")); //$NON-NLS-1$
                 columnStyleEditor.setEnabled(true);
 
                 columnStyleEditor.addSelectionListener(new SelectionAdapter() {
@@ -904,7 +905,7 @@ public class MenuItemProviders {
             public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem columnChooser = new MenuItem(popupMenu, SWT.PUSH);
                 columnChooser.setText(Messages.getLocalizedMessage(menuLabel));
-                columnChooser.setImage(GUIHelper.getImage("column_categories_chooser")); //$NON-NLS-1$
+                columnChooser.setImage(GUIHelper.getDisplayImage("column_categories_chooser")); //$NON-NLS-1$
                 columnChooser.setEnabled(true);
 
                 columnChooser.addSelectionListener(new SelectionAdapter() {
@@ -929,7 +930,7 @@ public class MenuItemProviders {
             public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
                 menuItem.setText(Messages.getLocalizedMessage(menuLabel));
-                menuItem.setImage(GUIHelper.getImage("remove_filter")); //$NON-NLS-1$
+                menuItem.setImage(GUIHelper.getDisplayImage("remove_filter")); //$NON-NLS-1$
                 menuItem.setEnabled(true);
 
                 menuItem.addSelectionListener(new SelectionAdapter() {
@@ -953,7 +954,7 @@ public class MenuItemProviders {
             public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
                 menuItem.setText(Messages.getLocalizedMessage(menuLabel));
-                menuItem.setImage(GUIHelper.getImage("toggle_filter")); //$NON-NLS-1$
+                menuItem.setImage(GUIHelper.getDisplayImage("toggle_filter")); //$NON-NLS-1$
                 menuItem.setEnabled(true);
 
                 menuItem.addSelectionListener(new SelectionAdapter() {
@@ -1004,7 +1005,7 @@ public class MenuItemProviders {
             public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem saveState = new MenuItem(popupMenu, SWT.PUSH);
                 saveState.setText(Messages.getLocalizedMessage(menuLabel));
-                saveState.setImage(GUIHelper.getImage("table_icon")); //$NON-NLS-1$
+                saveState.setImage(GUIHelper.getDisplayImage("table_icon")); //$NON-NLS-1$
                 saveState.setEnabled(true);
 
                 saveState.addSelectionListener(new SelectionAdapter() {
@@ -1136,7 +1137,7 @@ public class MenuItemProviders {
             public void addMenuItem(final NatTable natTable, Menu popupMenu) {
                 MenuItem exportToImage = new MenuItem(popupMenu, SWT.PUSH);
                 exportToImage.setText(Messages.getLocalizedMessage(menuLabel));
-                exportToImage.setImage(GUIHelper.getImage("export_image")); //$NON-NLS-1$
+                exportToImage.setImage(GUIHelper.getDisplayImage("export_image")); //$NON-NLS-1$
                 exportToImage.setEnabled(true);
 
                 exportToImage.addSelectionListener(new SelectionAdapter() {

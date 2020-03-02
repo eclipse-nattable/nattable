@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,6 @@
 package org.eclipse.nebula.widgets.nattable.style;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -23,7 +22,7 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
  */
 public class Style implements IStyle {
 
-    private final Map<ConfigAttribute<?>, Object> styleAttributeValueMap = new HashMap<ConfigAttribute<?>, Object>();
+    private final HashMap<ConfigAttribute<?>, Object> styleAttributeValueMap = new HashMap<>();
 
     @Override
     @SuppressWarnings("unchecked")
@@ -42,8 +41,7 @@ public class Style implements IStyle {
         resultBuilder.append(this.getClass().getSimpleName() + ": "); //$NON-NLS-1$
 
         for (Entry<ConfigAttribute<?>, Object> entry : this.styleAttributeValueMap.entrySet()) {
-            resultBuilder.append(entry.getKey()
-                    + ": " + entry.getValue() + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+            resultBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n"); //$NON-NLS-1$//$NON-NLS-2$
         }
 
         return resultBuilder.toString();

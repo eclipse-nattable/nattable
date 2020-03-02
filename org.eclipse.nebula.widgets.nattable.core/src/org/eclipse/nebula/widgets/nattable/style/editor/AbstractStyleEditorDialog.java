@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,15 +41,12 @@ public abstract class AbstractStyleEditorDialog extends Dialog {
         if (this.location != null) {
             if (this.location.x < getParent().getDisplay().getBounds().x) {
                 this.location.x = getParent().getDisplay().getBounds().x;
-            } else if (this.location.x + shell.getBounds().width > getParent()
-                    .getDisplay().getBounds().x
-                    + getParent().getDisplay().getBounds().width) {
+            } else if (this.location.x + shell.getBounds().width > getParent().getDisplay().getBounds().x + getParent().getDisplay().getBounds().width) {
                 this.location.x = getParent().getDisplay().getBounds().x
                         + getParent().getDisplay().getBounds().width
                         - shell.getBounds().width;
             }
-            if (this.location.y + shell.getBounds().height > getParent()
-                    .getDisplay().getBounds().y
+            if (this.location.y + shell.getBounds().height > getParent().getDisplay().getBounds().y
                     + getParent().getDisplay().getBounds().height) {
                 this.location.y = getParent().getDisplay().getBounds().y
                         + getParent().getDisplay().getBounds().height
@@ -69,7 +66,7 @@ public abstract class AbstractStyleEditorDialog extends Dialog {
      */
     public void open() {
         Shell shell = new Shell(getParent(), getStyle());
-        shell.setImage(GUIHelper.getImage("preferences")); //$NON-NLS-1$
+        shell.setImage(GUIHelper.getDisplayImage("preferences")); //$NON-NLS-1$
         shell.setText(getText());
 
         initComponents(shell);
@@ -80,8 +77,9 @@ public abstract class AbstractStyleEditorDialog extends Dialog {
         shell.open();
         Display display = shell.getDisplay();
         while (!shell.isDisposed()) {
-            if (!display.readAndDispatch())
+            if (!display.readAndDispatch()) {
                 display.sleep();
+            }
         }
     }
 
@@ -100,42 +98,47 @@ public abstract class AbstractStyleEditorDialog extends Dialog {
         GridDataFactory.fillDefaults().grab(true, true).applyTo(buttonPanel);
 
         Button okButton = new Button(buttonPanel, SWT.PUSH);
-        okButton.setText(Messages
-                .getString("AbstractStyleEditorDialog.okButton")); //$NON-NLS-1$
+        okButton.setText(Messages.getString("AbstractStyleEditorDialog.okButton")); //$NON-NLS-1$
         okButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 doFormOK(shell);
             }
         });
-        GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM)
-                .minSize(70, 25).grab(true, true).applyTo(okButton);
+        GridDataFactory.swtDefaults()
+                .align(SWT.RIGHT, SWT.BOTTOM)
+                .minSize(70, 25)
+                .grab(true, true)
+                .applyTo(okButton);
 
         Button clearButton = new Button(buttonPanel, SWT.PUSH);
-        clearButton.setText(Messages
-                .getString("AbstractStyleEditorDialog.clearButton")); //$NON-NLS-1$
-        clearButton.setToolTipText(Messages
-                .getString("AbstractStyleEditorDialog.clearButtonTooltip")); //$NON-NLS-1$
+        clearButton.setText(Messages.getString("AbstractStyleEditorDialog.clearButton")); //$NON-NLS-1$
+        clearButton.setToolTipText(Messages.getString("AbstractStyleEditorDialog.clearButtonTooltip")); //$NON-NLS-1$
         clearButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 doFormClear(shell);
             }
         });
-        GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM)
-                .minSize(80, 25).grab(false, false).applyTo(clearButton);
+        GridDataFactory.swtDefaults()
+                .align(SWT.RIGHT, SWT.BOTTOM)
+                .minSize(80, 25)
+                .grab(false, false)
+                .applyTo(clearButton);
 
         Button cancelButton = new Button(buttonPanel, SWT.NONE);
-        cancelButton.setText(Messages
-                .getString("AbstractStyleEditorDialog.cancelButton")); //$NON-NLS-1$
+        cancelButton.setText(Messages.getString("AbstractStyleEditorDialog.cancelButton")); //$NON-NLS-1$
         cancelButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 doFormCancel(shell);
             }
         });
-        GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM)
-                .minSize(80, 25).grab(false, false).applyTo(cancelButton);
+        GridDataFactory.swtDefaults()
+                .align(SWT.RIGHT, SWT.BOTTOM)
+                .minSize(80, 25)
+                .grab(false, false)
+                .applyTo(cancelButton);
 
         shell.setDefaultButton(okButton);
     }
