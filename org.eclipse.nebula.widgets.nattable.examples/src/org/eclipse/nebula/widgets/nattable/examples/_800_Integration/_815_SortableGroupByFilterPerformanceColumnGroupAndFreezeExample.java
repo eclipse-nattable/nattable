@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Dirk Fauth and others.
+ * Copyright (c) 2019, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -728,7 +728,7 @@ public class _815_SortableGroupByFilterPerformanceColumnGroupAndFreezeExample ex
                     valueRows++;
                 }
             }
-            return "Avg: " + String.format("%.2f", total / valueRows);
+            return "Avg: " + String.format("%.2f", total / (valueRows > 0 ? valueRows : 1));
         }
 
     }
@@ -759,7 +759,7 @@ public class _815_SortableGroupByFilterPerformanceColumnGroupAndFreezeExample ex
                     valueRows++;
                 }
             }
-            return "Avg: " + String.format("%.2f", total / valueRows);
+            return "Avg: " + String.format("%.2f", total / (valueRows > 0 ? valueRows : 1));
         }
 
     }

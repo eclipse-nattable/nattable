@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,13 +35,14 @@ public class NatTableExamples {
             InputStream inputStream = NatTableExamples.class.getResourceAsStream("/examples.index");
             if (inputStream != null) {
                 examples = new ArrayList<>();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                String line = reader.readLine();
-                while (line != null) {
-                    examples.add(line);
-                    line = reader.readLine();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+
+                    String line = reader.readLine();
+                    while (line != null) {
+                        examples.add(line);
+                        line = reader.readLine();
+                    }
                 }
-                reader.close();
             } else {
                 System.out.println("examples.index not found, reconstructing");
                 examples = createExamplesIndex(null);
@@ -68,12 +69,12 @@ public class NatTableExamples {
         findExamples(examplesDir, examples, INatExample.CLASSIC_EXAMPLES_PREFIX);
 
         File examplesIndexFile = new File(new File(basedir, "src"), "examples.index");
-        BufferedWriter writer = new BufferedWriter(new FileWriter(examplesIndexFile));
-        for (String example : examples) {
-            writer.write(example + "\n");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(examplesIndexFile))) {
+            for (String example : examples) {
+                writer.write(example + "\n");
+            }
+            writer.flush();
         }
-        writer.flush();
-        writer.close();
 
         return examples;
     }

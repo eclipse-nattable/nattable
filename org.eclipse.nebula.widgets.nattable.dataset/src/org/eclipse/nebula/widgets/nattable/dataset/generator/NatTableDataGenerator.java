@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -113,9 +113,7 @@ public class NatTableDataGenerator {
 
     // TODO: file dimensions should be embedded in the file
     public void getNumRows(String fileName) {
-        try {
-            FileReader fro = new FileReader(fileName);
-            BufferedReader bro = new BufferedReader(fro);
+        try (BufferedReader bro = new BufferedReader(new FileReader(fileName))) {
 
             String stringFromFile = bro.readLine();
             while (stringFromFile != null) // end of the file
@@ -123,7 +121,6 @@ public class NatTableDataGenerator {
                 this.numRows++;
                 stringFromFile = bro.readLine(); // read next line
             }
-            bro.close();
         } catch (FileNotFoundException filenotfoundexxption) {
             System.out.println(fileName + ", does not exist");
             System.exit(-1);
@@ -140,11 +137,7 @@ public class NatTableDataGenerator {
         getNumRows(fileName);
 
         Object[][] tableData = null;
-        FileReader fro = null;
-        BufferedReader bro = null;
-        try {
-            fro = new FileReader(fileName);
-            bro = new BufferedReader(fro);
+        try (BufferedReader bro = new BufferedReader(new FileReader(fileName))) {
 
             // declare String variable and prime the read
             String stringFromFile = bro.readLine();
@@ -177,15 +170,6 @@ public class NatTableDataGenerator {
         } catch (IOException ioexception) {
             ioexception.printStackTrace();
             System.exit(-1);
-        } finally {
-            if (bro != null) {
-                try {
-                    bro.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    System.exit(-1);
-                }
-            }
         }
 
         return new TableDataProvider(tableData, this.numCols, this.numRows);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Dirk Fauth and others.
+ * Copyright (c) 2012, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -65,6 +65,8 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
 
     private final List<LogRecord> logMessages = new ArrayList<>();
 
+    private final Random random = new Random();
+
     public static void main(String[] args) throws Exception {
         StandaloneNatExampleRunner.run(new AutomaticRowHeightExample());
     }
@@ -122,16 +124,14 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
         Level[] levels = new Level[] { Level.SEVERE, Level.WARNING, Level.INFO };
         String[] words = text.split(" ");
 
-        Random levelRandom = new Random();
-        Random wordRandom = new Random();
         for (int i = 0; i < 100; i++) {
-            int randWords = wordRandom.nextInt(words.length);
+            int randWords = this.random.nextInt(words.length);
             String msg = "";
             for (int j = 0; j < randWords; j++) {
                 msg += words[j] + " ";
             }
             this.logMessages.add(
-                    new LogRecord(levels[levelRandom.nextInt(levels.length)], msg));
+                    new LogRecord(levels[this.random.nextInt(levels.length)], msg));
         }
     }
 

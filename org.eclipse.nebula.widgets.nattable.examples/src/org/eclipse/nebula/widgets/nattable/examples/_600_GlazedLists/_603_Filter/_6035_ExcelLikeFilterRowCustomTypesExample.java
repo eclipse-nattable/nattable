@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._600_GlazedLists._603_Filter;
 
@@ -75,16 +75,13 @@ import ca.odell.glazedlists.TransformedList;
  * Example showing how to add the filter row to the layer composition of a grid
  * that looks like the Excel filter. It also shows how to add support for
  * filtering custom data type in such a filter row.
- *
- * @author Dirk Fauth
- *
  */
-public class _6035_ExcelLikeFilterRowCustomTypesExample extends
-        AbstractNatExample {
+public class _6035_ExcelLikeFilterRowCustomTypesExample extends AbstractNatExample {
+
+    Random randomGenerator = new Random();
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner
-                .run(new _6035_ExcelLikeFilterRowCustomTypesExample());
+        StandaloneNatExampleRunner.run(new _6035_ExcelLikeFilterRowCustomTypesExample());
     }
 
     @Override
@@ -110,69 +107,68 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
         propertyToLabelMap.put("gender", "Gender");
         propertyToLabelMap.put("city", "City");
 
-        IColumnPropertyAccessor<MyRowObject> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(
-                propertyNames);
+        IColumnPropertyAccessor<MyRowObject> columnPropertyAccessor =
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
 
-        BodyLayerStack<MyRowObject> bodyLayerStack = new BodyLayerStack<>(
-                createMyRowObjects(50), columnPropertyAccessor);
+        BodyLayerStack<MyRowObject> bodyLayerStack =
+                new BodyLayerStack<>(createMyRowObjects(50), columnPropertyAccessor);
         // add a label accumulator to be able to register converter
-        bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(
-                new ColumnLabelAccumulator());
+        bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(new ColumnLabelAccumulator());
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
-                bodyLayerStack, bodyLayerStack.getSelectionLayer());
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ILayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // example on how to configure a different icon if a filter is applied
-        ComboBoxFilterRowHeaderComposite<MyRowObject> filterRowHeaderLayer = new ComboBoxFilterRowHeaderComposite<>(
-                bodyLayerStack.getFilterList(),
-                bodyLayerStack.getBodyDataLayer(),
-                bodyLayerStack.getSortedList(), columnPropertyAccessor,
-                columnHeaderLayer, columnHeaderDataProvider, configRegistry,
-                false);
-        final IComboBoxDataProvider comboBoxDataProvider = filterRowHeaderLayer
-                .getComboBoxDataProvider();
-        filterRowHeaderLayer
-                .addConfiguration(new ComboBoxFilterRowConfiguration() {
-                    {
-                        this.cellEditor = new FilterRowComboBoxCellEditor(
-                                comboBoxDataProvider, 5);
-                        this.filterIconPainter = new ComboBoxFilterIconPainter(
-                                comboBoxDataProvider, GUIHelper
-                                        .getImage("filter"), null);
-                    }
-                });
+        ComboBoxFilterRowHeaderComposite<MyRowObject> filterRowHeaderLayer =
+                new ComboBoxFilterRowHeaderComposite<>(
+                        bodyLayerStack.getFilterList(),
+                        bodyLayerStack.getBodyDataLayer(),
+                        bodyLayerStack.getSortedList(), columnPropertyAccessor,
+                        columnHeaderLayer, columnHeaderDataProvider, configRegistry,
+                        false);
+        final IComboBoxDataProvider comboBoxDataProvider = filterRowHeaderLayer.getComboBoxDataProvider();
+        filterRowHeaderLayer.addConfiguration(new ComboBoxFilterRowConfiguration() {
+            {
+                this.cellEditor = new FilterRowComboBoxCellEditor(
+                        comboBoxDataProvider, 5);
+                this.filterIconPainter = new ComboBoxFilterIconPainter(
+                        comboBoxDataProvider, GUIHelper
+                                .getImage("filter"),
+                        null);
+            }
+        });
 
         // build the row header layer
-        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyLayerStack.getBodyDataProvider());
-        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
-        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                bodyLayerStack, bodyLayerStack.getSelectionLayer());
+        IDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
+        DataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        ILayer rowHeaderLayer =
+                new RowHeaderLayer(rowHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // build the corner layer
-        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
-                filterRowHeaderLayer);
+        IDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        ILayer cornerLayer =
+                new CornerLayer(cornerDataLayer, rowHeaderLayer, filterRowHeaderLayer);
 
         // build the grid layer
-        GridLayer gridLayer = new GridLayer(bodyLayerStack,
-                filterRowHeaderLayer, rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer =
+                new GridLayer(bodyLayerStack, filterRowHeaderLayer, rowHeaderLayer, cornerLayer);
 
         // turn the auto configuration off as we want to add our header menu
         // configuration
         NatTable natTable = new NatTable(parent, gridLayer, false);
-
         // as the autoconfiguration of the NatTable is turned off, we have to
-        // add the
-        // DefaultNatTableStyleConfiguration and the ConfigRegistry manually
+        // add the DefaultNatTableStyleConfiguration and the ConfigRegistry
+        // manually
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new MyRowObjectTableConfiguration());
@@ -199,8 +195,8 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
 
         natTable.configure();
 
-        natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(
-                natTable));
+        natTable.registerCommandHandler(
+                new DisplayPersistenceDialogCommandHandler(natTable));
 
         return natTable;
     }
@@ -221,13 +217,11 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
 
         private final SelectionLayer selectionLayer;
 
-        public BodyLayerStack(List<T> values,
-                IColumnPropertyAccessor<T> columnPropertyAccessor) {
+        public BodyLayerStack(List<T> values, IColumnPropertyAccessor<T> columnPropertyAccessor) {
             // wrapping of the list to show into GlazedLists
             // see http://publicobject.com/glazedlists/ for further information
             EventList<T> eventList = GlazedLists.eventList(values);
-            TransformedList<T, T> rowObjectsGlazedList = GlazedLists
-                    .threadSafeList(eventList);
+            TransformedList<T, T> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
 
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator
@@ -236,13 +230,12 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
             // wrap the SortedList with the FilterList
             this.filterList = new FilterList<>(getSortedList());
 
-            this.bodyDataProvider = new ListDataProvider<>(this.filterList,
-                    columnPropertyAccessor);
+            this.bodyDataProvider = new ListDataProvider<>(this.filterList, columnPropertyAccessor);
             this.bodyDataLayer = new DataLayer(getBodyDataProvider());
 
             // layer for event handling of GlazedLists and PropertyChanges
-            GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<>(
-                    this.bodyDataLayer, this.filterList);
+            GlazedListsEventLayer<T> glazedListsEventLayer =
+                    new GlazedListsEventLayer<>(this.bodyDataLayer, this.filterList);
 
             this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
             ViewportLayer viewportLayer = new ViewportLayer(getSelectionLayer());
@@ -330,22 +323,26 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
         public void configureRegistry(IConfigRegistry configRegistry) {
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DefaultIntegerDisplayConverter(), DisplayMode.NORMAL,
+                    new DefaultIntegerDisplayConverter(),
+                    DisplayMode.NORMAL,
                     ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 1);
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DefaultDoubleDisplayConverter(), DisplayMode.NORMAL,
+                    new DefaultDoubleDisplayConverter(),
+                    DisplayMode.NORMAL,
                     ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2);
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new GenderDisplayConverter(), DisplayMode.NORMAL,
+                    new GenderDisplayConverter(),
+                    DisplayMode.NORMAL,
                     ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new CityDisplayConverter(), DisplayMode.NORMAL,
+                    new CityDisplayConverter(),
+                    DisplayMode.NORMAL,
                     ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
         }
     }
@@ -353,8 +350,6 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
     /**
      * The configuration to enable the edit mode for the grid and additional
      * edit configurations like converters and validators.
-     *
-     * @author Dirk Fauth
      */
     class FilterRowConfiguration extends AbstractRegistryConfiguration {
 
@@ -364,33 +359,39 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
             // register the converters used by the filter logic
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
-                    new DefaultIntegerDisplayConverter(), DisplayMode.NORMAL,
+                    new DefaultIntegerDisplayConverter(),
+                    DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 1);
 
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
-                    new DefaultDoubleDisplayConverter(), DisplayMode.NORMAL,
+                    new DefaultDoubleDisplayConverter(),
+                    DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 2);
 
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
-                    new GenderDisplayConverter(), DisplayMode.NORMAL,
+                    new GenderDisplayConverter(),
+                    DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 3);
 
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
-                    new CityDisplayConverter(), DisplayMode.NORMAL,
+                    new CityDisplayConverter(),
+                    DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 4);
 
             // register the converters for rendering in
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new GenderDisplayConverter(), DisplayMode.NORMAL,
+                    new GenderDisplayConverter(),
+                    DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 3);
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new CityDisplayConverter(), DisplayMode.NORMAL,
+                    new CityDisplayConverter(),
+                    DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 4);
         }
 
@@ -410,27 +411,23 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
             String[] lastNames = { "Simpson", "Leonard", "Carlson", "Smithers",
                     "Flanders", "Krabappel", "Lovejoy" };
 
-            Random randomGenerator = new Random();
-
-            obj.setGender(Gender.values()[randomGenerator.nextInt(2)]);
+            obj.setGender(Gender.values()[this.randomGenerator.nextInt(2)]);
 
             if (obj.getGender().equals(Gender.MALE)) {
-                obj.setName(maleNames[randomGenerator.nextInt(maleNames.length)]
+                obj.setName(maleNames[this.randomGenerator.nextInt(maleNames.length)]
                         + " "
-                        + lastNames[randomGenerator.nextInt(lastNames.length)]);
+                        + lastNames[this.randomGenerator.nextInt(lastNames.length)]);
             } else {
-                obj.setName(femaleNames[randomGenerator
+                obj.setName(femaleNames[this.randomGenerator
                         .nextInt(femaleNames.length)]
                         + " "
-                        + lastNames[randomGenerator.nextInt(lastNames.length)]);
+                        + lastNames[this.randomGenerator.nextInt(lastNames.length)]);
             }
 
-            obj.setAge(randomGenerator.nextInt(100));
-            obj.setMoney(randomGenerator.nextDouble()
-                    * randomGenerator.nextInt(100));
+            obj.setAge(this.randomGenerator.nextInt(100));
+            obj.setMoney(this.randomGenerator.nextDouble() * this.randomGenerator.nextInt(100));
 
-            obj.setCity(this.possibleCities.get(randomGenerator
-                    .nextInt(this.possibleCities.size())));
+            obj.setCity(this.possibleCities.get(this.randomGenerator.nextInt(this.possibleCities.size())));
 
             result.add(obj);
         }

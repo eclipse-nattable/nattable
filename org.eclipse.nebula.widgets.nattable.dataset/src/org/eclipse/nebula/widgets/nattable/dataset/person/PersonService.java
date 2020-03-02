@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2015 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.dataset.person;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
  * are randomly put together out of names and places from "The Simpsons"
  */
 public class PersonService {
+
+    private static Random randomGenerator = new SecureRandom();
 
     static String[] maleNames = { "Bart", "Homer", "Lenny", "Carl", "Waylon",
             "Ned", "Timothy", "Rodd", "Todd" };
@@ -257,8 +260,6 @@ public class PersonService {
      * @return
      */
     private static Person createPerson(int id) {
-        Random randomGenerator = new Random();
-
         Person result = new Person(id);
         result.setGender(Gender.values()[randomGenerator.nextInt(2)]);
 
@@ -302,8 +303,6 @@ public class PersonService {
         String[] streets = getStreetNames();
         int[] plz = { 11111, 22222, 33333, 44444, 55555, 66666 };
         String[] cities = getCityNames();
-
-        Random randomGenerator = new Random();
 
         Address result = new Address();
 
@@ -363,12 +362,11 @@ public class PersonService {
 
     private static List<String> createFavouriteFood() {
         String[] food = getFoodList();
-        Random rand = new Random();
-        int favCount = rand.nextInt(food.length);
+        int favCount = randomGenerator.nextInt(food.length);
 
         List<String> result = new ArrayList<String>();
         for (int i = 0; i < favCount; i++) {
-            int randIndex = rand.nextInt(food.length);
+            int randIndex = randomGenerator.nextInt(food.length);
             if (!result.contains(food[randIndex])) {
                 result.add(food[randIndex]);
             }
@@ -378,12 +376,11 @@ public class PersonService {
 
     private static List<String> createFavouriteDrinks() {
         String[] drinks = getDrinkList();
-        Random rand = new Random();
-        int favCount = rand.nextInt(drinks.length);
+        int favCount = randomGenerator.nextInt(drinks.length);
 
         List<String> result = new ArrayList<String>();
         for (int i = 0; i < favCount; i++) {
-            int randIndex = rand.nextInt(drinks.length);
+            int randIndex = randomGenerator.nextInt(drinks.length);
             if (!result.contains(drinks[randIndex])) {
                 result.add(drinks[randIndex]);
             }
@@ -427,9 +424,8 @@ public class PersonService {
     public static String createRandomLengthText() {
         String[] words = baseText.split(" ");
 
-        Random wordRandom = new Random();
         String msg = "";
-        int randWords = wordRandom.nextInt(words.length);
+        int randWords = randomGenerator.nextInt(words.length);
         for (int j = 0; j < randWords; j++) {
             msg += words[j];
             if (msg.endsWith(",") || msg.endsWith(".")) {
@@ -443,7 +439,7 @@ public class PersonService {
     }
 
     public static Double createRandomMoneyAmount() {
-        Double result = new Random().nextDouble() * 1000;
+        Double result = randomGenerator.nextDouble() * 1000;
         BigDecimal bd = new BigDecimal(result);
         bd = bd.setScale(2, BigDecimal.ROUND_HALF_UP);
         return bd.doubleValue();

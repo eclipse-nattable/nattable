@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015 Dirk Fauth and others.
+ * Copyright (c) 2014, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -280,7 +280,8 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
             }
 
             @Override
-            public void configureLayer(ILayer layer) {}
+            public void configureLayer(ILayer layer) {
+            }
         });
 
         // turn the auto configuration off as we want to add our header menu
@@ -709,7 +710,7 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
                     valueRows++;
                 }
             }
-            return "Avg: " + String.format("%.2f", total / valueRows);
+            return "Avg: " + String.format("%.2f", total / (valueRows > 0 ? valueRows : 1));
         }
 
     }
@@ -740,7 +741,7 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
                     valueRows++;
                 }
             }
-            return "Avg: " + String.format("%.2f", total / valueRows);
+            return "Avg: " + String.format("%.2f", total / (valueRows > 0 ? valueRows : 1));
         }
 
     }

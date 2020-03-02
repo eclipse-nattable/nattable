@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._600_GlazedLists._605_GroupBy;
 
@@ -81,6 +81,8 @@ import ca.odell.glazedlists.TransformedList;
  * composition of a grid.
  */
 public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
+
+    Random randomGenerator = new Random();
 
     public static void main(String[] args) throws Exception {
         StandaloneNatExampleRunner.run(new _6052_GroupByCustomTypesExample());
@@ -408,22 +410,20 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
             String[] lastNames = { "Simpson", "Leonard", "Carlson", "Smithers",
                     "Flanders", "Krabappel", "Lovejoy" };
 
-            Random randomGenerator = new Random();
-
-            obj.setGender(MyRowObject.Gender.values()[randomGenerator.nextInt(2)]);
+            obj.setGender(MyRowObject.Gender.values()[this.randomGenerator.nextInt(2)]);
 
             if (obj.getGender().equals(MyRowObject.Gender.MALE)) {
-                obj.setName(maleNames[randomGenerator.nextInt(maleNames.length)]
-                        + " " + lastNames[randomGenerator.nextInt(lastNames.length)]);
+                obj.setName(maleNames[this.randomGenerator.nextInt(maleNames.length)]
+                        + " " + lastNames[this.randomGenerator.nextInt(lastNames.length)]);
             } else {
-                obj.setName(femaleNames[randomGenerator.nextInt(femaleNames.length)]
-                        + " " + lastNames[randomGenerator.nextInt(lastNames.length)]);
+                obj.setName(femaleNames[this.randomGenerator.nextInt(femaleNames.length)]
+                        + " " + lastNames[this.randomGenerator.nextInt(lastNames.length)]);
             }
 
-            obj.setAge(randomGenerator.nextInt(100));
-            obj.setMoney(randomGenerator.nextDouble() * randomGenerator.nextInt(100));
+            obj.setAge(this.randomGenerator.nextInt(100));
+            obj.setMoney(this.randomGenerator.nextDouble() * this.randomGenerator.nextInt(100));
 
-            obj.setCity(this.possibleCities.get(randomGenerator.nextInt(this.possibleCities.size())));
+            obj.setCity(this.possibleCities.get(this.randomGenerator.nextInt(this.possibleCities.size())));
 
             result.add(obj);
         }
