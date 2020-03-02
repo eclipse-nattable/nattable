@@ -83,10 +83,4 @@ public class ShowColumnPositionsEvent extends ColumnStructuralChangeEvent {
         return new ShowColumnPositionsEvent(this);
     }
 
-    @Override
-    public boolean convertToLocal(ILayer localLayer) {
-        super.convertToLocal(localLayer);
-        return true;
-    }
-
 }

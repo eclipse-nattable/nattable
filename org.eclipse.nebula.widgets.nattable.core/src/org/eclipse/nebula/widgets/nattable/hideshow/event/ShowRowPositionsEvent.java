@@ -82,9 +82,4 @@ public class ShowRowPositionsEvent extends RowStructuralChangeEvent {
         return new ShowRowPositionsEvent(this);
     }
 
-    @Override
-    public boolean convertToLocal(ILayer localLayer) {
-        super.convertToLocal(localLayer);
-        return true;
-    }
 }

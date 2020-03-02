@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.layer.event;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -131,7 +132,7 @@ public abstract class RowVisualChangeEvent implements IVisualChangeEvent {
      * @return The row position ranges for the rows that have changed.
      */
     public Collection<Range> getRowPositionRanges() {
-        return this.rowPositionRanges;
+        return this.rowPositionRanges != null ? this.rowPositionRanges : new ArrayList<Range>(0);
     }
 
     /**
@@ -165,8 +166,10 @@ public abstract class RowVisualChangeEvent implements IVisualChangeEvent {
 
     @Override
     public boolean convertToLocal(ILayer localLayer) {
-        this.rowPositionRanges =
-                localLayer.underlyingToLocalRowPositions(this.layer, this.rowPositionRanges);
+        if (this.rowPositionRanges != null) {
+            this.rowPositionRanges = localLayer.underlyingToLocalRowPositions(this.layer, this.rowPositionRanges);
+        }
+
         this.layer = localLayer;
 
         return this.rowPositionRanges != null && this.rowPositionRanges.size() > 0;
@@ -174,16 +177,14 @@ public abstract class RowVisualChangeEvent implements IVisualChangeEvent {
 
     @Override
     public Collection<Rectangle> getChangedPositionRectangles() {
-        Collection<Rectangle> changedPositionRectangles =
-                new ArrayList<>(this.rowPositionRanges.size());
-
-        int columnCount = this.layer.getColumnCount();
-        for (Range range : this.rowPositionRanges) {
-            changedPositionRectangles.add(
-                    new Rectangle(0, range.start, columnCount, range.end - range.start));
+        if (this.rowPositionRanges == null) {
+            return new ArrayList<>(0);
         }
 
-        return changedPositionRectangles;
+        int columnCount = this.layer.getColumnCount();
+        return this.rowPositionRanges.stream()
+                .map(range -> new Rectangle(0, range.start, columnCount, range.end - range.start))
+                .collect(Collectors.toList());
     }
 
     @Override
