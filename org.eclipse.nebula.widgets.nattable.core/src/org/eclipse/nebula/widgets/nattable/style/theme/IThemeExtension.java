@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth and others.
+ * Copyright (c) 2014, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style.theme;
 
@@ -16,9 +16,6 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
  * Theme extensions can be used to extend a already existing theme with
  * additional style configurations, like conditional styles or styles that are
  * dependent to other plugins (e.g. groupBy in GlazedLists extension).
- *
- * @author Dirk Fauth
- *
  */
 public interface IThemeExtension {
 
@@ -30,7 +27,7 @@ public interface IThemeExtension {
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configurations should be registered.
      */
-    public void registerStyles(IConfigRegistry configRegistry);
+    void registerStyles(IConfigRegistry configRegistry);
 
     /**
      * Unregister the style configurations that were registered by this
@@ -40,6 +37,17 @@ public interface IThemeExtension {
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configurations were applied to.
      */
-    public void unregisterStyles(IConfigRegistry configRegistry);
+    void unregisterStyles(IConfigRegistry configRegistry);
 
+    /**
+     * Method that is used to create the painter instances that should be
+     * registered for styling. Needed to update painters in case zoom operations
+     *
+     * @since 2.0
+     */
+    default void createPainterInstances() {
+        // by default does nothing
+        // needs to be overridden to create the painter instances that need to
+        // be updated on zoom operations
+    }
 }

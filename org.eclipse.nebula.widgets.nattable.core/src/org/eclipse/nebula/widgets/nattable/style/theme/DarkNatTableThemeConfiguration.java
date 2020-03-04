@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth and others.
+ * Copyright (c) 2014, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@gogglemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style.theme;
 
@@ -40,7 +40,8 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
  * </p>
  */
 public class DarkNatTableThemeConfiguration extends ModernNatTableThemeConfiguration {
-    {
+
+    public DarkNatTableThemeConfiguration() {
         this.defaultBgColor = GUIHelper.COLOR_BLACK;
         this.defaultFgColor = GUIHelper.COLOR_WIDGET_LIGHT_SHADOW;
 
@@ -48,47 +49,21 @@ public class DarkNatTableThemeConfiguration extends ModernNatTableThemeConfigura
         this.cHeaderFgColor = GUIHelper.COLOR_WIDGET_LIGHT_SHADOW;
         this.cHeaderGradientBgColor = GUIHelper.COLOR_WIDGET_DARK_SHADOW;
         this.cHeaderGradientFgColor = GUIHelper.COLOR_BLACK;
-        this.cHeaderCellPainter =
-                new GradientBackgroundPainter(
-                        new PaddingDecorator(
-                                new TextPainter(false, false),
-                                0,
-                                5,
-                                0,
-                                5,
-                                false),
-                        true);
 
         // column header selection style
         this.cHeaderSelectionFgColor = GUIHelper.COLOR_WIDGET_LIGHT_SHADOW;
         this.cHeaderSelectionGradientBgColor = GUIHelper.COLOR_BLACK;
         this.cHeaderSelectionGradientFgColor = GUIHelper.COLOR_WIDGET_DARK_SHADOW;
-        this.cHeaderSelectionCellPainter =
-                new GradientBackgroundPainter(
-                        new PaddingDecorator(
-                                new TextPainter(false, false),
-                                0,
-                                5,
-                                0,
-                                5,
-                                false),
-                        true);
 
         // row header styling
         this.rHeaderFgColor = GUIHelper.COLOR_WIDGET_LIGHT_SHADOW;
         this.rHeaderGradientBgColor = GUIHelper.COLOR_WIDGET_DARK_SHADOW;
         this.rHeaderGradientFgColor = GUIHelper.COLOR_BLACK;
-        this.rHeaderCellPainter =
-                new GradientBackgroundPainter(
-                        new TextPainter(false, false));
 
         // row header selection style
         this.rHeaderSelectionFgColor = GUIHelper.COLOR_WIDGET_LIGHT_SHADOW;
         this.rHeaderSelectionGradientBgColor = GUIHelper.COLOR_BLACK;
         this.rHeaderSelectionGradientFgColor = GUIHelper.COLOR_WIDGET_DARK_SHADOW;
-        this.rHeaderSelectionCellPainter =
-                new GradientBackgroundPainter(
-                        new TextPainter(false, false));
 
         // no alternate row styling
         this.evenRowBgColor = GUIHelper.COLOR_BLACK;
@@ -103,16 +78,43 @@ public class DarkNatTableThemeConfiguration extends ModernNatTableThemeConfigura
         this.selectionAnchorSelectionFgColor = GUIHelper.COLOR_WIDGET_LIGHT_SHADOW;
         this.selectionAnchorBorderStyle = new BorderStyle(1, GUIHelper.COLOR_DARK_GRAY, LineStyleEnum.SOLID);
 
+        this.filterRowBgColor = GUIHelper.COLOR_WIDGET_DARK_SHADOW;
+
+        this.summaryRowBgColor = GUIHelper.COLOR_DARK_GRAY;
+        this.summaryRowFgColor = GUIHelper.COLOR_WIDGET_LIGHT_SHADOW;
+
+        this.summaryRowSelectionBgColor = GUIHelper.COLOR_WIDGET_DARK_SHADOW;
+
+        this.renderCornerGridLines = true;
+        this.renderColumnHeaderGridLines = true;
+
+        this.dataChangeFgColor = GUIHelper.getColor(0, 204, 255);
+
+        this.hideIndicatorColor = GUIHelper.COLOR_WHITE;
+    }
+
+    @Override
+    public void createPainterInstances() {
+        super.createPainterInstances();
+        this.cHeaderCellPainter = new GradientBackgroundPainter(
+                new PaddingDecorator(new TextPainter(false, false), 0, 5, 0, 5, false),
+                true);
+        this.cHeaderSelectionCellPainter = new GradientBackgroundPainter(
+                new PaddingDecorator(new TextPainter(false, false), 0, 5, 0, 5, false),
+                true);
+
+        this.rHeaderCellPainter = new GradientBackgroundPainter(new TextPainter(false, false));
+        this.rHeaderSelectionCellPainter = new GradientBackgroundPainter(new TextPainter(false, false));
+
         // column/row group header style
-        this.cGroupHeaderCellPainter =
-                new GradientBackgroundPainter(
-                        new ColumnGroupHeaderTextPainter(
-                                new TextPainter(false, false),
-                                CellEdgeEnum.RIGHT,
-                                new ColumnGroupExpandCollapseImagePainter(false, true),
-                                false,
-                                0,
-                                false));
+        this.cGroupHeaderCellPainter = new GradientBackgroundPainter(
+                new ColumnGroupHeaderTextPainter(
+                        new TextPainter(false, false),
+                        CellEdgeEnum.RIGHT,
+                        new ColumnGroupExpandCollapseImagePainter(false, true),
+                        false,
+                        0,
+                        false));
         this.rGroupHeaderCellPainter =
                 new GradientBackgroundPainter(
                         new PaddingDecorator(
@@ -123,11 +125,7 @@ public class DarkNatTableThemeConfiguration extends ModernNatTableThemeConfigura
                                         false,
                                         0,
                                         true),
-                                0,
-                                0,
-                                2,
-                                0,
-                                false));
+                                0, 0, 2, 0, false));
 
         // sort header styling
         this.sortHeaderCellPainter =
@@ -140,11 +138,7 @@ public class DarkNatTableThemeConfiguration extends ModernNatTableThemeConfigura
                                         false,
                                         0,
                                         false),
-                                0,
-                                2,
-                                0,
-                                5,
-                                false),
+                                0, 2, 0, 5, false),
                         true);
         this.selectedSortHeaderCellPainter =
                 new GradientBackgroundPainter(
@@ -156,19 +150,14 @@ public class DarkNatTableThemeConfiguration extends ModernNatTableThemeConfigura
                                         false,
                                         0,
                                         false),
-                                0,
-                                2,
-                                0,
-                                5,
-                                false),
+                                0, 2, 0, 5, false),
                         true);
 
-        TreeImagePainter imagePainter =
-                new TreeImagePainter(
-                        false,
-                        GUIHelper.getImage("right_inv"), //$NON-NLS-1$
-                        GUIHelper.getImage("right_down_inv"), //$NON-NLS-1$
-                        null);
+        TreeImagePainter imagePainter = new TreeImagePainter(
+                false,
+                GUIHelper.getImage("right_inv"), //$NON-NLS-1$
+                GUIHelper.getImage("right_down_inv"), //$NON-NLS-1$
+                null);
         this.treeStructurePainter =
                 new BackgroundPainter(
                         new PaddingDecorator(
@@ -180,20 +169,7 @@ public class DarkNatTableThemeConfiguration extends ModernNatTableThemeConfigura
                                         false,
                                         2,
                                         true),
-                                0,
-                                5,
-                                0,
-                                5,
-                                false));
+                                0, 5, 0, 5, false));
 
-        this.filterRowBgColor = GUIHelper.COLOR_WIDGET_DARK_SHADOW;
-
-        this.summaryRowBgColor = GUIHelper.COLOR_DARK_GRAY;
-        this.summaryRowFgColor = GUIHelper.COLOR_WIDGET_LIGHT_SHADOW;
-
-        this.summaryRowSelectionBgColor = GUIHelper.COLOR_WIDGET_DARK_SHADOW;
-
-        this.renderCornerGridLines = true;
-        this.renderColumnHeaderGridLines = true;
     }
 }

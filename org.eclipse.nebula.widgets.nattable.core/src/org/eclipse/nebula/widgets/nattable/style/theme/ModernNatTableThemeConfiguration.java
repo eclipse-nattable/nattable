@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth and others.
+ * Copyright (c) 2014, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style.theme;
 
@@ -40,47 +40,22 @@ import org.eclipse.swt.graphics.FontData;
  * </p>
  */
 public class ModernNatTableThemeConfiguration extends DefaultNatTableThemeConfiguration {
-    {
+
+    public ModernNatTableThemeConfiguration() {
         this.defaultHAlign = HorizontalAlignmentEnum.LEFT;
-        this.defaultCellPainter =
-                new BackgroundPainter(
-                        new PaddingDecorator(
-                                new TextPainter(false, false),
-                                0,
-                                5,
-                                0,
-                                5,
-                                false));
 
         // column header styling
         this.cHeaderHAlign = HorizontalAlignmentEnum.LEFT;
         this.cHeaderFont = GUIHelper.DEFAULT_FONT;
-        this.cHeaderCellPainter =
-                new PaddingDecorator(
-                        new TextPainter(),
-                        0,
-                        5,
-                        0,
-                        5);
 
         // column header selection style
         this.cHeaderSelectionFont = GUIHelper.DEFAULT_FONT;
-        this.cHeaderSelectionCellPainter =
-                new BackgroundPainter(
-                        new PaddingDecorator(
-                                new TextPainter(false, false),
-                                0,
-                                5,
-                                0,
-                                5,
-                                false));
 
         // row header styling
         this.rHeaderFont = GUIHelper.DEFAULT_FONT;
 
         // row header selection style
         this.rHeaderSelectionFont = GUIHelper.DEFAULT_FONT;
-        this.rHeaderSelectionCellPainter = new TextPainter();
 
         // no alternate row styling
         this.evenRowBgColor = GUIHelper.COLOR_WHITE;
@@ -98,21 +73,41 @@ public class ModernNatTableThemeConfiguration extends DefaultNatTableThemeConfig
 
         // column/row group header style
         this.cGroupHeaderHAlign = HorizontalAlignmentEnum.CENTER;
+
+        FontData summaryRowFontData = GUIHelper.DEFAULT_FONT.getFontData()[0];
+        summaryRowFontData.setStyle(SWT.BOLD);
+        this.summaryRowFont = GUIHelper.getFont(summaryRowFontData);
+        this.summaryRowHAlign = HorizontalAlignmentEnum.RIGHT;
+        this.summaryRowBgColor = GUIHelper.COLOR_WIDGET_LIGHT_SHADOW;
+
+        this.summaryRowSelectionFont = GUIHelper.getFont(summaryRowFontData);
+        this.summaryRowSelectionBgColor = GUIHelper.COLOR_WIDGET_DARK_SHADOW;
+
+        this.renderCornerGridLines = true;
+        this.renderColumnHeaderGridLines = true;
+    }
+
+    @Override
+    public void createPainterInstances() {
+        super.createPainterInstances();
+
+        this.defaultCellPainter = new BackgroundPainter(
+                new PaddingDecorator(new TextPainter(false, false), 0, 5, 0, 5, false));
+
+        this.cHeaderCellPainter = new PaddingDecorator(new TextPainter(), 0, 5, 0, 5);
+        this.cHeaderSelectionCellPainter = new BackgroundPainter(
+                new PaddingDecorator(new TextPainter(false, false), 0, 5, 0, 5, false));
+        this.rHeaderSelectionCellPainter = new TextPainter();
         this.cGroupHeaderCellPainter = new ColumnGroupHeaderTextPainter();
-        this.rGroupHeaderCellPainter =
-                new BackgroundPainter(
-                        new PaddingDecorator(
-                                new RowGroupHeaderTextPainter(
-                                        new VerticalTextPainter(false, false),
-                                        CellEdgeEnum.BOTTOM,
-                                        false,
-                                        2,
-                                        true),
-                                0,
-                                0,
+        this.rGroupHeaderCellPainter = new BackgroundPainter(
+                new PaddingDecorator(
+                        new RowGroupHeaderTextPainter(
+                                new VerticalTextPainter(false, false),
+                                CellEdgeEnum.BOTTOM,
+                                false,
                                 2,
-                                0,
-                                false));
+                                true),
+                        0, 0, 2, 0, false));
 
         // sort header styling
         this.sortHeaderCellPainter =
@@ -125,11 +120,7 @@ public class ModernNatTableThemeConfiguration extends DefaultNatTableThemeConfig
                                         false,
                                         0,
                                         false),
-                                0,
-                                2,
-                                0,
-                                5,
-                                false));
+                                0, 2, 0, 5, false));
         this.selectedSortHeaderCellPainter =
                 new BackgroundPainter(
                         new PaddingDecorator(
@@ -140,11 +131,7 @@ public class ModernNatTableThemeConfiguration extends DefaultNatTableThemeConfig
                                         false,
                                         0,
                                         false),
-                                0,
-                                2,
-                                0,
-                                5,
-                                false));
+                                0, 2, 0, 5, false));
 
         TreeImagePainter treeImagePainter =
                 new TreeImagePainter(
@@ -163,11 +150,7 @@ public class ModernNatTableThemeConfiguration extends DefaultNatTableThemeConfig
                                         false,
                                         2,
                                         true),
-                                0,
-                                5,
-                                0,
-                                5,
-                                false));
+                                0, 5, 0, 5, false));
 
         TreeImagePainter treeSelectionImagePainter =
                 new TreeImagePainter(
@@ -186,22 +169,7 @@ public class ModernNatTableThemeConfiguration extends DefaultNatTableThemeConfig
                                         false,
                                         2,
                                         true),
-                                0,
-                                5,
-                                0,
-                                5,
-                                false));
+                                0, 5, 0, 5, false));
 
-        FontData summaryRowFontData = GUIHelper.DEFAULT_FONT.getFontData()[0];
-        summaryRowFontData.setStyle(SWT.BOLD);
-        this.summaryRowFont = GUIHelper.getFont(summaryRowFontData);
-        this.summaryRowHAlign = HorizontalAlignmentEnum.RIGHT;
-        this.summaryRowBgColor = GUIHelper.COLOR_WIDGET_LIGHT_SHADOW;
-
-        this.summaryRowSelectionFont = GUIHelper.getFont(summaryRowFontData);
-        this.summaryRowSelectionBgColor = GUIHelper.COLOR_WIDGET_DARK_SHADOW;
-
-        this.renderCornerGridLines = true;
-        this.renderColumnHeaderGridLines = true;
     }
 }

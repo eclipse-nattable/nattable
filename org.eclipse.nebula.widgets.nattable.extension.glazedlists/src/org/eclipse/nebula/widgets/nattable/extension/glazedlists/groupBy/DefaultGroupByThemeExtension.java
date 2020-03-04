@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth and others.
+ * Copyright (c) 2014, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
@@ -84,8 +84,7 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
     public Character groupByObjectPWEchoChar = null;
     public TextDecorationEnum groupByObjectTextDecoration = null;
 
-    public ICellPainter groupByObjectCellPainter = new BackgroundPainter(
-            new GroupByCellTextPainter());
+    public ICellPainter groupByObjectCellPainter = null;
 
     // group by object style
 
@@ -152,6 +151,11 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
     public TextDecorationEnum groupByHintTextDecoration = null;
 
     @Override
+    public void createPainterInstances() {
+        this.groupByObjectCellPainter = new BackgroundPainter(new GroupByCellTextPainter());
+    }
+
+    @Override
     public void registerStyles(IConfigRegistry configRegistry) {
         configureGroupByHeaderBackgroundColor(configRegistry);
         configureGroupByStyle(configRegistry);
@@ -169,8 +173,7 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
      */
-    protected void configureGroupByHeaderBackgroundColor(
-            IConfigRegistry configRegistry) {
+    protected void configureGroupByHeaderBackgroundColor(IConfigRegistry configRegistry) {
         if (getGroupByHeaderBackgroundColor() != null) {
             configRegistry.registerConfigAttribute(
                     GroupByConfigAttributes.GROUP_BY_HEADER_BACKGROUND_COLOR,
@@ -203,8 +206,10 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
         IStyle groupByStyle = getGroupByStyle();
         if (!ThemeConfiguration.isStyleEmpty(groupByStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, groupByStyle,
-                    DisplayMode.NORMAL, GroupByHeaderLayer.GROUP_BY_REGION);
+                    CellConfigAttributes.CELL_STYLE,
+                    groupByStyle,
+                    DisplayMode.NORMAL,
+                    GroupByHeaderLayer.GROUP_BY_REGION);
         }
     }
 
@@ -228,9 +233,11 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      */
     protected IStyle getGroupByStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.groupByBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.groupByFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -238,17 +245,26 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.groupByGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.groupByHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.groupByVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.groupByFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.groupByImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.groupByFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
+                this.groupByImage);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.groupByBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.groupByPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.groupByTextDecoration);
         return cellStyle;
     }
@@ -264,15 +280,19 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
         IStyle groupByObjectStyle = getGroupByObjectStyle();
         if (!ThemeConfiguration.isStyleEmpty(groupByObjectStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, groupByObjectStyle,
-                    DisplayMode.NORMAL, GroupByDataLayer.GROUP_BY_OBJECT);
+                    CellConfigAttributes.CELL_STYLE,
+                    groupByObjectStyle,
+                    DisplayMode.NORMAL,
+                    GroupByDataLayer.GROUP_BY_OBJECT);
         }
 
         ICellPainter cellPainter = getGroupByObjectCellPainter();
         if (cellPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, cellPainter,
-                    DisplayMode.NORMAL, GroupByDataLayer.GROUP_BY_OBJECT);
+                    CellConfigAttributes.CELL_PAINTER,
+                    cellPainter,
+                    DisplayMode.NORMAL,
+                    GroupByDataLayer.GROUP_BY_OBJECT);
         }
     }
 
@@ -296,9 +316,11 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      */
     protected IStyle getGroupByObjectStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.groupByObjectBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.groupByObjectFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -306,19 +328,26 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.groupByObjectGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.groupByObjectHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.groupByObjectVAlign);
-        cellStyle
-                .setAttributeValue(CellStyleAttributes.FONT, this.groupByObjectFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.groupByObjectFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.groupByObjectImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.groupByObjectBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.groupByObjectPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.groupByObjectTextDecoration);
         return cellStyle;
     }
@@ -355,20 +384,23 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
      */
-    protected void configureGroupByObjectSelectionStyle(
-            IConfigRegistry configRegistry) {
+    protected void configureGroupByObjectSelectionStyle(IConfigRegistry configRegistry) {
         IStyle groupByObjectStyle = getGroupByObjectSelectionStyle();
         if (!ThemeConfiguration.isStyleEmpty(groupByObjectStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, groupByObjectStyle,
-                    DisplayMode.SELECT, GroupByDataLayer.GROUP_BY_OBJECT);
+                    CellConfigAttributes.CELL_STYLE,
+                    groupByObjectStyle,
+                    DisplayMode.SELECT,
+                    GroupByDataLayer.GROUP_BY_OBJECT);
         }
 
         ICellPainter cellPainter = getGroupByObjectSelectionCellPainter();
         if (cellPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, cellPainter,
-                    DisplayMode.SELECT, GroupByDataLayer.GROUP_BY_OBJECT);
+                    CellConfigAttributes.CELL_PAINTER,
+                    cellPainter,
+                    DisplayMode.SELECT,
+                    GroupByDataLayer.GROUP_BY_OBJECT);
         }
     }
 
@@ -392,9 +424,11 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      */
     protected IStyle getGroupByObjectSelectionStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.groupByObjectSelectionBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.groupByObjectSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -402,19 +436,26 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.groupByObjectSelectionGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.groupByObjectSelectionHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.groupByObjectSelectionVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.groupByObjectSelectionFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.groupByObjectSelectionImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.groupByObjectSelectionBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.groupByObjectSelectionPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.groupByObjectSelectionTextDecoration);
         return cellStyle;
     }
@@ -455,15 +496,19 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
         IStyle groupBySummaryStyle = getGroupBySummaryStyle();
         if (!ThemeConfiguration.isStyleEmpty(groupBySummaryStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, groupBySummaryStyle,
-                    DisplayMode.NORMAL, GroupByDataLayer.GROUP_BY_SUMMARY);
+                    CellConfigAttributes.CELL_STYLE,
+                    groupBySummaryStyle,
+                    DisplayMode.NORMAL,
+                    GroupByDataLayer.GROUP_BY_SUMMARY);
         }
 
         ICellPainter cellPainter = getGroupBySummaryCellPainter();
         if (cellPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, cellPainter,
-                    DisplayMode.NORMAL, GroupByDataLayer.GROUP_BY_SUMMARY);
+                    CellConfigAttributes.CELL_PAINTER,
+                    cellPainter,
+                    DisplayMode.NORMAL,
+                    GroupByDataLayer.GROUP_BY_SUMMARY);
         }
     }
 
@@ -487,9 +532,11 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      */
     protected IStyle getGroupBySummaryStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.groupBySummaryBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.groupBySummaryFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -497,19 +544,26 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.groupBySummaryGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.groupBySummaryHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.groupBySummaryVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.groupBySummaryFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.groupBySummaryImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.groupBySummaryBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.groupBySummaryPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.groupBySummaryTextDecoration);
         return cellStyle;
     }
@@ -546,20 +600,23 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
      */
-    protected void configureGroupBySummarySelectionStyle(
-            IConfigRegistry configRegistry) {
+    protected void configureGroupBySummarySelectionStyle(IConfigRegistry configRegistry) {
         IStyle groupBySummaryStyle = getGroupBySummarySelectionStyle();
         if (!ThemeConfiguration.isStyleEmpty(groupBySummaryStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, groupBySummaryStyle,
-                    DisplayMode.SELECT, GroupByDataLayer.GROUP_BY_SUMMARY);
+                    CellConfigAttributes.CELL_STYLE,
+                    groupBySummaryStyle,
+                    DisplayMode.SELECT,
+                    GroupByDataLayer.GROUP_BY_SUMMARY);
         }
 
         ICellPainter cellPainter = getGroupBySummarySelectionCellPainter();
         if (cellPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, cellPainter,
-                    DisplayMode.SELECT, GroupByDataLayer.GROUP_BY_SUMMARY);
+                    CellConfigAttributes.CELL_PAINTER,
+                    cellPainter,
+                    DisplayMode.SELECT,
+                    GroupByDataLayer.GROUP_BY_SUMMARY);
         }
     }
 
@@ -583,9 +640,11 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      */
     protected IStyle getGroupBySummarySelectionStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.groupBySummarySelectionBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.groupBySummarySelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -593,19 +652,26 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.groupBySummarySelectionGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.groupBySummarySelectionHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.groupBySummarySelectionVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.groupBySummarySelectionFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.groupBySummarySelectionImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.groupBySummarySelectionBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.groupBySummarySelectionPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.groupBySummarySelectionTextDecoration);
         return cellStyle;
     }
@@ -652,13 +718,15 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
         String groupByHint = getGroupByHint();
         if (groupByHint != null && groupByHint.length() > 0) {
             configRegistry.registerConfigAttribute(
-                    GroupByConfigAttributes.GROUP_BY_HINT, groupByHint);
+                    GroupByConfigAttributes.GROUP_BY_HINT,
+                    groupByHint);
         }
 
         IStyle hintStyle = getGroupByHintStyle();
         if (!ThemeConfiguration.isStyleEmpty(hintStyle)) {
             configRegistry.registerConfigAttribute(
-                    GroupByConfigAttributes.GROUP_BY_HINT_STYLE, hintStyle);
+                    GroupByConfigAttributes.GROUP_BY_HINT_STYLE,
+                    hintStyle);
         }
     }
 
@@ -676,9 +744,11 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      */
     protected IStyle getGroupByHintStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.groupByHintBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.groupByHintFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -686,18 +756,26 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.groupByHintGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.groupByHintHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.groupByHintVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.groupByHintFont);
-        cellStyle
-                .setAttributeValue(CellStyleAttributes.IMAGE, this.groupByHintImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.groupByHintFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
+                this.groupByHintImage);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.groupByHintBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.groupByHintPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.groupByHintTextDecoration);
         return cellStyle;
     }
@@ -705,40 +783,53 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
     @Override
     public void unregisterStyles(IConfigRegistry configRegistry) {
         if (getGroupByHeaderBackgroundColor() != null) {
-            configRegistry
-                    .unregisterConfigAttribute(GroupByConfigAttributes.GROUP_BY_HEADER_BACKGROUND_COLOR);
+            configRegistry.unregisterConfigAttribute(
+                    GroupByConfigAttributes.GROUP_BY_HEADER_BACKGROUND_COLOR);
         }
 
-        if (!ThemeConfiguration.isStyleEmpty(getGroupByStyle()))
+        if (!ThemeConfiguration.isStyleEmpty(getGroupByStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.NORMAL,
                     GroupByHeaderLayer.GROUP_BY_REGION);
+        }
 
         String groupByHint = getGroupByHint();
-        if (groupByHint != null && groupByHint.length() > 0)
+        if (groupByHint != null && groupByHint.length() > 0) {
             configRegistry.unregisterConfigAttribute(
-                    GroupByConfigAttributes.GROUP_BY_HINT, groupByHint);
+                    GroupByConfigAttributes.GROUP_BY_HINT,
+                    groupByHint);
+        }
 
-        if (!ThemeConfiguration.isStyleEmpty(getGroupByObjectStyle()))
+        if (!ThemeConfiguration.isStyleEmpty(getGroupByObjectStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.NORMAL,
                     GroupByDataLayer.GROUP_BY_OBJECT);
-        if (getGroupByObjectCellPainter() != null)
+        }
+        if (getGroupByObjectCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.NORMAL,
                     GroupByDataLayer.GROUP_BY_OBJECT);
+        }
 
-        if (!ThemeConfiguration.isStyleEmpty(getGroupBySummaryStyle()))
+        if (!ThemeConfiguration.isStyleEmpty(getGroupBySummaryStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.NORMAL,
                     GroupByDataLayer.GROUP_BY_SUMMARY);
-        if (getGroupBySummaryCellPainter() != null)
+        }
+        if (getGroupBySummaryCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.NORMAL,
                     GroupByDataLayer.GROUP_BY_SUMMARY);
+        }
 
-        if (!ThemeConfiguration.isStyleEmpty(getGroupByHintStyle()))
-            configRegistry
-                    .unregisterConfigAttribute(GroupByConfigAttributes.GROUP_BY_HINT_STYLE);
+        if (!ThemeConfiguration.isStyleEmpty(getGroupByHintStyle())) {
+            configRegistry.unregisterConfigAttribute(
+                    GroupByConfigAttributes.GROUP_BY_HINT_STYLE);
+        }
     }
 }

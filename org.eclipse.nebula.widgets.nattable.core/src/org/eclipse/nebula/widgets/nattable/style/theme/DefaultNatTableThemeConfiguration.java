@@ -1,22 +1,24 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2016 Dirk Fauth and others.
+ * Copyright (c) 2014, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *    Loris Securo <lorissek@gmail.com> - Bug 499622, 500764
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style.theme;
 
+import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowPainter;
 import org.eclipse.nebula.widgets.nattable.group.painter.ColumnGroupHeaderTextPainter;
 import org.eclipse.nebula.widgets.nattable.group.painter.RowGroupHeaderTextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.BeveledBorderDecorator;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.LineBorderDecorator;
+import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.sort.painter.SortableHeaderTextPainter;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.BorderModeEnum;
@@ -103,7 +105,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Character defaultPWEchoChar = null;
     public TextDecorationEnum defaultTextDecoration = null;
 
-    public ICellPainter defaultCellPainter = new LineBorderDecorator(new TextPainter());
+    public ICellPainter defaultCellPainter = null;
 
     // column header styling
 
@@ -119,7 +121,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Character cHeaderPWEchoChar = null;
     public TextDecorationEnum cHeaderTextDecoration = null;
 
-    public ICellPainter cHeaderCellPainter = new BeveledBorderDecorator(new TextPainter());
+    public ICellPainter cHeaderCellPainter = null;
 
     // row header styling
 
@@ -135,7 +137,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Character rHeaderPWEchoChar = null;
     public TextDecorationEnum rHeaderTextDecoration = null;
 
-    public ICellPainter rHeaderCellPainter = new TextPainter();
+    public ICellPainter rHeaderCellPainter = null;
 
     // corner styling
 
@@ -151,7 +153,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Character cornerPWEchoChar = null;
     public TextDecorationEnum cornerTextDecoration = null;
 
-    public ICellPainter cornerCellPainter = new BeveledBorderDecorator(new TextPainter());
+    public ICellPainter cornerCellPainter = null;
 
     // hover styling
 
@@ -443,9 +445,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Character cGroupHeaderPWEchoChar = null;
     public TextDecorationEnum cGroupHeaderTextDecoration = null;
 
-    public ICellPainter cGroupHeaderCellPainter =
-            new BeveledBorderDecorator(
-                    new ColumnGroupHeaderTextPainter());
+    public ICellPainter cGroupHeaderCellPainter = null;
 
     public Color rGroupHeaderBgColor = null;
     public Color rGroupHeaderFgColor = null;
@@ -459,9 +459,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Character rGroupHeaderPWEchoChar = null;
     public TextDecorationEnum rGroupHeaderTextDecoration = null;
 
-    public ICellPainter rGroupHeaderCellPainter =
-            new BeveledBorderDecorator(
-                    new RowGroupHeaderTextPainter());
+    public ICellPainter rGroupHeaderCellPainter = null;
 
     // sort header style
 
@@ -477,9 +475,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Character sortHeaderPWEchoChar = null;
     public TextDecorationEnum sortHeaderTextDecoration = null;
 
-    public ICellPainter sortHeaderCellPainter =
-            new BeveledBorderDecorator(
-                    new SortableHeaderTextPainter());
+    public ICellPainter sortHeaderCellPainter = null;
 
     public Color selectedSortHeaderBgColor = null;
     public Color selectedSortHeaderFgColor = null;
@@ -576,6 +572,10 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 
     // freeze style
     public Color freezeSeparatorColor = null;
+    /**
+     * @since 2.0
+     */
+    public Integer freezeSeparatorWidth = null;
 
     // grid color
     public Color gridLineColor = null;
@@ -615,6 +615,121 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
      * @since 1.5
      */
     public BorderStyle copyBorderStyle = new BorderStyle(1, GUIHelper.COLOR_BLACK, LineStyleEnum.DASHED);
+
+    // data change style
+    /**
+     * @since 2.0
+     */
+    public Color dataChangeBgColor = null;
+    /**
+     * @since 2.0
+     */
+    public Color dataChangeFgColor = GUIHelper.COLOR_BLUE;
+    /**
+     * @since 2.0
+     */
+    public Color dataChangeGradientBgColor = null;
+    /**
+     * @since 2.0
+     */
+    public Color dataChangeGradientFgColor = null;
+    /**
+     * @since 2.0
+     */
+    public HorizontalAlignmentEnum dataChangeHAlign = null;
+    /**
+     * @since 2.0
+     */
+    public VerticalAlignmentEnum dataChangeVAlign = null;
+    /**
+     * @since 2.0
+     */
+    public Font dataChangeFont = null;
+    /**
+     * @since 2.0
+     */
+    public Image dataChangeImage = null;
+    /**
+     * @since 2.0
+     */
+    public BorderStyle dataChangeBorderStyle = null;
+    /**
+     * @since 2.0
+     */
+    public Character dataChangePWEchoChar = null;
+    /**
+     * @since 2.0
+     */
+    public TextDecorationEnum dataChangeTextDecoration = null;
+
+    /**
+     * @since 2.0
+     */
+    public Color dataChangeSelectionBgColor = null;
+    /**
+     * @since 2.0
+     */
+    public Color dataChangeSelectionFgColor = GUIHelper.COLOR_BLUE;
+    /**
+     * @since 2.0
+     */
+    public Color dataChangeSelectionGradientBgColor = null;
+    /**
+     * @since 2.0
+     */
+    public Color dataChangeSelectionGradientFgColor = null;
+    /**
+     * @since 2.0
+     */
+    public HorizontalAlignmentEnum dataChangeSelectionHAlign = null;
+    /**
+     * @since 2.0
+     */
+    public VerticalAlignmentEnum dataChangeSelectionVAlign = null;
+    /**
+     * @since 2.0
+     */
+    public Font dataChangeSelectionFont = null;
+    /**
+     * @since 2.0
+     */
+    public Image dataChangeSelectionImage = null;
+    /**
+     * @since 2.0
+     */
+    public BorderStyle dataChangeSelectionBorderStyle = null;
+    /**
+     * @since 2.0
+     */
+    public Character dataChangeSelectionPWEchoChar = null;
+    /**
+     * @since 2.0
+     */
+    public TextDecorationEnum dataChangeSelectionTextDecoration = null;
+
+    // hide indicator style
+    /**
+     * @since 2.0
+     */
+    public Color hideIndicatorColor = null;
+    /**
+     * @since 2.0
+     */
+    public Integer hideIndicatorWidth = null;
+
+    @Override
+    public void createPainterInstances() {
+        super.createPainterInstances();
+
+        this.defaultCellPainter = new LineBorderDecorator(new TextPainter());
+        this.cHeaderCellPainter = new BeveledBorderDecorator(new TextPainter());
+        this.rHeaderCellPainter = new TextPainter();
+        this.cornerCellPainter = new BeveledBorderDecorator(new TextPainter());
+        this.cGroupHeaderCellPainter = new BeveledBorderDecorator(new ColumnGroupHeaderTextPainter());
+        this.rGroupHeaderCellPainter = new BeveledBorderDecorator(new RowGroupHeaderTextPainter());
+        this.sortHeaderCellPainter = new BeveledBorderDecorator(new SortableHeaderTextPainter());
+        this.filterRowCellPainter = new PaddingDecorator(new FilterRowPainter(), 0, 0, 0, 5);
+    }
 
     @Override
     protected IStyle getDefaultCellStyle() {
@@ -2012,6 +2127,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     }
 
     @Override
+    protected Integer getFreezeSeparatorWidth() {
+        return this.freezeSeparatorWidth;
+    }
+
+    @Override
     protected Color getGridLineColor() {
         return this.gridLineColor;
     }
@@ -2093,5 +2213,93 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
                 CellStyleAttributes.BORDER_STYLE,
                 this.copyBorderStyle);
         return cellStyle;
+    }
+
+    @Override
+    protected IStyle getDataChangeStyle() {
+        IStyle cellStyle = new Style();
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
+                this.dataChangeBgColor);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
+                this.dataChangeFgColor);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
+                this.dataChangeGradientBgColor);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
+                this.dataChangeGradientFgColor);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+                this.dataChangeHAlign);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
+                this.dataChangeVAlign);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.dataChangeFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
+                this.dataChangeImage);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
+                this.dataChangeBorderStyle);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
+                this.dataChangePWEchoChar);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
+                this.dataChangeTextDecoration);
+        return cellStyle;
+    }
+
+    @Override
+    protected IStyle getDataChangeSelectionStyle() {
+        IStyle cellStyle = new Style();
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
+                this.dataChangeSelectionBgColor);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
+                this.dataChangeSelectionFgColor);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
+                this.dataChangeSelectionGradientBgColor);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
+                this.dataChangeSelectionGradientFgColor);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+                this.dataChangeSelectionHAlign);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
+                this.dataChangeSelectionVAlign);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.dataChangeSelectionFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
+                this.dataChangeSelectionImage);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
+                this.dataChangeSelectionBorderStyle);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
+                this.dataChangeSelectionPWEchoChar);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
+                this.dataChangeSelectionTextDecoration);
+        return cellStyle;
+    }
+
+    @Override
+    protected Color getHideIndicatorColor() {
+        return this.hideIndicatorColor;
+    }
+
+    @Override
+    protected Integer getHideIndicatorWidth() {
+        return this.hideIndicatorWidth;
     }
 }

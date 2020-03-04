@@ -1,30 +1,31 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth and others.
+ * Copyright (c) 2014, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *    Loris Securo <lorissek@gmail.com> - Bug 499622
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style.theme;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
+import org.eclipse.nebula.widgets.nattable.datachange.DataChangeLayer;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillHandleConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.freeze.IFreezeConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.grid.layer.config.DefaultGridLayerConfiguration;
+import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
@@ -78,10 +79,12 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * Collection of {@link IThemeExtension} that should be added to this
      * ThemeConfiguration.
      */
-    protected final List<IThemeExtension> extensions = new ArrayList<IThemeExtension>();
+    protected final ArrayList<IThemeExtension> extensions = new ArrayList<>();
 
     @Override
     public void configureRegistry(IConfigRegistry configRegistry) {
+        createPainterInstances();
+
         configureDefaultStyle(configRegistry);
         configureColumnHeaderStyle(configRegistry);
         configureRowHeaderStyle(configRegistry);
@@ -120,9 +123,26 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 
         configureCopyBorderStyle(configRegistry);
 
+        configureDataChangeStyle(configRegistry);
+
+        configureHideIndicatorStyle(configRegistry);
+
         for (IThemeExtension extension : this.extensions) {
             extension.registerStyles(configRegistry);
         }
+    }
+
+    /**
+     * This method should be used to create the {@link ICellPainter} instances.
+     * This is needed for zoom operations so the painter are re-created with
+     * settings that match the current scaling (e.g. images).
+     *
+     * @since 2.0
+     */
+    public void createPainterInstances() {
+        // defined here but not implemented as this abstract class does not
+        // create any painter. And as long as zoom is not needed, there is no
+        // need to create the painter instances in a single place.
     }
 
     /**
@@ -139,14 +159,16 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         if (!isStyleEmpty(defaultStyle)) {
             // register body cell style for every display mode
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, defaultStyle);
+                    CellConfigAttributes.CELL_STYLE,
+                    defaultStyle);
         }
 
         ICellPainter defaultPainter = getDefaultCellPainter();
         if (defaultPainter != null) {
             // register body cell painter for every display mode
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, defaultPainter);
+                    CellConfigAttributes.CELL_PAINTER,
+                    defaultPainter);
         }
     }
 
@@ -188,8 +210,10 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         if (!isStyleEmpty(columnHeaderStyle)) {
             // register column header cell style in normal mode
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, columnHeaderStyle,
-                    DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
+                    CellConfigAttributes.CELL_STYLE,
+                    columnHeaderStyle,
+                    DisplayMode.NORMAL,
+                    GridRegion.COLUMN_HEADER);
         }
 
         ICellPainter columnHeaderCellPainter = getColumnHeaderCellPainter();
@@ -198,8 +222,10 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
             // will also be used in other modes if no other cell painter is
             // registered explicitly
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, columnHeaderCellPainter,
-                    DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
+                    CellConfigAttributes.CELL_PAINTER,
+                    columnHeaderCellPainter,
+                    DisplayMode.NORMAL,
+                    GridRegion.COLUMN_HEADER);
         }
     }
 
@@ -261,8 +287,10 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         if (!isStyleEmpty(rowHeaderStyle)) {
             // register row header cell style in normal mode
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, rowHeaderStyle,
-                    DisplayMode.NORMAL, GridRegion.ROW_HEADER);
+                    CellConfigAttributes.CELL_STYLE,
+                    rowHeaderStyle,
+                    DisplayMode.NORMAL,
+                    GridRegion.ROW_HEADER);
         }
 
         ICellPainter rowHeaderCellPainter = getRowHeaderCellPainter();
@@ -271,8 +299,10 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
             // will also be used in other modes if no other cell painter is
             // registered explicitly
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, rowHeaderCellPainter,
-                    DisplayMode.NORMAL, GridRegion.ROW_HEADER);
+                    CellConfigAttributes.CELL_PAINTER,
+                    rowHeaderCellPainter,
+                    DisplayMode.NORMAL,
+                    GridRegion.ROW_HEADER);
         }
     }
 
@@ -329,24 +359,30 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      *            which the style configuration should be applied to.
      */
     protected void configureCornerStyle(IConfigRegistry configRegistry) {
-        IStyle cornerStyle = this.styleCornerLikeColumnHeader ? getColumnHeaderStyle()
+        IStyle cornerStyle = this.styleCornerLikeColumnHeader
+                ? getColumnHeaderStyle()
                 : getCornerStyle();
         if (!isStyleEmpty(cornerStyle)) {
             // register corner cell style in normal mode
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, cornerStyle,
-                    DisplayMode.NORMAL, GridRegion.CORNER);
+                    CellConfigAttributes.CELL_STYLE,
+                    cornerStyle,
+                    DisplayMode.NORMAL,
+                    GridRegion.CORNER);
         }
 
-        ICellPainter cornerCellPainter = this.styleCornerLikeColumnHeader ? getColumnHeaderCellPainter()
+        ICellPainter cornerCellPainter = this.styleCornerLikeColumnHeader
+                ? getColumnHeaderCellPainter()
                 : getCornerCellPainter();
         if (cornerCellPainter != null) {
             // register corner cell painter in normal mode
             // will also be used in other modes if no other cell painter is
             // registered explicitly
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, cornerCellPainter,
-                    DisplayMode.NORMAL, GridRegion.CORNER);
+                    CellConfigAttributes.CELL_PAINTER,
+                    cornerCellPainter,
+                    DisplayMode.NORMAL,
+                    GridRegion.CORNER);
         }
     }
 
@@ -411,54 +447,66 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         IStyle defaultHoverStyle = getDefaultHoverStyle();
         if (!isStyleEmpty(defaultHoverStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, defaultHoverStyle,
+                    CellConfigAttributes.CELL_STYLE,
+                    defaultHoverStyle,
                     DisplayMode.HOVER);
         }
         ICellPainter defaultHoverCellPainter = getDefaultHoverCellPainter();
         if (defaultHoverCellPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, defaultHoverCellPainter,
+                    CellConfigAttributes.CELL_PAINTER,
+                    defaultHoverCellPainter,
                     DisplayMode.HOVER);
         }
 
         IStyle bodyHoverStyle = getBodyHoverStyle();
         if (!isStyleEmpty(bodyHoverStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, bodyHoverStyle,
-                    DisplayMode.HOVER, GridRegion.BODY);
+                    CellConfigAttributes.CELL_STYLE,
+                    bodyHoverStyle,
+                    DisplayMode.HOVER,
+                    GridRegion.BODY);
         }
         ICellPainter bodyHoverCellPainter = getBodyHoverCellPainter();
         if (bodyHoverCellPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, bodyHoverCellPainter,
-                    DisplayMode.HOVER, GridRegion.BODY);
+                    CellConfigAttributes.CELL_PAINTER,
+                    bodyHoverCellPainter,
+                    DisplayMode.HOVER,
+                    GridRegion.BODY);
         }
 
         IStyle columnHeaderHoverStyle = getColumnHeaderHoverStyle();
         if (!isStyleEmpty(columnHeaderHoverStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, columnHeaderHoverStyle,
-                    DisplayMode.HOVER, GridRegion.COLUMN_HEADER);
+                    CellConfigAttributes.CELL_STYLE,
+                    columnHeaderHoverStyle,
+                    DisplayMode.HOVER,
+                    GridRegion.COLUMN_HEADER);
         }
         ICellPainter columnHeaderHoverCellPainter = getColumnHeaderHoverCellPainter();
         if (columnHeaderHoverCellPainter != null) {
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    columnHeaderHoverCellPainter, DisplayMode.HOVER,
+                    columnHeaderHoverCellPainter,
+                    DisplayMode.HOVER,
                     GridRegion.COLUMN_HEADER);
         }
 
         IStyle rowHeaderHoverStyle = getRowHeaderHoverStyle();
         if (!isStyleEmpty(rowHeaderHoverStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, rowHeaderHoverStyle,
-                    DisplayMode.HOVER, GridRegion.ROW_HEADER);
+                    CellConfigAttributes.CELL_STYLE,
+                    rowHeaderHoverStyle,
+                    DisplayMode.HOVER,
+                    GridRegion.ROW_HEADER);
         }
         ICellPainter rowHeaderHoverCellPainter = getRowHeaderHoverCellPainter();
         if (rowHeaderHoverCellPainter != null) {
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    rowHeaderHoverCellPainter, DisplayMode.HOVER,
+                    rowHeaderHoverCellPainter,
+                    DisplayMode.HOVER,
                     GridRegion.ROW_HEADER);
         }
     }
@@ -682,54 +730,66 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         IStyle defaultHoverStyle = getDefaultHoverSelectionStyle();
         if (!isStyleEmpty(defaultHoverStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, defaultHoverStyle,
+                    CellConfigAttributes.CELL_STYLE,
+                    defaultHoverStyle,
                     DisplayMode.SELECT_HOVER);
         }
         ICellPainter defaultHoverCellPainter = getDefaultHoverSelectionCellPainter();
         if (defaultHoverCellPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, defaultHoverCellPainter,
+                    CellConfigAttributes.CELL_PAINTER,
+                    defaultHoverCellPainter,
                     DisplayMode.SELECT_HOVER);
         }
 
         IStyle bodyHoverStyle = getBodyHoverSelectionStyle();
         if (!isStyleEmpty(bodyHoverStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, bodyHoverStyle,
-                    DisplayMode.SELECT_HOVER, GridRegion.BODY);
+                    CellConfigAttributes.CELL_STYLE,
+                    bodyHoverStyle,
+                    DisplayMode.SELECT_HOVER,
+                    GridRegion.BODY);
         }
         ICellPainter bodyHoverCellPainter = getBodyHoverSelectionCellPainter();
         if (bodyHoverCellPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, bodyHoverCellPainter,
-                    DisplayMode.SELECT_HOVER, GridRegion.BODY);
+                    CellConfigAttributes.CELL_PAINTER,
+                    bodyHoverCellPainter,
+                    DisplayMode.SELECT_HOVER,
+                    GridRegion.BODY);
         }
 
         IStyle columnHeaderHoverStyle = getColumnHeaderHoverSelectionStyle();
         if (!isStyleEmpty(columnHeaderHoverStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, columnHeaderHoverStyle,
-                    DisplayMode.SELECT_HOVER, GridRegion.COLUMN_HEADER);
+                    CellConfigAttributes.CELL_STYLE,
+                    columnHeaderHoverStyle,
+                    DisplayMode.SELECT_HOVER,
+                    GridRegion.COLUMN_HEADER);
         }
         ICellPainter columnHeaderHoverCellPainter = getColumnHeaderHoverSelectionCellPainter();
         if (columnHeaderHoverCellPainter != null) {
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    columnHeaderHoverCellPainter, DisplayMode.SELECT_HOVER,
+                    columnHeaderHoverCellPainter,
+                    DisplayMode.SELECT_HOVER,
                     GridRegion.COLUMN_HEADER);
         }
 
         IStyle rowHeaderHoverStyle = getRowHeaderHoverSelectionStyle();
         if (!isStyleEmpty(rowHeaderHoverStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, rowHeaderHoverStyle,
-                    DisplayMode.SELECT_HOVER, GridRegion.ROW_HEADER);
+                    CellConfigAttributes.CELL_STYLE,
+                    rowHeaderHoverStyle,
+                    DisplayMode.SELECT_HOVER,
+                    GridRegion.ROW_HEADER);
         }
         ICellPainter rowHeaderHoverCellPainter = getRowHeaderHoverSelectionCellPainter();
         if (rowHeaderHoverCellPainter != null) {
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    rowHeaderHoverCellPainter, DisplayMode.SELECT_HOVER,
+                    rowHeaderHoverCellPainter,
+                    DisplayMode.SELECT_HOVER,
                     GridRegion.ROW_HEADER);
         }
     }
@@ -947,7 +1007,8 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         IStyle defaultSelectionStyle = getDefaultSelectionCellStyle();
         if (!isStyleEmpty(defaultSelectionStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, defaultSelectionStyle,
+                    CellConfigAttributes.CELL_STYLE,
+                    defaultSelectionStyle,
                     DisplayMode.SELECT);
         }
 
@@ -956,7 +1017,8 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         if (defaultSelectionCellPainter != null) {
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    defaultSelectionCellPainter, DisplayMode.SELECT);
+                    defaultSelectionCellPainter,
+                    DisplayMode.SELECT);
         }
     }
 
@@ -995,22 +1057,25 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
      */
-    protected void configureColumnHeaderSelectionStyle(
-            IConfigRegistry configRegistry) {
+    protected void configureColumnHeaderSelectionStyle(IConfigRegistry configRegistry) {
         IStyle columnHeaderStyle = getColumnHeaderSelectionStyle();
         if (!isStyleEmpty(columnHeaderStyle)) {
             // register column header cell style in select mode
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, columnHeaderStyle,
-                    DisplayMode.SELECT, GridRegion.COLUMN_HEADER);
+                    CellConfigAttributes.CELL_STYLE,
+                    columnHeaderStyle,
+                    DisplayMode.SELECT,
+                    GridRegion.COLUMN_HEADER);
         }
 
         ICellPainter columnHeaderCellPainter = getColumnHeaderSelectionCellPainter();
         if (columnHeaderCellPainter != null) {
             // register column header cell painter in select mode
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, columnHeaderCellPainter,
-                    DisplayMode.SELECT, GridRegion.COLUMN_HEADER);
+                    CellConfigAttributes.CELL_PAINTER,
+                    columnHeaderCellPainter,
+                    DisplayMode.SELECT,
+                    GridRegion.COLUMN_HEADER);
         }
 
         IStyle fullSelectionColumnHeaderStyle = getColumnHeaderFullSelectionStyle();
@@ -1019,7 +1084,8 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
             // in the column are selected
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_STYLE,
-                    fullSelectionColumnHeaderStyle, DisplayMode.SELECT,
+                    fullSelectionColumnHeaderStyle,
+                    DisplayMode.SELECT,
                     SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
         }
 
@@ -1029,7 +1095,8 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
             // in the column are selected
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    fullSelectionColumnHeaderCellPainter, DisplayMode.SELECT,
+                    fullSelectionColumnHeaderCellPainter,
+                    DisplayMode.SELECT,
                     SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
         }
     }
@@ -1131,22 +1198,25 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
      */
-    protected void configureRowHeaderSelectionStyle(
-            IConfigRegistry configRegistry) {
+    protected void configureRowHeaderSelectionStyle(IConfigRegistry configRegistry) {
         IStyle rowHeaderStyle = getRowHeaderSelectionStyle();
         if (!isStyleEmpty(rowHeaderStyle)) {
             // register column header cell style in select mode
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, rowHeaderStyle,
-                    DisplayMode.SELECT, GridRegion.ROW_HEADER);
+                    CellConfigAttributes.CELL_STYLE,
+                    rowHeaderStyle,
+                    DisplayMode.SELECT,
+                    GridRegion.ROW_HEADER);
         }
 
         ICellPainter rowHeaderCellPainter = getRowHeaderSelectionCellPainter();
         if (rowHeaderCellPainter != null) {
             // register column header cell painter in select mode
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, rowHeaderCellPainter,
-                    DisplayMode.SELECT, GridRegion.ROW_HEADER);
+                    CellConfigAttributes.CELL_PAINTER,
+                    rowHeaderCellPainter,
+                    DisplayMode.SELECT,
+                    GridRegion.ROW_HEADER);
         }
 
         IStyle fullSelectionRowHeaderStyle = getRowHeaderFullSelectionStyle();
@@ -1155,7 +1225,8 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
             // the row are selected
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_STYLE,
-                    fullSelectionRowHeaderStyle, DisplayMode.SELECT,
+                    fullSelectionRowHeaderStyle,
+                    DisplayMode.SELECT,
                     SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
         }
 
@@ -1165,7 +1236,8 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
             // the row are selected
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    fullSelectionRowHeaderCellPainter, DisplayMode.SELECT,
+                    fullSelectionRowHeaderCellPainter,
+                    DisplayMode.SELECT,
                     SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
         }
     }
@@ -1266,22 +1338,28 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      *            which the style configuration should be applied to.
      */
     protected void configureCornerSelectionStyle(IConfigRegistry configRegistry) {
-        IStyle cornerStyle = this.styleCornerLikeColumnHeader ? getColumnHeaderSelectionStyle()
+        IStyle cornerStyle = this.styleCornerLikeColumnHeader
+                ? getColumnHeaderSelectionStyle()
                 : getCornerSelectionStyle();
         if (!isStyleEmpty(cornerStyle)) {
             // register corner cell style in select mode
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, cornerStyle,
-                    DisplayMode.SELECT, GridRegion.CORNER);
+                    CellConfigAttributes.CELL_STYLE,
+                    cornerStyle,
+                    DisplayMode.SELECT,
+                    GridRegion.CORNER);
         }
 
-        ICellPainter cornerCellPainter = this.styleCornerLikeColumnHeader ? getColumnHeaderSelectionCellPainter()
+        ICellPainter cornerCellPainter = this.styleCornerLikeColumnHeader
+                ? getColumnHeaderSelectionCellPainter()
                 : getCornerSelectionCellPainter();
         if (cornerCellPainter != null) {
             // register corner cell painter in select mode
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, cornerCellPainter,
-                    DisplayMode.SELECT, GridRegion.CORNER);
+                    CellConfigAttributes.CELL_PAINTER,
+                    cornerCellPainter,
+                    DisplayMode.SELECT,
+                    GridRegion.CORNER);
         }
     }
 
@@ -1337,14 +1415,16 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         IStyle anchorStyle = getSelectionAnchorStyle();
         if (!isStyleEmpty(anchorStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, anchorStyle,
+                    CellConfigAttributes.CELL_STYLE,
+                    anchorStyle,
                     DisplayMode.NORMAL,
                     SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
         }
         ICellPainter anchorPainter = getSelectionAnchorCellPainter();
         if (anchorPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, anchorPainter,
+                    CellConfigAttributes.CELL_PAINTER,
+                    anchorPainter,
                     DisplayMode.NORMAL,
                     SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
         }
@@ -1353,14 +1433,16 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         IStyle selectionAnchorStyle = getSelectionAnchorSelectionStyle();
         if (!isStyleEmpty(selectionAnchorStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, selectionAnchorStyle,
+                    CellConfigAttributes.CELL_STYLE,
+                    selectionAnchorStyle,
                     DisplayMode.SELECT,
                     SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
         }
         ICellPainter selectionAnchorPainter = getSelectionAnchorSelectionCellPainter();
         if (selectionAnchorPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, selectionAnchorPainter,
+                    CellConfigAttributes.CELL_PAINTER,
+                    selectionAnchorPainter,
                     DisplayMode.SELECT,
                     SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
         }
@@ -1369,7 +1451,8 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         IStyle gridLineStyle = getSelectionAnchorGridLineStyle();
         if (!isStyleEmpty(gridLineStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, gridLineStyle,
+                    CellConfigAttributes.CELL_STYLE,
+                    gridLineStyle,
                     DisplayMode.SELECT,
                     SelectionStyleLabels.SELECTION_ANCHOR_GRID_LINE_STYLE);
         }
@@ -1485,7 +1568,8 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         IStyle evenStyle = getEvenRowStyle();
         if (!isStyleEmpty(evenStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, evenStyle,
+                    CellConfigAttributes.CELL_STYLE,
+                    evenStyle,
                     DisplayMode.NORMAL,
                     AlternatingRowConfigLabelAccumulator.EVEN_ROW_CONFIG_TYPE);
         }
@@ -1493,7 +1577,8 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         ICellPainter evenCellPainter = getEvenRowCellPainter();
         if (evenCellPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, evenCellPainter,
+                    CellConfigAttributes.CELL_PAINTER,
+                    evenCellPainter,
                     DisplayMode.NORMAL,
                     AlternatingRowConfigLabelAccumulator.EVEN_ROW_CONFIG_TYPE);
         }
@@ -1501,7 +1586,8 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         IStyle oddStyle = getOddRowStyle();
         if (!isStyleEmpty(oddStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, oddStyle,
+                    CellConfigAttributes.CELL_STYLE,
+                    oddStyle,
                     DisplayMode.NORMAL,
                     AlternatingRowConfigLabelAccumulator.ODD_ROW_CONFIG_TYPE);
         }
@@ -1509,7 +1595,8 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         ICellPainter oddCellPainter = getOddRowCellPainter();
         if (oddCellPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, oddCellPainter,
+                    CellConfigAttributes.CELL_PAINTER,
+                    oddCellPainter,
                     DisplayMode.NORMAL,
                     AlternatingRowConfigLabelAccumulator.ODD_ROW_CONFIG_TYPE);
         }
@@ -1614,20 +1701,22 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
      */
-    protected void configureColumnGroupHeaderStyle(
-            IConfigRegistry configRegistry) {
+    protected void configureColumnGroupHeaderStyle(IConfigRegistry configRegistry) {
         IStyle columnGroupHeaderStyle = getColumnGroupHeaderStyle();
         if (!isStyleEmpty(columnGroupHeaderStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, columnGroupHeaderStyle,
-                    DisplayMode.NORMAL, GridRegion.COLUMN_GROUP_HEADER);
+                    CellConfigAttributes.CELL_STYLE,
+                    columnGroupHeaderStyle,
+                    DisplayMode.NORMAL,
+                    GridRegion.COLUMN_GROUP_HEADER);
         }
 
         ICellPainter columnGroupHeaderCellPainter = getColumnGroupHeaderCellPainter();
         if (columnGroupHeaderCellPainter != null) {
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    columnGroupHeaderCellPainter, DisplayMode.NORMAL,
+                    columnGroupHeaderCellPainter,
+                    DisplayMode.NORMAL,
                     GridRegion.COLUMN_GROUP_HEADER);
         }
     }
@@ -1691,15 +1780,18 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         IStyle rowGroupHeaderStyle = getRowGroupHeaderStyle();
         if (!isStyleEmpty(rowGroupHeaderStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, rowGroupHeaderStyle,
-                    DisplayMode.NORMAL, GridRegion.ROW_GROUP_HEADER);
+                    CellConfigAttributes.CELL_STYLE,
+                    rowGroupHeaderStyle,
+                    DisplayMode.NORMAL,
+                    GridRegion.ROW_GROUP_HEADER);
         }
 
         ICellPainter rowGroupHeaderCellPainter = getRowGroupHeaderCellPainter();
         if (rowGroupHeaderCellPainter != null) {
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    rowGroupHeaderCellPainter, DisplayMode.NORMAL,
+                    rowGroupHeaderCellPainter,
+                    DisplayMode.NORMAL,
                     GridRegion.ROW_GROUP_HEADER);
         }
     }
@@ -1765,11 +1857,13 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         IStyle sortStyle = getSortHeaderStyle();
         if (!isStyleEmpty(sortStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, sortStyle,
+                    CellConfigAttributes.CELL_STYLE,
+                    sortStyle,
                     DisplayMode.NORMAL,
                     DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, sortStyle,
+                    CellConfigAttributes.CELL_STYLE,
+                    sortStyle,
                     DisplayMode.NORMAL,
                     DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
         }
@@ -1777,11 +1871,13 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         ICellPainter cellPainter = getSortHeaderCellPainter();
         if (cellPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, cellPainter,
+                    CellConfigAttributes.CELL_PAINTER,
+                    cellPainter,
                     DisplayMode.NORMAL,
                     DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, cellPainter,
+                    CellConfigAttributes.CELL_PAINTER,
+                    cellPainter,
                     DisplayMode.NORMAL,
                     DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
         }
@@ -1853,16 +1949,17 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
      */
-    protected void configureSelectedSortHeaderStyle(
-            IConfigRegistry configRegistry) {
+    protected void configureSelectedSortHeaderStyle(IConfigRegistry configRegistry) {
         IStyle sortStyle = getSelectedSortHeaderStyle();
         if (!isStyleEmpty(sortStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, sortStyle,
+                    CellConfigAttributes.CELL_STYLE,
+                    sortStyle,
                     DisplayMode.SELECT,
                     DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, sortStyle,
+                    CellConfigAttributes.CELL_STYLE,
+                    sortStyle,
                     DisplayMode.SELECT,
                     DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
         }
@@ -1870,11 +1967,13 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         ICellPainter cellPainter = getSelectedSortHeaderCellPainter();
         if (cellPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, cellPainter,
+                    CellConfigAttributes.CELL_PAINTER,
+                    cellPainter,
                     DisplayMode.SELECT,
                     DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, cellPainter,
+                    CellConfigAttributes.CELL_PAINTER,
+                    cellPainter,
                     DisplayMode.SELECT,
                     DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
         }
@@ -1943,15 +2042,19 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         IStyle filterRowStyle = getFilterRowStyle();
         if (!isStyleEmpty(filterRowStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, filterRowStyle,
-                    DisplayMode.NORMAL, GridRegion.FILTER_ROW);
+                    CellConfigAttributes.CELL_STYLE,
+                    filterRowStyle,
+                    DisplayMode.NORMAL,
+                    GridRegion.FILTER_ROW);
         }
 
         ICellPainter cellPainter = getFilterRowCellPainter();
         if (cellPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, cellPainter,
-                    DisplayMode.NORMAL, GridRegion.FILTER_ROW);
+                    CellConfigAttributes.CELL_PAINTER,
+                    cellPainter,
+                    DisplayMode.NORMAL,
+                    GridRegion.FILTER_ROW);
         }
     }
 
@@ -2009,35 +2112,44 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         IStyle treeStyle = getTreeStyle();
         if (!isStyleEmpty(treeStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, treeStyle,
-                    DisplayMode.NORMAL, TreeLayer.TREE_COLUMN_CELL);
+                    CellConfigAttributes.CELL_STYLE,
+                    treeStyle,
+                    DisplayMode.NORMAL,
+                    TreeLayer.TREE_COLUMN_CELL);
         }
 
         ICellPainter cellPainter = getTreeCellPainter();
         if (cellPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, cellPainter,
-                    DisplayMode.NORMAL, TreeLayer.TREE_COLUMN_CELL);
+                    CellConfigAttributes.CELL_PAINTER,
+                    cellPainter,
+                    DisplayMode.NORMAL,
+                    TreeLayer.TREE_COLUMN_CELL);
         }
 
         IStyle treeSelectionStyle = getTreeSelectionStyle();
         if (!isStyleEmpty(treeSelectionStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, treeSelectionStyle,
-                    DisplayMode.SELECT, TreeLayer.TREE_COLUMN_CELL);
+                    CellConfigAttributes.CELL_STYLE,
+                    treeSelectionStyle,
+                    DisplayMode.SELECT,
+                    TreeLayer.TREE_COLUMN_CELL);
         }
 
         ICellPainter selectionCellPainter = getTreeSelectionCellPainter();
         if (selectionCellPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, selectionCellPainter,
-                    DisplayMode.SELECT, TreeLayer.TREE_COLUMN_CELL);
+                    CellConfigAttributes.CELL_PAINTER,
+                    selectionCellPainter,
+                    DisplayMode.SELECT,
+                    TreeLayer.TREE_COLUMN_CELL);
         }
 
         ICellPainter treePainter = getTreeStructurePainter();
         if (treePainter != null) {
             configRegistry.registerConfigAttribute(
-                    TreeConfigAttributes.TREE_STRUCTURE_PAINTER, treePainter,
+                    TreeConfigAttributes.TREE_STRUCTURE_PAINTER,
+                    treePainter,
                     DisplayMode.NORMAL);
         }
 
@@ -2045,7 +2157,8 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         if (treeSelectionPainter != null) {
             configRegistry.registerConfigAttribute(
                     TreeConfigAttributes.TREE_STRUCTURE_PAINTER,
-                    treeSelectionPainter, DisplayMode.SELECT);
+                    treeSelectionPainter,
+                    DisplayMode.SELECT);
         }
     }
 
@@ -2160,14 +2273,17 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         IStyle style = getSummaryRowStyle();
         if (!isStyleEmpty(style)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, style, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    style,
+                    DisplayMode.NORMAL,
                     SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
         }
 
         ICellPainter cellPainter = getSummaryRowCellPainter();
         if (cellPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, cellPainter,
+                    CellConfigAttributes.CELL_PAINTER,
+                    cellPainter,
                     DisplayMode.NORMAL,
                     SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
         }
@@ -2175,14 +2291,17 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         style = getSummaryRowSelectionStyle();
         if (!isStyleEmpty(style)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, style, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_STYLE,
+                    style,
+                    DisplayMode.SELECT,
                     SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
         }
 
         cellPainter = getSummaryRowSelectionCellPainter();
         if (cellPainter != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, cellPainter,
+                    CellConfigAttributes.CELL_PAINTER,
+                    cellPainter,
                     DisplayMode.SELECT,
                     SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
         }
@@ -2283,6 +2402,12 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
                     IFreezeConfigAttributes.SEPARATOR_COLOR,
                     getFreezeSeparatorColor());
         }
+
+        if (getFreezeSeparatorWidth() != null) {
+            configRegistry.registerConfigAttribute(
+                    IFreezeConfigAttributes.SEPARATOR_WIDTH,
+                    getFreezeSeparatorWidth());
+        }
     }
 
     /**
@@ -2294,6 +2419,16 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      *         separator.
      */
     protected abstract Color getFreezeSeparatorColor();
+
+    /**
+     * Returns the width that should be used by the freeze separator. If
+     * <code>null</code> is returned, the default width of 1 pixel will be used.
+     *
+     * @return The width of the freeze separator.
+     *
+     * @since 2.0
+     */
+    protected abstract Integer getFreezeSeparatorWidth();
 
     /**
      * This method is used to register the grid line styling, which consists of
@@ -2308,37 +2443,43 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
     protected void configureGridLineStyle(IConfigRegistry configRegistry) {
         if (getGridLineColor() != null) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.GRID_LINE_COLOR, getGridLineColor());
+                    CellConfigAttributes.GRID_LINE_COLOR,
+                    getGridLineColor());
         }
 
         if (getRenderColumnHeaderGridLines() != null) {
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.RENDER_GRID_LINES,
-                    getRenderColumnHeaderGridLines(), DisplayMode.NORMAL,
+                    getRenderColumnHeaderGridLines(),
+                    DisplayMode.NORMAL,
                     GridRegion.COLUMN_HEADER);
         }
         if (getRenderCornerGridLines() != null) {
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.RENDER_GRID_LINES,
-                    getRenderCornerGridLines(), DisplayMode.NORMAL,
+                    getRenderCornerGridLines(),
+                    DisplayMode.NORMAL,
                     GridRegion.CORNER);
         }
         if (getRenderRowHeaderGridLines() != null) {
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.RENDER_GRID_LINES,
-                    getRenderRowHeaderGridLines(), DisplayMode.NORMAL,
+                    getRenderRowHeaderGridLines(),
+                    DisplayMode.NORMAL,
                     GridRegion.ROW_HEADER);
         }
         if (getRenderBodyGridLines() != null) {
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.RENDER_GRID_LINES,
-                    getRenderBodyGridLines(), DisplayMode.NORMAL,
+                    getRenderBodyGridLines(),
+                    DisplayMode.NORMAL,
                     GridRegion.BODY);
         }
         if (getRenderFilterRowGridLines() != null) {
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.RENDER_GRID_LINES,
-                    getRenderFilterRowGridLines(), DisplayMode.NORMAL,
+                    getRenderFilterRowGridLines(),
+                    DisplayMode.NORMAL,
                     GridRegion.FILTER_ROW);
         }
     }
@@ -2505,19 +2646,22 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         Color fillHandleColor = getFillHandleColor();
         if (fillHandleColor != null) {
             configRegistry.registerConfigAttribute(
-                    FillHandleConfigAttributes.FILL_HANDLE_COLOR, fillHandleColor,
+                    FillHandleConfigAttributes.FILL_HANDLE_COLOR,
+                    fillHandleColor,
                     DisplayMode.NORMAL);
         }
         BorderStyle fillHandleBorderStyle = getFillHandleBorderStyle();
         if (fillHandleBorderStyle != null) {
             configRegistry.registerConfigAttribute(
-                    FillHandleConfigAttributes.FILL_HANDLE_BORDER_STYLE, fillHandleBorderStyle,
+                    FillHandleConfigAttributes.FILL_HANDLE_BORDER_STYLE,
+                    fillHandleBorderStyle,
                     DisplayMode.NORMAL);
         }
         BorderStyle fillHandleRegionBorderStyle = getFillHandleRegionBorderStyle();
         if (fillHandleRegionBorderStyle != null) {
             configRegistry.registerConfigAttribute(
-                    FillHandleConfigAttributes.FILL_HANDLE_REGION_BORDER_STYLE, fillHandleRegionBorderStyle,
+                    FillHandleConfigAttributes.FILL_HANDLE_REGION_BORDER_STYLE,
+                    fillHandleRegionBorderStyle,
                     DisplayMode.NORMAL);
         }
     }
@@ -2528,10 +2672,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * @return The {@link Color} that should be used to render the fill handle.
      * @since 1.5
      */
-    // TODO Change it to abstract in next major version
-    protected Color getFillHandleColor() {
-        return null;
-    }
+    protected abstract Color getFillHandleColor();
 
     /**
      * Returns the {@link BorderStyle} that should be used to render the border
@@ -2541,10 +2682,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      *         of the fill handle.
      * @since 1.5
      */
-    // TODO Change it to abstract in next major version
-    protected BorderStyle getFillHandleBorderStyle() {
-        return null;
-    }
+    protected abstract BorderStyle getFillHandleBorderStyle();
 
     /**
      * Returns the {@link BorderStyle} that should be used to render the border
@@ -2554,10 +2692,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      *         around the fill handle region.
      * @since 1.5
      */
-    // TODO Change it to abstract in next major version
-    protected BorderStyle getFillHandleRegionBorderStyle() {
-        return null;
-    }
+    protected abstract BorderStyle getFillHandleRegionBorderStyle();
 
     /**
      * Register the style configurations to render the copy border.
@@ -2571,7 +2706,8 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         IStyle copyBorderStyle = getCopyBorderStyle();
         if (!isStyleEmpty(copyBorderStyle)) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, copyBorderStyle,
+                    CellConfigAttributes.CELL_STYLE,
+                    copyBorderStyle,
                     DisplayMode.NORMAL,
                     SelectionStyleLabels.COPY_BORDER_STYLE);
         }
@@ -2586,10 +2722,99 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * @return The {@link IStyle} that should be used to render the copy border.
      * @since 1.5
      */
-    // TODO Change it to abstract in next major version
-    protected IStyle getCopyBorderStyle() {
-        return null;
+    protected abstract IStyle getCopyBorderStyle();
+
+    /**
+     * Register the style configurations to render cells in dirty state.
+     *
+     * @param configRegistry
+     *            The IConfigRegistry that is used by the NatTable instance to
+     *            which the style configuration should be applied to.
+     * @since 2.0
+     */
+    protected void configureDataChangeStyle(IConfigRegistry configRegistry) {
+        IStyle dataChangeStyle = getDataChangeStyle();
+        if (!isStyleEmpty(dataChangeStyle)) {
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_STYLE,
+                    dataChangeStyle,
+                    DisplayMode.NORMAL,
+                    DataChangeLayer.DIRTY);
+        }
+
+        IStyle selectedDataChangeStyle = getDataChangeSelectionStyle();
+        if (!isStyleEmpty(selectedDataChangeStyle)) {
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_STYLE,
+                    selectedDataChangeStyle,
+                    DisplayMode.SELECT,
+                    DataChangeLayer.DIRTY);
+        }
     }
+
+    /**
+     * Returns the {@link IStyle} that should be used to render dirty cells in
+     * {@link DisplayMode#NORMAL}. That means this style will be registered
+     * against the label {@link DataChangeLayer#DIRTY}.
+     *
+     * @return The {@link IStyle} that should be used to render dirty cells.
+     * @since 2.0
+     */
+    protected abstract IStyle getDataChangeStyle();
+
+    /**
+     * Returns the {@link IStyle} that should be used to render dirty cells in
+     * {@link DisplayMode#SELECT}. That means this style will be registered
+     * against the label {@link DataChangeLayer#DIRTY}.
+     *
+     * @return The {@link IStyle} that should be used to render dirty cells.
+     * @since 2.0
+     */
+    protected abstract IStyle getDataChangeSelectionStyle();
+
+    /**
+     * Register the style configurations for rendering the hide indicator.
+     *
+     * @param configRegistry
+     *            The IConfigRegistry that is used by the NatTable instance to
+     *            which the style configuration should be applied to.
+     * @since 2.0
+     */
+    protected void configureHideIndicatorStyle(IConfigRegistry configRegistry) {
+        if (getHideIndicatorColor() != null) {
+            configRegistry.registerConfigAttribute(
+                    HideIndicatorConfigAttributes.HIDE_INDICATOR_COLOR,
+                    getHideIndicatorColor());
+        }
+
+        if (getHideIndicatorWidth() != null) {
+            configRegistry.registerConfigAttribute(
+                    HideIndicatorConfigAttributes.HIDE_INDICATOR_LINE_WIDTH,
+                    getHideIndicatorWidth());
+        }
+    }
+
+    /**
+     * Returns the {@link Color} that should be used to render the hide
+     * indicator . If <code>null</code> is returned, the default color will be
+     * used.
+     *
+     * @return The {@link Color} that should be used to render the hide
+     *         indicator.
+     *
+     * @since 2.0
+     */
+    protected abstract Color getHideIndicatorColor();
+
+    /**
+     * Returns the width that should be used by the hide indicator. If
+     * <code>null</code> is returned, the default width of 1 pixel will be used.
+     *
+     * @return The width of the hide indicator.
+     *
+     * @since 2.0
+     */
+    protected abstract Integer getHideIndicatorWidth();
 
     /**
      * Null-safe check if a {@link IStyle} is empty or not.
@@ -2642,353 +2867,482 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configurations were applied to.
      */
-    public void unregisterThemeStyleConfigurations(
-            IConfigRegistry configRegistry) {
+    public void unregisterThemeStyleConfigurations(IConfigRegistry configRegistry) {
 
         // unregister default style configurations
-        if (!isStyleEmpty(getDefaultCellStyle()))
-            configRegistry
-                    .unregisterConfigAttribute(CellConfigAttributes.CELL_STYLE);
-        if (getDefaultCellPainter() != null)
-            configRegistry
-                    .unregisterConfigAttribute(CellConfigAttributes.CELL_PAINTER);
+        if (!isStyleEmpty(getDefaultCellStyle())) {
+            configRegistry.unregisterConfigAttribute(CellConfigAttributes.CELL_STYLE);
+        }
+        if (getDefaultCellPainter() != null) {
+            configRegistry.unregisterConfigAttribute(CellConfigAttributes.CELL_PAINTER);
+        }
 
         // unregister default selection style configurations
-        if (!isStyleEmpty(getDefaultSelectionCellStyle()))
+        if (!isStyleEmpty(getDefaultSelectionCellStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.SELECT);
-        if (getDefaultSelectionCellPainter() != null)
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.SELECT);
+        }
+        if (getDefaultSelectionCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.SELECT);
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.SELECT);
+        }
 
         // unregister column header style configurations
-        if (!isStyleEmpty(getColumnHeaderStyle()))
+        if (!isStyleEmpty(getColumnHeaderStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.NORMAL,
                     GridRegion.COLUMN_HEADER);
-        if (getColumnHeaderCellPainter() != null)
+        }
+        if (getColumnHeaderCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.NORMAL,
                     GridRegion.COLUMN_HEADER);
+        }
 
         // unregister column header selection style configurations
-        if (!isStyleEmpty(getColumnHeaderSelectionStyle()))
+        if (!isStyleEmpty(getColumnHeaderSelectionStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.SELECT,
                     GridRegion.COLUMN_HEADER);
-        if (getColumnHeaderSelectionCellPainter() != null)
+        }
+        if (getColumnHeaderSelectionCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.SELECT,
                     GridRegion.COLUMN_HEADER);
-        if (!isStyleEmpty(getColumnHeaderFullSelectionStyle()))
+        }
+        if (!isStyleEmpty(getColumnHeaderFullSelectionStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.SELECT,
                     SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
-        if (getColumnHeaderFullSelectionCellPainter() != null)
+        }
+        if (getColumnHeaderFullSelectionCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.SELECT,
                     SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
+        }
 
         // unregister row header style configurations
-        if (!isStyleEmpty(getRowHeaderStyle()))
+        if (!isStyleEmpty(getRowHeaderStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.NORMAL,
                     GridRegion.ROW_HEADER);
-        if (getRowHeaderCellPainter() != null)
+        }
+        if (getRowHeaderCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.NORMAL,
                     GridRegion.ROW_HEADER);
+        }
 
         // unregister row header selection style configurations
-        if (!isStyleEmpty(getRowHeaderSelectionStyle()))
+        if (!isStyleEmpty(getRowHeaderSelectionStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.SELECT,
                     GridRegion.ROW_HEADER);
-        if (getRowHeaderSelectionCellPainter() != null)
+        }
+        if (getRowHeaderSelectionCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.SELECT,
                     GridRegion.ROW_HEADER);
-        if (!isStyleEmpty(getRowHeaderFullSelectionStyle()))
+        }
+        if (!isStyleEmpty(getRowHeaderFullSelectionStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.SELECT,
                     SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
-        if (getRowHeaderFullSelectionCellPainter() != null)
+        }
+        if (getRowHeaderFullSelectionCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.SELECT,
                     SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
+        }
 
         // unregister corner style configurations
-        if (!isStyleEmpty(getCornerStyle()))
+        if (!isStyleEmpty(getCornerStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.NORMAL,
                     GridRegion.CORNER);
-        if (getCornerCellPainter() != null)
+        }
+        if (getCornerCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.NORMAL,
                     GridRegion.CORNER);
+        }
 
         // unregister corner header selection style configurations
-        if (!isStyleEmpty(getCornerSelectionStyle()))
+        if (!isStyleEmpty(getCornerSelectionStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.SELECT,
                     GridRegion.CORNER);
-        if (getCornerSelectionCellPainter() != null)
+        }
+        if (getCornerSelectionCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.SELECT,
                     GridRegion.CORNER);
+        }
 
         // unregister hover styling
-        if (!isStyleEmpty(getDefaultHoverStyle()))
+        if (!isStyleEmpty(getDefaultHoverStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.HOVER);
-        if (getDefaultHoverCellPainter() != null)
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.HOVER);
+        }
+        if (getDefaultHoverCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.HOVER);
-        if (!isStyleEmpty(getBodyHoverStyle()))
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.HOVER);
+        }
+        if (!isStyleEmpty(getBodyHoverStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.HOVER,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.HOVER,
                     GridRegion.BODY);
-        if (getBodyHoverCellPainter() != null)
+        }
+        if (getBodyHoverCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.HOVER,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.HOVER,
                     GridRegion.BODY);
-        if (!isStyleEmpty(getColumnHeaderHoverStyle()))
+        }
+        if (!isStyleEmpty(getColumnHeaderHoverStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.HOVER,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.HOVER,
                     GridRegion.COLUMN_HEADER);
-        if (getColumnHeaderHoverCellPainter() != null)
+        }
+        if (getColumnHeaderHoverCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.HOVER,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.HOVER,
                     GridRegion.COLUMN_HEADER);
-        if (!isStyleEmpty(getRowHeaderHoverStyle()))
+        }
+        if (!isStyleEmpty(getRowHeaderHoverStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.HOVER,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.HOVER,
                     GridRegion.ROW_HEADER);
-        if (getRowHeaderHoverCellPainter() != null)
+        }
+        if (getRowHeaderHoverCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.HOVER,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.HOVER,
                     GridRegion.ROW_HEADER);
+        }
 
         // unregister hover selection styling
-        if (!isStyleEmpty(getDefaultHoverSelectionStyle()))
+        if (!isStyleEmpty(getDefaultHoverSelectionStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.SELECT_HOVER);
-        if (getDefaultHoverSelectionCellPainter() != null)
-            configRegistry
-                    .unregisterConfigAttribute(
-                            CellConfigAttributes.CELL_PAINTER,
-                            DisplayMode.SELECT_HOVER);
-        if (!isStyleEmpty(getBodyHoverSelectionStyle()))
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.SELECT_HOVER);
+        }
+        if (getDefaultHoverSelectionCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.SELECT_HOVER,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.SELECT_HOVER);
+        }
+        if (!isStyleEmpty(getBodyHoverSelectionStyle())) {
+            configRegistry.unregisterConfigAttribute(
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.SELECT_HOVER,
                     GridRegion.BODY);
-        if (getBodyHoverSelectionCellPainter() != null)
+        }
+        if (getBodyHoverSelectionCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    DisplayMode.SELECT_HOVER, GridRegion.BODY);
-        if (!isStyleEmpty(getColumnHeaderHoverSelectionStyle()))
+                    DisplayMode.SELECT_HOVER,
+                    GridRegion.BODY);
+        }
+        if (!isStyleEmpty(getColumnHeaderHoverSelectionStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.SELECT_HOVER,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.SELECT_HOVER,
                     GridRegion.COLUMN_HEADER);
-        if (getColumnHeaderHoverSelectionCellPainter() != null)
+        }
+        if (getColumnHeaderHoverSelectionCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    DisplayMode.SELECT_HOVER, GridRegion.COLUMN_HEADER);
-        if (!isStyleEmpty(getRowHeaderHoverSelectionStyle()))
+                    DisplayMode.SELECT_HOVER,
+                    GridRegion.COLUMN_HEADER);
+        }
+        if (!isStyleEmpty(getRowHeaderHoverSelectionStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.SELECT_HOVER,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.SELECT_HOVER,
                     GridRegion.ROW_HEADER);
-        if (getRowHeaderHoverSelectionCellPainter() != null)
+        }
+        if (getRowHeaderHoverSelectionCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    DisplayMode.SELECT_HOVER, GridRegion.ROW_HEADER);
+                    DisplayMode.SELECT_HOVER,
+                    GridRegion.ROW_HEADER);
+        }
 
         // unregister selection anchor style configuration
-        if (!isStyleEmpty(getSelectionAnchorStyle()))
+        if (!isStyleEmpty(getSelectionAnchorStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.NORMAL,
                     SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
-        if (getSelectionAnchorCellPainter() != null)
+        }
+        if (getSelectionAnchorCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.NORMAL,
                     SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
-        if (!isStyleEmpty(getSelectionAnchorSelectionStyle()))
+        }
+        if (!isStyleEmpty(getSelectionAnchorSelectionStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.SELECT,
                     SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
-        if (getSelectionAnchorSelectionCellPainter() != null)
+        }
+        if (getSelectionAnchorSelectionCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.SELECT,
                     SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
-        if (!isStyleEmpty(getSelectionAnchorGridLineStyle()))
+        }
+        if (!isStyleEmpty(getSelectionAnchorGridLineStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.SELECT,
                     SelectionStyleLabels.SELECTION_ANCHOR_GRID_LINE_STYLE);
+        }
 
         // unregister alternating row style configuration
-        if (!isStyleEmpty(getEvenRowStyle()))
+        if (!isStyleEmpty(getEvenRowStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.NORMAL,
                     AlternatingRowConfigLabelAccumulator.EVEN_ROW_CONFIG_TYPE);
-        if (getEvenRowCellPainter() != null)
+        }
+        if (getEvenRowCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.NORMAL,
                     AlternatingRowConfigLabelAccumulator.EVEN_ROW_CONFIG_TYPE);
+        }
 
-        if (!isStyleEmpty(getOddRowStyle()))
+        if (!isStyleEmpty(getOddRowStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.NORMAL,
                     AlternatingRowConfigLabelAccumulator.ODD_ROW_CONFIG_TYPE);
-        if (getOddRowCellPainter() != null)
+        }
+        if (getOddRowCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.NORMAL,
                     AlternatingRowConfigLabelAccumulator.ODD_ROW_CONFIG_TYPE);
+        }
 
         // unregister column group header style configuration
-        if (!isStyleEmpty(getColumnGroupHeaderStyle()))
+        if (!isStyleEmpty(getColumnGroupHeaderStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.NORMAL,
                     GridRegion.COLUMN_GROUP_HEADER);
-        if (getColumnGroupHeaderCellPainter() != null)
+        }
+        if (getColumnGroupHeaderCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.NORMAL,
                     GridRegion.COLUMN_GROUP_HEADER);
+        }
 
         // unregister row group header style configuration
-        if (!isStyleEmpty(getRowGroupHeaderStyle()))
+        if (!isStyleEmpty(getRowGroupHeaderStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.NORMAL,
                     GridRegion.ROW_GROUP_HEADER);
-        if (getRowGroupHeaderCellPainter() != null)
+        }
+        if (getRowGroupHeaderCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.NORMAL,
                     GridRegion.ROW_GROUP_HEADER);
+        }
 
         // unregister sort header style configuration
         if (!isStyleEmpty(getSortHeaderStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.NORMAL,
                     DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.NORMAL,
                     DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
         }
         if (getSortHeaderCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.NORMAL,
                     DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.NORMAL,
                     DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
         }
 
         if (!isStyleEmpty(getSelectedSortHeaderStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.SELECT,
                     DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.SELECT,
                     DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
         }
         if (getSelectedSortHeaderCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.SELECT,
                     DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.SELECT,
                     DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
         }
 
         // unregister filter row style configuration
-        if (!isStyleEmpty(getFilterRowStyle()))
+        if (!isStyleEmpty(getFilterRowStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.NORMAL,
                     GridRegion.FILTER_ROW);
-        if (getFilterRowCellPainter() != null)
+        }
+        if (getFilterRowCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.NORMAL,
                     GridRegion.FILTER_ROW);
+        }
 
         // unregister tree style configuration
-        if (!isStyleEmpty(getTreeStyle()))
+        if (!isStyleEmpty(getTreeStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.NORMAL,
                     TreeLayer.TREE_COLUMN_CELL);
-        if (getTreeCellPainter() != null)
+        }
+        if (getTreeCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.NORMAL,
                     TreeLayer.TREE_COLUMN_CELL);
-        if (!isStyleEmpty(getTreeSelectionStyle()))
+        }
+        if (!isStyleEmpty(getTreeSelectionStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.SELECT,
                     TreeLayer.TREE_COLUMN_CELL);
-        if (getTreeSelectionCellPainter() != null)
+        }
+        if (getTreeSelectionCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.SELECT,
                     TreeLayer.TREE_COLUMN_CELL);
-        if (getTreeStructurePainter() != null)
+        }
+        if (getTreeStructurePainter() != null) {
             configRegistry.unregisterConfigAttribute(
                     TreeConfigAttributes.TREE_STRUCTURE_PAINTER,
                     DisplayMode.NORMAL);
-        if (getTreeStructureSelectionPainter() != null)
+        }
+        if (getTreeStructureSelectionPainter() != null) {
             configRegistry.unregisterConfigAttribute(
                     TreeConfigAttributes.TREE_STRUCTURE_PAINTER,
                     DisplayMode.SELECT);
+        }
 
         // unregister summary row style configuration
-        if (!isStyleEmpty(getSummaryRowStyle()))
+        if (!isStyleEmpty(getSummaryRowStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.NORMAL,
                     SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
-        if (getSummaryRowCellPainter() != null)
+        }
+        if (getSummaryRowCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.NORMAL,
                     SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
-        if (!isStyleEmpty(getSummaryRowSelectionStyle()))
+        }
+        if (!isStyleEmpty(getSummaryRowSelectionStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.SELECT,
                     SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
-        if (getSummaryRowSelectionCellPainter() != null)
+        }
+        if (getSummaryRowSelectionCellPainter() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.SELECT,
                     SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+        }
 
         // unregister freeze separator color
         if (getFreezeSeparatorColor() != null) {
-            configRegistry
-                    .unregisterConfigAttribute(IFreezeConfigAttributes.SEPARATOR_COLOR);
+            configRegistry.unregisterConfigAttribute(IFreezeConfigAttributes.SEPARATOR_COLOR);
+        }
+
+        // unregister freeze separator width
+        if (getFreezeSeparatorWidth() != null) {
+            configRegistry.unregisterConfigAttribute(IFreezeConfigAttributes.SEPARATOR_WIDTH);
         }
 
         // unregister grid line configuration
         if (getGridLineColor() != null) {
-            configRegistry
-                    .unregisterConfigAttribute(CellConfigAttributes.GRID_LINE_COLOR);
+            configRegistry.unregisterConfigAttribute(CellConfigAttributes.GRID_LINE_COLOR);
         }
 
         // unregister grid line rendering
         if (getRenderColumnHeaderGridLines() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.RENDER_GRID_LINES, DisplayMode.NORMAL,
+                    CellConfigAttributes.RENDER_GRID_LINES,
+                    DisplayMode.NORMAL,
                     GridRegion.COLUMN_HEADER);
         }
         if (getRenderCornerGridLines() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.RENDER_GRID_LINES, DisplayMode.NORMAL,
+                    CellConfigAttributes.RENDER_GRID_LINES,
+                    DisplayMode.NORMAL,
                     GridRegion.CORNER);
         }
         if (getRenderRowHeaderGridLines() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.RENDER_GRID_LINES, DisplayMode.NORMAL,
+                    CellConfigAttributes.RENDER_GRID_LINES,
+                    DisplayMode.NORMAL,
                     GridRegion.ROW_HEADER);
         }
         if (getRenderBodyGridLines() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.RENDER_GRID_LINES, DisplayMode.NORMAL,
+                    CellConfigAttributes.RENDER_GRID_LINES,
+                    DisplayMode.NORMAL,
                     GridRegion.BODY);
         }
         if (getRenderFilterRowGridLines() != null) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.RENDER_GRID_LINES, DisplayMode.NORMAL,
+                    CellConfigAttributes.RENDER_GRID_LINES,
+                    DisplayMode.NORMAL,
                     GridRegion.FILTER_ROW);
         }
 
@@ -3008,24 +3362,52 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
         if (getFillHandleColor() != null) {
             configRegistry.unregisterConfigAttribute(
                     FillHandleConfigAttributes.FILL_HANDLE_COLOR,
-                    DisplayMode.NORMAL, SelectionStyleLabels.FILL_HANDLE_CELL);
+                    DisplayMode.NORMAL,
+                    SelectionStyleLabels.FILL_HANDLE_CELL);
         }
         if (getFillHandleBorderStyle() != null) {
             configRegistry.unregisterConfigAttribute(
                     FillHandleConfigAttributes.FILL_HANDLE_BORDER_STYLE,
-                    DisplayMode.NORMAL, SelectionStyleLabels.FILL_HANDLE_CELL);
+                    DisplayMode.NORMAL,
+                    SelectionStyleLabels.FILL_HANDLE_CELL);
         }
         if (getFillHandleRegionBorderStyle() != null) {
             configRegistry.unregisterConfigAttribute(
                     FillHandleConfigAttributes.FILL_HANDLE_REGION_BORDER_STYLE,
-                    DisplayMode.NORMAL, SelectionStyleLabels.FILL_HANDLE_REGION);
+                    DisplayMode.NORMAL,
+                    SelectionStyleLabels.FILL_HANDLE_REGION);
         }
 
         // unregister copy border style configuration
-        if (!isStyleEmpty(getCopyBorderStyle()))
+        if (!isStyleEmpty(getCopyBorderStyle())) {
             configRegistry.unregisterConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.NORMAL,
                     SelectionStyleLabels.COPY_BORDER_STYLE);
+        }
+        if (!isStyleEmpty(getDataChangeStyle())) {
+            configRegistry.unregisterConfigAttribute(
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.NORMAL,
+                    DataChangeLayer.DIRTY);
+        }
+
+        if (!isStyleEmpty(getDataChangeSelectionStyle())) {
+            configRegistry.unregisterConfigAttribute(
+                    CellConfigAttributes.CELL_STYLE,
+                    DisplayMode.SELECT,
+                    DataChangeLayer.DIRTY);
+        }
+
+        // unregister hide indicator color
+        if (getHideIndicatorColor() != null) {
+            configRegistry.unregisterConfigAttribute(HideIndicatorConfigAttributes.HIDE_INDICATOR_COLOR);
+        }
+
+        // unregister hide indicator width
+        if (getHideIndicatorWidth() != null) {
+            configRegistry.unregisterConfigAttribute(HideIndicatorConfigAttributes.HIDE_INDICATOR_LINE_WIDTH);
+        }
 
         // unregister possible extension styles
         for (IThemeExtension extension : this.extensions) {
