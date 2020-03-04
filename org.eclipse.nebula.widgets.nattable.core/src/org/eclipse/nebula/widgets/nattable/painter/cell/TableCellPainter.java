@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2017 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,9 @@ package org.eclipse.nebula.widgets.nattable.painter.cell;
 import java.util.Collection;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.config.NatTableConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TableCellEditor;
+import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
@@ -307,9 +309,15 @@ public class TableCellPainter extends BackgroundPainter {
      *         configuration
      */
     protected int getSubCellHeight(ILayerCell subCell, GC gc, IConfigRegistry configRegistry) {
-        return (this.fixedSubCellHeight >= 0)
-                ? this.fixedSubCellHeight
-                : this.getInternalPainter().getPreferredHeight(subCell, gc, configRegistry);
+        if (this.fixedSubCellHeight >= 0) {
+            IDpiConverter dpiConverter = configRegistry.getConfigAttribute(
+                    NatTableConfigAttributes.HORIZONTAL_DPI_CONVERTER,
+                    DisplayMode.NORMAL);
+
+            return dpiConverter != null ? (int) (this.fixedSubCellHeight * dpiConverter.getCurrentDpiFactor()) : this.fixedSubCellHeight;
+        }
+
+        return this.getInternalPainter().getPreferredHeight(subCell, gc, configRegistry);
     }
 
     /**
