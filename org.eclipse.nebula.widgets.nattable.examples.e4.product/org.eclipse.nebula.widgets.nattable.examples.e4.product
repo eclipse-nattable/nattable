@@ -37,6 +37,7 @@
       <feature id="org.eclipse.nebula.widgets.nattable.examples.e4.feature"/>
       <feature id="org.eclipse.nebula.widgets.nattable.extension.nebula.feature"/>
       <feature id="org.eclipse.nebula.widgets.nattable.extension.poi.feature"/>
+      <feature id="org.eclipse.collections.feature" installMode="root"/>
    </features>
 
    <configurations>
