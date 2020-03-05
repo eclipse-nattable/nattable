@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -296,11 +296,11 @@ public abstract class AbstractCellEditor implements ICellEditor {
             conversionErrorHandler.removeError(this);
         } catch (ConversionFailedException e) {
             // conversion failed
-            conversionErrorHandler.displayError(this, e);
+            conversionErrorHandler.displayError(this, this.configRegistry, e);
             throw e;
         } catch (Exception e) {
             // conversion failed
-            conversionErrorHandler.displayError(this, e);
+            conversionErrorHandler.displayError(this, this.configRegistry, e);
             throw new ConversionFailedException(e.getMessage(), e);
         }
         return canonicalValue;
@@ -338,7 +338,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
                 return validationResult;
             } catch (Exception e) {
                 // validation failed
-                validationEditErrorHandler.displayError(this, e);
+                validationEditErrorHandler.displayError(this, this.configRegistry, e);
                 return false;
             }
         }

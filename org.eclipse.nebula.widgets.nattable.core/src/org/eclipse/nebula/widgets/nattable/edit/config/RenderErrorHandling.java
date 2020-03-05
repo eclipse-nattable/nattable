@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,11 +10,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.config;
 
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.editor.AbstractEditErrorHandler;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ControlDecorationProvider;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IEditErrorHandler;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
+import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -103,8 +105,7 @@ public class RenderErrorHandling extends AbstractEditErrorHandler {
      *            The decoration provider that should be used for decorating the
      *            editor control on error.
      */
-    public RenderErrorHandling(
-            IEditErrorHandler underlyingErrorHandler, ControlDecorationProvider decorationProvider) {
+    public RenderErrorHandling(IEditErrorHandler underlyingErrorHandler, ControlDecorationProvider decorationProvider) {
         super(underlyingErrorHandler);
         this.decorationProvider = decorationProvider;
         this.errorStyle = this.defaultErrorStyle;
@@ -146,10 +147,12 @@ public class RenderErrorHandling extends AbstractEditErrorHandler {
      * {@inheritDoc} After the error is handled by its underlying
      * {@link IEditErrorHandler}, the configured error style will be applied to
      * the editor control.
+     *
+     * @since 2.0
      */
     @Override
-    public void displayError(ICellEditor cellEditor, Exception e) {
-        super.displayError(cellEditor, e);
+    public void displayError(ICellEditor cellEditor, IConfigRegistry configRegistry, Exception e) {
+        super.displayError(cellEditor, configRegistry, e);
 
         if (!this.errorStylingActive) {
             Control editorControl = cellEditor.getEditorControl();
@@ -160,12 +163,9 @@ public class RenderErrorHandling extends AbstractEditErrorHandler {
             this.originalFont = editorControl.getFont();
 
             // set the rendering information out of the error style
-            editorControl.setBackground(
-                    this.errorStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
-            editorControl.setForeground(
-                    this.errorStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
-            editorControl.setFont(
-                    this.errorStyle.getAttributeValue(CellStyleAttributes.FONT));
+            editorControl.setBackground(this.errorStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
+            editorControl.setForeground(this.errorStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
+            editorControl.setFont(CellStyleUtil.getFont(this.errorStyle, configRegistry));
 
             this.errorStylingActive = true;
         }

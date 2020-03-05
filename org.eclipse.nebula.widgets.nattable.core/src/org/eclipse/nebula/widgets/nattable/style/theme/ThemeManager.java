@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth and others.
+ * Copyright (c) 2014, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style.theme;
 
@@ -15,9 +15,6 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 /**
  * The ThemeManager is used to register/unregister style configurations set by a
  * {@link ThemeConfiguration} at runtime.
- *
- * @author Dirk Fauth
- *
  */
 public class ThemeManager {
 
@@ -73,8 +70,21 @@ public class ThemeManager {
     protected void cleanThemeConfiguration() {
         // remove current applied style configurations
         if (this.currentTheme != null) {
-            this.currentTheme
-                    .unregisterThemeStyleConfigurations(this.configRegistry);
+            this.currentTheme.unregisterThemeStyleConfigurations(this.configRegistry);
+        }
+    }
+
+    /**
+     * Re-applies the current active theme by simply re-registering all style
+     * configurations. This is for example needed for zoom operations when the
+     * painters need to be re-created for image rendering according to the
+     * current scaling.
+     *
+     * @since 2.0
+     */
+    public void refreshCurrentTheme() {
+        if (this.currentTheme != null) {
+            this.currentTheme.configureRegistry(this.configRegistry);
         }
     }
 }

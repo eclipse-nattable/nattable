@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.gui;
 
@@ -207,11 +207,11 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
             conversionErrorHandler.removeError(this);
         } catch (ConversionFailedException e) {
             // conversion failed
-            conversionErrorHandler.displayError(this, e);
+            conversionErrorHandler.displayError(this, this.configRegistry, e);
             throw e;
         } catch (Exception e) {
             // conversion failed
-            conversionErrorHandler.displayError(this, e);
+            conversionErrorHandler.displayError(this, this.configRegistry, e);
             throw new ConversionFailedException(e.getMessage(), e);
         }
         return canonicalValue;
@@ -254,7 +254,7 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
                 return validationResult;
             } catch (Exception e) {
                 // validation failed
-                this.validationEditErrorHandler.displayError(this, e);
+                this.validationEditErrorHandler.displayError(this, this.configRegistry, e);
                 return false;
             }
         }

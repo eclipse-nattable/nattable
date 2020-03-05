@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,13 +10,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.editor;
 
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+
 /**
  * Abstract implementation of {@link IEditErrorHandler} that by default calls
  * the underlying {@link IEditErrorHandler} to handle the error. This allows
  * chaining of {@link IEditErrorHandler}s to support multiple error handling
  * behaviour, e.g. displaying the error in a dialog and log the error.
- *
- * @author Dirk Fauth
  */
 public abstract class AbstractEditErrorHandler implements IEditErrorHandler {
 
@@ -56,5 +56,18 @@ public abstract class AbstractEditErrorHandler implements IEditErrorHandler {
         if (this.underlyingErrorHandler != null) {
             this.underlyingErrorHandler.displayError(cellEditor, e);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This implementation will call its underlying {@link IEditErrorHandler}.
+     */
+    @Override
+    public void displayError(ICellEditor cellEditor, IConfigRegistry configRegistry, Exception e) {
+        if (this.underlyingErrorHandler != null) {
+            this.underlyingErrorHandler.displayError(cellEditor, configRegistry, e);
+        }
+        displayError(cellEditor, e);
     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,8 +22,6 @@ import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
  * For some {@link ICellEditor}s they are also used for just in time
  * conversion/validation to render the wrong input immediately for feedback to
  * the user. This is done e.g. in the {@link TextCellEditor}.
- *
- * @author Dirk Fauth
  *
  * @see EditConfigAttributes#CONVERSION_ERROR_HANDLER
  * @see EditConfigAttributes#VALIDATION_ERROR_HANDLER
@@ -55,4 +53,26 @@ public interface IEditErrorHandler {
      *            description on the error to the user.
      */
     void displayError(ICellEditor cellEditor, Exception e);
+
+    /**
+     * If an error occurs on conversion/validation of data, this method will be
+     * called for showing that error to the user. Usually the message contained
+     * within the given {@link Exception} will be shown to the user.
+     *
+     * @param cellEditor
+     *            The {@link ICellEditor} on which the conversion/validation
+     *            error occurred. Needed to add error styling or special
+     *            handling.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} to get additional context
+     *            information.
+     * @param e
+     *            The {@link Exception} that contains information about the
+     *            conversion/validation error. Used to show a more detailed
+     *            description on the error to the user.
+     * @since 2.0
+     */
+    default void displayError(ICellEditor cellEditor, IConfigRegistry configRegistry, Exception e) {
+        displayError(cellEditor, e);
+    }
 }

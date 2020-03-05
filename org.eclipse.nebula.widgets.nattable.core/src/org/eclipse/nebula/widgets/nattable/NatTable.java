@@ -425,6 +425,15 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
      * @since 2.0
      */
     protected void configureScaling(IDpiConverter horizontalConverter, IDpiConverter verticalConverter) {
+        // ensure that there is no active cell editor if the scaling changes, as
+        // it would leave the open editor for the previous scaling that does not
+        // match the updated view
+        if (!commitAndCloseActiveCellEditor()) {
+            // if committing didn't work out we need to perform a hard
+            // close otherwise the state of the table would be unstale
+            getActiveCellEditor().close();
+        }
+
         // set the converter to the registry
         getConfigRegistry().registerConfigAttribute(
                 NatTableConfigAttributes.HORIZONTAL_DPI_CONVERTER,
@@ -443,6 +452,8 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
         getConfigRegistry().registerConfigAttribute(
                 NatTableConfigAttributes.FONT_SCALING_FACTOR,
                 fontScalingFactor);
+
+        this.themeManager.refreshCurrentTheme();
     }
 
     /**
