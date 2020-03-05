@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2017 CEA LIST and others.
+ * Copyright (c) 2015, 2020 CEA LIST and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,6 +12,7 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.e4.css;
 
+import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.eclipse.e4.ui.css.core.dom.properties.converters.ICSSValueConverter;
 import org.eclipse.e4.ui.css.core.dom.properties.css2.CSS2FontProperties;
 import org.eclipse.e4.ui.css.core.engine.CSSElementContext;
 import org.eclipse.e4.ui.css.core.engine.CSSEngine;
+import org.eclipse.e4.ui.css.core.util.resources.IResourcesLocatorManager;
 import org.eclipse.e4.ui.css.swt.helpers.CSSSWTFontHelper;
 import org.eclipse.e4.ui.css.swt.properties.converters.CSSValueSWTGradientConverterImpl;
 import org.eclipse.e4.ui.css.swt.properties.css2.CSSPropertyBackgroundSWTHandler;
@@ -795,7 +797,19 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
 
                                 break;
                             case CSSPrimitiveValue.CSS_URI:
-                                Image image = (Image) engine.convert(value2, Image.class, natTable.getDisplay());
+                                // first try to resolve the image using NatTable
+                                // GUIHelper to support scaling
+                                Image image = null;
+                                try {
+                                    IResourcesLocatorManager manager = engine.getResourcesLocatorManager();
+                                    String resolved = manager.resolve(primitiveValue.getStringValue());
+                                    image = GUIHelper.getImageByURL(new URI(resolved).toURL());
+                                } catch (Exception e) {
+                                    // something went wrong with loading the
+                                    // image by URL try to use the CSSEngine
+                                    image = (Image) engine.convert(value2, Image.class, natTable.getDisplay());
+                                }
+
                                 if (image != null) {
                                     NatTableCSSHelper
                                             .getPainterProperties(context, displayMode)

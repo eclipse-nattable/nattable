@@ -64,7 +64,7 @@ public class ScalingUtil {
                 registryUpdater.accept(configRegistry);
             }
 
-            natTable.refresh();
+            natTable.refresh(false);
         }
     }
 
@@ -105,7 +105,7 @@ public class ScalingUtil {
                 registryUpdater.accept(configRegistry);
             }
 
-            natTable.refresh();
+            natTable.refresh(false);
         }
     }
 

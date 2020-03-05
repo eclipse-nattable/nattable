@@ -23,10 +23,30 @@ public class CellStyleProxy extends StyleProxy {
         super(CellConfigAttributes.CELL_STYLE, configRegistry, targetDisplayMode, configLabels);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T> T getAttributeValue(ConfigAttribute<T> styleAttribute) {
-        if (CellStyleAttributes.FONT.equals(styleAttribute)) {
+        return getAttributeValue(styleAttribute, false);
+    }
+
+    /**
+     * Returns the configured value for the given {@link ConfigAttribute}.
+     *
+     * @param <T>
+     *            The value type of the style {@link ConfigAttribute}.
+     * @param styleAttribute
+     *            The requested style {@link ConfigAttribute}.
+     * @param noModification
+     *            <code>true</code> if an unmodified value should be returned,
+     *            <code>false</code> if an internal modification like font
+     *            scaling should be performed.
+     * @return The value for the given {@link ConfigAttribute} or
+     *         <code>null</code> if no value is found.
+     *
+     * @since 2.0
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getAttributeValue(ConfigAttribute<T> styleAttribute, boolean noModification) {
+        if (!noModification && CellStyleAttributes.FONT.equals(styleAttribute)) {
             Float scalingFactor = this.configRegistry.getConfigAttribute(
                     NatTableConfigAttributes.FONT_SCALING_FACTOR,
                     DisplayMode.NORMAL);

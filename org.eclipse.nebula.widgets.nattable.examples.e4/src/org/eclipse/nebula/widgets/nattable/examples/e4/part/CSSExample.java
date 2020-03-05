@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2019 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -37,6 +37,7 @@ import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditBindings;
 import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditConfiguration;
 import org.eclipse.nebula.widgets.nattable.examples.e4.AbstractE4NatExamplePart;
+import org.eclipse.nebula.widgets.nattable.extension.e4.css.CSSConfigureScalingCommandHandler;
 import org.eclipse.nebula.widgets.nattable.extension.e4.painterfactory.CellPainterFactory;
 import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillHandleConfiguration;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -49,6 +50,7 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CustomLineBorderDecorator;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
+import org.eclipse.nebula.widgets.nattable.ui.scaling.ScalingUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -128,6 +130,8 @@ public class CSSExample extends AbstractE4NatExamplePart {
         gridLayer.addConfiguration(new DefaultEditConfiguration());
         gridLayer.addConfiguration(new DefaultEditBindings());
 
+        natTable.addConfiguration(new ScalingUiBindingConfiguration(natTable));
+
         natTable.addConfiguration(new AbstractRegistryConfiguration() {
 
             @Override
@@ -158,6 +162,8 @@ public class CSSExample extends AbstractE4NatExamplePart {
         natTable.setData(CSSSWTConstants.CSS_CLASS_NAME_KEY, "basic");
 
         natTable.configure();
+
+        natTable.registerCommandHandler(new CSSConfigureScalingCommandHandler(natTable));
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 
