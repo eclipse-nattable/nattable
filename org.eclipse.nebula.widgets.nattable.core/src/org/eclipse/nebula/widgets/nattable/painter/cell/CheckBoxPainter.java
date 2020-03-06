@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,29 +19,80 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 
+/**
+ * Specialization of {@link ImagePainter} that renders a checkbox based on a
+ * boolean value.
+ */
 public class CheckBoxPainter extends ImagePainter {
 
     private final Image checkedImg;
     private final Image uncheckedImg;
 
+    /**
+     * Create a new {@link CheckBoxPainter} with the default images.
+     */
     public CheckBoxPainter() {
         this(true);
     }
 
     /**
+     * Create a new {@link CheckBoxPainter} with the default images.
+     *
+     * @param paintBg
+     *            <code>true</code> if this painter should itself paint the
+     *            background, <code>false</code> if background painting should
+     *            be skipped.
      * @since 1.4
      */
     public CheckBoxPainter(boolean paintBg) {
-        super(paintBg);
-        this.checkedImg = GUIHelper.getImage("checked"); //$NON-NLS-1$
-        this.uncheckedImg = GUIHelper.getImage("unchecked"); //$NON-NLS-1$
+        this(paintBg, false);
     }
 
+    /**
+     * Create a new {@link CheckBoxPainter} with the default images.
+     *
+     * @param paintBg
+     *            <code>true</code> if this painter should itself paint the
+     *            background, <code>false</code> if background painting should
+     *            be skipped.
+     * @param invertIcons
+     *            Specify whether the default icons should be used (black check
+     *            mark) or if inverted icons should be used (white check mark).
+     *
+     * @since 2.0
+     */
+    public CheckBoxPainter(boolean paintBg, boolean invertIcons) {
+        super(paintBg);
+        this.checkedImg = GUIHelper.getImage("checked" + (invertIcons ? "_inv" : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        this.uncheckedImg = GUIHelper.getImage("unchecked" + (invertIcons ? "_inv" : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    }
+
+    /**
+     * Create a new {@link CheckBoxPainter} with the given images for rendering
+     * a checked/unchecked state.
+     *
+     * @param checkedImg
+     *            The image to render the checked state (<code>true</code>).
+     * @param uncheckedImg
+     *            The image to render the unchecked state (<code>false</code>)
+     */
     public CheckBoxPainter(Image checkedImg, Image uncheckedImg) {
         this(checkedImg, uncheckedImg, true);
     }
 
     /**
+     * Create a new {@link CheckBoxPainter} with the given images for rendering
+     * a checked/unchecked state.
+     *
+     * @param checkedImg
+     *            The image to render the checked state (<code>true</code>).
+     * @param uncheckedImg
+     *            The image to render the unchecked state (<code>false</code>)
+     * @param paintBg
+     *            <code>true</code> if this painter should itself paint the
+     *            background, <code>false</code> if background painting should
+     *            be skipped.
+     *
      * @since 1.4
      */
     public CheckBoxPainter(Image checkedImg, Image uncheckedImg, boolean paintBg) {

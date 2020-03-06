@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2017 CEA LIST and others.
+ * Copyright (c) 2015, 2020 CEA LIST and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -272,7 +272,11 @@ public class CellPainterFactory {
         this.contentPainter.put(
                 CHECKBOX_PAINTER_KEY,
                 (painterProperties, underlying) -> {
-                    return new CheckBoxPainter(false);
+                    boolean invert = false;
+                    if (painterProperties.containsKey(NatTableCSSConstants.INVERT_ICONS)) {
+                        invert = (Boolean) painterProperties.get(NatTableCSSConstants.INVERT_ICONS);
+                    }
+                    return new CheckBoxPainter(false, invert);
                 });
         this.contentPainter.put(
                 COMBOBOX_PAINTER_KEY,
