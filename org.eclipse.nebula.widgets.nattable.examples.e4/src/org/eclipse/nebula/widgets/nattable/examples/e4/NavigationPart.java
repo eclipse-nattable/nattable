@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2016, 2019 Dirk Fauth.
+ * Copyright (c) 2016, 2020 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -164,16 +164,16 @@ public class NavigationPart {
         List<String> examples = null;
 
         try {
-            InputStream inputStream = NatTableExamples.class.getResourceAsStream("/examples.index");
+            InputStream inputStream = NatTableExamples.class.getResourceAsStream("/src/examples.index");
             if (inputStream != null) {
                 examples = new ArrayList<>();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                String line = reader.readLine();
-                while (line != null) {
-                    examples.add(line);
-                    line = reader.readLine();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                    String line = reader.readLine();
+                    while (line != null) {
+                        examples.add(line);
+                        line = reader.readLine();
+                    }
                 }
-                reader.close();
             } else {
                 System.out.println("examples.index not found, reconstructing");
                 Bundle bundle = FrameworkUtil.getBundle(NatTableExamples.class);
