@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,6 +26,8 @@ import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.NoScalingDpiConverter;
+import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.sort.SortConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.sort.config.DefaultSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -59,6 +61,8 @@ public class SortIntegrationTest {
         this.nattable.addConfiguration(new DefaultNatTableStyleConfiguration());
         this.nattable.addConfiguration(new DefaultSortConfiguration());
         this.nattable.configure();
+
+        this.nattable.doCommand(new ConfigureScalingCommand(new NoScalingDpiConverter()));
     }
 
     @After

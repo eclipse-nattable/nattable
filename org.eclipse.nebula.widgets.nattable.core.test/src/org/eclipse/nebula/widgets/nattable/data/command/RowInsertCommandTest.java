@@ -32,11 +32,10 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.CornerLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.NoScalingDpiConverter;
-import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowInsertEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.graphics.Rectangle;
@@ -227,11 +226,8 @@ public class RowInsertCommandTest {
 
         NatTable natTable = new NatTable(new Shell(), grid);
 
-        // disable scaling for the tests
-        natTable.doCommand(new ConfigureScalingCommand(new NoScalingDpiConverter()));
-
         // height 10 x 20 height + 20 column header
-        natTable.setSize(500, 220);
+        natTable.setSize(GUIHelper.convertHorizontalPixelToDpi(500), GUIHelper.convertVerticalPixelToDpi(220));
 
         // scroll to bottom
         this.viewportLayer.moveRowPositionIntoViewport(17);

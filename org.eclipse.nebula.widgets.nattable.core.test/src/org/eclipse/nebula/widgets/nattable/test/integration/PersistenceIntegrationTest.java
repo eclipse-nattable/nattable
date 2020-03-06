@@ -17,6 +17,8 @@ import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.NoScalingDpiConverter;
+import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
 import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
@@ -51,6 +53,7 @@ public class PersistenceIntegrationTest {
                     }
 
                 });
+        this.natTableFixture.doCommand(new ConfigureScalingCommand(new NoScalingDpiConverter()));
         this.properties = new Properties();
     }
 

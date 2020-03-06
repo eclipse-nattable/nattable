@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,6 +22,8 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.LayerLi
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideColumnPositionsEvent;
+import org.eclipse.nebula.widgets.nattable.layer.NoScalingDpiConverter;
+import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.junit.After;
 import org.junit.Before;
@@ -44,6 +46,7 @@ public class HideMultipleColumnsIntegrationTest {
                 new ConfigRegistry());
 
         this.natTableFixture = new NatTableFixture(this.bodyLayerStackFixture);
+        this.natTableFixture.doCommand(new ConfigureScalingCommand(new NoScalingDpiConverter()));
         this.listenerFixture = new LayerListenerFixture();
         this.natTableFixture.addLayerListener(this.listenerFixture);
     }

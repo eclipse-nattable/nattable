@@ -123,7 +123,7 @@ public class GUIHelper {
      * @since 2.0
      */
     public static Font getScaledFont(Font font, float fontScalingFactor) {
-        if (fontScalingFactor != 1) {
+        if (font != null && fontScalingFactor != 1) {
             int fontHeight = (int) (font.getFontData()[0].getHeight() * fontScalingFactor);
             FontData[] fontData = font.getFontData();
             for (FontData data : fontData) {

@@ -15,12 +15,11 @@ import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.NoScalingDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
-import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -68,11 +67,8 @@ public class NatTableFixture extends NatTable {
     }
 
     private void initClientArea(int width, int height) {
-        setSize(width, height);
+        setSize(GUIHelper.convertHorizontalPixelToDpi(width), GUIHelper.convertVerticalPixelToDpi(height));
         doCommand(new InitializeClientAreaCommandFixture());
-
-        // disable scaling for the tests
-        doCommand(new ConfigureScalingCommand(new NoScalingDpiConverter()));
     }
 
     @Override

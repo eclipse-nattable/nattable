@@ -49,8 +49,10 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
+import org.eclipse.nebula.widgets.nattable.layer.NoScalingDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.SpanningDataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
@@ -87,6 +89,7 @@ public class EditIntegrationTest {
     public void setup() {
         this.gridLayerStack = new DummyGridLayerStack(5, 5);
         this.natTable = new NatTableFixture(this.gridLayerStack);
+        this.natTable.doCommand(new ConfigureScalingCommand(new NoScalingDpiConverter()));
 
         // Ensure no active editor (static) is present
         // Although deprecated this needs to still work for backwards
@@ -365,6 +368,7 @@ public class EditIntegrationTest {
                 RowDataListFixture.getPropertyNames(),
                 RowDataListFixture.getPropertyToLabelMap());
         this.natTable = new NatTableFixture(layerStack, 1200, 300, false);
+        this.natTable.doCommand(new ConfigureScalingCommand(new NoScalingDpiConverter()));
 
         // Enable editing
         this.natTable.enableEditingOnAllCells();
@@ -436,6 +440,7 @@ public class EditIntegrationTest {
                 RowDataListFixture.getPropertyNames(),
                 RowDataListFixture.getPropertyToLabelMap());
         this.natTable = new NatTableFixture(layerStack, 1200, 300, false);
+        this.natTable.doCommand(new ConfigureScalingCommand(new NoScalingDpiConverter()));
 
         // Enable editing
         this.natTable.enableEditingOnAllCells();
@@ -604,6 +609,7 @@ public class EditIntegrationTest {
         }), 0, 0);
         layer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
         this.natTable = new NatTableFixture(layer, 1200, 300, false);
+        this.natTable.doCommand(new ConfigureScalingCommand(new NoScalingDpiConverter()));
 
         layer.addConfiguration(new DefaultEditBindings());
         layer.addConfiguration(new DefaultEditConfiguration());

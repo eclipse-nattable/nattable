@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
+ * Copyright (c) 2018, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,6 +41,7 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.graphics.Rectangle;
@@ -251,7 +252,7 @@ public class KeyRowInsertCommandTest {
 
         NatTable natTable = new NatTable(new Shell(), grid);
         // height 10 x 20 height + 20 column header
-        natTable.setSize(500, 220);
+        natTable.setSize(GUIHelper.convertHorizontalPixelToDpi(500), GUIHelper.convertVerticalPixelToDpi(220));
 
         // scroll to bottom
         this.viewportLayer.moveRowPositionIntoViewport(17);

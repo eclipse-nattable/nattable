@@ -31,6 +31,7 @@ import org.eclipse.nebula.widgets.nattable.layer.FixedScalingDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.NoScalingDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AbstractOverrider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
@@ -89,6 +90,8 @@ public class SummaryRowIntegrationTest {
         this.natTable.addConfiguration(new TestSummaryRowConfiguration());
 
         this.natTable.configure();
+
+        this.natTable.doCommand(new ConfigureScalingCommand(new NoScalingDpiConverter()));
     }
 
     @Test
