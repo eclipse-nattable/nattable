@@ -50,6 +50,20 @@ public class HideIndicatorOverlayPainter implements IOverlayPainter2 {
     protected IConfigRegistry configRegistry;
 
     /**
+     * Layer that is placed above the column header in a composition, e.g. the
+     * GroupByHeaderLayer. Needed to adjust the hide indicator start and height,
+     * and also to retrieve the labels from a body cell.
+     */
+    private ILayer layerOnTop;
+
+    /**
+     * Layer that is placed left of the row header in a composition. Needed to
+     * adjust the hide indicator start and height, and also to retrieve the
+     * labels from a body cell.
+     */
+    private ILayer layerToLeft;
+
+    /**
      *
      * @param columnHeaderLayer
      *            The layer in the column header that should be used to
@@ -109,13 +123,16 @@ public class HideIndicatorOverlayPainter implements IOverlayPainter2 {
             int lineAdjustment = gc.getLineWidth() % 2;
             int height = this.columnHeaderLayer.getHeight();
 
+            int headerRowCountAdjust = this.layerOnTop != null ? this.layerOnTop.getRowCount() : 0;
+            int headerStartYOffset = this.layerOnTop != null ? this.layerOnTop.getHeight() : 0;
+
             for (int col = 0; col < layer.getColumnCount(); col++) {
-                LabelStack configLabels = layer.getConfigLabelsByPosition(col, this.columnHeaderLayer.getRowCount());
+                LabelStack configLabels = layer.getConfigLabelsByPosition(col, this.columnHeaderLayer.getRowCount() + headerRowCountAdjust);
                 if (configLabels.hasLabel(HideIndicatorConstants.COLUMN_LEFT_HIDDEN)) {
                     int x = layer.getStartXOfColumnPosition(col);
                     if (this.rowHeaderLayer == null || x >= this.rowHeaderLayer.getWidth()) {
-                        int start = rectangle.y;
-                        for (int i = 0; i < this.columnHeaderLayer.getRowCount(); i++) {
+                        int start = rectangle.y + headerStartYOffset;
+                        for (int i = headerRowCountAdjust; i < (this.columnHeaderLayer.getRowCount() + headerRowCountAdjust); i++) {
                             ILayerCell cell = layer.getCellByPosition(col, i);
                             int cellStart = layer.getStartXOfColumnPosition(cell.getOriginColumnPosition());
                             if (cellStart < x
@@ -124,7 +141,7 @@ public class HideIndicatorOverlayPainter implements IOverlayPainter2 {
                                 start += layer.getRowHeightByPosition(i);
                             }
                         }
-                        gc.drawLine(x - lineAdjustment, start, x - lineAdjustment, height);
+                        gc.drawLine(x - lineAdjustment, start, x - lineAdjustment, height + headerStartYOffset);
                     }
                 }
 
@@ -137,8 +154,8 @@ public class HideIndicatorOverlayPainter implements IOverlayPainter2 {
                         lineAdjustment = (gc.getLineWidth() / 2) + lineAdjustment;
                     }
                     if (this.rowHeaderLayer == null || x >= this.rowHeaderLayer.getWidth()) {
-                        int start = rectangle.y;
-                        for (int i = 0; i < this.columnHeaderLayer.getRowCount(); i++) {
+                        int start = rectangle.y + headerStartYOffset;
+                        for (int i = headerRowCountAdjust; i < (this.columnHeaderLayer.getRowCount() + headerRowCountAdjust); i++) {
                             ILayerCell cell = layer.getCellByPosition(col + 1, i);
                             if (cell != null
                                     && cell.getOriginColumnPosition() < cell.getColumnPosition()
@@ -146,7 +163,7 @@ public class HideIndicatorOverlayPainter implements IOverlayPainter2 {
                                 start += layer.getRowHeightByPosition(i);
                             }
                         }
-                        gc.drawLine(x - lineAdjustment, start, x - lineAdjustment, height - 1);
+                        gc.drawLine(x - lineAdjustment, start, x - lineAdjustment, height - 1 + headerStartYOffset);
                     }
                 }
             }
@@ -173,13 +190,16 @@ public class HideIndicatorOverlayPainter implements IOverlayPainter2 {
             int lineAdjustment = gc.getLineWidth() % 2;
             int width = this.rowHeaderLayer.getWidth();
 
+            int headerColumnCountAdjust = this.layerToLeft != null ? this.layerToLeft.getColumnCount() : 0;
+            int headerStartXOffset = this.layerToLeft != null ? this.layerToLeft.getWidth() : 0;
+
             for (int row = 0; row < layer.getRowCount(); row++) {
-                LabelStack configLabels = layer.getConfigLabelsByPosition(this.rowHeaderLayer.getColumnCount(), row);
+                LabelStack configLabels = layer.getConfigLabelsByPosition(this.rowHeaderLayer.getColumnCount() + headerColumnCountAdjust, row);
                 if (configLabels.hasLabel(HideIndicatorConstants.ROW_TOP_HIDDEN)) {
                     int y = layer.getStartYOfRowPosition(row);
                     if (this.columnHeaderLayer == null || y >= this.columnHeaderLayer.getHeight()) {
-                        int start = rectangle.x;
-                        for (int i = 0; i < this.rowHeaderLayer.getColumnCount(); i++) {
+                        int start = rectangle.x + headerStartXOffset;
+                        for (int i = headerColumnCountAdjust; i < (this.rowHeaderLayer.getColumnCount() + headerColumnCountAdjust); i++) {
                             ILayerCell cell = layer.getCellByPosition(i, row);
                             int cellStart = layer.getStartYOfRowPosition(cell.getOriginRowPosition());
                             if (cellStart < y
@@ -188,7 +208,7 @@ public class HideIndicatorOverlayPainter implements IOverlayPainter2 {
                                 start += layer.getColumnWidthByPosition(i);
                             }
                         }
-                        gc.drawLine(start, y - lineAdjustment, width, y - lineAdjustment);
+                        gc.drawLine(start, y - lineAdjustment, width + headerStartXOffset, y - lineAdjustment);
                     }
                 }
 
@@ -201,14 +221,14 @@ public class HideIndicatorOverlayPainter implements IOverlayPainter2 {
                         lineAdjustment = (gc.getLineWidth() / 2) + lineAdjustment;
                     }
                     if (this.columnHeaderLayer == null || y >= this.columnHeaderLayer.getHeight()) {
-                        int start = rectangle.x;
-                        for (int i = 0; i < this.rowHeaderLayer.getColumnCount(); i++) {
+                        int start = rectangle.x + headerStartXOffset;
+                        for (int i = headerColumnCountAdjust; i < this.rowHeaderLayer.getColumnCount() + headerColumnCountAdjust; i++) {
                             ILayerCell cell = layer.getCellByPosition(i, row + 1);
                             if (cell != null && cell.getOriginRowPosition() < cell.getRowPosition()) {
                                 start += layer.getColumnWidthByPosition(i);
                             }
                         }
-                        gc.drawLine(start, y - lineAdjustment, width, y - lineAdjustment);
+                        gc.drawLine(start, y - lineAdjustment, width + headerStartXOffset, y - lineAdjustment);
                     }
                 }
             }
@@ -296,5 +316,32 @@ public class HideIndicatorOverlayPainter implements IOverlayPainter2 {
      */
     public void setConfigRegistry(IConfigRegistry configRegistry) {
         this.configRegistry = configRegistry;
+    }
+
+    /**
+     *
+     * @param layer
+     *            Layer that is placed above the column header in a composition,
+     *            e.g. the GroupByHeaderLayer. Needed to adjust the hide
+     *            indicator start and height, and also to retrieve the labels
+     *            from a body cell.
+     *
+     * @since 2.0
+     */
+    public void setLayerOnTop(ILayer layer) {
+        this.layerOnTop = layer;
+    }
+
+    /**
+     *
+     * @param layer
+     *            Layer that is placed left of the row header in a composition.
+     *            Needed to adjust the hide indicator start and height, and also
+     *            to retrieve the labels from a body cell.
+     *
+     * @since 2.0
+     */
+    public void setLayerToLeft(ILayer layer) {
+        this.layerToLeft = layer;
     }
 }
