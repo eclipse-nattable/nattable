@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2017 CEA LIST and others.
+ * Copyright (c) 2015, 2020 CEA LIST and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -416,6 +416,18 @@ public interface NatTableCSSConstants {
      * validation error.
      */
     String VALIDATION_ERROR_FOREGROUND_COLOR = "validation-error-color";
+    /**
+     * CSS property for the color of the hide indicator.
+     *
+     * @since 2.0
+     */
+    String HIDE_INDICATOR_COLOR = "hide-indicator-color";
+    /**
+     * CSS property for the width of the hide indicator.
+     *
+     * @since 2.0
+     */
+    String HIDE_INDICATOR_WIDTH = "hide-indicator-width";
 
     // context value keys
 

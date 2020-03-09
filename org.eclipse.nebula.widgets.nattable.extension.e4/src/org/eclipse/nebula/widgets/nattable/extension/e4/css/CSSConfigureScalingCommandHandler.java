@@ -21,7 +21,7 @@ import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand
  * {@link ILayerCommandHandler} for the {@link ConfigureScalingCommand} that
  * actively triggers an update of the CSS styling.
  *
- * @since 1.3
+ * @since 2.0
  */
 @SuppressWarnings("restriction")
 public class CSSConfigureScalingCommandHandler implements ILayerCommandHandler<ConfigureScalingCommand> {

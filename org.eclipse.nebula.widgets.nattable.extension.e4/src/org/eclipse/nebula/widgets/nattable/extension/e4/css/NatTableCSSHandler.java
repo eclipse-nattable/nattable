@@ -37,6 +37,7 @@ import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.extension.e4.painterfactory.CellPainterFactory;
 import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillHandleConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.freeze.IFreezeConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.AbstractTextPainter;
@@ -900,6 +901,20 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                             painter,
                             displayMode);
                 }
+            } else if (NatTableCSSConstants.HIDE_INDICATOR_COLOR.equalsIgnoreCase(property)
+                    && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
+                natTable.getConfigRegistry().registerConfigAttribute(
+                        HideIndicatorConfigAttributes.HIDE_INDICATOR_COLOR,
+                        (Color) engine.convert(value, Color.class, natTable.getDisplay()),
+                        displayMode,
+                        label);
+            } else if (NatTableCSSConstants.HIDE_INDICATOR_WIDTH.equalsIgnoreCase(property)
+                    && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
+                natTable.getConfigRegistry().registerConfigAttribute(
+                        HideIndicatorConfigAttributes.HIDE_INDICATOR_LINE_WIDTH,
+                        (int) ((CSSPrimitiveValue) value).getFloatValue(CSSPrimitiveValue.CSS_PT),
+                        displayMode,
+                        label);
             }
 
             return true;
@@ -1498,6 +1513,25 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                         displayMode,
                         label);
                 return NatTableCSSHelper.getDisplayConverterString(converter);
+            } else if (NatTableCSSConstants.HIDE_INDICATOR_COLOR.equalsIgnoreCase(property)) {
+                ICSSValueConverter cssValueConverter = engine.getCSSValueConverter(String.class);
+                return cssValueConverter.convert(
+                        natTable.getConfigRegistry().getConfigAttribute(
+                                HideIndicatorConfigAttributes.HIDE_INDICATOR_COLOR,
+                                displayMode,
+                                label),
+                        engine,
+                        null);
+            } else if (NatTableCSSConstants.HIDE_INDICATOR_WIDTH.equalsIgnoreCase(property)) {
+                Integer width = natTable.getConfigRegistry().getConfigAttribute(
+                        HideIndicatorConfigAttributes.HIDE_INDICATOR_LINE_WIDTH,
+                        displayMode,
+                        label);
+                if (width == null) {
+                    return "0";
+                } else {
+                    return width.toString();
+                }
             }
         }
         return null;

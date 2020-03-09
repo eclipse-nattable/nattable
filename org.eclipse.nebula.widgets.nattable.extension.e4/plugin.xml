@@ -192,6 +192,12 @@
          <property-name
                name="converter">
          </property-name>
+         <property-name
+               name="hide-indicator-color">
+         </property-name>
+         <property-name
+               name="hide-indicator-width">
+         </property-name>
       </handler>
       <handler
             adapter="org.eclipse.nebula.widgets.nattable.extension.e4.css.NatTableWrapperElementAdapter"
