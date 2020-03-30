@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -75,5 +75,16 @@ public class NatTableWrapperElementAdapter extends ElementAdapter {
     @Override
     public String getAttribute(String arg0) {
         return "";
+    }
+
+    /**
+     * @since 2.0
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (this.natTableWrapper != null) {
+            this.natTableWrapper.dispose();
+        }
     }
 }

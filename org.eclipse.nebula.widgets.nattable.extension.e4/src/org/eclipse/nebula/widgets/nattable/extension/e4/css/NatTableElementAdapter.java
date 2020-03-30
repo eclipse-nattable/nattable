@@ -12,14 +12,18 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.e4.css;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.e4.ui.css.core.engine.CSSEngine;
+import org.eclipse.e4.ui.css.core.impl.engine.AbstractCSSEngine;
 import org.eclipse.e4.ui.css.swt.dom.WidgetElement;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -42,7 +46,7 @@ public class NatTableElementAdapter extends WidgetElement {
      * Collection of virtual children that can be used as child selectors in CSS
      * that will be mapped to NatTable labels.
      */
-    List<Node> virtualChildren = new ArrayList<>();
+    ArrayList<Node> virtualChildren = new ArrayList<>();
 
     public NatTableElementAdapter(final NatTable natTable, final CSSEngine engine) {
         super(natTable, engine);
@@ -58,6 +62,14 @@ public class NatTableElementAdapter extends WidgetElement {
         for (String label : natTable.getProvidedLabels()) {
             addVirtualChild(label);
         }
+
+        natTable.addDisposeListener(new DisposeListener() {
+
+            @Override
+            public void widgetDisposed(DisposeEvent e) {
+                dispose();
+            }
+        });
 
         // the special NatTable related update listener should only be
         // registered once, there is no need to add additional listeners for
@@ -110,6 +122,31 @@ public class NatTableElementAdapter extends WidgetElement {
         this.virtualChildren.add(
                 new NatTableWrapperElementAdapter(
                         new NatTableWrapper(getControl(), label), this.engine, this));
+    }
+
+    /**
+     * @since 2.0
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        for (Node node : this.virtualChildren) {
+            if (node instanceof NatTableWrapperElementAdapter) {
+                ((NatTableWrapperElementAdapter) node).dispose();
+
+                if (this.engine != null && this.engine instanceof AbstractCSSEngine) {
+                    try {
+                        Method method = AbstractCSSEngine.class.getDeclaredMethod("handleWidgetDisposed", Object.class);
+                        if (method != null) {
+                            method.setAccessible(true);
+                            method.invoke(this.engine, ((NatTableWrapperElementAdapter) node).natTableWrapper);
+                        }
+                    } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 
     /**

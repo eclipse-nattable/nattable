@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -30,5 +30,13 @@ public class NatTableWrapper {
 
     public String getLabel() {
         return this.label;
+    }
+
+    /**
+     * @since 2.0
+     */
+    public void dispose() {
+        // null the NatTable reference to avoid memory leaks
+        this.natTable = null;
     }
 }
