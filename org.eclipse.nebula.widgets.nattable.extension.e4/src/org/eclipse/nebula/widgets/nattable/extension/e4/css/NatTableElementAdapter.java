@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,6 +14,7 @@ package org.eclipse.nebula.widgets.nattable.extension.e4.css;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.e4.ui.css.core.engine.CSSEngine;
 import org.eclipse.e4.ui.css.swt.dom.WidgetElement;
@@ -21,6 +22,7 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.w3c.dom.Element;
@@ -34,7 +36,7 @@ public class NatTableElementAdapter extends WidgetElement {
      * Static flag to ensure that the update listener is only applied once to
      * the display.
      */
-    private static boolean listenerApplied = false;
+    private static AtomicBoolean listenerApplied = new AtomicBoolean(false);
 
     /**
      * Collection of virtual children that can be used as child selectors in CSS
@@ -57,23 +59,11 @@ public class NatTableElementAdapter extends WidgetElement {
             addVirtualChild(label);
         }
 
-        if (!listenerApplied) {
-            // The listener added via CSSSWTApplyStylesListener does not apply
-            // styles for the children. But as NatTable styling is done via
-            // virtual children for the labels, it is important to apply the
-            // styles also to the children on skinning.
-            natTable.getDisplay().addListener(SWT.Skin, new Listener() {
-                @Override
-                public void handleEvent(Event event) {
-                    if (engine != null && event.widget instanceof NatTable) {
-                        engine.applyStyles(event.widget, true);
-                    }
-                }
-            });
-
-            // the special NatTable related update listener is registered, so we
-            // won't add additional listeners for additional NatTable instances
-            listenerApplied = true;
+        // the special NatTable related update listener should only be
+        // registered once, there is no need to add additional listeners for
+        // additional NatTable instances
+        if (listenerApplied.compareAndSet(false, true)) {
+            new NatTableSkinListener(natTable.getDisplay(), engine);
         }
     }
 
@@ -120,5 +110,37 @@ public class NatTableElementAdapter extends WidgetElement {
         this.virtualChildren.add(
                 new NatTableWrapperElementAdapter(
                         new NatTableWrapper(getControl(), label), this.engine, this));
+    }
+
+    /**
+     * Add a listener for {@link SWT#Skin} to apply styles to a NatTable.
+     * <p>
+     * The listener added via CSSSWTApplyStylesListener does not apply styles
+     * for the children. But as NatTable styling is done via virtual children
+     * for the labels, it is important to apply the styles also to the children
+     * on skinning.
+     * </p>
+     * <p>
+     * Extracted to a separate class instead of an anonymous inner class, to
+     * avoid memory leakage.
+     * </p>
+     */
+    private static class NatTableSkinListener {
+
+        CSSEngine engine;
+
+        public NatTableSkinListener(Display display, final CSSEngine cssEngine) {
+            this.engine = cssEngine;
+
+            display.addListener(SWT.Skin, new Listener() {
+                @Override
+                public void handleEvent(Event event) {
+                    if (NatTableSkinListener.this.engine != null && event.widget instanceof NatTable) {
+                        NatTableSkinListener.this.engine.applyStyles(event.widget, true);
+                    }
+                }
+            });
+        }
+
     }
 }
