@@ -177,12 +177,16 @@ public class DateCellEditor extends AbstractCellEditor {
         this.dateTime = createEditorControl(parent);
         setCanonicalValue(originalCanonicalValue);
 
-        // this is necessary so the control gets the focus
-        // but this also causing some issues as focusing the DateTime control
-        // programmatically does some strange things with showing the editable
-        // data also it seems to be not possible to open the dropdown
-        // programmatically
-        this.dateTime.forceFocus();
+        // set focus asynchronously in order to prevent display glitches
+        // it seems to be not possible to open the dropdown programmatically
+        parent.getDisplay().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                if (! DateCellEditor.this.dateTime.isDisposed()) {
+                    DateCellEditor.this.dateTime.forceFocus();
+                }
+            }
+        });
 
         return this.dateTime;
     }
