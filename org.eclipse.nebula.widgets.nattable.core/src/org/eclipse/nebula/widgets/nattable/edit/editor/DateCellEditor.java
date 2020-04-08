@@ -1,12 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2017 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
+ *    Wippermueller, Frank <wippermueller.frank@guj.de> - Bug 561850
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.editor;
 
@@ -182,7 +183,7 @@ public class DateCellEditor extends AbstractCellEditor {
         parent.getDisplay().asyncExec(new Runnable() {
             @Override
             public void run() {
-                if (! DateCellEditor.this.dateTime.isDisposed()) {
+                if (!DateCellEditor.this.dateTime.isDisposed()) {
                     DateCellEditor.this.dateTime.forceFocus();
                 }
             }
