@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2018 CEA LIST and others.
+ * Copyright (c) 2015, 2020 CEA LIST and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -54,12 +54,6 @@ public class FillHandleDragMode extends AutoScrollDragMode {
 
     protected MouseEvent startEvent;
     /**
-     * The usage of the index is deprecated. Instead the startPosition should be
-     * used which is relative to the SelectionLayer.
-     */
-    @Deprecated
-    protected Point startIndex;
-    /**
      * @since 1.6
      */
     protected Point startPosition;
@@ -101,10 +95,6 @@ public class FillHandleDragMode extends AutoScrollDragMode {
             this.selectionCell = this.selectionLayer.getCellByPosition(
                     selectedCellPositions[0].columnPosition,
                     selectedCellPositions[0].rowPosition);
-
-            this.startIndex = new Point(
-                    this.selectionCell.getColumnIndex(),
-                    this.selectionCell.getRowIndex());
 
             this.startPosition = new Point(
                     this.selectionCell.getColumnPosition(),
@@ -360,7 +350,6 @@ public class FillHandleDragMode extends AutoScrollDragMode {
     protected void reset(NatTable natTable) {
         this.selectionCell = null;
         this.startEvent = null;
-        this.startIndex = null;
         this.startPosition = null;
         this.direction = null;
         this.selectionLayer.setFillHandleRegion(null);

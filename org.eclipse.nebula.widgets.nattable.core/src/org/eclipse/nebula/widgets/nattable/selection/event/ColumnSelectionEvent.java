@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,22 +28,6 @@ public class ColumnSelectionEvent extends ColumnVisualChangeEvent implements ISe
      * The control mask used.
      */
     private boolean withControlMask = false;
-
-    /**
-     * Constructor.
-     *
-     * @param selectionLayer
-     *            The selection layer.
-     * @param columnPosition
-     *            The column position.
-     * @deprecated Replaced by
-     *             {@link #ColumnSelectionEvent(SelectionLayer, int, boolean, boolean)}
-     */
-    @Deprecated
-    public ColumnSelectionEvent(SelectionLayer selectionLayer, int columnPosition) {
-        super(selectionLayer, new Range(columnPosition, columnPosition + 1));
-        this.selectionLayer = selectionLayer;
-    }
 
     /**
      * Constructor.

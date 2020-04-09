@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,13 +16,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
-import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditorRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -32,13 +30,11 @@ import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.IRowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 
 /**
  * Helper class for retrieving information regarding editing of selected cells.
  */
-@SuppressWarnings("deprecation")
 public class EditUtils {
 
     /**
@@ -195,48 +191,6 @@ public class EditUtils {
             }
         }
         return true;
-    }
-
-    /**
-     * Checks if the cell at the specified coordinates is editable or not.
-     * <p>
-     * Note: The coordinates need to be related to the given layer, otherwise
-     * the wrong cell will be used for the check.
-     * </p>
-     *
-     * @param layer
-     *            The {@link ILayer} to check the cell coordinates against.
-     * @param configRegistry
-     *            The {@link IConfigRegistry} needed to access the configured
-     *            {@link IEditableRule}s.
-     * @param cellCoords
-     *            The coordinates of the cell to check the editable state,
-     *            related to the given {@link ILayer}
-     * @return <code>true</code> if the cell is editable, <code>false</code> if
-     *         not
-     * @deprecated Use
-     *             {@link #isCellEditable(PositionCoordinate, IConfigRegistry)}
-     *             as PositionCoordinate already contains the layer to which the
-     *             coordinates match. The redundant layer parameter is not
-     *             needed and can lead to failures in case the positions do not
-     *             match it.
-     */
-    @Deprecated
-    public static boolean isCellEditable(ILayer layer, IConfigRegistry configRegistry, PositionCoordinate cellCoords) {
-        ILayerCell layerCell = layer.getCellByPosition(cellCoords.columnPosition, cellCoords.rowPosition);
-        if (layerCell != null) {
-            LabelStack labelStack = layerCell.getConfigLabels();
-
-            IEditableRule editableRule = configRegistry.getConfigAttribute(
-                    EditConfigAttributes.CELL_EDITABLE_RULE,
-                    DisplayMode.EDIT,
-                    labelStack.getLabels());
-
-            if (editableRule != null) {
-                return editableRule.isEditable(layerCell, configRegistry);
-            }
-        }
-        return false;
     }
 
     /**
@@ -615,30 +569,6 @@ public class EditUtils {
             return convertedCells;
         }
         return selectedCells;
-    }
-
-    /**
-     * Checks if there is an active editor registered. If there is one, it is
-     * tried to commit the value that is currently entered there.
-     *
-     * @deprecated Has been replaced by
-     *             {@link NatTable#commitAndCloseActiveCellEditor()}. The active
-     *             editor is now managed by the table itself. Therefore the
-     *             static helpers to access the editor should not be used any
-     *             more.
-     *
-     * @return <code>false</code> if there is an open editor that can not be
-     *         committed because of conversion/validation errors,
-     *         <code>true</code> if there is no active open editor or it could
-     *         be closed after committing the value.
-     */
-    @Deprecated
-    public static boolean commitAndCloseActiveEditor() {
-        ICellEditor activeCellEditor = ActiveCellEditorRegistry.getActiveCellEditor();
-        if (activeCellEditor != null) {
-            return activeCellEditor.commit(MoveDirectionEnum.NONE, true);
-        }
-        return true;
     }
 
 }

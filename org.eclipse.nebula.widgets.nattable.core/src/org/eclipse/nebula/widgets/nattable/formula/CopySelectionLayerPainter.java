@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2019 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -36,7 +36,6 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -208,39 +207,6 @@ public class CopySelectionLayerPainter extends SelectionLayerPainter {
                 gc.setLineWidth(originalLineWidth);
                 gc.setForeground(originalForeground);
             }
-        }
-    }
-
-    /**
-     * Apply the border style that should be used to render the border for cells
-     * that are currently copied to the {@link InternalCellClipboard}. Checks
-     * the {@link ConfigRegistry} for a registered {@link IStyle} for the
-     * {@link SelectionStyleLabels#COPY_BORDER_STYLE} label. If none is
-     * registered, a default line style will be used to render the border.
-     *
-     * @param gc
-     *            The current {@link GC} that is used for rendering.
-     * @param configRegistry
-     *            The {@link ConfigRegistry} to retrieve the style information
-     *            from.
-     */
-    @Deprecated
-    protected void applyCopyBorderStyle(GC gc, IConfigRegistry configRegistry) {
-        IStyle cellStyle = configRegistry.getConfigAttribute(
-                CellConfigAttributes.CELL_STYLE,
-                DisplayMode.NORMAL,
-                SelectionStyleLabels.COPY_BORDER_STYLE);
-        BorderStyle borderStyle = cellStyle != null ? cellStyle.getAttributeValue(CellStyleAttributes.BORDER_STYLE) : null;
-
-        // if there is no border style configured, use the default
-        if (borderStyle == null) {
-            gc.setLineStyle(SWT.LINE_DASH);
-            gc.setLineDash(new int[] { 2, 2 });
-            gc.setForeground(GUIHelper.COLOR_BLACK);
-        } else {
-            gc.setLineStyle(LineStyleEnum.toSWT(borderStyle.getLineStyle()));
-            gc.setLineWidth(borderStyle.getThickness());
-            gc.setForeground(borderStyle.getColor());
         }
     }
 

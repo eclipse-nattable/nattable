@@ -170,20 +170,6 @@ public class TreeLayerPerformanceTest {
         }
 
         @Override
-        public String formatDataForDepth(int depth, Person object) {
-            if (object != null) {
-                return object.toString();
-            } else {
-                return ""; //$NON-NLS-1$
-            }
-        }
-
-        @Override
-        public String formatDataForDepth(int depth, int index) {
-            return formatDataForDepth(depth, getDataAtIndex(index));
-        }
-
-        @Override
         public int getDepthOfData(Person object) {
             Person firstElement = this.firstElementMapping.get(object.getLastName());
             return firstElement.equals(object) ? 0 : 1;

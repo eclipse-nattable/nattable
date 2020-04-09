@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,6 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Properties;
 
-import org.eclipse.nebula.widgets.nattable.persistence.ColorPersistor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
@@ -24,8 +23,7 @@ import org.junit.Test;
 
 public class ColorPersistorTest {
 
-    private static final Color TEST_COLOR = Display.getDefault()
-            .getSystemColor(SWT.COLOR_RED);;
+    private static final Color TEST_COLOR = Display.getDefault().getSystemColor(SWT.COLOR_RED);
     Properties properties;
 
     @Before

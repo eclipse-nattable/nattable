@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014, 2015 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,6 @@ package org.eclipse.nebula.widgets.nattable.ui.menu;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
-import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.swt.SWT;
@@ -34,17 +33,6 @@ public class BodyMenuConfiguration extends AbstractUiBindingConfiguration {
         this.bodyMenu = new PopupMenuBuilder(natTable)
                 .withColumnStyleEditor("%ColumnStyleEditorDialog.shellTitle") //$NON-NLS-1$
                 .build();
-    }
-
-    /**
-     *
-     * @param natTable
-     * @param bodyLayer
-     * @deprecated use the constructor without bodyLayer parameter
-     */
-    @Deprecated
-    public BodyMenuConfiguration(NatTable natTable, ILayer bodyLayer) {
-        this(natTable);
     }
 
     @Override

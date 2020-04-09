@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,6 @@
 package org.eclipse.nebula.widgets.nattable.group.painter;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.group.model.IRowGroupModel;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
@@ -21,43 +20,6 @@ import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.swt.graphics.GC;
 
 public class RowGroupHeaderTextPainter extends CellPainterWrapper {
-
-    /**
-     * Creates the default {@link RowGroupHeaderTextPainter} that uses a
-     * {@link TextPainter} as base {@link ICellPainter} and decorate it with the
-     * {@link RowGroupExpandCollapseImagePainter} on the bottom edge of the
-     * cell.
-     *
-     * @param rowGroupModel
-     *            the row group model that is used by the grid
-     *
-     * @deprecated Use constructor without IRowGroupModel reference
-     */
-    @SuppressWarnings("rawtypes")
-    @Deprecated
-    public RowGroupHeaderTextPainter(IRowGroupModel rowGroupModel) {
-        this(rowGroupModel, new TextPainter());
-    }
-
-    /**
-     * Creates a {@link RowGroupHeaderTextPainter} that uses the given
-     * {@link ICellPainter} as base {@link ICellPainter} and decorate it with
-     * the {@link RowGroupExpandCollapseImagePainter} on the bottom edge of the
-     * cell.
-     *
-     * @param rowGroupModel
-     *            the row group model that is used by the grid
-     * @param interiorPainter
-     *            the base {@link ICellPainter} to use
-     *
-     * @deprecated Use constructor without IRowGroupModel reference
-     */
-    @SuppressWarnings("rawtypes")
-    @Deprecated
-    public RowGroupHeaderTextPainter(IRowGroupModel rowGroupModel,
-            ICellPainter interiorPainter) {
-        this(interiorPainter, CellEdgeEnum.BOTTOM);
-    }
 
     /**
      * Creates the default {@link RowGroupHeaderTextPainter} that uses a
@@ -94,10 +56,8 @@ public class RowGroupHeaderTextPainter extends CellPainterWrapper {
      *            the edge of the cell on which the sort indicator decoration
      *            should be applied
      */
-    public RowGroupHeaderTextPainter(ICellPainter interiorPainter,
-            CellEdgeEnum cellEdge) {
-        this(interiorPainter, cellEdge, new RowGroupExpandCollapseImagePainter(
-                true));
+    public RowGroupHeaderTextPainter(ICellPainter interiorPainter, CellEdgeEnum cellEdge) {
+        this(interiorPainter, cellEdge, new RowGroupExpandCollapseImagePainter(true));
     }
 
     /**
@@ -116,10 +76,8 @@ public class RowGroupHeaderTextPainter extends CellPainterWrapper {
      *            related decoration (by default the
      *            {@link RowGroupExpandCollapseImagePainter} will be used)
      */
-    public RowGroupHeaderTextPainter(ICellPainter interiorPainter,
-            CellEdgeEnum cellEdge, ICellPainter decoratorPainter) {
-        setWrappedPainter(new CellPainterDecorator(interiorPainter, cellEdge,
-                decoratorPainter));
+    public RowGroupHeaderTextPainter(ICellPainter interiorPainter, CellEdgeEnum cellEdge, ICellPainter decoratorPainter) {
+        setWrappedPainter(new CellPainterDecorator(interiorPainter, cellEdge, decoratorPainter));
     }
 
     // the following constructors are intended to configure the
@@ -155,15 +113,21 @@ public class RowGroupHeaderTextPainter extends CellPainterWrapper {
      *            <code>true</code> will cause the bounds of the cell to shrink
      *            for the base painter.
      */
-    public RowGroupHeaderTextPainter(ICellPainter interiorPainter,
-            CellEdgeEnum cellEdge, boolean paintBg, int spacing,
+    public RowGroupHeaderTextPainter(
+            ICellPainter interiorPainter,
+            CellEdgeEnum cellEdge,
+            boolean paintBg,
+            int spacing,
             boolean paintDecorationDependent) {
 
-        ICellPainter sortPainter = new RowGroupExpandCollapseImagePainter(
-                paintBg);
+        ICellPainter sortPainter = new RowGroupExpandCollapseImagePainter(paintBg);
         CellPainterDecorator painter = new CellPainterDecorator(
-                interiorPainter, cellEdge, spacing, sortPainter,
-                paintDecorationDependent, paintBg);
+                interiorPainter,
+                cellEdge,
+                spacing,
+                sortPainter,
+                paintDecorationDependent,
+                paintBg);
         setWrappedPainter(painter);
     }
 
@@ -198,13 +162,21 @@ public class RowGroupHeaderTextPainter extends CellPainterWrapper {
      *            <code>true</code> will cause the bounds of the cell to shrink
      *            for the base painter.
      */
-    public RowGroupHeaderTextPainter(ICellPainter interiorPainter,
-            CellEdgeEnum cellEdge, ICellPainter decoratorPainter,
-            boolean paintBg, int spacing, boolean paintDecorationDependent) {
+    public RowGroupHeaderTextPainter(
+            ICellPainter interiorPainter,
+            CellEdgeEnum cellEdge,
+            ICellPainter decoratorPainter,
+            boolean paintBg,
+            int spacing,
+            boolean paintDecorationDependent) {
 
         CellPainterDecorator painter = new CellPainterDecorator(
-                interiorPainter, cellEdge, spacing, decoratorPainter,
-                paintDecorationDependent, paintBg);
+                interiorPainter,
+                cellEdge,
+                spacing,
+                decoratorPainter,
+                paintDecorationDependent,
+                paintBg);
         setWrappedPainter(painter);
     }
 
@@ -227,19 +199,22 @@ public class RowGroupHeaderTextPainter extends CellPainterWrapper {
      *            flag to configure how the bounds of the base painter should be
      *            calculated
      */
-    public RowGroupHeaderTextPainter(ICellPainter interiorPainter,
-            boolean paintBg, boolean interiorPainterToSpanFullWidth) {
-        ICellPainter sortPainter = new RowGroupExpandCollapseImagePainter(
-                paintBg);
+    public RowGroupHeaderTextPainter(
+            ICellPainter interiorPainter, boolean paintBg, boolean interiorPainterToSpanFullWidth) {
+
+        ICellPainter sortPainter = new RowGroupExpandCollapseImagePainter(paintBg);
         CellPainterDecorator painter = new CellPainterDecorator(
-                interiorPainter, CellEdgeEnum.BOTTOM, 0, sortPainter,
-                !interiorPainterToSpanFullWidth, paintBg);
+                interiorPainter,
+                CellEdgeEnum.BOTTOM,
+                0,
+                sortPainter,
+                !interiorPainterToSpanFullWidth,
+                paintBg);
         setWrappedPainter(painter);
     }
 
     @Override
-    public int getPreferredWidth(ILayerCell cell, GC gc,
-            IConfigRegistry configRegistry) {
+    public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
         return 0;
     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,9 +17,6 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.event.ColumnHeaderSelectio
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectColumnCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
-import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
-import org.eclipse.nebula.widgets.nattable.selection.event.ColumnSelectionEvent;
-import org.eclipse.nebula.widgets.nattable.selection.event.RowSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.junit.Before;
@@ -44,37 +41,32 @@ public class SelectionEventsTest {
     }
 
     @Test
-    public void shouldFireCellSelectionEvent() throws Exception {
+    public void shouldFireCellSelectionEvent() {
         // Grid coordinates
-        this.nattable.doCommand(new SelectCellCommand(this.nattable, 1, 5, NO_SHIFT,
-                NO_CTRL));
+        this.nattable.doCommand(new SelectCellCommand(this.nattable, 1, 5, NO_SHIFT, NO_CTRL));
 
         assertEquals(1, this.listener.getEventsCount());
         assertTrue(this.listener.containsInstanceOf(CellSelectionEvent.class));
 
-        CellSelectionEvent event = (CellSelectionEvent) this.listener
-                .getReceivedEvents().get(0);
+        CellSelectionEvent event = (CellSelectionEvent) this.listener.getReceivedEvents().get(0);
         assertEquals(1, event.getColumnPosition());
         assertEquals(5, event.getRowPosition());
     }
 
     @Test
-    public void shouldFireRowSelectionEvent() throws Exception {
+    public void shouldFireRowSelectionEvent() {
         // Select single row
-        this.nattable.doCommand(new SelectRowsCommand(this.nattable, 5, 5, NO_SHIFT,
-                NO_CTRL));
+        this.nattable.doCommand(new SelectRowsCommand(this.nattable, 5, 5, NO_SHIFT, NO_CTRL));
 
         assertEquals(1, this.listener.getEventsCount());
         assertTrue(this.listener.containsInstanceOf(RowSelectionEvent.class));
 
-        RowSelectionEvent event = (RowSelectionEvent) this.listener
-                .getReceivedEvents().get(0);
+        RowSelectionEvent event = (RowSelectionEvent) this.listener.getReceivedEvents().get(0);
         assertEquals(5, event.getRowPositionRanges().iterator().next().start);
         assertEquals(6, event.getRowPositionRanges().iterator().next().end);
 
         // Select additional rows with shift
-        this.nattable.doCommand(new SelectRowsCommand(this.nattable, 5, 7, WITH_SHIFT,
-                NO_CTRL));
+        this.nattable.doCommand(new SelectRowsCommand(this.nattable, 5, 7, WITH_SHIFT, NO_CTRL));
         assertEquals(2, this.listener.getEventsCount());
         assertTrue(this.listener.containsInstanceOf(RowSelectionEvent.class));
 
@@ -86,17 +78,14 @@ public class SelectionEventsTest {
     }
 
     @Test
-    public void shouldFireColumnSelectionEvent() throws Exception {
-        this.nattable.doCommand(new SelectColumnCommand(this.nattable, 5, 5, NO_SHIFT,
-                NO_CTRL));
+    public void shouldFireColumnSelectionEvent() {
+        this.nattable.doCommand(new SelectColumnCommand(this.nattable, 5, 5, NO_SHIFT, NO_CTRL));
 
         assertEquals(2, this.listener.getEventsCount());
         assertTrue(this.listener.containsInstanceOf(ColumnSelectionEvent.class));
-        assertTrue(this.listener
-                .containsInstanceOf(ColumnHeaderSelectionEvent.class));
+        assertTrue(this.listener.containsInstanceOf(ColumnHeaderSelectionEvent.class));
 
-        ColumnSelectionEvent event = (ColumnSelectionEvent) this.listener
-                .getReceivedEvents().get(0);
+        ColumnSelectionEvent event = (ColumnSelectionEvent) this.listener.getReceivedEvents().get(0);
         assertEquals(5, event.getColumnPositionRanges().iterator().next().start);
         assertEquals(6, event.getColumnPositionRanges().iterator().next().end);
     }

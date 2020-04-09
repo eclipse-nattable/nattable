@@ -110,17 +110,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
         this(underlyingLayer, null, useDefaultConfiguration);
     }
 
-    public SelectionLayer(IUniqueIndexLayer underlyingLayer, ISelectionModel selectionModel,
-            boolean useDefaultConfiguration) {
-        this(underlyingLayer, selectionModel, useDefaultConfiguration, true);
-    }
-
-    /**
-     * @deprecated the ISelectionModel is now itself an ILayerEventHandler
-     */
-    @Deprecated
-    public SelectionLayer(IUniqueIndexLayer underlyingLayer, ISelectionModel selectionModel,
-            boolean useDefaultConfiguration, boolean registerDefaultEventHandler) {
+    public SelectionLayer(IUniqueIndexLayer underlyingLayer, ISelectionModel selectionModel, boolean useDefaultConfiguration) {
         super(underlyingLayer);
         this.underlyingLayer = underlyingLayer;
 

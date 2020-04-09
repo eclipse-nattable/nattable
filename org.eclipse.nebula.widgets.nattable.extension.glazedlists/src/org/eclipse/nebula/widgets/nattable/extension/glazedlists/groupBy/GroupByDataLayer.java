@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -47,7 +47,6 @@ import org.eclipse.nebula.widgets.nattable.sort.ISortModel;
 import org.eclipse.nebula.widgets.nattable.sort.SortDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRowValuesCommand;
-import org.eclipse.nebula.widgets.nattable.tree.ITreeData;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.util.CalculatedValueCache;
 import org.eclipse.nebula.widgets.nattable.util.ICalculatedValueCache;
@@ -138,9 +137,6 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      */
     private ICalculatedValueCache valueCache;
 
-    /** Map the group to a dynamic list of group elements */
-    private final Map<GroupByObject, FilterList<T>> filtersByGroup = new ConcurrentHashMap<GroupByObject, FilterList<T>>();
-
     private final Map<GroupByObject, List<T>> itemsByGroup = new ConcurrentHashMap<GroupByObject, List<T>>();
 
     /**
@@ -187,10 +183,10 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      *            this:
      *
      *            <pre>
-     * EventList&lt;T&gt; eventList = GlazedLists.eventList(values);
-     * TransformedList&lt;T, T&gt; rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
-     * SortedList&lt;T&gt; sortedList = new SortedList&lt;&gt;(rowObjectsGlazedList, null);
-     * FilterList&lt;T&gt; filterList = new FilterList&lt;&gt;(sortedList);
+     *            EventList&lt;T&gt; eventList = GlazedLists.eventList(values);
+     *            TransformedList&lt;T, T&gt; rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+     *            SortedList&lt;T&gt; sortedList = new SortedList&lt;&gt;(rowObjectsGlazedList, null);
+     *            FilterList&lt;T&gt; filterList = new FilterList&lt;&gt;(sortedList);
      *            </pre>
      *
      *            the <code>FilterList</code> needs to be used as parameter
@@ -230,10 +226,10 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      *            this:
      *
      *            <pre>
-     * EventList&lt;T&gt; eventList = GlazedLists.eventList(values);
-     * TransformedList&lt;T, T&gt; rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
-     * SortedList&lt;T&gt; sortedList = new SortedList&lt;&gt;(rowObjectsGlazedList, null);
-     * FilterList&lt;T&gt; filterList = new FilterList&lt;&gt;(sortedList);
+     *            EventList&lt;T&gt; eventList = GlazedLists.eventList(values);
+     *            TransformedList&lt;T, T&gt; rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+     *            SortedList&lt;T&gt; sortedList = new SortedList&lt;&gt;(rowObjectsGlazedList, null);
+     *            FilterList&lt;T&gt; filterList = new FilterList&lt;&gt;(sortedList);
      *            </pre>
      *
      *            the <code>FilterList</code> needs to be used as parameter
@@ -278,10 +274,10 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      *            this:
      *
      *            <pre>
-     * EventList&lt;T&gt; eventList = GlazedLists.eventList(values);
-     * TransformedList&lt;T, T&gt; rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
-     * SortedList&lt;T&gt; sortedList = new SortedList&lt;&gt;(rowObjectsGlazedList, null);
-     * FilterList&lt;T&gt; filterList = new FilterList&lt;&gt;(sortedList);
+     *            EventList&lt;T&gt; eventList = GlazedLists.eventList(values);
+     *            TransformedList&lt;T, T&gt; rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+     *            SortedList&lt;T&gt; sortedList = new SortedList&lt;&gt;(rowObjectsGlazedList, null);
+     *            FilterList&lt;T&gt; filterList = new FilterList&lt;&gt;(sortedList);
      *            </pre>
      *
      *            the <code>FilterList</code> needs to be used as parameter
@@ -324,10 +320,10 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      *            this:
      *
      *            <pre>
-     * EventList&lt;T&gt; eventList = GlazedLists.eventList(values);
-     * TransformedList&lt;T, T&gt; rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
-     * SortedList&lt;T&gt; sortedList = new SortedList&lt;&gt;(rowObjectsGlazedList, null);
-     * FilterList&lt;T&gt; filterList = new FilterList&lt;&gt;(sortedList);
+     *            EventList&lt;T&gt; eventList = GlazedLists.eventList(values);
+     *            TransformedList&lt;T, T&gt; rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+     *            SortedList&lt;T&gt; sortedList = new SortedList&lt;&gt;(rowObjectsGlazedList, null);
+     *            FilterList&lt;T&gt; filterList = new FilterList&lt;&gt;(sortedList);
      *            </pre>
      *
      *            the <code>FilterList</code> needs to be used as parameter
@@ -373,10 +369,10 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      *            this:
      *
      *            <pre>
-     * EventList&lt;T&gt; eventList = GlazedLists.eventList(values);
-     * TransformedList&lt;T, T&gt; rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
-     * SortedList&lt;T&gt; sortedList = new SortedList&lt;&gt;(rowObjectsGlazedList, null);
-     * FilterList&lt;T&gt; filterList = new FilterList&lt;&gt;(sortedList);
+     *            EventList&lt;T&gt; eventList = GlazedLists.eventList(values);
+     *            TransformedList&lt;T, T&gt; rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+     *            SortedList&lt;T&gt; sortedList = new SortedList&lt;&gt;(rowObjectsGlazedList, null);
+     *            FilterList&lt;T&gt; filterList = new FilterList&lt;&gt;(sortedList);
      *            </pre>
      *
      *            the <code>FilterList</code> needs to be used as parameter
@@ -424,10 +420,10 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      *            this:
      *
      *            <pre>
-     * EventList&lt;T&gt; eventList = GlazedLists.eventList(values);
-     * TransformedList&lt;T, T&gt; rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
-     * SortedList&lt;T&gt; sortedList = new SortedList&lt;&gt;(rowObjectsGlazedList, null);
-     * FilterList&lt;T&gt; filterList = new FilterList&lt;&gt;(sortedList);
+     *            EventList&lt;T&gt; eventList = GlazedLists.eventList(values);
+     *            TransformedList&lt;T, T&gt; rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+     *            SortedList&lt;T&gt; sortedList = new SortedList&lt;&gt;(rowObjectsGlazedList, null);
+     *            FilterList&lt;T&gt; filterList = new FilterList&lt;&gt;(sortedList);
      *            </pre>
      *
      *            the <code>FilterList</code> needs to be used as parameter
@@ -508,20 +504,6 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      */
     protected GroupByTreeFormat<T> createGroupByTreeFormat(GroupByModel groupByModel, IColumnAccessor<T> groupByColumnAccessor) {
         return new GroupByTreeFormat<T>(groupByModel, groupByColumnAccessor);
-    }
-
-    /**
-     * @param model
-     *            The {@link ISortModel} that should be set to the
-     *            {@link IGroupByComparator} that is necessary to create the
-     *            sorted tree structure.
-     * @see IGroupByComparator#setSortModel(ISortModel)
-     * @deprecated use
-     *             {@link #initializeTreeComparator(ISortModel, IUniqueIndexLayer, boolean)}
-     */
-    @Deprecated
-    public void setSortModel(ISortModel model) {
-        this.treeFormat.setSortModel(model);
     }
 
     /**
@@ -947,37 +929,6 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         public void cleanupCollapsed(Collection<Object> groupByObjects) {
             this.collapsed.retainAll(groupByObjects);
         }
-    }
-
-    /**
-     * Get the list of the items in a group. Used for example to calculate the
-     * group summary values or group item count.
-     * <p>
-     * It returns the same as {@link ITreeData#getChildren(Object, boolean)},
-     * e.g. <code>treeData.getChildren(groupDescriptor, true)</code>, but in a
-     * more efficient way.
-     * </p>
-     * <p>
-     * Note: This method returns a filtered view on the base list. Therefore it
-     * is not thread-safe as it could lead to concurrent modification exceptions
-     * if the underlying list changes while the FilterList is processed.
-     * </p>
-     *
-     * @param group
-     *            The {@link GroupByObject} for which the children should be
-     *            retrieved.
-     * @return The {@link FilterList} of elements
-     *
-     * @deprecated Use {@link #getItemsInGroup(GroupByObject)}
-     */
-    @Deprecated
-    public FilterList<T> getElementsInGroup(GroupByObject group) {
-        FilterList<T> elementsInGroup = this.filtersByGroup.get(group);
-        if (elementsInGroup == null) {
-            elementsInGroup = new FilterList<T>(this.eventList, getGroupDescriptorMatcher(group, this.columnAccessor));
-            this.filtersByGroup.put(group, elementsInGroup);
-        }
-        return elementsInGroup;
     }
 
     /**

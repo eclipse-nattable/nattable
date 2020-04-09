@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,14 +10,14 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.event;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Collection;
 
-import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.BaseColumnReorderLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -58,9 +58,8 @@ public class ResizingVisibleReorderedColumnsTest {
         Rectangle expectedRectangle = new Rectangle(4, 0, 1, 7);
         Collection<Rectangle> actualRectangles = ((ColumnResizeEvent) this.layerListener
                 .getReceivedEvent(ColumnResizeEvent.class))
-                .getChangedPositionRectangles();
-        Assert.assertEquals(expectedRectangle, actualRectangles.iterator()
-                .next());
+                        .getChangedPositionRectangles();
+        assertEquals(expectedRectangle, actualRectangles.iterator().next());
     }
 
     @Test
@@ -76,9 +75,8 @@ public class ResizingVisibleReorderedColumnsTest {
         Rectangle expectedRectangle = new Rectangle(2, 0, 3, 7);
         Collection<Rectangle> actualRectangles = ((ColumnResizeEvent) this.layerListener
                 .getReceivedEvent(ColumnResizeEvent.class))
-                .getChangedPositionRectangles();
-        Assert.assertEquals(expectedRectangle, actualRectangles.iterator()
-                .next());
+                        .getChangedPositionRectangles();
+        assertEquals(expectedRectangle, actualRectangles.iterator().next());
     }
 
     @Test
@@ -93,7 +91,7 @@ public class ResizingVisibleReorderedColumnsTest {
         Rectangle expectedRectangle = new Rectangle(0, 0, 5, 7);
         Collection<Rectangle> actualRectangles = ((ColumnResizeEvent) this.layerListener
                 .getReceivedEvent(ColumnResizeEvent.class))
-                .getChangedPositionRectangles();
-        Assert.assertEquals(expectedRectangle, actualRectangles);
+                        .getChangedPositionRectangles();
+        assertEquals(expectedRectangle, actualRectangles);
     }
 }

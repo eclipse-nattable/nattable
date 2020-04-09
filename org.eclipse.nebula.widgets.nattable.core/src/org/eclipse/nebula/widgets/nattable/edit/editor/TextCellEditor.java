@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -545,27 +545,6 @@ public class TextCellEditor extends AbstractCellEditor {
      */
     public void setErrorDecorationEnabled(boolean enabled) {
         this.decorationProvider.setErrorDecorationEnabled(enabled);
-    }
-
-    /**
-     * Set the error description text that will be shown in the decoration
-     * hover.
-     *
-     * @param errorText
-     *            The text to be shown as a description for the decoration, or
-     *            <code>null</code> if there should be no description.
-     *
-     * @see ControlDecoration#setDescriptionText(String)
-     * @deprecated The error decoration text is dynamically set by the
-     *             {@link RenderErrorHandling} if a
-     *             {@link org.eclipse.nebula.widgets.nattable.data.convert.ConversionFailedException}
-     *             or a
-     *             {@link org.eclipse.nebula.widgets.nattable.data.validate.ValidationFailedException}
-     *             is thrown. A value set via this method will be overridden.
-     */
-    @Deprecated
-    public void setErrorDecorationText(String errorText) {
-        this.decorationProvider.setErrorDecorationText(errorText);
     }
 
     /**

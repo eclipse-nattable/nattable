@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,6 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.group.action.RowGroupExpandCollapseAction;
-import org.eclipse.nebula.widgets.nattable.group.model.IRowGroupModel;
 import org.eclipse.nebula.widgets.nattable.group.painter.RowGroupHeaderTextPainter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.BeveledBorderDecorator;
@@ -31,26 +30,6 @@ public class DefaultRowGroupHeaderLayerConfiguration<T> implements IConfiguratio
 
     public static final String GROUP_COLLAPSED_CONFIG_TYPE = "GROUP_COLLAPSED"; //$NON-NLS-1$
     public static final String GROUP_EXPANDED_CONFIG_TYPE = "GROUP_EXPANDED"; //$NON-NLS-1$
-
-    @SuppressWarnings("unused")
-    private final IRowGroupModel<T> rowGroupModel;
-
-    public DefaultRowGroupHeaderLayerConfiguration() {
-        this.rowGroupModel = null;
-    }
-
-    /**
-     *
-     * @param rowGroupModel
-     *            The IRowGroupModel that is used by the RowGroupHeaderLayer.
-     *
-     * @deprecated use constructor without IRowGroupModel as it is not needed
-     *             anymore
-     */
-    @Deprecated
-    public DefaultRowGroupHeaderLayerConfiguration(final IRowGroupModel<T> rowGroupModel) {
-        this.rowGroupModel = rowGroupModel;
-    }
 
     @Override
     public void configureLayer(ILayer layer) {

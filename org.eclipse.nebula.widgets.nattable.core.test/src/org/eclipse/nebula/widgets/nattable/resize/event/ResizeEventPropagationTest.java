@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,14 +10,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.event;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Collection;
 
-import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
-import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,15 +51,14 @@ public class ResizeEventPropagationTest {
         this.dataLayer.setColumnWidthByPosition(2, 200);
 
         // This is the propagated event
-        ColumnResizeEvent columnResizeEvent = (ColumnResizeEvent) this.layerListener
-                .getReceivedEvents().get(0);
-        Collection<Rectangle> actualRectangles = columnResizeEvent
-                .getChangedPositionRectangles();
+        ColumnResizeEvent columnResizeEvent =
+                (ColumnResizeEvent) this.layerListener.getReceivedEvents().get(0);
+        Collection<Rectangle> actualRectangles =
+                columnResizeEvent.getChangedPositionRectangles();
 
         // The affected region should have the following size
         Rectangle expectedRectangle = new Rectangle(2, 0, 3, 7);
-        Assert.assertEquals(expectedRectangle, actualRectangles.iterator()
-                .next());
+        assertEquals(expectedRectangle, actualRectangles.iterator().next());
     }
 
     @Test
@@ -71,14 +69,13 @@ public class ResizeEventPropagationTest {
         this.dataLayer.setRowHeightByPosition(3, 100);
 
         // This is the propagated event
-        RowResizeEvent rowResizeEvent = (RowResizeEvent) this.layerListener
-                .getReceivedEvents().get(0);
-        Collection<Rectangle> actualRectangles = rowResizeEvent
-                .getChangedPositionRectangles();
+        RowResizeEvent rowResizeEvent =
+                (RowResizeEvent) this.layerListener.getReceivedEvents().get(0);
+        Collection<Rectangle> actualRectangles =
+                rowResizeEvent.getChangedPositionRectangles();
 
         // The affected region should have the following size
         Rectangle expectedRectangle = new Rectangle(0, 3, 5, 4);
-        Assert.assertEquals(expectedRectangle, actualRectangles.iterator()
-                .next());
+        assertEquals(expectedRectangle, actualRectangles.iterator().next());
     }
 }

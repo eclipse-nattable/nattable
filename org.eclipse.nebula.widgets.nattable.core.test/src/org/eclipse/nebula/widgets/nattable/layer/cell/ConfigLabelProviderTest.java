@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -252,7 +252,8 @@ public class ConfigLabelProviderTest {
                 new FilterRowHeaderComposite<Person>(
                         new IFilterStrategy<Person>() {
                             @Override
-                            public void applyFilter(Map<Integer, Object> filterIndexToObjectMap) {}
+                            public void applyFilter(Map<Integer, Object> filterIndexToObjectMap) {
+                            }
                         },
                         new SortHeaderLayer<Person>(
                                 new ColumnHeaderLayer(this.columnHeaderDataLayer, this.bodyDataLayer, selectionLayer),
@@ -299,16 +300,6 @@ public class ConfigLabelProviderTest {
         SelectionLayer selectionLayer = new SelectionLayer(this.bodyDataLayer);
         TreeLayer treeLayer = new TreeLayer(selectionLayer, new TreeRowModel<Person>(
                 new ITreeData<Person>() {
-
-                    @Override
-                    public String formatDataForDepth(int depth, Person object) {
-                        return null;
-                    }
-
-                    @Override
-                    public String formatDataForDepth(int depth, int index) {
-                        return null;
-                    }
 
                     @Override
                     public int getDepthOfData(Person object) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,7 +30,6 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -336,47 +335,6 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
             }
         }
         return true;
-    }
-
-    /**
-     * @deprecated Use {@link #getBorderStyle} instead.
-     */
-    @Deprecated
-    protected void applyBorderStyle(GC gc, IConfigRegistry configRegistry) {
-        BorderStyle borderStyle = configRegistry.getConfigAttribute(
-                SelectionConfigAttributes.SELECTION_GRID_LINE_STYLE,
-                DisplayMode.SELECT);
-
-        // check for backwards compatibility style configuration
-        if (borderStyle == null) {
-            // Note: If there is no style configured for the
-            // SelectionStyleLabels.SELECTION_ANCHOR_GRID_LINE_STYLE
-            // label, the style configured for DisplayMode.SELECT will be
-            // retrieved by this call.
-            // Ensure that the selection style configuration does not contain a
-            // border style configuration to avoid strange rendering behavior.
-            // By default there is no border configuration added, so there
-            // shouldn't be issues with backwards compatibility. And if there
-            // are some, they can be solved easily by adding the necessary
-            // border style configuration.
-            IStyle cellStyle = configRegistry.getConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE,
-                    DisplayMode.SELECT,
-                    SelectionStyleLabels.SELECTION_ANCHOR_GRID_LINE_STYLE);
-            borderStyle = cellStyle != null ? cellStyle.getAttributeValue(CellStyleAttributes.BORDER_STYLE) : null;
-        }
-
-        // if there is no border style configured, use the default one for
-        // backwards compatibility
-        if (borderStyle == null) {
-            gc.setLineStyle(SWT.LINE_CUSTOM);
-            gc.setLineDash(new int[] { 1, 1 });
-            gc.setForeground(GUIHelper.COLOR_BLACK);
-        } else {
-            gc.setLineStyle(LineStyleEnum.toSWT(borderStyle.getLineStyle()));
-            gc.setLineWidth(borderStyle.getThickness());
-            gc.setForeground(borderStyle.getColor());
-        }
     }
 
     /**

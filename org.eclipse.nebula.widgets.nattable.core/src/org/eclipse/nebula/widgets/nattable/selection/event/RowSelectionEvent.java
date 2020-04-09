@@ -44,26 +44,6 @@ public class RowSelectionEvent extends RowVisualChangeEvent implements ISelectio
      *            The positions of the rows.
      * @param rowPositionToMoveIntoViewport
      *            The row position to move into the viewport.
-     * @deprecated Replaced by
-     *             {@link #RowSelectionEvent(SelectionLayer, Collection, int, boolean, boolean)}
-     */
-    @Deprecated
-    public RowSelectionEvent(SelectionLayer selectionLayer,
-            Collection<Integer> rowPositions, int rowPositionToMoveIntoViewport) {
-        super(selectionLayer, PositionUtil.getRanges(rowPositions));
-        this.selectionLayer = selectionLayer;
-        this.rowPositionToMoveIntoViewport = rowPositionToMoveIntoViewport;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param selectionLayer
-     *            The selection layer.
-     * @param rowPositions
-     *            The positions of the rows.
-     * @param rowPositionToMoveIntoViewport
-     *            The row position to move into the viewport.
      * @param withShiftMask
      *            Boolean to determinate if the shift mask is used.
      * @param withControlMask

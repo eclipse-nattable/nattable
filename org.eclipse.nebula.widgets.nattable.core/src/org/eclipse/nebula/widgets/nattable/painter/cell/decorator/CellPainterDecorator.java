@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -231,23 +231,15 @@ public class CellPainterDecorator implements ICellPainter {
         this.paintBg = paintBg;
     }
 
-    /**
-     *
-     * @deprecated use setPaintDecorationDependent() instead, note that the
-     *             semantic is different
-     */
-    @Deprecated
-    public void setBaseCellPainterSpansWholeCell(boolean interiorPainterToSpanFullWidth) {
-        this.paintDecorationDependent = !interiorPainterToSpanFullWidth;
-    }
-
     @Override
     public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 
         int baseWidth = (this.baseCellPainter != null
-                ? this.baseCellPainter.getPreferredWidth(cell, gc, configRegistry) : 0);
+                ? this.baseCellPainter.getPreferredWidth(cell, gc, configRegistry)
+                : 0);
         int decorationWidth = (this.decoratorCellPainter != null
-                ? this.decoratorCellPainter.getPreferredWidth(cell, gc, configRegistry) : 0);
+                ? this.decoratorCellPainter.getPreferredWidth(cell, gc, configRegistry)
+                : 0);
 
         switch (this.cellEdge) {
             case TOP_LEFT:
@@ -268,9 +260,11 @@ public class CellPainterDecorator implements ICellPainter {
     public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 
         int baseHeight = (this.baseCellPainter != null
-                ? this.baseCellPainter.getPreferredHeight(cell, gc, configRegistry) : 0);
+                ? this.baseCellPainter.getPreferredHeight(cell, gc, configRegistry)
+                : 0);
         int decorationHeight = (this.decoratorCellPainter != null
-                ? this.decoratorCellPainter.getPreferredHeight(cell, gc, configRegistry) : 0);
+                ? this.decoratorCellPainter.getPreferredHeight(cell, gc, configRegistry)
+                : 0);
 
         switch (this.cellEdge) {
             case TOP_LEFT:
@@ -290,7 +284,8 @@ public class CellPainterDecorator implements ICellPainter {
     @Override
     public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
         Rectangle baseCellPainterBounds = this.paintDecorationDependent
-                ? getBaseCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry) : adjustedCellBounds;
+                ? getBaseCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry)
+                : adjustedCellBounds;
         Rectangle decoratorCellPainterBounds = getDecoratorCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry);
 
         if (this.paintBg) {
@@ -322,9 +317,11 @@ public class CellPainterDecorator implements ICellPainter {
             IConfigRegistry configRegistry) {
 
         int preferredDecoratorWidth = (this.decoratorCellPainter != null
-                ? this.decoratorCellPainter.getPreferredWidth(cell, gc, configRegistry) : 0);
+                ? this.decoratorCellPainter.getPreferredWidth(cell, gc, configRegistry)
+                : 0);
         int preferredDecoratorHeight = (this.decoratorCellPainter != null
-                ? this.decoratorCellPainter.getPreferredHeight(cell, gc, configRegistry) : 0);
+                ? this.decoratorCellPainter.getPreferredHeight(cell, gc, configRegistry)
+                : 0);
 
         // grab any extra space:
         int grabbedPreferredWidth = adjustedCellBounds.width - preferredDecoratorWidth - this.spacing;
@@ -404,9 +401,11 @@ public class CellPainterDecorator implements ICellPainter {
             IConfigRegistry configRegistry) {
 
         int preferredDecoratorWidth = (this.decoratorCellPainter != null
-                ? this.decoratorCellPainter.getPreferredWidth(cell, gc, configRegistry) : 0);
+                ? this.decoratorCellPainter.getPreferredWidth(cell, gc, configRegistry)
+                : 0);
         int preferredDecoratorHeight = (this.decoratorCellPainter != null
-                ? this.decoratorCellPainter.getPreferredHeight(cell, gc, configRegistry) : 0);
+                ? this.decoratorCellPainter.getPreferredHeight(cell, gc, configRegistry)
+                : 0);
 
         switch (this.cellEdge) {
             case LEFT:

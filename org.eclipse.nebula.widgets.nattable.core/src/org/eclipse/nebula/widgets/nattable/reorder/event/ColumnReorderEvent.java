@@ -46,27 +46,6 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
      * @param beforeFromColumnPosition
      *            The column position that was reordered, before the reorder
      *            operation was performed.
-     * @param beforeToColumnPosition
-     *            The position of the column to which the reorder operation was
-     *            performed, before the reorder operation was performed
-     * @param reorderToLeftEdge
-     *            whether the reorder operation was performed to the left or the
-     *            right edge.
-     *
-     * @deprecated Use constructor with explicit index parameters.
-     */
-    @Deprecated
-    public ColumnReorderEvent(ILayer layer, int beforeFromColumnPosition, int beforeToColumnPosition, boolean reorderToLeftEdge) {
-        this(layer, beforeFromColumnPosition, beforeFromColumnPosition, beforeToColumnPosition, beforeToColumnPosition, reorderToLeftEdge);
-    }
-
-    /**
-     *
-     * @param layer
-     *            The layer to which the column positions match.
-     * @param beforeFromColumnPosition
-     *            The column position that was reordered, before the reorder
-     *            operation was performed.
      * @param beforeFromColumnIndex
      *            The index of the reordered position.
      * @param beforeToColumnPosition
@@ -93,30 +72,6 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
                 beforeToColumnPosition,
                 beforeToColumnIndex,
                 reorderToLeftEdge);
-    }
-
-    /**
-     *
-     * @param layer
-     *            The layer to which the column positions match.
-     * @param beforeFromColumnPositions
-     *            The column positions that were reordered, before the reorder
-     *            operation was performed.
-     * @param beforeToColumnPosition
-     *            The position of the column to which the reorder operation was
-     *            performed, before the reorder operation was performed
-     * @param reorderToLeftEdge
-     *            whether the reorder operation was performed to the left or the
-     *            right edge.
-     *
-     * @deprecated Use constructor with explicit index parameters.
-     */
-    @Deprecated
-    public ColumnReorderEvent(ILayer layer,
-            List<Integer> beforeFromColumnPositions,
-            int beforeToColumnPosition,
-            boolean reorderToLeftEdge) {
-        this(layer, beforeFromColumnPositions, beforeFromColumnPositions, beforeToColumnPosition, beforeToColumnPosition, reorderToLeftEdge);
     }
 
     /**

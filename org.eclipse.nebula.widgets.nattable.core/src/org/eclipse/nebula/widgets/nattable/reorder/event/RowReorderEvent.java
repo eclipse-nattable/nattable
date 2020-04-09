@@ -40,26 +40,6 @@ public class RowReorderEvent extends RowStructuralChangeEvent {
     private boolean reorderToTopEdge;
 
     /**
-     * @param layer
-     *            The layer to which the row positions match.
-     * @param beforeFromRowPosition
-     *            The row position that was reordered, before the reorder
-     *            operation was performed.
-     * @param beforeToRowPosition
-     *            The position of the row to which the reorder operation was
-     *            performed, before the reorder operation was performed
-     * @param reorderToTopEdge
-     *            whether the reorder operation was performed to the top or the
-     *            bottom edge.
-     *
-     * @deprecated Use constructor with explicit index parameters.
-     */
-    @Deprecated
-    public RowReorderEvent(ILayer layer, int beforeFromRowPosition, int beforeToRowPosition, boolean reorderToTopEdge) {
-        this(layer, beforeFromRowPosition, beforeFromRowPosition, beforeToRowPosition, beforeToRowPosition, reorderToTopEdge);
-    }
-
-    /**
      *
      * @param layer
      *            The layer to which the row positions match.
@@ -92,29 +72,6 @@ public class RowReorderEvent extends RowStructuralChangeEvent {
                 beforeToRowPosition,
                 beforeToRowIndex,
                 reorderToTopEdge);
-    }
-
-    /**
-     * @param layer
-     *            The layer to which the row positions match.
-     * @param beforeFromRowPositions
-     *            The row positions that were reordered, before the reorder
-     *            operation was performed.
-     * @param beforeToRowPosition
-     *            The position of the row to which the reorder operation was
-     *            performed, before the reorder operation was performed
-     * @param reorderToTopEdge
-     *            whether the reorder operation was performed to the top or the
-     *            bottom edge.
-     *
-     * @deprecated Use constructor with explicit index parameters.
-     */
-    @Deprecated
-    public RowReorderEvent(ILayer layer,
-            List<Integer> beforeFromRowPositions,
-            int beforeToRowPosition,
-            boolean reorderToTopEdge) {
-        this(layer, beforeFromRowPositions, beforeFromRowPositions, beforeToRowPosition, beforeToRowPosition, reorderToTopEdge);
     }
 
     /**

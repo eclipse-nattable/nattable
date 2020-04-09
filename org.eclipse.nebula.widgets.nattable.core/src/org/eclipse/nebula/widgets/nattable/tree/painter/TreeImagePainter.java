@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.tree.painter;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ImagePainter;
-import org.eclipse.nebula.widgets.nattable.tree.ITreeRowModel;
 import org.eclipse.nebula.widgets.nattable.tree.config.DefaultTreeLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Image;
@@ -23,44 +22,6 @@ public class TreeImagePainter extends ImagePainter {
     private Image collapsedImage;
     private Image expandedImage;
     private Image leafImage;
-
-    /**
-     * Create a TreeImagePainter that uses the default icons to show the tree
-     * state.
-     *
-     * @param treeRowModel
-     *            The ITreeRowModel to determine the tree state. <b>Is not used
-     *            anymore!</b>
-     *
-     * @deprecated Use constructor without ITreeRowModel parameter
-     */
-    @Deprecated
-    public TreeImagePainter(ITreeRowModel<?> treeRowModel) {
-        this(
-                GUIHelper.getImage("plus"), GUIHelper.getImage("minus"), GUIHelper.getImage("leaf")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    }
-
-    /**
-     * Create a TreeImagePainter that uses the given icons to show the tree
-     * state.
-     *
-     * @param treeRowModel
-     *            The ITreeRowModel to determine the tree state. <b>Is not used
-     *            anymore!</b>
-     * @param plusImage
-     *            The image that should be shown for collapsed tree nodes.
-     * @param minusImage
-     *            The image that should be shown for expanded tree nodes.
-     * @param leafImage
-     *            The image that should be shown for leafs without children.
-     *
-     * @deprecated Use constructor without ITreeRowModel parameter
-     */
-    @Deprecated
-    public TreeImagePainter(ITreeRowModel<?> treeRowModel, Image plusImage,
-            Image minusImage, Image leafImage) {
-        this(plusImage, minusImage, leafImage);
-    }
 
     /**
      * Create a TreeImagePainter that uses the default icons to show the tree

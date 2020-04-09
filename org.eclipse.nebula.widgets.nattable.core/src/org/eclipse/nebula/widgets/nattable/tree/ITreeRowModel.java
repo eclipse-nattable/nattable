@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,8 +12,6 @@
 package org.eclipse.nebula.widgets.nattable.tree;
 
 import java.util.List;
-
-import org.eclipse.nebula.widgets.nattable.export.IExportFormatter;
 
 /**
  * The {@link ITreeRowModel} is used by the {@link TreeLayer} to build up and
@@ -42,27 +40,6 @@ public interface ITreeRowModel<T> {
      *         element has children and therefore is a node.
      */
     boolean isLeaf(int index);
-
-    /**
-     * Returns a formatted String representation for the tree node at the given
-     * index with the given depth.
-     * <p>
-     * Currently only used for exporting a tree to excel. Possibly not necessary
-     * in the future when implementing an exporter that formats converts and
-     * formats tree node values in another way.
-     * </p>
-     *
-     * @param index
-     *            The index of the requested tree node.
-     * @param depth
-     *            The depth of the tree node at the requested index.
-     * @return The String representation of the tree node at the given index
-     *         with the given depth.
-     *
-     * @deprecated formatting should be done in the {@link IExportFormatter}
-     */
-    @Deprecated
-    String getObjectAtIndexAndDepth(int index, int depth);
 
     /**
      * @param index

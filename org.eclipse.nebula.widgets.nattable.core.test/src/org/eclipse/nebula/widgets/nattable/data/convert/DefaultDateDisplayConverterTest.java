@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,8 +17,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.eclipse.nebula.widgets.nattable.data.convert.ConversionFailedException;
-import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDateDisplayConverter;
 import org.junit.Test;
 
 public class DefaultDateDisplayConverterTest {
@@ -59,7 +57,8 @@ public class DefaultDateDisplayConverterTest {
         try {
             converter.displayToCanonicalValue("AAA");
             fail("ConversionFailedException should have been throwed");
-        } catch (ConversionFailedException e) {}
+        } catch (ConversionFailedException e) {
+        }
 
     }
 }

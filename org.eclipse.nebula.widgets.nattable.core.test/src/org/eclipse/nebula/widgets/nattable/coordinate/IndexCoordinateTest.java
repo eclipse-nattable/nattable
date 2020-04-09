@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,8 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.coordinate;
 
-import org.eclipse.nebula.widgets.nattable.coordinate.IndexCoordinate;
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,22 +28,22 @@ public class IndexCoordinateTest {
 
     @Test
     public void testIdentity() {
-        Assert.assertEquals(this.i1, this.i1);
+        assertEquals(this.i1, this.i1);
     }
 
     @Test
     public void testEquals() {
-        Assert.assertEquals(this.i1, this.i2);
+        assertEquals(this.i1, this.i2);
     }
 
     @Test
     public void testIdentityHashCode() {
-        Assert.assertEquals(this.i1.hashCode(), this.i1.hashCode());
+        assertEquals(this.i1.hashCode(), this.i1.hashCode());
     }
 
     @Test
     public void testHashCode() {
-        Assert.assertEquals(this.i1.hashCode(), this.i2.hashCode());
+        assertEquals(this.i1.hashCode(), this.i2.hashCode());
     }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,16 +10,16 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.matcher;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.integration.SWTUtils;
-import org.eclipse.nebula.widgets.nattable.ui.matcher.CellLabelMouseEventMatcher;
-import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.swt.events.MouseEvent;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,7 +47,7 @@ public class CellLabelMouseEventMatcherTest {
                 SWTUtils.getLeftClickEvent(100, 100, 0, this.natTableFixture)),
                 new LabelStack(GridRegion.BODY));
 
-        Assert.assertTrue(match);
+        assertTrue(match);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class CellLabelMouseEventMatcherTest {
                 SWTUtils.getLeftClickEvent(100, 100, 0, this.natTableFixture)),
                 new LabelStack(GridRegion.BODY));
 
-        Assert.assertFalse(match);
+        assertFalse(match);
     }
 
     @Test
@@ -72,7 +72,7 @@ public class CellLabelMouseEventMatcherTest {
                 SWTUtils.getLeftClickEvent(100, 100, 0, this.natTableFixture)),
                 new LabelStack(GridRegion.BODY));
 
-        Assert.assertFalse(match);
+        assertFalse(match);
     }
 
 }

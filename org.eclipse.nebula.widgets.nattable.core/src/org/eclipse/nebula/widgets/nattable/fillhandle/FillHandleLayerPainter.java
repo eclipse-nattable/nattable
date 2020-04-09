@@ -37,7 +37,6 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -435,39 +434,6 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
     }
 
     /**
-     * Apply the border style that should be used to render the border for cells
-     * that are currently part of the fill handle region. Checks the
-     * {@link IConfigRegistry} for a registered {@link IStyle} for the
-     * {@link FillHandleConfigAttributes#FILL_HANDLE_REGION_BORDER_STYLE} label.
-     * If none is registered, a default line style will be used to render the
-     * border.
-     *
-     * @param gc
-     *            The current {@link GC} that is used for rendering.
-     * @param configRegistry
-     *            The {@link IConfigRegistry} to retrieve the style information
-     *            from.
-     * @deprecated Use {@link #getHandleRegionBorderStyle} instead.
-     */
-    @Deprecated
-    protected void applyHandleBorderStyle(GC gc, IConfigRegistry configRegistry) {
-        BorderStyle borderStyle = configRegistry.getConfigAttribute(
-                FillHandleConfigAttributes.FILL_HANDLE_REGION_BORDER_STYLE,
-                DisplayMode.NORMAL);
-
-        // if there is no border style configured, use the default
-        if (borderStyle == null) {
-            gc.setLineStyle(SWT.LINE_SOLID);
-            gc.setLineWidth(2);
-            gc.setForeground(GUIHelper.getColor(0, 125, 10));
-        } else {
-            gc.setLineStyle(LineStyleEnum.toSWT(borderStyle.getLineStyle()));
-            gc.setLineWidth(borderStyle.getThickness());
-            gc.setForeground(borderStyle.getColor());
-        }
-    }
-
-    /**
      * Get the border style that should be used to render the border for cells
      * that are currently part of the fill handle region. Checks the
      * {@link IConfigRegistry} for a registered {@link IStyle} for the
@@ -493,60 +459,6 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
         }
 
         return borderStyle;
-    }
-
-    /**
-     * Apply the style for rendering the fill handle. If the
-     * {@link IConfigRegistry} is <code>null</code> or does not contain
-     * configurations for styling the fill handle, the default style is used.
-     * The default is a dark green square with a white solid one pixel width
-     * line.
-     *
-     * @param gc
-     *            The {@link GC} to set the styles to.
-     * @param configRegistry
-     *            The {@link IConfigRegistry} needed to determine the configured
-     *            fill handle style. Can be <code>null</code> which results in
-     *            using the default style of a green square with white 1 pixel
-     *            solid line border.
-     * @deprecated Use {@link #getHandleColor} and {@link #getHandleBorderStyle}
-     *             instead.
-     */
-    @Deprecated
-    protected void applyHandleStyle(GC gc, IConfigRegistry configRegistry) {
-        if (configRegistry != null) {
-            BorderStyle borderStyle = configRegistry.getConfigAttribute(
-                    FillHandleConfigAttributes.FILL_HANDLE_BORDER_STYLE,
-                    DisplayMode.NORMAL);
-
-            Color color = configRegistry.getConfigAttribute(
-                    FillHandleConfigAttributes.FILL_HANDLE_COLOR,
-                    DisplayMode.NORMAL);
-
-            if (color != null) {
-                gc.setBackground(color);
-            } else {
-                // set default color
-                gc.setBackground(GUIHelper.getColor(0, 125, 10));
-            }
-
-            if (borderStyle != null) {
-                gc.setLineStyle(LineStyleEnum.toSWT(borderStyle.getLineStyle()));
-                gc.setLineWidth(borderStyle.getThickness());
-                gc.setForeground(borderStyle.getColor());
-            } else {
-                gc.setLineStyle(SWT.LINE_SOLID);
-                gc.setLineWidth(1);
-                gc.setForeground(GUIHelper.COLOR_WHITE);
-            }
-        } else {
-            // set default border style
-            gc.setLineStyle(SWT.LINE_SOLID);
-            gc.setLineWidth(1);
-            gc.setForeground(GUIHelper.COLOR_WHITE);
-            // set default color
-            gc.setBackground(GUIHelper.getColor(0, 125, 10));
-        }
     }
 
     /**
@@ -603,39 +515,6 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
             }
         }
         return new BorderStyle(1, GUIHelper.COLOR_WHITE, LineStyleEnum.SOLID, BorderModeEnum.CENTERED);
-    }
-
-    /**
-     * Apply the border style that should be used to render the border for cells
-     * that are currently copied to the {@link InternalCellClipboard}. Checks
-     * the {@link IConfigRegistry} for a registered {@link IStyle} for the
-     * {@link SelectionStyleLabels#COPY_BORDER_STYLE} label. If none is
-     * registered, a default line style will be used to render the border.
-     *
-     * @param gc
-     *            The current {@link GC} that is used for rendering.
-     * @param configRegistry
-     *            The {@link IConfigRegistry} to retrieve the style information
-     *            from.
-     */
-    @Deprecated
-    protected void applyCopyBorderStyle(GC gc, IConfigRegistry configRegistry) {
-        IStyle cellStyle = configRegistry.getConfigAttribute(
-                CellConfigAttributes.CELL_STYLE,
-                DisplayMode.NORMAL,
-                SelectionStyleLabels.COPY_BORDER_STYLE);
-        BorderStyle borderStyle = cellStyle != null ? cellStyle.getAttributeValue(CellStyleAttributes.BORDER_STYLE) : null;
-
-        // if there is no border style configured, use the default
-        if (borderStyle == null) {
-            gc.setLineStyle(SWT.LINE_DASH);
-            gc.setLineDash(new int[] { 2, 2 });
-            gc.setForeground(GUIHelper.COLOR_BLACK);
-        } else {
-            gc.setLineStyle(LineStyleEnum.toSWT(borderStyle.getLineStyle()));
-            gc.setLineWidth(borderStyle.getThickness());
-            gc.setForeground(borderStyle.getColor());
-        }
     }
 
     /**

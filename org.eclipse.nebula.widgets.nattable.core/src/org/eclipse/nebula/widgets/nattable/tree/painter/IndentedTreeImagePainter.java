@@ -15,7 +15,6 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CellPainterDecorator;
-import org.eclipse.nebula.widgets.nattable.tree.ITreeRowModel;
 import org.eclipse.nebula.widgets.nattable.tree.config.DefaultTreeLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -35,67 +34,6 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
     private final int treeIndent;
 
     private final CellPainterDecorator internalPainter;
-
-    /**
-     * Creates an IndentedTreeImagePainter based on the given ITreeRowModel.
-     * Will use 10 pixels for indentation per depth and a default
-     * TreeImagePainter for rendering the icons in the tree.
-     *
-     * @param treeRowModel
-     *            The ITreeRowModel that is needed to get information about tree
-     *            states like depth, children and expand/collapse.
-     *
-     * @deprecated Use constructor without ITreeRowModel parameter
-     */
-    @Deprecated
-    public IndentedTreeImagePainter(ITreeRowModel<?> treeRowModel) {
-        this(10, new TreeImagePainter());
-    }
-
-    /**
-     * Creates an IndentedTreeImagePainter based on the given ITreeRowModel.
-     * Will use the given number of pixels for indentation per depth and a
-     * default TreeImagePainter for rendering the icons in the tree.
-     *
-     * @param treeRowModel
-     *            The ITreeRowModel that is needed to get information about tree
-     *            states like depth, children and expand/collapse.
-     * @param treeIndent
-     *            The number of pixels to indent per depth.
-     *
-     * @deprecated Use constructor without ITreeRowModel parameter
-     */
-    @Deprecated
-    public IndentedTreeImagePainter(ITreeRowModel<?> treeRowModel, int treeIndent) {
-        this(treeIndent, new TreeImagePainter());
-    }
-
-    /**
-     * Creates an IndentedTreeImagePainter based on the given ITreeRowModel,
-     * indentation per depth and ICellPainter for painting the icons in the
-     * tree.
-     *
-     * @param treeRowModel
-     *            The ITreeRowModel that is needed to get information about tree
-     *            states like depth, children and expand/collapse.
-     * @param treeIndent
-     *            The number of pixels to indent per depth.
-     * @param treeImagePainter
-     *            The TreeImagePainter that should be used to paint the images
-     *            in the tree. It needs to be of type of TreeImagePainter that
-     *            paints expand/collapse/leaf icons regarding the node state,
-     *            because the ui bindings for expand/collapse are registered
-     *            against that type.
-     *
-     * @deprecated Use constructor without ITreeRowModel parameter
-     */
-    @Deprecated
-    public IndentedTreeImagePainter(
-            ITreeRowModel<?> treeRowModel,
-            int treeIndent,
-            TreeImagePainter treeImagePainter) {
-        this(treeIndent, treeImagePainter);
-    }
 
     /**
      * Creates an IndentedTreeImagePainter. Will use 10 pixels for indentation

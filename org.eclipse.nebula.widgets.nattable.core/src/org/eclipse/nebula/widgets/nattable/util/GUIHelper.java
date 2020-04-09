@@ -566,21 +566,6 @@ public class GUIHelper {
         return null;
     }
 
-    /**
-     * <b>WARNING:</b> Do not use this method as it might cause resource
-     * handling issues!
-     *
-     * @deprecated This method does not work correctly since it uses
-     *             {@link ImageData#toString()}
-     */
-    @Deprecated
-    public static Image getImage(ImageData data) {
-        if (JFaceResources.getImage(data.toString()) == null) {
-            JFaceResources.getImageRegistry().put(data.toString(), ImageDescriptor.createFromImageData(data));
-        }
-        return JFaceResources.getImage(data.toString());
-    }
-
     // Sequence
 
     private static final AtomicLong atomicLong = new AtomicLong(0);

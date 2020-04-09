@@ -37,7 +37,6 @@ import org.eclipse.nebula.widgets.nattable.conflation.IEventConflater;
 import org.eclipse.nebula.widgets.nattable.conflation.VisualChangeEventConflater;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
-import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditorRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.CellEditorCreatedEvent;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
@@ -99,7 +98,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 
 //this warning suppression is because of the ActiveCellEditorRegistry usage to ensure backwards compatibility
-@SuppressWarnings("deprecation")
 public class NatTable extends Canvas implements ILayer, PaintListener, IClientAreaProvider, ILayerListener, IPersistable {
 
     private static final Log LOG = LogFactory.getLog(NatTable.class);
@@ -293,7 +291,6 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
             public void widgetDisposed(DisposeEvent e) {
                 doCommand(new DisposeResourcesCommand());
                 NatTable.this.conflaterChain.stop();
-                ActiveCellEditorRegistry.unregisterActiveCellEditor();
                 layer.dispose();
 
                 parent.removeListener(SWT.Resize, NatTable.this.closeEditorOnParentResize);
@@ -371,6 +368,9 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
      * <li>ConfigRegistry</li>
      * <li>UiBindingRegistry</li>
      * </ol>
+     *
+     * @param configuration
+     *            The {@link IConfiguration} to add.
      */
     public void addConfiguration(IConfiguration configuration) {
         if (this.autoconfigure) {
@@ -790,14 +790,11 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
                     @Override
                     public void widgetDisposed(DisposeEvent e) {
                         NatTable.this.activeCellEditor = null;
-                        ActiveCellEditorRegistry.unregisterActiveCellEditor();
                     }
                 });
             } else {
                 this.activeCellEditor = null;
-                ActiveCellEditorRegistry.unregisterActiveCellEditor();
             }
-            ActiveCellEditorRegistry.registerActiveCellEditor(this.activeCellEditor);
         }
     }
 

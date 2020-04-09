@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,18 +36,6 @@ public class TreeRowModel<T> extends AbstractTreeRowModel<T> {
     @Override
     public boolean isCollapsed(int index) {
         return this.parentIndexes.contains(index);
-    }
-
-    /**
-     * Clears the parent indexes that indicate a collapsed node.
-     *
-     * @deprecated Since this is not specified by the ITreeRowModel interface,
-     *             this method shouldn't be used directly and therefore be
-     *             removed.
-     */
-    @Deprecated
-    public void clear() {
-        this.parentIndexes.clear();
     }
 
     @Override

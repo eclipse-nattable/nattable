@@ -220,35 +220,6 @@ public class TreeLayer extends AbstractRowHideShowLayer {
     }
 
     /**
-     * @return The IndentedTreeImagePainter that paints indentation to the left
-     *         of the configured base painter and icons for expand/collapse if
-     *         possible, to render tree structure accordingly.
-     *
-     * @deprecated since 1.1 the configured TreeImagePainter should be used
-     *             instead of the hard referenced one
-     */
-    @Deprecated
-    public IndentedTreeImagePainter getIndentedTreeImagePainter() {
-        return this.indentedTreeImagePainter;
-    }
-
-    /**
-     * @return The ICellPainter that is used to paint the images in the tree by
-     *         the IndentedTreeImagePainter. Usually it is some type of
-     *         TreeImagePainter that paints expand/collapse/leaf icons regarding
-     *         the node state.<br>
-     *         Can be <code>null</code> if set explicitly to the
-     *         IndentedTreeImagePainter!
-     *
-     * @deprecated since 1.1 the configured TreeImagePainter should be used
-     *             instead of the hard referenced one
-     */
-    @Deprecated
-    public ICellPainter getTreeImagePainter() {
-        return this.indentedTreeImagePainter != null ? this.indentedTreeImagePainter.getTreeImagePainter() : null;
-    }
-
-    /**
      * @param columnPosition
      *            The column position to check.
      * @return <code>true</code> if the given column position is the tree

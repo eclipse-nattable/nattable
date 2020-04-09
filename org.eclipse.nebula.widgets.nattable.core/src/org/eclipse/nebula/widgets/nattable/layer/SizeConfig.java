@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1200,27 +1200,6 @@ public class SizeConfig implements IPersistable {
             space -= toReduce;
         }
         return space;
-    }
-
-    /**
-     * This method is used to correct the calculated percentage values in case a
-     * user configured more than 100 percent. In that case the set percentage
-     * values are scaled down to not exceed 100 percent.
-     *
-     * @param sum
-     *            The sum of all configured percentage sized positions.
-     * @param positionCount
-     *            The number of positions to check.
-     * @return Integer array with the sum value at first position and the new
-     *         calculated real pixel sum at second position in case a
-     *         corrections took place. Will return <code>null</code> in case no
-     *         correction happened.
-     *
-     * @deprecated Use {@link #correctPercentageValues(double, int)}
-     */
-    @Deprecated
-    protected int[] correctPercentageValues(int sum, int positionCount) {
-        return correctPercentageValues(Integer.valueOf(sum).doubleValue(), positionCount);
     }
 
     /**

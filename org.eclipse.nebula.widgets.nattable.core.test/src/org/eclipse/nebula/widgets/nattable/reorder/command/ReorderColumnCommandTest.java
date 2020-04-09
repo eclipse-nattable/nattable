@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,11 +10,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder.command;
 
+import static org.junit.Assert.assertEquals;
+
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
-import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,11 +36,11 @@ public class ReorderColumnCommandTest {
 
         this.columnReorderLayer.doCommand(reorderColumnCommand);
 
-        Assert.assertEquals(0, this.columnReorderLayer.getColumnIndexByPosition(0));
-        Assert.assertEquals(4, this.columnReorderLayer.getColumnIndexByPosition(1));
-        Assert.assertEquals(1, this.columnReorderLayer.getColumnIndexByPosition(2));
-        Assert.assertEquals(2, this.columnReorderLayer.getColumnIndexByPosition(3));
-        Assert.assertEquals(3, this.columnReorderLayer.getColumnIndexByPosition(4));
+        assertEquals(0, this.columnReorderLayer.getColumnIndexByPosition(0));
+        assertEquals(4, this.columnReorderLayer.getColumnIndexByPosition(1));
+        assertEquals(1, this.columnReorderLayer.getColumnIndexByPosition(2));
+        assertEquals(2, this.columnReorderLayer.getColumnIndexByPosition(3));
+        assertEquals(3, this.columnReorderLayer.getColumnIndexByPosition(4));
     }
 
 }

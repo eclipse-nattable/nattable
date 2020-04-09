@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,18 +10,22 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.event;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collection;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
-import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.graphics.Rectangle;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,18 +53,18 @@ public class ResizeEventDiffTest {
 
     @After
     public void after() {
-        Assert.assertTrue(this.event.isHorizontalStructureChanged());
+        assertTrue(this.event.isHorizontalStructureChanged());
 
-        Assert.assertFalse(this.event.isVerticalStructureChanged());
-        Assert.assertNull(this.event.getRowDiffs());
+        assertFalse(this.event.isVerticalStructureChanged());
+        assertNull(this.event.getRowDiffs());
     }
 
     @Test
     public void testColumnDiffs() {
         Collection<StructuralDiff> columnDiffs = this.event.getColumnDiffs();
-        Assert.assertNotNull(columnDiffs);
-        Assert.assertEquals(1, columnDiffs.size());
-        Assert.assertEquals(new StructuralDiff(DiffTypeEnum.CHANGE, new Range(
+        assertNotNull(columnDiffs);
+        assertEquals(1, columnDiffs.size());
+        assertEquals(new StructuralDiff(DiffTypeEnum.CHANGE, new Range(
                 2, 3), new Range(2, 3)), columnDiffs.iterator().next());
     }
 
@@ -69,9 +73,9 @@ public class ResizeEventDiffTest {
         this.event.convertToLocal(this.viewportLayer);
 
         Collection<StructuralDiff> columnDiffs = this.event.getColumnDiffs();
-        Assert.assertNotNull(columnDiffs);
-        Assert.assertEquals(1, columnDiffs.size());
-        Assert.assertEquals(new StructuralDiff(DiffTypeEnum.CHANGE, new Range(
+        assertNotNull(columnDiffs);
+        assertEquals(1, columnDiffs.size());
+        assertEquals(new StructuralDiff(DiffTypeEnum.CHANGE, new Range(
                 0, 1), new Range(0, 1)), columnDiffs.iterator().next());
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,8 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
-import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 public class DefaultDisplayConverterTest {
@@ -20,26 +20,22 @@ public class DefaultDisplayConverterTest {
 
     @Test
     public void testNonNullDataToDisplay() {
-        Assert.assertEquals("abc",
-                this.defaultDisplayTypeConverter.canonicalToDisplayValue("abc"));
+        assertEquals("abc", this.defaultDisplayTypeConverter.canonicalToDisplayValue("abc"));
     }
 
     @Test
     public void testNullDataToDisplay() {
-        Assert.assertEquals("",
-                this.defaultDisplayTypeConverter.canonicalToDisplayValue(null));
+        assertEquals("", this.defaultDisplayTypeConverter.canonicalToDisplayValue(null));
     }
 
     @Test
     public void testNonNullDisplayToData() {
-        Assert.assertEquals("abc",
-                this.defaultDisplayTypeConverter.displayToCanonicalValue("abc"));
+        assertEquals("abc", this.defaultDisplayTypeConverter.displayToCanonicalValue("abc"));
     }
 
     @Test
     public void testNullDisplayToData() {
-        Assert.assertEquals(null,
-                this.defaultDisplayTypeConverter.displayToCanonicalValue(""));
+        assertEquals(null, this.defaultDisplayTypeConverter.displayToCanonicalValue(""));
     }
 
 }

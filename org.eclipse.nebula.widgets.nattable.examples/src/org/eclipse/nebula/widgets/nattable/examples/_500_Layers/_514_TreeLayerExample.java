@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Dirk Fauth and others.
+ * Copyright (c) 2019, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -292,20 +292,6 @@ public class _514_TreeLayerExample extends AbstractNatExample {
             this.firstElementMapping.forEach((lastname, parent) -> {
                 this.parentMapping.get(lastname).remove(parent);
             });
-        }
-
-        @Override
-        public String formatDataForDepth(int depth, PersonWithAddress object) {
-            if (object != null) {
-                return object.toString();
-            } else {
-                return ""; //$NON-NLS-1$
-            }
-        }
-
-        @Override
-        public String formatDataForDepth(int depth, int index) {
-            return formatDataForDepth(depth, getDataAtIndex(index));
         }
 
         @Override

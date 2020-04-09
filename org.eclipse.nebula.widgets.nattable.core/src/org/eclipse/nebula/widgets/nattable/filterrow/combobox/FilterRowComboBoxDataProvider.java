@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2019 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -382,21 +382,6 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      */
     public void addCacheUpdateListener(IFilterRowComboUpdateListener listener) {
         this.cacheUpdateListener.add(listener);
-    }
-
-    /**
-     * Removes the given listener from the list of listeners for value cache
-     * updates.
-     *
-     * @param listener
-     *            The listener to remove.
-     *
-     * @deprecated typo in method, use
-     *             {@link #removeCacheUpdateListener(IFilterRowComboUpdateListener)}
-     */
-    @Deprecated
-    public void removeCacheUdpateListener(IFilterRowComboUpdateListener listener) {
-        this.cacheUpdateListener.remove(listener);
     }
 
     /**

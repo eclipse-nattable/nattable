@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2019 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.command;
 
@@ -19,7 +19,6 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
-import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditorRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
@@ -33,7 +32,6 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.junit.Before;
 import org.junit.Test;
 
-@SuppressWarnings("deprecation")
 public class EditUtilsTest {
 
     private static final String TEST_LABEL = "testLabel";
@@ -49,9 +47,7 @@ public class EditUtilsTest {
         this.natTable = new NatTableFixture(this.gridLayerStack);
 
         // Ensure no active editor (static) is present
-        // Although deprecated this needs to still work for backwards
-        // compatibility
-        assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
+        assertNull(this.natTable.getActiveCellEditor());
     }
 
     @Test

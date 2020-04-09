@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2017 Dirk Fauth and others.
+ * Copyright (c) 2014, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -879,7 +879,6 @@ public class GroupByDataLayerTest {
         assertTrue(labels.contains(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + 5));
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testGroupByItemCount() {
         // groupBy lastname
@@ -890,26 +889,19 @@ public class GroupByDataLayerTest {
         GroupByObject simpsons = (GroupByObject) this.dataLayer.getTreeList().get(9);
         assertEquals("Simpson", simpsons.getValue());
 
-        List<Person> elementsInGroup = this.dataLayer.getElementsInGroup(flanders);
         List<Person> itemsInGroup = this.dataLayer.getItemsInGroup(flanders);
         List<Object> rowModelChildren = this.dataLayer.getTreeRowModel().getChildren(0);
-        assertEquals(8, elementsInGroup.size());
         assertEquals(8, itemsInGroup.size());
         assertEquals(8, rowModelChildren.size());
-        assertEquals(elementsInGroup, itemsInGroup);
         assertEquals(itemsInGroup, rowModelChildren);
 
-        elementsInGroup = this.dataLayer.getElementsInGroup(simpsons);
         itemsInGroup = this.dataLayer.getItemsInGroup(simpsons);
         rowModelChildren = this.dataLayer.getTreeRowModel().getChildren(9);
-        assertEquals(10, elementsInGroup.size());
         assertEquals(10, itemsInGroup.size());
         assertEquals(10, rowModelChildren.size());
-        assertEquals(elementsInGroup, itemsInGroup);
         assertEquals(itemsInGroup, rowModelChildren);
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testGroupByItemCountAfterListChange() {
         // groupBy lastname
@@ -920,13 +912,10 @@ public class GroupByDataLayerTest {
         GroupByObject simpsons = (GroupByObject) this.dataLayer.getTreeList().get(9);
         assertEquals("Simpson", simpsons.getValue());
 
-        List<Person> elementsInGroup = this.dataLayer.getElementsInGroup(flanders);
         List<Person> itemsInGroup = this.dataLayer.getItemsInGroup(flanders);
         List<Object> rowModelChildren = this.dataLayer.getTreeRowModel().getChildren(0);
-        assertEquals(8, elementsInGroup.size());
         assertEquals(8, itemsInGroup.size());
         assertEquals(8, rowModelChildren.size());
-        assertEquals(elementsInGroup, itemsInGroup);
         assertEquals(itemsInGroup, rowModelChildren);
 
         this.sortedList.addListEventListener(new ListEventListener<Person>() {
@@ -943,13 +932,10 @@ public class GroupByDataLayerTest {
 
         this.sortedList.add(p);
 
-        elementsInGroup = this.dataLayer.getElementsInGroup(flanders);
         itemsInGroup = this.dataLayer.getItemsInGroup(flanders);
         rowModelChildren = this.dataLayer.getTreeRowModel().getChildren(0);
-        assertEquals(9, elementsInGroup.size());
         assertEquals(9, itemsInGroup.size());
         assertEquals(9, rowModelChildren.size());
-        assertEquals(elementsInGroup, itemsInGroup);
         assertEquals(itemsInGroup, rowModelChildren);
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -156,16 +156,6 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
     }
 
     /**
-     * @deprecated Use
-     *             {@link #drawGridLines(ILayer, GC, Rectangle, IConfigRegistry, List)}
-     *             with specifying the label stack
-     */
-    @Deprecated
-    protected void drawGridLines(ILayer natLayer, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
-        drawGridLines(natLayer, gc, rectangle, configRegistry, new ArrayList<String>());
-    }
-
-    /**
      * @since 1.4
      */
     protected void drawGridLines(ILayer natLayer, GC gc, Rectangle rectangle, IConfigRegistry configRegistry, List<String> labels) {
@@ -192,7 +182,8 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 
         int rowPositionByY = natLayer.getRowPositionByY(rectangle.y + rectangle.height);
         int maxRowPosition = rowPositionByY > 0
-                ? Math.min(natLayer.getRowCount(), rowPositionByY) : natLayer.getRowCount();
+                ? Math.min(natLayer.getRowCount(), rowPositionByY)
+                : natLayer.getRowCount();
         for (int rowPosition = natLayer.getRowPositionByY(rectangle.y); rowPosition < maxRowPosition; rowPosition++) {
             final int size = natLayer.getRowHeightByPosition(rowPosition);
             if (size > 0) {
@@ -214,7 +205,8 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 
         int columnPositionByX = natLayer.getColumnPositionByX(rectangle.x + rectangle.width);
         int maxColumnPosition = columnPositionByX > 0
-                ? Math.min(natLayer.getColumnCount(), columnPositionByX) : natLayer.getColumnCount();
+                ? Math.min(natLayer.getColumnCount(), columnPositionByX)
+                : natLayer.getColumnCount();
         for (int columnPosition = natLayer.getColumnPositionByX(rectangle.x); columnPosition < maxColumnPosition; columnPosition++) {
             final int size = natLayer.getColumnWidthByPosition(columnPosition);
             if (size > 0) {

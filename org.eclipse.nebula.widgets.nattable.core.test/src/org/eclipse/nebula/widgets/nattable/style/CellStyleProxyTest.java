@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,18 +10,12 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
 
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
-import org.eclipse.nebula.widgets.nattable.style.CellStyleProxy;
-import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
-import org.eclipse.nebula.widgets.nattable.style.Style;
-import org.eclipse.nebula.widgets.nattable.style.StyleProxy;
-import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class CellStyleProxyTest {
@@ -60,6 +54,6 @@ public class CellStyleProxyTest {
         HorizontalAlignmentEnum alignmentFromProxy = cellStyleProxy
                 .getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT);
 
-        Assert.assertEquals(HorizontalAlignmentEnum.CENTER, alignmentFromProxy);
+        assertEquals(HorizontalAlignmentEnum.CENTER, alignmentFromProxy);
     }
 }

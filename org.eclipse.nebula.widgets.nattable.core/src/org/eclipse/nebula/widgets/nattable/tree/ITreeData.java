@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,28 +14,6 @@ package org.eclipse.nebula.widgets.nattable.tree;
 import java.util.List;
 
 public interface ITreeData<T> {
-
-    /**
-     *
-     * @param depth
-     * @param object
-     * @return
-     * @deprecated formatting of data should be done by the exporter or a
-     *             display converter
-     */
-    @Deprecated
-    String formatDataForDepth(int depth, T object);
-
-    /**
-     *
-     * @param depth
-     * @param index
-     * @return
-     * @deprecated formatting of data should be done by the exporter or a
-     *             display converter
-     */
-    @Deprecated
-    String formatDataForDepth(int depth, int index);
 
     /**
      * @param object

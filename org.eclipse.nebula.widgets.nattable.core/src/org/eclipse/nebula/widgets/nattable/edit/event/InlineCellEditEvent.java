@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -63,43 +63,10 @@ public class InlineCellEditEvent implements ILayerEvent {
      *            running in.
      * @param initialValue
      *            The value that should be put to the activated editor control.
-     * 
+     *
      * @since 1.6
      */
     public InlineCellEditEvent(
-            PositionCoordinate cellCoordinate,
-            Composite parent,
-            IConfigRegistry configRegistry,
-            Object initialValue) {
-
-        this.cellCoordinate = cellCoordinate;
-        this.parent = parent;
-        this.configRegistry = configRegistry;
-        this.initialValue = initialValue;
-    }
-
-    /**
-     *
-     * @param layer
-     *            The layer the cellCoordinates rely on.
-     * @param cellCoordinate
-     *            The coordinates of the cell to edit for the set layer.
-     * @param parent
-     *            The parent Composite, needed for the creation of the editor
-     *            control.
-     * @param configRegistry
-     *            The {@link IConfigRegistry} containing the configuration of
-     *            the current NatTable instance the command should be executed
-     *            for. This is necessary because the edit controllers in the
-     *            current architecture are not aware of the instance they are
-     *            running in.
-     * @param initialValue
-     *            The value that should be put to the activated editor control.
-     * @deprecated use constructor without layer parameter
-     */
-    @Deprecated
-    public InlineCellEditEvent(
-            ILayer layer,
             PositionCoordinate cellCoordinate,
             Composite parent,
             IConfigRegistry configRegistry,
