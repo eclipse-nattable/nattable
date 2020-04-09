@@ -266,7 +266,7 @@ public class ColumnReorderLayerTest {
 
         columnLabelAccumulator.registerColumnOverrides(4, "INDEX_4_LABEL");
 
-        List<String> labelsForIndex4 = this.columnReorderLayer.getConfigLabelsByPosition(4, 0).getLabels();
+        List<String> labelsForIndex4 = this.columnReorderLayer.getConfigLabelsByPosition(4, 0);
         assertEquals(2, labelsForIndex4.size());
         assertEquals("INDEX_4_LABEL", labelsForIndex4.get(0));
         assertEquals("EVEN_BODY", labelsForIndex4.get(1));
@@ -275,7 +275,7 @@ public class ColumnReorderLayerTest {
         this.columnReorderLayer.reorderColumnPosition(0, 5);
 
         // Index: 1 2 3 4 0 Width: 100 35 100 80 150
-        labelsForIndex4 = this.columnReorderLayer.getConfigLabelsByPosition(3, 0).getLabels();
+        labelsForIndex4 = this.columnReorderLayer.getConfigLabelsByPosition(3, 0);
         assertEquals(2, labelsForIndex4.size());
         assertEquals("INDEX_4_LABEL", labelsForIndex4.get(0));
         assertEquals("EVEN_BODY", labelsForIndex4.get(1));

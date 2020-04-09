@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit;
 
@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.Control;
  */
 public class EditController {
 
-    private static final Log log = LogFactory.getLog(EditController.class);
+    private static final Log LOG = LogFactory.getLog(EditController.class);
 
     /**
      * Activates the edit mode for the given cell. Will determine whether the
@@ -73,7 +73,7 @@ public class EditController {
 
             // read the configuration for the specified cell for
             // - which editor to use for that cell
-            final List<String> configLabels = cell.getConfigLabels().getLabels();
+            final List<String> configLabels = cell.getConfigLabels();
 
             // check which editor to use
             final ICellEditor cellEditor = configRegistry.getConfigAttribute(
@@ -121,9 +121,9 @@ public class EditController {
             }
         } catch (Exception e) {
             if (cell == null) {
-                log.error("Cell being edited is no longer available. Initial value: " + initialCanonicalValue, e); //$NON-NLS-1$
+                LOG.error("Cell being edited is no longer available. Initial value: " + initialCanonicalValue, e); //$NON-NLS-1$
             } else {
-                log.error("Error while editing cell: Cell: " + cell + "; Initial value: " + initialCanonicalValue, e); //$NON-NLS-1$ //$NON-NLS-2$
+                LOG.error("Error while editing cell: Cell: " + cell + "; Initial value: " + initialCanonicalValue, e); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
     }
@@ -167,7 +167,7 @@ public class EditController {
             ICellEditor cellEditor = configRegistry.getConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR,
                     DisplayMode.EDIT,
-                    cells.iterator().next().getConfigLabels().getLabels());
+                    cells.iterator().next().getConfigLabels());
 
             if (cells.size() == 1
                     || (cells.size() > 1 && supportMultiEdit(cells, cellEditor, configRegistry))) {
@@ -179,9 +179,9 @@ public class EditController {
                     ICellEditDialog dialog = CellEditDialogFactory.createCellEditDialog(
                             parent != null ? parent.getShell() : null,
                             initialCanonicalValue,
-                                    cells.iterator().next(),
-                                    cellEditor,
-                                    configRegistry);
+                            cells.iterator().next(),
+                            cellEditor,
+                            configRegistry);
 
                     int returnValue = dialog.open();
 
@@ -244,10 +244,11 @@ public class EditController {
      *         selected cells, <code>false</code> if at least one cell does
      *         specify to not support multi edit.
      */
-    private static boolean supportMultiEdit(Collection<ILayerCell> cells,
-            ICellEditor cellEditor, IConfigRegistry configRegistry) {
+    private static boolean supportMultiEdit(
+            Collection<ILayerCell> cells, ICellEditor cellEditor, IConfigRegistry configRegistry) {
+
         for (ILayerCell cell : cells) {
-            if (!cellEditor.supportMultiEdit(configRegistry, cell.getConfigLabels().getLabels())) {
+            if (!cellEditor.supportMultiEdit(configRegistry, cell.getConfigLabels())) {
                 return false;
             }
         }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,8 @@
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
+
+import static org.junit.Assert.assertEquals;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -23,7 +25,6 @@ import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,28 +42,29 @@ public class ConfigurableCellBorderTest {
     @Test
     public void shouldReturnASelectedCellWithDottedLineStyling() {
         Style cellStyle = new Style();
-        final BorderStyle defaultBorderStyle = new BorderStyle(13,
-                GUIHelper.COLOR_YELLOW, LineStyleEnum.DOTTED);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                defaultBorderStyle);
+        final BorderStyle defaultBorderStyle = new BorderStyle(13, GUIHelper.COLOR_YELLOW, LineStyleEnum.DOTTED);
+        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, defaultBorderStyle);
 
         // Register line styling for body cells in selection mode
-        this.configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                cellStyle, DisplayMode.SELECT,
+        this.configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_STYLE,
+                cellStyle,
+                DisplayMode.SELECT,
                 SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
 
         // Select and access cell
         this.natTable.doCommand(new SelectCellCommand(this.natTable, 2, 2, false, false));
         ILayerCell cell = this.natTable.getCellByPosition(2, 2);
-        Assert.assertEquals(DisplayMode.SELECT, cell.getDisplayMode());
+        assertEquals(DisplayMode.SELECT, cell.getDisplayMode());
 
         // Check for line styling
-        Assert.assertEquals(
+        assertEquals(
                 defaultBorderStyle,
                 this.configRegistry.getConfigAttribute(
-                        CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(),
-                        cell.getConfigLabels().getLabels()).getAttributeValue(
-                        CellStyleAttributes.BORDER_STYLE));
+                        CellConfigAttributes.CELL_STYLE,
+                        cell.getDisplayMode(),
+                        cell.getConfigLabels())
+                        .getAttributeValue(CellStyleAttributes.BORDER_STYLE));
     }
 
 }

@@ -672,7 +672,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
             ICellPainter treeCellPainter = configRegistry.getConfigAttribute(
                     TreeConfigAttributes.TREE_STRUCTURE_PAINTER,
                     cell.getDisplayMode(),
-                    cell.getConfigLabels().getLabels());
+                    cell.getConfigLabels());
 
             if (treeCellPainter != null) {
                 IndentedTreeImagePainter treePainter = findIndentedTreeImagePainter(treeCellPainter);

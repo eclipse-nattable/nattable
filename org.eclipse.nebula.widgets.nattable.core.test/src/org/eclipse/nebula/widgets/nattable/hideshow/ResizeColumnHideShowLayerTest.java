@@ -1035,18 +1035,18 @@ public class ResizeColumnHideShowLayerTest {
     @Test
     public void testHiddenColumnsHaveSkipSearchLabel() {
         LabelStack labels = this.hideShowLayer.getConfigLabelsByPosition(1, 0);
-        assertTrue("LabelStack not empty", labels.getLabels().isEmpty());
+        assertTrue("LabelStack not empty", labels.isEmpty());
 
         this.hideShowLayer.hideColumnPositions(1, 4);
 
         labels = this.hideShowLayer.getConfigLabelsByPosition(1, 0);
-        assertFalse("LabelStack not empty", labels.getLabels().isEmpty());
+        assertFalse("LabelStack not empty", labels.isEmpty());
         assertTrue("skip search label not contained", labels.hasLabel(ISearchStrategy.SKIP_SEARCH_RESULT_LABEL));
 
         this.hideShowLayer.showAllColumns();
 
         labels = this.hideShowLayer.getConfigLabelsByPosition(1, 0);
-        assertTrue("LabelStack not empty", labels.getLabels().isEmpty());
+        assertTrue("LabelStack not empty", labels.isEmpty());
     }
 
     @Test

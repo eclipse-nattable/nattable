@@ -138,7 +138,7 @@ public class CheckBoxPainter extends ImagePainter {
         IDisplayConverter displayConverter = configRegistry.getConfigAttribute(
                 CellConfigAttributes.DISPLAY_CONVERTER,
                 cell.getDisplayMode(),
-                cell.getConfigLabels().getLabels());
+                cell.getConfigLabels());
         Boolean convertedValue = null;
         if (displayConverter != null) {
             convertedValue =

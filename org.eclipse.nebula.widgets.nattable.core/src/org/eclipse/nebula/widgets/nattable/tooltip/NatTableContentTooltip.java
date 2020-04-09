@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -129,13 +129,12 @@ public class NatTableContentTooltip extends DefaultToolTip {
         if (cell != null) {
             // if the registered cell painter is the PasswordCellPainter, there
             // will be no tooltip
-            ICellPainter painter = this.natTable.getConfigRegistry()
-                    .getConfigAttribute(CellConfigAttributes.CELL_PAINTER,
-                            DisplayMode.NORMAL,
-                            cell.getConfigLabels().getLabels());
+            ICellPainter painter = this.natTable.getConfigRegistry().getConfigAttribute(
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.NORMAL,
+                    cell.getConfigLabels());
             if (isVisibleContentPainter(painter)) {
-                String tooltipValue = CellDisplayConversionUtils
-                        .convertDataType(cell, this.natTable.getConfigRegistry());
+                String tooltipValue = CellDisplayConversionUtils.convertDataType(cell, this.natTable.getConfigRegistry());
 
                 if (tooltipValue.length() > 0) {
                     return tooltipValue;
@@ -158,8 +157,7 @@ public class NatTableContentTooltip extends DefaultToolTip {
         if (painter instanceof PasswordTextPainter) {
             return false;
         } else if (painter instanceof CellPainterWrapper) {
-            return isVisibleContentPainter(((CellPainterWrapper) painter)
-                    .getWrappedPainter());
+            return isVisibleContentPainter(((CellPainterWrapper) painter).getWrappedPainter());
         }
         return true;
     }

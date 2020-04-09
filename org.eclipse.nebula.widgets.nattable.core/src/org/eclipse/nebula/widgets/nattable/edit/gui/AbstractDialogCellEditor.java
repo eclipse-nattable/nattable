@@ -134,7 +134,7 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
         this.layerCell = cell;
         this.configRegistry = configRegistry;
 
-        final List<String> configLabels = cell.getConfigLabels().getLabels();
+        final List<String> configLabels = cell.getConfigLabels();
         this.displayConverter = configRegistry.getConfigAttribute(
                 CellConfigAttributes.DISPLAY_CONVERTER,
                 DisplayMode.EDIT,

@@ -761,7 +761,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
             return this.configRegistry.getConfigAttribute(
                     GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
                     DisplayMode.NORMAL,
-                    labelStack.getLabels());
+                    labelStack);
         }
 
         return null;

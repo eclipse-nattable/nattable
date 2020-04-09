@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Dirk Fauth and others.
+ * Copyright (c) 2012, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -97,7 +97,7 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
 
         int borderLineCount = 0;
         // check how many border lines are configured for that cell
-        List<String> labels = cell.getConfigLabels().getLabels();
+        List<String> labels = cell.getConfigLabels();
         if (labels.contains(RIGHT_LINE_BORDER_LABEL))
             borderLineCount++;
         if (labels.contains(LEFT_LINE_BORDER_LABEL))
@@ -113,7 +113,7 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
 
         int borderLineCount = 0;
         // check how many border lines are configured for that cell
-        List<String> labels = cell.getConfigLabels().getLabels();
+        List<String> labels = cell.getConfigLabels();
         if (labels.contains(TOP_LINE_BORDER_LABEL))
             borderLineCount++;
         if (labels.contains(BOTTOM_LINE_BORDER_LABEL))
@@ -137,7 +137,7 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
         int borderThickness = borderStyle != null ? borderStyle.getThickness() : 0;
 
         // check how many border lines are configured for that cell
-        List<String> labels = cell.getConfigLabels().getLabels();
+        List<String> labels = cell.getConfigLabels();
 
         int leftBorderThickness = 0;
         int rightBorderThickness = 0;
@@ -175,9 +175,10 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
         Integer gridLineWidth = configRegistry.getConfigAttribute(
                 CellConfigAttributes.GRID_LINE_WIDTH,
                 DisplayMode.NORMAL,
-                cell.getConfigLabels().getLabels());
+                cell.getConfigLabels());
         int adjustment = (gridLineWidth == null || gridLineWidth == 1)
-                ? 0 : Math.round(gridLineWidth.floatValue() / 2);
+                ? 0
+                : Math.round(gridLineWidth.floatValue() / 2);
 
         gc.setLineWidth(borderThickness);
 

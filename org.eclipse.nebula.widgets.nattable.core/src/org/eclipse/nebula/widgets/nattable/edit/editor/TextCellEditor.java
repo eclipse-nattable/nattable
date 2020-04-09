@@ -277,7 +277,7 @@ public class TextCellEditor extends AbstractCellEditor {
             IStyle conversionErrorStyle = this.configRegistry.getConfigAttribute(
                     EditConfigAttributes.CONVERSION_ERROR_STYLE,
                     DisplayMode.EDIT,
-                    this.labelStack.getLabels());
+                    this.labelStack);
 
             ((RenderErrorHandling) this.inputConversionErrorHandler).setErrorStyle(conversionErrorStyle);
         }
@@ -286,7 +286,7 @@ public class TextCellEditor extends AbstractCellEditor {
             IStyle validationErrorStyle = this.configRegistry.getConfigAttribute(
                     EditConfigAttributes.VALIDATION_ERROR_STYLE,
                     DisplayMode.EDIT,
-                    this.labelStack.getLabels());
+                    this.labelStack);
 
             ((RenderErrorHandling) this.inputValidationErrorHandler).setErrorStyle(validationErrorStyle);
         }

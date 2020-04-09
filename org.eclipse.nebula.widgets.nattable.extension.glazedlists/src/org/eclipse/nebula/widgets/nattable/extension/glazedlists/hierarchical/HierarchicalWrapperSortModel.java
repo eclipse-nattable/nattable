@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
+ * Copyright (c) 2018, 2020 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -128,7 +128,7 @@ public class HierarchicalWrapperSortModel implements ISortModel {
         Comparator<?> comparator = this.configRegistry.getConfigAttribute(
                 SortConfigAttributes.SORT_COMPARATOR,
                 cell.getDisplayMode(),
-                cell.getConfigLabels().getLabels());
+                cell.getConfigLabels());
 
         return (comparator instanceof NullComparator) ? null : comparator;
     }

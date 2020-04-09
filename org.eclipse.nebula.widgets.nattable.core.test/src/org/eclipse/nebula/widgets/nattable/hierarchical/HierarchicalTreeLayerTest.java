@@ -198,84 +198,84 @@ public class HierarchicalTreeLayerTest {
     @Test
     public void testConfigLabelsByPosition() {
         LabelStack stack = this.treeLayer.getConfigLabelsByPosition(0, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(HierarchicalTreeLayer.LEVEL_HEADER_CELL));
 
         stack = this.treeLayer.getConfigLabelsByPosition(1, 0);
-        assertEquals(4, stack.getLabels().size());
+        assertEquals(4, stack.size());
         assertTrue(stack.hasLabel(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + 0));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE));
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 0));
 
         stack = this.treeLayer.getConfigLabelsByPosition(2, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 1));
 
         stack = this.treeLayer.getConfigLabelsByPosition(3, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(HierarchicalTreeLayer.LEVEL_HEADER_CELL));
 
         stack = this.treeLayer.getConfigLabelsByPosition(4, 0);
-        assertEquals(4, stack.getLabels().size());
+        assertEquals(4, stack.size());
         assertTrue(stack.hasLabel(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + 0));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE));
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2));
 
         stack = this.treeLayer.getConfigLabelsByPosition(5, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3));
 
         stack = this.treeLayer.getConfigLabelsByPosition(6, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(HierarchicalTreeLayer.LEVEL_HEADER_CELL));
 
         stack = this.treeLayer.getConfigLabelsByPosition(7, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4));
 
         stack = this.treeLayer.getConfigLabelsByPosition(8, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 5));
 
         this.treeLayer.setShowTreeLevelHeader(false);
 
         stack = this.treeLayer.getConfigLabelsByPosition(0, 0);
-        assertEquals(4, stack.getLabels().size());
+        assertEquals(4, stack.size());
         assertTrue(stack.hasLabel(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + 0));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE));
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 0));
 
         stack = this.treeLayer.getConfigLabelsByPosition(1, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 1));
 
         stack = this.treeLayer.getConfigLabelsByPosition(2, 0);
-        assertEquals(4, stack.getLabels().size());
+        assertEquals(4, stack.size());
         assertTrue(stack.hasLabel(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + 0));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE));
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2));
 
         stack = this.treeLayer.getConfigLabelsByPosition(3, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3));
 
         stack = this.treeLayer.getConfigLabelsByPosition(4, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4));
 
         stack = this.treeLayer.getConfigLabelsByPosition(5, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 5));
     }
 
     @Test
     public void testExpandCollapseConfigLabelsByPosition() {
         LabelStack stack = this.treeLayer.getConfigLabelsByPosition(1, 0);
-        assertEquals(4, stack.getLabels().size());
+        assertEquals(4, stack.size());
         assertTrue(stack.hasLabel(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + 0));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE));
@@ -285,7 +285,7 @@ public class HierarchicalTreeLayerTest {
         this.treeLayer.expandOrCollapse(0, 0);
 
         stack = this.treeLayer.getConfigLabelsByPosition(1, 0);
-        assertEquals(4, stack.getLabels().size());
+        assertEquals(4, stack.size());
         assertTrue(stack.hasLabel(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + 0));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_COLLAPSED_CONFIG_TYPE));
@@ -295,7 +295,7 @@ public class HierarchicalTreeLayerTest {
         this.treeLayer.expandOrCollapse(0, 0);
 
         stack = this.treeLayer.getConfigLabelsByPosition(4, 0);
-        assertEquals(4, stack.getLabels().size());
+        assertEquals(4, stack.size());
         assertTrue(stack.hasLabel(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + 0));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE));
@@ -305,7 +305,7 @@ public class HierarchicalTreeLayerTest {
         this.treeLayer.expandOrCollapse(2, 0);
 
         stack = this.treeLayer.getConfigLabelsByPosition(4, 0);
-        assertEquals(4, stack.getLabels().size());
+        assertEquals(4, stack.size());
         assertTrue(stack.hasLabel(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + 0));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_COLLAPSED_CONFIG_TYPE));
@@ -315,25 +315,25 @@ public class HierarchicalTreeLayerTest {
         this.treeLayer.expandOrCollapse(2, 0);
 
         stack = this.treeLayer.getConfigLabelsByPosition(5, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3));
 
         stack = this.treeLayer.getConfigLabelsByPosition(6, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(HierarchicalTreeLayer.LEVEL_HEADER_CELL));
 
         stack = this.treeLayer.getConfigLabelsByPosition(7, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4));
 
         stack = this.treeLayer.getConfigLabelsByPosition(8, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 5));
 
         this.treeLayer.setShowTreeLevelHeader(false);
 
         stack = this.treeLayer.getConfigLabelsByPosition(0, 0);
-        assertEquals(4, stack.getLabels().size());
+        assertEquals(4, stack.size());
         assertTrue(stack.hasLabel(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + 0));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE));
@@ -343,7 +343,7 @@ public class HierarchicalTreeLayerTest {
         this.treeLayer.expandOrCollapse(0, 0);
 
         stack = this.treeLayer.getConfigLabelsByPosition(0, 0);
-        assertEquals(4, stack.getLabels().size());
+        assertEquals(4, stack.size());
         assertTrue(stack.hasLabel(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + 0));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_COLLAPSED_CONFIG_TYPE));
@@ -353,7 +353,7 @@ public class HierarchicalTreeLayerTest {
         this.treeLayer.expandOrCollapse(0, 0);
 
         stack = this.treeLayer.getConfigLabelsByPosition(2, 0);
-        assertEquals(4, stack.getLabels().size());
+        assertEquals(4, stack.size());
         assertTrue(stack.hasLabel(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + 0));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE));
@@ -363,7 +363,7 @@ public class HierarchicalTreeLayerTest {
         this.treeLayer.expandOrCollapse(2, 0);
 
         stack = this.treeLayer.getConfigLabelsByPosition(2, 0);
-        assertEquals(4, stack.getLabels().size());
+        assertEquals(4, stack.size());
         assertTrue(stack.hasLabel(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + 0));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_COLLAPSED_CONFIG_TYPE));
@@ -376,41 +376,41 @@ public class HierarchicalTreeLayerTest {
         this.treeLayer.expandOrCollapse(0, 0);
 
         LabelStack stack = this.treeLayer.getConfigLabelsByPosition(1, 0);
-        assertEquals(4, stack.getLabels().size());
+        assertEquals(4, stack.size());
         assertTrue(stack.hasLabel(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + 0));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_COLLAPSED_CONFIG_TYPE));
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 0));
 
         stack = this.treeLayer.getConfigLabelsByPosition(2, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 1));
 
         stack = this.treeLayer.getConfigLabelsByPosition(3, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(HierarchicalTreeLayer.LEVEL_HEADER_CELL));
 
         stack = this.treeLayer.getConfigLabelsByPosition(4, 0);
-        assertEquals(2, stack.getLabels().size());
+        assertEquals(2, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2));
         assertTrue(stack.hasLabel(HierarchicalTreeLayer.COLLAPSED_CHILD));
 
         stack = this.treeLayer.getConfigLabelsByPosition(5, 0);
-        assertEquals(2, stack.getLabels().size());
+        assertEquals(2, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3));
         assertTrue(stack.hasLabel(HierarchicalTreeLayer.COLLAPSED_CHILD));
 
         stack = this.treeLayer.getConfigLabelsByPosition(6, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(HierarchicalTreeLayer.LEVEL_HEADER_CELL));
 
         stack = this.treeLayer.getConfigLabelsByPosition(7, 0);
-        assertEquals(2, stack.getLabels().size());
+        assertEquals(2, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4));
         assertTrue(stack.hasLabel(HierarchicalTreeLayer.COLLAPSED_CHILD));
 
         stack = this.treeLayer.getConfigLabelsByPosition(8, 0);
-        assertEquals(2, stack.getLabels().size());
+        assertEquals(2, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 5));
         assertTrue(stack.hasLabel(HierarchicalTreeLayer.COLLAPSED_CHILD));
 
@@ -421,46 +421,46 @@ public class HierarchicalTreeLayerTest {
         this.treeLayer.expandOrCollapse(2, 0);
 
         stack = this.treeLayer.getConfigLabelsByPosition(0, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(HierarchicalTreeLayer.LEVEL_HEADER_CELL));
 
         stack = this.treeLayer.getConfigLabelsByPosition(1, 0);
-        assertEquals(4, stack.getLabels().size());
+        assertEquals(4, stack.size());
         assertTrue(stack.hasLabel(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + 0));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE));
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 0));
 
         stack = this.treeLayer.getConfigLabelsByPosition(2, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 1));
 
         stack = this.treeLayer.getConfigLabelsByPosition(3, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(HierarchicalTreeLayer.LEVEL_HEADER_CELL));
 
         stack = this.treeLayer.getConfigLabelsByPosition(4, 0);
-        assertEquals(4, stack.getLabels().size());
+        assertEquals(4, stack.size());
         assertTrue(stack.hasLabel(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + 0));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_COLLAPSED_CONFIG_TYPE));
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2));
 
         stack = this.treeLayer.getConfigLabelsByPosition(5, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3));
 
         stack = this.treeLayer.getConfigLabelsByPosition(6, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(HierarchicalTreeLayer.LEVEL_HEADER_CELL));
 
         stack = this.treeLayer.getConfigLabelsByPosition(7, 0);
-        assertEquals(2, stack.getLabels().size());
+        assertEquals(2, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4));
         assertTrue(stack.hasLabel(HierarchicalTreeLayer.COLLAPSED_CHILD));
 
         stack = this.treeLayer.getConfigLabelsByPosition(8, 0);
-        assertEquals(2, stack.getLabels().size());
+        assertEquals(2, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 5));
         assertTrue(stack.hasLabel(HierarchicalTreeLayer.COLLAPSED_CHILD));
 
@@ -474,26 +474,26 @@ public class HierarchicalTreeLayerTest {
         this.treeLayer.expandOrCollapse(0, 0);
 
         stack = this.treeLayer.getConfigLabelsByPosition(0, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(HierarchicalTreeLayer.LEVEL_HEADER_CELL));
 
         stack = this.treeLayer.getConfigLabelsByPosition(1, 0);
-        assertEquals(4, stack.getLabels().size());
+        assertEquals(4, stack.size());
         assertTrue(stack.hasLabel(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + 0));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_COLLAPSED_CONFIG_TYPE));
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 0));
 
         stack = this.treeLayer.getConfigLabelsByPosition(2, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 1));
 
         stack = this.treeLayer.getConfigLabelsByPosition(3, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(HierarchicalTreeLayer.LEVEL_HEADER_CELL));
 
         stack = this.treeLayer.getConfigLabelsByPosition(4, 0);
-        assertEquals(4, stack.getLabels().size());
+        assertEquals(4, stack.size());
         assertTrue(stack.hasLabel(TreeLayer.TREE_COLUMN_CELL));
         assertTrue(stack.hasLabel(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + 0));
         // special situation
@@ -504,19 +504,19 @@ public class HierarchicalTreeLayerTest {
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2));
 
         stack = this.treeLayer.getConfigLabelsByPosition(5, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3));
 
         stack = this.treeLayer.getConfigLabelsByPosition(6, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(HierarchicalTreeLayer.LEVEL_HEADER_CELL));
 
         stack = this.treeLayer.getConfigLabelsByPosition(7, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4));
 
         stack = this.treeLayer.getConfigLabelsByPosition(8, 0);
-        assertEquals(1, stack.getLabels().size());
+        assertEquals(1, stack.size());
         assertTrue(stack.hasLabel(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 5));
     }
 

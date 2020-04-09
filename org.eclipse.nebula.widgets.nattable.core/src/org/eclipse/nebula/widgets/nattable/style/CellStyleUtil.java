@@ -44,7 +44,7 @@ public final class CellStyleUtil {
      * @return The transitive style information for the given cell.
      */
     public static IStyle getCellStyle(ILayerCell cell, IConfigRegistry configRegistry) {
-        return new CellStyleProxy(configRegistry, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
+        return new CellStyleProxy(configRegistry, cell.getDisplayMode(), cell.getConfigLabels());
     }
 
     /**
@@ -200,7 +200,7 @@ public final class CellStyleUtil {
 
         ArrayList<Color> colors = new ArrayList<>();
 
-        for (String configLabel : cell.getConfigLabels().getLabels()) {
+        for (String configLabel : cell.getConfigLabels()) {
             IStyle cellStyle = configRegistry.getSpecificConfigAttribute(
                     CellConfigAttributes.CELL_STYLE,
                     displayMode,

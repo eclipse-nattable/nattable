@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -137,7 +137,8 @@ public abstract class PoiExcelExporter implements ILayerExporter {
     }
 
     @Override
-    public void exportLayerEnd(OutputStream outputStream, String layerName) throws IOException {}
+    public void exportLayerEnd(OutputStream outputStream, String layerName) throws IOException {
+    }
 
     @Override
     public void exportRowBegin(OutputStream outputStream, int rowPosition) throws IOException {
@@ -153,7 +154,8 @@ public abstract class PoiExcelExporter implements ILayerExporter {
     }
 
     @Override
-    public void exportRowEnd(OutputStream outputStream, int rowPosition) throws IOException {}
+    public void exportRowEnd(OutputStream outputStream, int rowPosition) throws IOException {
+    }
 
     @Override
     public void exportCell(
@@ -199,7 +201,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         CellStyleProxy cellStyle = new CellStyleProxy(
                 configRegistry,
                 DisplayMode.NORMAL,
-                cell.getConfigLabels().getLabels());
+                cell.getConfigLabels());
         Color fg = cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR);
         Color bg = cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
         org.eclipse.swt.graphics.Font font = cellStyle.getAttributeValue(CellStyleAttributes.FONT);
@@ -216,7 +218,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         ICellPainter cellPainter = configRegistry.getConfigAttribute(
                 CellConfigAttributes.CELL_PAINTER,
                 DisplayMode.NORMAL,
-                cell.getConfigLabels().getLabels());
+                cell.getConfigLabels());
         boolean vertical = this.applyVerticalTextConfiguration ? isVertical(cellPainter) : false;
         boolean wrap = this.applyTextWrapping ? wrapText(cellPainter) : false;
 
@@ -406,7 +408,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         String dataFormat = configRegistry.getConfigAttribute(
                 ExportConfigAttributes.DATE_FORMAT,
                 DisplayMode.NORMAL,
-                cell.getConfigLabels().getLabels());
+                cell.getConfigLabels());
         if (dataFormat == null) {
             dataFormat = "m/d/yy h:mm"; //$NON-NLS-1$
         }

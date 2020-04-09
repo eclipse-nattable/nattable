@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -55,10 +55,8 @@ public class BlendedBackgroundPainter extends TextPainter {
     }
 
     @Override
-    protected Color getBackgroundColour(final ILayerCell cell,
-            final IConfigRegistry configRegistry) {
-        return blendBackgroundColour(cell, configRegistry,
-                this.gridBackgroundColour);
+    protected Color getBackgroundColour(ILayerCell cell, IConfigRegistry configRegistry) {
+        return blendBackgroundColour(cell, configRegistry, this.gridBackgroundColour);
     }
 
     /**
@@ -77,29 +75,23 @@ public class BlendedBackgroundPainter extends TextPainter {
      *            Colours are not blended with this colour.
      * @return A blended background colour.
      */
-    public static Color blendBackgroundColour(final ILayerCell cell,
-            final IConfigRegistry configRegistry, final RGB baseColor) {
+    public static Color blendBackgroundColour(ILayerCell cell, IConfigRegistry configRegistry, RGB baseColor) {
 
         // Get all of the background colours registered for the cell in normal
         // mode.
-        final List<Color> colours = CellStyleUtil.getAllBackgroundColors(cell,
-                configRegistry, DisplayMode.NORMAL);
+        List<Color> colours = CellStyleUtil.getAllBackgroundColors(cell, configRegistry, DisplayMode.NORMAL);
 
         // If the cell is selected, get it's selected background colour and add
         // to the blending mix.
         if (cell.getDisplayMode().equals(DisplayMode.SELECT)) {
-            final IStyle cellStyle = new CellStyleProxy(configRegistry,
-                    DisplayMode.SELECT, cell.getConfigLabels().getLabels());
-            colours.add(cellStyle
-                    .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
+            IStyle cellStyle = new CellStyleProxy(configRegistry, DisplayMode.SELECT, cell.getConfigLabels());
+            colours.add(cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
         }
 
         if (colours.size() == 0) {
             return null;
-
         } else if (colours.size() == 1) {
             return colours.get(0);
-
         } else {
             RGB rgb = colours.get(0).getRGB();
 

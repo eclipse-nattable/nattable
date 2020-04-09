@@ -112,7 +112,7 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
         LabelStack stack = natLayer.getRegionLabelsByXY(xOffset, yOffset);
         List<String> labels = new ArrayList<String>();
         if (stack != null) {
-            labels = stack.getLabels();
+            labels = stack;
             // check if there is a configuration telling to not rendering grid
             // lines
             renderConfig = configRegistry.getConfigAttribute(

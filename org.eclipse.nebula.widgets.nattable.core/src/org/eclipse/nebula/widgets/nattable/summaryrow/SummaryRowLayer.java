@@ -244,7 +244,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
                     @Override
                     public Object executeCalculation() {
                         LabelStack labelStack = getConfigLabelsByPositionWithoutTransformation(columnPosition, getSummaryRowPosition());
-                        String[] configLabels = labelStack.getLabels().toArray(ArrayUtil.STRING_TYPE_ARRAY);
+                        String[] configLabels = labelStack.toArray(ArrayUtil.STRING_TYPE_ARRAY);
 
                         final ISummaryProvider summaryProvider = SummaryRowLayer.this.configRegistry.getConfigAttribute(
                                 SummaryRowConfigAttributes.SUMMARY_PROVIDER,

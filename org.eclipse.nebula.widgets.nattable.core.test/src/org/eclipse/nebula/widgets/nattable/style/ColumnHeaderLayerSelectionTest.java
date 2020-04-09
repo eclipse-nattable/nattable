@@ -97,7 +97,7 @@ public class ColumnHeaderLayerSelectionTest {
         });
 
         LabelStack labelStack = this.gridLayer.getConfigLabelsByPosition(3, 0);
-        assertEquals(2, labelStack.getLabels().size());
+        assertEquals(2, labelStack.size());
         assertTrue(labelStack.hasLabel("test"));
         assertTrue(labelStack.hasLabel(GridRegion.COLUMN_HEADER));
     }

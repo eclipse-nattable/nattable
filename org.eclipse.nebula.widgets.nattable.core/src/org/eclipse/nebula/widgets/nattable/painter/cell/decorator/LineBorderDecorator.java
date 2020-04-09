@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -87,9 +87,10 @@ public class LineBorderDecorator extends CellPainterWrapper {
         Integer gridLineWidth = configRegistry.getConfigAttribute(
                 CellConfigAttributes.GRID_LINE_WIDTH,
                 DisplayMode.NORMAL,
-                cell.getConfigLabels().getLabels());
+                cell.getConfigLabels());
         int adjustment = (gridLineWidth == null || gridLineWidth == 1)
-                ? 0 : Math.round(gridLineWidth.floatValue() / 2);
+                ? 0
+                : Math.round(gridLineWidth.floatValue() / 2);
 
         gc.setLineWidth(borderThickness);
 

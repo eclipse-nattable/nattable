@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -329,7 +329,7 @@ public class CellDisplayValueSearchUtil {
             final IDisplayConverter displayConverter = configRegistry.getConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
                     DisplayMode.NORMAL,
-                    labels.getLabels());
+                    labels);
             Object dataValue = null;
             if (displayConverter != null) {
                 ILayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);

@@ -143,27 +143,26 @@ public abstract class AbstractCellEditor implements ICellEditor {
         this.layerCell = cell;
         this.configRegistry = configRegistry;
         this.labelStack = cell.getConfigLabels();
-        final List<String> configLabels = this.labelStack.getLabels();
         this.displayConverter = configRegistry.getConfigAttribute(
                 CellConfigAttributes.DISPLAY_CONVERTER,
                 DisplayMode.EDIT,
-                configLabels);
-        this.cellStyle = new CellStyleProxy(configRegistry, DisplayMode.EDIT, configLabels);
+                this.labelStack);
+        this.cellStyle = new CellStyleProxy(configRegistry, DisplayMode.EDIT, this.labelStack);
         this.dataValidator = configRegistry.getConfigAttribute(
                 EditConfigAttributes.DATA_VALIDATOR,
                 DisplayMode.EDIT,
-                configLabels);
+                this.labelStack);
 
         this.conversionEditErrorHandler =
                 EditConfigHelper.getEditErrorHandler(
                         configRegistry,
                         EditConfigAttributes.CONVERSION_ERROR_HANDLER,
-                        configLabels);
+                        this.labelStack);
         this.validationEditErrorHandler =
                 EditConfigHelper.getEditErrorHandler(
                         configRegistry,
                         EditConfigAttributes.VALIDATION_ERROR_HANDLER,
-                        configLabels);
+                        this.labelStack);
 
         return activateCell(parent, originalCanonicalValue);
     }
@@ -431,7 +430,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
 
     @Override
     public boolean openAdjacentEditor() {
-        return EditConfigHelper.openAdjacentEditor(this.configRegistry, this.labelStack.getLabels());
+        return EditConfigHelper.openAdjacentEditor(this.configRegistry, this.labelStack);
     }
 
     @Override
@@ -467,6 +466,8 @@ public abstract class AbstractCellEditor implements ICellEditor {
     public Rectangle calculateControlBounds(Rectangle cellBounds) {
         return cellBounds;
     }
+
+    // TODO move to interface
 
     /**
      * This method can be used to set the {@link IDataValidator} to use. This

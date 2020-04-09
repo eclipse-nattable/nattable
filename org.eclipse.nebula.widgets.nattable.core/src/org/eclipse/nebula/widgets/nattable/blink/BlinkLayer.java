@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -59,7 +59,9 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements
 
     protected boolean blinkingEnabled = true;
 
-    /** Cache all the update events allowing the layer to track what got updated */
+    /**
+     * Cache all the update events allowing the layer to track what got updated
+     */
     private final UpdateEventsCache<T> updateEventsCache;
 
     /** Duration of a single blink */
@@ -106,7 +108,8 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements
         this.scheduler = scheduler;
         this.updateEventsCache = new UpdateEventsCache<T>(rowIdAccessor,
                 triggerBlinkOnRowUpdate ? new RowKeyStrategyImpl()
-                        : new CellKeyStrategyImpl(), scheduler);
+                        : new CellKeyStrategyImpl(),
+                scheduler);
 
         registerCommandHandler(new BlinkTimerEnableCommandHandler(this));
     }
@@ -204,7 +207,7 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements
 
         IBlinkingCellResolver resolver = this.configRegistry.getConfigAttribute(
                 BlinkConfigAttributes.BLINK_RESOLVER, DisplayMode.NORMAL,
-                underlyingLabelStack.getLabels());
+                underlyingLabelStack);
 
         String[] blinkConfigTypes = null;
         if (resolver != null) {

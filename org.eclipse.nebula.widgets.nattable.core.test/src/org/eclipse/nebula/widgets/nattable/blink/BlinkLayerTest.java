@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -89,13 +89,13 @@ public class BlinkLayerTest {
         LabelStack blinkLabels = this.layerUnderTest.getConfigLabelsByPosition(6, 0);
 
         // Blink started
-        assertEquals(1, blinkLabels.getLabels().size());
-        assertEquals(BLINKING_LABEL, blinkLabels.getLabels().get(0));
+        assertEquals(1, blinkLabels.size());
+        assertEquals(BLINKING_LABEL, blinkLabels.get(0));
 
         // After 50 ms
         Thread.sleep(50);
         blinkLabels = this.layerUnderTest.getConfigLabelsByPosition(6, 0);
-        assertEquals(1, blinkLabels.getLabels().size());
+        assertEquals(1, blinkLabels.size());
 
         // Wait for blink to elapse
         Thread.sleep(110);
@@ -105,7 +105,7 @@ public class BlinkLayerTest {
             ;
 
         blinkLabels = this.layerUnderTest.getConfigLabelsByPosition(6, 0);
-        assertEquals(0, blinkLabels.getLabels().size());
+        assertEquals(0, blinkLabels.size());
     }
 
     @Test
@@ -126,14 +126,14 @@ public class BlinkLayerTest {
         LabelStack blinkLabels = this.layerUnderTest.getConfigLabelsByPosition(6, 0);
 
         // Blink started
-        assertEquals(2, blinkLabels.getLabels().size());
-        assertEquals(BLINKING_LABEL, blinkLabels.getLabels().get(0));
-        assertEquals(TEST_LABEL, blinkLabels.getLabels().get(1));
+        assertEquals(2, blinkLabels.size());
+        assertEquals(BLINKING_LABEL, blinkLabels.get(0));
+        assertEquals(TEST_LABEL, blinkLabels.get(1));
 
         // After 50 ms
         Thread.sleep(50);
         blinkLabels = this.layerUnderTest.getConfigLabelsByPosition(6, 0);
-        assertEquals(2, blinkLabels.getLabels().size());
+        assertEquals(2, blinkLabels.size());
 
         // Wait for blink to elapse
         Thread.sleep(110);
@@ -143,8 +143,8 @@ public class BlinkLayerTest {
             ;
 
         blinkLabels = this.layerUnderTest.getConfigLabelsByPosition(6, 0);
-        assertEquals(1, blinkLabels.getLabels().size());
-        assertEquals(TEST_LABEL, blinkLabels.getLabels().get(0));
+        assertEquals(1, blinkLabels.size());
+        assertEquals(TEST_LABEL, blinkLabels.get(0));
     }
 
     /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2018 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -73,7 +73,7 @@ public class MultiLineTextCellEditor extends TextCellEditor {
 
     @Override
     public Text createEditorControl(Composite parent) {
-        boolean openInline = openInline(this.configRegistry, this.labelStack.getLabels());
+        boolean openInline = openInline(this.configRegistry, this.labelStack);
 
         int style = HorizontalAlignmentEnum.getSWTStyle(this.cellStyle) | SWT.MULTI | SWT.BORDER;
         if (!openInline) {
@@ -117,7 +117,8 @@ public class MultiLineTextCellEditor extends TextCellEditor {
                 }
 
                 @Override
-                public void keyPressed(KeyEvent e) {}
+                public void keyPressed(KeyEvent e) {
+                }
             });
         }
 

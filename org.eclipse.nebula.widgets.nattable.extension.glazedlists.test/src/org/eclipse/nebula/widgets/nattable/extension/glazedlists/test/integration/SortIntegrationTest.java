@@ -83,8 +83,7 @@ public class SortIntegrationTest {
         altClickColumn2Header();
 
         // Assert presence of sort icon
-        List<String> labels = this.nattable.getConfigLabelsByPosition(2, 0)
-                .getLabels();
+        List<String> labels = this.nattable.getConfigLabelsByPosition(2, 0);
         assertEquals(4, labels.size());
         assertTrue(labels.contains("SORT"));
         assertTrue(labels.contains("SORT_DOWN"));
@@ -114,8 +113,7 @@ public class SortIntegrationTest {
         altClickColumn2Header();
 
         // Assert no sort icon is displayed
-        List<String> labels = this.nattable.getConfigLabelsByPosition(2, 0)
-                .getLabels();
+        List<String> labels = this.nattable.getConfigLabelsByPosition(2, 0);
         assertEquals(2, labels.size());
         assertTrue(labels.contains("COLUMN_HEADER"));
         assertTrue(labels.contains(TEST_LABEL));
@@ -150,15 +148,14 @@ public class SortIntegrationTest {
         altShiftClickColumn3Header();
 
         // Assert correct sort icons
-        List<String> labels = this.nattable.getConfigLabelsByPosition(2, 0)
-                .getLabels();
+        List<String> labels = this.nattable.getConfigLabelsByPosition(2, 0);
         assertEquals(4, labels.size());
         assertTrue(labels.contains("SORT"));
         assertTrue(labels.contains("SORT_UP"));
         assertTrue(labels.contains("SORT_SEQ_0"));
         assertTrue(labels.contains("COLUMN_HEADER"));
 
-        labels = this.nattable.getConfigLabelsByPosition(3, 0).getLabels();
+        labels = this.nattable.getConfigLabelsByPosition(3, 0);
         assertEquals(4, labels.size());
         assertTrue(labels.contains("SORT"));
         assertTrue(labels.contains("SORT_UP"));

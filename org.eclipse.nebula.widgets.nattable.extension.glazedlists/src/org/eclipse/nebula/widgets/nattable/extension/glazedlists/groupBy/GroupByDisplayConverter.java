@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2017 Dirk Fauth and others.
+ * Copyright (c) 2014, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -93,7 +93,7 @@ public class GroupByDisplayConverter<T> extends ContextualDisplayConverter {
                 String childCountPattern = configRegistry.getConfigAttribute(
                         GroupByConfigAttributes.GROUP_BY_CHILD_COUNT_PATTERN,
                         DisplayMode.NORMAL,
-                        cell.getConfigLabels().getLabels());
+                        cell.getConfigLabels());
 
                 if (childCountPattern != null && childCountPattern.length() > 0) {
                     List<T> children = this.groupByDataLayer.getItemsInGroup(groupByObject);
@@ -167,7 +167,7 @@ public class GroupByDisplayConverter<T> extends ContextualDisplayConverter {
                     converter = configRegistry.getConfigAttribute(
                             CellConfigAttributes.DISPLAY_CONVERTER,
                             DisplayMode.NORMAL,
-                            stackBelow.getLabels());
+                            stackBelow);
 
                     // this way we are caching the found converters to avoid
                     // performance issues on searching for the correct one
@@ -187,7 +187,7 @@ public class GroupByDisplayConverter<T> extends ContextualDisplayConverter {
             // converter again
             // Note: this displayConverter needs to be registered for the
             // GroupByDataLayer.GROUP_BY_OBJECT label
-            List<String> labels = new ArrayList<String>(cell.getConfigLabels().getLabels());
+            List<String> labels = new ArrayList<>(cell.getConfigLabels());
             labels.remove(GroupByDataLayer.GROUP_BY_OBJECT);
             converter = configRegistry.getConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,

@@ -50,9 +50,9 @@ public class ColumnOverrideLabelAccumulatorTest {
         LabelStack configLabels = new LabelStack();
         this.labelAccumulator.accumulateConfigLabels(configLabels, 0, 0);
 
-        Assert.assertEquals(2, configLabels.getLabels().size());
-        Assert.assertEquals(TEST_LABEL1, configLabels.getLabels().get(0));
-        Assert.assertEquals(TEST_LABEL2, configLabels.getLabels().get(1));
+        Assert.assertEquals(2, configLabels.size());
+        Assert.assertEquals(TEST_LABEL1, configLabels.get(0));
+        Assert.assertEquals(TEST_LABEL2, configLabels.get(1));
     }
 
     @Test
@@ -63,10 +63,10 @@ public class ColumnOverrideLabelAccumulatorTest {
         LabelStack configLabels = new LabelStack();
         this.labelAccumulator.accumulateConfigLabels(configLabels, 0, 0);
 
-        Assert.assertEquals(3, configLabels.getLabels().size());
-        Assert.assertEquals(TEST_LABEL1, configLabels.getLabels().get(0));
-        Assert.assertEquals(TEST_LABEL2, configLabels.getLabels().get(1));
-        Assert.assertEquals(TEST_LABEL3, configLabels.getLabels().get(2));
+        Assert.assertEquals(3, configLabels.size());
+        Assert.assertEquals(TEST_LABEL1, configLabels.get(0));
+        Assert.assertEquals(TEST_LABEL2, configLabels.get(1));
+        Assert.assertEquals(TEST_LABEL3, configLabels.get(2));
     }
 
     @Test
@@ -80,10 +80,10 @@ public class ColumnOverrideLabelAccumulatorTest {
         LabelStack configLabels = new LabelStack();
         this.labelAccumulator.accumulateConfigLabels(configLabels, 0, 0);
 
-        Assert.assertEquals(3, configLabels.getLabels().size());
-        Assert.assertEquals(TEST_LABEL1, configLabels.getLabels().get(0));
-        Assert.assertEquals(TEST_LABEL2, configLabels.getLabels().get(1));
-        Assert.assertEquals(TEST_LABEL3, configLabels.getLabels().get(2));
+        Assert.assertEquals(3, configLabels.size());
+        Assert.assertEquals(TEST_LABEL1, configLabels.get(0));
+        Assert.assertEquals(TEST_LABEL2, configLabels.get(1));
+        Assert.assertEquals(TEST_LABEL3, configLabels.get(2));
     }
 
     @Test
@@ -94,9 +94,9 @@ public class ColumnOverrideLabelAccumulatorTest {
         LabelStack configLabels = new LabelStack();
         this.labelAccumulator.accumulateConfigLabels(configLabels, 0, 0);
 
-        Assert.assertEquals(2, configLabels.getLabels().size());
-        Assert.assertEquals(TEST_LABEL2, configLabels.getLabels().get(0));
-        Assert.assertEquals(TEST_LABEL1, configLabels.getLabels().get(1));
+        Assert.assertEquals(2, configLabels.size());
+        Assert.assertEquals(TEST_LABEL2, configLabels.get(0));
+        Assert.assertEquals(TEST_LABEL1, configLabels.get(1));
     }
 
     @Test
@@ -108,10 +108,10 @@ public class ColumnOverrideLabelAccumulatorTest {
         LabelStack configLabels = new LabelStack();
         this.labelAccumulator.accumulateConfigLabels(configLabels, 0, 0);
 
-        Assert.assertEquals(3, configLabels.getLabels().size());
-        Assert.assertEquals(TEST_LABEL2, configLabels.getLabels().get(0));
-        Assert.assertEquals(TEST_LABEL3, configLabels.getLabels().get(1));
-        Assert.assertEquals(TEST_LABEL1, configLabels.getLabels().get(2));
+        Assert.assertEquals(3, configLabels.size());
+        Assert.assertEquals(TEST_LABEL2, configLabels.get(0));
+        Assert.assertEquals(TEST_LABEL3, configLabels.get(1));
+        Assert.assertEquals(TEST_LABEL1, configLabels.get(2));
     }
 
     @Test
@@ -125,10 +125,10 @@ public class ColumnOverrideLabelAccumulatorTest {
         LabelStack configLabels = new LabelStack();
         this.labelAccumulator.accumulateConfigLabels(configLabels, 0, 0);
 
-        Assert.assertEquals(3, configLabels.getLabels().size());
-        Assert.assertEquals(TEST_LABEL2, configLabels.getLabels().get(0));
-        Assert.assertEquals(TEST_LABEL3, configLabels.getLabels().get(1));
-        Assert.assertEquals(TEST_LABEL1, configLabels.getLabels().get(2));
+        Assert.assertEquals(3, configLabels.size());
+        Assert.assertEquals(TEST_LABEL2, configLabels.get(0));
+        Assert.assertEquals(TEST_LABEL3, configLabels.get(1));
+        Assert.assertEquals(TEST_LABEL1, configLabels.get(2));
     }
 
     @Test

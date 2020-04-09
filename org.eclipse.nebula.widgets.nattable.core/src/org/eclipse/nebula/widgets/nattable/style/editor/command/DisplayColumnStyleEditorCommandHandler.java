@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,9 +39,9 @@ import org.eclipse.swt.widgets.Display;
  * Applies the label from step 2 to all cells in the selected column
  *
  */
-public class DisplayColumnStyleEditorCommandHandler extends
-        AbstractLayerCommandHandler<DisplayColumnStyleEditorCommand> implements
-        IPersistable {
+public class DisplayColumnStyleEditorCommandHandler
+        extends AbstractLayerCommandHandler<DisplayColumnStyleEditorCommand>
+        implements IPersistable {
 
     protected static final String PERSISTENCE_PREFIX = "userDefinedColumnStyle"; //$NON-NLS-1$
     protected static final String USER_EDITED_STYLE_LABEL = "USER_EDITED_STYLE"; //$NON-NLS-1$
@@ -64,20 +64,16 @@ public class DisplayColumnStyleEditorCommandHandler extends
 
     @Override
     public boolean doCommand(DisplayColumnStyleEditorCommand command) {
-        int columnIndexOfClick = command.getNattableLayer()
-                .getColumnIndexByPosition(command.columnPosition);
+        int columnIndexOfClick = command.getNattableLayer().getColumnIndexByPosition(command.columnPosition);
 
         LabelStack configLabels = new LabelStack();
-        this.columnLabelAccumulator.accumulateConfigLabels(configLabels,
-                columnIndexOfClick, 0);
+        this.columnLabelAccumulator.accumulateConfigLabels(configLabels, columnIndexOfClick, 0);
         configLabels.addLabel(getConfigLabel(columnIndexOfClick));
 
         // Column style
-        Style clickedCellStyle = (Style) this.configRegistry.getConfigAttribute(
-                CELL_STYLE, NORMAL, configLabels.getLabels());
+        Style clickedCellStyle = (Style) this.configRegistry.getConfigAttribute(CELL_STYLE, NORMAL, configLabels);
 
-        this.dialog = new ColumnStyleEditorDialog(Display.getCurrent()
-                .getActiveShell(), clickedCellStyle);
+        this.dialog = new ColumnStyleEditorDialog(Display.getCurrent().getActiveShell(), clickedCellStyle);
         this.dialog.open();
 
         if (this.dialog.isCancelPressed()) {
@@ -88,26 +84,22 @@ public class DisplayColumnStyleEditorCommandHandler extends
         if (selectedColumns.length > 0) {
             applySelectedStyleToColumns(command, selectedColumns);
             // fire refresh event
-            this.selectionLayer
-                    .fireLayerEvent(new ColumnVisualUpdateEvent(this.selectionLayer,
-                            this.selectionLayer.getSelectedColumnPositions()));
+            this.selectionLayer.fireLayerEvent(
+                    new ColumnVisualUpdateEvent(this.selectionLayer, this.selectionLayer.getSelectedColumnPositions()));
         } else {
             applySelectedStyle();
             // fire refresh event
-            this.selectionLayer.fireLayerEvent(new VisualRefreshEvent(
-                    this.selectionLayer));
+            this.selectionLayer.fireLayerEvent(new VisualRefreshEvent(this.selectionLayer));
         }
 
         return true;
     }
 
     private int[] getSelectedColumnIndeces() {
-        int[] selectedColumnPositions = this.selectionLayer
-                .getFullySelectedColumnPositions();
+        int[] selectedColumnPositions = this.selectionLayer.getFullySelectedColumnPositions();
         int[] selectedColumnIndeces = new int[selectedColumnPositions.length];
         for (int i = 0; i < selectedColumnPositions.length; i++) {
-            selectedColumnIndeces[i] = this.selectionLayer
-                    .getColumnIndexByPosition(selectedColumnPositions[i]);
+            selectedColumnIndeces[i] = this.selectionLayer.getColumnIndexByPosition(selectedColumnPositions[i]);
         }
         return selectedColumnIndeces;
     }
@@ -117,8 +109,7 @@ public class DisplayColumnStyleEditorCommandHandler extends
         return DisplayColumnStyleEditorCommand.class;
     }
 
-    protected void applySelectedStyleToColumns(
-            DisplayColumnStyleEditorCommand command, int[] columnIndeces) {
+    protected void applySelectedStyleToColumns(DisplayColumnStyleEditorCommand command, int[] columnIndeces) {
         // Read the edited styles
         Style newColumnCellStyle = this.dialog.getNewColumnCellStyle();
 
@@ -129,11 +120,9 @@ public class DisplayColumnStyleEditorCommandHandler extends
             applySelectedStyle(newColumnCellStyle, configLabel);
 
             if (newColumnCellStyle != null) {
-                this.columnLabelAccumulator.registerColumnOverridesOnTop(
-                        columnIndex, configLabel);
+                this.columnLabelAccumulator.registerColumnOverridesOnTop(columnIndex, configLabel);
             } else {
-                this.columnLabelAccumulator.unregisterOverrides(columnIndex,
-                        configLabel);
+                this.columnLabelAccumulator.unregisterOverrides(columnIndex, configLabel);
             }
         }
     }
@@ -145,15 +134,13 @@ public class DisplayColumnStyleEditorCommandHandler extends
         applySelectedStyle(newColumnCellStyle, USER_EDITED_STYLE_LABEL);
 
         if (newColumnCellStyle != null) {
-            this.columnLabelAccumulator
-                    .registerOverridesOnTop(USER_EDITED_STYLE_LABEL);
+            this.columnLabelAccumulator.registerOverridesOnTop(USER_EDITED_STYLE_LABEL);
         } else {
             this.columnLabelAccumulator.unregisterOverrides(USER_EDITED_STYLE_LABEL);
         }
     }
 
-    protected void applySelectedStyle(Style newColumnCellStyle,
-            String configLabel) {
+    protected void applySelectedStyle(Style newColumnCellStyle, String configLabel) {
         if (newColumnCellStyle == null) {
             this.stylesToPersist.remove(configLabel);
         } else {
@@ -162,8 +149,7 @@ public class DisplayColumnStyleEditorCommandHandler extends
                     this.dialog.getNewColumnBorderStyle());
             this.stylesToPersist.put(configLabel, newColumnCellStyle);
         }
-        this.configRegistry.registerConfigAttribute(CELL_STYLE, newColumnCellStyle,
-                NORMAL, configLabel);
+        this.configRegistry.registerConfigAttribute(CELL_STYLE, newColumnCellStyle, NORMAL, configLabel);
     }
 
     protected String getConfigLabel(int columnIndex) {
@@ -186,26 +172,19 @@ public class DisplayColumnStyleEditorCommandHandler extends
                     // Has the config label been processed
                     String configLabel = getConfigLabel(colIndex);
                     if (!this.stylesToPersist.keySet().contains(configLabel)) {
-                        Style savedStyle = StylePersistor.loadStyle(prefix
-                                + DOT + configLabel, properties);
+                        Style savedStyle = StylePersistor.loadStyle(prefix + DOT + configLabel, properties);
 
-                        this.configRegistry.registerConfigAttribute(CELL_STYLE,
-                                savedStyle, NORMAL, configLabel);
+                        this.configRegistry.registerConfigAttribute(CELL_STYLE, savedStyle, NORMAL, configLabel);
                         this.stylesToPersist.put(configLabel, savedStyle);
-                        this.columnLabelAccumulator.registerColumnOverrides(
-                                colIndex, configLabel);
+                        this.columnLabelAccumulator.registerColumnOverrides(colIndex, configLabel);
                     }
                 } else {
                     // Has the config label been processed
-                    if (!this.stylesToPersist.keySet().contains(
-                            USER_EDITED_STYLE_LABEL)) {
-                        Style savedStyle = StylePersistor.loadStyle(prefix
-                                + DOT + USER_EDITED_STYLE_LABEL, properties);
+                    if (!this.stylesToPersist.keySet().contains(USER_EDITED_STYLE_LABEL)) {
+                        Style savedStyle = StylePersistor.loadStyle(prefix + DOT + USER_EDITED_STYLE_LABEL, properties);
 
-                        this.configRegistry.registerConfigAttribute(CELL_STYLE,
-                                savedStyle, NORMAL, USER_EDITED_STYLE_LABEL);
-                        this.stylesToPersist
-                                .put(USER_EDITED_STYLE_LABEL, savedStyle);
+                        this.configRegistry.registerConfigAttribute(CELL_STYLE, savedStyle, NORMAL, USER_EDITED_STYLE_LABEL);
+                        this.stylesToPersist.put(USER_EDITED_STYLE_LABEL, savedStyle);
                         this.columnLabelAccumulator.registerOverrides(
                                 USER_EDITED_STYLE_LABEL,
                                 USER_EDITED_STYLE_LABEL);
@@ -216,15 +195,11 @@ public class DisplayColumnStyleEditorCommandHandler extends
     }
 
     protected int parseColumnIndexFromKey(String keyString) {
-        int colLabelStartIndex = keyString
-                .indexOf(USER_EDITED_COLUMN_STYLE_LABEL_PREFIX);
-        String columnConfigLabel = keyString.substring(colLabelStartIndex,
-                keyString.indexOf('.', colLabelStartIndex));
-        int lastUnderscoreInLabel = columnConfigLabel.lastIndexOf('_',
-                colLabelStartIndex);
+        int colLabelStartIndex = keyString.indexOf(USER_EDITED_COLUMN_STYLE_LABEL_PREFIX);
+        String columnConfigLabel = keyString.substring(colLabelStartIndex, keyString.indexOf('.', colLabelStartIndex));
+        int lastUnderscoreInLabel = columnConfigLabel.lastIndexOf('_', colLabelStartIndex);
 
-        return Integer.parseInt(columnConfigLabel
-                .substring(lastUnderscoreInLabel + 1));
+        return Integer.parseInt(columnConfigLabel.substring(lastUnderscoreInLabel + 1));
     }
 
     @Override

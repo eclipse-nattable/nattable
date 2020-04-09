@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -167,20 +167,20 @@ public class ColumnGroupHeaderLayerTest {
     public void testConfigLabels() {
         // check expanded column group
         LabelStack stack = this.columnGroupLayer.getConfigLabelsByPosition(0, 0);
-        assertEquals(2, stack.getLabels().size());
+        assertEquals(2, stack.size());
         assertTrue(stack.hasLabel(GridRegion.COLUMN_GROUP_HEADER));
         assertTrue(stack.hasLabel(DefaultColumnGroupHeaderLayerConfiguration.GROUP_EXPANDED_CONFIG_TYPE));
 
         // check collapsed column group
         this.model.getColumnGroupByIndex(0).setCollapsed(true);
         stack = this.columnGroupLayer.getConfigLabelsByPosition(0, 0);
-        assertEquals(2, stack.getLabels().size());
+        assertEquals(2, stack.size());
         assertTrue(stack.hasLabel(GridRegion.COLUMN_GROUP_HEADER));
         assertTrue(stack.hasLabel(DefaultColumnGroupHeaderLayerConfiguration.GROUP_COLLAPSED_CONFIG_TYPE));
 
         // check ungrouped
         stack = this.columnGroupLayer.getConfigLabelsByPosition(3, 0);
-        assertEquals(0, stack.getLabels().size());
+        assertEquals(0, stack.size());
     }
 
     @Test
@@ -198,7 +198,7 @@ public class ColumnGroupHeaderLayerTest {
 
         // check expanded column group
         LabelStack stack = this.columnGroupLayer.getConfigLabelsByPosition(0, 0);
-        assertEquals(3, stack.getLabels().size());
+        assertEquals(3, stack.size());
         assertTrue(stack.hasLabel(GridRegion.COLUMN_GROUP_HEADER));
         assertTrue(stack.hasLabel("custom"));
         assertTrue(stack.hasLabel(DefaultColumnGroupHeaderLayerConfiguration.GROUP_EXPANDED_CONFIG_TYPE));
@@ -206,14 +206,14 @@ public class ColumnGroupHeaderLayerTest {
         // check collapsed column group
         this.model.getColumnGroupByIndex(0).setCollapsed(true);
         stack = this.columnGroupLayer.getConfigLabelsByPosition(0, 0);
-        assertEquals(3, stack.getLabels().size());
+        assertEquals(3, stack.size());
         assertTrue(stack.hasLabel(GridRegion.COLUMN_GROUP_HEADER));
         assertTrue(stack.hasLabel("custom"));
         assertTrue(stack.hasLabel(DefaultColumnGroupHeaderLayerConfiguration.GROUP_COLLAPSED_CONFIG_TYPE));
 
         // check ungrouped
         stack = this.columnGroupLayer.getConfigLabelsByPosition(3, 0);
-        assertEquals(0, stack.getLabels().size());
+        assertEquals(0, stack.size());
     }
 
     @Test

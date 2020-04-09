@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,8 +34,7 @@ public class ColumnHeaderClickEventMatcher extends MouseEventMatcher {
     }
 
     @Override
-    public boolean matches(NatTable natTable, MouseEvent event,
-            LabelStack regionLabels) {
+    public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
         return super.matches(natTable, event, regionLabels)
                 && isNearTheHeaderEdge(natTable, event)
                 && isNotFilterRegion(regionLabels)
@@ -51,7 +50,7 @@ public class ColumnHeaderClickEventMatcher extends MouseEventMatcher {
 
     private boolean isNotFilterRegion(LabelStack regionLabels) {
         if (isNotNull(regionLabels)) {
-            return !regionLabels.getLabels().contains(GridRegion.FILTER_ROW);
+            return !regionLabels.contains(GridRegion.FILTER_ROW);
         }
         return true;
     }
@@ -59,8 +58,7 @@ public class ColumnHeaderClickEventMatcher extends MouseEventMatcher {
     // added this additional check because of Bug 428901
     private boolean isNotColumnGroupRegion(LabelStack regionLabels) {
         if (isNotNull(regionLabels)) {
-            return !regionLabels.getLabels().contains(
-                    GridRegion.COLUMN_GROUP_HEADER);
+            return !regionLabels.contains(GridRegion.COLUMN_GROUP_HEADER);
         }
         return true;
     }

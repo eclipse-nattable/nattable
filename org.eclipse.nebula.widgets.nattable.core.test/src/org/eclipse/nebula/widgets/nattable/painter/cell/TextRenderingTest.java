@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,9 @@
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,7 +33,6 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -75,24 +77,24 @@ public class TextRenderingTest {
     public void testWhitespacePattern() {
         Pattern pattern = Pattern.compile("\\s*$");
         Matcher matcher = pattern.matcher("012345        		   ");
-        Assert.assertTrue(matcher.find());
-        Assert.assertEquals(6, matcher.start());
+        assertTrue(matcher.find());
+        assertEquals(6, matcher.start());
         matcher = pattern.matcher("0123");
-        Assert.assertTrue(matcher.find());
-        Assert.assertEquals(4, matcher.start());
+        assertTrue(matcher.find());
+        assertEquals(4, matcher.start());
         matcher = pattern.matcher("");
-        Assert.assertTrue(matcher.find());
-        Assert.assertEquals(0, matcher.start());
+        assertTrue(matcher.find());
+        assertEquals(0, matcher.start());
 
         pattern = Pattern.compile("\\s+\\S+\\s*$");
         matcher = pattern.matcher("  Blah 	 blah		blah  			theEnd  ");
-        Assert.assertTrue(matcher.find());
-        Assert.assertEquals(19, matcher.start());
+        assertTrue(matcher.find());
+        assertEquals(19, matcher.start());
     }
 
     @Test
     public void testLineBreak() {
-        Assert.assertEquals("", "012345".substring(6));
+        assertEquals("", "012345".substring(6));
     }
 
     private void registerFont(FontData fontData) {
@@ -110,26 +112,20 @@ public class TextRenderingTest {
         ILayerCell cell = this.natTable.getCellByPosition(2, 2);
         final FontData expectedFontData = this.defaultFont.getFontData()[0];
         IStyle cellStyle = this.configRegistry.getConfigAttribute(
-                CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(), cell
-                        .getConfigLabels().getLabels());
-        final FontData actualFontData = cellStyle.getAttributeValue(
-                CellStyleAttributes.FONT).getFontData()[0];
-        Assert.assertEquals(actualFontData.getName(),
-                expectedFontData.getName());
-        Assert.assertEquals(actualFontData.getHeight(),
-                expectedFontData.getHeight());
-        Assert.assertEquals(actualFontData.getStyle(),
-                expectedFontData.getStyle());
+                CellConfigAttributes.CELL_STYLE,
+                cell.getDisplayMode(),
+                cell.getConfigLabels());
+        final FontData actualFontData = cellStyle.getAttributeValue(CellStyleAttributes.FONT).getFontData()[0];
+        assertEquals(actualFontData.getName(), expectedFontData.getName());
+        assertEquals(actualFontData.getHeight(), expectedFontData.getHeight());
+        assertEquals(actualFontData.getStyle(), expectedFontData.getStyle());
 
         // Draw font
         this.cellPainter.setupGCFromConfig(this.gc, cellStyle);
-        final FontData exepectedDrawnFontData = this.gc.getFont().getFontData()[0];
-        Assert.assertEquals(actualFontData.getName(),
-                exepectedDrawnFontData.getName());
-        Assert.assertEquals(actualFontData.getHeight(),
-                exepectedDrawnFontData.getHeight());
-        Assert.assertEquals(actualFontData.getStyle(),
-                exepectedDrawnFontData.getStyle());
+        final FontData expectedDrawnFontData = this.gc.getFont().getFontData()[0];
+        assertEquals(actualFontData.getName(), expectedDrawnFontData.getName());
+        assertEquals(actualFontData.getHeight(), expectedDrawnFontData.getHeight());
+        assertEquals(actualFontData.getStyle(), expectedDrawnFontData.getStyle());
     }
 
     @Test
@@ -139,9 +135,9 @@ public class TextRenderingTest {
         String testString3 = "Hello Mister,\n\rhow are you?\n\rI'm fine!";
         String testString4 = "Hello Mister,\r\nhow are you?\r\nI'm fine!";
 
-        Assert.assertEquals(3, this.cellPainter.getNumberOfNewLines(testString1));
-        Assert.assertEquals(3, this.cellPainter.getNumberOfNewLines(testString2));
-        Assert.assertEquals(3, this.cellPainter.getNumberOfNewLines(testString3));
-        Assert.assertEquals(3, this.cellPainter.getNumberOfNewLines(testString4));
+        assertEquals(3, this.cellPainter.getNumberOfNewLines(testString1));
+        assertEquals(3, this.cellPainter.getNumberOfNewLines(testString2));
+        assertEquals(3, this.cellPainter.getNumberOfNewLines(testString3));
+        assertEquals(3, this.cellPainter.getNumberOfNewLines(testString4));
     }
 }

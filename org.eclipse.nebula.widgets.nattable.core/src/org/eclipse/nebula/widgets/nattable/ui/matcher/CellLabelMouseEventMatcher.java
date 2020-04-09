@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,27 +23,24 @@ public class CellLabelMouseEventMatcher extends MouseEventMatcher {
 
     private final String labelToMatch;
 
-    public CellLabelMouseEventMatcher(String regionName, int button,
-            String labelToMatch) {
+    public CellLabelMouseEventMatcher(String regionName, int button, String labelToMatch) {
         super(regionName, button);
         this.labelToMatch = labelToMatch;
     }
 
-    public CellLabelMouseEventMatcher(int stateMask, String regionName,
-            int button, String labelToMatch) {
+    public CellLabelMouseEventMatcher(int stateMask, String regionName, int button, String labelToMatch) {
         super(stateMask, regionName, button);
         this.labelToMatch = labelToMatch;
     }
 
     @Override
-    public boolean matches(NatTable natTable, MouseEvent event,
-            LabelStack regionLabels) {
+    public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
         NatEventData eventData = NatEventData.createInstanceFromEvent(event);
         LabelStack customLabels = natTable.getConfigLabelsByPosition(
                 eventData.getColumnPosition(), eventData.getRowPosition());
 
         return super.matches(natTable, event, regionLabels)
-                && customLabels.getLabels().contains(this.labelToMatch);
+                && customLabels.contains(this.labelToMatch);
     }
 
 }

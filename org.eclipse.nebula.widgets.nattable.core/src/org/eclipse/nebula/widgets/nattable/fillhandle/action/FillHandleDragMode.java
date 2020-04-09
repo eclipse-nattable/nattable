@@ -143,7 +143,7 @@ public class FillHandleDragMode extends AutoScrollDragMode {
             Direction direction = natTable.getConfigRegistry().getConfigAttribute(
                     FillHandleConfigAttributes.ALLOWED_FILL_DIRECTION,
                     DisplayMode.NORMAL,
-                    this.selectionCell.getConfigLabels().getLabels());
+                    this.selectionCell.getConfigLabels());
 
             if (direction == null) {
                 direction = Direction.BOTH;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -58,8 +58,9 @@ public class NatColumnTableFormat<R> implements AdvancedTableFormat<R> {
             return null;
         }
         Comparator<?> comparator = this.configRegistry.getConfigAttribute(
-                SortConfigAttributes.SORT_COMPARATOR, cell.getDisplayMode(),
-                cell.getConfigLabels().getLabels());
+                SortConfigAttributes.SORT_COMPARATOR,
+                cell.getDisplayMode(),
+                cell.getConfigLabels());
 
         return (comparator instanceof NullComparator) ? null : comparator;
     }

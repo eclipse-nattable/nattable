@@ -1548,14 +1548,14 @@ public class TwoLevelRowGroupHeaderLayerTest {
     public void shouldReturnConfigLabelsOnLevel0() {
         // check expanded column group
         LabelStack stack = this.rowGroupHeaderLayer.getConfigLabelsByPosition(1, 4);
-        assertEquals(2, stack.getLabels().size());
+        assertEquals(2, stack.size());
         assertTrue(stack.hasLabel(GridRegion.ROW_GROUP_HEADER));
         assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_EXPANDED_CONFIG_TYPE));
 
         // check collapsed column group
         this.rowGroupHeaderLayer.collapseGroup(0, 4);
         stack = this.rowGroupHeaderLayer.getConfigLabelsByPosition(1, 4);
-        assertEquals(2, stack.getLabels().size());
+        assertEquals(2, stack.size());
         assertTrue(stack.hasLabel(GridRegion.ROW_GROUP_HEADER));
         assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_COLLAPSED_CONFIG_TYPE));
     }
@@ -1564,14 +1564,14 @@ public class TwoLevelRowGroupHeaderLayerTest {
     public void shouldReturnConfigLabelsOnLevel1() {
         // check expanded column group
         LabelStack stack = this.rowGroupHeaderLayer.getConfigLabelsByPosition(0, 4);
-        assertEquals(2, stack.getLabels().size());
+        assertEquals(2, stack.size());
         assertTrue(stack.hasLabel(GridRegion.ROW_GROUP_HEADER));
         assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_EXPANDED_CONFIG_TYPE));
 
         // check collapsed column group
         this.rowGroupHeaderLayer.collapseGroup(1, 4);
         stack = this.rowGroupHeaderLayer.getConfigLabelsByPosition(0, 4);
-        assertEquals(2, stack.getLabels().size());
+        assertEquals(2, stack.size());
         assertTrue(stack.hasLabel(GridRegion.ROW_GROUP_HEADER));
         assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_COLLAPSED_CONFIG_TYPE));
     }
@@ -1581,14 +1581,14 @@ public class TwoLevelRowGroupHeaderLayerTest {
         // check column 0 where we only have a group on level 0 but not on level
         // 0
         LabelStack stack = this.rowGroupHeaderLayer.getConfigLabelsByPosition(0, 0);
-        assertEquals(2, stack.getLabels().size());
+        assertEquals(2, stack.size());
         assertTrue(stack.hasLabel(GridRegion.ROW_GROUP_HEADER));
         assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_EXPANDED_CONFIG_TYPE));
 
         // check collapsed column group
         this.rowGroupHeaderLayer.collapseGroup(0);
         stack = this.rowGroupHeaderLayer.getConfigLabelsByPosition(0, 0);
-        assertEquals(2, stack.getLabels().size());
+        assertEquals(2, stack.size());
         assertTrue(stack.hasLabel(GridRegion.ROW_GROUP_HEADER));
         assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_COLLAPSED_CONFIG_TYPE));
     }

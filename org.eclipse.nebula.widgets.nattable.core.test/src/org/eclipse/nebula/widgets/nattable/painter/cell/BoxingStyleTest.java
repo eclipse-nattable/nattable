@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -76,7 +76,7 @@ public class BoxingStyleTest {
         ILayerCell cell = this.natTable.getCellByPosition(2, 2);
         IStyle cellStyle = this.configRegistry.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(), cell
-                        .getConfigLabels().getLabels());
+                        .getConfigLabels());
         Assert.assertEquals(backgroundColor, cellStyle
                 .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
 
@@ -101,7 +101,7 @@ public class BoxingStyleTest {
         ILayerCell cell = this.natTable.getCellByPosition(2, 2);
         IStyle cellStyle = this.configRegistry.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(), cell
-                        .getConfigLabels().getLabels());
+                        .getConfigLabels());
         Assert.assertEquals(foregroundColor, cellStyle
                 .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
 
@@ -128,7 +128,7 @@ public class BoxingStyleTest {
                 this.configRegistry
                         .getConfigAttribute(CellConfigAttributes.CELL_STYLE,
                                 cell.getDisplayMode(),
-                                cell.getConfigLabels().getLabels())
+                                cell.getConfigLabels())
                         .getAttributeValue(
                                 CellStyleAttributes.HORIZONTAL_ALIGNMENT)
                         .name());
@@ -152,7 +152,7 @@ public class BoxingStyleTest {
                 this.configRegistry
                         .getConfigAttribute(CellConfigAttributes.CELL_STYLE,
                                 cell.getDisplayMode(),
-                                cell.getConfigLabels().getLabels())
+                                cell.getConfigLabels())
                         .getAttributeValue(
                                 CellStyleAttributes.VERTICAL_ALIGNMENT)
                         .name());

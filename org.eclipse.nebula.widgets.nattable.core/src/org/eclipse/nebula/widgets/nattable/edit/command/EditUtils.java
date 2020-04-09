@@ -68,7 +68,7 @@ public class EditUtils {
     public static ICellEditor getLastSelectedCellEditor(SelectionLayer selectionLayer, IConfigRegistry configRegistry) {
         ILayerCell lastSelectedCell = EditUtils.getLastSelectedCell(selectionLayer);
         if (lastSelectedCell != null) {
-            final List<String> lastSelectedCellLabelsArray = lastSelectedCell.getConfigLabels().getLabels();
+            final List<String> lastSelectedCellLabelsArray = lastSelectedCell.getConfigLabels();
             return configRegistry.getConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR,
                     DisplayMode.EDIT,
@@ -93,7 +93,7 @@ public class EditUtils {
     public static boolean activateLastSelectedCellEditor(SelectionLayer selectionLayer, IConfigRegistry configRegistry, boolean byTraversal) {
         ILayerCell lastSelectedCell = EditUtils.getLastSelectedCell(selectionLayer);
         if (lastSelectedCell != null) {
-            final List<String> lastSelectedCellLabelsArray = lastSelectedCell.getConfigLabels().getLabels();
+            final List<String> lastSelectedCellLabelsArray = lastSelectedCell.getConfigLabels();
             ICellEditor editor = configRegistry.getConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR,
                     DisplayMode.EDIT,
@@ -182,7 +182,7 @@ public class EditUtils {
                 IEditableRule editableRule = configRegistry.getConfigAttribute(
                         EditConfigAttributes.CELL_EDITABLE_RULE,
                         DisplayMode.EDIT,
-                        labelStack.getLabels());
+                        labelStack);
 
                 if (editableRule == null
                         || !editableRule.isEditable(layerCell, configRegistry)) {
@@ -215,7 +215,7 @@ public class EditUtils {
             IEditableRule editableRule = configRegistry.getConfigAttribute(
                     EditConfigAttributes.CELL_EDITABLE_RULE,
                     DisplayMode.EDIT,
-                    labelStack.getLabels());
+                    labelStack);
 
             if (editableRule != null) {
                 return editableRule.isEditable(layerCell, configRegistry);
@@ -298,7 +298,7 @@ public class EditUtils {
                 ICellEditor cellEditor = configRegistry.getConfigAttribute(
                         EditConfigAttributes.CELL_EDITOR,
                         DisplayMode.EDIT,
-                        labelStack.getLabels());
+                        labelStack);
 
                 // The first time we get here we need to remember the editor so
                 // further checks can use it.
@@ -410,7 +410,7 @@ public class EditUtils {
                 IDisplayConverter dataTypeConverter = configRegistry.getConfigAttribute(
                         CellConfigAttributes.DISPLAY_CONVERTER,
                         DisplayMode.EDIT,
-                        labelStack.getLabels());
+                        labelStack);
                 if (dataTypeConverter != null) {
                     converterSet.add(dataTypeConverter.getClass());
                 }

@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.gui;
 
@@ -45,19 +45,13 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class TickUpdateCellEditDialog extends CellEditDialog {
 
-    private static final Log log = LogFactory
-            .getLog(TickUpdateCellEditDialog.class);
+    private static final Log LOG = LogFactory.getLog(TickUpdateCellEditDialog.class);
 
-    private static final String SET = Messages
-            .getString("TickUpdateCellEditDialog.set"); //$NON-NLS-1$
-    private static final String INCREASE_BY = Messages
-            .getString("TickUpdateCellEditDialog.increase"); //$NON-NLS-1$
-    private static final String DECREASE_BY = Messages
-            .getString("TickUpdateCellEditDialog.decrease"); //$NON-NLS-1$
-    private static final String ADJUST_BY = Messages
-            .getString("TickUpdateCellEditDialog.adjust"); //$NON-NLS-1$
-    private static final String[] OPTIONS_DEFAULT = { SET, INCREASE_BY,
-            DECREASE_BY };
+    private static final String SET = Messages.getString("TickUpdateCellEditDialog.set"); //$NON-NLS-1$
+    private static final String INCREASE_BY = Messages.getString("TickUpdateCellEditDialog.increase"); //$NON-NLS-1$
+    private static final String DECREASE_BY = Messages.getString("TickUpdateCellEditDialog.decrease"); //$NON-NLS-1$
+    private static final String ADJUST_BY = Messages.getString("TickUpdateCellEditDialog.adjust"); //$NON-NLS-1$
+    private static final String[] OPTIONS_DEFAULT = { SET, INCREASE_BY, DECREASE_BY };
     private static final String[] OPTIONS_ADJUST = { SET, ADJUST_BY };
 
     /**
@@ -127,9 +121,11 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
         this.tickUpdateHandler = tickUpdateHandler;
 
         Boolean useAdjustByConfig = configRegistry.getConfigAttribute(
-                TickUpdateConfigAttributes.USE_ADJUST_BY, DisplayMode.EDIT,
-                cell.getConfigLabels().getLabels());
-        this.useAdjustBy = useAdjustByConfig != null ? useAdjustByConfig
+                TickUpdateConfigAttributes.USE_ADJUST_BY,
+                DisplayMode.EDIT,
+                cell.getConfigLabels());
+        this.useAdjustBy = useAdjustByConfig != null
+                ? useAdjustByConfig
                 : false;
     }
 
@@ -150,15 +146,15 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
                 this.configRegistry);
 
         this.validator = this.configRegistry.getConfigAttribute(
-                EditConfigAttributes.DATA_VALIDATOR, DisplayMode.EDIT,
-                this.cell.getConfigLabels().getLabels());
+                EditConfigAttributes.DATA_VALIDATOR,
+                DisplayMode.EDIT,
+                this.cell.getConfigLabels());
 
         if (this.cellEditor instanceof AbstractCellEditor) {
             // need to override the validator because increase decrease adjust
             // don't need to validate immediately
-            ((AbstractCellEditor) this.cellEditor)
-                    .setDataValidator(new TickUpdateDataValidatorWrapper(
-                            this.validator));
+            ((AbstractCellEditor) this.cellEditor).setDataValidator(
+                    new TickUpdateDataValidatorWrapper(this.validator));
         }
 
         Control editorControl = this.cellEditor.getEditorControl();
@@ -166,15 +162,20 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
         // propagate the ESC event from the editor to the dialog
         editorControl.addKeyListener(getEscKeyListener());
 
-        GridDataFactory.fillDefaults().grab(true, false).hint(100, 20)
-                .indent(5, 0).applyTo(editorControl);
+        GridDataFactory.fillDefaults()
+                .grab(true, false)
+                .hint(100, 20)
+                .indent(5, 0)
+                .applyTo(editorControl);
+
         // if the editor control already has no layout data set already, apply
         // the default one
         // this check allows to specify a custom layout data while creating the
-        // editor control
-        // in the ICellEditor
+        // editor control in the ICellEditor
         if (editorControl.getLayoutData() == null) {
-            GridDataFactory.fillDefaults().grab(true, false).hint(100, 20)
+            GridDataFactory.fillDefaults()
+                    .grab(true, false)
+                    .hint(100, 20)
                     .applyTo(editorControl);
         }
 
@@ -191,8 +192,7 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
      *            update combo.
      */
     private void createUpdateCombo(Composite composite) {
-        this.updateCombo = new Combo(composite, SWT.READ_ONLY | SWT.DROP_DOWN
-                | SWT.BORDER);
+        this.updateCombo = new Combo(composite, SWT.READ_ONLY | SWT.DROP_DOWN | SWT.BORDER);
 
         for (String option : this.useAdjustBy ? OPTIONS_ADJUST : OPTIONS_DEFAULT) {
             this.updateCombo.add(option);
@@ -234,10 +234,11 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
 
     @Override
     public Object calculateValue(Object currentValue, Object processValue) {
-        double delta = ((processValue == null) ? 0
-                : (processValue instanceof Number) ? ((Number) processValue)
-                        .doubleValue() : Double.valueOf((String) processValue)
-                        .doubleValue());
+        double delta = ((processValue == null)
+                ? 0
+                : (processValue instanceof Number)
+                        ? ((Number) processValue).doubleValue()
+                        : Double.valueOf((String) processValue).doubleValue());
         if (this.editType == EditTypeEnum.ADJUST) {
             if (delta >= 0) {
                 this.editType = EditTypeEnum.INCREASE;
@@ -249,12 +250,10 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
         Object newValue = null;
         switch (this.editType) {
             case INCREASE:
-                newValue = this.tickUpdateHandler.getIncrementedValue(currentValue,
-                        delta);
+                newValue = this.tickUpdateHandler.getIncrementedValue(currentValue, delta);
                 break;
             case DECREASE:
-                newValue = this.tickUpdateHandler.getDecrementedValue(currentValue,
-                        delta);
+                newValue = this.tickUpdateHandler.getDecrementedValue(currentValue, delta);
                 break;
         }
 
@@ -262,11 +261,11 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
             if (this.validator.validate(this.cell, this.configRegistry, newValue)) {
                 return newValue;
             } else {
-                log.warn("Tick update failed for value " + newValue //$NON-NLS-1$
+                LOG.warn("Tick update failed for value " + newValue //$NON-NLS-1$
                         + ". New value is not valid!"); //$NON-NLS-1$
             }
         } catch (Exception e) {
-            log.warn("Tick update failed for value " + newValue //$NON-NLS-1$
+            LOG.warn("Tick update failed for value " + newValue //$NON-NLS-1$
                     + ". " + e.getLocalizedMessage()); //$NON-NLS-1$
         }
 
@@ -280,8 +279,7 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
      * within this dialog. Will only execute the validation if
      * {@link EditTypeEnum#SET} is used. Otherwise validation is skipped.
      */
-    private final class TickUpdateDataValidatorWrapper implements
-            IDataValidator {
+    private final class TickUpdateDataValidatorWrapper implements IDataValidator {
 
         IDataValidator wrappedValidator;
 
@@ -292,18 +290,15 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
         @Override
         public boolean validate(int columnIndex, int rowIndex, Object newValue) {
             if (TickUpdateCellEditDialog.this.editType == EditTypeEnum.SET) {
-                return this.wrappedValidator.validate(columnIndex, rowIndex,
-                        newValue);
+                return this.wrappedValidator.validate(columnIndex, rowIndex, newValue);
             }
             return true;
         }
 
         @Override
-        public boolean validate(ILayerCell cell,
-                IConfigRegistry configRegistry, Object newValue) {
+        public boolean validate(ILayerCell cell, IConfigRegistry configRegistry, Object newValue) {
             if (TickUpdateCellEditDialog.this.editType == EditTypeEnum.SET) {
-                return this.wrappedValidator.validate(cell, configRegistry,
-                        newValue);
+                return this.wrappedValidator.validate(cell, configRegistry, newValue);
             }
             return true;
         }

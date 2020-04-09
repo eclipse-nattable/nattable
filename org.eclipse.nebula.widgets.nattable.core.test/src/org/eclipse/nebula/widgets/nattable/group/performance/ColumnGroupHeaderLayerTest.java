@@ -11545,14 +11545,14 @@ public class ColumnGroupHeaderLayerTest {
     public void shouldReturnConfigLabels() {
         // check expanded column group
         LabelStack stack = this.columnGroupHeaderLayer.getConfigLabelsByPosition(0, 0);
-        assertEquals(2, stack.getLabels().size());
+        assertEquals(2, stack.size());
         assertTrue(stack.hasLabel(GridRegion.COLUMN_GROUP_HEADER));
         assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_EXPANDED_CONFIG_TYPE));
 
         // check collapsed column group
         this.columnGroupHeaderLayer.collapseGroup(0);
         stack = this.columnGroupHeaderLayer.getConfigLabelsByPosition(0, 0);
-        assertEquals(2, stack.getLabels().size());
+        assertEquals(2, stack.size());
         assertTrue(stack.hasLabel(GridRegion.COLUMN_GROUP_HEADER));
         assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_COLLAPSED_CONFIG_TYPE));
 
@@ -11565,7 +11565,7 @@ public class ColumnGroupHeaderLayerTest {
 
         // check ungrouped
         stack = this.columnGroupHeaderLayer.getConfigLabelsByPosition(3, 0);
-        assertEquals(0, stack.getLabels().size());
+        assertEquals(0, stack.size());
     }
 
     @Test
@@ -11583,7 +11583,7 @@ public class ColumnGroupHeaderLayerTest {
 
         // check expanded column group
         LabelStack stack = this.columnGroupHeaderLayer.getConfigLabelsByPosition(0, 0);
-        assertEquals(3, stack.getLabels().size());
+        assertEquals(3, stack.size());
         assertTrue(stack.hasLabel(GridRegion.COLUMN_GROUP_HEADER));
         assertTrue(stack.hasLabel("custom"));
         assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_EXPANDED_CONFIG_TYPE));
@@ -11591,7 +11591,7 @@ public class ColumnGroupHeaderLayerTest {
         // check collapsed column group
         this.columnGroupHeaderLayer.collapseGroup(0);
         stack = this.columnGroupHeaderLayer.getConfigLabelsByPosition(0, 0);
-        assertEquals(3, stack.getLabels().size());
+        assertEquals(3, stack.size());
         assertTrue(stack.hasLabel(GridRegion.COLUMN_GROUP_HEADER));
         assertTrue(stack.hasLabel("custom"));
         assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_COLLAPSED_CONFIG_TYPE));
@@ -11605,7 +11605,7 @@ public class ColumnGroupHeaderLayerTest {
 
         // check ungrouped
         stack = this.columnGroupHeaderLayer.getConfigLabelsByPosition(3, 0);
-        assertEquals(0, stack.getLabels().size());
+        assertEquals(0, stack.size());
     }
 
     @Test

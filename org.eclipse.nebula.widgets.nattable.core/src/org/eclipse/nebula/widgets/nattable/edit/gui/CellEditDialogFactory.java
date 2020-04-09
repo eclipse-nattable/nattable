@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.gui;
 
@@ -24,9 +24,6 @@ import org.eclipse.swt.widgets.Shell;
 /**
  * Factory to create {@link ICellEditDialog} instances that should be opened for
  * editing cell values.
- *
- * @author Dirk Fauth
- *
  */
 public class CellEditDialogFactory {
 
@@ -73,36 +70,47 @@ public class CellEditDialogFactory {
         // if the cell editor itself is a ICellEditDialog, simply return it
         if (cellEditor instanceof ICellEditDialog) {
             // activate the editor and then return it
-            cellEditor.activateCell(parentShell, originalCanonicalValue,
-                    EditModeEnum.DIALOG, new DialogEditHandler(), cell,
+            cellEditor.activateCell(
+                    parentShell,
+                    originalCanonicalValue,
+                    EditModeEnum.DIALOG,
+                    new DialogEditHandler(),
+                    cell,
                     configRegistry);
             result = (ICellEditDialog) cellEditor;
         } else {
-            ITickUpdateHandler tickUpdateHandler = configRegistry
-                    .getConfigAttribute(
-                            TickUpdateConfigAttributes.UPDATE_HANDLER,
-                            DisplayMode.EDIT, cell.getConfigLabels()
-                                    .getLabels());
+            ITickUpdateHandler tickUpdateHandler = configRegistry.getConfigAttribute(
+                    TickUpdateConfigAttributes.UPDATE_HANDLER,
+                    DisplayMode.EDIT,
+                    cell.getConfigLabels());
             if (tickUpdateHandler != null
                     && tickUpdateHandler.isApplicableFor(cell.getDataValue())) {
                 // if a tick update handler is applicable, return the
                 // TickUpdateCellEditDialog
-                result = new TickUpdateCellEditDialog(parentShell,
-                        originalCanonicalValue, cell, cellEditor,
-                        configRegistry, tickUpdateHandler);
+                result = new TickUpdateCellEditDialog(
+                        parentShell,
+                        originalCanonicalValue,
+                        cell,
+                        cellEditor,
+                        configRegistry,
+                        tickUpdateHandler);
             } else {
                 // return the default edit dialog that will show the underlying
                 // editor
-                result = new CellEditDialog(parentShell,
-                        originalCanonicalValue, cell, cellEditor,
+                result = new CellEditDialog(
+                        parentShell,
+                        originalCanonicalValue,
+                        cell,
+                        cellEditor,
                         configRegistry);
             }
         }
 
         // check if there are custom edit dialog settings registered
         result.setDialogSettings(configRegistry.getConfigAttribute(
-                EditConfigAttributes.EDIT_DIALOG_SETTINGS, DisplayMode.EDIT,
-                cell.getConfigLabels().getLabels()));
+                EditConfigAttributes.EDIT_DIALOG_SETTINGS,
+                DisplayMode.EDIT,
+                cell.getConfigLabels()));
 
         return result;
     }

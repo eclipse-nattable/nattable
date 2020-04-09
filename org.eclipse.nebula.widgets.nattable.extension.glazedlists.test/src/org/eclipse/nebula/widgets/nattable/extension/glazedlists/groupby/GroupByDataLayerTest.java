@@ -277,9 +277,9 @@ public class GroupByDataLayerTest {
                     assertTrue("groupBy column label not found", stack.hasLabel(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column));
 
                     // respect the label order
-                    assertEquals(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column, stack.getLabels().get(0));
-                    assertEquals(GroupByDataLayer.GROUP_BY_OBJECT, stack.getLabels().get(1));
-                    assertEquals(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + column, stack.getLabels().get(2));
+                    assertEquals(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column, stack.get(0));
+                    assertEquals(GroupByDataLayer.GROUP_BY_OBJECT, stack.get(1));
+                    assertEquals(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + column, stack.get(2));
                 } else {
                     assertFalse("groupBy object label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_OBJECT));
                     assertFalse("groupBy column label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column));
@@ -314,19 +314,19 @@ public class GroupByDataLayerTest {
                         assertTrue("groupBy summary column label not found", stack.hasLabel(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + column));
 
                         // respect the label order
-                        assertEquals(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + column, stack.getLabels().get(0));
-                        assertEquals(GroupByDataLayer.GROUP_BY_SUMMARY, stack.getLabels().get(1));
-                        assertEquals(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column, stack.getLabels().get(2));
-                        assertEquals(GroupByDataLayer.GROUP_BY_OBJECT, stack.getLabels().get(3));
-                        assertEquals(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + column, stack.getLabels().get(4));
+                        assertEquals(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + column, stack.get(0));
+                        assertEquals(GroupByDataLayer.GROUP_BY_SUMMARY, stack.get(1));
+                        assertEquals(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column, stack.get(2));
+                        assertEquals(GroupByDataLayer.GROUP_BY_OBJECT, stack.get(3));
+                        assertEquals(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + column, stack.get(4));
                     } else {
                         assertFalse("groupBy summary label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_SUMMARY));
                         assertFalse("groupBy summary column label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + column));
 
                         // respect the label order
-                        assertEquals(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column, stack.getLabels().get(0));
-                        assertEquals(GroupByDataLayer.GROUP_BY_OBJECT, stack.getLabels().get(1));
-                        assertEquals(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + column, stack.getLabels().get(2));
+                        assertEquals(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column, stack.get(0));
+                        assertEquals(GroupByDataLayer.GROUP_BY_OBJECT, stack.get(1));
+                        assertEquals(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + column, stack.get(2));
                     }
                 } else {
                     assertFalse("groupBy object label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_OBJECT));
@@ -367,28 +367,28 @@ public class GroupByDataLayerTest {
                         // should have conditional formatting
                         if (row == 9) {
                             // respect the label order
-                            assertEquals(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + column, stack.getLabels().get(0));
-                            assertEquals(GroupByDataLayer.GROUP_BY_SUMMARY, stack.getLabels().get(1));
-                            assertEquals(MY_LABEL, stack.getLabels().get(2));
-                            assertEquals(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column, stack.getLabels().get(3));
-                            assertEquals(GroupByDataLayer.GROUP_BY_OBJECT, stack.getLabels().get(4));
-                            assertEquals(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + column, stack.getLabels().get(5));
+                            assertEquals(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + column, stack.get(0));
+                            assertEquals(GroupByDataLayer.GROUP_BY_SUMMARY, stack.get(1));
+                            assertEquals(MY_LABEL, stack.get(2));
+                            assertEquals(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column, stack.get(3));
+                            assertEquals(GroupByDataLayer.GROUP_BY_OBJECT, stack.get(4));
+                            assertEquals(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + column, stack.get(5));
                         } else {
                             // respect the label order
-                            assertEquals(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + column, stack.getLabels().get(0));
-                            assertEquals(GroupByDataLayer.GROUP_BY_SUMMARY, stack.getLabels().get(1));
-                            assertEquals(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column, stack.getLabels().get(2));
-                            assertEquals(GroupByDataLayer.GROUP_BY_OBJECT, stack.getLabels().get(3));
-                            assertEquals(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + column, stack.getLabels().get(4));
+                            assertEquals(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + column, stack.get(0));
+                            assertEquals(GroupByDataLayer.GROUP_BY_SUMMARY, stack.get(1));
+                            assertEquals(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column, stack.get(2));
+                            assertEquals(GroupByDataLayer.GROUP_BY_OBJECT, stack.get(3));
+                            assertEquals(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + column, stack.get(4));
                         }
                     } else {
                         assertFalse("groupBy summary label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_SUMMARY));
                         assertFalse("groupBy summary column label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + column));
 
                         // respect the label order
-                        assertEquals(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column, stack.getLabels().get(0));
-                        assertEquals(GroupByDataLayer.GROUP_BY_OBJECT, stack.getLabels().get(1));
-                        assertEquals(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + column, stack.getLabels().get(2));
+                        assertEquals(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column, stack.get(0));
+                        assertEquals(GroupByDataLayer.GROUP_BY_OBJECT, stack.get(1));
+                        assertEquals(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + column, stack.get(2));
                     }
                 } else {
                     assertFalse("groupBy object label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_OBJECT));

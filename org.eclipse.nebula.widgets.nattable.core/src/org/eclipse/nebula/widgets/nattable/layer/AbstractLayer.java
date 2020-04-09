@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -80,7 +80,8 @@ public abstract class AbstractLayer implements ILayer {
     // Dispose
 
     @Override
-    public void dispose() {}
+    public void dispose() {
+    }
 
     // Regions
 
@@ -405,7 +406,7 @@ public abstract class AbstractLayer implements ILayer {
         return configRegistry.getConfigAttribute(
                 CellConfigAttributes.CELL_PAINTER,
                 cell.getDisplayMode(),
-                cell.getConfigLabels().getLabels());
+                cell.getConfigLabels());
     }
 
     /**

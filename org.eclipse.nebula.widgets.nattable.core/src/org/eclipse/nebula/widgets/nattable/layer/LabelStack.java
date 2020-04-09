@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,82 +10,105 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LabelStack {
+/**
+ * Collection of labels applied to a cell. Used for conditional styling and
+ * behavior.
+ */
+public class LabelStack extends LinkedList<String> {
+
+    private static final long serialVersionUID = -2942954228158176792L;
 
     /**
-     * List implementation saves the overhead of popping labels off in the
-     * {@link #getLabels()} method
+     * Creates a {@link LabelStack} initialized with the given labels.
+     *
+     * @param labels
+     *            The labels that should be initially added to the created
+     *            {@link LabelStack}.
      */
-    private final List<String> labels = new LinkedList<String>();
+    public LabelStack(String... labels) {
+        super(Arrays.asList(labels));
+    }
 
-    public LabelStack(String... labelNames) {
-        for (String label : labelNames) {
-            if (label != null) {
-                this.labels.add(label);
-            }
-        }
+    /**
+     * Creates a {@link LabelStack} initialized with the given labels.
+     *
+     * @param labels
+     *            The labels that should be initially added to the created
+     *            {@link LabelStack}.
+     * @since 2.0
+     */
+    public LabelStack(Collection<String> labels) {
+        super(labels);
     }
 
     /**
      * Adds a label to the bottom of the label stack.
      *
      * @param label
+     *            The label to add.
+     * @return <code>true</code> if the label was added, <code>false</code> if
+     *         adding failed.
+     * @since 2.0
      */
-    public void addLabel(String label) {
+    public boolean addLabel(String label) {
         if (!hasLabel(label)) {
-            this.labels.add(label);
+            return add(label);
         }
+        return false;
     }
 
     /**
-     * Adds a label to the top of the label stack.
+     * Adds a label to the top of the label stack. If the label is already in
+     * the label stack it is moved to the top.
      *
      * @param label
+     *            The label to add.
      */
     public void addLabelOnTop(String label) {
-        if (!hasLabel(label)) {
-            this.labels.add(0, label);
+        if (hasLabel(label)) {
+            removeLabel(label);
         }
+        addFirst(label);
     }
 
+    /**
+     *
+     * @return The label stack collection.
+     * @deprecated As {@link LabelStack} is itself a collection, the usage of
+     *             this method is not needed anymore.
+     */
+    @Deprecated
     public List<String> getLabels() {
-        return this.labels;
+        return this;
     }
 
+    /**
+     * Check if the given label is on the label stack.
+     *
+     * @param label
+     *            The label to test.
+     * @return <code>true</code> if the label stack contains the given label,
+     *         <code>false</code> if not.
+     */
     public boolean hasLabel(String label) {
-        return this.labels.contains(label);
+        return contains(label);
     }
 
+    /**
+     * Removes the given label from the label stack.
+     *
+     * @param label
+     *            The label to remove.
+     * @return <code>true</code> if the label was removed, <code>false</code> if
+     *         not.
+     */
     public boolean removeLabel(String label) {
-        return this.labels.remove(label);
-    }
-
-    @Override
-    public String toString() {
-        return this.labels.toString();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-
-        if (!(obj instanceof LabelStack)) {
-            return false;
-        }
-
-        LabelStack that = (LabelStack) obj;
-
-        return this.labels.equals(that.labels);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.labels.hashCode();
+        return remove(label);
     }
 
 }

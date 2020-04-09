@@ -673,7 +673,7 @@ public class TableCellEditor extends AbstractCellEditor {
             this.conversionErrorStyle = TableCellEditor.this.configRegistry.getConfigAttribute(
                     EditConfigAttributes.CONVERSION_ERROR_STYLE,
                     DisplayMode.EDIT,
-                    TableCellEditor.this.labelStack.getLabels());
+                    TableCellEditor.this.labelStack);
 
             if (this.conversionErrorStyle == null) {
                 this.conversionErrorStyle = new Style();
@@ -685,7 +685,7 @@ public class TableCellEditor extends AbstractCellEditor {
             this.validationErrorStyle = TableCellEditor.this.configRegistry.getConfigAttribute(
                     EditConfigAttributes.VALIDATION_ERROR_STYLE,
                     DisplayMode.EDIT,
-                    TableCellEditor.this.labelStack.getLabels());
+                    TableCellEditor.this.labelStack);
 
             if (this.validationErrorStyle == null) {
                 this.validationErrorStyle = new Style();

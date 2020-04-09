@@ -299,11 +299,10 @@ public class SummaryRowIntegrationTest {
     @Test
     public void defaultConfigLabelsAreApplied() {
         LabelStack configLabels = this.natTable.getConfigLabelsByPosition(0, 4);
-        List<String> labels = configLabels.getLabels();
 
-        assertEquals(2, labels.size());
-        assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 0, labels.get(0));
-        assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL, labels.get(1));
+        assertEquals(2, configLabels.size());
+        assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 0, configLabels.get(0));
+        assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL, configLabels.get(1));
     }
 
     @Test
@@ -313,12 +312,11 @@ public class SummaryRowIntegrationTest {
         ((ViewportLayer) this.layerStackWithSummary).setConfigLabelAccumulator(labelAcc);
 
         LabelStack configLabels = this.natTable.getConfigLabelsByPosition(0, 4);
-        List<String> labels = configLabels.getLabels();
 
-        assertEquals(3, labels.size());
-        assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 0, labels.get(0));
-        assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL, labels.get(1));
-        assertEquals("myLabel", labels.get(2));
+        assertEquals(3, configLabels.size());
+        assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 0, configLabels.get(0));
+        assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL, configLabels.get(1));
+        assertEquals("myLabel", configLabels.get(2));
     }
 
     @Test
@@ -333,17 +331,15 @@ public class SummaryRowIntegrationTest {
         });
 
         LabelStack configLabels = this.natTable.getConfigLabelsByPosition(0, 4);
-        List<String> labels = configLabels.getLabels();
 
-        assertEquals(2, labels.size());
-        assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 0, labels.get(0));
-        assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL, labels.get(1));
+        assertEquals(2, configLabels.size());
+        assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 0, configLabels.get(0));
+        assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL, configLabels.get(1));
 
         configLabels = this.natTable.getConfigLabelsByPosition(0, 3);
-        labels = configLabels.getLabels();
 
-        assertEquals(1, labels.size());
-        assertTrue("Label in default body does not start with myLabel", labels.get(0).startsWith("myLabel"));
+        assertEquals(1, configLabels.size());
+        assertTrue("Label in default body does not start with myLabel", configLabels.get(0).startsWith("myLabel"));
     }
 
     @Test

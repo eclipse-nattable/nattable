@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *    Roman Flueckiger <roman.flueckiger@mac.com> - Bug 446866
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.matcher;
@@ -29,9 +29,6 @@ import org.eclipse.swt.events.MouseEvent;
  * is evaluated.
  * <p>
  * If not specified, this matcher will react on the left mouse button.
- *
- * @author Dirk Fauth
- *
  */
 public class CellEditorMouseEventMatcher implements IMouseEventMatcher {
 
@@ -123,11 +120,10 @@ public class CellEditorMouseEventMatcher implements IMouseEventMatcher {
                 // cell == null can happen if the viewport is quite large and
                 // contains not enough cells to fill it.
                 if (cell != null) {
-                    ICellEditor cellEditor = natTable.getConfigRegistry()
-                            .getConfigAttribute(
-                                    EditConfigAttributes.CELL_EDITOR,
-                                    DisplayMode.EDIT,
-                                    cell.getConfigLabels().getLabels());
+                    ICellEditor cellEditor = natTable.getConfigRegistry().getConfigAttribute(
+                            EditConfigAttributes.CELL_EDITOR,
+                            DisplayMode.EDIT,
+                            cell.getConfigLabels());
 
                     if (cellEditor != null
                             && cellEditor.activateAtAnyPosition()) {
