@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
-import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
@@ -40,7 +39,8 @@ public class AbstractIndexLayerTransform extends AbstractLayer implements IUniqu
 
     private IUniqueIndexLayer underlyingLayer;
 
-    public AbstractIndexLayerTransform() {}
+    public AbstractIndexLayerTransform() {
+    }
 
     public AbstractIndexLayerTransform(IUniqueIndexLayer underlyingLayer) {
         setUnderlyingLayer(underlyingLayer);
@@ -88,7 +88,7 @@ public class AbstractIndexLayerTransform extends AbstractLayer implements IUniqu
     // Configuration
 
     @Override
-    public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
+    public void configure(IConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
         super.configure(configRegistry, uiBindingRegistry);
         this.underlyingLayer.configure(configRegistry, uiBindingRegistry);
     }
@@ -386,7 +386,6 @@ public class AbstractIndexLayerTransform extends AbstractLayer implements IUniqu
 
     @Override
     public boolean isDynamicSizeLayer() {
-        return this.underlyingLayer instanceof AbstractLayer
-                && ((AbstractLayer) this.underlyingLayer).isDynamicSizeLayer();
+        return this.underlyingLayer.isDynamicSizeLayer();
     }
 }

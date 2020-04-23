@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,7 +21,6 @@ import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractRegionCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
-import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
@@ -115,7 +114,7 @@ public class CompositeLayer extends AbstractLayer {
     // Configuration
 
     @Override
-    public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
+    public void configure(IConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
         for (int layoutX = 0; layoutX < this.layoutXCount; layoutX++) {
             for (int layoutY = 0; layoutY < this.layoutYCount; layoutY++) {
                 this.childLayerLayout[layoutX][layoutY].configure(
@@ -696,7 +695,7 @@ public class CompositeLayer extends AbstractLayer {
 
         final Rectangle compositeClientArea = getClientAreaProvider().getClientArea();
 
-        if (childLayer instanceof AbstractLayer && ((AbstractLayer) childLayer).isDynamicSizeLayer()) {
+        if (childLayer.isDynamicSizeLayer()) {
 
             // check if there are further sections to the bottom and reduce the
             // height accordingly necessary in case the current child layer is
@@ -1010,8 +1009,7 @@ public class CompositeLayer extends AbstractLayer {
     public boolean isDynamicSizeLayer() {
         for (int layoutX = 0; layoutX < this.layoutXCount; layoutX++) {
             for (int layoutY = 0; layoutY < this.layoutYCount; layoutY++) {
-                if (this.childLayerLayout[layoutX][layoutY] instanceof AbstractLayer
-                        && ((AbstractLayer) this.childLayerLayout[layoutX][layoutY]).isDynamicSizeLayer()) {
+                if (this.childLayerLayout[layoutX][layoutY].isDynamicSizeLayer()) {
                     return true;
                 }
             }
@@ -1034,9 +1032,7 @@ public class CompositeLayer extends AbstractLayer {
                     labels.addAll(((IConfigLabelProvider) accumulator).getProvidedLabels());
                 }
 
-                if (childLayer instanceof AbstractLayer) {
-                    labels.addAll(((AbstractLayer) childLayer).getProvidedLabels());
-                }
+                labels.addAll(childLayer.getProvidedLabels());
             }
         }
         return labels;

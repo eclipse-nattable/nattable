@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,7 +40,6 @@ import org.eclipse.nebula.widgets.nattable.edit.CellEditorCreatedEvent;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeGridCommand;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DefaultHorizontalDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.DefaultVerticalDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
@@ -680,7 +678,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
     }
 
     @Override
-    public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
+    public void configure(IConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
         throw new UnsupportedOperationException("Cannot use this method to configure NatTable. Use no-argument configure() instead."); //$NON-NLS-1$
     }
 
@@ -696,8 +694,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
         }
 
         if (this.underlyingLayer != null) {
-            this.underlyingLayer.configure((ConfigRegistry) getConfigRegistry(),
-                    getUiBindingRegistry());
+            this.underlyingLayer.configure(getConfigRegistry(), getUiBindingRegistry());
         }
 
         for (IConfiguration configuration : this.configurations) {
@@ -1293,10 +1290,8 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
      *
      * @since 1.4
      */
+    @Override
     public Collection<String> getProvidedLabels() {
-        if (this.underlyingLayer instanceof AbstractLayer) {
-            return ((AbstractLayer) this.underlyingLayer).getProvidedLabels();
-        }
-        return Collections.emptySet();
+        return this.underlyingLayer.getProvidedLabels();
     }
 }

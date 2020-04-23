@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,7 @@ import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractRegionCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
-import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -96,7 +96,7 @@ public class DimensionallyDependentLayer extends AbstractLayer {
     // Configuration
 
     @Override
-    public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
+    public void configure(IConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
         this.baseLayer.configure(configRegistry, uiBindingRegistry);
         super.configure(configRegistry, uiBindingRegistry);
     }

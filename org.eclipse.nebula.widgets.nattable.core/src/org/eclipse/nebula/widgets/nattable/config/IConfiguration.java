@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,17 +22,23 @@ import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
  * These will be processed when {@link NatTable#configure()} is invoked.
  *
  * Default configurations are added to most layers
- * {@link AbstractLayer#addConfiguration(IConfiguration)}. You can turn off
- * default configuration for an {@link ILayer} by setting auto configure to
- * false in the constructor.
+ * {@link AbstractLayer#addConfiguration(IConfiguration)}. Typically you can
+ * turn off default configurations for an {@link ILayer} by setting
+ * autoconfigure to <code>false</code> in the constructor.
  */
 public interface IConfiguration {
 
+    /**
+     * Perform configurations on the provided layer.
+     *
+     * @param layer
+     *            The {@link ILayer} to configure.
+     */
     public void configureLayer(ILayer layer);
 
     /**
-     * Configure NatTable's {@link IConfigRegistry} upon receiving this call
-     * back. A mechanism to plug-in custom {@link ICellPainter},
+     * Configure NatTable's {@link IConfigRegistry} upon receiving this
+     * callback. A mechanism to plug-in custom {@link ICellPainter},
      * {@link IDataValidator} etc.
      *
      * @param configRegistry
@@ -42,8 +48,8 @@ public interface IConfiguration {
     public void configureRegistry(IConfigRegistry configRegistry);
 
     /**
-     * Configure NatTable's {@link IConfigRegistry} upon receiving this call
-     * back A mechanism to customize key/mouse bindings.
+     * Configure NatTable's {@link UiBindingRegistry} upon receiving this
+     * callback. A mechanism to customize key/mouse bindings.
      *
      * @param uiBindingRegistry
      *            The {@link UiBindingRegistry} instance to register ui bindings

@@ -467,8 +467,6 @@ public abstract class AbstractCellEditor implements ICellEditor {
         return cellBounds;
     }
 
-    // TODO move to interface
-
     /**
      * This method can be used to set the {@link IDataValidator} to use. This
      * might be useful e.g. the configured validator needs to be wrapped to add

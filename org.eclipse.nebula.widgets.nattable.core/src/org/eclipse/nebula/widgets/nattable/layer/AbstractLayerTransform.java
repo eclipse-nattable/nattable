@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
-import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
@@ -39,7 +38,8 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
 
     protected ILayer underlyingLayer;
 
-    public AbstractLayerTransform() {}
+    public AbstractLayerTransform() {
+    }
 
     public AbstractLayerTransform(ILayer underlyingLayer) {
         setUnderlyingLayer(underlyingLayer);
@@ -84,7 +84,7 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
     // Configuration
 
     @Override
-    public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
+    public void configure(IConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
         this.underlyingLayer.configure(configRegistry, uiBindingRegistry);
         super.configure(configRegistry, uiBindingRegistry);
     }
@@ -390,7 +390,7 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
 
     @Override
     public boolean isDynamicSizeLayer() {
-        return ((AbstractLayer) this.underlyingLayer).isDynamicSizeLayer();
+        return this.underlyingLayer.isDynamicSizeLayer();
     }
 
 }

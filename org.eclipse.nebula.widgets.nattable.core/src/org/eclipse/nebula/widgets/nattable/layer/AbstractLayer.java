@@ -29,7 +29,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
-import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
@@ -161,7 +160,7 @@ public abstract class AbstractLayer implements ILayer {
     }
 
     @Override
-    public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
+    public void configure(IConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
         if (!this.configurationApplied) {
             for (IConfiguration configuration : this.configurations) {
                 configuration.configureLayer(this);
@@ -414,6 +413,7 @@ public abstract class AbstractLayer implements ILayer {
      *         or a fixed size.
      * @since 1.4
      */
+    @Override
     public boolean isDynamicSizeLayer() {
         return false;
     }
@@ -422,13 +422,14 @@ public abstract class AbstractLayer implements ILayer {
      * @return The collection of labels that are provided by this layer.
      * @since 1.4
      */
+    @Override
     public Collection<String> getProvidedLabels() {
         Collection<String> labels = null;
 
-        if (getUnderlyingLayerByPosition(0, 0) instanceof AbstractLayer) {
-            labels = ((AbstractLayer) getUnderlyingLayerByPosition(0, 0)).getProvidedLabels();
+        if (getUnderlyingLayerByPosition(0, 0) != null) {
+            labels = getUnderlyingLayerByPosition(0, 0).getProvidedLabels();
         } else {
-            labels = new LinkedHashSet<String>();
+            labels = new LinkedHashSet<>();
         }
 
         // add the region
