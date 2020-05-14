@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -158,7 +158,8 @@ public class _602_GlazedListsSortingExample extends AbstractNatExample {
                                 sortedList,
                                 accessor,
                                 configRegistry,
-                                columnHeaderDataLayer));
+                                columnHeaderDataLayer),
+                        false);
 
         // build the row header layer
         IDataProvider rowHeaderDataProvider =
@@ -216,23 +217,23 @@ public class _602_GlazedListsSortingExample extends AbstractNatExample {
                 configRegistry.registerConfigAttribute(
                         SortConfigAttributes.SORT_COMPARATOR,
                         new Comparator<String>() {
-                    @Override
-                    public int compare(String o1, String o2) {
+                            @Override
+                            public int compare(String o1, String o2) {
 
-                        // check the sort order
-                        boolean sortDesc = sortHeaderLayer
-                                .getSortModel().getSortDirection(1)
-                                .equals(SortDirectionEnum.DESC);
-                        if ("Simpson".equals(o1)
-                                && !"Simpson".equals(o2)) {
-                            return sortDesc ? 1 : -1;
-                        } else if (!"Simpson".equals(o1)
-                                && "Simpson".equals(o2)) {
-                            return sortDesc ? -1 : 1;
-                        }
-                        return o1.compareToIgnoreCase(o2);
-                    }
-                },
+                                // check the sort order
+                                boolean sortDesc = sortHeaderLayer
+                                        .getSortModel().getSortDirection(1)
+                                        .equals(SortDirectionEnum.DESC);
+                                if ("Simpson".equals(o1)
+                                        && !"Simpson".equals(o2)) {
+                                    return sortDesc ? 1 : -1;
+                                } else if (!"Simpson".equals(o1)
+                                        && "Simpson".equals(o2)) {
+                                    return sortDesc ? -1 : 1;
+                                }
+                                return o1.compareToIgnoreCase(o2);
+                            }
+                        },
                         DisplayMode.NORMAL,
                         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 1);
 
