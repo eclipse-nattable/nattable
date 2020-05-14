@@ -82,6 +82,7 @@
                   <signFiles>
                     <signFile>${project.build.directory}/products/${product-folder}/macosx/cocoa/x86_64/NatTable Example Application.app</signFile>
                   </signFiles>
+				  <entitlements>${project.basedir}/nattable.entitlement</entitlements>
                 </configuration>
               </execution>
             </executions>
