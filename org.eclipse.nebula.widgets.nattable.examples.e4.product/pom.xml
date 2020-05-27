@@ -86,6 +86,7 @@
 				  <timeoutMillis>300000</timeoutMillis> <!-- 5 min -->
                   <continueOnFail>${macSigner.forceContinue}</continueOnFail>
 				  <entitlements>${project.basedir}/nattable.entitlement</entitlements>
+				  <signerUrl>http://172.30.206.146:8282/macosx-signing-service/1.0.1-SNAPSHOT</signerUrl>
                 </configuration>
               </execution>
             </executions>
@@ -111,7 +112,7 @@
               </execution>
             </executions>
           </plugin>
-		  
+
 		  <!-- create DMG file -->
 		  <plugin>
             <groupId>org.eclipse.cbi.maven.plugins</groupId>
@@ -127,7 +128,7 @@
                   <source>${project.build.directory}/products/org.eclipse.nebula.widgets.nattable.examples.e4.product-macosx.cocoa.x86_64.tar.gz</source>
                   <continueOnFail>true</continueOnFail>
                   <timeoutMillis>600000</timeoutMillis> <!-- 10 min -->
-                  <continueOnFail>${macSigner.forceContinue}</continueOnFail>                  
+                  <continueOnFail>${macSigner.forceContinue}</continueOnFail>
                   <sign>true</sign>
                 </configuration>
               </execution>
