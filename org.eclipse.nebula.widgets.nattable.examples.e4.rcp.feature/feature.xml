@@ -333,26 +333,6 @@ Minimalistic E4 RCP feature with reduced set of bundles
          fragment="true"/>
 
    <plugin
-         id="org.eclipse.equinox.launcher.gtk.linux.ppc64"
-         os="linux"
-         ws="gtk"
-         arch="ppc64"
-         download-size="86"
-         install-size="238"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
-         id="org.eclipse.equinox.launcher.gtk.linux.ppc64le"
-         os="linux"
-         ws="gtk"
-         arch="ppc64le"
-         download-size="83"
-         install-size="216"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
          id="org.eclipse.equinox.launcher.gtk.linux.x86_64"
          os="linux"
          ws="gtk"
@@ -450,28 +430,6 @@ Minimalistic E4 RCP feature with reduced set of bundles
          arch="x86_64"
          download-size="2399"
          install-size="5512"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.swt.gtk.linux.ppc64"
-         os="linux"
-         ws="gtk"
-         arch="ppc64"
-         download-size="2601"
-         install-size="6767"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.swt.gtk.linux.ppc64le"
-         os="linux"
-         ws="gtk"
-         arch="ppc64le"
-         download-size="2567"
-         install-size="6505"
          version="0.0.0"
          fragment="true"
          unpack="false"/>
