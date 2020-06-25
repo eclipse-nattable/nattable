@@ -39,39 +39,41 @@ public class PositionUtilBenchmark {
 
     private int[] valuesPrimitive;
 
-    private ArrayList<Integer> valuesWrapper;
+    private List<Integer> valuesWrapper;
 
     public static void main(String[] args) {
         PositionUtilBenchmark benchmark = new PositionUtilBenchmark();
         benchmark.startGrouping();
 
+        System.out.println();
+
         benchmark.startBoxingUnboxing();
 
-        System.out.println();
         System.out.println();
         benchmark.getPositionsPerformance();
     }
 
     PositionUtilBenchmark() {
-        this.valuesPrimitive = createPrimitiveValuesArrayForEach();
-        int[] valuesFromIntStream = createPrimitiveValuesArrayIntStream();
-
-        if (!Arrays.equals(this.valuesPrimitive, valuesFromIntStream)) {
-            System.err.println("Primitive input not equal");
+        this.valuesPrimitive = new int[999_991];
+        int index = 0;
+        for (int i = 0; i < 1_000_000; i++) {
+            if (i == 0 || i % 100_000 != 0) {
+                this.valuesPrimitive[index] = i;
+                index++;
+            }
         }
 
-        this.valuesWrapper = createWrapperValuesForEach();
-        ArrayList<Integer> wrapperFromStream = createWrapperValuesIntStream();
-
-        if (!this.valuesWrapper.equals(wrapperFromStream)) {
-            System.err.println("Wrapper input not equal");
+        this.valuesWrapper = new ArrayList<>(999_991);
+        for (int i = 0; i < 1_000_000; i++) {
+            if (i == 0 || i % 100_000 != 0) {
+                this.valuesWrapper.add(i);
+            }
         }
     }
 
     @SuppressWarnings("unused")
     void startBoxingUnboxing() {
 
-        System.out.println();
         System.out.println("start boxing/unboxing");
         System.out.println();
 
@@ -157,7 +159,6 @@ public class PositionUtilBenchmark {
     @SuppressWarnings("unused")
     void startGrouping() {
 
-        System.out.println();
         System.out.println("start grouping");
         System.out.println();
 
@@ -191,101 +192,17 @@ public class PositionUtilBenchmark {
 
     }
 
-    private int[] createPrimitiveValuesArrayForEach() {
-        int sum = 0;
-        int[] values = null;
-        for (int j = 0; j < ITERATIONS; j++) {
-            long start = System.currentTimeMillis();
-            values = new int[999_991];
-            int index = 0;
-            for (int i = 0; i < 1_000_000; i++) {
-                if (i == 0 || i % 100_000 != 0) {
-                    values[index] = i;
-                    index++;
-                }
-            }
-            long end = System.currentTimeMillis();
-
-            sum += (end - start);
-        }
-
-        System.out.println("collecting int[] via for-loop\t\t" + (sum / ITERATIONS) + " ms"); //$NON-NLS-1$ //$NON-NLS-2$
-
-        return values;
-    }
-
-    private int[] createPrimitiveValuesArrayIntStream() {
-        int sum = 0;
-        int[] values = null;
-        for (int j = 0; j < ITERATIONS; j++) {
-            long start = System.currentTimeMillis();
-            values = IntStream.range(0, 1_000_000)
-                    .filter(i -> i == 0 || i % 100_000 != 0)
-                    .toArray();
-            long end = System.currentTimeMillis();
-
-            sum += (end - start);
-        }
-
-        System.out.println("collecting int[] via IntStream\t\t" + (sum / ITERATIONS) + " ms"); //$NON-NLS-1$ //$NON-NLS-2$
-
-        return values;
-    }
-
-    private ArrayList<Integer> createWrapperValuesForEach() {
-        int sum = 0;
-        ArrayList<Integer> values = null;
-        for (int j = 0; j < ITERATIONS; j++) {
-            long start = System.currentTimeMillis();
-            values = new ArrayList<Integer>();
-            for (int i = 0; i < 1_000_000; i++) {
-                if (i == 0 || i % 100_000 != 0) {
-                    values.add(i);
-                }
-            }
-            long end = System.currentTimeMillis();
-
-            sum += (end - start);
-        }
-
-        System.out.println("collecting List<Integer> via for-loop\t" + (sum / ITERATIONS) + " ms"); //$NON-NLS-1$ //$NON-NLS-2$
-
-        return values;
-    }
-
-    private ArrayList<Integer> createWrapperValuesIntStream() {
-        int sum = 0;
-        ArrayList<Integer> values = null;
-        for (int j = 0; j < ITERATIONS; j++) {
-            long start = System.currentTimeMillis();
-
-            values = new ArrayList<Integer>();
-            values.addAll(IntStream.range(0, 1_000_000)
-                    .filter(i -> (i == 0 || i % 100_000 != 0))
-                    .boxed()
-                    .collect(Collectors.toList()));
-
-            long end = System.currentTimeMillis();
-
-            sum += (end - start);
-        }
-
-        System.out.println("collecting List<Integer> via IntStream\t" + (sum / ITERATIONS) + " ms"); //$NON-NLS-1$ //$NON-NLS-2$
-
-        return values;
-    }
-
     public static List<List<Integer>> getGroupedByContiguousWrapperToWrapper(Collection<Integer> numberCollection) {
         int sum = 0;
         ArrayList<List<Integer>> grouped = null;
         for (int j = 0; j < ITERATIONS; j++) {
             long start = System.currentTimeMillis();
 
-            ArrayList<Integer> numbers = new ArrayList<Integer>(numberCollection);
+            ArrayList<Integer> numbers = new ArrayList<>(numberCollection);
             Collections.sort(numbers);
 
-            ArrayList<Integer> contiguous = new ArrayList<Integer>();
-            grouped = new ArrayList<List<Integer>>();
+            ArrayList<Integer> contiguous = new ArrayList<>();
+            grouped = new ArrayList<>();
 
             for (int i = 0; i < numbers.size() - 1; i++) {
                 if (numbers.get(i).intValue() + 1 != numbers.get(i + 1).intValue()) {
