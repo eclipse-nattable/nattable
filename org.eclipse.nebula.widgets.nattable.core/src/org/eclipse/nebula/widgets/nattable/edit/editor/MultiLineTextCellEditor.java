@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.edit.editor;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
+import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -73,7 +74,7 @@ public class MultiLineTextCellEditor extends TextCellEditor {
 
     @Override
     public Text createEditorControl(Composite parent) {
-        boolean openInline = openInline(this.configRegistry, this.labelStack);
+        boolean openInline = (this.editMode == EditModeEnum.INLINE);
 
         int style = HorizontalAlignmentEnum.getSWTStyle(this.cellStyle) | SWT.MULTI | SWT.BORDER;
         if (!openInline) {
