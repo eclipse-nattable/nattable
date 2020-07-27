@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2019 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -56,7 +56,7 @@ public class DetailGlazedListsEventLayer<T>
      * it. Storing the underlying layer reference as {@link IUniqueIndexLayer}
      * in here avoids casting operations at every access.
      */
-    private final IUniqueIndexLayer underlyingLayer;
+    private final IUniqueIndexLayer underlying;
 
     /**
      * The {@link EventList} whose events this layer is processing. Needed here
@@ -82,7 +82,7 @@ public class DetailGlazedListsEventLayer<T>
      */
     public DetailGlazedListsEventLayer(IUniqueIndexLayer underlyingLayer, EventList<T> eventList) {
         super(underlyingLayer);
-        this.underlyingLayer = underlyingLayer;
+        this.underlying = underlyingLayer;
 
         // add ourself as listener to the EventList
         this.eventList = eventList;
@@ -286,12 +286,12 @@ public class DetailGlazedListsEventLayer<T>
 
     @Override
     public int getColumnPositionByIndex(int columnIndex) {
-        return this.underlyingLayer.getColumnPositionByIndex(columnIndex);
+        return this.underlying.getColumnPositionByIndex(columnIndex);
     }
 
     @Override
     public int getRowPositionByIndex(int rowIndex) {
-        return this.underlyingLayer.getRowPositionByIndex(rowIndex);
+        return this.underlying.getRowPositionByIndex(rowIndex);
     }
 
 }

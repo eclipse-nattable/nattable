@@ -270,19 +270,12 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 
         int startPositionOfGroup = getStartPositionOfGroup(rowPosition);
         int endPositionOfGroup = startPositionOfGroup + sizeOfGroup;
-        int[] rowIndexesInGroup = RowGroupUtils.getRowIndexesInGroupAsArray(this.model, rowIndex);
+        List<Integer> rowIndexesInGroup = RowGroupUtils.getRowIndexesInGroup(this.model, rowIndex);
 
         for (int i = startPositionOfGroup; i < endPositionOfGroup; i++) {
             int index = getRowIndexByPosition(i);
-            for (int j = 0; j < rowIndexesInGroup.length; j++) {
-                boolean contained = false;
-                if (rowIndexesInGroup[j] == index) {
-                    contained = true;
-                    break;
-                }
-                if (contained) {
-                    sizeOfGroup--;
-                }
+            if (!rowIndexesInGroup.contains(Integer.valueOf(index))) {
+                sizeOfGroup--;
             }
         }
 
@@ -326,9 +319,12 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
     @Override
     public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
         int rowIndex = getRowIndexByPosition(rowPosition);
-        if (columnPosition == 0
-                && RowGroupUtils.isPartOfAGroup(this.model, rowIndex)) {
-            LabelStack stack = new LabelStack(GridRegion.ROW_GROUP_HEADER);
+        if (columnPosition == 0 && RowGroupUtils.isPartOfAGroup(this.model, rowIndex)) {
+            LabelStack stack = new LabelStack();
+            if (getConfigLabelAccumulator() != null) {
+                getConfigLabelAccumulator().accumulateConfigLabels(stack, columnPosition, rowPosition);
+            }
+            stack.addLabel(GridRegion.ROW_GROUP_HEADER);
 
             IRowGroup<T> group = RowGroupUtils.getRowGroupForRowIndex(this.model, rowIndex);
             if (RowGroupUtils.isCollapsed(this.model, group)) {

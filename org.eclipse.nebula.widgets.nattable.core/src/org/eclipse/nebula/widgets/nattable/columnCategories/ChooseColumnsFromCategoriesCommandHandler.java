@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,8 +30,8 @@ import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCom
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
-public class ChooseColumnsFromCategoriesCommandHandler extends
-        AbstractLayerCommandHandler<ChooseColumnsFromCategoriesCommand>
+public class ChooseColumnsFromCategoriesCommandHandler
+        extends AbstractLayerCommandHandler<ChooseColumnsFromCategoriesCommand>
         implements IColumnCategoriesDialogListener {
 
     private final ColumnHideShowLayer columnHideShowLayer;
@@ -43,7 +43,8 @@ public class ChooseColumnsFromCategoriesCommandHandler extends
     public ChooseColumnsFromCategoriesCommandHandler(
             ColumnHideShowLayer columnHideShowLayer,
             ColumnHeaderLayer columnHeaderLayer,
-            DataLayer columnHeaderDataLayer, ColumnCategoriesModel model) {
+            DataLayer columnHeaderDataLayer,
+            ColumnCategoriesModel model) {
         super();
         this.columnHideShowLayer = columnHideShowLayer;
         this.columnHeaderLayer = columnHeaderLayer;
@@ -53,11 +54,11 @@ public class ChooseColumnsFromCategoriesCommandHandler extends
 
     @Override
     protected boolean doCommand(ChooseColumnsFromCategoriesCommand command) {
-        this.dialog = new ColumnCategoriesDialog(command.getShell(), this.model,
-                getHiddenColumnEntries(this.columnHideShowLayer, this.columnHeaderLayer,
-                        this.columnHeaderDataLayer), getVisibleColumnsEntries(
-                        this.columnHideShowLayer, this.columnHeaderLayer,
-                        this.columnHeaderDataLayer));
+        this.dialog = new ColumnCategoriesDialog(
+                command.getShell(),
+                this.model,
+                getHiddenColumnEntries(this.columnHideShowLayer, this.columnHeaderLayer, this.columnHeaderDataLayer),
+                getVisibleColumnsEntries(this.columnHideShowLayer, this.columnHeaderLayer, this.columnHeaderDataLayer));
 
         this.dialog.addListener(this);
         this.dialog.open();
@@ -73,15 +74,13 @@ public class ChooseColumnsFromCategoriesCommandHandler extends
 
     @Override
     public void itemsRemoved(List<Integer> removedColumnPositions) {
-        ColumnChooserUtils.hideColumnPositions(removedColumnPositions,
-                this.columnHideShowLayer);
+        ColumnChooserUtils.hideColumnPositions(removedColumnPositions, this.columnHideShowLayer);
         refreshDialog();
     }
 
     @Override
     public void itemsSelected(List<Integer> addedColumnIndexes) {
-        ColumnChooserUtils.showColumnIndexes(addedColumnIndexes,
-                this.columnHideShowLayer);
+        ColumnChooserUtils.showColumnIndexes(addedColumnIndexes, this.columnHideShowLayer);
         refreshDialog();
     }
 
@@ -98,12 +97,9 @@ public class ChooseColumnsFromCategoriesCommandHandler extends
      *            the column positions to move
      */
     @Override
-    public void itemsMoved(MoveDirectionEnum direction,
-            List<Integer> selectedPositions) {
-        List<List<Integer>> fromPositions = PositionUtil
-                .getGroupedByContiguous(selectedPositions);
-        List<Integer> toPositions = getDestinationPositions(direction,
-                fromPositions);
+    public void itemsMoved(MoveDirectionEnum direction, List<Integer> selectedPositions) {
+        List<List<Integer>> fromPositions = PositionUtil.getGroupedByContiguous(selectedPositions);
+        List<Integer> toPositions = getDestinationPositions(direction, fromPositions);
 
         for (int i = 0; i < fromPositions.size(); i++) {
             boolean multipleColumnsMoved = fromPositions.get(i).size() > 1;
@@ -112,11 +108,9 @@ public class ChooseColumnsFromCategoriesCommandHandler extends
             if (!multipleColumnsMoved) {
                 int fromPosition = fromPositions.get(i).get(0).intValue();
                 int toPosition = toPositions.get(i);
-                command = new ColumnReorderCommand(this.columnHideShowLayer,
-                        fromPosition, toPosition);
+                command = new ColumnReorderCommand(this.columnHideShowLayer, fromPosition, toPosition);
             } else if (multipleColumnsMoved) {
-                command = new MultiColumnReorderCommand(this.columnHideShowLayer,
-                        fromPositions.get(i), toPositions.get(i));
+                command = new MultiColumnReorderCommand(this.columnHideShowLayer, fromPositions.get(i), toPositions.get(i));
             }
             this.columnHideShowLayer.doCommand(command);
         }
@@ -143,18 +137,16 @@ public class ChooseColumnsFromCategoriesCommandHandler extends
      *            </ul>
      * @return a List of destination positions
      */
-    protected List<Integer> getDestinationPositions(
-            MoveDirectionEnum direction, List<List<Integer>> selectedPositions) {
+    protected List<Integer> getDestinationPositions(MoveDirectionEnum direction, List<List<Integer>> selectedPositions) {
         List<Integer> destinationPositions = new ArrayList<Integer>();
         for (List<Integer> contiguousPositions : selectedPositions) {
             switch (direction) {
                 case UP:
-                    destinationPositions.add(ObjectUtils
-                            .getFirstElement(contiguousPositions) - 1);
+                    destinationPositions.add(ObjectUtils.getFirstElement(contiguousPositions) - 1);
                     break;
                 case DOWN:
-                    destinationPositions.add(ObjectUtils
-                            .getLastElement(contiguousPositions) + 2);
+                    destinationPositions.add(ObjectUtils.getLastElement(contiguousPositions) + 2);
+                    break;
                 default:
                     break;
             }
@@ -164,11 +156,11 @@ public class ChooseColumnsFromCategoriesCommandHandler extends
 
     private void refreshDialog() {
         if (isNotNull(this.dialog)) {
-            this.dialog.refresh(ColumnChooserUtils.getHiddenColumnEntries(
-                    this.columnHideShowLayer, this.columnHeaderLayer,
-                    this.columnHeaderDataLayer), ColumnChooserUtils
-                    .getVisibleColumnsEntries(this.columnHideShowLayer,
-                            this.columnHeaderLayer, this.columnHeaderDataLayer));
+            this.dialog.refresh(
+                    ColumnChooserUtils.getHiddenColumnEntries(
+                            this.columnHideShowLayer, this.columnHeaderLayer, this.columnHeaderDataLayer),
+                    ColumnChooserUtils.getVisibleColumnsEntries(
+                            this.columnHideShowLayer, this.columnHeaderLayer, this.columnHeaderDataLayer));
         }
     }
 

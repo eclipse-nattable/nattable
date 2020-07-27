@@ -35,7 +35,11 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 /**
  * Helper class for retrieving information regarding editing of selected cells.
  */
-public class EditUtils {
+public final class EditUtils {
+
+    private EditUtils() {
+        // empty default constructor for helper class
+    }
 
     /**
      *
@@ -400,10 +404,9 @@ public class EditUtils {
      *         {@link IDisplayConverter} configured, <code>false</code> if at
      *         least one cell has another {@link IDisplayConverter} configured.
      */
-    @SuppressWarnings("rawtypes")
     public static boolean isConverterSame(Collection<ILayerCell> selectedCells, IConfigRegistry configRegistry) {
         if (selectedCells != null) {
-            Set<Class> converterSet = new HashSet<Class>();
+            Set<Class<?>> converterSet = new HashSet<>();
 
             for (ILayerCell selectedCell : selectedCells) {
                 LabelStack labelStack = selectedCell.getConfigLabels();
@@ -514,14 +517,15 @@ public class EditUtils {
     public static Collection<ILayerCell> getSelectedCellsForEditing(SelectionLayer selectionLayer) {
         Collection<ILayerCell> selectedCells = null;
         if (selectionLayer.getSelectionModel() instanceof IRowSelectionModel) {
-            selectedCells = new ArrayList<ILayerCell>();
+            selectedCells = new ArrayList<>();
 
             if (selectionLayer.getSelectionModel().getSelectedRowCount() == 1) {
                 selectedCells.add(getLastSelectedCell(selectionLayer));
             } else {
                 ILayerCell anchor = getLastSelectedCell(selectionLayer);
+                int columnPosition = anchor != null ? anchor.getColumnPosition() : -1;
                 for (ILayerCell cell : selectionLayer.getSelectedCells()) {
-                    if (cell.getColumnPosition() == anchor.getColumnPosition()) {
+                    if (cell.getColumnPosition() == columnPosition) {
                         selectedCells.add(cell);
                     }
                 }
@@ -560,7 +564,7 @@ public class EditUtils {
     public static Collection<ILayerCell> getSelectedCellsForEditing(SelectionLayer selectionLayer, IUniqueIndexLayer upperLayer) {
         Collection<ILayerCell> selectedCells = getSelectedCellsForEditing(selectionLayer);
         if (upperLayer != null) {
-            Collection<ILayerCell> convertedCells = new ArrayList<ILayerCell>();
+            ArrayList<ILayerCell> convertedCells = new ArrayList<>();
             for (ILayerCell cell : selectedCells) {
                 int convertedColPos = LayerUtil.convertColumnPosition(cell.getLayer(), cell.getColumnPosition(), upperLayer);
                 int convertedRowPos = LayerUtil.convertRowPosition(cell.getLayer(), cell.getRowPosition(), upperLayer);

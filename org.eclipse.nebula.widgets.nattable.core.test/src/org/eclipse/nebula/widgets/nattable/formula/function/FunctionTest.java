@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2018 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -58,6 +59,22 @@ public class FunctionTest {
     }
 
     @Test
+    public void shouldSumMultipleSumFunctions() {
+        List<FunctionValue> values = new ArrayList<>();
+        values.add(new BigDecimalFunctionValue(5));
+        values.add(new BigDecimalFunctionValue(3));
+        FunctionValue function1 = new SumFunction(values);
+
+        values = new ArrayList<>();
+        values.add(new BigDecimalFunctionValue(12));
+        values.add(new BigDecimalFunctionValue(42));
+        FunctionValue function2 = new SumFunction(values);
+
+        FunctionValue function = new SumFunction(Arrays.asList(function1, function2));
+        assertEquals(new BigDecimal(5 + 3 + 12 + 42), function.getValue());
+    }
+
+    @Test
     public void shouldAvgEmptyValues() {
         FunctionValue function = new AverageFunction(new ArrayList<FunctionValue>());
         assertEquals(new BigDecimal(0), function.getValue());
@@ -77,18 +94,18 @@ public class FunctionTest {
         values.add(new BigDecimalFunctionValue(42));
         values.add(new BigDecimalFunctionValue(23));
         FunctionValue function = new AverageFunction(values);
-        assertEquals(new BigDecimal(32.5), function.getValue());
+        assertEquals(BigDecimal.valueOf(32.5), function.getValue());
     }
 
     @Test
     public void shouldAvgMultipleValues() {
         List<FunctionValue> values = new ArrayList<>();
-        values.add(new BigDecimalFunctionValue(5));
+        values.add(new BigDecimalFunctionValue(5d));
         values.add(new BigDecimalFunctionValue(3));
-        values.add(new BigDecimalFunctionValue(12));
-        values.add(new BigDecimalFunctionValue(40));
+        values.add(new BigDecimalFunctionValue("12"));
+        values.add(new BigDecimalFunctionValue(new BigDecimal(40)));
         FunctionValue function = new AverageFunction(values);
-        assertEquals(new BigDecimal((5 + 3 + 12 + 40) / 4), function.getValue());
+        assertEquals(BigDecimal.valueOf((5d + 3 + 12 + 40) / 4), function.getValue());
     }
 
     @Test

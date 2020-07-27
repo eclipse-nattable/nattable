@@ -859,6 +859,80 @@ public class GroupByDataLayerTest {
     }
 
     @Test
+    public void testKeepSortOnGrouping() {
+        addSortingCapability();
+
+        // sort by lastname descending
+        this.sortModel.sort(1, SortDirectionEnum.DESC, false);
+
+        // 10 Simpsons, 8 Flanders
+        assertEquals(18, this.dataLayer.getRowCount());
+        for (int i = 0; i < this.dataLayer.getRowCount(); i++) {
+            if (i < 10) {
+                assertEquals("Simpson", this.dataLayer.getDataValue(1, i));
+            } else {
+                assertEquals("Flanders", this.dataLayer.getDataValue(1, i));
+            }
+        }
+
+        // groupby firstname
+        this.groupByModel.addGroupByColumnIndex(0);
+
+        // 10 Simpsons, 8 Flanders, 8 GroupByObjects for firstnames
+        assertEquals(26, this.dataLayer.getRowCount());
+
+        Object o = this.dataLayer.getTreeList().get(0);
+        assertTrue("Object is not a GroupByObject", o instanceof GroupByObject);
+        assertEquals("Bart", ((GroupByObject) o).getValue());
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 1));
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 2));
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 3));
+
+        o = this.dataLayer.getTreeList().get(4);
+        assertTrue("Object is not a GroupByObject", o instanceof GroupByObject);
+        assertEquals("Homer", ((GroupByObject) o).getValue());
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 5));
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 6));
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 7));
+
+        o = this.dataLayer.getTreeList().get(8);
+        assertTrue("Object is not a GroupByObject", o instanceof GroupByObject);
+        assertEquals("Lisa", ((GroupByObject) o).getValue());
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 9));
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 10));
+
+        o = this.dataLayer.getTreeList().get(11);
+        assertTrue("Object is not a GroupByObject", o instanceof GroupByObject);
+        assertEquals("Marge", ((GroupByObject) o).getValue());
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 12));
+        assertEquals("Simpson", this.dataLayer.getDataValue(1, 13));
+
+        o = this.dataLayer.getTreeList().get(14);
+        assertTrue("Object is not a GroupByObject", o instanceof GroupByObject);
+        assertEquals("Maude", ((GroupByObject) o).getValue());
+        assertEquals("Flanders", this.dataLayer.getDataValue(1, 15));
+        assertEquals("Flanders", this.dataLayer.getDataValue(1, 16));
+
+        o = this.dataLayer.getTreeList().get(17);
+        assertTrue("Object is not a GroupByObject", o instanceof GroupByObject);
+        assertEquals("Ned", ((GroupByObject) o).getValue());
+        assertEquals("Flanders", this.dataLayer.getDataValue(1, 18));
+        assertEquals("Flanders", this.dataLayer.getDataValue(1, 19));
+
+        o = this.dataLayer.getTreeList().get(20);
+        assertTrue("Object is not a GroupByObject", o instanceof GroupByObject);
+        assertEquals("Rodd", ((GroupByObject) o).getValue());
+        assertEquals("Flanders", this.dataLayer.getDataValue(1, 21));
+        assertEquals("Flanders", this.dataLayer.getDataValue(1, 22));
+
+        o = this.dataLayer.getTreeList().get(23);
+        assertTrue("Object is not a GroupByObject", o instanceof GroupByObject);
+        assertEquals("Todd", ((GroupByObject) o).getValue());
+        assertEquals("Flanders", this.dataLayer.getDataValue(1, 24));
+        assertEquals("Flanders", this.dataLayer.getDataValue(1, 25));
+    }
+
+    @Test
     public void testProvidedLabels() {
         Collection<String> labels = this.dataLayer.getProvidedLabels();
         assertEquals(14, labels.size());

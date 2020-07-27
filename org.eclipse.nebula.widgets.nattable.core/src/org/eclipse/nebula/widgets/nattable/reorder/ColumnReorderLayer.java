@@ -58,7 +58,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 
     public static final String PERSISTENCE_KEY_COLUMN_INDEX_ORDER = ".columnIndexOrder"; //$NON-NLS-1$
 
-    private final IUniqueIndexLayer underlyingLayer;
+    private final IUniqueIndexLayer underlying;
 
     /**
      * The internal cache of the column index order. Used to track the
@@ -104,7 +104,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
      */
     public ColumnReorderLayer(IUniqueIndexLayer underlyingLayer, boolean useDefaultConfiguration) {
         super(underlyingLayer);
-        this.underlyingLayer = underlyingLayer;
+        this.underlying = underlyingLayer;
 
         populateIndexOrder();
 
@@ -127,9 +127,9 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
                 } else {
                     // only react on ADD or DELETE and not on CHANGE
                     StructuralChangeEventHelper.handleColumnDelete(
-                            structuralDiffs, this.underlyingLayer, this.columnIndexOrder, true);
+                            structuralDiffs, this.underlying, this.columnIndexOrder, true);
                     StructuralChangeEventHelper.handleColumnInsert(
-                            structuralDiffs, this.underlyingLayer, this.columnIndexOrder, true);
+                            structuralDiffs, this.underlying, this.columnIndexOrder, true);
                     // update index-position mapping
                     refreshIndexPositionMapping();
                 }
@@ -259,12 +259,12 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
     @Override
     public int localToUnderlyingColumnPosition(int localColumnPosition) {
         int columnIndex = getColumnIndexByPosition(localColumnPosition);
-        return this.underlyingLayer.getColumnPositionByIndex(columnIndex);
+        return this.underlying.getColumnPositionByIndex(columnIndex);
     }
 
     @Override
     public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
-        int columnIndex = this.underlyingLayer.getColumnIndexByPosition(underlyingColumnPosition);
+        int columnIndex = this.underlying.getColumnIndexByPosition(underlyingColumnPosition);
         return getColumnPositionByIndex(columnIndex);
     }
 
@@ -297,7 +297,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 
         int aggregateWidth = 0;
         for (int columnPosition = 0; columnPosition < targetColumnPosition; columnPosition++) {
-            aggregateWidth += this.underlyingLayer.getColumnWidthByPosition(localToUnderlyingColumnPosition(columnPosition));
+            aggregateWidth += this.underlying.getColumnWidthByPosition(localToUnderlyingColumnPosition(columnPosition));
         }
 
         this.startXCache.put(targetColumnPosition, aggregateWidth);
@@ -340,7 +340,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 
     @Override
     public int getRowPositionByIndex(int rowIndex) {
-        return this.underlyingLayer.getRowPositionByIndex(rowIndex);
+        return this.underlying.getRowPositionByIndex(rowIndex);
     }
 
     /**

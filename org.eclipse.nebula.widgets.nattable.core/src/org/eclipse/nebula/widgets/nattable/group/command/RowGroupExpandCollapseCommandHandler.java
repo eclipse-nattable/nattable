@@ -41,29 +41,27 @@ public class RowGroupExpandCollapseCommandHandler<T> extends AbstractLayerComman
 
         // if group of rowIndex is not collapseable return without any
         // further operation ...
-        if (group == null || !group.isCollapseable()) {
-            return true;
+        if (group != null && group.isCollapseable()) {
+            boolean wasCollapsed = group.isCollapsed();
+
+            if (wasCollapsed) {
+                group.expand();
+            } else {
+                group.collapse();
+            }
+
+            int[] rowIndexes = RowGroupUtils.getRowIndexesInGroupAsArray(model, rowIndex);
+            int[] rowPositions = RowGroupUtils.getRowPositionsInGroup(this.rowGroupExpandCollapseLayer, rowIndexes);
+
+            ILayerEvent event;
+            if (wasCollapsed) {
+                event = new ShowRowPositionsEvent(this.rowGroupExpandCollapseLayer, rowPositions);
+            } else {
+                event = new HideRowPositionsEvent(this.rowGroupExpandCollapseLayer, rowPositions);
+            }
+
+            this.rowGroupExpandCollapseLayer.fireLayerEvent(event);
         }
-
-        boolean wasCollapsed = group.isCollapsed();
-
-        if (wasCollapsed) {
-            group.expand();
-        } else {
-            group.collapse();
-        }
-
-        int[] rowIndexes = RowGroupUtils.getRowIndexesInGroupAsArray(model, rowIndex);
-        int[] rowPositions = RowGroupUtils.getRowPositionsInGroup(this.rowGroupExpandCollapseLayer, rowIndexes);
-
-        ILayerEvent event;
-        if (wasCollapsed) {
-            event = new ShowRowPositionsEvent(this.rowGroupExpandCollapseLayer, rowPositions);
-        } else {
-            event = new HideRowPositionsEvent(this.rowGroupExpandCollapseLayer, rowPositions);
-        }
-
-        this.rowGroupExpandCollapseLayer.fireLayerEvent(event);
 
         return true;
     }

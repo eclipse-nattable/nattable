@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Dirk Fauth and others.
+ * Copyright (c) 2012, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,8 +28,6 @@ import org.eclipse.swt.graphics.Rectangle;
  * no echo character is configured, the bullet character will be used as echo
  * character.
  *
- * @author Dirk Fauth
- *
  * @see PasswordCellEditor
  */
 public class PasswordTextPainter extends TextPainter {
@@ -54,24 +52,20 @@ public class PasswordTextPainter extends TextPainter {
         super(wrapText, paintBg, spacing);
     }
 
-    public PasswordTextPainter(boolean wrapText, boolean paintBg,
-            boolean calculate) {
+    public PasswordTextPainter(boolean wrapText, boolean paintBg, boolean calculate) {
         super(wrapText, paintBg, calculate);
     }
 
-    public PasswordTextPainter(boolean wrapText, boolean paintBg, int spacing,
-            boolean calculate) {
+    public PasswordTextPainter(boolean wrapText, boolean paintBg, int spacing, boolean calculate) {
         super(wrapText, paintBg, spacing, calculate);
     }
 
     @Override
-    public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle,
-            IConfigRegistry configRegistry) {
+    public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
         // check for the configuration of a echo character in the corresponding
         // cell style
         IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
-        Character configEchoChar = cellStyle
-                .getAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR);
+        Character configEchoChar = cellStyle.getAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR);
         if (configEchoChar != null) {
             this.echoChar = configEchoChar;
         }
@@ -79,10 +73,12 @@ public class PasswordTextPainter extends TextPainter {
     }
 
     @Override
-    protected String getTextToDisplay(ILayerCell cell, GC gc,
-            int availableLength, String text) {
-        String result = super.getTextToDisplay(cell, gc, availableLength, text);
-        // replace all characters with the configured echo character
-        return result.replaceAll(".", this.echoChar.toString()); //$NON-NLS-1$
+    protected String getTextToDisplay(ILayerCell cell, GC gc, int availableLength, String text) {
+        // always return a fixed length value of the configured echo character
+        StringBuilder obfuscated = new StringBuilder();
+        for (int i = 0; i < 8; i++) {
+            obfuscated.append(this.echoChar);
+        }
+        return obfuscated.toString();
     }
 }

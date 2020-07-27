@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Dirk Fauth.
+ * Copyright (c) 2017, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@ package org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
@@ -152,6 +153,12 @@ public class ComboBoxGlazedListsFilterStrategyTest {
 
         dataProvider.setDataValue(1, 1, comboBoxDataProvider.getValues(1, 0));
         assertEquals(18000, filterList.size());
+    }
+
+    @Test
+    public void shouldFilterAll() {
+        dataProvider.setDataValue(0, 1, new ArrayList<>());
+        assertEquals(0, filterList.size());
     }
 
     // with static filter

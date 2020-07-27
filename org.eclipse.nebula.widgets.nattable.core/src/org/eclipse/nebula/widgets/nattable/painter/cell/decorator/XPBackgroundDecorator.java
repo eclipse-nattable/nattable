@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -86,18 +86,16 @@ public class XPBackgroundDecorator extends BackgroundPainter {
         gc.setForeground(originalForeground);
 
         // Draw bottom edge
-        boolean isHighlight = false;
-
         int y = rectangle.y + rectangle.height - 3;
-        gc.setForeground(isHighlight ? this.highlightColor1 : this.gradientColor1);
+        gc.setForeground(this.gradientColor1);
         gc.drawLine(rectangle.x, y, rectangle.x + rectangle.width, y);
 
         y++;
-        gc.setForeground(isHighlight ? this.highlightColor2 : this.gradientColor2);
+        gc.setForeground(this.gradientColor2);
         gc.drawLine(rectangle.x, y, rectangle.x + rectangle.width, y);
 
         y++;
-        gc.setForeground(isHighlight ? this.highlightColor3 : this.gradientColor3);
+        gc.setForeground(this.gradientColor3);
         gc.drawLine(rectangle.x, y, rectangle.x + rectangle.width, y);
     }
 

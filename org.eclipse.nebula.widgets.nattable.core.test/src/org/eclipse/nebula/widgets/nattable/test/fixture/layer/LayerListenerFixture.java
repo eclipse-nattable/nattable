@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -44,7 +44,7 @@ public class LayerListenerFixture implements ILayerListener {
 
     public boolean containsInstanceOf(Class<? extends ILayerEvent> class1) {
         for (ILayerEvent inEvent : this.receivedEvents) {
-            if (inEvent.getClass().getName().equals(class1.getName())) {
+            if (inEvent.getClass().isAssignableFrom(class1)) {
                 return true;
             }
         }
@@ -53,7 +53,7 @@ public class LayerListenerFixture implements ILayerListener {
 
     public ILayerEvent getReceivedEvent(Class<? extends ILayerEvent> class1) {
         for (ILayerEvent inEvent : this.receivedEvents) {
-            if (inEvent.getClass().getName().equals(class1.getName())) {
+            if (inEvent.getClass().isAssignableFrom(class1)) {
                 return inEvent;
             }
         }

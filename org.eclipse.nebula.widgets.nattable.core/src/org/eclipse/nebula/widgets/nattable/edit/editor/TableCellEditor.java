@@ -77,7 +77,7 @@ import org.eclipse.swt.widgets.Text;
  * <li>Committing the value in the NatTable framework code will simply replace
  * the list reference with itself</li>
  * <li>It does only support validation error styling for conversion and
- * validation errors aswell</li>
+ * validation errors as well</li>
  * </ul>
  *
  * @see TableCellPainter
@@ -109,14 +109,8 @@ public class TableCellEditor extends AbstractCellEditor {
      */
     private int fixedSubCellHeight;
     /**
-     * Internal focus listener to handle committing and closing of this editor
-     * if the focus is lost out of the editor control AND the editing support
-     * editor control.
-     */
-    private FocusListener focusListener = new InternalFocusListener();
-    /**
      * Internal ColumnLabelProvider that is used to apply styling to the table
-     * viewer aswell as for the editor controls in the table viewer.
+     * viewer as well as for the editor controls in the table viewer.
      */
     private InternalLabelProvider labelProvider;
     /**
@@ -180,6 +174,11 @@ public class TableCellEditor extends AbstractCellEditor {
         this.fixedSubCellHeight = fixedSubCellHeight;
         this.moveSelectionOnEnter = moveSelectionOnEnter;
         this.alwaysOpenEditor = alwaysOpenEditor;
+
+        // Internal focus listener to handle committing and closing of this
+        // editor if the focus is lost out of the editor control AND the editing
+        // support editor control.
+        this.focusListener = new InternalFocusListener();
     }
 
     @Override
@@ -376,9 +375,17 @@ public class TableCellEditor extends AbstractCellEditor {
         // committed if the user clicks in another cell after editing within the
         // table cell editor otherwise the framework performs a commit and close
         // BEFORE the cell editor of the table viewer commits the value
-        if (!this.viewer.isCellEditorActive()) {
-            super.close();
-        }
+        this.viewer.applyEditorValue();
+        super.close();
+    }
+
+    @Override
+    public boolean commit(MoveDirectionEnum direction, boolean closeAfterCommit, boolean skipValidation) {
+        // Apply the value of an active cell editor if one is active. Otherwise
+        // the old value will be committed to the NatTable BEFORE the cell
+        // editor was able to apply.
+        this.viewer.applyEditorValue();
+        return super.commit(direction, closeAfterCommit, skipValidation);
     }
 
     /**

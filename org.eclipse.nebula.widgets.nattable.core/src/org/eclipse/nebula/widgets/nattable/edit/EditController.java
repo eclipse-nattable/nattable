@@ -63,6 +63,11 @@ public class EditController {
     public static void editCell(final ILayerCell cell, final Composite parent,
             Object initialCanonicalValue, final IConfigRegistry configRegistry) {
 
+        if (cell == null) {
+            LOG.error("Cell being edited is no longer available. Initial value: " + initialCanonicalValue); //$NON-NLS-1$
+            return;
+        }
+
         try {
             // determine the position of the cell to put into edit mode
             Rectangle cellBounds = cell.getBounds();
@@ -120,11 +125,7 @@ public class EditController {
                 editCells(cells, parent, initialCanonicalValue, configRegistry);
             }
         } catch (Exception e) {
-            if (cell == null) {
-                LOG.error("Cell being edited is no longer available. Initial value: " + initialCanonicalValue, e); //$NON-NLS-1$
-            } else {
-                LOG.error("Error while editing cell: Cell: " + cell + "; Initial value: " + initialCanonicalValue, e); //$NON-NLS-1$ //$NON-NLS-2$
-            }
+            LOG.error("Error while editing cell: Cell: " + cell + "; Initial value: " + initialCanonicalValue, e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 

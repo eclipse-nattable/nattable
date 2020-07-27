@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
+ * Copyright (c) 2018, 2020 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -42,15 +42,15 @@ public class HierarchicalWrapper {
     }
 
     /**
-     * Creates a new {@link HierarchicalWrapper} with the given model object
-     * array.
+     * Copy constructor to create a new {@link HierarchicalWrapper} out of the
+     * given object.
      *
-     * @param levelObjects
-     *            The objects that should be wrapped, where each item in the
-     *            array specifies a level object.
+     * @param toCopy
+     *            The {@link HierarchicalWrapper} that should be copied.
+     * @since 2.0
      */
-    private HierarchicalWrapper(Object[] levelObjects) {
-        this.levelObjects = levelObjects;
+    public HierarchicalWrapper(HierarchicalWrapper toCopy) {
+        this.levelObjects = Arrays.copyOf(toCopy.levelObjects, toCopy.levelObjects.length);
     }
 
     /**
@@ -94,10 +94,5 @@ public class HierarchicalWrapper {
      */
     public int getLevels() {
         return this.levelObjects.length;
-    }
-
-    @Override
-    public HierarchicalWrapper clone() {
-        return new HierarchicalWrapper(Arrays.copyOf(this.levelObjects, this.levelObjects.length));
     }
 }

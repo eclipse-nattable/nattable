@@ -76,7 +76,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     /**
      * The selected cells
      */
-    private Selections<T> selections = new Selections<T>();
+    private Selections<T> selections = new Selections<>();
 
     /**
      * Lock for ensuring thread safety
@@ -286,7 +286,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
         this.selectionsLock.readLock().lock();
         try {
             Collection<CellPosition<T>> selectedPositions = this.selections.getSelections();
-            selectedCells = new ArrayList<Rectangle>(selectedPositions.size());
+            selectedCells = new ArrayList<>(selectedPositions.size());
             for (CellPosition<T> cellPosition : selectedPositions) {
                 int rowPosition = getRowPositionByRowObject(cellPosition.getRowObject());
                 if (isRowVisible(rowPosition)) {
@@ -298,7 +298,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
         } finally {
             this.selectionsLock.readLock().unlock();
         }
-        return selectedCells != null ? selectedCells : new ArrayList<Rectangle>();
+        return selectedCells;
     }
 
     /**
@@ -412,7 +412,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
 
     @Override
     public Set<Range> getSelectedRowPositions() {
-        HashSet<Range> visiblySelectedRowPositions = new HashSet<Range>();
+        HashSet<Range> visiblySelectedRowPositions = new HashSet<>();
 
         this.selectionsLock.readLock().lock();
         try {

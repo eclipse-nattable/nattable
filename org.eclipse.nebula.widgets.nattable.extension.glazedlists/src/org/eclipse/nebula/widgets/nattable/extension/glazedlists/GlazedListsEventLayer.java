@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -50,7 +50,7 @@ public class GlazedListsEventLayer<T>
         implements IUniqueIndexLayer, ListEventListener<T>, PropertyChangeListener {
 
     private static final Scheduler scheduler = new Scheduler("GlazedListsEventLayer"); //$NON-NLS-1$
-    private final IUniqueIndexLayer underlyingLayer;
+    private final IUniqueIndexLayer underlying;
     private final ScheduledFuture<?> future;
     private EventList<T> eventList;
     private boolean testMode = false;
@@ -62,7 +62,7 @@ public class GlazedListsEventLayer<T>
 
     public GlazedListsEventLayer(IUniqueIndexLayer underlyingLayer, EventList<T> eventList) {
         super(underlyingLayer);
-        this.underlyingLayer = underlyingLayer;
+        this.underlying = underlyingLayer;
         this.eventList = eventList;
 
         this.eventList.addListEventListener(this);
@@ -246,13 +246,13 @@ public class GlazedListsEventLayer<T>
 
     @Override
     public int getColumnPositionByIndex(int columnIndex) {
-        return this.underlyingLayer.getColumnPositionByIndex(columnIndex);
+        return this.underlying.getColumnPositionByIndex(columnIndex);
     }
 
     // Rows
 
     @Override
     public int getRowPositionByIndex(int rowIndex) {
-        return this.underlyingLayer.getRowPositionByIndex(rowIndex);
+        return this.underlying.getRowPositionByIndex(rowIndex);
     }
 }

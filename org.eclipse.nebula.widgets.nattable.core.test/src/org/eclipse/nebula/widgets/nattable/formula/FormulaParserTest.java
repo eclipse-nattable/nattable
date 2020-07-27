@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2018 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -501,7 +501,7 @@ public class FormulaParserTest {
         assertEquals(new BigDecimal(-42), result.getValue());
 
         result = this.parser.parseFunction("SQRT(144)");
-        assertEquals(new BigDecimal(12), result.getValue());
+        assertEquals(BigDecimal.valueOf(12d), result.getValue());
     }
 
     @Test
@@ -771,10 +771,10 @@ public class FormulaParserTest {
         this.dataProvider.setDataValue(0, 1, "34.81");
 
         FunctionValue result = this.parser.parseFunction("=SQRT(36)");
-        assertEquals(new BigDecimal("6"), result.getValue());
+        assertEquals(new BigDecimal("6.0"), result.getValue());
 
         result = this.parser.parseFunction("=SQRT(A2)");
-        assertTrue(result.getValue().toString().startsWith("5.9000"));
+        assertTrue(result.getValue().toString().startsWith("5.9"));
 
         result = this.parser.parseFunction("=SQRT(POWER(2.5;2))");
         assertEquals(new BigDecimal("2.5"), result.getValue());

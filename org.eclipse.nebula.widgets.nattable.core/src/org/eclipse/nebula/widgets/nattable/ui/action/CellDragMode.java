@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -101,7 +101,7 @@ public class CellDragMode implements IDragMode {
 
         @Override
         public void paintOverlay(GC gc, ILayer layer) {
-            if (CellDragMode.this.cellImage != null & !CellDragMode.this.cellImage.isDisposed()) {
+            if (CellDragMode.this.cellImage != null && !CellDragMode.this.cellImage.isDisposed()) {
                 gc.drawImage(
                         CellDragMode.this.cellImage,
                         CellDragMode.this.currentEvent.x - CellDragMode.this.xOffset,

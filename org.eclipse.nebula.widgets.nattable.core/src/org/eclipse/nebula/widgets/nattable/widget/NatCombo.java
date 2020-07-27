@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,9 +18,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -179,8 +178,11 @@ public class NatCombo extends Composite {
     /**
      * The style bits that where set on creation time. Needed in case the
      * dropdown shell was disposed and needs to be created again.
+     *
+     * @since 2.0 - Renamed from style to widgetStyle to avoid possible
+     *        confusions with Widget#style.
      */
-    protected final int style;
+    protected final int widgetStyle;
 
     /**
      * Flag that indicated whether this NatCombo supports filtering of the
@@ -397,7 +399,7 @@ public class NatCombo extends Composite {
         this.maxVisibleItems = maxVisibleItems;
         this.iconImage = iconImage;
 
-        this.style = style;
+        this.widgetStyle = style;
 
         this.showDropdownFilter = showDropdownFilter;
         this.freeEdit = (style & SWT.READ_ONLY) == 0;
@@ -631,44 +633,13 @@ public class NatCombo extends Composite {
         // add a column to be able to resize the item width in the dropdown
         new TableColumn(this.dropdownTable, SWT.NONE);
 
-        this.dropdownTableViewer.setContentProvider(new IStructuredContentProvider() {
+        this.dropdownTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-            @Override
-            public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
-
-            @Override
-            public void dispose() {}
-
-            @Override
-            public Object[] getElements(Object inputElement) {
-                return (Object[]) inputElement;
-            }
-        });
-
-        this.dropdownTableViewer.setLabelProvider(new ILabelProvider() {
-
-            @Override
-            public void removeListener(ILabelProviderListener listener) {}
+        this.dropdownTableViewer.setLabelProvider(new LabelProvider() {
 
             @Override
             public boolean isLabelProperty(Object element, String property) {
                 return false;
-            }
-
-            @Override
-            public void dispose() {}
-
-            @Override
-            public void addListener(ILabelProviderListener listener) {}
-
-            @Override
-            public String getText(Object element) {
-                return element.toString();
-            }
-
-            @Override
-            public Image getImage(Object element) {
-                return null;
             }
         });
 
@@ -781,11 +752,7 @@ public class NatCombo extends Composite {
             this.filterBox.setLayoutData(data);
 
             data = new FormData();
-            if (this.showDropdownFilter) {
-                dropDownLayoutData.top = new FormAttachment(this.filterBox, 0, SWT.BOTTOM);
-            } else {
-                dropDownLayoutData.top = new FormAttachment(this.dropdownShell, 0, SWT.TOP);
-            }
+            dropDownLayoutData.top = new FormAttachment(this.filterBox, 0, SWT.BOTTOM);
             this.dropdownTable.setLayoutData(dropDownLayoutData);
 
             ViewerFilter viewerFilter = new ViewerFilter() {
@@ -850,7 +817,7 @@ public class NatCombo extends Composite {
      */
     public void showDropdownControl(boolean focusOnText) {
         if (this.dropdownShell == null || this.dropdownShell.isDisposed()) {
-            createDropdownControl(this.style);
+            createDropdownControl(this.widgetStyle);
         }
         calculateBounds();
         this.dropdownShell.open();
@@ -867,7 +834,7 @@ public class NatCombo extends Composite {
      */
     protected Table getDropdownTable() {
         if (this.dropdownTable == null) {
-            createDropdownControl(this.style);
+            createDropdownControl(this.widgetStyle);
         }
         return this.dropdownTable;
     }

@@ -66,8 +66,7 @@ public abstract class AbstractColumnChooserDialog extends Dialog {
 
     protected abstract void populateDialogArea(Composite composite);
 
-    protected void createLabels(Composite parent, String availableStr,
-            String selectedStr) {
+    protected void createLabels(Composite parent, String availableStr, String selectedStr) {
         boolean availableSet = availableStr != null && availableStr.length() > 0;
         boolean selectedSet = selectedStr != null && selectedStr.length() > 0;
 
@@ -79,8 +78,7 @@ public abstract class AbstractColumnChooserDialog extends Dialog {
             }
 
             Label filler = new Label(parent, SWT.NONE);
-            GridDataFactory.swtDefaults().span(availableSet ? 1 : 2, 1)
-                    .applyTo(filler);
+            GridDataFactory.swtDefaults().applyTo(filler);
 
             if (selectedSet) {
                 Label selectedLabel = new Label(parent, SWT.NONE);
@@ -96,7 +94,8 @@ public abstract class AbstractColumnChooserDialog extends Dialog {
             return new Point(500, 350);
         }
         Point initialSize = super.getInitialSize();
-        return initialSize.x < 500 && initialSize.y < 350 ? new Point(500, 350)
+        return initialSize.x < 500 && initialSize.y < 350
+                ? new Point(500, 350)
                 : initialSize;
     }
 

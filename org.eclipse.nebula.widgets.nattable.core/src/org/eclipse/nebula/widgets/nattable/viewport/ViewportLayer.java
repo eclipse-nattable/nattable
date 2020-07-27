@@ -1648,26 +1648,30 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
         int x = 0;
         int y = 0;
 
-        switch (horizontal) {
-            case LEFT:
-                x = -1;
-                break;
-            case RIGHT:
-                x = 1;
-                break;
-            case NONE:
-                x = 0;
+        if (horizontal != null) {
+            switch (horizontal) {
+                case LEFT:
+                    x = -1;
+                    break;
+                case RIGHT:
+                    x = 1;
+                    break;
+                case NONE:
+                    x = 0;
+            }
         }
 
-        switch (vertical) {
-            case UP:
-                y = -1;
-                break;
-            case DOWN:
-                y = 1;
-                break;
-            case NONE:
-                y = 0;
+        if (vertical != null) {
+            switch (vertical) {
+                case UP:
+                    y = -1;
+                    break;
+                case DOWN:
+                    y = 1;
+                    break;
+                case NONE:
+                    y = 0;
+            }
         }
 
         if (x != 0) {
@@ -1773,8 +1777,6 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
         private int y;
 
         private final Display display = Display.getCurrent();
-
-        public MoveViewportRunnable() {}
 
         public void schedule() {
             if (ViewportLayer.this.edgeHoverRunnable != this) {

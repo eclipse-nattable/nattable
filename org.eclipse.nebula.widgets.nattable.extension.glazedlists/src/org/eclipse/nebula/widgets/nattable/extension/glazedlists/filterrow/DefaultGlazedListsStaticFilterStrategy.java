@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2019 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,7 +19,7 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.filterrow.IFilterStrategy;
 
 import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
+import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 import ca.odell.glazedlists.matchers.Matcher;
 import ca.odell.glazedlists.matchers.MatcherEditor;
@@ -110,12 +110,7 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends DefaultGlazedList
      */
     public void addStaticFilter(final Matcher<T> matcher) {
         // create a new MatcherEditor
-        MatcherEditor<T> matcherEditor = new AbstractMatcherEditor<T>() {
-            {
-                fireChanged(matcher);
-            }
-        };
-
+        MatcherEditor<T> matcherEditor = GlazedLists.fixedMatcherEditor(matcher);
         addStaticFilter(matcherEditor);
     }
 

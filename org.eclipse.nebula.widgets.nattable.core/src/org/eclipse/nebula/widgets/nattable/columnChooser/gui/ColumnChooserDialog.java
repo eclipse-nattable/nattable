@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -466,7 +465,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
                     columnGroupTreeItem.setText(columnGroupName);
                 }
 
-                if (columnGroupTreeItem != null && columnGroupTreeItem.getData() == null) {
+                if (columnGroupTreeItem.getData() == null) {
                     // ensure that the data is set for the first item in the
                     // column group
                     ColumnGroupEntry columnGroupEntry =
@@ -703,7 +702,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
      * @return The {@link ColumnEntry}s out of the selected {@link TreeItem}s.
      */
     private List<ColumnEntry> getColumnEntriesIncludingNested(TreeItem[] selectedTreeItems) {
-        List<ColumnEntry> selectedColumnEntries = new ArrayList<ColumnEntry>();
+        ArrayList<ColumnEntry> selectedColumnEntries = new ArrayList<>();
 
         for (int i = 0; i < selectedTreeItems.length; i++) {
             // Column Group selected - get all children
@@ -721,7 +720,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
     }
 
     private List<ColumnGroupEntry> getSelectedColumnGroupEntries(TreeItem[] selectedTreeItems) {
-        List<ColumnGroupEntry> selectedColumnGroups = new ArrayList<ColumnGroupEntry>();
+        ArrayList<ColumnGroupEntry> selectedColumnGroups = new ArrayList<>();
 
         for (int i = 0; i < selectedTreeItems.length; i++) {
             if (isColumnGroupLeaf(selectedTreeItems[i])) {
@@ -834,51 +833,54 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
      * start of the group.
      */
     void moveSelectedToTop() {
-        if (isAnyLeafSelected(this.selectedTree)) {
-            if (!isFirstLeafSelected(this.selectedTree)) {
-                List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(this.selectedTree);
-                List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(this.selectedTree);
+        if (isAnyLeafSelected(this.selectedTree) && !isFirstLeafSelected(this.selectedTree)) {
+            List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(this.selectedTree);
+            List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(this.selectedTree);
 
-                List<Integer> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
+            List<Integer> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
 
-                // Group continuous positions
-                List<List<Integer>> positionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
-                List<Integer> toPositions = new ArrayList<Integer>();
+            // Group continuous positions
+            List<List<Integer>> positionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
+            List<Integer> toPositions = new ArrayList<>();
 
-                // TODO all level?
-                GroupModel groupModel = null;
-                if (this.columnGroupHeaderLayer != null) {
-                    groupModel = this.columnGroupHeaderLayer.getGroupModel(0);
-                }
-
-                int shift = getUpperMostPosition();
-                for (List<Integer> groupedPositions : positionsGroupedByContiguous) {
-                    // check for unbreakable group
-                    // Position of first element in list
-                    int firstPositionInGroup = groupedPositions.get(0);
-
-                    boolean columnGroupMoved = columnGroupMoved(groupedPositions, selectedColumnGroupEntries);
-
-                    // Column entry
-                    ColumnEntry columnEntry = getNextColumnEntryForPosition(this.selectedTree, firstPositionInGroup);
-                    int columnEntryPosition = -1;
-                    if (groupModel != null) {
-                        columnEntryPosition = this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(columnEntry.getIndex());
-                    }
-
-                    if (this.columnGroupModel != null && this.columnGroupModel.isPartOfAnUnbreakableGroup(columnEntry.getIndex())) {
-                        List<Integer> groupMembers = this.columnGroupModel.getColumnGroupByIndex(columnEntry.getIndex()).getMembers();
-                        int groupUpperMost = groupMembers.get(0);
-                        toPositions.add(groupUpperMost);
-                    } else if (groupModel != null && groupModel.isPartOfAnUnbreakableGroup(columnEntryPosition) && !columnGroupMoved) {
-                        toPositions.add(groupModel.getGroupByPosition(columnEntryPosition).getVisibleStartPosition());
-                    } else {
-                        toPositions.add(shift);
-                        shift += groupedPositions.size();
-                    }
-                }
-                fireItemsMoved(MoveDirectionEnum.UP, selectedColumnGroupEntries, selectedColumnEntries, positionsGroupedByContiguous, toPositions);
+            // TODO all level?
+            GroupModel groupModel = null;
+            if (this.columnGroupHeaderLayer != null) {
+                groupModel = this.columnGroupHeaderLayer.getGroupModel(0);
             }
+
+            int shift = getUpperMostPosition();
+            for (List<Integer> groupedPositions : positionsGroupedByContiguous) {
+                // check for unbreakable group
+                // Position of first element in list
+                int firstPositionInGroup = groupedPositions.get(0);
+
+                boolean columnGroupMoved = columnGroupMoved(groupedPositions, selectedColumnGroupEntries);
+
+                // Column entry
+                ColumnEntry columnEntry = getNextColumnEntryForPosition(firstPositionInGroup);
+
+                if (columnEntry == null) {
+                    continue;
+                }
+
+                int columnEntryPosition = -1;
+                if (groupModel != null) {
+                    columnEntryPosition = this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(columnEntry.getIndex());
+                }
+
+                if (this.columnGroupModel != null && this.columnGroupModel.isPartOfAnUnbreakableGroup(columnEntry.getIndex())) {
+                    List<Integer> groupMembers = this.columnGroupModel.getColumnGroupByIndex(columnEntry.getIndex()).getMembers();
+                    int groupUpperMost = groupMembers.get(0);
+                    toPositions.add(groupUpperMost);
+                } else if (groupModel != null && groupModel.isPartOfAnUnbreakableGroup(columnEntryPosition) && !columnGroupMoved) {
+                    toPositions.add(groupModel.getGroupByPosition(columnEntryPosition).getVisibleStartPosition());
+                } else {
+                    toPositions.add(shift);
+                    shift += groupedPositions.size();
+                }
+            }
+            fireItemsMoved(MoveDirectionEnum.UP, selectedColumnGroupEntries, selectedColumnEntries, positionsGroupedByContiguous, toPositions);
         }
     }
 
@@ -886,120 +888,123 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
      * Move selected items in the selected tree up (left).
      */
     protected void moveSelectedUp() {
-        if (isAnyLeafSelected(this.selectedTree)) {
-            if (!isFirstLeafSelected(this.selectedTree)) {
-                List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(this.selectedTree);
-                List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(this.selectedTree);
+        if (isAnyLeafSelected(this.selectedTree) && !isFirstLeafSelected(this.selectedTree)) {
+            List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(this.selectedTree);
+            List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(this.selectedTree);
 
-                List<Integer> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
+            List<Integer> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
 
-                // Group continuous positions. If a column group moves, a bunch
-                // of 'from' positions move to a single 'to' position
-                List<List<Integer>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
-                List<Integer> toPositions = new ArrayList<Integer>();
+            // Group continuous positions. If a column group moves, a bunch
+            // of 'from' positions move to a single 'to' position
+            List<List<Integer>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
+            List<Integer> toPositions = new ArrayList<>();
 
-                // TODO all level?
-                GroupModel groupModel = null;
-                if (this.columnGroupHeaderLayer != null) {
-                    groupModel = this.columnGroupHeaderLayer.getGroupModel(0);
+            // TODO all level?
+            GroupModel groupModel = null;
+            if (this.columnGroupHeaderLayer != null) {
+                groupModel = this.columnGroupHeaderLayer.getGroupModel(0);
+            }
+
+            // Set destination positions
+            for (List<Integer> groupedPositions : postionsGroupedByContiguous) {
+                // Do these contiguous positions contain a column group ?
+                boolean columnGroupMoved = columnGroupMoved(groupedPositions, selectedColumnGroupEntries);
+
+                // If already at first position do not move
+                int firstPositionInGroup = groupedPositions.get(0);
+
+                // Column entry
+                ColumnEntry columnEntry = getPreviousColumnEntryForPosition(firstPositionInGroup);
+
+                if (columnEntry == null) {
+                    continue;
                 }
 
-                // Set destination positions
-                for (List<Integer> groupedPositions : postionsGroupedByContiguous) {
-                    // Do these contiguous positions contain a column group ?
-                    boolean columnGroupMoved = columnGroupMoved(groupedPositions, selectedColumnGroupEntries);
+                int columnEntryIndex = columnEntry.getIndex();
+                int columnEntryPosition = -1;
+                if (groupModel != null) {
+                    columnEntryPosition = this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(columnEntry.getIndex());
+                }
 
-                    // If already at first position do not move
-                    int firstPositionInGroup = groupedPositions.get(0);
+                // Previous column entry
+                ColumnEntry previousColumnEntry = getPreviousColumnEntryForPosition(firstPositionInGroup - 1);
+                int previousColumnEntryPosition = -1;
+                if (groupModel != null && previousColumnEntry != null) {
+                    previousColumnEntryPosition = this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(previousColumnEntry.getIndex());
+                }
 
-                    // Column entry
-                    ColumnEntry columnEntry = getPreviousColumnEntryForPosition(this.selectedTree, firstPositionInGroup);
-                    int columnEntryIndex = columnEntry.getIndex();
-                    int columnEntryPosition = -1;
-                    if (groupModel != null) {
-                        columnEntryPosition = this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(columnEntry.getIndex());
-                    }
+                // Previous column entry is null if the last leaf in the
+                // tree is selected
+                if (previousColumnEntry == null) {
+                    toPositions.add(firstPositionInGroup);
+                } else {
+                    int previousColumnEntryIndex = previousColumnEntry.getIndex();
 
-                    // Previous column entry
-                    ColumnEntry previousColumnEntry = getPreviousColumnEntryForPosition(this.selectedTree, firstPositionInGroup - 1);
-                    int previousColumnEntryPosition = -1;
-                    if (groupModel != null && previousColumnEntry != null) {
-                        previousColumnEntryPosition = this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(previousColumnEntry.getIndex());
-                    }
-
-                    // Previous column entry is null if the last leaf in the
-                    // tree is selected
-                    if (previousColumnEntry == null) {
-                        toPositions.add(firstPositionInGroup);
-                    } else {
-                        int previousColumnEntryIndex = previousColumnEntry.getIndex();
-
-                        if (columnGroupMoved) {
-                            // If the previous entry is a column group
-                            // move above it.
-                            if (this.columnGroupModel != null
-                                    && this.columnGroupModel.isPartOfAGroup(previousColumnEntryIndex)) {
-                                ColumnGroup previousColumnGroup = this.columnGroupModel.getColumnGroupByIndex(previousColumnEntryIndex);
-                                toPositions.add(firstPositionInGroup - previousColumnGroup.getSize());
-                            } else if (groupModel != null
-                                    && groupModel.isPartOfAGroup(previousColumnEntryPosition)) {
-                                Group previousGroup = groupModel.getGroupByPosition(previousColumnEntryPosition);
-                                toPositions.add(firstPositionInGroup - previousGroup.getVisibleSpan());
-                            } else {
-                                toPositions.add(firstPositionInGroup - 1);
-                            }
+                    if (columnGroupMoved) {
+                        // If the previous entry is a column group
+                        // move above it.
+                        if (this.columnGroupModel != null
+                                && this.columnGroupModel.isPartOfAGroup(previousColumnEntryIndex)) {
+                            ColumnGroup previousColumnGroup = this.columnGroupModel.getColumnGroupByIndex(previousColumnEntryIndex);
+                            toPositions.add(firstPositionInGroup - previousColumnGroup.getSize());
+                        } else if (groupModel != null
+                                && groupModel.isPartOfAGroup(previousColumnEntryPosition)) {
+                            Group previousGroup = groupModel.getGroupByPosition(previousColumnEntryPosition);
+                            toPositions.add(firstPositionInGroup - previousGroup.getVisibleSpan());
                         } else {
-                            // If is first member of the unbreakable group,
-                            // can't move up i.e. out of the group
-                            if (this.columnGroupModel != null
-                                    && this.columnGroupModel.isPartOfAnUnbreakableGroup(columnEntryIndex)
-                                    && !ColumnGroupUtils.isInTheSameGroup(columnEntryIndex, previousColumnEntryIndex, this.columnGroupModel)) {
-                                return;
-                            }
+                            toPositions.add(firstPositionInGroup - 1);
+                        }
+                    } else {
+                        // If is first member of the unbreakable group,
+                        // can't move up i.e. out of the group
+                        if (this.columnGroupModel != null
+                                && this.columnGroupModel.isPartOfAnUnbreakableGroup(columnEntryIndex)
+                                && !ColumnGroupUtils.isInTheSameGroup(columnEntryIndex, previousColumnEntryIndex, this.columnGroupModel)) {
+                            return;
+                        }
 
-                            if (groupModel != null
-                                    && groupModel.isPartOfAnUnbreakableGroup(columnEntryIndex)
-                                    // TODO all level?
-                                    && !ColumnGroupUtils.isInTheSameGroup(this.columnGroupHeaderLayer, 0, columnEntryPosition, previousColumnEntryPosition)) {
-                                return;
-                            }
+                        if (groupModel != null
+                                && groupModel.isPartOfAnUnbreakableGroup(columnEntryIndex)
+                                // TODO all level?
+                                && !ColumnGroupUtils.isInTheSameGroup(this.columnGroupHeaderLayer, 0, columnEntryPosition, previousColumnEntryPosition)) {
+                            return;
+                        }
 
-                            // If previous entry is an unbreakable column group
-                            // move above it
-                            if (this.columnGroupModel != null
-                                    && this.columnGroupModel.isPartOfAnUnbreakableGroup(previousColumnEntryIndex)
-                                    && !this.columnGroupModel.isPartOfAGroup(columnEntryIndex)
-                                    && !ColumnGroupUtils.isInTheSameGroup(columnEntryIndex, previousColumnEntryIndex, this.columnGroupModel)) {
+                        // If previous entry is an unbreakable column group
+                        // move above it
+                        if (this.columnGroupModel != null
+                                && this.columnGroupModel.isPartOfAnUnbreakableGroup(previousColumnEntryIndex)
+                                && !this.columnGroupModel.isPartOfAGroup(columnEntryIndex)
+                                && !ColumnGroupUtils.isInTheSameGroup(columnEntryIndex, previousColumnEntryIndex, this.columnGroupModel)) {
 
-                                ColumnGroup previousColumnGroup = this.columnGroupModel.getColumnGroupByIndex(previousColumnEntryIndex);
-                                toPositions.add(firstPositionInGroup - previousColumnGroup.getSize());
-                            } else if (groupModel != null
-                                    && groupModel.isPartOfAnUnbreakableGroup(previousColumnEntryPosition)
-                                    && !groupModel.isPartOfAGroup(columnEntryPosition)
-                                    // TODO all level?
-                                    && !ColumnGroupUtils.isInTheSameGroup(this.columnGroupHeaderLayer, 0, columnEntryPosition, previousColumnEntryPosition)) {
+                            ColumnGroup previousColumnGroup = this.columnGroupModel.getColumnGroupByIndex(previousColumnEntryIndex);
+                            toPositions.add(firstPositionInGroup - previousColumnGroup.getSize());
+                        } else if (groupModel != null
+                                && groupModel.isPartOfAnUnbreakableGroup(previousColumnEntryPosition)
+                                && !groupModel.isPartOfAGroup(columnEntryPosition)
+                                // TODO all level?
+                                && !ColumnGroupUtils.isInTheSameGroup(this.columnGroupHeaderLayer, 0, columnEntryPosition, previousColumnEntryPosition)) {
 
-                                Group previousGroup = groupModel.getGroupByPosition(previousColumnEntryPosition);
-                                toPositions.add(firstPositionInGroup - previousGroup.getVisibleSpan());
-                            } else if (groupModel != null
-                                    && ((groupModel.isPartOfAGroup(columnEntryPosition)
-                                            && groupModel.getGroupByPosition(columnEntryPosition).isGroupStart(columnEntryPosition))
-                                            || (groupModel.isPartOfAGroup(previousColumnEntryPosition)
-                                                    && groupModel.getGroupByPosition(previousColumnEntryPosition).isGroupEnd(previousColumnEntryPosition)
-                                                    && !groupModel.getGroupByPosition(previousColumnEntryPosition).isUnbreakable()))) {
-                                // we first move out of the group if we are at
-                                // the left edge in a current group or the right
-                                // edge of the previous group
-                                toPositions.add(firstPositionInGroup);
-                            } else {
-                                toPositions.add(firstPositionInGroup - 1);
-                            }
+                            Group previousGroup = groupModel.getGroupByPosition(previousColumnEntryPosition);
+                            toPositions.add(firstPositionInGroup - previousGroup.getVisibleSpan());
+                        } else if (groupModel != null
+                                && ((groupModel.isPartOfAGroup(columnEntryPosition)
+                                        && groupModel.getGroupByPosition(columnEntryPosition).isGroupStart(columnEntryPosition))
+                                        || (groupModel.isPartOfAGroup(previousColumnEntryPosition)
+                                                && groupModel.getGroupByPosition(previousColumnEntryPosition).isGroupEnd(previousColumnEntryPosition)
+                                                && !groupModel.getGroupByPosition(previousColumnEntryPosition).isUnbreakable()))) {
+                            // we first move out of the group if we are at
+                            // the left edge in a current group or the right
+                            // edge of the previous group
+                            toPositions.add(firstPositionInGroup);
+                        } else {
+                            toPositions.add(firstPositionInGroup - 1);
                         }
                     }
                 }
-
-                fireItemsMoved(MoveDirectionEnum.UP, selectedColumnGroupEntries, selectedColumnEntries, postionsGroupedByContiguous, toPositions);
             }
+
+            fireItemsMoved(MoveDirectionEnum.UP, selectedColumnGroupEntries, selectedColumnEntries, postionsGroupedByContiguous, toPositions);
         }
     }
 
@@ -1009,10 +1014,10 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
         List<Integer> columnGroupEntryPositions = ColumnGroupEntry.getColumnGroupEntryPositions(selectedColumnGroupEntries);
 
         // Selected columns + column groups
-        Set<Integer> allSelectedPositionsSet = new HashSet<Integer>();
+        HashSet<Integer> allSelectedPositionsSet = new HashSet<>();
         allSelectedPositionsSet.addAll(columnEntryPositions);
         allSelectedPositionsSet.addAll(columnGroupEntryPositions);
-        List<Integer> allSelectedPositions = new ArrayList<Integer>(allSelectedPositionsSet);
+        ArrayList<Integer> allSelectedPositions = new ArrayList<>(allSelectedPositionsSet);
         Collections.sort(allSelectedPositions);
 
         return allSelectedPositions;
@@ -1022,115 +1027,118 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
      * Move selected items in the selected tree down (right).
      */
     protected void moveSelectedDown() {
-        if (isAnyLeafSelected(this.selectedTree)) {
-            if (!isLastLeafSelected(this.selectedTree)) {
-                List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(this.selectedTree);
-                List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(this.selectedTree);
+        if (isAnyLeafSelected(this.selectedTree) && !isLastLeafSelected(this.selectedTree)) {
+            List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(this.selectedTree);
+            List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(this.selectedTree);
 
-                List<Integer> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
+            List<Integer> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
 
-                // Group continuous positions
-                List<List<Integer>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
-                List<Integer> toPositions = new ArrayList<Integer>();
+            // Group continuous positions
+            List<List<Integer>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
+            List<Integer> toPositions = new ArrayList<>();
 
-                // TODO all level?
-                GroupModel groupModel = null;
-                if (this.columnGroupHeaderLayer != null) {
-                    groupModel = this.columnGroupHeaderLayer.getGroupModel(0);
+            // TODO all level?
+            GroupModel groupModel = null;
+            if (this.columnGroupHeaderLayer != null) {
+                groupModel = this.columnGroupHeaderLayer.getGroupModel(0);
+            }
+
+            // Set destination positions
+            for (List<Integer> groupedPositions : postionsGroupedByContiguous) {
+                // Do these contiguous positions contain a column group ?
+                boolean columnGroupMoved = columnGroupMoved(groupedPositions, selectedColumnGroupEntries);
+
+                // Position of last element in list
+                int lastListIndex = groupedPositions.size() - 1;
+                int lastPositionInGroup = groupedPositions.get(lastListIndex);
+
+                // Column entry
+                ColumnEntry columnEntry = getNextColumnEntryForPosition(lastPositionInGroup);
+
+                if (columnEntry == null) {
+                    continue;
                 }
 
-                // Set destination positions
-                for (List<Integer> groupedPositions : postionsGroupedByContiguous) {
-                    // Do these contiguous positions contain a column group ?
-                    boolean columnGroupMoved = columnGroupMoved(groupedPositions, selectedColumnGroupEntries);
+                int columnEntryIndex = columnEntry.getIndex();
+                int columnEntryPosition = -1;
+                if (groupModel != null) {
+                    columnEntryPosition = this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(columnEntry.getIndex());
+                }
 
-                    // Position of last element in list
-                    int lastListIndex = groupedPositions.size() - 1;
-                    int lastPositionInGroup = groupedPositions.get(lastListIndex);
+                // Next Column Entry
+                ColumnEntry nextColumnEntry = getNextColumnEntryForPosition(lastPositionInGroup + 1);
+                int nextColumnEntryPosition = -1;
+                if (groupModel != null && nextColumnEntry != null) {
+                    nextColumnEntryPosition = this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(nextColumnEntry.getIndex());
+                }
 
-                    // Column entry
-                    ColumnEntry columnEntry = getNextColumnEntryForPosition(this.selectedTree, lastPositionInGroup);
-                    int columnEntryIndex = columnEntry.getIndex();
-                    int columnEntryPosition = -1;
-                    if (groupModel != null) {
-                        columnEntryPosition = this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(columnEntry.getIndex());
-                    }
+                // Next column entry will be null the last leaf in the tree
+                // is selected
+                if (nextColumnEntry == null) {
+                    toPositions.add(lastPositionInGroup);
+                } else {
+                    int nextColumnEntryIndex = nextColumnEntry.getIndex();
 
-                    // Next Column Entry
-                    ColumnEntry nextColumnEntry = getNextColumnEntryForPosition(this.selectedTree, lastPositionInGroup + 1);
-                    int nextColumnEntryPosition = -1;
-                    if (groupModel != null && nextColumnEntry != null) {
-                        nextColumnEntryPosition = this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(nextColumnEntry.getIndex());
-                    }
-
-                    // Next column entry will be null the last leaf in the tree
-                    // is selected
-                    if (nextColumnEntry == null) {
-                        toPositions.add(lastPositionInGroup);
-                    } else {
-                        int nextColumnEntryIndex = nextColumnEntry.getIndex();
-
-                        if (columnGroupMoved) {
-                            // If the next entry is a column group
-                            // move past it.
-                            if (this.columnGroupModel != null
-                                    && this.columnGroupModel.isPartOfAGroup(nextColumnEntryIndex)) {
-                                ColumnGroup nextColumnGroup = this.columnGroupModel.getColumnGroupByIndex(nextColumnEntryIndex);
-                                toPositions.add(lastPositionInGroup + nextColumnGroup.getSize());
-                            } else if (groupModel != null
-                                    && groupModel.isPartOfAGroup(nextColumnEntryPosition)) {
-                                Group nextGroup = groupModel.getGroupByPosition(nextColumnEntryPosition);
-                                toPositions.add(lastPositionInGroup + nextGroup.getVisibleSpan());
-                            } else {
-                                toPositions.add(lastPositionInGroup + 1);
-                            }
+                    if (columnGroupMoved) {
+                        // If the next entry is a column group
+                        // move past it.
+                        if (this.columnGroupModel != null
+                                && this.columnGroupModel.isPartOfAGroup(nextColumnEntryIndex)) {
+                            ColumnGroup nextColumnGroup = this.columnGroupModel.getColumnGroupByIndex(nextColumnEntryIndex);
+                            toPositions.add(lastPositionInGroup + nextColumnGroup.getSize());
+                        } else if (groupModel != null
+                                && groupModel.isPartOfAGroup(nextColumnEntryPosition)) {
+                            Group nextGroup = groupModel.getGroupByPosition(nextColumnEntryPosition);
+                            toPositions.add(lastPositionInGroup + nextGroup.getVisibleSpan());
                         } else {
-                            // If is last member of the unbreakable group, can't
-                            // move down i.e. out of the group
-                            if (this.columnGroupModel != null
-                                    && this.columnGroupModel.isPartOfAnUnbreakableGroup(columnEntryIndex)
-                                    && !ColumnGroupUtils.isInTheSameGroup(columnEntryIndex, nextColumnEntryIndex, this.columnGroupModel)) {
-                                return;
-                            }
+                            toPositions.add(lastPositionInGroup + 1);
+                        }
+                    } else {
+                        // If is last member of the unbreakable group, can't
+                        // move down i.e. out of the group
+                        if (this.columnGroupModel != null
+                                && this.columnGroupModel.isPartOfAnUnbreakableGroup(columnEntryIndex)
+                                && !ColumnGroupUtils.isInTheSameGroup(columnEntryIndex, nextColumnEntryIndex, this.columnGroupModel)) {
+                            return;
+                        }
 
-                            if (groupModel != null
-                                    && groupModel.isPartOfAnUnbreakableGroup(columnEntryPosition)
-                                    // TODO all level?
-                                    && !ColumnGroupUtils.isInTheSameGroup(this.columnGroupHeaderLayer, 0, columnEntryPosition, nextColumnEntryPosition)) {
-                                return;
-                            }
+                        if (groupModel != null
+                                && groupModel.isPartOfAnUnbreakableGroup(columnEntryPosition)
+                                // TODO all level?
+                                && !ColumnGroupUtils.isInTheSameGroup(this.columnGroupHeaderLayer, 0, columnEntryPosition, nextColumnEntryPosition)) {
+                            return;
+                        }
 
-                            // If next entry is an unbreakable column group
-                            // move past it
-                            if (this.columnGroupModel != null
-                                    && this.columnGroupModel.isPartOfAnUnbreakableGroup(nextColumnEntryIndex)
-                                    && !this.columnGroupModel.isPartOfAGroup(columnEntryIndex)
-                                    && !ColumnGroupUtils.isInTheSameGroup(columnEntryIndex, nextColumnEntryIndex, this.columnGroupModel)) {
-                                ColumnGroup nextColumnGroup = this.columnGroupModel.getColumnGroupByIndex(nextColumnEntryIndex);
-                                toPositions.add(lastPositionInGroup + nextColumnGroup.getSize());
-                            } else if (groupModel != null
-                                    && groupModel.isPartOfAnUnbreakableGroup(nextColumnEntryPosition)
-                                    && !groupModel.isPartOfAGroup(columnEntryPosition)) {
-                                Group nextGroup = groupModel.getGroupByPosition(nextColumnEntryPosition);
-                                toPositions.add(lastPositionInGroup + nextGroup.getVisibleSpan());
-                            } else if (groupModel != null
-                                    && ((groupModel.isPartOfAGroup(columnEntryPosition)
-                                            && groupModel.getGroupByPosition(columnEntryPosition).isGroupEnd(columnEntryPosition))
-                                            || (groupModel.isPartOfAGroup(nextColumnEntryPosition)
-                                                    && groupModel.getGroupByPosition(nextColumnEntryPosition).isGroupStart(nextColumnEntryPosition)
-                                                    && !groupModel.getGroupByPosition(nextColumnEntryPosition).isUnbreakable()))) {
-                                // we first move out of the group if we are at
-                                // the left edge in a current group or the right
-                                // edge of the previous group
-                                toPositions.add(lastPositionInGroup);
-                            } else {
-                                toPositions.add(lastPositionInGroup + 1);
-                            }
+                        // If next entry is an unbreakable column group
+                        // move past it
+                        if (this.columnGroupModel != null
+                                && this.columnGroupModel.isPartOfAnUnbreakableGroup(nextColumnEntryIndex)
+                                && !this.columnGroupModel.isPartOfAGroup(columnEntryIndex)
+                                && !ColumnGroupUtils.isInTheSameGroup(columnEntryIndex, nextColumnEntryIndex, this.columnGroupModel)) {
+                            ColumnGroup nextColumnGroup = this.columnGroupModel.getColumnGroupByIndex(nextColumnEntryIndex);
+                            toPositions.add(lastPositionInGroup + nextColumnGroup.getSize());
+                        } else if (groupModel != null
+                                && groupModel.isPartOfAnUnbreakableGroup(nextColumnEntryPosition)
+                                && !groupModel.isPartOfAGroup(columnEntryPosition)) {
+                            Group nextGroup = groupModel.getGroupByPosition(nextColumnEntryPosition);
+                            toPositions.add(lastPositionInGroup + nextGroup.getVisibleSpan());
+                        } else if (groupModel != null
+                                && ((groupModel.isPartOfAGroup(columnEntryPosition)
+                                        && groupModel.getGroupByPosition(columnEntryPosition).isGroupEnd(columnEntryPosition))
+                                        || (groupModel.isPartOfAGroup(nextColumnEntryPosition)
+                                                && groupModel.getGroupByPosition(nextColumnEntryPosition).isGroupStart(nextColumnEntryPosition)
+                                                && !groupModel.getGroupByPosition(nextColumnEntryPosition).isUnbreakable()))) {
+                            // we first move out of the group if we are at
+                            // the left edge in a current group or the right
+                            // edge of the previous group
+                            toPositions.add(lastPositionInGroup);
+                        } else {
+                            toPositions.add(lastPositionInGroup + 1);
                         }
                     }
                 }
-                fireItemsMoved(MoveDirectionEnum.DOWN, selectedColumnGroupEntries, selectedColumnEntries, postionsGroupedByContiguous, toPositions);
             }
+            fireItemsMoved(MoveDirectionEnum.DOWN, selectedColumnGroupEntries, selectedColumnEntries, postionsGroupedByContiguous, toPositions);
         }
     }
 
@@ -1140,60 +1148,63 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
      * items to the end of the group.
      */
     void moveSelectedToBottom() {
-        if (isAnyLeafSelected(this.selectedTree)) {
-            if (!isLastLeafSelected(this.selectedTree)) {
-                List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(this.selectedTree);
-                List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(this.selectedTree);
+        if (isAnyLeafSelected(this.selectedTree) && !isLastLeafSelected(this.selectedTree)) {
+            List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(this.selectedTree);
+            List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(this.selectedTree);
 
-                List<Integer> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
+            List<Integer> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
 
-                // Group continuous positions
-                List<List<Integer>> positionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
-                List<Integer> toPositions = new ArrayList<Integer>();
+            // Group continuous positions
+            List<List<Integer>> positionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
+            List<Integer> toPositions = new ArrayList<>();
 
-                List<List<Integer>> reversed = new ArrayList<List<Integer>>(positionsGroupedByContiguous);
-                Collections.reverse(reversed);
+            List<List<Integer>> reversed = new ArrayList<>(positionsGroupedByContiguous);
+            Collections.reverse(reversed);
 
-                int lowerMost = getLowerMostPosition();
+            int lowerMost = getLowerMostPosition();
 
-                // TODO all level?
-                GroupModel groupModel = null;
-                if (this.columnGroupHeaderLayer != null) {
-                    groupModel = this.columnGroupHeaderLayer.getGroupModel(0);
-                }
-
-                int shift = 0;
-                for (List<Integer> groupedPositions : reversed) {
-                    // check for unbreakable group
-                    // Position of last element in list
-                    int lastListIndex = groupedPositions.size() - 1;
-                    int lastPositionInGroup = groupedPositions.get(lastListIndex);
-
-                    boolean columnGroupMoved = columnGroupMoved(groupedPositions, selectedColumnGroupEntries);
-
-                    // Column entry
-                    ColumnEntry columnEntry = getNextColumnEntryForPosition(this.selectedTree, lastPositionInGroup);
-                    int columnEntryPosition = -1;
-                    if (groupModel != null) {
-                        columnEntryPosition = this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(columnEntry.getIndex());
-                    }
-
-                    int columnEntryIndex = columnEntry.getIndex();
-                    if (this.columnGroupModel != null && this.columnGroupModel.isPartOfAnUnbreakableGroup(columnEntryIndex)) {
-                        List<Integer> groupMembers = this.columnGroupModel.getColumnGroupByIndex(columnEntryIndex).getMembers();
-                        int groupLowerMost = groupMembers.get(groupMembers.size() - 1);
-                        toPositions.add(groupLowerMost);
-                    } else if (groupModel != null && groupModel.isPartOfAnUnbreakableGroup(columnEntryPosition) && !columnGroupMoved) {
-                        Group group = groupModel.getGroupByPosition(columnEntryPosition);
-                        toPositions.add(group.getVisibleStartPosition() + group.getVisibleSpan() - 1);
-                    } else {
-                        toPositions.add(Integer.valueOf(lowerMost - shift));
-                        shift += groupedPositions.size();
-                    }
-                }
-
-                fireItemsMoved(MoveDirectionEnum.DOWN, selectedColumnGroupEntries, selectedColumnEntries, reversed, toPositions);
+            // TODO all level?
+            GroupModel groupModel = null;
+            if (this.columnGroupHeaderLayer != null) {
+                groupModel = this.columnGroupHeaderLayer.getGroupModel(0);
             }
+
+            int shift = 0;
+            for (List<Integer> groupedPositions : reversed) {
+                // check for unbreakable group
+                // Position of last element in list
+                int lastListIndex = groupedPositions.size() - 1;
+                int lastPositionInGroup = groupedPositions.get(lastListIndex);
+
+                boolean columnGroupMoved = columnGroupMoved(groupedPositions, selectedColumnGroupEntries);
+
+                // Column entry
+                ColumnEntry columnEntry = getNextColumnEntryForPosition(lastPositionInGroup);
+
+                if (columnEntry == null) {
+                    continue;
+                }
+
+                int columnEntryPosition = -1;
+                if (groupModel != null) {
+                    columnEntryPosition = this.columnGroupHeaderLayer.getPositionLayer().getColumnPositionByIndex(columnEntry.getIndex());
+                }
+
+                int columnEntryIndex = columnEntry.getIndex();
+                if (this.columnGroupModel != null && this.columnGroupModel.isPartOfAnUnbreakableGroup(columnEntryIndex)) {
+                    List<Integer> groupMembers = this.columnGroupModel.getColumnGroupByIndex(columnEntryIndex).getMembers();
+                    int groupLowerMost = groupMembers.get(groupMembers.size() - 1);
+                    toPositions.add(groupLowerMost);
+                } else if (groupModel != null && groupModel.isPartOfAnUnbreakableGroup(columnEntryPosition) && !columnGroupMoved) {
+                    Group group = groupModel.getGroupByPosition(columnEntryPosition);
+                    toPositions.add(group.getVisibleStartPosition() + group.getVisibleSpan() - 1);
+                } else {
+                    toPositions.add(Integer.valueOf(lowerMost - shift));
+                    shift += groupedPositions.size();
+                }
+            }
+
+            fireItemsMoved(MoveDirectionEnum.DOWN, selectedColumnGroupEntries, selectedColumnEntries, reversed, toPositions);
         }
     }
 
@@ -1206,7 +1217,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
         return false;
     }
 
-    private ColumnEntry getColumnEntryForPosition(Tree tree, int columnEntryPosition) {
+    private ColumnEntry getColumnEntryForPosition(int columnEntryPosition) {
         List<ColumnEntry> allColumnEntries = getColumnEntriesIncludingNested(this.selectedTree.getItems());
 
         for (ColumnEntry columnEntry : allColumnEntries) {
@@ -1217,10 +1228,10 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
         return null;
     }
 
-    private ColumnEntry getPreviousColumnEntryForPosition(Tree tree, int columnEntryPosition) {
+    private ColumnEntry getPreviousColumnEntryForPosition(int columnEntryPosition) {
         ColumnEntry result = null;
         while (result == null && columnEntryPosition >= getUpperMostPosition()) {
-            result = getColumnEntryForPosition(tree, columnEntryPosition);
+            result = getColumnEntryForPosition(columnEntryPosition);
             if (result == null) {
                 columnEntryPosition--;
             }
@@ -1228,10 +1239,10 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
         return result;
     }
 
-    private ColumnEntry getNextColumnEntryForPosition(Tree tree, int columnEntryPosition) {
+    private ColumnEntry getNextColumnEntryForPosition(int columnEntryPosition) {
         ColumnEntry result = null;
         while (result == null && columnEntryPosition <= getLowerMostPosition()) {
-            result = getColumnEntryForPosition(tree, columnEntryPosition);
+            result = getColumnEntryForPosition(columnEntryPosition);
             if (result == null) {
                 columnEntryPosition++;
             }
@@ -1253,7 +1264,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
      */
     protected List<Integer> getIndexesOfSelectedLeaves(Tree tree) {
         List<TreeItem> allSelectedLeaves = ArrayUtil.asList(tree.getSelection());
-        List<Integer> allSelectedIndexes = new ArrayList<Integer>();
+        List<Integer> allSelectedIndexes = new ArrayList<>();
 
         for (TreeItem selectedLeaf : allSelectedLeaves) {
             allSelectedIndexes.add(Integer.valueOf(tree.indexOf(selectedLeaf)));
@@ -1340,7 +1351,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
      *            index of the leaf in the tree
      */
     protected void setSelection(Tree tree, List<Integer> indexes) {
-        List<TreeItem> selectedLeaves = new ArrayList<TreeItem>();
+        ArrayList<TreeItem> selectedLeaves = new ArrayList<>();
 
         for (Integer leafIndex : indexes) {
             selectedLeaves.add(tree.getItem(leafIndex.intValue()));
@@ -1358,11 +1369,13 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
      */
     private void setSelectionIncludingNested(Tree tree, List<Integer> columnEntryIndexes) {
         Collection<TreeItem> allLeaves = ArrayUtil.asCollection(tree.getItems());
-        List<TreeItem> selectedLeaves = new ArrayList<TreeItem>();
+        List<TreeItem> selectedLeaves = new ArrayList<>();
 
+        ColumnEntry columnEntry = null;
         for (TreeItem leaf : allLeaves) {
             if (!isColumnGroupLeaf(leaf)) {
-                int index = getColumnEntryInLeaf(leaf).getIndex();
+                columnEntry = getColumnEntryInLeaf(leaf);
+                int index = columnEntry != null ? columnEntry.getIndex() : -1;
                 if (columnEntryIndexes.contains(Integer.valueOf(index))) {
                     selectedLeaves.add(leaf);
                 }
@@ -1370,7 +1383,8 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
                 // Check all children in column groups
                 Collection<TreeItem> columnGroupLeaves = ArrayUtil.asCollection(leaf.getItems());
                 for (TreeItem columnGroupLeaf : columnGroupLeaves) {
-                    int index = getColumnEntryInLeaf(columnGroupLeaf).getIndex();
+                    columnEntry = getColumnEntryInLeaf(columnGroupLeaf);
+                    int index = columnEntry != null ? columnEntry.getIndex() : -1;
                     if (columnEntryIndexes.contains(Integer.valueOf(index))) {
                         selectedLeaves.add(columnGroupLeaf);
                     }
@@ -1396,7 +1410,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 
                 for (TreeItem nestedLeaf : nestedLeaves) {
                     ColumnEntry columnEntry = getColumnEntryInLeaf(nestedLeaf);
-                    if (!columnEntryIndexes.contains(columnEntry.getIndex())) {
+                    if (columnEntry != null && !columnEntryIndexes.contains(columnEntry.getIndex())) {
                         markSelected = false;
                     }
                 }

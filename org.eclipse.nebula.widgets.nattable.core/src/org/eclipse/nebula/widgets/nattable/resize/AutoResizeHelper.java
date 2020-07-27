@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2019 Dirk Fauth.
+ * Copyright (c) 2015, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -234,7 +234,7 @@ public class AutoResizeHelper {
      * Reference to the currently active {@link AutoResizeRowRunnable} or
      * <code>null</code> if no runnable is active.
      */
-    private static volatile AutoResizeRowRunnable activeRunnable;
+    private static AutoResizeRowRunnable activeRunnable;
 
     /**
      * Trigger auto-resizing of rows based on the content of the whole row.
@@ -258,6 +258,15 @@ public class AutoResizeHelper {
      * @since 1.6
      */
     public static void autoResizeRows(final NatTable natTable, final ILayer rowLayer, final ILayer bodyDataLayer) {
+        cancelActiveRunnable();
+        setActiveRunnable(new AutoResizeRowRunnable(natTable, rowLayer, bodyDataLayer), natTable.getDisplay());
+    }
+
+    /**
+     * Cancel an active {@link AutoResizeRowRunnable} if the reference is set.
+     * Perform the check and the cancel as an atomic operation.
+     */
+    private static synchronized void cancelActiveRunnable() {
         if (activeRunnable != null) {
             // if a runnable is currently active we stop it to avoid
             // inconsistent execution, e.g. a previous started runnable could
@@ -265,9 +274,25 @@ public class AutoResizeHelper {
             // table has changed
             activeRunnable.cancelled = true;
         }
+    }
 
-        activeRunnable = new AutoResizeRowRunnable(natTable, rowLayer, bodyDataLayer);
-        natTable.getDisplay().asyncExec(activeRunnable);
+    /**
+     *
+     * @param runnable
+     *            The {@link AutoResizeRowRunnable} to activate or
+     *            <code>null</code> if there is no active
+     *            {@link AutoResizeRowRunnable} to set.
+     * @param display
+     *            The {@link Display} needed to execute the
+     *            {@link AutoResizeRowRunnable} asynchronously, or
+     *            <code>null</code> if there is no active
+     *            {@link AutoResizeRowRunnable} to set.
+     */
+    private static synchronized void setActiveRunnable(AutoResizeRowRunnable runnable, Display display) {
+        activeRunnable = runnable;
+        if (activeRunnable != null) {
+            display.asyncExec(activeRunnable);
+        }
     }
 
     /**
@@ -300,7 +325,7 @@ public class AutoResizeHelper {
                 }
 
                 if (this.cancelled) {
-                    activeRunnable = null;
+                    setActiveRunnable(null, null);
                     return;
                 }
 
@@ -321,7 +346,7 @@ public class AutoResizeHelper {
                     for (int i = 0; i < rowPos.length; i++) {
 
                         if (this.cancelled) {
-                            activeRunnable = null;
+                            setActiveRunnable(null, null);
                             return;
                         }
 
@@ -350,7 +375,7 @@ public class AutoResizeHelper {
                 }
             }
 
-            activeRunnable = null;
+            setActiveRunnable(null, null);
         }
     }
 }

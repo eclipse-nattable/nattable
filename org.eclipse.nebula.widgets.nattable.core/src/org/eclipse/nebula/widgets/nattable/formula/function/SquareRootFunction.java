@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -55,16 +55,15 @@ public class SquareRootFunction extends AbstractMathSingleValueFunction {
     @Override
     public BigDecimal getValue() {
         BigDecimal value = convertValue(getSingleValue().getValue());
-        BigDecimal x = new BigDecimal(Math.sqrt(value.doubleValue()));
-        return x.add(new BigDecimal(value.subtract(x.multiply(x)).doubleValue() / (x.doubleValue() * 2.0)));
+        BigDecimal x = BigDecimal.valueOf(Math.sqrt(value.doubleValue()));
+        return x.add(BigDecimal.valueOf(value.subtract(x.multiply(x)).doubleValue() / (x.doubleValue() * 2.0)));
     }
 
     @Override
     public String toString() {
         if (this.values.isEmpty()) {
             return "²"; //$NON-NLS-1$
-        }
-        else {
+        } else {
             return getSingleValue() + "²"; //$NON-NLS-1$
         }
     }

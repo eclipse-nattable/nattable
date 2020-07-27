@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 
 /**
  * {@link FunctionValue} that carries a {@link BigDecimal} for calculations.
- * 
+ *
  * @since 1.4
  */
 public class BigDecimalFunctionValue implements FunctionValue {
@@ -28,7 +28,7 @@ public class BigDecimalFunctionValue implements FunctionValue {
     }
 
     public BigDecimalFunctionValue(double value) {
-        this.value = new BigDecimal(value);
+        this.value = BigDecimal.valueOf(value);
     }
 
     public BigDecimalFunctionValue(String value) {

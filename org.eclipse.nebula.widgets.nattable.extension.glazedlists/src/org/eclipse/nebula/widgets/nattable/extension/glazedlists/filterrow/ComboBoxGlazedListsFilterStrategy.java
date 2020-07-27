@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2019 Dirk Fauth and others.
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,9 +30,10 @@ import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
 
 import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
+import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 import ca.odell.glazedlists.matchers.MatcherEditor;
+import ca.odell.glazedlists.matchers.Matchers;
 
 /**
  * Specialisation of the DefaultGlazedListsStaticFilterStrategy that is intended
@@ -57,11 +58,7 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
     /**
      * A MatcherEditor that will never match anything.
      */
-    private MatcherEditor<T> matchNone = new AbstractMatcherEditor<T>() {
-        {
-            fireMatchNone();
-        }
-    };
+    private MatcherEditor<T> matchNone = GlazedLists.fixedMatcherEditor(Matchers.falseMatcher());
 
     /**
      *

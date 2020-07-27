@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2018, 2019 Dirk Fauth.
+ * Copyright (c) 2018, 2020 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -24,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Helper class to de-normalize a collection of objects with hierarchical object
@@ -34,7 +33,13 @@ import java.util.Set;
  *
  * @since 1.6
  */
-public class HierarchicalHelper {
+public final class HierarchicalHelper {
+
+    private static final Object lockObj = new Object();
+
+    private HierarchicalHelper() {
+        // empty default constructor for helper class
+    }
 
     /**
      * The regular expression that is used to separate properties for accessing
@@ -105,10 +110,10 @@ public class HierarchicalHelper {
      * @return The flattened list of the hierarchical object graph.
      */
     public static List<HierarchicalWrapper> deNormalize(List<?> input, boolean addParentObject, List<String> propertyNames) {
-        List<HierarchicalWrapper> result = new ArrayList<HierarchicalWrapper>();
+        ArrayList<HierarchicalWrapper> result = new ArrayList<>();
 
         if (input != null) {
-            Set<String> nested = new LinkedHashSet<String>();
+            LinkedHashSet<String> nested = new LinkedHashSet<>();
             for (String name : propertyNames) {
                 String[] prop = name.split(PROPERTY_SEPARATOR_REGEX);
                 if (prop.length > 1) {
@@ -160,8 +165,8 @@ public class HierarchicalHelper {
 
         if (level < nested.length) {
             Object child = getDataValue(parent.getObject(level), nested[level], propertyDescriptorMap);
-            if (child != null && child instanceof Collection<?>) {
-                List<HierarchicalWrapper> result = new ArrayList<HierarchicalWrapper>();
+            if (child instanceof Collection<?>) {
+                ArrayList<HierarchicalWrapper> result = new ArrayList<>();
                 Collection<?> children = (Collection<?>) child;
 
                 if (addParentObject) {
@@ -169,7 +174,7 @@ public class HierarchicalHelper {
                 }
 
                 for (Object root : children) {
-                    HierarchicalWrapper rootWrapper = parent.clone();
+                    HierarchicalWrapper rootWrapper = new HierarchicalWrapper(parent);
                     rootWrapper.setObject(level + 1, root);
                     result.addAll(deNormalizeWithDirectChildren(rootWrapper, level + 1, nested, propertyDescriptorMap, addParentObject));
                 }
@@ -202,7 +207,7 @@ public class HierarchicalHelper {
             Method readMethod = propertyDesc.getReadMethod();
             return readMethod.invoke(rowObj);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -227,14 +232,14 @@ public class HierarchicalHelper {
     private static PropertyDescriptor getPropertyDescriptor(Object rowObj, String propertyName,
             Map<Class<?>, Map<String, PropertyDescriptor>> propertyDescriptorMap) throws IntrospectionException {
 
-        synchronized (rowObj) {
+        synchronized (lockObj) {
             Map<String, PropertyDescriptor> descriptorMap = propertyDescriptorMap.get(rowObj.getClass());
 
             if (descriptorMap == null) {
                 PropertyDescriptor[] propertyDescriptors = Introspector.getBeanInfo(rowObj.getClass())
                         .getPropertyDescriptors();
 
-                Map<String, PropertyDescriptor> propertiesByAttribute = new HashMap<String, PropertyDescriptor>();
+                Map<String, PropertyDescriptor> propertiesByAttribute = new HashMap<>();
                 for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
                     propertiesByAttribute.put(propertyDescriptor.getName(), propertyDescriptor);
                 }
@@ -274,10 +279,10 @@ public class HierarchicalHelper {
      *         belonging to a level.
      */
     public static Map<Integer, List<Integer>> getLevelIndexMapping(String[] propertyNames) {
-        Map<Integer, List<Integer>> levelIndexMapping = new LinkedHashMap<Integer, List<Integer>>();
+        LinkedHashMap<Integer, List<Integer>> levelIndexMapping = new LinkedHashMap<>();
         if (propertyNames.length > 0) {
             int currentLevel = 1;
-            List<Integer> columns = new ArrayList<Integer>();
+            ArrayList<Integer> columns = new ArrayList<>();
             columns.add(0);
             levelIndexMapping.put(0, columns);
             for (int col = 1; col < propertyNames.length; col++) {

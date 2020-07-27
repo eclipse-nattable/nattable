@@ -105,7 +105,7 @@ public class RowGroupExpandCollapseLayer<T> extends AbstractRowHideShowLayer imp
     }
 
     @Override
-    protected void invalidateCache() {
+    protected synchronized void invalidateCache() {
         super.invalidateCache();
         this.model.invalidateIndexCache();
     }

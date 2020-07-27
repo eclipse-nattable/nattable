@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@
 package org.eclipse.nebula.widgets.nattable.data;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -19,7 +20,9 @@ import org.apache.commons.logging.LogFactory;
 
 public class ExtendedReflectiveColumnPropertyAccessor<R> extends ReflectiveColumnPropertyAccessor<R> {
 
-    private static final Log log = LogFactory.getLog(ExtendedReflectiveColumnPropertyAccessor.class);
+    private static final Log LOG = LogFactory.getLog(ExtendedReflectiveColumnPropertyAccessor.class);
+
+    private static final String ERROR_LOG_STATEMENT = "Error on accessing the data model via reflection"; //$NON-NLS-1$
 
     /**
      * @param propertyNames
@@ -56,7 +59,7 @@ public class ExtendedReflectiveColumnPropertyAccessor<R> extends ReflectiveColum
         } else {
             super.setDataValue(rowObj, columnIndex, newValue);
         }
-    };
+    }
 
     /**
      * Reads the value of a property out of a given bean via reflection.
@@ -92,20 +95,19 @@ public class ExtendedReflectiveColumnPropertyAccessor<R> extends ReflectiveColum
                     getterMethod = objectClass.getMethod(getterName);
                     child = getterMethod.invoke(child);
                 } catch (Exception e1) {
-                    log.error("Error on reflective accessing the data model", e1); //$NON-NLS-1$
-                    throw new RuntimeException(e);
+                    LOG.error(ERROR_LOG_STATEMENT, e1);
+                    throw new IllegalStateException(e);
                 }
             } catch (Exception e) {
-                log.error("Error on reflective accessing the data model", e); //$NON-NLS-1$
-                throw new RuntimeException(e);
+                LOG.error(ERROR_LOG_STATEMENT, e);
+                throw new IllegalStateException(e);
             }
 
             if (child != null) {
                 objectClass = child.getClass();
             } else {
                 // null is returned by reflection, therefore we can not go
-                // further
-                // and null is the correct return value
+                // further and null is the correct return value
                 break;
             }
         }
@@ -134,11 +136,16 @@ public class ExtendedReflectiveColumnPropertyAccessor<R> extends ReflectiveColum
             if (propertyName.contains(".")) { //$NON-NLS-1$
                 singlePropertyObject = getPropertyValue(
                         object,
-                        propertyName.substring(0, propertyName.lastIndexOf("."))); //$NON-NLS-1$
-                singlePropertyName = propertyName.substring(propertyName.lastIndexOf(".") + 1); //$NON-NLS-1$
+                        propertyName.substring(0, propertyName.lastIndexOf('.')));
+                singlePropertyName = propertyName.substring(propertyName.lastIndexOf('.') + 1);
             } else {
                 singlePropertyObject = object;
                 singlePropertyName = propertyName;
+            }
+
+            if (singlePropertyObject == null) {
+                // no object found, stop further processing
+                return;
             }
 
             String setterName = "set" //$NON-NLS-1$
@@ -146,23 +153,50 @@ public class ExtendedReflectiveColumnPropertyAccessor<R> extends ReflectiveColum
                     + singlePropertyName.substring(1);
             Method setterMethod = null;
             if (value != null) {
-                setterMethod = singlePropertyObject.getClass().getMethod(
-                        setterName, new Class<?>[] { value.getClass() });
+                setterMethod = getSetterMethodByNameAndType(singlePropertyObject, setterName, value);
             } else {
                 // as the value is null we can not access the setter method
                 // directly and have to search for the method
                 Method[] methods = singlePropertyObject.getClass().getMethods();
-                for (Method m : methods) {
-                    if (m.getName().equals(setterName)) {
-                        setterMethod = m;
-                    }
-                }
+                setterMethod = Arrays.stream(methods).filter(m -> m.getName().equals(setterName)).findFirst().orElse(null);
             }
-            setterMethod.invoke(singlePropertyObject, value);
+
+            if (setterMethod != null) {
+                setterMethod.invoke(singlePropertyObject, value);
+            }
         } catch (Exception e) {
-            log.error("Error on reflective accessing the data model", e); //$NON-NLS-1$
-            throw new RuntimeException(e);
+            LOG.error(ERROR_LOG_STATEMENT, e);
+            throw new IllegalStateException(e);
         }
     }
 
+    private Method getSetterMethodByNameAndType(Object singlePropertyObject, String setterName, Object value) throws NoSuchMethodException {
+        Method setterMethod = null;
+        try {
+            setterMethod = singlePropertyObject.getClass().getMethod(setterName, value.getClass());
+        } catch (NoSuchMethodException e) {
+            // if the method was not found, check if the value is a
+            // wrapper type and check for the primitive type
+            if (value.getClass() == Boolean.class) {
+                setterMethod = singlePropertyObject.getClass().getMethod(setterName, Boolean.TYPE);
+            } else if (value.getClass() == Byte.class) {
+                setterMethod = singlePropertyObject.getClass().getMethod(setterName, Byte.TYPE);
+            } else if (value.getClass() == Short.class) {
+                setterMethod = singlePropertyObject.getClass().getMethod(setterName, Short.TYPE);
+            } else if (value.getClass() == Integer.class) {
+                setterMethod = singlePropertyObject.getClass().getMethod(setterName, Integer.TYPE);
+            } else if (value.getClass() == Long.class) {
+                setterMethod = singlePropertyObject.getClass().getMethod(setterName, Long.TYPE);
+            } else if (value.getClass() == Float.class) {
+                setterMethod = singlePropertyObject.getClass().getMethod(setterName, Float.TYPE);
+            } else if (value.getClass() == Double.class) {
+                setterMethod = singlePropertyObject.getClass().getMethod(setterName, Double.TYPE);
+            } else if (value.getClass() == Character.class) {
+                setterMethod = singlePropertyObject.getClass().getMethod(setterName, Character.TYPE);
+            } else {
+                throw e;
+            }
+        }
+        return setterMethod;
+    }
 }

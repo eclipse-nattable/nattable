@@ -144,9 +144,11 @@ public class MenuItemProviders {
                 menuItem.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent event) {
-                        int columnPosition = getNatEventData(event).getColumnPosition();
-                        natTable.doCommand(
-                                new ColumnHideCommand(natTable, columnPosition));
+                        NatEventData eventData = getNatEventData(event);
+                        if (eventData != null) {
+                            int columnPosition = eventData.getColumnPosition();
+                            natTable.doCommand(new ColumnHideCommand(natTable, columnPosition));
+                        }
                     }
                 });
             }
@@ -301,15 +303,17 @@ public class MenuItemProviders {
                 menuItem.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent event) {
-                        NatEventData natEventData = MenuItemProviders.getNatEventData(event);
-                        int columnPosition = natEventData.getColumnPosition();
-                        int diffToCellStart = natEventData.getOriginalEvent().x
-                                - natTable.getStartXOfColumnPosition(columnPosition);
-                        int diffToCellEnd = natTable.getStartXOfColumnPosition(columnPosition)
-                                + natTable.getColumnWidthByPosition(columnPosition)
-                                - natEventData.getOriginalEvent().x;
-                        natTable.doCommand(
-                                new ColumnShowCommand(natTable, columnPosition, diffToCellStart < diffToCellEnd, showAll));
+                        NatEventData eventData = getNatEventData(event);
+                        if (eventData != null) {
+                            int columnPosition = eventData.getColumnPosition();
+                            int diffToCellStart = eventData.getOriginalEvent().x
+                                    - natTable.getStartXOfColumnPosition(columnPosition);
+                            int diffToCellEnd = natTable.getStartXOfColumnPosition(columnPosition)
+                                    + natTable.getColumnWidthByPosition(columnPosition)
+                                    - eventData.getOriginalEvent().x;
+                            natTable.doCommand(
+                                    new ColumnShowCommand(natTable, columnPosition, diffToCellStart < diffToCellEnd, showAll));
+                        }
                     }
                 });
             }
@@ -356,9 +360,11 @@ public class MenuItemProviders {
                 menuItem.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent event) {
-                        int rowPosition = getNatEventData(event).getRowPosition();
-                        natTable.doCommand(
-                                new RowHideCommand(natTable, rowPosition));
+                        NatEventData eventData = getNatEventData(event);
+                        if (eventData != null) {
+                            int rowPosition = eventData.getRowPosition();
+                            natTable.doCommand(new RowHideCommand(natTable, rowPosition));
+                        }
                     }
                 });
             }
@@ -419,11 +425,12 @@ public class MenuItemProviders {
                 menuItem.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent event) {
-                        NatEventData data = MenuItemProviders.getNatEventData(event);
-                        int rowPosition = data.getRowPosition();
-                        int columnPosition = data.getColumnPosition();
-                        natTable.doCommand(
-                                new RowPositionHideCommand(natTable, columnPosition, rowPosition));
+                        NatEventData eventData = getNatEventData(event);
+                        if (eventData != null) {
+                            int rowPosition = eventData.getRowPosition();
+                            int columnPosition = eventData.getColumnPosition();
+                            natTable.doCommand(new RowPositionHideCommand(natTable, columnPosition, rowPosition));
+                        }
                     }
                 });
             }
@@ -578,15 +585,17 @@ public class MenuItemProviders {
                 menuItem.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent event) {
-                        NatEventData natEventData = MenuItemProviders.getNatEventData(event);
-                        int rowPosition = natEventData.getRowPosition();
-                        int diffToCellStart = natEventData.getOriginalEvent().y
-                                - natTable.getStartYOfRowPosition(rowPosition);
-                        int diffToCellEnd = natTable.getStartYOfRowPosition(rowPosition)
-                                + natTable.getRowHeightByPosition(rowPosition)
-                                - natEventData.getOriginalEvent().y;
-                        natTable.doCommand(
-                                new RowShowCommand(natTable, rowPosition, diffToCellStart < diffToCellEnd, showAll));
+                        NatEventData eventData = getNatEventData(event);
+                        if (eventData != null) {
+                            int rowPosition = eventData.getRowPosition();
+                            int diffToCellStart = eventData.getOriginalEvent().y
+                                    - natTable.getStartYOfRowPosition(rowPosition);
+                            int diffToCellEnd = natTable.getStartYOfRowPosition(rowPosition)
+                                    + natTable.getRowHeightByPosition(rowPosition)
+                                    - eventData.getOriginalEvent().y;
+                            natTable.doCommand(
+                                    new RowShowCommand(natTable, rowPosition, diffToCellStart < diffToCellEnd, showAll));
+                        }
                     }
                 });
             }
@@ -610,13 +619,16 @@ public class MenuItemProviders {
                 autoResizeColumns.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent event) {
-                        int columnPosition = getNatEventData(event).getColumnPosition();
-                        natTable.doCommand(
-                                new InitializeAutoResizeColumnsCommand(
-                                        natTable,
-                                        columnPosition,
-                                        natTable.getConfigRegistry(),
-                                        new GCFactory(natTable)));
+                        NatEventData eventData = getNatEventData(event);
+                        if (eventData != null) {
+                            int columnPosition = eventData.getColumnPosition();
+                            natTable.doCommand(
+                                    new InitializeAutoResizeColumnsCommand(
+                                            natTable,
+                                            columnPosition,
+                                            natTable.getConfigRegistry(),
+                                            new GCFactory(natTable)));
+                        }
                     }
                 });
             }
@@ -640,13 +652,16 @@ public class MenuItemProviders {
                 autoResizeRows.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent event) {
-                        int rowPosition = getNatEventData(event).getRowPosition();
-                        natTable.doCommand(
-                                new InitializeAutoResizeRowsCommand(
-                                        natTable,
-                                        rowPosition,
-                                        natTable.getConfigRegistry(),
-                                        new GCFactory(natTable)));
+                        NatEventData eventData = getNatEventData(event);
+                        if (eventData != null) {
+                            int rowPosition = eventData.getRowPosition();
+                            natTable.doCommand(
+                                    new InitializeAutoResizeRowsCommand(
+                                            natTable,
+                                            rowPosition,
+                                            natTable.getConfigRegistry(),
+                                            new GCFactory(natTable)));
+                        }
                     }
                 });
             }
@@ -669,13 +684,16 @@ public class MenuItemProviders {
                 autoResizeColumns.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent event) {
-                        int columnPosition = getNatEventData(event).getColumnPosition();
-                        natTable.doCommand(
-                                new InitializeAutoResizeColumnsCommand(
-                                        natTable,
-                                        columnPosition,
-                                        natTable.getConfigRegistry(),
-                                        new GCFactory(natTable)));
+                        NatEventData eventData = getNatEventData(event);
+                        if (eventData != null) {
+                            int columnPosition = eventData.getColumnPosition();
+                            natTable.doCommand(
+                                    new InitializeAutoResizeColumnsCommand(
+                                            natTable,
+                                            columnPosition,
+                                            natTable.getConfigRegistry(),
+                                            new GCFactory(natTable)));
+                        }
                     }
                 });
             }
@@ -725,14 +743,17 @@ public class MenuItemProviders {
                 columnStyleEditor.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent event) {
-                        int rowPosition = getNatEventData(event).getRowPosition();
-                        int columnPosition = getNatEventData(event).getColumnPosition();
-                        natTable.doCommand(
-                                new DisplayColumnStyleEditorCommand(
-                                        natTable,
-                                        natTable.getConfigRegistry(),
-                                        columnPosition,
-                                        rowPosition));
+                        NatEventData eventData = getNatEventData(event);
+                        if (eventData != null) {
+                            int rowPosition = eventData.getRowPosition();
+                            int columnPosition = eventData.getColumnPosition();
+                            natTable.doCommand(
+                                    new DisplayColumnStyleEditorCommand(
+                                            natTable,
+                                            natTable.getConfigRegistry(),
+                                            columnPosition,
+                                            rowPosition));
+                        }
                     }
                 });
             }
@@ -756,10 +777,13 @@ public class MenuItemProviders {
                 menuItem.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent event) {
-                        natTable.doCommand(
-                                new DisplayColumnRenameDialogCommand(
-                                        natTable,
-                                        getNatEventData(event).getColumnPosition()));
+                        NatEventData eventData = getNatEventData(event);
+                        if (eventData != null) {
+                            natTable.doCommand(
+                                    new DisplayColumnRenameDialogCommand(
+                                            natTable,
+                                            eventData.getColumnPosition()));
+                        }
                     }
                 });
             }
@@ -868,26 +892,28 @@ public class MenuItemProviders {
 
                 inspectLabelsMenuItem.addSelectionListener(new SelectionAdapter() {
                     @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        NatEventData natEventData = getNatEventData(e);
-                        NatTable natTable = natEventData.getNatTable();
-                        int columnPosition = natEventData.getColumnPosition();
-                        int rowPosition = natEventData.getRowPosition();
+                    public void widgetSelected(SelectionEvent event) {
+                        NatEventData eventData = getNatEventData(event);
+                        if (eventData != null) {
+                            NatTable natTable = eventData.getNatTable();
+                            int columnPosition = eventData.getColumnPosition();
+                            int rowPosition = eventData.getRowPosition();
 
-                        String msg = "Display mode: " + natTable.getDisplayModeByPosition(columnPosition, rowPosition) + "\nConfig labels: " //$NON-NLS-1$ //$NON-NLS-2$
-                                + natTable.getConfigLabelsByPosition(columnPosition, rowPosition)
-                                + "\nData value: " //$NON-NLS-1$
-                                + natTable.getDataValueByPosition(columnPosition, rowPosition)
-                                + "\n\nColumn position: " + columnPosition + "\nColumn index: " //$NON-NLS-1$ //$NON-NLS-2$
-                                + natTable.getColumnIndexByPosition(columnPosition)
-                                + "\n\nRow position: " + rowPosition + "\nRow index: " //$NON-NLS-1$ //$NON-NLS-2$
-                                + natTable.getRowIndexByPosition(rowPosition);
+                            String msg = "Display mode: " + natTable.getDisplayModeByPosition(columnPosition, rowPosition) + "\nConfig labels: " //$NON-NLS-1$ //$NON-NLS-2$
+                                    + natTable.getConfigLabelsByPosition(columnPosition, rowPosition)
+                                    + "\nData value: " //$NON-NLS-1$
+                                    + natTable.getDataValueByPosition(columnPosition, rowPosition)
+                                    + "\n\nColumn position: " + columnPosition + "\nColumn index: " //$NON-NLS-1$ //$NON-NLS-2$
+                                    + natTable.getColumnIndexByPosition(columnPosition)
+                                    + "\n\nRow position: " + rowPosition + "\nRow index: " //$NON-NLS-1$ //$NON-NLS-2$
+                                    + natTable.getRowIndexByPosition(rowPosition);
 
-                        MessageBox messageBox =
-                                new MessageBox(natTable.getShell(), SWT.ICON_INFORMATION | SWT.OK);
-                        messageBox.setText(Messages.getString("MenuItemProviders.debugInformation")); //$NON-NLS-1$
-                        messageBox.setMessage(msg);
-                        messageBox.open();
+                            MessageBox messageBox =
+                                    new MessageBox(natTable.getShell(), SWT.ICON_INFORMATION | SWT.OK);
+                            messageBox.setText(Messages.getString("MenuItemProviders.debugInformation")); //$NON-NLS-1$
+                            messageBox.setMessage(msg);
+                            messageBox.open();
+                        }
                     }
                 });
             }
@@ -1047,11 +1073,13 @@ public class MenuItemProviders {
 
                 columnStyleEditor.addSelectionListener(new SelectionAdapter() {
                     @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        NatEventData natEventData = MenuItemProviders.getNatEventData(e);
-                        int columnPosition = natEventData.getColumnPosition();
-                        natTable.doCommand(
-                                new DisplayColumnGroupRenameDialogCommand(natTable, columnPosition));
+                    public void widgetSelected(SelectionEvent event) {
+                        NatEventData eventData = getNatEventData(event);
+                        if (eventData != null) {
+                            int columnPosition = eventData.getColumnPosition();
+                            natTable.doCommand(
+                                    new DisplayColumnGroupRenameDialogCommand(natTable, columnPosition));
+                        }
                     }
                 });
             }
@@ -1073,12 +1101,13 @@ public class MenuItemProviders {
 
                 columnStyleEditor.addSelectionListener(new SelectionAdapter() {
                     @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        NatEventData natEventData = MenuItemProviders.getNatEventData(e);
-                        int columnPosition = natEventData.getColumnPosition();
-                        int columnIndex = natEventData.getNatTable().getColumnIndexByPosition(columnPosition);
-                        natTable.doCommand(
-                                new RemoveColumnGroupCommand(columnIndex));
+                    public void widgetSelected(SelectionEvent event) {
+                        NatEventData eventData = getNatEventData(event);
+                        if (eventData != null) {
+                            int columnPosition = eventData.getColumnPosition();
+                            int columnIndex = eventData.getNatTable().getColumnIndexByPosition(columnPosition);
+                            natTable.doCommand(new RemoveColumnGroupCommand(columnIndex));
+                        }
                     }
                 });
             }
@@ -1264,9 +1293,12 @@ public class MenuItemProviders {
 
                 renameRowGroup.addSelectionListener(new SelectionAdapter() {
                     @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        int rowPosition = getNatEventData(e).getRowPosition();
-                        natTable.doCommand(new DisplayRowGroupRenameDialogCommand(natTable, rowPosition));
+                    public void widgetSelected(SelectionEvent event) {
+                        NatEventData eventData = getNatEventData(event);
+                        if (eventData != null) {
+                            int rowPosition = eventData.getRowPosition();
+                            natTable.doCommand(new DisplayRowGroupRenameDialogCommand(natTable, rowPosition));
+                        }
                     }
                 });
             }
@@ -1304,11 +1336,13 @@ public class MenuItemProviders {
 
                 menuItem.addSelectionListener(new SelectionAdapter() {
                     @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        NatEventData natEventData = getNatEventData(e);
-                        int rowPosition = natEventData.getRowPosition();
-                        int rowIndex = natEventData.getNatTable().getRowIndexByPosition(rowPosition);
-                        natTable.doCommand(new RemoveRowGroupCommand(rowIndex));
+                    public void widgetSelected(SelectionEvent event) {
+                        NatEventData eventData = getNatEventData(event);
+                        if (eventData != null) {
+                            int rowPosition = eventData.getRowPosition();
+                            int rowIndex = eventData.getNatTable().getRowIndexByPosition(rowPosition);
+                            natTable.doCommand(new RemoveRowGroupCommand(rowIndex));
+                        }
                     }
                 });
             }
@@ -1346,9 +1380,12 @@ public class MenuItemProviders {
 
                 menuItem.addSelectionListener(new SelectionAdapter() {
                     @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        int columnPosition = getNatEventData(e).getColumnPosition();
-                        natTable.doCommand(new FreezeColumnCommand(natTable, columnPosition, false, true));
+                    public void widgetSelected(SelectionEvent event) {
+                        NatEventData eventData = getNatEventData(event);
+                        if (eventData != null) {
+                            int columnPosition = eventData.getColumnPosition();
+                            natTable.doCommand(new FreezeColumnCommand(natTable, columnPosition, false, true));
+                        }
                     }
                 });
             }
@@ -1386,9 +1423,12 @@ public class MenuItemProviders {
 
                 menuItem.addSelectionListener(new SelectionAdapter() {
                     @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        int rowPosition = getNatEventData(e).getRowPosition();
-                        natTable.doCommand(new FreezeRowCommand(natTable, rowPosition, false, true));
+                    public void widgetSelected(SelectionEvent event) {
+                        NatEventData eventData = getNatEventData(event);
+                        if (eventData != null) {
+                            int rowPosition = eventData.getRowPosition();
+                            natTable.doCommand(new FreezeRowCommand(natTable, rowPosition, false, true));
+                        }
                     }
                 });
             }
@@ -1431,11 +1471,14 @@ public class MenuItemProviders {
 
                 menuItem.addSelectionListener(new SelectionAdapter() {
                     @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        int columnPosition = getNatEventData(e).getColumnPosition();
-                        int rowPosition = getNatEventData(e).getRowPosition();
-                        natTable.doCommand(
-                                new FreezePositionCommand(natTable, columnPosition, rowPosition, false, true, include));
+                    public void widgetSelected(SelectionEvent event) {
+                        NatEventData eventData = getNatEventData(event);
+                        if (eventData != null) {
+                            int columnPosition = eventData.getColumnPosition();
+                            int rowPosition = eventData.getRowPosition();
+                            natTable.doCommand(
+                                    new FreezePositionCommand(natTable, columnPosition, rowPosition, false, true, include));
+                        }
                     }
                 });
             }

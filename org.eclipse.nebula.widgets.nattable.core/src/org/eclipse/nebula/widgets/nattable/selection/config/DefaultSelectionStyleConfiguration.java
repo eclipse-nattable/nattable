@@ -71,7 +71,7 @@ public class DefaultSelectionStyleConfiguration extends AbstractRegistryConfigur
     protected void configureSelectionStyle(IConfigRegistry configRegistry) {
         Style cellStyle = new Style();
         cellStyle.setAttributeValue(
-                CellStyleAttributes.FONT, 
+                CellStyleAttributes.FONT,
                 this.selectionFont);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.BACKGROUND_COLOR,
@@ -150,12 +150,12 @@ public class DefaultSelectionStyleConfiguration extends AbstractRegistryConfigur
                 GridRegion.COLUMN_HEADER);
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_STYLE,
-                cellStyle.clone(),
+                new Style(cellStyle),
                 DisplayMode.SELECT,
                 GridRegion.CORNER);
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_STYLE,
-                cellStyle.clone(),
+                new Style(cellStyle),
                 DisplayMode.SELECT,
                 GridRegion.ROW_HEADER);
     }
@@ -174,7 +174,7 @@ public class DefaultSelectionStyleConfiguration extends AbstractRegistryConfigur
                 SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_STYLE,
-                cellStyle.clone(),
+                new Style(cellStyle),
                 DisplayMode.SELECT,
                 SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
     }

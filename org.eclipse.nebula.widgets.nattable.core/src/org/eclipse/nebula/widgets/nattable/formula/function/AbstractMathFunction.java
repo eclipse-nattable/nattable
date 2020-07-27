@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -67,7 +67,7 @@ public abstract class AbstractMathFunction extends AbstractFunction {
         if (value instanceof BigDecimal) {
             return (BigDecimal) value;
         } else if (value instanceof Number) {
-            return new BigDecimal(((Number) value).doubleValue());
+            return BigDecimal.valueOf(((Number) value).doubleValue());
         }
         return new BigDecimal(value.toString());
     }

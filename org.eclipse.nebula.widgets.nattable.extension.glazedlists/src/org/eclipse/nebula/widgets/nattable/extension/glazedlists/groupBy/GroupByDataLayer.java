@@ -17,6 +17,7 @@ package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -137,7 +138,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      */
     private ICalculatedValueCache valueCache;
 
-    private final Map<GroupByObject, List<T>> itemsByGroup = new ConcurrentHashMap<GroupByObject, List<T>>();
+    private final Map<GroupByObject, List<T>> itemsByGroup = new ConcurrentHashMap<>();
 
     /**
      * The internal {@link TreeList.ExpansionModel} that is used by default if
@@ -625,11 +626,10 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         // applied sorting although showing the sort indicator)
         // for better user experience we remember the sort state and reapply it
         // after the tree update
-        List<Integer> sortedIndexes = null;
-        List<SortDirectionEnum> sortDirections = null;
+        List<Integer> sortedIndexes = Collections.emptyList();
+        List<SortDirectionEnum> sortDirections = new ArrayList<>();
         if (this.treeFormat.getSortModel() != null) {
             sortedIndexes = this.treeFormat.getSortModel().getSortedColumnIndexes();
-            sortDirections = new ArrayList<SortDirectionEnum>();
             for (Integer index : sortedIndexes) {
                 sortDirections.add(this.treeFormat.getSortModel().getSortDirection(index));
             }

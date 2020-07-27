@@ -597,11 +597,11 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
                             this.bottomRightInSelection.rowPosition)) {
                 labelStack.addLabel(SelectionStyleLabels.FILL_HANDLE_CELL);
             }
-        }
 
-        if (this.fillHandleRegion != null
-                && this.fillHandleRegion.contains(cell.getColumnPosition(), cell.getRowPosition())) {
-            labelStack.addLabel(SelectionStyleLabels.FILL_HANDLE_REGION);
+            if (this.fillHandleRegion != null
+                    && this.fillHandleRegion.contains(cell.getColumnPosition(), cell.getRowPosition())) {
+                labelStack.addLabel(SelectionStyleLabels.FILL_HANDLE_REGION);
+            }
         }
         return labelStack;
     }

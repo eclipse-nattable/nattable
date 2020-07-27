@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,10 +36,11 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.FunctionList;
 import ca.odell.glazedlists.FunctionList.Function;
+import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.TextFilterator;
-import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
 import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 import ca.odell.glazedlists.matchers.MatcherEditor;
+import ca.odell.glazedlists.matchers.Matchers;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
 import ca.odell.glazedlists.matchers.ThresholdMatcherEditor;
 import ca.odell.glazedlists.util.concurrent.ReadWriteLock;
@@ -63,11 +64,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
      *
      * @since 1.6
      */
-    private MatcherEditor<T> matchAll = new AbstractMatcherEditor<T>() {
-        {
-            fireMatchAll();
-        }
-    };
+    private MatcherEditor<T> matchAll = GlazedLists.fixedMatcherEditor(Matchers.trueMatcher());
 
     /**
      * Create a new DefaultGlazedListsFilterStrategy on top of the given

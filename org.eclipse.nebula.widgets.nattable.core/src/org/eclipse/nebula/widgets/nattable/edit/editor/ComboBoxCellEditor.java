@@ -372,7 +372,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
                 // in the combo we don't need a conversion and use the value
                 if (EditConstants.SELECT_ALL_ITEMS_VALUE.equals(canonicalValue)
                         || this.displayConverter == null) {
-                    editorValues = new String[] { canonicalValue != null ? canonicalValue.toString() : "" }; //$NON-NLS-1$
+                    editorValues = new String[] { canonicalValue.toString() };
                 } else {
                     editorValues = new String[] {
                             (String) this.displayConverter.canonicalToDisplayValue(

@@ -127,8 +127,8 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
                 // only cells below the offset that are selected
                 return (cell.getColumnPosition() >= columnOffset
                         && cell.getRowPosition() >= rowOffset)
-                        && (cell.getDisplayMode() == DisplayMode.SELECT
-                                || cell.getDisplayMode() == DisplayMode.SELECT_HOVER);
+                        && (DisplayMode.SELECT.equals(cell.getDisplayMode())
+                                || DisplayMode.SELECT_HOVER.equals(cell.getDisplayMode()));
             }
         });
 

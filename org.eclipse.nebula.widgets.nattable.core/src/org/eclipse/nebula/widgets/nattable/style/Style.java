@@ -24,6 +24,21 @@ public class Style implements IStyle {
 
     private final HashMap<ConfigAttribute<?>, Object> styleAttributeValueMap = new HashMap<>();
 
+    public Style() {
+        // empty default constructor.
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param style
+     *            The {@link Style} object to copy.
+     * @since 2.0
+     */
+    public Style(Style style) {
+        this.styleAttributeValueMap.putAll(style.styleAttributeValueMap);
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getAttributeValue(ConfigAttribute<T> styleAttribute) {
@@ -45,15 +60,5 @@ public class Style implements IStyle {
         }
 
         return resultBuilder.toString();
-    }
-
-    /**
-     * @since 1.4
-     */
-    @Override
-    public Style clone() {
-        Style clone = new Style();
-        clone.styleAttributeValueMap.putAll(this.styleAttributeValueMap);
-        return clone;
     }
 }

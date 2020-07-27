@@ -56,7 +56,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
 
     public static final String PERSISTENCE_KEY_ROW_INDEX_ORDER = ".rowIndexOrder"; //$NON-NLS-1$
 
-    private final IUniqueIndexLayer underlyingLayer;
+    private final IUniqueIndexLayer underlying;
 
     /**
      * The local cache of the row index order. Used to track the reordering
@@ -109,7 +109,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
      */
     public RowReorderLayer(IUniqueIndexLayer underlyingLayer, boolean useDefaultConfiguration) {
         super(underlyingLayer);
-        this.underlyingLayer = underlyingLayer;
+        this.underlying = underlyingLayer;
 
         populateIndexOrder();
 
@@ -132,9 +132,9 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
                 } else {
                     // only react on ADD or DELETE and not on CHANGE
                     StructuralChangeEventHelper.handleRowDelete(
-                            structuralDiffs, this.underlyingLayer, this.rowIndexOrder, true);
+                            structuralDiffs, this.underlying, this.rowIndexOrder, true);
                     StructuralChangeEventHelper.handleRowInsert(
-                            structuralDiffs, this.underlyingLayer, this.rowIndexOrder, true);
+                            structuralDiffs, this.underlying, this.rowIndexOrder, true);
                     // update index-position mapping
                     refreshIndexPositionMapping();
                 }
@@ -232,7 +232,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
 
     @Override
     public int getColumnPositionByIndex(int columnIndex) {
-        return this.underlyingLayer.getColumnPositionByIndex(columnIndex);
+        return this.underlying.getColumnPositionByIndex(columnIndex);
     }
 
     // Y
@@ -251,7 +251,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
 
         int aggregateWidth = 0;
         for (int rowPosition = 0; rowPosition < targetRowPosition; rowPosition++) {
-            aggregateWidth += this.underlyingLayer.getRowHeightByPosition(localToUnderlyingRowPosition(rowPosition));
+            aggregateWidth += this.underlying.getRowHeightByPosition(localToUnderlyingRowPosition(rowPosition));
         }
 
         this.startYCache.put(targetRowPosition, aggregateWidth);
@@ -322,12 +322,12 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
     @Override
     public int localToUnderlyingRowPosition(int localRowPosition) {
         int rowIndex = getRowIndexByPosition(localRowPosition);
-        return this.underlyingLayer.getRowPositionByIndex(rowIndex);
+        return this.underlying.getRowPositionByIndex(rowIndex);
     }
 
     @Override
     public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, int underlyingRowPosition) {
-        int rowIndex = this.underlyingLayer.getRowIndexByPosition(underlyingRowPosition);
+        int rowIndex = this.underlying.getRowIndexByPosition(underlyingRowPosition);
         return getRowPositionByIndex(rowIndex);
     }
 

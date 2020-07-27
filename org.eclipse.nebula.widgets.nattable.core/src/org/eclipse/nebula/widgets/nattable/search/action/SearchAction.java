@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,6 @@ import org.eclipse.nebula.widgets.nattable.search.CellValueAsStringComparator;
 import org.eclipse.nebula.widgets.nattable.search.gui.SearchDialog;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -28,23 +27,19 @@ import org.eclipse.swt.events.KeyEvent;
  */
 public class SearchAction implements IKeyAction {
 
-    private static SearchDialog dialog;
+    private SearchDialog dialog;
 
     private NatTable natTable;
     private IDialogSettings dialogSettings;
     private boolean modal;
 
-    private DisposeListener listener = new DisposeListener() {
-
-        @Override
-        public void widgetDisposed(DisposeEvent e) {
-            if (dialog != null) {
-                if (dialog.isModal()) {
-                    dialog.close();
-                    dialog = null;
-                } else {
-                    dialog.setInput(null, null);
-                }
+    private DisposeListener listener = e -> {
+        if (this.dialog != null) {
+            if (this.dialog.isModal()) {
+                this.dialog.close();
+                this.dialog = null;
+            } else {
+                this.dialog.setInput(null, null);
             }
         }
     };
@@ -88,14 +83,14 @@ public class SearchAction implements IKeyAction {
     }
 
     protected void setActiveContext() {
-        if (dialog != null
-                && dialog.getNatTable() != null
+        if (this.dialog != null
+                && this.dialog.getNatTable() != null
                 && !isEquivalentToActiveContext()) {
-            dialog.close();
-            dialog = null;
+            this.dialog.close();
+            this.dialog = null;
         }
-        if (dialog != null) {
-            dialog.setInput(this.natTable, this.dialogSettings);
+        if (this.dialog != null) {
+            this.dialog.setInput(this.natTable, this.dialogSettings);
         }
     }
 
@@ -108,18 +103,18 @@ public class SearchAction implements IKeyAction {
      */
     private boolean isEquivalentToActiveContext() {
         if (this.modal) {
-            return (this.natTable == dialog.getNatTable()
-                    && this.dialogSettings == dialog.getOriginalDialogSettings()
-                    && this.modal == dialog.isModal());
+            return (this.natTable == this.dialog.getNatTable()
+                    && this.dialogSettings == this.dialog.getOriginalDialogSettings()
+                    && this.modal == this.dialog.isModal());
         }
-        if (dialog.isModal()) {
+        if (this.dialog.isModal()) {
             return false;
         }
         return !this.natTable.isDisposed()
-                && (dialog.getNatTable() != null && !dialog.getNatTable().isDisposed())
-                && this.natTable.getShell().equals(dialog.getNatTable().getShell())
-                && ((this.dialogSettings == null && dialog.getOriginalDialogSettings() == null)
-                        || this.dialogSettings.equals(dialog.getOriginalDialogSettings()));
+                && (this.dialog.getNatTable() != null && !this.dialog.getNatTable().isDisposed())
+                && this.natTable.getShell().equals(this.dialog.getNatTable().getShell())
+                && ((this.dialogSettings == null && this.dialog.getOriginalDialogSettings() == null)
+                        || (this.dialogSettings != null && this.dialogSettings.equals(this.dialog.getOriginalDialogSettings())));
     }
 
     @Override
@@ -132,13 +127,13 @@ public class SearchAction implements IKeyAction {
             this.natTable.addDisposeListener(this.listener);
         }
         setActiveContext();
-        if (dialog == null) {
-            dialog = new SearchDialog(this.natTable.getShell(),
+        if (this.dialog == null) {
+            this.dialog = new SearchDialog(this.natTable.getShell(),
                     new CellValueAsStringComparator<String>(),
                     this.modal ? SWT.NONE : SWT.APPLICATION_MODAL);
-            dialog.setInput(this.natTable, this.dialogSettings);
+            this.dialog.setInput(this.natTable, this.dialogSettings);
         }
-        dialog.open();
+        this.dialog.open();
     }
 
 }

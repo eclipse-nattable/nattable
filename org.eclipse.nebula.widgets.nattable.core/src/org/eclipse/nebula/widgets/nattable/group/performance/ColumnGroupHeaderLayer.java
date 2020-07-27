@@ -105,14 +105,6 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
     private final List<GroupModel> model;
 
     /**
-     * The {@link ILayerPainter} that is used by this layer. Typically the
-     * {@link ColumnGroupHeaderGridLineCellLayerPainter} to support rendering of
-     * huge column group cells by inspecting the {@link #showAlwaysGroupNames}
-     * attribute.
-     */
-    private ILayerPainter layerPainter;
-
-    /**
      * {@link SizeConfig} instance for the row height configuration.
      */
     private final SizeConfig rowHeightConfig = new SizeConfig(DataLayer.DEFAULT_ROW_HEIGHT);
@@ -416,8 +408,16 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         }
     }
 
+    /**
+     * @return The {@link ILayerPainter} that is used by this layer. Typically
+     *         the {@link ColumnGroupHeaderGridLineCellLayerPainter} to support
+     *         rendering of huge column group cells by inspecting the
+     *         {@link #showAlwaysGroupNames} attribute.
+     */
     @Override
     public ILayerPainter getLayerPainter() {
+        // return the ILayerPainter set to this layer, not the ILayerPainter
+        // from the underlying layer as specified in AbstractLayerTransform
         return this.layerPainter;
     }
 
@@ -553,7 +553,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         // it is above the ViewportLayer. We therefore need a special handling
         // to check additionally below the ViewportLayer.
         if (result == null && layer instanceof CompositeFreezeLayer) {
-            result = findLayerPath(this.compositeFreezeLayer.getChildLayerByLayoutCoordinate(1, 1), columnPosition);
+            result = findLayerPath(((CompositeFreezeLayer) layer).getChildLayerByLayoutCoordinate(1, 1), columnPosition);
         }
 
         if (result != null) {

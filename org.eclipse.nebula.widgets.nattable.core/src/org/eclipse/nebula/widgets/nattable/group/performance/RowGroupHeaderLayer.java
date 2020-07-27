@@ -103,14 +103,6 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
     private final List<GroupModel> model;
 
     /**
-     * The {@link ILayerPainter} that is used by this layer. Typically the
-     * {@link RowGroupHeaderGridLineCellLayerPainter} to support rendering of
-     * huge row group cells by inspecting the {@link #showAlwaysGroupNames}
-     * attribute.
-     */
-    private ILayerPainter layerPainter;
-
-    /**
      * {@link SizeConfig} instance for the column width configuration.
      */
     private final SizeConfig columnWidthConfig = new SizeConfig(20);
@@ -410,8 +402,16 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
         }
     }
 
+    /**
+     * @return The {@link ILayerPainter} that is used by this layer. Typically
+     *         the {@link RowGroupHeaderGridLineCellLayerPainter} to support
+     *         rendering of huge row group cells by inspecting the
+     *         {@link #showAlwaysGroupNames} attribute.
+     */
     @Override
     public ILayerPainter getLayerPainter() {
+        // return the ILayerPainter set to this layer, not the ILayerPainter
+        // from the underlying layer as specified in AbstractLayerTransform
         return this.layerPainter;
     }
 
@@ -546,7 +546,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
         // it is above the ViewportLayer. We therefore need a special handling
         // to check additionally below the ViewportLayer.
         if (result == null && layer instanceof CompositeFreezeLayer) {
-            result = findLayerPath(this.compositeFreezeLayer.getChildLayerByLayoutCoordinate(1, 1), rowPosition);
+            result = findLayerPath(((CompositeFreezeLayer) layer).getChildLayerByLayoutCoordinate(1, 1), rowPosition);
         }
 
         if (result != null) {

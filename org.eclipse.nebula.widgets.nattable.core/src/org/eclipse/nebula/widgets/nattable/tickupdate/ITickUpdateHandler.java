@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -91,28 +91,22 @@ public interface ITickUpdateHandler {
         @Override
         public Object getIncrementedValue(Object currentValue, double incrementSize) {
             if (currentValue instanceof Byte) {
-                return Integer.valueOf(((Byte) currentValue)
-                        + Double.valueOf(Math.abs(incrementSize)).byteValue()).byteValue();
+                return (byte) (((Byte) currentValue) + (byte) Math.abs(incrementSize));
             }
             if (currentValue instanceof Short) {
-                return Integer.valueOf(((Short) currentValue)
-                        + Double.valueOf(Math.abs(incrementSize)).shortValue()).shortValue();
+                return (short) (((Short) currentValue) + (short) Math.abs(incrementSize));
             }
             if (currentValue instanceof Integer) {
-                return Integer.valueOf(((Integer) currentValue)
-                        + Double.valueOf(Math.abs(incrementSize)).intValue());
+                return Integer.valueOf(((Integer) currentValue) + (int) Math.abs(incrementSize));
             }
             if (currentValue instanceof Long) {
-                return Long.valueOf(((Long) currentValue)
-                        + Double.valueOf(Math.abs(incrementSize)).longValue());
+                return Long.valueOf(((Long) currentValue) + (long) Math.abs(incrementSize));
             }
             if (currentValue instanceof Double) {
-                return Double.valueOf(((Double) currentValue)
-                        + Math.abs(incrementSize));
+                return Double.valueOf(((Double) currentValue) + Math.abs(incrementSize));
             }
             if (currentValue instanceof Float) {
-                return Float.valueOf(((Float) currentValue)
-                        + Double.valueOf(Math.abs(incrementSize)).floatValue());
+                return Float.valueOf(((Float) currentValue) + (float) Math.abs(incrementSize));
             }
             return currentValue;
         }
@@ -125,28 +119,22 @@ public interface ITickUpdateHandler {
         @Override
         public Object getDecrementedValue(Object currentValue, double decrementSize) {
             if (currentValue instanceof Byte) {
-                return Integer.valueOf(((Byte) currentValue)
-                        - Double.valueOf(Math.abs(decrementSize)).byteValue()).byteValue();
+                return (byte) (((Byte) currentValue) - (byte) Math.abs(decrementSize));
             }
             if (currentValue instanceof Short) {
-                return Integer.valueOf(((Short) currentValue)
-                        - Double.valueOf(Math.abs(decrementSize)).shortValue()).shortValue();
+                return (short) (((Short) currentValue) - (short) Math.abs(decrementSize));
             }
             if (currentValue instanceof Integer) {
-                return Integer.valueOf(((Integer) currentValue)
-                        - Double.valueOf(Math.abs(decrementSize)).intValue());
+                return Integer.valueOf(((Integer) currentValue) - (int) Math.abs(decrementSize));
             }
             if (currentValue instanceof Long) {
-                return Long.valueOf(((Long) currentValue)
-                        - Double.valueOf(Math.abs(decrementSize)).longValue());
+                return Long.valueOf(((Long) currentValue) - (long) Math.abs(decrementSize));
             }
             if (currentValue instanceof Double) {
-                return Double.valueOf(((Double) currentValue)
-                        - Math.abs(decrementSize));
+                return Double.valueOf(((Double) currentValue) - Math.abs(decrementSize));
             }
             if (currentValue instanceof Float) {
-                return Float.valueOf(((Float) currentValue)
-                        - Double.valueOf(Math.abs(decrementSize)).floatValue());
+                return Float.valueOf(((Float) currentValue) - (float) Math.abs(decrementSize));
             }
             return currentValue;
         }

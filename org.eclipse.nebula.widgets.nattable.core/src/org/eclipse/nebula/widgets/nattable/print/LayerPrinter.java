@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,6 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -71,7 +70,7 @@ public class LayerPrinter {
         }
     }
 
-    private final List<PrintTarget> printTargets = new ArrayList<PrintTarget>();
+    private final ArrayList<PrintTarget> printTargets = new ArrayList<>();
 
     public static final int FOOTER_HEIGHT_IN_PRINTER_DPI = 300;
 
@@ -93,7 +92,7 @@ public class LayerPrinter {
 
     private boolean calculatePageCount = true;
 
-    private List<PrintListener> printListener = new ArrayList<PrintListener>();
+    private ArrayList<PrintListener> printListener = new ArrayList<>();
 
     /**
      *
@@ -325,8 +324,8 @@ public class LayerPrinter {
             }
             Rectangle print = computePrintArea(printer);
 
-            float pixelX = Float.valueOf(print.width) / Float.valueOf(total.width);
-            float pixelY = Float.valueOf(print.height - getFooterHeightInPrinterDPI()) / Float.valueOf(total.height);
+            float pixelX = (float) print.width / (float) total.width;
+            float pixelY = ((float) print.height - getFooterHeightInPrinterDPI()) / total.height;
 
             // only support down-scaling, no stretching
             // stretching could cause serious issues, e.g. vertical
@@ -451,6 +450,11 @@ public class LayerPrinter {
         Rectangle printArea = computePrintArea(printer);
         float[] scaleFactor = computeLayerScaleFactor(target.layer, printer);
 
+        if (scaleFactor == null) {
+            // theoretical case that should never happen
+            scaleFactor = new float[] { 1f, 1f };
+        }
+
         Integer[] gridLineWidth = getGridLineWidth(target.configRegistry);
 
         // calculate pages based on non cut off columns/rows
@@ -497,10 +501,10 @@ public class LayerPrinter {
         // need to consider the repeat print target height
         int repeatPrintTargetHeightInDpi = target.repeat ? 0 : Math.round(Float.valueOf(getRepeatPrintTargetHeight()) * getRepeatPrintTargetScaleFactor(printer)[1]);
         int headerHeightInDpi = (target.repeatHeaderLayer != null) ? Math.round(Float.valueOf(target.repeatHeaderLayer.getHeight()) * scaleFactor[1]) : 0;
-        int pageHeight = Math.round(Float.valueOf((printArea.height - repeatPrintTargetHeightInDpi - headerHeightInDpi - getFooterHeightInPrinterDPI()) / scaleFactor[1]));
+        int pageHeight = Math.round((printArea.height - repeatPrintTargetHeightInDpi - headerHeightInDpi - getFooterHeightInPrinterDPI()) / scaleFactor[1]);
         int firstPageHeight = (available < 0)
-                ? Math.round(Float.valueOf((printArea.height - repeatPrintTargetHeightInDpi - getFooterHeightInPrinterDPI()) / scaleFactor[1]))
-                : Math.round(Float.valueOf(available) * prevScaleFactor[1] / scaleFactor[1]);
+                ? Math.round((printArea.height - repeatPrintTargetHeightInDpi - getFooterHeightInPrinterDPI()) / scaleFactor[1])
+                : Math.round(available * prevScaleFactor[1] / scaleFactor[1]);
         int endY = 0;
         int added = 0;
         int remaining = -1;
@@ -867,7 +871,7 @@ public class LayerPrinter {
                     float[] repeatScaleFactor = null;
 
                     int available = -1;
-                    float[] prevScaleFactor = null;
+                    float[] prevScaleFactor = new float[] { 1f, 1f };
 
                     boolean newPage = true;
                     boolean pageStarted = false;
@@ -883,10 +887,15 @@ public class LayerPrinter {
                         float[] scaleFactor = computeLayerScaleFactor(target.layer, this.printer);
                         float[] dpiFactor = computeScaleFactor(target.layer, this.printer, true);
 
+                        if (scaleFactor == null) {
+                            // theoretical case, should never happen
+                            scaleFactor = new float[] { 1f, 1f };
+                        }
+
                         int availablePixel = available;
                         if (available > 0) {
-                            int prevDPI = Math.round(Float.valueOf(available) * prevScaleFactor[1]);
-                            availablePixel = Math.round(Float.valueOf(prevDPI) / scaleFactor[1]);
+                            int prevDPI = Math.round(available * prevScaleFactor[1]);
+                            availablePixel = Math.round(prevDPI / scaleFactor[1]);
                         }
 
                         Integer[] gridLineWidth = getGridLineWidth(target.configRegistry);
@@ -905,7 +914,7 @@ public class LayerPrinter {
                             setLayerSize(target, this.printer.getPrinterData());
 
                             final Rectangle printerClientArea = computePrintArea(this.printer);
-                            final int printBoundsWidth = Math.round(Float.valueOf(printerClientArea.width) / scaleFactor[0]);
+                            final int printBoundsWidth = Math.round(printerClientArea.width / scaleFactor[0]);
                             int repeatPrintTargetHeight = getRepeatPrintTargetHeight();
                             float repeatPrintTargetHeightInDpi = repeatPrintTargetHeight * ((repeatScaleFactor != null) ? repeatScaleFactor[1] : 0);
                             int headerHeight = (target.repeatHeaderLayer != null) ? target.repeatHeaderLayer.getHeight() : 0;
@@ -963,10 +972,10 @@ public class LayerPrinter {
                                     }
 
                                     Rectangle footerBounds = new Rectangle(
-                                            Math.round(Float.valueOf((printerClientArea.width / dpiFactor[0]) * horizontalPageNumber)),
-                                            Math.round(Float.valueOf(((printerClientArea.height - getFooterHeightInPrinterDPI()) / dpiFactor[1]) * verticalPageNumber)),
-                                            Math.round(Float.valueOf(printerClientArea.width / dpiFactor[0])),
-                                            Math.round(Float.valueOf((printerClientArea.height - getFooterHeightInPrinterDPI()) / dpiFactor[1])));
+                                            Math.round((printerClientArea.width / dpiFactor[0]) * horizontalPageNumber),
+                                            Math.round(((printerClientArea.height - getFooterHeightInPrinterDPI()) / dpiFactor[1]) * verticalPageNumber),
+                                            Math.round((printerClientArea.width / dpiFactor[0])),
+                                            Math.round((printerClientArea.height - getFooterHeightInPrinterDPI()) / dpiFactor[1]));
 
                                     if (shouldPrint(this.printer.getPrinterData(), currentPage)) {
                                         // end a page that was previously
@@ -1024,7 +1033,7 @@ public class LayerPrinter {
                                         }
 
                                         if (target.repeatHeaderLayer != null && verticalPageNumber != 0) {
-                                            headerTransform.translate(0, startY + Math.round(Float.valueOf(repeatPrintTargetHeight) * ((repeatScaleFactor != null) ? repeatScaleFactor[1] : 0f) / scaleFactor[1]));
+                                            headerTransform.translate(0, (float) startY + Math.round(repeatPrintTargetHeight * ((repeatScaleFactor != null) ? repeatScaleFactor[1] : 0f) / scaleFactor[1]));
                                             gc.setTransform(headerTransform);
                                             printLayer(target, gc, new Rectangle(printBounds.x, 0, intersect.width, headerHeight));
                                             printerTransform.translate(0, headerHeight);
@@ -1035,7 +1044,7 @@ public class LayerPrinter {
                                         // page on the same page as the previous
                                         // target
                                         if (LayerPrinter.this.join && available > 0 && verticalPageNumber == 0) {
-                                            printerTransform.translate(0, (printBoundsHeight + headerHeight) - availablePixel);
+                                            printerTransform.translate(0, (float) (printBoundsHeight + headerHeight) - availablePixel);
                                         }
 
                                         gc.setTransform(printerTransform);
@@ -1137,7 +1146,7 @@ public class LayerPrinter {
             // at x = 100, page 3 at x = 300
             // Adjust to print from the left page margin.
             // i.e x = 0
-            transform.translate(-1 * printBounds.x, -1 * printBounds.y);
+            transform.translate(-1f * printBounds.x, -1f * printBounds.y);
         }
 
         /**
@@ -1158,12 +1167,7 @@ public class LayerPrinter {
             } else {
                 final Rectangle fullLayerSize = getTotalArea(target.layer);
 
-                target.layer.setClientAreaProvider(new IClientAreaProvider() {
-                    @Override
-                    public Rectangle getClientArea() {
-                        return fullLayerSize;
-                    }
-                });
+                target.layer.setClientAreaProvider(() -> fullLayerSize);
 
                 // in case the whole layer should be printed or only the
                 // selected pages, we need to ensure to set the starting point

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,8 +38,7 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
 
     private final List<String> propertyNames;
 
-    private Map<Class<?>, Map<String, PropertyDescriptor>> propertyDescriptorMap =
-            new HashMap<Class<?>, Map<String, PropertyDescriptor>>();
+    private Map<Class<?>, Map<String, PropertyDescriptor>> propertyDescriptorMap = new HashMap<>();
 
     /**
      * @param propertyNames
@@ -71,7 +70,7 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
             return readMethod.invoke(rowObj);
         } catch (Exception e) {
             LOG.warn(e);
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -79,9 +78,9 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
     public void setDataValue(R rowObj, int columnIndex, Object newValue) {
         try {
             PropertyDescriptor propertyDesc = getPropertyDescriptor(rowObj, columnIndex);
-            Method writeMethod = propertyDesc.getWriteMethod();
+            Method writeMethod = propertyDesc != null ? propertyDesc.getWriteMethod() : null;
             if (writeMethod == null) {
-                throw new RuntimeException(
+                throw new IllegalStateException(
                         "Setter method not found in backing bean for value at column index: " + columnIndex); //$NON-NLS-1$
             }
             writeMethod.invoke(rowObj, newValue);
@@ -89,9 +88,9 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
             LOG.error("Data type being set does not match the data type of the setter method in the backing bean", ex); //$NON-NLS-1$
         } catch (Exception e) {
             LOG.error(e);
-            throw new RuntimeException("Error while setting data value"); //$NON-NLS-1$
+            throw new IllegalStateException("Error while setting data value"); //$NON-NLS-1$
         }
-    };
+    }
 
     @Override
     public String getColumnProperty(int columnIndex) {
@@ -114,24 +113,24 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
      *            The Java Bean for which the {@link PropertyDescriptor} is
      *            requested.
      * @param propertyName
-     *            The name of the property for which the {@link PropertyDescriptor}
-     *            is requested.
-     * @return The {@link PropertyDescriptor} that describes the property with the
-     *         given name in the given Java Bean object that exports it via a pair
-     *         of accessor methods.
+     *            The name of the property for which the
+     *            {@link PropertyDescriptor} is requested.
+     * @return The {@link PropertyDescriptor} that describes the property with
+     *         the given name in the given Java Bean object that exports it via
+     *         a pair of accessor methods.
      * @throws IntrospectionException
      *             if an exception occurs during introspection
      * @since 1.6
      */
     protected PropertyDescriptor getPropertyDescriptor(Object rowObj, String propertyName) throws IntrospectionException {
-        synchronized (rowObj) {
+        synchronized (this.propertyDescriptorMap) {
             Map<String, PropertyDescriptor> descriptorMap = this.propertyDescriptorMap.get(rowObj.getClass());
 
             if (descriptorMap == null) {
                 PropertyDescriptor[] propertyDescriptors =
                         Introspector.getBeanInfo(rowObj.getClass()).getPropertyDescriptors();
 
-                Map<String, PropertyDescriptor> propertiesByAttribute = new HashMap<String, PropertyDescriptor>();
+                Map<String, PropertyDescriptor> propertiesByAttribute = new HashMap<>();
                 for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
                     propertiesByAttribute.put(propertyDescriptor.getName(), propertyDescriptor);
                 }

@@ -777,7 +777,7 @@ public class SizeConfig implements IPersistable {
      *            configured for fixed size.
      */
     public void setPercentage(int position, int percentage) {
-        setPercentage(position, Integer.valueOf(percentage).doubleValue());
+        setPercentage(position, (double) percentage);
     }
 
     /**
@@ -869,10 +869,8 @@ public class SizeConfig implements IPersistable {
      *         positions is interpreted by pixel.
      */
     public boolean isPercentageSizing() {
-        if (!this.percentageSizingMap.isEmpty()) {
-            if (this.percentageSizingMap.containsValue(true)) {
-                return true;
-            }
+        if (!this.percentageSizingMap.isEmpty() && this.percentageSizingMap.containsValue(true)) {
+            return true;
         }
         return this.percentageSizing;
     }
@@ -993,7 +991,7 @@ public class SizeConfig implements IPersistable {
             }
 
             int[] correction = correctPercentageValues(sum, positionCount);
-            if (correction != null) {
+            if (correction != null && correction.length > 0) {
                 sum = correction[0];
                 realSum = correction[1] + fixedSum;
             }
@@ -1030,7 +1028,7 @@ public class SizeConfig implements IPersistable {
             // if min size configured, check noInfoPositions and update
             // according to the min size that gets applied
             if (!noInfoPositions.isEmpty() && isMinSizeConfigured()) {
-                double remaining = Double.valueOf(space - realSum);
+                double remaining = (double) space - (double) realSum;
                 double remainingColSpace = remaining / noInfoPositions.size();
 
                 for (MutableIntIterator it = noInfoPositions.intIterator(); it.hasNext();) {
@@ -1071,12 +1069,12 @@ public class SizeConfig implements IPersistable {
 
             if (!noInfoPositions.isEmpty()) {
                 // now calculate the size for the remaining columns
-                double remaining = Double.valueOf(space - realSum);
+                double remaining = (double) space - (double) realSum;
                 double remainingColSpace = remaining / noInfoPositions.size();
                 for (int position : noInfoPositions.toArray()) {
                     sum += (remainingColSpace / space) * 100;
                     int minSize = getMinSize(position);
-                    this.realSizeMap.put(position, remainingColSpace < minSize ? minSize : Double.valueOf(remainingColSpace).intValue());
+                    this.realSizeMap.put(position, remainingColSpace < minSize ? minSize : (int) remainingColSpace);
                 }
 
                 // If there are positions for which no size information exist,
@@ -1093,11 +1091,11 @@ public class SizeConfig implements IPersistable {
             if (sum < 100
                     && !fixedPercentagePositions.isEmpty()
                     && this.distributeRemainingSpace) {
-                double remaining = Double.valueOf(space - realSum);
+                double remaining = (double) space - (double) realSum;
                 if (remaining > 0) {
                     // calculate sum of eligible fixed percentage positions
                     double eligibleSum = fixedPercentagePositions.primitiveStream()
-                            .mapToDouble(pos -> this.percentageSizeMap.get(pos))
+                            .mapToDouble(this.percentageSizeMap::get)
                             .sum();
 
                     // calculate ratio
@@ -1255,7 +1253,7 @@ public class SizeConfig implements IPersistable {
                     newValue = getMinSize(mod.getOne());
                 }
 
-                double newPercentage = (Double.valueOf(newValue) / Double.valueOf(this.availableSpace - fixedSum)) * 100;
+                double newPercentage = ((double) newValue / (double) this.availableSpace - fixedSum) * 100;
                 newPercentageSum += newPercentage;
 
                 realSum += newValue;
@@ -1276,21 +1274,21 @@ public class SizeConfig implements IPersistable {
 
         // the given sum is not greater than 100 so we do not have to modify
         // anything
-        return null;
+        return new int[0];
     }
 
     private int calculateAggregatedSize(int position) {
         int resizeAggregate = 0;
         int resizedColumns = 0;
 
-        boolean percentageSizing = isPercentageSizing();
-        MutableIntIntMap mapToUse = percentageSizing ? this.realSizeMap : this.sizeMap;
+        boolean pSizing = isPercentageSizing();
+        MutableIntIntMap mapToUse = pSizing ? this.realSizeMap : this.sizeMap;
 
         for (int resizedPosition : mapToUse.keySet().toSortedArray()) {
             if (resizedPosition < position) {
                 resizedColumns++;
                 int size = mapToUse.get(resizedPosition);
-                resizeAggregate += percentageSizing ? size : upScale(size);
+                resizeAggregate += pSizing ? size : upScale(size);
             } else {
                 break;
             }
@@ -1317,7 +1315,7 @@ public class SizeConfig implements IPersistable {
     private int correctExtend(int extend, MutableIntList fixedPercentagePositions) {
         int remainingExtend = extend;
         double eligibleSum = fixedPercentagePositions.primitiveStream()
-                .mapToDouble(pos -> this.percentageSizeMap.get(pos))
+                .mapToDouble(this.percentageSizeMap::get)
                 .sum();
         // calculate ratio
         for (int pos : fixedPercentagePositions.toArray()) {
