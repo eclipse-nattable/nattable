@@ -469,8 +469,8 @@ public class NatCombo extends Composite {
      *            adding internal styles via ConfigRegistry.
      */
     protected void createTextControl(int style) {
-        int widgetStyle = style | HorizontalAlignmentEnum.getSWTStyle(this.cellStyle);
-        this.text = new Text(this, widgetStyle);
+        int textStyle = style | HorizontalAlignmentEnum.getSWTStyle(this.cellStyle);
+        this.text = new Text(this, textStyle);
         this.text.setBackground(this.cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
         this.text.setForeground(this.cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
         this.text.setFont(this.cellStyle.getAttributeValue(CellStyleAttributes.FONT));

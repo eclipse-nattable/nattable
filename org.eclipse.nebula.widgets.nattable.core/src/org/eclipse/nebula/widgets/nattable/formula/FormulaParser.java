@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2018 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,6 +12,7 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.formula;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -55,17 +56,44 @@ import org.eclipse.nebula.widgets.nattable.formula.function.SumFunction;
  */
 public class FormulaParser {
 
-    public static final String operatorRegex = "[-+/*\\^]"; //$NON-NLS-1$
-    public static final String digitRegex = "[\\d]+"; //$NON-NLS-1$
-    public static final String placeholderRegex = "\\{" + digitRegex + "\\}"; //$NON-NLS-1$ //$NON-NLS-2$
+    /**
+     * @since 2.0
+     */
+    public static final String OPERATOR_REGEX = "[-+/*\\^]"; //$NON-NLS-1$
+    /**
+     * @since 2.0
+     */
+    public static final String DIGIT_REGEX = "[\\d]+"; //$NON-NLS-1$
+    /**
+     * @since 2.0
+     */
+    public static final String PLACEHOLDER_REGEX = "\\{" + DIGIT_REGEX + "\\}"; //$NON-NLS-1$ //$NON-NLS-2$
 
-    public static final String operatorSplitRegex = "((?<=[-+/*\\^\\s])|(?=[-+/*\\^\\s]))"; //$NON-NLS-1$
+    /**
+     * @since 2.0
+     */
+    public static final String OPERATOR_SPLIT_REGEX = "((?<=[-+/*\\^\\s])|(?=[-+/*\\^\\s]))"; //$NON-NLS-1$
 
-    public static final String referenceRegex = "[A-Z]+[0-9]+"; //$NON-NLS-1$
-    public static final String referenceRangeRegex = referenceRegex + ":" + referenceRegex; //$NON-NLS-1$
-    public static final String columnRangeRegex = "[A-Z]+:[A-Z]+"; //$NON-NLS-1$
-    public static final String rowRangeRegex = digitRegex + ":" + digitRegex; //$NON-NLS-1$
-    public static final String rangeRegex = "(" + referenceRangeRegex + "|" + columnRangeRegex + "|" + rowRangeRegex + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    /**
+     * @since 2.0
+     */
+    public static final String REFERENCE_REGEX = "[A-Z]+[0-9]+"; //$NON-NLS-1$
+    /**
+     * @since 2.0
+     */
+    public static final String REFERENCE_RANGE_REGEX = REFERENCE_REGEX + ":" + REFERENCE_REGEX; //$NON-NLS-1$
+    /**
+     * @since 2.0
+     */
+    public static final String COLUMN_RANGE_REGEX = "[A-Z]+:[A-Z]+"; //$NON-NLS-1$
+    /**
+     * @since 2.0
+     */
+    public static final String ROW_RANGE_REGEX = DIGIT_REGEX + ":" + DIGIT_REGEX; //$NON-NLS-1$
+    /**
+     * @since 2.0
+     */
+    public static final String RANGE_REGEX = "(" + REFERENCE_RANGE_REGEX + "|" + COLUMN_RANGE_REGEX + "|" + ROW_RANGE_REGEX + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
     protected DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance();
     protected String localizedDigitRegex;
@@ -73,9 +101,9 @@ public class FormulaParser {
     protected String functionRegex;
     protected Pattern functionPattern;
 
-    protected Pattern referencePattern = Pattern.compile(referenceRegex);
+    protected Pattern referencePattern = Pattern.compile(REFERENCE_REGEX);
 
-    protected Map<String, Class<? extends AbstractFunction>> functionMapping = new HashMap<String, Class<? extends AbstractFunction>>();
+    protected Map<String, Class<? extends AbstractFunction>> functionMapping = new HashMap<>();
 
     protected IDataProvider dataProvider;
 
@@ -214,12 +242,12 @@ public class FormulaParser {
         // process parenthesis
         processedFunction = processParenthesis(processedFunction, replacements, parsedReferences, referer);
 
-        String[] operandsAndOperators = processedFunction.split(operatorSplitRegex);
+        String[] operandsAndOperators = processedFunction.split(OPERATOR_SPLIT_REGEX);
 
-        List<FunctionValue> values = new ArrayList<FunctionValue>(operandsAndOperators.length);
+        List<FunctionValue> values = new ArrayList<>(operandsAndOperators.length);
         for (int i = 0; i < operandsAndOperators.length; i++) {
             String part = operandsAndOperators[i].trim();
-            if (part.matches(operatorRegex)) {
+            if (part.matches(OPERATOR_REGEX)) {
                 if ("-".equals(part)) { //$NON-NLS-1$
                     values.add(new NegateFunction());
                 } else if ("+".equals(part)) { //$NON-NLS-1$
@@ -231,10 +259,10 @@ public class FormulaParser {
                 } else if ("^".equals(part)) { //$NON-NLS-1$
                     values.add(new PowerFunction());
                 }
-            } else if (part.matches(rangeRegex)) {
+            } else if (part.matches(RANGE_REGEX)) {
                 MultipleValueFunctionValue multi = new MultipleValueFunctionValue();
                 String[] parts = part.split(":"); //$NON-NLS-1$
-                if (part.matches(referenceRangeRegex)) {
+                if (part.matches(REFERENCE_RANGE_REGEX)) {
                     int[] from = evaluateReference(parts[0]);
                     int[] to = evaluateReference(parts[1]);
 
@@ -248,7 +276,7 @@ public class FormulaParser {
                             addDataProviderValue(column, row, multi.getValue(), parsedReferences, referer);
                         }
                     }
-                } else if (part.matches(rowRangeRegex)) {
+                } else if (part.matches(ROW_RANGE_REGEX)) {
                     int from = Integer.valueOf(parts[0]) - 1;
                     int to = Integer.valueOf(parts[1]) - 1;
 
@@ -263,7 +291,7 @@ public class FormulaParser {
                             addDataProviderValue(column, row, multi.getValue(), parsedReferences, referer);
                         }
                     }
-                } else if (part.matches(columnRangeRegex)) {
+                } else if (part.matches(COLUMN_RANGE_REGEX)) {
                     int from = getColumnIndex(parts[0]);
                     int to = getColumnIndex(parts[1]);
 
@@ -280,10 +308,10 @@ public class FormulaParser {
                     }
                 }
                 values.add(multi);
-            } else if (part.matches(referenceRegex)) {
+            } else if (part.matches(REFERENCE_REGEX)) {
                 int[] coords = evaluateReference(part);
                 addDataProviderValue(coords[0], coords[1], values, parsedReferences, referer);
-            } else if (part.matches(placeholderRegex)) {
+            } else if (part.matches(PLACEHOLDER_REGEX)) {
                 String number = part.substring(1, part.length() - 1);
                 try {
                     values.add(replacements.get(Integer.valueOf(number)));
@@ -292,7 +320,7 @@ public class FormulaParser {
                 }
             } else if (part.matches(this.localizedDigitRegex)) {
                 // check if last is big decimal and throw exception in that case
-                if (values.size() > 0 && values.get(values.size() - 1) instanceof BigDecimalFunctionValue) {
+                if (!values.isEmpty() && values.get(values.size() - 1) instanceof BigDecimalFunctionValue) {
                     throw new IllegalArgumentException(Messages.getString("FormulaParser.error.missingOperator")); //$NON-NLS-1$
                 }
 
@@ -389,15 +417,13 @@ public class FormulaParser {
 
             AbstractFunction fv = null;
             try {
-                fv = functionClass.newInstance();
-            } catch (InstantiationException e) {
-                throw new IllegalArgumentException(Messages.getString("FormulaParser.error.instantiation", e.getLocalizedMessage()), e); //$NON-NLS-1$
-            } catch (IllegalAccessException e) {
+                fv = functionClass.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
                 throw new IllegalArgumentException(Messages.getString("FormulaParser.error.instantiation", e.getLocalizedMessage()), e); //$NON-NLS-1$
             }
 
             // process parameter
-            Map<Integer, FunctionValue> nestedReplacements = new HashMap<Integer, FunctionValue>();
+            Map<Integer, FunctionValue> nestedReplacements = new HashMap<>();
             parameterString = processFunctions(parameterString, nestedReplacements, parsedReferences, referer);
             String[] parameter = parameterString.split(";"); //$NON-NLS-1$
 
@@ -491,7 +517,7 @@ public class FormulaParser {
      * @since 1.6
      */
     protected List<FunctionValue> processPower(List<FunctionValue> values) {
-        List<FunctionValue> result = new ArrayList<FunctionValue>();
+        List<FunctionValue> result = new ArrayList<>();
 
         // we only process one power operation at once
         boolean operatorFound = false;
@@ -500,7 +526,7 @@ public class FormulaParser {
             FunctionValue v = it.next();
             if (!operatorFound
                     && it.hasNext()
-                    && result.size() > 0
+                    && !result.isEmpty()
                     && v instanceof PowerFunction
                     && ((AbstractFunction) v).isEmpty()) {
 
@@ -533,7 +559,7 @@ public class FormulaParser {
      *         division is already combined.
      */
     protected List<FunctionValue> processMultiplicationAndDivision(List<FunctionValue> values) {
-        List<FunctionValue> result = new ArrayList<FunctionValue>();
+        List<FunctionValue> result = new ArrayList<>();
 
         // we only process one multiplication/division operation at once
         boolean operatorFound = false;
@@ -542,7 +568,7 @@ public class FormulaParser {
             FunctionValue v = it.next();
             if (!operatorFound
                     && it.hasNext()
-                    && result.size() > 0
+                    && !result.isEmpty()
                     && (v instanceof ProductFunction || v instanceof QuotientFunction)
                     && ((AbstractFunction) v).isEmpty()) {
 
@@ -740,7 +766,7 @@ public class FormulaParser {
      * @see FormulaParser#setDecimalFormat(DecimalFormat)
      */
     protected void updateLocalizedDigitRegex() {
-        this.localizedDigitRegex = digitRegex + "(\\" + this.decimalFormat.getDecimalFormatSymbols().getDecimalSeparator() + digitRegex + ")?"; //$NON-NLS-1$ //$NON-NLS-2$
+        this.localizedDigitRegex = DIGIT_REGEX + "(\\" + this.decimalFormat.getDecimalFormatSymbols().getDecimalSeparator() + DIGIT_REGEX + ")?"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -900,7 +926,7 @@ public class FormulaParser {
     // cycle detection code
 
     protected boolean detectCycle(Map<IndexCoordinate, Set<IndexCoordinate>> parsedReferences) {
-        Set<IndexCoordinate> initPath = new HashSet<IndexCoordinate>();
+        Set<IndexCoordinate> initPath = new HashSet<>();
         for (Map.Entry<IndexCoordinate, Set<IndexCoordinate>> entry : parsedReferences.entrySet()) {
             if (isCyclic(new Node(entry.getKey(), entry.getValue()), initPath, parsedReferences)) {
                 return true;

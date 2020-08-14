@@ -300,11 +300,11 @@ public class FormulaParserTest {
 
     @Test
     public void shouldMatchPlaceholderRegex() {
-        assertTrue("{0}".matches(FormulaParser.placeholderRegex));
-        assertTrue("{1}".matches(FormulaParser.placeholderRegex));
-        assertTrue("{10}".matches(FormulaParser.placeholderRegex));
-        assertTrue("{42}".matches(FormulaParser.placeholderRegex));
-        assertTrue("{100}".matches(FormulaParser.placeholderRegex));
+        assertTrue("{0}".matches(FormulaParser.PLACEHOLDER_REGEX));
+        assertTrue("{1}".matches(FormulaParser.PLACEHOLDER_REGEX));
+        assertTrue("{10}".matches(FormulaParser.PLACEHOLDER_REGEX));
+        assertTrue("{42}".matches(FormulaParser.PLACEHOLDER_REGEX));
+        assertTrue("{100}".matches(FormulaParser.PLACEHOLDER_REGEX));
     }
 
     @Test
@@ -327,18 +327,18 @@ public class FormulaParserTest {
 
     @Test
     public void shouldMatchOperatorRegex() {
-        assertTrue("+".matches(FormulaParser.operatorRegex));
-        assertTrue("-".matches(FormulaParser.operatorRegex));
-        assertTrue("*".matches(FormulaParser.operatorRegex));
-        assertTrue("/".matches(FormulaParser.operatorRegex));
-        assertTrue("^".matches(FormulaParser.operatorRegex));
+        assertTrue("+".matches(FormulaParser.OPERATOR_REGEX));
+        assertTrue("-".matches(FormulaParser.OPERATOR_REGEX));
+        assertTrue("*".matches(FormulaParser.OPERATOR_REGEX));
+        assertTrue("/".matches(FormulaParser.OPERATOR_REGEX));
+        assertTrue("^".matches(FormulaParser.OPERATOR_REGEX));
     }
 
     @Test
     public void shouldMatchDigiRegex() {
-        assertTrue("5".matches(FormulaParser.digitRegex));
-        assertTrue("15".matches(FormulaParser.digitRegex));
-        assertTrue("426".matches(FormulaParser.digitRegex));
+        assertTrue("5".matches(FormulaParser.DIGIT_REGEX));
+        assertTrue("15".matches(FormulaParser.DIGIT_REGEX));
+        assertTrue("426".matches(FormulaParser.DIGIT_REGEX));
     }
 
     @Test
@@ -521,79 +521,79 @@ public class FormulaParserTest {
 
     @Test
     public void shouldMatchReferenceRegex() {
-        assertTrue("A7".matches(FormulaParser.referenceRegex));
-        assertTrue("Z9".matches(FormulaParser.referenceRegex));
-        assertTrue("AZ1".matches(FormulaParser.referenceRegex));
-        assertTrue("C27".matches(FormulaParser.referenceRegex));
-        assertTrue("AC420".matches(FormulaParser.referenceRegex));
+        assertTrue("A7".matches(FormulaParser.REFERENCE_REGEX));
+        assertTrue("Z9".matches(FormulaParser.REFERENCE_REGEX));
+        assertTrue("AZ1".matches(FormulaParser.REFERENCE_REGEX));
+        assertTrue("C27".matches(FormulaParser.REFERENCE_REGEX));
+        assertTrue("AC420".matches(FormulaParser.REFERENCE_REGEX));
     }
 
     @Test
     public void shouldNotMatchReferenceRegex() {
-        assertFalse("A".matches(FormulaParser.referenceRegex));
-        assertFalse("9".matches(FormulaParser.referenceRegex));
+        assertFalse("A".matches(FormulaParser.REFERENCE_REGEX));
+        assertFalse("9".matches(FormulaParser.REFERENCE_REGEX));
     }
 
     @Test
     public void shouldMatchReferenceRangeRegex() {
-        assertTrue("A7:C7".matches(FormulaParser.referenceRangeRegex));
-        assertTrue("Z9:Z10".matches(FormulaParser.referenceRangeRegex));
-        assertTrue("AZ1:AZ12".matches(FormulaParser.referenceRangeRegex));
+        assertTrue("A7:C7".matches(FormulaParser.REFERENCE_RANGE_REGEX));
+        assertTrue("Z9:Z10".matches(FormulaParser.REFERENCE_RANGE_REGEX));
+        assertTrue("AZ1:AZ12".matches(FormulaParser.REFERENCE_RANGE_REGEX));
     }
 
     @Test
     public void shouldNotMatchReferenceRangeRegex() {
-        assertFalse("A:C7".matches(FormulaParser.referenceRangeRegex));
-        assertFalse("Z9:Z".matches(FormulaParser.referenceRangeRegex));
-        assertFalse("1:AZ12".matches(FormulaParser.referenceRangeRegex));
-        assertFalse("AZ1:12".matches(FormulaParser.referenceRangeRegex));
-        assertFalse("A1:A2:A3".matches(FormulaParser.referenceRangeRegex));
+        assertFalse("A:C7".matches(FormulaParser.REFERENCE_RANGE_REGEX));
+        assertFalse("Z9:Z".matches(FormulaParser.REFERENCE_RANGE_REGEX));
+        assertFalse("1:AZ12".matches(FormulaParser.REFERENCE_RANGE_REGEX));
+        assertFalse("AZ1:12".matches(FormulaParser.REFERENCE_RANGE_REGEX));
+        assertFalse("A1:A2:A3".matches(FormulaParser.REFERENCE_RANGE_REGEX));
     }
 
     @Test
     public void shouldMatchRowRangeRegex() {
-        assertTrue("7:7".matches(FormulaParser.rowRangeRegex));
-        assertTrue("9:10".matches(FormulaParser.rowRangeRegex));
-        assertTrue("1:112".matches(FormulaParser.rowRangeRegex));
+        assertTrue("7:7".matches(FormulaParser.ROW_RANGE_REGEX));
+        assertTrue("9:10".matches(FormulaParser.ROW_RANGE_REGEX));
+        assertTrue("1:112".matches(FormulaParser.ROW_RANGE_REGEX));
     }
 
     @Test
     public void shouldNotMatchRowRangeRegex() {
-        assertFalse("A1:C7".matches(FormulaParser.rowRangeRegex));
-        assertFalse("9:Z".matches(FormulaParser.rowRangeRegex));
-        assertFalse("1:AZ12".matches(FormulaParser.rowRangeRegex));
-        assertFalse("AZ1:12".matches(FormulaParser.rowRangeRegex));
+        assertFalse("A1:C7".matches(FormulaParser.ROW_RANGE_REGEX));
+        assertFalse("9:Z".matches(FormulaParser.ROW_RANGE_REGEX));
+        assertFalse("1:AZ12".matches(FormulaParser.ROW_RANGE_REGEX));
+        assertFalse("AZ1:12".matches(FormulaParser.ROW_RANGE_REGEX));
     }
 
     @Test
     public void shouldMatchColumnRangeRegex() {
-        assertTrue("A:C".matches(FormulaParser.columnRangeRegex));
-        assertTrue("Z:Z".matches(FormulaParser.columnRangeRegex));
-        assertTrue("A:AZ".matches(FormulaParser.columnRangeRegex));
+        assertTrue("A:C".matches(FormulaParser.COLUMN_RANGE_REGEX));
+        assertTrue("Z:Z".matches(FormulaParser.COLUMN_RANGE_REGEX));
+        assertTrue("A:AZ".matches(FormulaParser.COLUMN_RANGE_REGEX));
     }
 
     @Test
     public void shouldNotMatchColumnRangeRegex() {
-        assertFalse("A7:C7".matches(FormulaParser.columnRangeRegex));
-        assertFalse("9:Z".matches(FormulaParser.columnRangeRegex));
-        assertFalse("1:AZ12".matches(FormulaParser.columnRangeRegex));
-        assertFalse("AZ1:12".matches(FormulaParser.columnRangeRegex));
+        assertFalse("A7:C7".matches(FormulaParser.COLUMN_RANGE_REGEX));
+        assertFalse("9:Z".matches(FormulaParser.COLUMN_RANGE_REGEX));
+        assertFalse("1:AZ12".matches(FormulaParser.COLUMN_RANGE_REGEX));
+        assertFalse("AZ1:12".matches(FormulaParser.COLUMN_RANGE_REGEX));
     }
 
     @Test
     public void shouldMatchRangeRegex() {
-        assertTrue("A:C".matches(FormulaParser.rangeRegex));
-        assertTrue("1:1".matches(FormulaParser.rangeRegex));
-        assertTrue("A1:C4".matches(FormulaParser.rangeRegex));
+        assertTrue("A:C".matches(FormulaParser.RANGE_REGEX));
+        assertTrue("1:1".matches(FormulaParser.RANGE_REGEX));
+        assertTrue("A1:C4".matches(FormulaParser.RANGE_REGEX));
     }
 
     @Test
     public void shouldNotMatchRangeRegex() {
-        assertFalse("A:1".matches(FormulaParser.rangeRegex));
-        assertFalse("1:A".matches(FormulaParser.rangeRegex));
-        assertFalse("A:C4".matches(FormulaParser.rangeRegex));
-        assertFalse("A1:4".matches(FormulaParser.rangeRegex));
-        assertFalse("A1:A4:B3".matches(FormulaParser.rangeRegex));
+        assertFalse("A:1".matches(FormulaParser.RANGE_REGEX));
+        assertFalse("1:A".matches(FormulaParser.RANGE_REGEX));
+        assertFalse("A:C4".matches(FormulaParser.RANGE_REGEX));
+        assertFalse("A1:4".matches(FormulaParser.RANGE_REGEX));
+        assertFalse("A1:A4:B3".matches(FormulaParser.RANGE_REGEX));
     }
 
     @Test

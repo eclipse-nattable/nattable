@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.columnCategories;
 
 import java.util.List;
 
-import org.eclipse.nebula.widgets.nattable.columnCategories.IColumnCategoriesDialogListener;
 import org.eclipse.nebula.widgets.nattable.columnCategories.gui.ColumnCategoriesDialog;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.test.fixture.ColumnCategoriesModelFixture;

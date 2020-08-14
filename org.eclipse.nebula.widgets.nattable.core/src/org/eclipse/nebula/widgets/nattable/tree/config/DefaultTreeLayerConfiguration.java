@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) Sep 7, 2012 Edwin Park and others.
+ * Copyright (c) Sep 7, 2012, 2020 Edwin Park and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,8 +29,7 @@ import org.eclipse.nebula.widgets.nattable.ui.matcher.CellPainterMouseEventMatch
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 
 /**
- * @author Edwin Park
- *
+ * Default configuration for {@link TreeLayer}.
  */
 public class DefaultTreeLayerConfiguration implements IConfiguration {
 
@@ -41,45 +40,50 @@ public class DefaultTreeLayerConfiguration implements IConfiguration {
 
     private TreeLayer treeLayer;
 
-    /**
-	 *
-	 */
     public DefaultTreeLayerConfiguration(TreeLayer treeLayer) {
         this.treeLayer = treeLayer;
     }
 
     @Override
-    public void configureLayer(ILayer layer) {}
+    public void configureLayer(ILayer layer) {
+        // no layer configuration needed here
+    }
 
     @Override
     public void configureRegistry(IConfigRegistry configRegistry) {
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                new Style() {
-                    {
-                        setAttributeValue(
-                                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                                HorizontalAlignmentEnum.LEFT);
-                    }
-                }, DisplayMode.NORMAL, TreeLayer.TREE_COLUMN_CELL);
+        Style style = new Style();
+        style.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+                HorizontalAlignmentEnum.LEFT);
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_STYLE,
+                style,
+                DisplayMode.NORMAL,
+                TreeLayer.TREE_COLUMN_CELL);
         configRegistry.registerConfigAttribute(
                 ExportConfigAttributes.EXPORT_FORMATTER,
                 new TreeExportFormatter(this.treeLayer.getModel()),
-                DisplayMode.NORMAL, TreeLayer.TREE_COLUMN_CELL);
+                DisplayMode.NORMAL,
+                TreeLayer.TREE_COLUMN_CELL);
     }
 
     @Override
     public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
         TreeExpandCollapseAction treeExpandCollapseAction = new TreeExpandCollapseAction();
-        CellPainterMouseEventMatcher treeImagePainterMouseEventMatcher = new CellPainterMouseEventMatcher(
-                GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON,
-                TreeImagePainter.class);
+        CellPainterMouseEventMatcher treeImagePainterMouseEventMatcher =
+                new CellPainterMouseEventMatcher(
+                        GridRegion.BODY,
+                        MouseEventMatcher.LEFT_BUTTON,
+                        TreeImagePainter.class);
 
         uiBindingRegistry.registerFirstSingleClickBinding(
-                treeImagePainterMouseEventMatcher, treeExpandCollapseAction);
+                treeImagePainterMouseEventMatcher,
+                treeExpandCollapseAction);
 
         // Obscure any mouse down bindings for this image painter
         uiBindingRegistry.registerFirstMouseDownBinding(
-                treeImagePainterMouseEventMatcher, new NoOpMouseAction());
+                treeImagePainterMouseEventMatcher,
+                new NoOpMouseAction());
     }
 
 }

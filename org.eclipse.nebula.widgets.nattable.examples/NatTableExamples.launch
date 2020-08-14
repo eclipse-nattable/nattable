@@ -17,5 +17,6 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.eclipse.nebula.widgets.nattable.examples.NatTableExamples"/>
+<stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="org.eclipse.nebula.widgets.nattable.examples"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.eclipse.nebula.widgets.nattable.examples"/>
 </launchConfiguration>

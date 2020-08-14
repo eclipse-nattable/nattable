@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2016 Dirk Fauth.
+ * Copyright (c) 2016, 2020 Dirk Fauth.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,7 +22,6 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 
-@SuppressWarnings("restriction")
 public class LifecycleManager {
 
     public static final String CLOSE_ON_SHUTDOWN_TAG = "CloseOnShutdown";

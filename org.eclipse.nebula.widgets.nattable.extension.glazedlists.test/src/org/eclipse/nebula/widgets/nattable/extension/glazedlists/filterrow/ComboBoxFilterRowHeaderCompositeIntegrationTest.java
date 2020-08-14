@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Dirk Fauth.
+ * Copyright (c) 2019, 2020 Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -253,6 +254,30 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         List<String> lastNames = new ArrayList<>(Arrays.asList("Simpson"));
         natTable.doCommand(new UpdateDataCommand(natTable, 1, 2, firstNames));
         natTable.doCommand(new UpdateDataCommand(natTable, 2, 2, lastNames));
+        assertEquals(2400, bodyLayer.getFilterList().size());
+    }
+
+    @Test
+    public void shouldFilterOnLoadPersistedState() {
+        // load the possible values first to simulate same behavior as in UI,
+        // otherwise exceptions might occur
+        filterRowHeaderLayer.comboBoxDataProvider.getValues(0, 0);
+
+        // filter
+        List<String> firstNames = new ArrayList<>(Arrays.asList("Homer", "Bart"));
+        natTable.doCommand(new UpdateDataCommand(natTable, 1, 2, firstNames));
+        assertEquals(2400, bodyLayer.getFilterList().size());
+
+        // persist
+        Properties properties = new Properties();
+        natTable.saveState("filtered", properties);
+
+        natTable.doCommand(new ClearAllFiltersCommand());
+        // test that nothing is filtered
+        assertEquals(9000, bodyLayer.getFilterList().size());
+
+        // load saved state
+        natTable.loadState("filtered", properties);
         assertEquals(2400, bodyLayer.getFilterList().size());
     }
 

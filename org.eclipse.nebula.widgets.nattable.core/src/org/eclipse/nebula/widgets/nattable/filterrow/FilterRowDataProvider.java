@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Original authors and others.
+ * Copyright (c) 2012, 2020 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -292,16 +293,20 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
      * @throws InstantiationException
      * @throws IllegalAccessException
      * @throws ClassNotFoundException
+     * @throws SecurityException
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws IllegalArgumentException
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private Object getFilterFromString(String filterText, IDisplayConverter converter)
-            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
 
         if (filterText.startsWith(FILTER_COLLECTION_PREFIX)) {
             // the filter text represents a collection
             int indexEndCollSpec = filterText.indexOf(")"); //$NON-NLS-1$
             String collectionSpec = filterText.substring(filterText.indexOf("(") + 1, indexEndCollSpec); //$NON-NLS-1$
-            Collection filterCollection = (Collection) Class.forName(collectionSpec).newInstance();
+            Collection filterCollection = (Collection) Class.forName(collectionSpec).getDeclaredConstructor().newInstance();
 
             // also get rid of the collection marks
             filterText = filterText.substring(indexEndCollSpec + 2, filterText.length() - 1);

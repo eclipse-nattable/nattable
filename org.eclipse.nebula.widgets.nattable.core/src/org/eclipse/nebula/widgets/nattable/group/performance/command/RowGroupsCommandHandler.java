@@ -29,6 +29,7 @@ import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel;
 import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
 import org.eclipse.nebula.widgets.nattable.group.performance.RowGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
+import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiRowReorderCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.ui.rename.HeaderRenameDialog;
@@ -258,6 +259,7 @@ public class RowGroupsCommandHandler extends AbstractLayerCommandHandler<IRowGro
         if (!dialog.isCancelPressed()) {
             Group rowGroup = this.contextLayer.getGroupByPosition(rowPosition);
             rowGroup.setName(dialog.getNewLabel());
+            this.contextLayer.fireLayerEvent(new VisualRefreshEvent(this.contextLayer));
         }
 
         return true;

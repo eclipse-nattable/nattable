@@ -540,4 +540,11 @@ Minimalistic E4 RCP feature with reduced set of bundles
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="org.eclipse.e4.ui.dialogs"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>
