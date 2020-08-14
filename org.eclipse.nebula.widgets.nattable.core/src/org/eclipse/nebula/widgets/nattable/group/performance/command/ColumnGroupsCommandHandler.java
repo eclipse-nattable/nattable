@@ -29,6 +29,7 @@ import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLa
 import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel;
 import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
+import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.ui.rename.HeaderRenameDialog;
@@ -260,6 +261,7 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
         if (!dialog.isCancelPressed()) {
             Group columnGroup = this.contextLayer.getGroupByPosition(columnPosition);
             columnGroup.setName(dialog.getNewLabel());
+            this.contextLayer.fireLayerEvent(new VisualRefreshEvent(this.contextLayer));
         }
 
         return true;

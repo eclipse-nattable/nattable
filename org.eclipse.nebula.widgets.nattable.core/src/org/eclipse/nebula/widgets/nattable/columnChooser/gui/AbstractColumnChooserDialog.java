@@ -90,12 +90,14 @@ public abstract class AbstractColumnChooserDialog extends Dialog {
 
     @Override
     protected Point getInitialSize() {
+        int minWidth = GUIHelper.convertHorizontalPixelToDpi(500, true);
+        int minHeight = GUIHelper.convertVerticalPixelToDpi(350, true);
         if (this.dialogSettings == null) {
-            return new Point(500, 350);
+            return new Point(minWidth, minHeight);
         }
         Point initialSize = super.getInitialSize();
-        return initialSize.x < 500 && initialSize.y < 350
-                ? new Point(500, 350)
+        return initialSize.x < minWidth && initialSize.y < minHeight
+                ? new Point(minWidth, minHeight)
                 : initialSize;
     }
 

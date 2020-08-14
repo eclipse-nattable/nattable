@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Dirk Fauth and others.
+ * Copyright (c) 2012, 2020 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -70,8 +70,6 @@ import org.eclipse.swt.widgets.Text;
  * Rather than adding listeners to this dialog yourself, you should register the
  * listeners to the {@link DisplayColumnChooserCommandHandler}, as it will
  * handle propagating the listeners to newly created instances of this dialog.
- *
- * @author Dirk Fauth
  *
  * @see DisplayPersistenceDialogCommand
  * @see DisplayPersistenceDialogCommandHandler
@@ -350,13 +348,6 @@ public class PersistenceDialog extends Dialog {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets
-     * .Shell)
-     */
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
@@ -364,14 +355,11 @@ public class PersistenceDialog extends Dialog {
         newShell.setImage(GUIHelper.getImage("table_icon")); //$NON-NLS-1$
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.jface.dialogs.Dialog#getInitialSize()
-     */
     @Override
     protected Point getInitialSize() {
-        return new Point(500, 300);
+        return new Point(
+                GUIHelper.convertHorizontalPixelToDpi(500, true),
+                GUIHelper.convertVerticalPixelToDpi(300, true));
     };
 
     /**
