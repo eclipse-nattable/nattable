@@ -365,7 +365,7 @@ public class CollectionsBenchmark {
         MutableIntList values = null;
         for (int j = 0; j < ITERATIONS; j++) {
             long start = System.currentTimeMillis();
-            values = IntLists.mutable.empty();
+            values = IntLists.mutable.withInitialCapacity(999_991);
             for (int i = 0; i < 1_000_000; i++) {
                 if (i == 0 || i % 100_000 != 0) {
                     values.add(i);
@@ -435,7 +435,7 @@ public class CollectionsBenchmark {
         MutableIntSet values = null;
         for (int j = 0; j < ITERATIONS; j++) {
             long start = System.currentTimeMillis();
-            values = IntSets.mutable.empty();
+            values = IntSets.mutable.withInitialCapacity(999_991);
             for (int i = 0; i < 1_000_000; i++) {
                 if (i == 0 || i % 100_000 != 0) {
                     values.add(i);
