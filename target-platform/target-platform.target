@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="NatTable Target Definition" sequenceNumber="1597381627">
+<target name="NatTable Target Definition" sequenceNumber="1598959976">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.executable.feature.group" version="3.8.500.v20190907-0428"/>
@@ -24,8 +24,8 @@
       <repository location="https://download.eclipse.org/nebula/releases/2.3.0"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.collections.feature.feature.group" version="10.3.0.v20200807-1841"/>
-      <repository location="https://download.eclipse.org/collections/10.3.0/repository"/>
+      <unit id="org.eclipse.collections.feature.feature.group" version="10.4.0.v20200820-2049"/>
+      <repository location="https://download.eclipse.org/collections/10.4.0/repository"/>
     </location>
   </locations>
 </target>
