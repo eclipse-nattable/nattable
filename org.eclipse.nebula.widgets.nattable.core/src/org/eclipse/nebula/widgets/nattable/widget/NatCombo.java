@@ -1306,7 +1306,7 @@ public class NatCombo extends Composite {
     @Override
     public void removeFocusListener(final FocusListener listener) {
         // The FocusListenerWrapper is executing the focusLost event
-        // in a separate thread with 100ms delay to ensure that the NatComboe
+        // in a separate thread with 100ms delay to ensure that the NatCombo
         // lost focus. This is necessary because the NatCombo is a combination
         // of a text field and a table as dropdown which do not share the
         // same focus by default.
