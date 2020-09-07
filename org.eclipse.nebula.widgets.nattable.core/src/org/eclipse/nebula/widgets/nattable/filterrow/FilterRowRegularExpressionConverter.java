@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2015 Dirk Fauth and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2015, 2020 Dirk Fauth and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
@@ -31,7 +33,7 @@ import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
  * <b><u>Note:</u></b><br>
  * The {@link FilterRowRegularExpressionConverter} needs to be registered as
  * {@link CellConfigAttributes#DISPLAY_CONVERTER}!
- * 
+ *
  * <pre>
  * configRegistry.registerConfigAttribute(
  *         CellConfigAttributes.DISPLAY_CONVERTER,

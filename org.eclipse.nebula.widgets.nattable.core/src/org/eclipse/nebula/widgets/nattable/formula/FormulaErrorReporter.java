@@ -1,14 +1,14 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
- *
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.formula;
 
@@ -25,7 +25,7 @@ public interface FormulaErrorReporter {
     /**
      * Registers the error message for the given cell coordinates to this
      * {@link FormulaErrorReporter}.
-     * 
+     *
      * @param column
      *            The column index of the cell where the error happened.
      * @param row
@@ -37,7 +37,7 @@ public interface FormulaErrorReporter {
 
     /**
      * Removes the error message for the given cell coordinates.
-     * 
+     *
      * @param column
      *            The column index of the cell for which an error message is
      *            registered.
@@ -49,7 +49,7 @@ public interface FormulaErrorReporter {
 
     /**
      * Checks if an error message is registered for the given cell coordinates.
-     * 
+     *
      * @param column
      *            The column index of the cell for which a check should be
      *            performed.
@@ -65,7 +65,7 @@ public interface FormulaErrorReporter {
      * Returns the error message that is registered for the given cell
      * coordinates or <code>null</code> if no error message is registered for
      * that cell coordinates.
-     * 
+     *
      * @param column
      *            The column index of the cell for which the error message is
      *            requested.

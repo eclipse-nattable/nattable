@@ -1,10 +1,11 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
@@ -381,9 +382,11 @@ public class TreeExample extends AbstractE4NatExamplePart {
                 @Override
                 public int compare(Object o1, Object o2) {
                     String e1 = (o1 instanceof PersonWithAddress)
-                            ? (depth == 0 ? ((PersonWithAddress) o1).getLastName() : ((PersonWithAddress) o1).getFirstName()) : o1.toString();
+                            ? (depth == 0 ? ((PersonWithAddress) o1).getLastName() : ((PersonWithAddress) o1).getFirstName())
+                            : o1.toString();
                     String e2 = (o2 instanceof PersonWithAddress)
-                            ? (depth == 0 ? ((PersonWithAddress) o2).getLastName() : ((PersonWithAddress) o2).getFirstName()) : o2.toString();
+                            ? (depth == 0 ? ((PersonWithAddress) o2).getLastName() : ((PersonWithAddress) o2).getFirstName())
+                            : o2.toString();
                     return e1.compareTo(e2);
                 }
 

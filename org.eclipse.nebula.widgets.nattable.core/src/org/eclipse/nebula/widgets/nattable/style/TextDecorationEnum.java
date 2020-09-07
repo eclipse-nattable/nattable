@@ -1,12 +1,14 @@
 /*******************************************************************************
- * Copyright (c) Oct 15, 2012 Dirk Fauth and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Dirk Fauth and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *    Dirk Fauth - initial API and implementation and/or initial documentation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style;
 
@@ -16,10 +18,9 @@ package org.eclipse.nebula.widgets.nattable.style;
  * <li>NONE (default) - Render no decoration</li>
  * <li>UNDERLINE - Render the text underlined</li>
  * <li>STRIKETHROUGH - Render the text strike through</li>
- * <li>UNDERLINE_STRIKETHROUGH - Render the text underlined and strike through</li>
+ * <li>UNDERLINE_STRIKETHROUGH - Render the text underlined and strike
+ * through</li>
  * </ul>
- *
- * @author Dirk Fauth
  */
 public enum TextDecorationEnum {
 

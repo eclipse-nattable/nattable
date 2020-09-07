@@ -1,12 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2014, 2020 Dirk Fauth and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@ggooglemail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.tree.command;
 
@@ -44,8 +46,7 @@ public class TreeExpandToLevelCommandHandler extends AbstractLayerCommandHandler
     public boolean doCommand(TreeExpandToLevelCommand command) {
         if (command.getParentIndex() == null) {
             this.treeLayer.expandAllToLevel(command.getLevel());
-        }
-        else {
+        } else {
             this.treeLayer.expandTreeRowToLevel(command.getParentIndex(), command.getLevel());
         }
         return true;

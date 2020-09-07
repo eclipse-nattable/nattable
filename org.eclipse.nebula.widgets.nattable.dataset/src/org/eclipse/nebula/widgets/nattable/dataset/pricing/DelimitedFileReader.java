@@ -1,10 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -43,7 +45,7 @@ public class DelimitedFileReader extends FilterReader {
     /**
      * Return when a line is read. The line can then be processed by accessing
      * the tabbedLineRead tokenizer. The tokenzier is built using the delimChar
-     * 
+     *
      * @param readBuffer
      * @param off
      * @param len
@@ -54,25 +56,25 @@ public class DelimitedFileReader extends FilterReader {
             throws IOException {
         int read = -1;
         boolean hasLineBeenRead = false;
-        if (tabbedLineRead != null) {
-            in.reset();
+        if (this.tabbedLineRead != null) {
+            this.in.reset();
         }
-        char prevChar = delimChar;
+        char prevChar = this.delimChar;
         List<Character> charBuffer = new ArrayList<Character>();
-        PushbackReader pushBackReader = new PushbackReader(in, len);
+        PushbackReader pushBackReader = new PushbackReader(this.in, len);
         while ((read = pushBackReader.read(readBuffer, off, len)) >= 0) {
             // Read until new line is found. This allows users to handle line by
             // line.
             for (int charIndex = 0; charIndex < readBuffer.length; charIndex++) {
                 char readChar = readBuffer[charIndex];
                 if (readChar == '\n') {
-                    in.mark(read);
+                    this.in.mark(read);
                     pushBackReader.unread(readBuffer, 0, readBuffer.length
                             - (charIndex + 1));
                     hasLineBeenRead = true;
                     break;
                 } else {
-                    if (readChar == delimChar && delimChar == prevChar) {
+                    if (readChar == this.delimChar && this.delimChar == prevChar) {
                         charBuffer.add(Character.valueOf(' '));
                     }
                     prevChar = readChar;
@@ -86,15 +88,15 @@ public class DelimitedFileReader extends FilterReader {
             }
         }
         if (read >= 0) {
-            tabbedLineRead = new StringTokenizer(
+            this.tabbedLineRead = new StringTokenizer(
                     parseCharactersToString(charBuffer),
-                    String.valueOf(delimChar));
+                    String.valueOf(this.delimChar));
         }
         return read;
     }
 
     public StringTokenizer getTabbedLineRead() {
-        return tabbedLineRead;
+        return this.tabbedLineRead;
     }
 
     private String parseCharactersToString(List<Character> chars) {

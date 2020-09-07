@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2014 Frank Mosebach.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2014, 2020 Frank Mosebach.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Frank Mosebach <mosebach@patronas.de> - regression test for bug 447942
@@ -73,7 +75,8 @@ public final class ViewportLayerDisposalTest {
 
         // Process all pending ui tasks. This is supposed to disptach an event
         // to the (disposed) viewport layer.
-        while (this.shell.getDisplay().readAndDispatch()) {}
+        while (this.shell.getDisplay().readAndDispatch()) {
+        }
 
         // Test that the background thread has successfully updated the table's
         // data layer.

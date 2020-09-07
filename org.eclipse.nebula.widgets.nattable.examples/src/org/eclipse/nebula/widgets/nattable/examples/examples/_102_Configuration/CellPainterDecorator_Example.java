@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -165,56 +167,64 @@ class TableDecorationConfiguration extends AbstractRegistryConfiguration {
                 CellConfigAttributes.CELL_PAINTER, new CellPainterDecorator(
                         new TextPainter(), CellEdgeEnum.TOP, new ImagePainter(
                                 GUIHelper.getImage("plus")),
-                        this.paintDecorationdepentend), DisplayMode.NORMAL,
+                        this.paintDecorationdepentend),
+                DisplayMode.NORMAL,
                 CellPainterDecorator_Example.COLUMN_ONE_LABEL);
 
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_PAINTER, new CellPainterDecorator(
                         new TextPainter(), CellEdgeEnum.BOTTOM,
                         new ImagePainter(GUIHelper.getImage("plus")),
-                        this.paintDecorationdepentend), DisplayMode.NORMAL,
+                        this.paintDecorationdepentend),
+                DisplayMode.NORMAL,
                 CellPainterDecorator_Example.COLUMN_TWO_LABEL);
 
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_PAINTER, new CellPainterDecorator(
                         new TextPainter(), CellEdgeEnum.LEFT, new ImagePainter(
                                 GUIHelper.getImage("plus")),
-                        this.paintDecorationdepentend), DisplayMode.NORMAL,
+                        this.paintDecorationdepentend),
+                DisplayMode.NORMAL,
                 CellPainterDecorator_Example.COLUMN_THREE_LABEL);
 
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_PAINTER, new CellPainterDecorator(
                         new TextPainter(), CellEdgeEnum.RIGHT,
                         new ImagePainter(GUIHelper.getImage("plus")),
-                        this.paintDecorationdepentend), DisplayMode.NORMAL,
+                        this.paintDecorationdepentend),
+                DisplayMode.NORMAL,
                 CellPainterDecorator_Example.COLUMN_FOUR_LABEL);
 
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_PAINTER, new CellPainterDecorator(
                         new TextPainter(), CellEdgeEnum.TOP_LEFT,
                         new ImagePainter(GUIHelper.getImage("plus")),
-                        this.paintDecorationdepentend), DisplayMode.NORMAL,
+                        this.paintDecorationdepentend),
+                DisplayMode.NORMAL,
                 CellPainterDecorator_Example.COLUMN_FIVE_LABEL);
 
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_PAINTER, new CellPainterDecorator(
                         new TextPainter(), CellEdgeEnum.TOP_RIGHT,
                         new ImagePainter(GUIHelper.getImage("plus")),
-                        this.paintDecorationdepentend), DisplayMode.NORMAL,
+                        this.paintDecorationdepentend),
+                DisplayMode.NORMAL,
                 CellPainterDecorator_Example.COLUMN_SIX_LABEL);
 
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_PAINTER, new CellPainterDecorator(
                         new TextPainter(), CellEdgeEnum.BOTTOM_LEFT,
                         new ImagePainter(GUIHelper.getImage("plus")),
-                        this.paintDecorationdepentend), DisplayMode.NORMAL,
+                        this.paintDecorationdepentend),
+                DisplayMode.NORMAL,
                 CellPainterDecorator_Example.COLUMN_SEVEN_LABEL);
 
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_PAINTER, new CellPainterDecorator(
                         new TextPainter(), CellEdgeEnum.BOTTOM_RIGHT,
                         new ImagePainter(GUIHelper.getImage("plus")),
-                        this.paintDecorationdepentend), DisplayMode.NORMAL,
+                        this.paintDecorationdepentend),
+                DisplayMode.NORMAL,
                 CellPainterDecorator_Example.COLUMN_EIGHT_LABEL);
 
     }

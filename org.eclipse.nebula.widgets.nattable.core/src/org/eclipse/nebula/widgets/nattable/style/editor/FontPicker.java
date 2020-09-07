@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -37,16 +39,16 @@ public class FontPicker {
 
     public FontPicker(final Composite parent, Font originalFont) {
         this.button = new Button(parent, SWT.NONE);
-        if (originalFont == null)
+        if (originalFont == null) {
             throw new IllegalArgumentException("null"); //$NON-NLS-1$
+        }
 
         update(originalFont.getFontData()[0]);
 
         this.button.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                FontDialog dialog = new FontDialog(new Shell(Display
-                        .getDefault(), SWT.SHELL_TRIM));
+                FontDialog dialog = new FontDialog(new Shell(Display.getDefault(), SWT.SHELL_TRIM));
                 dialog.setFontList(FontPicker.this.fontData);
                 FontData selected = dialog.open();
                 if (selected != null) {
@@ -70,16 +72,14 @@ public class FontPicker {
     }
 
     private Font createDisplayFont(FontData data) {
-        FontData resizedData = new FontData(data.getName(), data.getHeight(),
-                data.getStyle());
+        FontData resizedData = new FontData(data.getName(), data.getHeight(), data.getStyle());
         this.displayFont = GUIHelper.getFont(resizedData);
         return this.displayFont;
     }
 
     /**
-     * @return Font selected by the user.
-     *         <em>Note that it is the responsibility of the client to dispose of this
-     *         resource.</em>
+     * @return Font selected by the user. <em>Note that it is the responsibility
+     *         of the client to dispose of this resource.</em>
      */
     public Font getSelectedFont() {
         return this.selectedFont;
@@ -90,9 +90,9 @@ public class FontPicker {
     }
 
     /**
-     * Set the selected font.
-     * <em>Note that this class will not take ownership of the passed resource. Instead it will
-     * create and manage its own internal copy.</em>
+     * Set the selected font. <em>Note that this class will not take ownership
+     * of the passed resource. Instead it will create and manage its own
+     * internal copy.</em>
      */
     public void setOriginalFont(Font font) {
         if (font != null) {

@@ -1,10 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -85,6 +87,7 @@ public class DataGenerator<T> {
 
     private static class DataValueGeneratorFactory implements
             IValueGeneratorFactory {
+        @Override
         public IValueGenerator createValueGenerator(Field field)
                 throws InstantiationException, IllegalAccessException {
             field.setAccessible(true);
@@ -100,6 +103,7 @@ public class DataGenerator<T> {
 
     private static class DoubleValueGeneratorFactory implements
             IValueGeneratorFactory {
+        @Override
         public IValueGenerator createValueGenerator(Field field)
                 throws InstantiationException, IllegalAccessException {
             field.setAccessible(true);
@@ -112,6 +116,7 @@ public class DataGenerator<T> {
 
     private static class StringListValueGeneratorFactory implements
             IValueGeneratorFactory {
+        @Override
         public IValueGenerator createValueGenerator(Field field)
                 throws InstantiationException, IllegalAccessException {
             field.setAccessible(true);
@@ -124,6 +129,7 @@ public class DataGenerator<T> {
 
     private static class ValueGeneratorFactory implements
             IValueGeneratorFactory {
+        @Override
         public IValueGenerator createValueGenerator(Field field)
                 throws InstantiationException, IllegalAccessException {
             if (field.isAnnotationPresent(DataValueGenerator.class)) {

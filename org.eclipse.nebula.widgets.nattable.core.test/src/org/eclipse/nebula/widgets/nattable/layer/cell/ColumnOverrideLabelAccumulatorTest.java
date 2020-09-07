@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2012, 2020 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -11,6 +13,7 @@
 package org.eclipse.nebula.widgets.nattable.layer.cell;
 
 import static org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator.PERSISTENCE_KEY;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +21,6 @@ import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,8 +39,7 @@ public class ColumnOverrideLabelAccumulatorTest {
 
     @Before
     public void setUp() {
-        this.labelAccumulator = new ColumnOverrideLabelAccumulator(
-                new DataLayerFixture());
+        this.labelAccumulator = new ColumnOverrideLabelAccumulator(new DataLayerFixture());
         this.testProperties = new Properties();
     }
 
@@ -50,9 +51,9 @@ public class ColumnOverrideLabelAccumulatorTest {
         LabelStack configLabels = new LabelStack();
         this.labelAccumulator.accumulateConfigLabels(configLabels, 0, 0);
 
-        Assert.assertEquals(2, configLabels.size());
-        Assert.assertEquals(TEST_LABEL1, configLabels.get(0));
-        Assert.assertEquals(TEST_LABEL2, configLabels.get(1));
+        assertEquals(2, configLabels.size());
+        assertEquals(TEST_LABEL1, configLabels.get(0));
+        assertEquals(TEST_LABEL2, configLabels.get(1));
     }
 
     @Test
@@ -63,10 +64,10 @@ public class ColumnOverrideLabelAccumulatorTest {
         LabelStack configLabels = new LabelStack();
         this.labelAccumulator.accumulateConfigLabels(configLabels, 0, 0);
 
-        Assert.assertEquals(3, configLabels.size());
-        Assert.assertEquals(TEST_LABEL1, configLabels.get(0));
-        Assert.assertEquals(TEST_LABEL2, configLabels.get(1));
-        Assert.assertEquals(TEST_LABEL3, configLabels.get(2));
+        assertEquals(3, configLabels.size());
+        assertEquals(TEST_LABEL1, configLabels.get(0));
+        assertEquals(TEST_LABEL2, configLabels.get(1));
+        assertEquals(TEST_LABEL3, configLabels.get(2));
     }
 
     @Test
@@ -80,10 +81,10 @@ public class ColumnOverrideLabelAccumulatorTest {
         LabelStack configLabels = new LabelStack();
         this.labelAccumulator.accumulateConfigLabels(configLabels, 0, 0);
 
-        Assert.assertEquals(3, configLabels.size());
-        Assert.assertEquals(TEST_LABEL1, configLabels.get(0));
-        Assert.assertEquals(TEST_LABEL2, configLabels.get(1));
-        Assert.assertEquals(TEST_LABEL3, configLabels.get(2));
+        assertEquals(3, configLabels.size());
+        assertEquals(TEST_LABEL1, configLabels.get(0));
+        assertEquals(TEST_LABEL2, configLabels.get(1));
+        assertEquals(TEST_LABEL3, configLabels.get(2));
     }
 
     @Test
@@ -94,9 +95,9 @@ public class ColumnOverrideLabelAccumulatorTest {
         LabelStack configLabels = new LabelStack();
         this.labelAccumulator.accumulateConfigLabels(configLabels, 0, 0);
 
-        Assert.assertEquals(2, configLabels.size());
-        Assert.assertEquals(TEST_LABEL2, configLabels.get(0));
-        Assert.assertEquals(TEST_LABEL1, configLabels.get(1));
+        assertEquals(2, configLabels.size());
+        assertEquals(TEST_LABEL2, configLabels.get(0));
+        assertEquals(TEST_LABEL1, configLabels.get(1));
     }
 
     @Test
@@ -108,10 +109,10 @@ public class ColumnOverrideLabelAccumulatorTest {
         LabelStack configLabels = new LabelStack();
         this.labelAccumulator.accumulateConfigLabels(configLabels, 0, 0);
 
-        Assert.assertEquals(3, configLabels.size());
-        Assert.assertEquals(TEST_LABEL2, configLabels.get(0));
-        Assert.assertEquals(TEST_LABEL3, configLabels.get(1));
-        Assert.assertEquals(TEST_LABEL1, configLabels.get(2));
+        assertEquals(3, configLabels.size());
+        assertEquals(TEST_LABEL2, configLabels.get(0));
+        assertEquals(TEST_LABEL3, configLabels.get(1));
+        assertEquals(TEST_LABEL1, configLabels.get(2));
     }
 
     @Test
@@ -125,10 +126,10 @@ public class ColumnOverrideLabelAccumulatorTest {
         LabelStack configLabels = new LabelStack();
         this.labelAccumulator.accumulateConfigLabels(configLabels, 0, 0);
 
-        Assert.assertEquals(3, configLabels.size());
-        Assert.assertEquals(TEST_LABEL2, configLabels.get(0));
-        Assert.assertEquals(TEST_LABEL3, configLabels.get(1));
-        Assert.assertEquals(TEST_LABEL1, configLabels.get(2));
+        assertEquals(3, configLabels.size());
+        assertEquals(TEST_LABEL2, configLabels.get(0));
+        assertEquals(TEST_LABEL3, configLabels.get(1));
+        assertEquals(TEST_LABEL1, configLabels.get(2));
     }
 
     @Test
@@ -140,9 +141,9 @@ public class ColumnOverrideLabelAccumulatorTest {
 
         String baseKey = TEST_PREFIX + PERSISTENCE_KEY;
 
-        Assert.assertEquals(TEST_LABEL1 + "," + TEST_LABEL2,
+        assertEquals(TEST_LABEL1 + "," + TEST_LABEL2,
                 this.testProperties.getProperty(baseKey + ".0"));
-        Assert.assertEquals(TEST_LABEL2,
+        assertEquals(TEST_LABEL2,
                 this.testProperties.getProperty(baseKey + ".1"));
     }
 
@@ -159,13 +160,13 @@ public class ColumnOverrideLabelAccumulatorTest {
 
         String baseKey = TEST_PREFIX + PERSISTENCE_KEY;
 
-        Assert.assertEquals(TEST_MIX_LABEL,
+        assertEquals(TEST_MIX_LABEL,
                 this.testProperties.getProperty(baseKey + "." + TEST_MIX_KEY));
-        Assert.assertEquals(TEST_LABEL1 + "," + TEST_LABEL2,
+        assertEquals(TEST_LABEL1 + "," + TEST_LABEL2,
                 this.testProperties.getProperty(baseKey + ".0"));
-        Assert.assertEquals(TEST_LABEL2,
+        assertEquals(TEST_LABEL2,
                 this.testProperties.getProperty(baseKey + ".1"));
-        Assert.assertEquals(
+        assertEquals(
                 TEST_LABEL3,
                 this.testProperties.getProperty(baseKey + "."
                         + ColumnOverrideLabelAccumulator.ALL_COLUMN_KEY));
@@ -181,13 +182,13 @@ public class ColumnOverrideLabelAccumulatorTest {
         this.labelAccumulator.loadState(TEST_PREFIX, this.testProperties);
 
         List<String> overrides = this.labelAccumulator.getOverrides(0);
-        Assert.assertEquals(1, overrides.size());
-        Assert.assertEquals(TEST_LABEL1, overrides.get(0));
+        assertEquals(1, overrides.size());
+        assertEquals(TEST_LABEL1, overrides.get(0));
 
         overrides = this.labelAccumulator.getOverrides(5);
-        Assert.assertEquals(2, overrides.size());
-        Assert.assertEquals(TEST_LABEL1, overrides.get(0));
-        Assert.assertEquals(TEST_LABEL2, overrides.get(1));
+        assertEquals(2, overrides.size());
+        assertEquals(TEST_LABEL1, overrides.get(0));
+        assertEquals(TEST_LABEL2, overrides.get(1));
     }
 
     @Test
@@ -204,21 +205,21 @@ public class ColumnOverrideLabelAccumulatorTest {
         this.labelAccumulator.loadState(TEST_PREFIX, this.testProperties);
 
         List<String> overrides = this.labelAccumulator.getOverrides(0);
-        Assert.assertEquals(1, overrides.size());
-        Assert.assertEquals(TEST_LABEL1, overrides.get(0));
+        assertEquals(1, overrides.size());
+        assertEquals(TEST_LABEL1, overrides.get(0));
 
         overrides = this.labelAccumulator.getOverrides(5);
-        Assert.assertEquals(2, overrides.size());
-        Assert.assertEquals(TEST_LABEL1, overrides.get(0));
-        Assert.assertEquals(TEST_LABEL2, overrides.get(1));
+        assertEquals(2, overrides.size());
+        assertEquals(TEST_LABEL1, overrides.get(0));
+        assertEquals(TEST_LABEL2, overrides.get(1));
 
         overrides = this.labelAccumulator.getOverrides(TEST_MIX_KEY);
-        Assert.assertEquals(1, overrides.size());
-        Assert.assertEquals(TEST_MIX_LABEL, overrides.get(0));
+        assertEquals(1, overrides.size());
+        assertEquals(TEST_MIX_LABEL, overrides.get(0));
 
         overrides = this.labelAccumulator
                 .getOverrides(ColumnOverrideLabelAccumulator.ALL_COLUMN_KEY);
-        Assert.assertEquals(1, overrides.size());
-        Assert.assertEquals(TEST_LABEL3, overrides.get(0));
+        assertEquals(1, overrides.size());
+        assertEquals(TEST_LABEL3, overrides.get(0));
     }
 }

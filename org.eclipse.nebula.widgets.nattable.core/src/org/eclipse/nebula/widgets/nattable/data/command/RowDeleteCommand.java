@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2018 Dirk Fauth.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2018, 2020 Dirk Fauth.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
@@ -23,7 +25,7 @@ public class RowDeleteCommand extends AbstractMultiRowCommand {
 
     /**
      * Creates a {@link RowDeleteCommand}.
-     * 
+     *
      * @param layer
      *            The layer to which the row positions match.
      * @param rowPositions
@@ -35,7 +37,7 @@ public class RowDeleteCommand extends AbstractMultiRowCommand {
 
     /**
      * Clone constructor.
-     * 
+     *
      * @param command
      *            The command to clone.
      */

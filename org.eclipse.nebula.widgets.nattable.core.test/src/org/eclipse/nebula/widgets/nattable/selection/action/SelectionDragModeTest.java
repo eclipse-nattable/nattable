@@ -1,14 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.action;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
@@ -21,7 +26,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -55,9 +59,9 @@ public class SelectionDragModeTest {
         this.dragMode.mouseDown(this.natTable, this.mouseEvent);
 
         List<ILayerEvent> receivedEvents = this.listener.getReceivedEvents();
-        Assert.assertNotNull(receivedEvents);
+        assertNotNull(receivedEvents);
 
-        Assert.assertEquals(0, receivedEvents.size());
+        assertEquals(0, receivedEvents.size());
     }
 
 }

@@ -1,14 +1,14 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *		Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
- *
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.formula.function;
 
@@ -44,11 +44,9 @@ public class SumFunction extends AbstractMathFunction {
     public String toString() {
         if (isEmpty()) {
             return "+"; //$NON-NLS-1$
-        }
-        else if (this.values.size() == 1) {
+        } else if (this.values.size() == 1) {
             return "+ " + this.values.get(0); //$NON-NLS-1$
-        }
-        else {
+        } else {
             StringBuilder builder = new StringBuilder();
             for (Iterator<FunctionValue> it = this.values.iterator(); it.hasNext();) {
                 FunctionValue v = it.next();

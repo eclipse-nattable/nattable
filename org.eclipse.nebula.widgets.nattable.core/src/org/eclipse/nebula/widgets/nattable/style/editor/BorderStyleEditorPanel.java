@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -50,8 +52,7 @@ public class BorderStyleEditorPanel extends AbstractEditorPanel<BorderStyle> {
         gridLayout.marginLeft = 10;
         setLayout(gridLayout);
 
-        new Label(this, NONE).setText(Messages
-                .getString("BorderStyleEditorPanel.noBorder")); //$NON-NLS-1$
+        new Label(this, NONE).setText(Messages.getString("BorderStyleEditorPanel.noBorder")); //$NON-NLS-1$
 
         this.noBordersCheckBox = new Button(this, CHECK);
         this.noBordersCheckBox.addSelectionListener(new SelectionAdapter() {
@@ -64,16 +65,13 @@ public class BorderStyleEditorPanel extends AbstractEditorPanel<BorderStyle> {
             }
         });
 
-        new Label(this, NONE).setText(Messages
-                .getString("BorderStyleEditorPanel.color")); //$NON-NLS-1$
+        new Label(this, NONE).setText(Messages.getString("BorderStyleEditorPanel.color")); //$NON-NLS-1$
         this.colorPicker = new ColorPicker(this, GUIHelper.COLOR_WIDGET_BORDER);
 
-        new Label(this, NONE).setText(Messages
-                .getString("BorderStyleEditorPanel.lineStyle")); //$NON-NLS-1$
+        new Label(this, NONE).setText(Messages.getString("BorderStyleEditorPanel.lineStyle")); //$NON-NLS-1$
         this.lineStylePicker = new LineStylePicker(this);
 
-        new Label(this, NONE).setText(Messages
-                .getString("BorderStyleEditorPanel.thickness")); //$NON-NLS-1$
+        new Label(this, NONE).setText(Messages.getString("BorderStyleEditorPanel.thickness")); //$NON-NLS-1$
         this.thicknessPicker = new BorderThicknessPicker(this);
 
         // By default, no border is selected and all controls are disabled

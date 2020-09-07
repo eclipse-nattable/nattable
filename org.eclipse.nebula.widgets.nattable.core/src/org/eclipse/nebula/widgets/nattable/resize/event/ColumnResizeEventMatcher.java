@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -20,21 +22,17 @@ import org.eclipse.swt.graphics.Point;
 
 public class ColumnResizeEventMatcher extends MouseEventMatcher {
 
-    public ColumnResizeEventMatcher(int stateMask, String eventRegion,
-            int button) {
+    public ColumnResizeEventMatcher(int stateMask, String eventRegion, int button) {
         super(stateMask, eventRegion, button);
     }
 
     @Override
-    public boolean matches(NatTable natTable, MouseEvent event,
-            LabelStack regionLabels) {
-        return super.matches(natTable, event, regionLabels)
-                && isColumnResizable(natTable, event);
+    public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
+        return super.matches(natTable, event, regionLabels) && isColumnResizable(natTable, event);
     }
 
     private boolean isColumnResizable(ILayer natLayer, MouseEvent event) {
-        int columnPosition = CellEdgeDetectUtil.getColumnPositionToResize(
-                natLayer, new Point(event.x, event.y));
+        int columnPosition = CellEdgeDetectUtil.getColumnPositionToResize(natLayer, new Point(event.x, event.y));
 
         if (columnPosition < 0) {
             return false;

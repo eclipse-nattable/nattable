@@ -1,12 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder.command;
 
@@ -18,9 +20,6 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 /**
  * Command to start row reordering. Will transport the position of the row that
  * will be reordered via dragging.
- *
- * @author Dirk Fauth
- *
  */
 public class RowReorderStartCommand implements ILayerCommand {
 
@@ -37,8 +36,7 @@ public class RowReorderStartCommand implements ILayerCommand {
      *            The position of the row that should be reordered
      */
     public RowReorderStartCommand(ILayer layer, int fromRowPosition) {
-        this.fromRowPositionCoordinate = new RowPositionCoordinate(layer,
-                fromRowPosition);
+        this.fromRowPositionCoordinate = new RowPositionCoordinate(layer, fromRowPosition);
     }
 
     /**
@@ -60,9 +58,8 @@ public class RowReorderStartCommand implements ILayerCommand {
 
     @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
-        RowPositionCoordinate targetFromRowPositionCoordinate = LayerCommandUtil
-                .convertRowPositionToTargetContext(this.fromRowPositionCoordinate,
-                        targetLayer);
+        RowPositionCoordinate targetFromRowPositionCoordinate =
+                LayerCommandUtil.convertRowPositionToTargetContext(this.fromRowPositionCoordinate, targetLayer);
         if (targetFromRowPositionCoordinate != null) {
             this.fromRowPositionCoordinate = targetFromRowPositionCoordinate;
             return true;

@@ -1,16 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import org.junit.Test;
 
 public class DefaultBooleanDisplayConverterTest {
@@ -19,32 +23,25 @@ public class DefaultBooleanDisplayConverterTest {
 
     @Test
     public void testNonNullDataToDisplay() {
-        Assert.assertEquals("true",
-                this.booleanConverter.canonicalToDisplayValue(Boolean.TRUE));
-        Assert.assertEquals("false",
-                this.booleanConverter.canonicalToDisplayValue(Boolean.FALSE));
+        assertEquals("true", this.booleanConverter.canonicalToDisplayValue(Boolean.TRUE));
+        assertEquals("false", this.booleanConverter.canonicalToDisplayValue(Boolean.FALSE));
     }
 
     @Test
     public void testNullDataToDisplay() {
-        Assert.assertEquals(null,
-                this.booleanConverter.canonicalToDisplayValue(null));
+        assertNull(this.booleanConverter.canonicalToDisplayValue(null));
     }
 
     @Test
     public void testNonNullDisplayToData() {
-        Assert.assertEquals(Boolean.TRUE,
-                this.booleanConverter.displayToCanonicalValue("true"));
-        Assert.assertEquals(Boolean.FALSE,
-                this.booleanConverter.displayToCanonicalValue("false"));
-        Assert.assertEquals(Boolean.FALSE,
-                this.booleanConverter.displayToCanonicalValue("123"));
+        assertEquals(Boolean.TRUE, this.booleanConverter.displayToCanonicalValue("true"));
+        assertEquals(Boolean.FALSE, this.booleanConverter.displayToCanonicalValue("false"));
+        assertEquals(Boolean.FALSE, this.booleanConverter.displayToCanonicalValue("123"));
     }
 
     @Test
     public void testNullDisplayToData() {
-        Assert.assertEquals(Boolean.FALSE,
-                this.booleanConverter.displayToCanonicalValue(""));
+        assertEquals(Boolean.FALSE, this.booleanConverter.displayToCanonicalValue(""));
     }
 
 }

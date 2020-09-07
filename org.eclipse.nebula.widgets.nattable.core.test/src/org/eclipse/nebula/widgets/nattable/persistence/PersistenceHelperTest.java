@@ -1,12 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2012 Dirk Fauth and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Dirk Fauth and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *    Dirk Fauth - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.persistence;
 
@@ -31,8 +33,7 @@ public class PersistenceHelperTest {
         natTable.saveState("Blubb", properties);
         natTable.saveState("Temp", properties);
 
-        Collection<String> stateNames = PersistenceHelper
-                .getAvailableStates(properties);
+        Collection<String> stateNames = PersistenceHelper.getAvailableStates(properties);
         assertTrue(
                 "Resulting state name collection does not contain the empty default state",
                 stateNames.contains(""));
@@ -53,8 +54,7 @@ public class PersistenceHelperTest {
     @Test
     public void testGetAvailableStatesOnEmpty() {
         assertTrue("Resulting state name collection is not empty",
-                PersistenceHelper.getAvailableStates(new Properties())
-                        .isEmpty());
+                PersistenceHelper.getAvailableStates(new Properties()).isEmpty());
     }
 
     @Test
@@ -66,8 +66,7 @@ public class PersistenceHelperTest {
         natTable.saveState("Blubb", properties);
         natTable.saveState("Temp", properties);
 
-        Collection<String> stateNames = PersistenceHelper
-                .getAvailableStates(properties);
+        Collection<String> stateNames = PersistenceHelper.getAvailableStates(properties);
         assertTrue(
                 "Resulting state name collection does not contain the empty default state",
                 stateNames.contains(""));
@@ -101,8 +100,7 @@ public class PersistenceHelperTest {
         natTable.saveState("Blubb", properties);
         natTable.saveState("Temp", properties);
 
-        Collection<String> stateNames = PersistenceHelper
-                .getAvailableStates(properties);
+        Collection<String> stateNames = PersistenceHelper.getAvailableStates(properties);
         assertTrue(
                 "Resulting state name collection does not contain the empty default state",
                 stateNames.contains(""));
@@ -137,8 +135,7 @@ public class PersistenceHelperTest {
         natTable.saveState("Blubb", properties);
         natTable.saveState("Temp", properties);
 
-        Collection<String> stateNames = PersistenceHelper
-                .getAvailableStates(properties);
+        Collection<String> stateNames = PersistenceHelper.getAvailableStates(properties);
         assertTrue(
                 "Resulting state name collection does not contain the empty default state",
                 stateNames.contains(""));
@@ -173,8 +170,7 @@ public class PersistenceHelperTest {
         natTable.saveState("Blubb", properties);
         natTable.saveState("Temp", properties);
 
-        Collection<String> stateNames = PersistenceHelper
-                .getAvailableStates(properties);
+        Collection<String> stateNames = PersistenceHelper.getAvailableStates(properties);
         assertTrue(
                 "Resulting state name collection does not contain the empty default state",
                 stateNames.contains(""));
@@ -209,8 +205,7 @@ public class PersistenceHelperTest {
         natTable.saveState("Blubb", properties);
         natTable.saveState("Temp", properties);
 
-        Collection<String> stateNames = PersistenceHelper
-                .getAvailableStates(properties);
+        Collection<String> stateNames = PersistenceHelper.getAvailableStates(properties);
         assertTrue(
                 "Resulting state name collection does not contain the empty default state",
                 stateNames.contains(""));

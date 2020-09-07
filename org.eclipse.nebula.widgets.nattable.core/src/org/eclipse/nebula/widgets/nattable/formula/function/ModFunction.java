@@ -1,14 +1,14 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *		Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
- *
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.formula.function;
 
@@ -33,7 +33,7 @@ public class ModFunction extends AbstractMathFunction {
 
         if (values.size() > 2) {
             throw new FunctionException("#N/A", //$NON-NLS-1$
-            Messages.getString("FormulaParser.error.wrongNumberOfArguments", new Object[] { 2, values.size() })); //$NON-NLS-1$
+                    Messages.getString("FormulaParser.error.wrongNumberOfArguments", new Object[] { 2, values.size() })); //$NON-NLS-1$
         }
     }
 
@@ -41,7 +41,7 @@ public class ModFunction extends AbstractMathFunction {
     public BigDecimal getValue() {
         if (this.values.size() != 2) {
             throw new FunctionException("#N/A", //$NON-NLS-1$
-            Messages.getString("FormulaParser.error.wrongNumberOfArguments", new Object[] { 2, this.values.size() })); //$NON-NLS-1$
+                    Messages.getString("FormulaParser.error.wrongNumberOfArguments", new Object[] { 2, this.values.size() })); //$NON-NLS-1$
         }
 
         BigDecimal number = convertValue(this.values.get(0).getValue());
@@ -56,11 +56,9 @@ public class ModFunction extends AbstractMathFunction {
     public String toString() {
         if (isEmpty()) {
             return "%"; //$NON-NLS-1$
-        }
-        else if (this.values.size() == 1) {
+        } else if (this.values.size() == 1) {
             return this.values.get(0) + " %"; //$NON-NLS-1$
-        }
-        else {
+        } else {
             return this.values.get(0) + " % " + this.values.get(1); //$NON-NLS-1$
         }
     }

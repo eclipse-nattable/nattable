@@ -1,12 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.gui;
 
@@ -19,9 +21,6 @@ import org.eclipse.swt.widgets.FileDialog;
  * This implementation is a proof of concept for special cell editors that wrap
  * dialogs. The {@link FileDialog} is wrapped by this implementation. It will
  * open the default file selection dialog on trying to activate the cell editor.
- *
- * @author Dirk Fauth
- *
  */
 public class FileDialogCellEditor extends AbstractDialogCellEditor {
 

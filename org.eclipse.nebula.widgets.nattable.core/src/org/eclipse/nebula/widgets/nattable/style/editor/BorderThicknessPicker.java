@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -44,26 +46,29 @@ public class BorderThicknessPicker extends Composite {
 
     public int getSelectedThickness() {
         int idx = this.combo.getSelectionIndex();
-        if (idx == 0)
+        if (idx == 0) {
             return 1;
-        else if (idx == 1)
+        } else if (idx == 1) {
             return 3;
-        else if (idx == 2)
+        } else if (idx == 2) {
             return 6;
-        else
+        } else {
             throw new IllegalStateException("never happen"); //$NON-NLS-1$
+        }
     }
 
     public void setSelectedThickness(int thickness) {
-        if (thickness < 0)
+        if (thickness < 0) {
             throw new IllegalArgumentException("negative number"); //$NON-NLS-1$
+        }
         int idx = 0;
-        if (thickness < 3)
+        if (thickness < 3) {
             idx = 0;
-        else if (thickness < 6)
+        } else if (thickness < 6) {
             idx = 1;
-        else if (thickness > 6)
+        } else if (thickness > 6) {
             idx = 2;
+        }
         this.combo.select(idx);
     }
 }

@@ -1,12 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2014, 2020 Dirk Fauth and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *    Daniel Fritsch <danielw.fritsch@web.de> - Bug 460794
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow;
@@ -29,9 +31,6 @@ import org.eclipse.swt.widgets.Text;
  * entering a value. To optimize execution, the commit is triggered with a small
  * delay, so if a user enters multiple characters, the filter execution is not
  * executed for each key stroke, but only for the combination.
- *
- * @author Dirk Fauth
- *
  */
 public class FilterRowTextCellEditor extends TextCellEditor {
 
@@ -39,15 +38,14 @@ public class FilterRowTextCellEditor extends TextCellEditor {
     protected Text createEditorControl(Composite parent, int style) {
         Text text = super.createEditorControl(parent, style);
 
-        final ScheduledExecutorService service = Executors
-                .newScheduledThreadPool(1);
+        final ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
 
         text.addKeyListener(new KeyAdapter() {
 
             @Override
             public void keyReleased(KeyEvent e) {
-                service.schedule(new KeyPressCommitRunnable(getEditorValue()),
-                        150L, TimeUnit.MILLISECONDS);
+                service.schedule(
+                        new KeyPressCommitRunnable(getEditorValue()), 150L, TimeUnit.MILLISECONDS);
             }
         });
 
@@ -62,9 +60,6 @@ public class FilterRowTextCellEditor extends TextCellEditor {
      * create the runnable is not the same as currently set to the editor
      * control, nothing will happen. This is to reduce the number of commit
      * executions if a user types several characters.
-     *
-     * @author Dirk Fauth
-     *
      */
     private class KeyPressCommitRunnable implements Runnable {
 

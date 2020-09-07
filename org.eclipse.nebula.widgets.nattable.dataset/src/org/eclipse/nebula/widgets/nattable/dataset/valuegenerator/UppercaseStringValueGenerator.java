@@ -1,10 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -30,12 +32,13 @@ public class UppercaseStringValueGenerator implements IValueGenerator {
         this.maxLength = maxLength;
     }
 
+    @Override
     public Object newValue(Random random) {
         StringBuilder strBuilder = new StringBuilder();
 
-        int wordLength = random.nextInt(maxLength);
+        int wordLength = random.nextInt(this.maxLength);
         for (int i = 0; i < wordLength; i++) {
-            strBuilder.append(getChar(uppercase, random));
+            strBuilder.append(getChar(this.uppercase, random));
         }
 
         return strBuilder.toString();

@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -23,12 +25,14 @@ public class AutoResizeColumnAction implements IMouseAction {
     @Override
     public void run(NatTable natTable, MouseEvent event) {
         Point clickPoint = new Point(event.x, event.y);
-        int column = CellEdgeDetectUtil.getColumnPositionToResize(natTable,
-                clickPoint);
+        int column = CellEdgeDetectUtil.getColumnPositionToResize(natTable, clickPoint);
 
-        InitializeAutoResizeColumnsCommand command = new InitializeAutoResizeColumnsCommand(
-                natTable, column, natTable.getConfigRegistry(), new GCFactory(
-                        natTable));
+        InitializeAutoResizeColumnsCommand command =
+                new InitializeAutoResizeColumnsCommand(
+                        natTable,
+                        column,
+                        natTable.getConfigRegistry(),
+                        new GCFactory(natTable));
         natTable.doCommand(command);
     }
 

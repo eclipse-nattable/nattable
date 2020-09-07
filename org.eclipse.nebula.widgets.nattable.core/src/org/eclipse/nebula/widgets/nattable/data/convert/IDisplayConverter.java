@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -78,7 +80,7 @@ public interface IDisplayConverter {
      * The type the display value is converted to <i>must</i> match the type in
      * the setter of the backing bean/row object Use this method for contextual
      * conversion.
-     * 
+     *
      * @param cell
      *            The {@link ILayerCell} whose canonical value should be
      *            converted.

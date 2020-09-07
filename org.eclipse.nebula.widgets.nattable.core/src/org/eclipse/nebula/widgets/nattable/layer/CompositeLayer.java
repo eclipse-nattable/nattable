@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2012, 2020 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -16,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractRegionCommand;
@@ -48,10 +49,10 @@ public class CompositeLayer extends AbstractLayer {
 
     private final int layoutYCount;
 
-    private final Map<ILayer, String> childLayerToRegionNameMap = new HashMap<ILayer, String>();
-    private final Map<String, ILayer> regionNameToChildLayerMap = new HashMap<String, ILayer>();
+    private final HashMap<ILayer, String> childLayerToRegionNameMap = new HashMap<>();
+    private final HashMap<String, ILayer> regionNameToChildLayerMap = new HashMap<>();
 
-    private final Map<String, IConfigLabelAccumulator> regionNameToConfigLabelAccumulatorMap = new HashMap<String, IConfigLabelAccumulator>();
+    private final HashMap<String, IConfigLabelAccumulator> regionNameToConfigLabelAccumulatorMap = new HashMap<>();
 
     /** Data struct. for child Layers */
     private final ILayer[][] childLayerLayout;
@@ -231,7 +232,7 @@ public class CompositeLayer extends AbstractLayer {
             return null;
         }
 
-        Collection<Range> localColumnPositionRanges = new ArrayList<Range>(underlyingColumnPositionRanges.size());
+        Collection<Range> localColumnPositionRanges = new ArrayList<>(underlyingColumnPositionRanges.size());
 
         int offset = getColumnPositionOffset(layoutCoordinate.x);
         for (Range underlyingColumnPositionRange : underlyingColumnPositionRanges) {
@@ -397,7 +398,7 @@ public class CompositeLayer extends AbstractLayer {
             return null;
         }
 
-        Collection<Range> localRowPositionRanges = new ArrayList<Range>(underlyingRowPositionRanges.size());
+        Collection<Range> localRowPositionRanges = new ArrayList<>(underlyingRowPositionRanges.size());
 
         int offset = getRowPositionOffset(layoutCoordinate.y);
         for (Range underlyingRowPositionRange : underlyingRowPositionRanges) {

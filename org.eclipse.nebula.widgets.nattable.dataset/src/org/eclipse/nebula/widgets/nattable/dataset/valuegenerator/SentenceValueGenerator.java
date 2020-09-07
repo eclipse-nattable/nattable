@@ -1,10 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -41,6 +43,7 @@ public class SentenceValueGenerator implements IValueGenerator {
         this.maxLength = maxLength;
     }
 
+    @Override
     public Object newValue(Random random) {
         if (random.nextBoolean()) {
             return "";
@@ -48,7 +51,7 @@ public class SentenceValueGenerator implements IValueGenerator {
 
         StringBuilder strBuilder = new StringBuilder();
 
-        int remainingLength = minLength + random.nextInt(maxLength - minLength);
+        int remainingLength = this.minLength + random.nextInt(this.maxLength - this.minLength);
 
         boolean endsWithPunctuation = random.nextBoolean();
 
@@ -61,7 +64,7 @@ public class SentenceValueGenerator implements IValueGenerator {
         remainingLength -= word.length();
 
         while (remainingLength > 1) {
-            strBuilder.append(getChar(midPunctuation, random));
+            strBuilder.append(getChar(this.midPunctuation, random));
             remainingLength--;
 
             word = getWord(remainingLength, random);
@@ -70,7 +73,7 @@ public class SentenceValueGenerator implements IValueGenerator {
         }
 
         if (endsWithPunctuation) {
-            strBuilder.append(getChar(endPunctuation, random));
+            strBuilder.append(getChar(this.endPunctuation, random));
         }
 
         return strBuilder.toString();
@@ -81,8 +84,8 @@ public class SentenceValueGenerator implements IValueGenerator {
 
         int wordLength = random.nextInt(maxWordLength);
         for (int i = 0; i < wordLength; i++) {
-            wordBuilder.append(getChar(random.nextBoolean() ? uppercase
-                    : lowercase, random));
+            wordBuilder.append(getChar(random.nextBoolean() ? this.uppercase
+                    : this.lowercase, random));
         }
 
         return wordBuilder.toString();

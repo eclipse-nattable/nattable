@@ -25,3 +25,7 @@ location "https://download.eclipse.org/nebula/releases/2.3.0" {
 location "https://download.eclipse.org/collections/10.4.0/repository" {
 	org.eclipse.collections.feature.feature.group
 }
+
+location "http://download.eclipse.org/cbi/updates/license" {
+	org.eclipse.license.feature.group
+}

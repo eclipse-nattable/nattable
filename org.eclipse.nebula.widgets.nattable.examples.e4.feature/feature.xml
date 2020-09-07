@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.nebula.widgets.nattable.examples.e4.feature"
-      label="NatTable E4 Examples Feature"
+      label="%featureName"
       version="2.0.0.qualifier"
-      provider-name="Eclipse Nebula NatTable">
+      provider-name="%providerName"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+   <description url="https://projects.eclipse.org/projects/technology.nebula.nattable">
+      %description
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+   <copyright>
+      %copyright
    </copyright>
 
    <license url="http://www.example.com/license">

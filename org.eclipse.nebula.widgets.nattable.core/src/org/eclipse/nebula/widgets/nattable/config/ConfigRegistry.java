@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -26,25 +28,30 @@ public class ConfigRegistry implements IConfigRegistry {
     Map<ConfigAttribute<?>, Map<String, Map<String, ?>>> configRegistry = new HashMap<ConfigAttribute<?>, Map<String, Map<String, ?>>>();
 
     @Override
-    public <T> T getConfigAttribute(ConfigAttribute<T> configAttribute,
-            String targetDisplayMode, String... configLabels) {
-        return getConfigAttribute(configAttribute, targetDisplayMode,
+    public <T> T getConfigAttribute(
+            ConfigAttribute<T> configAttribute,
+            String targetDisplayMode,
+            String... configLabels) {
+
+        return getConfigAttribute(
+                configAttribute,
+                targetDisplayMode,
                 Arrays.asList(configLabels));
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getConfigAttribute(ConfigAttribute<T> configAttribute,
-            String targetDisplayMode, List<String> configLabels) {
+    public <T> T getConfigAttribute(
+            ConfigAttribute<T> configAttribute,
+            String targetDisplayMode,
+            List<String> configLabels) {
+
         T attributeValue = null;
 
-        Map<String, Map<String, ?>> displayModeConfigAttributeMap = this.configRegistry
-                .get(configAttribute);
+        Map<String, Map<String, ?>> displayModeConfigAttributeMap = this.configRegistry.get(configAttribute);
         if (displayModeConfigAttributeMap != null) {
-            for (String displayMode : this.displayModeOrdering
-                    .getDisplayModeOrdering(targetDisplayMode)) {
-                Map<String, T> configAttributeMap = (Map<String, T>) displayModeConfigAttributeMap
-                        .get(displayMode);
+            for (String displayMode : this.displayModeOrdering.getDisplayModeOrdering(targetDisplayMode)) {
+                Map<String, T> configAttributeMap = (Map<String, T>) displayModeConfigAttributeMap.get(displayMode);
                 if (configAttributeMap != null) {
                     for (String configLabel : configLabels) {
                         attributeValue = configAttributeMap.get(configLabel);
@@ -67,15 +74,16 @@ public class ConfigRegistry implements IConfigRegistry {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getSpecificConfigAttribute(ConfigAttribute<T> configAttribute,
-            String displayMode, String configLabel) {
+    public <T> T getSpecificConfigAttribute(
+            ConfigAttribute<T> configAttribute,
+            String displayMode,
+            String configLabel) {
+
         T attributeValue = null;
 
-        Map<String, Map<String, ?>> displayModeConfigAttributeMap = this.configRegistry
-                .get(configAttribute);
+        Map<String, Map<String, ?>> displayModeConfigAttributeMap = this.configRegistry.get(configAttribute);
         if (displayModeConfigAttributeMap != null) {
-            Map<String, T> configAttributeMap = (Map<String, T>) displayModeConfigAttributeMap
-                    .get(displayMode);
+            Map<String, T> configAttributeMap = (Map<String, T>) displayModeConfigAttributeMap.get(displayMode);
             if (configAttributeMap != null) {
                 attributeValue = configAttributeMap.get(configLabel);
                 if (attributeValue != null) {
@@ -88,32 +96,37 @@ public class ConfigRegistry implements IConfigRegistry {
     }
 
     @Override
-    public <T> void registerConfigAttribute(ConfigAttribute<T> configAttribute,
+    public <T> void registerConfigAttribute(
+            ConfigAttribute<T> configAttribute,
             T attributeValue) {
-        registerConfigAttribute(configAttribute, attributeValue,
-                DisplayMode.NORMAL);
+
+        registerConfigAttribute(configAttribute, attributeValue, DisplayMode.NORMAL);
     }
 
     @Override
-    public <T> void registerConfigAttribute(ConfigAttribute<T> configAttribute,
-            T attributeValue, String displayMode) {
-        registerConfigAttribute(configAttribute, attributeValue, displayMode,
-                null);
+    public <T> void registerConfigAttribute(
+            ConfigAttribute<T> configAttribute,
+            T attributeValue,
+            String displayMode) {
+
+        registerConfigAttribute(configAttribute, attributeValue, displayMode, null);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> void registerConfigAttribute(ConfigAttribute<T> configAttribute,
-            T attributeValue, String displayMode, String configLabel) {
-        Map<String, Map<String, ?>> displayModeConfigAttributeMap = this.configRegistry
-                .get(configAttribute);
+    public <T> void registerConfigAttribute(
+            ConfigAttribute<T> configAttribute,
+            T attributeValue,
+            String displayMode,
+            String configLabel) {
+
+        Map<String, Map<String, ?>> displayModeConfigAttributeMap = this.configRegistry.get(configAttribute);
         if (displayModeConfigAttributeMap == null) {
             displayModeConfigAttributeMap = new HashMap<String, Map<String, ?>>();
             this.configRegistry.put(configAttribute, displayModeConfigAttributeMap);
         }
 
-        Map<String, T> configAttributeMap = (Map<String, T>) displayModeConfigAttributeMap
-                .get(displayMode);
+        Map<String, T> configAttributeMap = (Map<String, T>) displayModeConfigAttributeMap.get(displayMode);
         if (configAttributeMap == null) {
             configAttributeMap = new HashMap<String, T>();
             displayModeConfigAttributeMap.put(displayMode, configAttributeMap);
@@ -125,25 +138,28 @@ public class ConfigRegistry implements IConfigRegistry {
     @Override
     public <T> void unregisterConfigAttribute(
             ConfigAttribute<T> configAttributeType) {
+
         unregisterConfigAttribute(configAttributeType, DisplayMode.NORMAL);
     }
 
     @Override
     public <T> void unregisterConfigAttribute(
-            ConfigAttribute<T> configAttributeType, String displayMode) {
+            ConfigAttribute<T> configAttributeType,
+            String displayMode) {
+
         unregisterConfigAttribute(configAttributeType, displayMode, null);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> void unregisterConfigAttribute(
-            ConfigAttribute<T> configAttributeType, String displayMode,
+            ConfigAttribute<T> configAttributeType,
+            String displayMode,
             String configLabel) {
-        Map<String, Map<String, ?>> displayModeConfigAttributeMap = this.configRegistry
-                .get(configAttributeType);
+
+        Map<String, Map<String, ?>> displayModeConfigAttributeMap = this.configRegistry.get(configAttributeType);
         if (displayModeConfigAttributeMap != null) {
-            Map<String, T> configAttributeMap = (Map<String, T>) displayModeConfigAttributeMap
-                    .get(displayMode);
+            Map<String, T> configAttributeMap = (Map<String, T>) displayModeConfigAttributeMap.get(displayMode);
             if (configAttributeMap != null) {
                 configAttributeMap.remove(configLabel);
             }

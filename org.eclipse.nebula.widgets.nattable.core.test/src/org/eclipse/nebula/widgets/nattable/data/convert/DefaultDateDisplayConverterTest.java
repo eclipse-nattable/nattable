@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2012, 2020 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -26,30 +28,24 @@ public class DefaultDateDisplayConverterTest {
 
     @Test
     public void happyPath() throws Exception {
-        final DefaultDateDisplayConverter converter = new DefaultDateDisplayConverter(
-                "yyyy.MM.dd HH:mm:ss", utc);
-        assertEquals("1970.01.01 00:00:00",
-                converter.canonicalToDisplayValue(FROZEN_DATE));
-        assertEquals(FROZEN_DATE,
-                converter.displayToCanonicalValue("1970.01.01 00:00:00"));
+        DefaultDateDisplayConverter converter = new DefaultDateDisplayConverter("yyyy.MM.dd HH:mm:ss", utc);
+        assertEquals("1970.01.01 00:00:00", converter.canonicalToDisplayValue(FROZEN_DATE));
+        assertEquals(FROZEN_DATE, converter.displayToCanonicalValue("1970.01.01 00:00:00"));
     }
 
     @Test
     public void defaultDisplayFormat() throws Exception {
-        final SimpleDateFormat sdf = new SimpleDateFormat();
+        SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.setTimeZone(utc);
 
-        final DefaultDateDisplayConverter converter = new DefaultDateDisplayConverter(
-                utc);
-        assertEquals(sdf.format(FROZEN_DATE),
-                converter.canonicalToDisplayValue(FROZEN_DATE));
-        assertEquals(FROZEN_DATE,
-                converter.displayToCanonicalValue(sdf.format(FROZEN_DATE)));
+        DefaultDateDisplayConverter converter = new DefaultDateDisplayConverter(utc);
+        assertEquals(sdf.format(FROZEN_DATE), converter.canonicalToDisplayValue(FROZEN_DATE));
+        assertEquals(FROZEN_DATE, converter.displayToCanonicalValue(sdf.format(FROZEN_DATE)));
     }
 
     @Test
     public void invalidDataType() throws Exception {
-        final DefaultDateDisplayConverter converter = new DefaultDateDisplayConverter();
+        DefaultDateDisplayConverter converter = new DefaultDateDisplayConverter();
 
         System.err.println("** THE FOLLOWING STACK TRACE IS EXPECTED **");
         assertEquals("XXX", converter.canonicalToDisplayValue("XXX"));

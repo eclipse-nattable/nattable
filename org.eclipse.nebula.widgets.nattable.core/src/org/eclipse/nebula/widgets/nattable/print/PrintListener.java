@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2017 Dirk Fauth.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2017, 2020 Dirk Fauth.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
@@ -24,8 +26,8 @@ public interface PrintListener {
     void printStarted();
 
     /**
-     * This method gets executed after the print operation is finished and the layer
-     * states are restored for UI rendering.
+     * This method gets executed after the print operation is finished and the
+     * layer states are restored for UI rendering.
      */
     void printFinished();
 

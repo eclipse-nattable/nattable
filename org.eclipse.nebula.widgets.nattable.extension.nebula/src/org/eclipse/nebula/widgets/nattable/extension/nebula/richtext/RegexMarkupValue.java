@@ -1,10 +1,11 @@
 /*****************************************************************************
- * Copyright (c) 2016, 2018 Dirk Fauth.
+ * Copyright (c) 2016, 2020 Dirk Fauth.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
@@ -163,12 +164,12 @@ public class RegexMarkupValue implements MarkupProcessor {
     }
 
     /**
-     * Return whether the {@link Pattern#CASE_INSENSITIVE} flag is applied to enable
-     * case insensitive matching.
+     * Return whether the {@link Pattern#CASE_INSENSITIVE} flag is applied to
+     * enable case insensitive matching.
      * <p>
-     * <b>Note:</b> Case-insensitive matching can also be enabled via the embedded
-     * flag expression (?i) if the flag in this {@link RegexMarkupValue} is
-     * disabled.
+     * <b>Note:</b> Case-insensitive matching can also be enabled via the
+     * embedded flag expression (?i) if the flag in this
+     * {@link RegexMarkupValue} is disabled.
      * </p>
      *
      * @return <code>true</code> if case insensitive matching is enabled,
@@ -181,17 +182,18 @@ public class RegexMarkupValue implements MarkupProcessor {
     }
 
     /**
-     * Configure whether the {@link Pattern#CASE_INSENSITIVE} flag should be applied
-     * to enable case insensitive matching.
+     * Configure whether the {@link Pattern#CASE_INSENSITIVE} flag should be
+     * applied to enable case insensitive matching.
      * <p>
-     * <b>Note:</b> Case-insensitive matching can also be enabled via the embedded
-     * flag expression (?i) if the flag in this {@link RegexMarkupValue} is
-     * disabled.
+     * <b>Note:</b> Case-insensitive matching can also be enabled via the
+     * embedded flag expression (?i) if the flag in this
+     * {@link RegexMarkupValue} is disabled.
      * </p>
      *
      * @param caseInsensitive
-     *            <code>true</code> if case insensitive matching should be enabled,
-     *            <code>false</code> if matching should be case sensitive.
+     *            <code>true</code> if case insensitive matching should be
+     *            enabled, <code>false</code> if matching should be case
+     *            sensitive.
      *
      * @since 1.2
      */
@@ -204,9 +206,9 @@ public class RegexMarkupValue implements MarkupProcessor {
      * Unicode aware case folding. Only works if case insensitive matching is
      * enabled.
      * <p>
-     * <b>Note:</b> Unicode-aware case folding can also be enabled via the embedded
-     * flag expression (?u) if the flag in this {@link RegexMarkupValue} is
-     * disabled.
+     * <b>Note:</b> Unicode-aware case folding can also be enabled via the
+     * embedded flag expression (?u) if the flag in this
+     * {@link RegexMarkupValue} is disabled.
      * </p>
      *
      * @return <code>true</code> if Unicode aware case folding is enabled,
@@ -220,19 +222,19 @@ public class RegexMarkupValue implements MarkupProcessor {
     }
 
     /**
-     * Configure whether the {@link Pattern#UNICODE_CASE} flag should be applied to
-     * enable Unicode aware case folding. Only works if case insensitive matching is
-     * enabled.
+     * Configure whether the {@link Pattern#UNICODE_CASE} flag should be applied
+     * to enable Unicode aware case folding. Only works if case insensitive
+     * matching is enabled.
      * <p>
-     * <b>Note:</b> Unicode-aware case folding can also be enabled via the embedded
-     * flag expression (?u) if the flag in this {@link RegexMarkupValue} is
-     * disabled.
+     * <b>Note:</b> Unicode-aware case folding can also be enabled via the
+     * embedded flag expression (?u) if the flag in this
+     * {@link RegexMarkupValue} is disabled.
      * </p>
      *
      * @param unicodeCase
-     *            <code>true</code> if Unicode aware case folding should be enabled,
-     *            <code>false</code> if case-insensitive matching should only match
-     *            characters in the US-ASCII charset.
+     *            <code>true</code> if Unicode aware case folding should be
+     *            enabled, <code>false</code> if case-insensitive matching
+     *            should only match characters in the US-ASCII charset.
      *
      * @since 1.2
      */

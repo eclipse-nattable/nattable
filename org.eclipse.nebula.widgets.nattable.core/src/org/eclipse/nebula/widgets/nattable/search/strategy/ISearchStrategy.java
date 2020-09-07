@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -23,15 +25,16 @@ public interface ISearchStrategy {
 
     /**
      * Label that can be added to cells to avoid that they are included in the
-     * search result. Helpful for example if columns that show checkboxes should be
-     * excluded from searching.
+     * search result. Helpful for example if columns that show checkboxes should
+     * be excluded from searching.
      *
      * @since 1.6
      */
     String SKIP_SEARCH_RESULT_LABEL = "SKIP_SEARCH_RESULT"; //$NON-NLS-1$
 
     /**
-     * Search for the given value and return the coordinates of the matching cell.
+     * Search for the given value and return the coordinates of the matching
+     * cell.
      *
      * @param valueToMatch
      *            The value to search for.

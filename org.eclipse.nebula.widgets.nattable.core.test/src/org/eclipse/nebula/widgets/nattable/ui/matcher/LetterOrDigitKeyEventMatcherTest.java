@@ -1,97 +1,100 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.matcher;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 public class LetterOrDigitKeyEventMatcherTest {
 
     @Test
     public void testLetterOrDigitMatch() {
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('0'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('1'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('2'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('3'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('4'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('5'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('6'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('7'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('8'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('9'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('0'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('1'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('2'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('3'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('4'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('5'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('6'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('7'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('8'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('9'));
 
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('a'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('b'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('c'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('d'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('e'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('f'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('g'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('h'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('i'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('j'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('k'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('l'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('m'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('n'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('o'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('p'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('q'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('r'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('s'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('t'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('u'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('v'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('w'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('x'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('y'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('z'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('a'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('b'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('c'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('d'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('e'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('f'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('g'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('h'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('i'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('j'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('k'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('l'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('m'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('n'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('o'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('p'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('q'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('r'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('s'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('t'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('u'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('v'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('w'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('x'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('y'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('z'));
     }
 
     @Test
     public void testWhiteSpacesNotMatch() {
-        Assert.assertFalse(LetterOrDigitKeyEventMatcher.isLetterOrDigit('\t'));
-        Assert.assertFalse(LetterOrDigitKeyEventMatcher.isLetterOrDigit('\n'));
-        Assert.assertFalse(LetterOrDigitKeyEventMatcher.isLetterOrDigit('\r'));
+        assertFalse(LetterOrDigitKeyEventMatcher.isLetterOrDigit('\t'));
+        assertFalse(LetterOrDigitKeyEventMatcher.isLetterOrDigit('\n'));
+        assertFalse(LetterOrDigitKeyEventMatcher.isLetterOrDigit('\r'));
     }
 
     @Test
     public void testSpecialCharactersMatch() {
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('.'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit(':'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit(','));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit(';'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('-'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('_'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('#'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('\''));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('+'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('*'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('~'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('!'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('?'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher
-                .isLetterOrDigit('\u00A7'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('$'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('%'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('&'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('/'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('('));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit(')'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('['));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit(']'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('{'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('}'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('='));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('\\'));
-        Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('"'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('.'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit(':'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit(','));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit(';'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('-'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('_'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('#'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('\''));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('+'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('*'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('~'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('!'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('?'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('\u00A7'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('$'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('%'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('&'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('/'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('('));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit(')'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('['));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit(']'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('{'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('}'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('='));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('\\'));
+        assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('"'));
     }
 }

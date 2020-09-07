@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -18,8 +20,7 @@ public class ReorderColumnGroupEndCommandHandler extends
 
     private final ColumnGroupReorderLayer columnGroupReorderLayer;
 
-    public ReorderColumnGroupEndCommandHandler(
-            ColumnGroupReorderLayer columnGroupReorderLayer) {
+    public ReorderColumnGroupEndCommandHandler(ColumnGroupReorderLayer columnGroupReorderLayer) {
         this.columnGroupReorderLayer = columnGroupReorderLayer;
     }
 
@@ -36,8 +37,9 @@ public class ReorderColumnGroupEndCommandHandler extends
         // if not reorderToLeftEdge we increase toColumnPosition by 1
         // as the following processing is calculating the reorderToLeftEdge
         // value out of the given toColumnPosition and the column count
-        if (!command.isReorderToLeftEdge())
+        if (!command.isReorderToLeftEdge()) {
             toColumnPosition++;
+        }
 
         return this.columnGroupReorderLayer.reorderColumnGroup(
                 this.columnGroupReorderLayer.getReorderFromColumnPosition(),

@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -19,8 +21,7 @@ import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
  * {@link SummaryRowLayer} is present in the body layer stack. This adds an
  * extra row to the row header for displaying the summary row.
  */
-public class DefaultSummaryRowHeaderDataProvider extends
-        DefaultRowHeaderDataProvider implements IDataProvider {
+public class DefaultSummaryRowHeaderDataProvider extends DefaultRowHeaderDataProvider implements IDataProvider {
 
     public static final String DEFAULT_SUMMARY_ROW_LABEL = "Summary"; //$NON-NLS-1$
     private final String summaryRowLabel;
@@ -33,8 +34,7 @@ public class DefaultSummaryRowHeaderDataProvider extends
      * @param summaryRowLabel
      *            label to display in the row header for the Summary Row
      */
-    public DefaultSummaryRowHeaderDataProvider(IDataProvider bodyDataProvider,
-            String summaryRowLabel) {
+    public DefaultSummaryRowHeaderDataProvider(IDataProvider bodyDataProvider, String summaryRowLabel) {
         super(bodyDataProvider);
         this.summaryRowLabel = summaryRowLabel;
     }

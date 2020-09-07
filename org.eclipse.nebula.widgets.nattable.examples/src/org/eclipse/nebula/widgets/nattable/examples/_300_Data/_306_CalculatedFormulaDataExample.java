@@ -1,10 +1,11 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
@@ -198,11 +199,9 @@ public class _306_CalculatedFormulaDataExample extends AbstractNatExample {
             int formulaRowIndex = rowIndex + 1;
             if (columnIndex < 3) {
                 return super.getDataValue(columnIndex, rowIndex);
-            }
-            else if (columnIndex == 3) {
+            } else if (columnIndex == 3) {
                 return "=SUM(B" + formulaRowIndex + ";C" + formulaRowIndex + ")";
-            }
-            else if (columnIndex == 4) {
+            } else if (columnIndex == 4) {
                 return "=(B" + formulaRowIndex + "+C" + formulaRowIndex + ")/A" + formulaRowIndex;
             }
             return "";

@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -23,8 +25,7 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 
-public class DefaultNatTableStyleConfiguration extends
-        AbstractRegistryConfiguration {
+public class DefaultNatTableStyleConfiguration extends AbstractRegistryConfiguration {
 
     public Color bgColor = GUIHelper.COLOR_WHITE;
     public Color fgColor = GUIHelper.COLOR_BLACK;
@@ -40,26 +41,37 @@ public class DefaultNatTableStyleConfiguration extends
     @Override
     public void configureRegistry(IConfigRegistry configRegistry) {
         configRegistry.registerConfigAttribute(
-                CellConfigAttributes.CELL_PAINTER, this.cellPainter);
+                CellConfigAttributes.CELL_PAINTER,
+                this.cellPainter);
 
         Style cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.bgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.fgColor);
         cellStyle.setAttributeValue(
-                CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, this.gradientBgColor);
+                CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
+                this.gradientBgColor);
         cellStyle.setAttributeValue(
-                CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, this.gradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.font);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+                CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
+                this.gradientFgColor);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.font);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.hAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.vAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.borderStyle);
 
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_STYLE,
                 cellStyle);
 
         configRegistry.registerConfigAttribute(

@@ -1,10 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -109,10 +111,11 @@ public class PricingDataBean {
     @DataValueGenerator(ErrorSeverityValueGenerator.class)
     private int errorSeverity;
 
-    public PricingDataBean() {}
+    public PricingDataBean() {
+    }
 
     public String getIsin() {
-        return isin;
+        return this.isin;
     }
 
     public void setIsin(String isin) {
@@ -120,7 +123,7 @@ public class PricingDataBean {
     }
 
     public double getBid() {
-        return bid;
+        return this.bid;
     }
 
     public void setBid(double bid) {
@@ -128,7 +131,7 @@ public class PricingDataBean {
     }
 
     public double getBidYield() {
-        return bidYield;
+        return this.bidYield;
     }
 
     public void setBidYield(double bidYield) {
@@ -136,7 +139,7 @@ public class PricingDataBean {
     }
 
     public double getAsk() {
-        return ask;
+        return this.ask;
     }
 
     public void setAsk(double ask) {
@@ -144,7 +147,7 @@ public class PricingDataBean {
     }
 
     public double getAskYield() {
-        return askYield;
+        return this.askYield;
     }
 
     public void setAskYield(double askYield) {
@@ -152,7 +155,7 @@ public class PricingDataBean {
     }
 
     public double getBidOverAsk() {
-        return bidOverAsk;
+        return this.bidOverAsk;
     }
 
     public void setBidOverAsk(double bidOverAsk) {
@@ -160,7 +163,7 @@ public class PricingDataBean {
     }
 
     public String getBidAskType() {
-        return bidAskType;
+        return this.bidAskType;
     }
 
     public void setBidAskType(String bidkAskType) {
@@ -168,7 +171,7 @@ public class PricingDataBean {
     }
 
     public double getClosingPrice() {
-        return closingPrice;
+        return this.closingPrice;
     }
 
     public void setClosingPrice(double closingPrice) {
@@ -176,7 +179,7 @@ public class PricingDataBean {
     }
 
     public double getClosingYield() {
-        return closingYield;
+        return this.closingYield;
     }
 
     public void setClosingYield(double closingYield) {
@@ -184,7 +187,7 @@ public class PricingDataBean {
     }
 
     public double getClosingSpread() {
-        return closingSpread;
+        return this.closingSpread;
     }
 
     public void setClosingSpread(double closingSpread) {
@@ -192,7 +195,7 @@ public class PricingDataBean {
     }
 
     public double getPriceChange() {
-        return priceChange;
+        return this.priceChange;
     }
 
     public void setPriceChange(double priceChange) {
@@ -200,7 +203,7 @@ public class PricingDataBean {
     }
 
     public double getYieldChange() {
-        return yieldChange;
+        return this.yieldChange;
     }
 
     public void setYieldChange(double yieldChange) {
@@ -208,7 +211,7 @@ public class PricingDataBean {
     }
 
     public double getSpreadChange() {
-        return spreadChange;
+        return this.spreadChange;
     }
 
     public void setSpreadChange(double spreadChange) {
@@ -216,7 +219,7 @@ public class PricingDataBean {
     }
 
     public double getBasisPointValue() {
-        return basisPointValue;
+        return this.basisPointValue;
     }
 
     public void setBasisPointValue(double basisPointValue) {
@@ -224,7 +227,7 @@ public class PricingDataBean {
     }
 
     public double getModDuration() {
-        return modDuration;
+        return this.modDuration;
     }
 
     public void setModDuration(double modDuration) {
@@ -232,7 +235,7 @@ public class PricingDataBean {
     }
 
     public double getConvexity() {
-        return convexity;
+        return this.convexity;
     }
 
     public void setConvexity(double convexity) {
@@ -240,7 +243,7 @@ public class PricingDataBean {
     }
 
     public String getNativeTradingGroup() {
-        return nativeTradingGroup;
+        return this.nativeTradingGroup;
     }
 
     public void setNativeTradingGroup(String nativeTradingGroup) {
@@ -248,7 +251,7 @@ public class PricingDataBean {
     }
 
     public double getTgPosition() {
-        return tgPosition;
+        return this.tgPosition;
     }
 
     public void setTgPosition(double tgPosition) {
@@ -256,7 +259,7 @@ public class PricingDataBean {
     }
 
     public double getTgPL() {
-        return tgPL;
+        return this.tgPL;
     }
 
     public void setTgPL(double tgPL) {
@@ -264,7 +267,7 @@ public class PricingDataBean {
     }
 
     public double getTgClosingPL() {
-        return tgClosingPL;
+        return this.tgClosingPL;
     }
 
     public void setTgClosingPL(double tgClosingPL) {
@@ -272,7 +275,7 @@ public class PricingDataBean {
     }
 
     public double getTgCostOfInventory() {
-        return tgCostOfInventory;
+        return this.tgCostOfInventory;
     }
 
     public void setTgCostOfInventory(double tgCostOfInventory) {
@@ -280,7 +283,7 @@ public class PricingDataBean {
     }
 
     public double getTgAverageCost() {
-        return tgAverageCost;
+        return this.tgAverageCost;
     }
 
     public void setTgAverageCost(double tgAverageCost) {
@@ -288,7 +291,7 @@ public class PricingDataBean {
     }
 
     public double getTgUnrealizedPL() {
-        return tgUnrealizedPL;
+        return this.tgUnrealizedPL;
     }
 
     public void setTgUnrealizedPL(double tgUnrealizedPL) {
@@ -296,7 +299,7 @@ public class PricingDataBean {
     }
 
     public double getTgNetPL() {
-        return tgNetPL;
+        return this.tgNetPL;
     }
 
     public void setTgNetPL(double tgNetPL) {
@@ -304,7 +307,7 @@ public class PricingDataBean {
     }
 
     public double getIdnBid() {
-        return idnBid;
+        return this.idnBid;
     }
 
     public void setIdnBid(double idnBid) {
@@ -312,7 +315,7 @@ public class PricingDataBean {
     }
 
     public double getIdnBidYield() {
-        return idnBidYield;
+        return this.idnBidYield;
     }
 
     public void setIdnBidYield(double idnBidYield) {
@@ -320,7 +323,7 @@ public class PricingDataBean {
     }
 
     public double getIdnBidSize() {
-        return idnBidSize;
+        return this.idnBidSize;
     }
 
     public void setIdnBidSize(double idnBidSize) {
@@ -328,7 +331,7 @@ public class PricingDataBean {
     }
 
     public double getIdnBidSpread() {
-        return idnBidSpread;
+        return this.idnBidSpread;
     }
 
     public void setIdnBidSpread(double idnBidSpread) {
@@ -336,7 +339,7 @@ public class PricingDataBean {
     }
 
     public double getIdnAskYield() {
-        return idnAskYield;
+        return this.idnAskYield;
     }
 
     public void setIdnAskYield(double idnAskYield) {
@@ -344,7 +347,7 @@ public class PricingDataBean {
     }
 
     public double getTdPosition() {
-        return tdPosition;
+        return this.tdPosition;
     }
 
     public void setTdPosition(double tdPosition) {
@@ -352,7 +355,7 @@ public class PricingDataBean {
     }
 
     public double getTdTradingPL() {
-        return tdTradingPL;
+        return this.tdTradingPL;
     }
 
     public void setTdTradingPL(double tdTradingPL) {
@@ -360,7 +363,7 @@ public class PricingDataBean {
     }
 
     public double getTdClosingPL() {
-        return tdClosingPL;
+        return this.tdClosingPL;
     }
 
     public void setTdClosingPL(double tdClosingPL) {
@@ -368,7 +371,7 @@ public class PricingDataBean {
     }
 
     public double getTdCostOfInventory() {
-        return tdCostOfInventory;
+        return this.tdCostOfInventory;
     }
 
     public void setTdCostOfInventory(double tdCostOfInventory) {
@@ -376,7 +379,7 @@ public class PricingDataBean {
     }
 
     public double getTdAvgCost() {
-        return tdAvgCost;
+        return this.tdAvgCost;
     }
 
     public void setTdAvgCost(double tdAvgCost) {
@@ -384,7 +387,7 @@ public class PricingDataBean {
     }
 
     public double getTdUnrealizedPL() {
-        return tdUnrealizedPL;
+        return this.tdUnrealizedPL;
     }
 
     public void setTdUnrealizedPL(double tdUnrealizedPL) {
@@ -392,7 +395,7 @@ public class PricingDataBean {
     }
 
     public double getTdNetPL() {
-        return tdNetPL;
+        return this.tdNetPL;
     }
 
     public void setTdNetPL(double tdNetPL) {
@@ -400,7 +403,7 @@ public class PricingDataBean {
     }
 
     public String getComments() {
-        return comments;
+        return this.comments;
     }
 
     public void setComments(String comments) {
@@ -408,7 +411,7 @@ public class PricingDataBean {
     }
 
     public String getAlias() {
-        return alias;
+        return this.alias;
     }
 
     public void setAlias(String alias) {
@@ -416,7 +419,7 @@ public class PricingDataBean {
     }
 
     public String getBaseIssue() {
-        return baseIssue;
+        return this.baseIssue;
     }
 
     public void setBaseIssue(String baseIssue) {
@@ -424,7 +427,7 @@ public class PricingDataBean {
     }
 
     public String getPricingModel() {
-        return pricingModel;
+        return this.pricingModel;
     }
 
     public void setPricingModel(String pricingModel) {
@@ -432,7 +435,7 @@ public class PricingDataBean {
     }
 
     public String getPricingSource() {
-        return pricingSource;
+        return this.pricingSource;
     }
 
     public void setPricingSource(String pricingSource) {
@@ -440,7 +443,7 @@ public class PricingDataBean {
     }
 
     public String getErrorMessage() {
-        return errorMessage;
+        return this.errorMessage;
     }
 
     public void setErrorMessage(String errorMessage) {
@@ -448,7 +451,7 @@ public class PricingDataBean {
     }
 
     public int getErrorSeverity() {
-        return errorSeverity;
+        return this.errorSeverity;
     }
 
     public void setErrorSeverity(int errorSeverity) {
@@ -456,7 +459,7 @@ public class PricingDataBean {
     }
 
     public String getSecurityType() {
-        return securityType;
+        return this.securityType;
     }
 
     public void setSecurityType(String securityType) {
@@ -464,7 +467,7 @@ public class PricingDataBean {
     }
 
     public double getBidSpread() {
-        return bidSpread;
+        return this.bidSpread;
     }
 
     public void setBidSpread(double bidSpread) {
@@ -472,7 +475,7 @@ public class PricingDataBean {
     }
 
     public double getAskSpread() {
-        return askSpread;
+        return this.askSpread;
     }
 
     public void setAskSpread(double askSpread) {
@@ -480,7 +483,7 @@ public class PricingDataBean {
     }
 
     public double getBidOverAskP() {
-        return bidOverAskP;
+        return this.bidOverAskP;
     }
 
     public void setBidOverAskP(double bidOverAskP) {

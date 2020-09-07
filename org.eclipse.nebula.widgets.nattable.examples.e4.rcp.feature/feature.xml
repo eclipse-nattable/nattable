@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.nebula.widgets.nattable.examples.e4.rcp.feature"
-      label="NatTable E4 RCP Feature"
+      label="%featureName"
       version="2.0.0.qualifier"
-      provider-name="Eclipse Nebula NatTable">
+      provider-name="%providerName"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
-   <description url="http://www.example.com/description">
-      NatTable E4 RCP
-Minimalistic E4 RCP feature with reduced set of bundles
+   <description url="https://projects.eclipse.org/projects/technology.nebula.nattable">
+      %description
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+   <copyright>
+      %copyright
    </copyright>
 
    <license url="http://www.example.com/license">

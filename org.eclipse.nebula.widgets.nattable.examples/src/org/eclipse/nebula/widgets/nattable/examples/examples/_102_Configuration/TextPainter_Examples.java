@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -309,7 +311,8 @@ public class TextPainter_Examples extends AbstractNatExample {
 
         ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
                 new DataLayer(new DummyColumnHeaderDataProvider(
-                        bodyDataProvider), 20, 100), viewportLayer,
+                        bodyDataProvider), 20, 100),
+                viewportLayer,
                 selectionLayer);
         columnHeaderLayer
                 .addConfiguration(new DefaultColumnHeaderLayerConfiguration() {
@@ -354,19 +357,24 @@ public class TextPainter_Examples extends AbstractNatExample {
             // return
             // "Lorem ipsum dolor sit amet, consetetur sadipscing elitr,\n" +
             // "sed diam nonumy eirmod tempor invidunt ut labore et dolore\n" +
-            // "magna aliquyam erat, sed diam voluptua. At vero eos et accusam\n"
+            // "magna aliquyam erat, sed diam voluptua. At vero eos et
+            // accusam\n"
             // +
             // "et justo duo dolores et ea rebum. Stet clita kasd gubergren,\n"
             // +
             // "no sea takimata sanctus est Lorem ipsum dolor sit amet.\n" +
-            // "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam\n"
+            // "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
+            // diam\n"
             // +
-            // "nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,\n"
+            // "nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam
+            // erat,\n"
             // +
             // "sed diam voluptua.\n\n " +
-            // "At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd\n"
+            // "At vero eos et accusam et justo duo dolores et ea rebum. Stet
+            // clita kasd\n"
             // +
-            // "gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
+            // "gubergren, no sea takimata sanctus est Lorem ipsum dolor sit
+            // amet.";
         }
 
         @Override

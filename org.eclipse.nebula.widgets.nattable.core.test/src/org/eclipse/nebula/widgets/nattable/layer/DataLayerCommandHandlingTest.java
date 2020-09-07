@@ -1,20 +1,24 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,8 +38,7 @@ public class DataLayerCommandHandlingTest {
     @Test
     public void handleUpdateDataCommand() throws Exception {
         this.dataLayer.doCommand(this.command);
-        Assert.assertEquals(TEST_VALUE, this.dataLayer.getDataProvider()
-                .getDataValue(2, 2));
+        assertEquals(TEST_VALUE, this.dataLayer.getDataProvider().getDataValue(2, 2));
     }
 
     @Test
@@ -43,7 +46,7 @@ public class DataLayerCommandHandlingTest {
         LayerListenerFixture listener = new LayerListenerFixture();
         this.dataLayer.addLayerListener(listener);
         this.dataLayer.doCommand(this.command);
-        Assert.assertTrue(listener.getReceivedEvents().get(0) instanceof CellVisualChangeEvent);
+        assertTrue(listener.getReceivedEvents().get(0) instanceof CellVisualChangeEvent);
     }
 
     @Test
@@ -51,14 +54,14 @@ public class DataLayerCommandHandlingTest {
         LayerListenerFixture listener = new LayerListenerFixture();
         this.dataLayer.addLayerListener(listener);
         this.dataLayer.doCommand(this.command);
-        Assert.assertTrue(listener.getReceivedEvents().size() == 1);
-        Assert.assertTrue(listener.getReceivedEvents().get(0) instanceof CellVisualChangeEvent);
+        assertTrue(listener.getReceivedEvents().size() == 1);
+        assertTrue(listener.getReceivedEvents().get(0) instanceof CellVisualChangeEvent);
 
         // as calling the UpdateCommand with the same value should not trigger
         // any event
         // the size of the received events will stay 1 (the one event from
         // before which is cached)
         this.dataLayer.doCommand(this.command);
-        Assert.assertTrue(listener.getReceivedEvents().size() == 1);
+        assertTrue(listener.getReceivedEvents().size() == 1);
     }
 }

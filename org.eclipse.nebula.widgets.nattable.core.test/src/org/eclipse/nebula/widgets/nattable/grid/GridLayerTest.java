@@ -1,14 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.grid;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
@@ -24,7 +31,6 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ViewportLayerFixtu
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -50,24 +56,21 @@ public class GridLayerTest {
 
     @Test
     public void getLayers() throws Exception {
-        Assert.assertNotNull(this.gridLayerUnderTest.getBodyLayer());
-        Assert.assertNotNull(this.gridLayerUnderTest.getColumnHeaderLayer());
-        Assert.assertNotNull(this.gridLayerUnderTest.getRowHeaderLayer());
-        Assert.assertNotNull(this.gridLayerUnderTest.getCornerLayer());
+        assertNotNull(this.gridLayerUnderTest.getBodyLayer());
+        assertNotNull(this.gridLayerUnderTest.getColumnHeaderLayer());
+        assertNotNull(this.gridLayerUnderTest.getRowHeaderLayer());
+        assertNotNull(this.gridLayerUnderTest.getCornerLayer());
     }
 
     @Test
     public void doCommandInvokesBodyFirst() throws Exception {
         DummyCommandHandler bodyCommandHandler = new DummyCommandHandler(true);
-        DummyCommandHandler columnHeaderCommandHandler = new DummyCommandHandler(
-                true);
-        DummyCommandHandler rowHeaderCommandHandler = new DummyCommandHandler(
-                true);
+        DummyCommandHandler columnHeaderCommandHandler = new DummyCommandHandler(true);
+        DummyCommandHandler rowHeaderCommandHandler = new DummyCommandHandler(true);
         DummyCommandHandler cornerCommandHandler = new DummyCommandHandler(true);
 
         this.bodyDataLayer.registerCommandHandler(bodyCommandHandler);
-        this.columnHeaderDataLayer
-                .registerCommandHandler(columnHeaderCommandHandler);
+        this.columnHeaderDataLayer.registerCommandHandler(columnHeaderCommandHandler);
         this.rowHeaderDataLayer.registerCommandHandler(rowHeaderCommandHandler);
         this.cornerDataLayer.registerCommandHandler(cornerCommandHandler);
 
@@ -75,24 +78,21 @@ public class GridLayerTest {
 
         this.gridLayerUnderTest.doCommand(command);
 
-        Assert.assertTrue(bodyCommandHandler.isCommandCaught());
-        Assert.assertFalse(columnHeaderCommandHandler.isCommandCaught());
-        Assert.assertFalse(rowHeaderCommandHandler.isCommandCaught());
-        Assert.assertFalse(cornerCommandHandler.isCommandCaught());
+        assertTrue(bodyCommandHandler.isCommandCaught());
+        assertFalse(columnHeaderCommandHandler.isCommandCaught());
+        assertFalse(rowHeaderCommandHandler.isCommandCaught());
+        assertFalse(cornerCommandHandler.isCommandCaught());
     }
 
     @Test
     public void doCommandInvokesOtherLayers() throws Exception {
         DummyCommandHandler bodyCommandHandler = new DummyCommandHandler(false);
-        DummyCommandHandler columnHeaderCommandHandler = new DummyCommandHandler(
-                false);
-        DummyCommandHandler rowHeaderCommandHandler = new DummyCommandHandler(
-                false);
+        DummyCommandHandler columnHeaderCommandHandler = new DummyCommandHandler(false);
+        DummyCommandHandler rowHeaderCommandHandler = new DummyCommandHandler(false);
         DummyCommandHandler cornerCommandHandler = new DummyCommandHandler(true);
 
         this.bodyDataLayer.registerCommandHandler(bodyCommandHandler);
-        this.columnHeaderDataLayer
-                .registerCommandHandler(columnHeaderCommandHandler);
+        this.columnHeaderDataLayer.registerCommandHandler(columnHeaderCommandHandler);
         this.rowHeaderDataLayer.registerCommandHandler(rowHeaderCommandHandler);
         this.cornerDataLayer.registerCommandHandler(cornerCommandHandler);
 
@@ -100,10 +100,10 @@ public class GridLayerTest {
 
         this.gridLayerUnderTest.doCommand(command);
 
-        Assert.assertFalse(bodyCommandHandler.isCommandCaught());
-        Assert.assertFalse(columnHeaderCommandHandler.isCommandCaught());
-        Assert.assertFalse(rowHeaderCommandHandler.isCommandCaught());
-        Assert.assertTrue(cornerCommandHandler.isCommandCaught());
+        assertFalse(bodyCommandHandler.isCommandCaught());
+        assertFalse(columnHeaderCommandHandler.isCommandCaught());
+        assertFalse(rowHeaderCommandHandler.isCommandCaught());
+        assertTrue(cornerCommandHandler.isCommandCaught());
     }
 
     // **** New tests using fixtures ****
@@ -126,11 +126,11 @@ public class GridLayerTest {
         // Client area gets init when this command is fired
         gridLayer.doCommand(new InitializeClientAreaCommandFixture());
 
-        Assert.assertEquals(160, viewport.getClientAreaWidth());
-        Assert.assertEquals(80, viewport.getClientAreaHeight());
+        assertEquals(160, viewport.getClientAreaWidth());
+        assertEquals(80, viewport.getClientAreaHeight());
 
-        Assert.assertEquals(160, viewport.getWidth());
-        Assert.assertEquals(80, viewport.getHeight());
+        assertEquals(160, viewport.getWidth());
+        assertEquals(80, viewport.getHeight());
     }
 
     @Test
@@ -140,8 +140,8 @@ public class GridLayerTest {
 
         ILayer rowHeader = gridLayer.getRowHeaderLayer();
         // Only visible rows are counted
-        Assert.assertEquals(100, rowHeader.getHeight());
-        Assert.assertEquals(40, rowHeader.getWidth());
+        assertEquals(100, rowHeader.getHeight());
+        assertEquals(40, rowHeader.getWidth());
     }
 
     @Test
@@ -149,12 +149,11 @@ public class GridLayerTest {
         GridLayer gridLayer = new GridLayerFixture();
 
         ILayer colHeader = gridLayer.getCornerLayer();
-        Assert.assertEquals(20, colHeader.getHeight());
-        Assert.assertEquals(40, colHeader.getWidth());
+        assertEquals(20, colHeader.getHeight());
+        assertEquals(40, colHeader.getWidth());
     }
 
-    class DummyCommandHandler extends
-            AbstractLayerCommandHandler<LayerCommandFixture> {
+    class DummyCommandHandler extends AbstractLayerCommandHandler<LayerCommandFixture> {
 
         private final boolean catchCommand;
 

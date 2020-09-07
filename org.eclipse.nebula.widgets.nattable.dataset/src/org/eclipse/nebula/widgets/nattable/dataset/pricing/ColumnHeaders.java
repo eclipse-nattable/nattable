@@ -1,10 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -14,27 +16,30 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public enum ColumnHeaders {
-    ONE("ISIN", "isin", String.class), TWO("Bid", "bid", Double.class), THREE(
-            "Ask", "ask", Double.class), FOUR("Pricing Model", "pricingModel",
-            String.class), FIVE("Ask Yield", "askYield", Double.class), SIX(
-            "Bid Yield", "bidYield", Double.class), SEVEN("(p) Bid/Ask",
-            "bidOverAsk", Double.class), EIGHT("Bid Ask Type", "bidAskType",
-            String.class), NINE("Base Issue", "baseIssue", String.class), TEN(
-            "Closing Price", "closingPrice", Double.class), ELEVEN(
-            "Closing Yield", "closingYield", Double.class), TWELVE(
-            "Closing Spread", "closingSpread", Double.class), THIRTEEN(
-            "Price Change", "priceChange", Double.class), FOURTEEN(
-            "Yield Change", "yieldChange", Double.class), FIFTEEN(
-            "Spread Change", "spreadChange", Double.class), SIXTEEN("Alias",
-            "alias", String.class), SEVENTEEN("Basis Point Value",
-            "basisPointValue", Double.class), EIGHTEEN("Mod. Duration",
-            "modDuration", Double.class), NINETEEN("Convexity", "convexity",
-            Double.class), TWENTY("Native Trading Group", "nativeTradingGroup",
-            String.class), TWENTYONE("Error Severity", "errorSeverity",
-            Double.class), TWENTYTWO("Error Message", "errorMessage",
-            String.class), TWENTYTHREE("Pricing Source", "pricingSource",
-            String.class), TWENTYFOUR("Security Type", "securityType",
-            String.class), ;
+    ONE("ISIN", "isin", String.class),
+    TWO("Bid", "bid", Double.class),
+    THREE("Ask", "ask", Double.class),
+    FOUR("Pricing Model", "pricingModel", String.class),
+    FIVE("Ask Yield", "askYield", Double.class),
+    SIX("Bid Yield", "bidYield", Double.class),
+    SEVEN("(p) Bid/Ask", "bidOverAsk", Double.class),
+    EIGHT("Bid Ask Type", "bidAskType", String.class),
+    NINE("Base Issue", "baseIssue", String.class),
+    TEN("Closing Price", "closingPrice", Double.class),
+    ELEVEN("Closing Yield", "closingYield", Double.class),
+    TWELVE("Closing Spread", "closingSpread", Double.class),
+    THIRTEEN("Price Change", "priceChange", Double.class),
+    FOURTEEN("Yield Change", "yieldChange", Double.class),
+    FIFTEEN("Spread Change", "spreadChange", Double.class),
+    SIXTEEN("Alias", "alias", String.class),
+    SEVENTEEN("Basis Point Value", "basisPointValue", Double.class),
+    EIGHTEEN("Mod. Duration", "modDuration", Double.class),
+    NINETEEN("Convexity", "convexity", Double.class),
+    TWENTY("Native Trading Group", "nativeTradingGroup", String.class),
+    TWENTYONE("Error Severity", "errorSeverity", Double.class),
+    TWENTYTWO("Error Message", "errorMessage", String.class),
+    TWENTYTHREE("Pricing Source", "pricingSource", String.class),
+    TWENTYFOUR("Security Type", "securityType", String.class);
 
     private String label;
     private String property;
@@ -56,7 +61,7 @@ public enum ColumnHeaders {
     }
 
     public String getLabel() {
-        return label;
+        return this.label;
     }
 
     public void setLabel(String label) {
@@ -93,7 +98,7 @@ public enum ColumnHeaders {
     }
 
     public String getProperty() {
-        return property;
+        return this.property;
     }
 
     public void setProperty(String property) {
@@ -101,6 +106,6 @@ public enum ColumnHeaders {
     }
 
     public Class<?> getType() {
-        return type;
+        return this.type;
     }
 }

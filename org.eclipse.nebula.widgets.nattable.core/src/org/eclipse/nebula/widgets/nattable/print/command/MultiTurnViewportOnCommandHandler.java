@@ -1,12 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2014, 2020 Dirk Fauth and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.print.command;
 
@@ -20,12 +22,8 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
  * also not necessary to process the command any further, this handler is used
  * to ensure that all viewports in the composition get the chance to process the
  * command.
- *
- * @author Dirk Fauth
- *
  */
-public class MultiTurnViewportOnCommandHandler implements
-        ILayerCommandHandler<TurnViewportOnCommand> {
+public class MultiTurnViewportOnCommandHandler implements ILayerCommandHandler<TurnViewportOnCommand> {
 
     private ViewportLayer[] viewports;
 

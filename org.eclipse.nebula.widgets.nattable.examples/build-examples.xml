@@ -12,6 +12,7 @@
             	<attribute name="Permissions" value="all-permissions"/>
             </manifest>
             <fileset dir="src"/>
+            <fileset file="about.html"/>
             <fileset dir="../org.eclipse.nebula.widgets.nattable.core/target/classes"/>
             <fileset dir="../org.eclipse.nebula.widgets.nattable.extension.glazedlists/target/classes"/>
             <fileset dir="../org.eclipse.nebula.widgets.nattable.extension.nebula/target/classes"/>
@@ -56,7 +57,7 @@
             	src="lib/org.eclipse.osgi_3.13.0.v20180409-1500.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.eclipse.collections_10.1.0.v20191204-1814.jar"/>
+            	src="lib/org.eclipse.collections_10.4.0.v20200820-2049.jar"/>
         </jar>
 
     </target>

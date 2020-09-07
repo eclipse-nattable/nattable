@@ -32,8 +32,12 @@
    </feature>
    <category-def name="nattable-core" label="NatTable Core">
       <description>
-         NatTable Core plugin
+         The core NatTable functions.
       </description>
    </category-def>
-   <category-def name="nattable-extensions" label="NatTable Extensions"/>
+   <category-def name="nattable-extensions" label="NatTable Extensions">
+      <description>
+         Extensions to provide additional features based on third-party libraries.
+      </description>
+   </category-def>
 </site>

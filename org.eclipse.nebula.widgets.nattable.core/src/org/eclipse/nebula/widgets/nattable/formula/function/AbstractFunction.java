@@ -1,14 +1,14 @@
 /*****************************************************************************
- * Copyright (c) 2015 CEA LIST.
+ * Copyright (c) 2015, 2020 CEA LIST.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
- *
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.formula.function;
 
@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Subclasses are intended to process values that are set to it.
- * 
+ *
  * @since 1.4
  */
 public abstract class AbstractFunction implements FunctionValue, OperatorFunctionValue {
@@ -40,8 +40,7 @@ public abstract class AbstractFunction implements FunctionValue, OperatorFunctio
         if (value != null) {
             if (value instanceof MultipleValueFunctionValue) {
                 this.values.addAll(((MultipleValueFunctionValue) value).getValue());
-            }
-            else {
+            } else {
                 this.values.add(value);
             }
         }

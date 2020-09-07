@@ -1,12 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Dirk Fauth and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Dirk Fauth and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *     Dirk Fauth - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._300_Data;
 
@@ -114,13 +116,15 @@ public class _304_DynamicColumnExample extends AbstractNatExample {
                 bodyDataProvider);
         ILayer rowHeaderLayer = new RowHeaderLayer(
                 new DefaultRowHeaderDataLayer(new DefaultRowHeaderDataProvider(
-                        bodyDataProvider)), bodyLayerStack.getViewportLayer(),
+                        bodyDataProvider)),
+                bodyLayerStack.getViewportLayer(),
                 bodyLayerStack.getSelectionLayer());
 
         // create the corner layer stack
         ILayer cornerLayer = new CornerLayer(new DataLayer(
                 new DefaultCornerDataProvider(columnHeaderDataProvider,
-                        rowHeaderDataProvider)), rowHeaderLayer,
+                        rowHeaderDataProvider)),
+                rowHeaderLayer,
                 columnHeaderLayer);
 
         // create the grid layer composed with the prior created layer stacks

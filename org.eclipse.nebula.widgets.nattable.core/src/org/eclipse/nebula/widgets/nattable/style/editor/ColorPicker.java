@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -38,15 +40,15 @@ public class ColorPicker extends CLabel {
 
     public ColorPicker(Composite parent, final Color originalColor) {
         super(parent, SWT.SHADOW_OUT);
-        if (originalColor == null)
+        if (originalColor == null) {
             throw new IllegalArgumentException("null"); //$NON-NLS-1$
+        }
         this.selectedColor = originalColor;
         setImage(getColorImage(originalColor));
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseDown(MouseEvent e) {
-                ColorDialog dialog = new ColorDialog(new Shell(
-                        Display.getDefault(), SWT.SHELL_TRIM));
+                ColorDialog dialog = new ColorDialog(new Shell(Display.getDefault(), SWT.SHELL_TRIM));
                 dialog.setRGB(ColorPicker.this.selectedColor.getRGB());
                 RGB selected = dialog.open();
                 if (selected != null) {
@@ -72,9 +74,8 @@ public class ColorPicker extends CLabel {
     }
 
     /**
-     * @return the Color most recently selected by the user.
-     *         <em>Note that it is the responsibility of the client to
-     *         dispose this resource</em>
+     * @return the Color most recently selected by the user. <em>Note that it is
+     *         the responsibility of the client to dispose this resource</em>
      */
     public Color getSelectedColor() {
         return this.selectedColor;
@@ -82,15 +83,16 @@ public class ColorPicker extends CLabel {
 
     /**
      * Set the current selected color that will be displayed by the picker.
-     * <em>Note that this class is not responsible
-     * for destroying the given Color object. It does not take ownership. Instead it will create its own internal
-     * copy of the given Color resource.</em>
+     * <em>Note that this class is not responsible for destroying the given
+     * Color object. It does not take ownership. Instead it will create its own
+     * internal copy of the given Color resource.</em>
      *
      * @param backgroundColor
      */
     public void setSelectedColor(Color backgroundColor) {
-        if (backgroundColor == null)
+        if (backgroundColor == null) {
             throw new IllegalArgumentException("null"); //$NON-NLS-1$
+        }
         update(backgroundColor.getRGB());
     }
 

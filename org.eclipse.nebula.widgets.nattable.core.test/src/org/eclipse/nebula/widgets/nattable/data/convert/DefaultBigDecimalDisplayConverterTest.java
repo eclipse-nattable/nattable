@@ -1,14 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -16,7 +22,6 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -39,28 +44,24 @@ public class DefaultBigDecimalDisplayConverterTest {
 
     @Test
     public void testNonNullDataToDisplay() {
-        Assert.assertEquals("123", this.bigDecConverter
-                .canonicalToDisplayValue(BigDecimal.valueOf(123)));
-        Assert.assertEquals("23.5", this.bigDecConverter
-                .canonicalToDisplayValue(BigDecimal.valueOf(23.5)));
+        assertEquals("123", this.bigDecConverter.canonicalToDisplayValue(BigDecimal.valueOf(123)));
+        assertEquals("23.5", this.bigDecConverter.canonicalToDisplayValue(BigDecimal.valueOf(23.5)));
     }
 
     @Test
     public void testNullDataToDisplay() {
-        Assert.assertNull(this.bigDecConverter.canonicalToDisplayValue(null));
+        assertNull(this.bigDecConverter.canonicalToDisplayValue(null));
     }
 
     @Test
     public void testNonNullDisplayToData() {
-        Assert.assertEquals(BigDecimal.valueOf(123),
-                this.bigDecConverter.displayToCanonicalValue("123"));
-        Assert.assertEquals(BigDecimal.valueOf(23.5),
-                this.bigDecConverter.displayToCanonicalValue("23.5"));
+        assertEquals(BigDecimal.valueOf(123), this.bigDecConverter.displayToCanonicalValue("123"));
+        assertEquals(BigDecimal.valueOf(23.5), this.bigDecConverter.displayToCanonicalValue("23.5"));
     }
 
     @Test
     public void testNullDisplayToData() {
-        Assert.assertNull(this.bigDecConverter.displayToCanonicalValue(""));
+        assertNull(this.bigDecConverter.displayToCanonicalValue(""));
     }
 
     @Test(expected = ConversionFailedException.class)
@@ -76,8 +77,7 @@ public class DefaultBigDecimalDisplayConverterTest {
         localized.setMaximumFractionDigits(2);
 
         this.bigDecConverter.setNumberFormat(localized);
-        Assert.assertEquals("123,5", this.bigDecConverter
-                .canonicalToDisplayValue(new BigDecimal("123.5")));
+        assertEquals("123,5", this.bigDecConverter.canonicalToDisplayValue(new BigDecimal("123.5")));
 
         this.bigDecConverter.setNumberFormat(original);
     }
@@ -92,8 +92,8 @@ public class DefaultBigDecimalDisplayConverterTest {
 
         this.bigDecConverter.setNumberFormat(localized);
         Object result = this.bigDecConverter.displayToCanonicalValue("123,5");
-        Assert.assertTrue(result instanceof BigDecimal);
-        Assert.assertEquals(new BigDecimal("123.5"), result);
+        assertTrue(result instanceof BigDecimal);
+        assertEquals(new BigDecimal("123.5"), result);
 
         this.bigDecConverter.setNumberFormat(original);
     }

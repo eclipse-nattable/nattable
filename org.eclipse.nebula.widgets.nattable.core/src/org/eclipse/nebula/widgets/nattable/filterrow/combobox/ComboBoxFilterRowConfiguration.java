@@ -1,12 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
@@ -32,9 +34,6 @@ import org.eclipse.swt.graphics.GC;
  * Special filter row configuration that configures the
  * FilterRowComboBoxCellEditor as editor for the filter row with its necessary
  * configurations regarding matching mode, converter and painter.
- *
- * @author Dirk Fauth
- *
  */
 public class ComboBoxFilterRowConfiguration extends
         AbstractRegistryConfiguration {
@@ -59,7 +58,8 @@ public class ComboBoxFilterRowConfiguration extends
      * to be set manually. Otherwise this configuration will not work
      * correctly!</b>
      */
-    public ComboBoxFilterRowConfiguration() {}
+    public ComboBoxFilterRowConfiguration() {
+    }
 
     /**
      * Create a ComboBoxFilterRowConfiguration that uses the default

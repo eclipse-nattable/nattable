@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014, 2015 Dirk Fauth and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
@@ -144,7 +146,7 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
                         PersonService.getPersonsWithAddress(5),
                         columnPropertyAccessor,
                         new PersonWithAddressTwoLevelTreeFormat());
-                        // new PersonWithAddressTreeFormat());
+        // new PersonWithAddressTreeFormat());
 
         // build the column header layer
         IDataProvider columnHeaderDataProvider =
@@ -465,9 +467,11 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
                 @Override
                 public int compare(Object o1, Object o2) {
                     String e1 = (o1 instanceof PersonWithAddress)
-                            ? (depth == 0 ? ((PersonWithAddress) o1).getLastName() : ((PersonWithAddress) o1).getFirstName()) : o1.toString();
+                            ? (depth == 0 ? ((PersonWithAddress) o1).getLastName() : ((PersonWithAddress) o1).getFirstName())
+                            : o1.toString();
                     String e2 = (o2 instanceof PersonWithAddress)
-                            ? (depth == 0 ? ((PersonWithAddress) o2).getLastName() : ((PersonWithAddress) o2).getFirstName()) : o2.toString();
+                            ? (depth == 0 ? ((PersonWithAddress) o2).getLastName() : ((PersonWithAddress) o2).getFirstName())
+                            : o2.toString();
                     return e1.compareTo(e2);
                 }
 

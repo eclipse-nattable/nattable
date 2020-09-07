@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2014, 2020 Dirk Fauth.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
@@ -14,9 +16,9 @@ package org.eclipse.nebula.widgets.nattable.layer;
  * Interface to add support for scaling.
  * <p>
  * This interface is inspired by Riena and the corresponding talk at EclipseCon
- * 2014 <a
- * href="http://www.slideshare.net/da152/swt-scalingece2014-aktuell">Scaling SWT
- * on high-resolution screens</a>
+ * 2014
+ * <a href="http://www.slideshare.net/da152/swt-scalingece2014-aktuell">Scaling
+ * SWT on high-resolution screens</a>
  * </p>
  */
 public interface IDpiConverter {

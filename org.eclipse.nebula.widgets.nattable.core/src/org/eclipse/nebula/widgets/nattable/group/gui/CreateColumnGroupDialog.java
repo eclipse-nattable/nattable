@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -36,8 +38,7 @@ public class CreateColumnGroupDialog extends Dialog {
 
     private CreateColumnGroupDialog(Shell parentShell) {
         super(parentShell);
-        setShellStyle(SWT.CLOSE | SWT.BORDER | SWT.TITLE
-                | SWT.APPLICATION_MODAL);
+        setShellStyle(SWT.CLOSE | SWT.BORDER | SWT.TITLE | SWT.APPLICATION_MODAL);
         setBlockOnOpen(false);
     }
 
@@ -52,9 +53,7 @@ public class CreateColumnGroupDialog extends Dialog {
     @Override
     public void create() {
         super.create();
-        getShell()
-                .setText(
-                        Messages.getString("ColumnGroups.createColumnGroupDialogTitle")); //$NON-NLS-1$
+        getShell().setText(Messages.getString("ColumnGroups.createColumnGroupDialogTitle")); //$NON-NLS-1$
     }
 
     @Override
@@ -62,15 +61,24 @@ public class CreateColumnGroupDialog extends Dialog {
 
         final Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new GridLayout(1, false));
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(composite);
+        GridDataFactory
+                .fillDefaults()
+                .grab(true, true)
+                .applyTo(composite);
 
-        GridDataFactory.fillDefaults().minSize(200, 100)
-                .align(SWT.FILL, SWT.FILL).grab(true, false)
+        GridDataFactory
+                .fillDefaults()
+                .minSize(200, 100)
+                .align(SWT.FILL, SWT.FILL)
+                .grab(true, false)
                 .applyTo(createInputPanel(composite));
 
         Composite buttonPanel = createButtonSection(composite);
-        GridDataFactory.swtDefaults().align(SWT.FILL, SWT.BOTTOM)
-                .grab(true, true).applyTo(buttonPanel);
+        GridDataFactory
+                .swtDefaults()
+                .align(SWT.FILL, SWT.BOTTOM)
+                .grab(true, true)
+                .applyTo(buttonPanel);
 
         return composite;
     }
@@ -84,10 +92,16 @@ public class CreateColumnGroupDialog extends Dialog {
         layout.horizontalSpacing = 2;
         panel.setLayout(layout);
 
-        this.createButton = createButton(panel, IDialogConstants.CLIENT_ID,
-                Messages.getString("ColumnGroups.createButtonLabel"), false); //$NON-NLS-1$
-        GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM)
-                .grab(true, true).applyTo(this.createButton);
+        this.createButton = createButton(
+                panel,
+                IDialogConstants.CLIENT_ID,
+                Messages.getString("ColumnGroups.createButtonLabel"), //$NON-NLS-1$
+                false);
+        GridDataFactory
+                .swtDefaults()
+                .align(SWT.RIGHT, SWT.BOTTOM)
+                .grab(true, true)
+                .applyTo(this.createButton);
 
         this.createButton.setEnabled(false);
         getShell().setDefaultButton(this.createButton);
@@ -102,9 +116,13 @@ public class CreateColumnGroupDialog extends Dialog {
         Button closeButton = createButton(
                 panel,
                 IDialogConstants.CANCEL_ID,
-                Messages.getString("AbstractStyleEditorDialog.cancelButton"), false); //$NON-NLS-1$
-        GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM)
-                .grab(false, false).applyTo(closeButton);
+                Messages.getString("AbstractStyleEditorDialog.cancelButton"), //$NON-NLS-1$
+                false);
+        GridDataFactory
+                .swtDefaults()
+                .align(SWT.RIGHT, SWT.BOTTOM)
+                .grab(false, false)
+                .applyTo(closeButton);
 
         return panel;
     }
@@ -114,13 +132,17 @@ public class CreateColumnGroupDialog extends Dialog {
         row.setLayout(new GridLayout(2, false));
 
         final Label createLabel = new Label(row, SWT.NONE);
-        createLabel
-                .setText(Messages.getString("ColumnGroups.createGroupLabel") + ":"); //$NON-NLS-1$ //$NON-NLS-2$
-        GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER)
+        createLabel.setText(Messages.getString("ColumnGroups.createGroupLabel") + ":"); //$NON-NLS-1$ //$NON-NLS-2$
+        GridDataFactory
+                .fillDefaults()
+                .align(SWT.LEFT, SWT.CENTER)
                 .applyTo(createLabel);
 
         this.groupNameText = new Text(row, SWT.SINGLE | SWT.BORDER);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(this.groupNameText);
+        GridDataFactory
+                .fillDefaults()
+                .grab(true, false)
+                .applyTo(this.groupNameText);
         this.groupNameText.addModifyListener(e -> CreateColumnGroupDialog.this.createButton.setEnabled(CreateColumnGroupDialog.this.groupNameText.getText().length() > 0));
         this.groupNameText.addSelectionListener(new SelectionAdapter() {
             @Override

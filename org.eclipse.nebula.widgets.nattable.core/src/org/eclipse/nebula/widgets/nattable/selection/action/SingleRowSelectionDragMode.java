@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -23,8 +25,7 @@ import org.eclipse.swt.events.MouseEvent;
  *
  * @see RowOnlySelectionBindings
  */
-public class SingleRowSelectionDragMode extends RowSelectionDragMode implements
-        IDragMode {
+public class SingleRowSelectionDragMode extends RowSelectionDragMode implements IDragMode {
 
     @Override
     public void mouseMove(NatTable natTable, MouseEvent event) {
@@ -37,8 +38,7 @@ public class SingleRowSelectionDragMode extends RowSelectionDragMode implements
         int selectedRowPosition = natTable.getRowPositionByY(event.y);
 
         if (selectedColumnPosition > -1 && selectedRowPosition > -1) {
-            fireSelectionCommand(natTable, selectedColumnPosition,
-                    selectedRowPosition, false, false);
+            fireSelectionCommand(natTable, selectedColumnPosition, selectedRowPosition, false, false);
         }
     }
 }

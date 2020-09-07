@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -28,11 +30,9 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 
-public class DefaultRowHeaderStyleConfiguration extends
-        AbstractRegistryConfiguration {
+public class DefaultRowHeaderStyleConfiguration extends AbstractRegistryConfiguration {
 
-    public Font font = GUIHelper
-            .getFont(new FontData("Verdana", 10, SWT.NORMAL)); //$NON-NLS-1$
+    public Font font = GUIHelper.getFont(new FontData("Verdana", 10, SWT.NORMAL)); //$NON-NLS-1$
     public Color bgColor = GUIHelper.COLOR_WIDGET_BACKGROUND;
     public Color fgColor = GUIHelper.COLOR_WIDGET_FOREGROUND;
     public Color gradientBgColor = GUIHelper.COLOR_WHITE;
@@ -51,30 +51,44 @@ public class DefaultRowHeaderStyleConfiguration extends
 
     protected void configureRowHeaderStyle(IConfigRegistry configRegistry) {
         Style cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.bgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.fgColor);
         cellStyle.setAttributeValue(
-                CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, this.gradientBgColor);
+                CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
+                this.gradientBgColor);
         cellStyle.setAttributeValue(
-                CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, this.gradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+                CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
+                this.gradientFgColor);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.hAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.vAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.borderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.font);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.font);
 
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                cellStyle, DisplayMode.NORMAL, GridRegion.ROW_HEADER);
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_STYLE,
+                cellStyle,
+                DisplayMode.NORMAL,
+                GridRegion.ROW_HEADER);
     }
 
     protected void configureRowHeaderCellPainter(IConfigRegistry configRegistry) {
         configRegistry.registerConfigAttribute(
-                CellConfigAttributes.CELL_PAINTER, this.cellPainter,
-                DisplayMode.NORMAL, GridRegion.ROW_HEADER);
+                CellConfigAttributes.CELL_PAINTER,
+                this.cellPainter,
+                DisplayMode.NORMAL,
+                GridRegion.ROW_HEADER);
     }
 
 }

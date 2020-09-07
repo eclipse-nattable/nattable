@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -205,26 +207,26 @@ public class ControlDecorationProvider {
                                                                          // AFTER
                                                                          // activateCell()
 
-                            @Override
-                            public void paintControl(PaintEvent e) {
+                    @Override
+                    public void paintControl(PaintEvent e) {
 
-                                controlToDecorate.removePaintListener(this);
-                                int position = SWT.TOP;
-                                final Rectangle textBounds = controlToDecorate
-                                        .getBounds();
-                                final Rectangle parentClientArea = controlToDecorate
-                                        .getParent().getClientArea();
-                                if ((parentClientArea.x + parentClientArea.width) > (textBounds.x
-                                        + textBounds.width + errorImage
+                        controlToDecorate.removePaintListener(this);
+                        int position = SWT.TOP;
+                        final Rectangle textBounds = controlToDecorate
+                                .getBounds();
+                        final Rectangle parentClientArea = controlToDecorate
+                                .getParent().getClientArea();
+                        if ((parentClientArea.x + parentClientArea.width) > (textBounds.x
+                                + textBounds.width + errorImage
                                         .getBounds().width)) {
-                                    position |= SWT.RIGHT;
-                                } else {
-                                    position |= SWT.LEFT;
-                                }
-                                ControlDecorationProvider.this.errorDecoration = newControlDecoration(
-                                        controlToDecorate, errorImage, position);
-                            }
-                        });
+                            position |= SWT.RIGHT;
+                        } else {
+                            position |= SWT.LEFT;
+                        }
+                        ControlDecorationProvider.this.errorDecoration = newControlDecoration(
+                                controlToDecorate, errorImage, position);
+                    }
+                });
             } else {
                 this.errorDecoration = newControlDecoration(controlToDecorate,
                         errorImage, this.decorationPositionOverride);

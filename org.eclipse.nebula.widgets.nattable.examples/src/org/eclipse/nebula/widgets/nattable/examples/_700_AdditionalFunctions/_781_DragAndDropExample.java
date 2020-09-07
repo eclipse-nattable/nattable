@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015 Dirk Fauth and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2014, 2020 Dirk Fauth and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
@@ -225,13 +227,16 @@ public class _781_DragAndDropExample extends AbstractNatExample {
         }
 
         @Override
-        public void dragLeave(DropTargetEvent event) {}
+        public void dragLeave(DropTargetEvent event) {
+        }
 
         @Override
-        public void dragOperationChanged(DropTargetEvent event) {}
+        public void dragOperationChanged(DropTargetEvent event) {
+        }
 
         @Override
-        public void dragOver(DropTargetEvent event) {}
+        public void dragOver(DropTargetEvent event) {
+        }
 
         @Override
         public void drop(DropTargetEvent event) {
@@ -245,7 +250,8 @@ public class _781_DragAndDropExample extends AbstractNatExample {
                 p.setMarried(Boolean.valueOf(data[4]));
                 try {
                     p.setBirthday(this.sdf.parse(data[5]));
-                } catch (ParseException e) {}
+                } catch (ParseException e) {
+                }
 
                 int rowPosition = getRowPosition(event);
                 if (rowPosition > 0) {
@@ -258,7 +264,8 @@ public class _781_DragAndDropExample extends AbstractNatExample {
         }
 
         @Override
-        public void dropAccept(DropTargetEvent event) {}
+        public void dropAccept(DropTargetEvent event) {
+        }
 
         private int getRowPosition(DropTargetEvent event) {
             Point pt = event.display.map(null, this.natTable, event.x, event.y);

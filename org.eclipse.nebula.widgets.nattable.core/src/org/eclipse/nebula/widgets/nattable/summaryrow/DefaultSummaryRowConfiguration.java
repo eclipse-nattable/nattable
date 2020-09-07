@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2012, 2020 Original authors and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
@@ -25,11 +27,9 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 
-public class DefaultSummaryRowConfiguration extends
-        AbstractRegistryConfiguration {
+public class DefaultSummaryRowConfiguration extends AbstractRegistryConfiguration {
 
-    public BorderStyle summaryRowBorderStyle = new BorderStyle(0,
-            GUIHelper.COLOR_BLACK, LineStyleEnum.DOTTED);
+    public BorderStyle summaryRowBorderStyle = new BorderStyle(0, GUIHelper.COLOR_BLACK, LineStyleEnum.DOTTED);
     public Color summaryRowFgColor = GUIHelper.COLOR_BLACK;
     public Color summaryRowBgColor = GUIHelper.COLOR_WHITE;
     public Font summaryRowFont = GUIHelper.getFont(new FontData("Verdana", 8, SWT.BOLD)); //$NON-NLS-1$
@@ -43,22 +43,30 @@ public class DefaultSummaryRowConfiguration extends
 
     protected void addSummaryRowStyleConfig(IConfigRegistry configRegistry) {
         Style cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.summaryRowFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.summaryRowFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.summaryRowBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.summaryRowFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.summaryRowBorderStyle);
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                cellStyle, DisplayMode.NORMAL,
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_STYLE,
+                cellStyle,
+                DisplayMode.NORMAL,
                 SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
     }
 
     protected void addSummaryProviderConfig(IConfigRegistry configRegistry) {
         configRegistry.registerConfigAttribute(
                 SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                ISummaryProvider.DEFAULT, DisplayMode.NORMAL,
+                ISummaryProvider.DEFAULT,
+                DisplayMode.NORMAL,
                 SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
     }
 

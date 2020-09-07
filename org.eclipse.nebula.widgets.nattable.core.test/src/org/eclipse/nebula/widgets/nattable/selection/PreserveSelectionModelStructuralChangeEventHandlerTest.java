@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2014, 2020 Dirk Fauth and others.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
@@ -361,8 +363,7 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
         for (ILayerCell cell : selectedCells) {
             if (cell.getColumnPosition() >= 5) {
                 fail("wrong column position selected");
-            }
-            else {
+            } else {
                 found[cell.getColumnPosition()] = true;
             }
         }
@@ -378,8 +379,7 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
         for (ILayerCell cell : selectedCells) {
             if (cell.getColumnPosition() >= 3) {
                 fail("wrong column position selected");
-            }
-            else {
+            } else {
                 found[cell.getColumnPosition()] = true;
             }
         }
@@ -398,8 +398,7 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
         for (ILayerCell cell : selectedCells) {
             if (cell.getColumnPosition() >= 5) {
                 fail("wrong column position selected");
-            }
-            else {
+            } else {
                 found[cell.getColumnPosition()] = true;
             }
         }
@@ -430,8 +429,7 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
             if (cell.getColumnPosition() >= 5
                     || cell.getColumnPosition() < 2) {
                 fail("wrong column position selected: " + cell.getColumnPosition());
-            }
-            else {
+            } else {
                 found[cell.getColumnPosition() - 2] = true;
             }
         }
@@ -448,8 +446,7 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
         for (ILayerCell cell : selectedCells) {
             if (cell.getColumnPosition() >= 3) {
                 fail("wrong column position selected: " + cell.getColumnPosition());
-            }
-            else {
+            } else {
                 found[cell.getColumnPosition()] = true;
             }
         }
