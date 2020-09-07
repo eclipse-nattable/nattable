@@ -229,21 +229,12 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements
      */
     private Runnable getStopBlinkTask(final String key, final ILayer layer) {
 
-        return new Runnable() {
-            @Override
-            public void run() {
+        return () -> Display.getDefault().asyncExec(() -> {
 
-                Display.getDefault().asyncExec(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        BlinkLayer.this.blinkingUpdates.remove(key);
-                        BlinkLayer.this.blinkingTasks.remove(key);
-                        fireLayerEvent(new BlinkEvent(layer));
-                    }
-                });
-            }
-        };
+            BlinkLayer.this.blinkingUpdates.remove(key);
+            BlinkLayer.this.blinkingTasks.remove(key);
+            fireLayerEvent(new BlinkEvent(layer));
+        });
 
     }
 

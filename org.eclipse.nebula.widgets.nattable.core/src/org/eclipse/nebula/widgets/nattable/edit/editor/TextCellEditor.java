@@ -16,8 +16,6 @@ import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
-import org.eclipse.jface.fieldassist.IContentProposal;
-import org.eclipse.jface.fieldassist.IContentProposalListener;
 import org.eclipse.jface.fieldassist.IContentProposalListener2;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.fieldassist.IControlContentAdapter;
@@ -754,14 +752,10 @@ public class TextCellEditor extends AbstractCellEditor {
 
         // add the necessary listeners to support the interaction between the
         // content proposal and this text editor
-        contentProposalAdapter.addContentProposalListener(new IContentProposalListener() {
-
-            @Override
-            public void proposalAccepted(IContentProposal proposal) {
-                if (TextCellEditor.this.editMode == EditModeEnum.INLINE) {
-                    commit(MoveDirectionEnum.NONE);
-                    TextCellEditor.this.contentProposalAdapter = null;
-                }
+        contentProposalAdapter.addContentProposalListener(proposal -> {
+            if (TextCellEditor.this.editMode == EditModeEnum.INLINE) {
+                commit(MoveDirectionEnum.NONE);
+                TextCellEditor.this.contentProposalAdapter = null;
             }
         });
 

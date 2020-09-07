@@ -95,13 +95,8 @@ public class ButtonCellPainter extends AbstractCellPainter implements
             @Override
             public void run() {
                 ButtonCellPainter.this.recentlyClicked = false;
-                Display.getDefault().asyncExec(new Runnable() {
-                    @Override
-                    public void run() {
-                        layer.fireLayerEvent(new CellVisualChangeEvent(layer,
-                                ButtonCellPainter.this.columnPosClicked, ButtonCellPainter.this.rowPosClicked));
-                    }
-                });
+                Display.getDefault().asyncExec(() -> layer.fireLayerEvent(new CellVisualChangeEvent(layer,
+                        ButtonCellPainter.this.columnPosClicked, ButtonCellPainter.this.rowPosClicked)));
             }
         };
     }

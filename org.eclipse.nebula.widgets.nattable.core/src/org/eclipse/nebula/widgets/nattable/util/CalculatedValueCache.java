@@ -206,19 +206,16 @@ public class CalculatedValueCache implements ICalculatedValueCache {
                     result = null;
                 }
 
-                this.executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        Object summaryValue = calculator.executeCalculation();
-                        addToCache(key, summaryValue);
+                this.executor.execute(() -> {
+                    Object summaryValue = calculator.executeCalculation();
+                    addToCache(key, summaryValue);
 
-                        // only fire an update event if the new calculated value
-                        // is different to the value in the cache copy
-                        if (!cacheValuesEqual(summaryValue, cacheCopyValue)
-                                && CalculatedValueCache.this.layer != null) {
-                            CalculatedValueCache.this.layer.fireLayerEvent(new CellVisualChangeEvent(
-                                    CalculatedValueCache.this.layer, columnPosition, rowPosition));
-                        }
+                    // only fire an update event if the new calculated value
+                    // is different to the value in the cache copy
+                    if (!cacheValuesEqual(summaryValue, cacheCopyValue)
+                            && CalculatedValueCache.this.layer != null) {
+                        CalculatedValueCache.this.layer.fireLayerEvent(new CellVisualChangeEvent(
+                                CalculatedValueCache.this.layer, columnPosition, rowPosition));
                     }
                 });
             }

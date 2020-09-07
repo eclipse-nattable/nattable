@@ -15,7 +15,6 @@ package org.eclipse.nebula.widgets.nattable.selection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -564,22 +563,12 @@ public class SelectionModel implements ISelectionModel {
     }
 
     protected void sortByX(List<Rectangle> selectionRectanglesInRow) {
-        Collections.sort(selectionRectanglesInRow, new Comparator<Rectangle>() {
-            @Override
-            public int compare(Rectangle rectangle1, Rectangle rectangle2) {
-                return Integer.valueOf(rectangle1.x).compareTo(Integer.valueOf(rectangle2.x));
-            }
-        });
+        Collections.sort(selectionRectanglesInRow, (rectangle1, rectangle2) -> Integer.valueOf(rectangle1.x).compareTo(Integer.valueOf(rectangle2.x)));
     }
 
     protected void sortByY(List<Rectangle> selectionRectanglesInColumn) {
         Collections.sort(selectionRectanglesInColumn,
-                new Comparator<Rectangle>() {
-                    @Override
-                    public int compare(Rectangle rectangle1, Rectangle rectangle2) {
-                        return Integer.valueOf(rectangle1.y).compareTo(Integer.valueOf(rectangle2.y));
-                    }
-                });
+                (rectangle1, rectangle2) -> Integer.valueOf(rectangle1.y).compareTo(Integer.valueOf(rectangle2.y)));
     }
 
     private Rectangle getLeftSelection(Rectangle intersection, Rectangle selection) {

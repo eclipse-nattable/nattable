@@ -10,23 +10,19 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hover.config;
 
-import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
 import org.eclipse.nebula.widgets.nattable.hover.action.ClearHoverStylingAction;
 import org.eclipse.nebula.widgets.nattable.hover.action.HoverStylingAction;
-import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.resize.action.AutoResizeColumnAction;
 import org.eclipse.nebula.widgets.nattable.resize.action.ColumnResizeCursorAction;
 import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEventMatcher;
 import org.eclipse.nebula.widgets.nattable.resize.mode.ColumnResizeDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.NoOpMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
-import org.eclipse.nebula.widgets.nattable.ui.matcher.IMouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
 
 public class ColumnHeaderResizeHoverBindings extends
         AbstractUiBindingConfiguration {
@@ -58,30 +54,15 @@ public class ColumnHeaderResizeHoverBindings extends
 
         // clear any hover styling if the mouse is moved out of a NatTable
         // region
-        uiBindingRegistry.registerMouseMoveBinding(new IMouseEventMatcher() {
-            @Override
-            public boolean matches(NatTable natTable, MouseEvent event,
-                    LabelStack regionLabels) {
-                return ((natTable != null && regionLabels == null) || regionLabels != null
-                        && regionLabels.hasLabel(GridRegion.CORNER));
-            }
-
-        }, new ClearHoverStylingAction());
+        uiBindingRegistry.registerMouseMoveBinding((natTable, event, regionLabels) -> ((natTable != null && regionLabels == null) || regionLabels != null
+                && regionLabels.hasLabel(GridRegion.CORNER)), new ClearHoverStylingAction());
 
         // clear any hover styling if the mouse is moved out of the NatTable
         // area
-        uiBindingRegistry.registerMouseExitBinding(new IMouseEventMatcher() {
-            @Override
-            public boolean matches(NatTable natTable, MouseEvent event,
-                    LabelStack regionLabels) {
-                // always return true because this matcher is only asked in case
-                // the mouse
-                // exits the NatTable client area, therefore further checks are
-                // not necessary
-                return true;
-            }
-
-        }, new ClearHoverStylingAction());
+        // always return true for the matcher because it is only asked in case
+        // the mouse exits the NatTable client area, therefore further checks
+        // are not necessary
+        uiBindingRegistry.registerMouseExitBinding((natTable, event, regionLabels) -> true, new ClearHoverStylingAction());
 
         // Column resize
         uiBindingRegistry.registerFirstMouseDragMode(
@@ -95,7 +76,8 @@ public class ColumnHeaderResizeHoverBindings extends
                 new AutoResizeColumnAction());
         uiBindingRegistry.registerSingleClickBinding(
                 new ColumnResizeEventMatcher(SWT.NONE,
-                        GridRegion.COLUMN_HEADER, 1), new NoOpMouseAction());
+                        GridRegion.COLUMN_HEADER, 1),
+                new NoOpMouseAction());
     }
 
 }

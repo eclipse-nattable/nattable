@@ -13,8 +13,6 @@ package org.eclipse.nebula.widgets.nattable.resize.action;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Display;
@@ -29,14 +27,7 @@ public class ColumnResizeCursorAction implements IMouseAction {
             this.columnResizeCursor = new Cursor(Display.getDefault(),
                     SWT.CURSOR_SIZEWE);
 
-            natTable.addDisposeListener(new DisposeListener() {
-
-                @Override
-                public void widgetDisposed(DisposeEvent e) {
-                    ColumnResizeCursorAction.this.columnResizeCursor.dispose();
-                }
-
-            });
+            natTable.addDisposeListener(e -> ColumnResizeCursorAction.this.columnResizeCursor.dispose());
         }
 
         natTable.setCursor(this.columnResizeCursor);

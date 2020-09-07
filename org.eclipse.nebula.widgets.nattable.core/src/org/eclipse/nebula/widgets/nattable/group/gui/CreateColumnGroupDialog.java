@@ -18,8 +18,6 @@ import org.eclipse.nebula.widgets.nattable.group.command.CreateColumnGroupComman
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
@@ -123,12 +121,7 @@ public class CreateColumnGroupDialog extends Dialog {
 
         this.groupNameText = new Text(row, SWT.SINGLE | SWT.BORDER);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(this.groupNameText);
-        this.groupNameText.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-                CreateColumnGroupDialog.this.createButton.setEnabled(CreateColumnGroupDialog.this.groupNameText.getText().length() > 0);
-            }
-        });
+        this.groupNameText.addModifyListener(e -> CreateColumnGroupDialog.this.createButton.setEnabled(CreateColumnGroupDialog.this.groupNameText.getText().length() > 0));
         this.groupNameText.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetDefaultSelected(SelectionEvent e) {
@@ -151,16 +144,13 @@ public class CreateColumnGroupDialog extends Dialog {
     }
 
     private void doColumnGrouping() {
-        BusyIndicator.showWhile(super.getShell().getDisplay(), new Runnable() {
-            @Override
-            public void run() {
-                final CreateColumnGroupCommand command = new CreateColumnGroupCommand(
-                        CreateColumnGroupDialog.this.groupNameText.getText());
-                try {
-                    CreateColumnGroupDialog.this.contextLayer.doCommand(command);
-                } finally {
-                    terminateDialog();
-                }
+        BusyIndicator.showWhile(super.getShell().getDisplay(), () -> {
+            final CreateColumnGroupCommand command = new CreateColumnGroupCommand(
+                    CreateColumnGroupDialog.this.groupNameText.getText());
+            try {
+                CreateColumnGroupDialog.this.contextLayer.doCommand(command);
+            } finally {
+                terminateDialog();
             }
         });
     }

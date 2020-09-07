@@ -453,7 +453,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
                 if (diffs != null) {
                     rowPositions = diffs.stream()
                             .filter(diff -> diff.getDiffType() != null && diff.getDiffType().equals(DiffTypeEnum.DELETE))
-                            .map(rowDiff -> rowDiff.getBeforePositionRange())
+                            .map(StructuralDiff::getBeforePositionRange)
                             .flatMapToInt(range -> IntStream.range(range.start, range.end))
                             .toArray();
                 } else {

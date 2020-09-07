@@ -31,22 +31,12 @@ public interface ISummaryProvider {
      * so avoids calls to the {@link ISummaryProvider} and is a performance
      * tweak.
      */
-    public static final ISummaryProvider NONE = new ISummaryProvider() {
-        @Override
-        public Object summarize(int columnIndex) {
-            return null;
-        }
-    };
+    public static final ISummaryProvider NONE = columnIndex -> null;
 
     /**
      * This instance will always return
      * {@link ISummaryProvider#DEFAULT_SUMMARY_VALUE} and does not perform a
      * calculation.
      */
-    public static final ISummaryProvider DEFAULT = new ISummaryProvider() {
-        @Override
-        public Object summarize(int columnIndex) {
-            return DEFAULT_SUMMARY_VALUE;
-        }
-    };
+    public static final ISummaryProvider DEFAULT = columnIndex -> DEFAULT_SUMMARY_VALUE;
 }

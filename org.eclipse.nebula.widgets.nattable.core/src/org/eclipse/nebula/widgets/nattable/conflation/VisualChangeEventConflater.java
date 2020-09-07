@@ -36,20 +36,11 @@ public class VisualChangeEventConflater extends AbstractEventConflater {
 
     @Override
     public Runnable getConflaterTask() {
-        return new Runnable() {
+        return () -> {
+            if (VisualChangeEventConflater.this.queue.size() > 0) {
+                clearQueue();
 
-            @Override
-            public void run() {
-                if (VisualChangeEventConflater.this.queue.size() > 0) {
-                    clearQueue();
-
-                    VisualChangeEventConflater.this.natTable.getDisplay().asyncExec(new Runnable() {
-                        @Override
-                        public void run() {
-                            VisualChangeEventConflater.this.natTable.updateResize();
-                        }
-                    });
-                }
+                VisualChangeEventConflater.this.natTable.getDisplay().asyncExec(() -> VisualChangeEventConflater.this.natTable.updateResize());
             }
         };
     }

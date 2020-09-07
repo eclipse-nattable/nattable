@@ -524,7 +524,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
                 // recalculate hidden rows based on updated collapsed nodes
                 int[] updatedHiddenRows = this.collapsedNodes.stream()
                         .map(node -> getChildIndexes(node.columnIndex, node.rowIndex))
-                        .flatMapToInt(children -> Arrays.stream(children))
+                        .flatMapToInt(Arrays::stream)
                         .toArray();
 
                 this.hiddenRowIndexes = IntSets.mutable.of(updatedHiddenRows);
@@ -1181,7 +1181,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
         // collect all rows of coords that are still collapsed
         int[] remain = this.collapsedNodes.stream()
                 .map(node -> getChildIndexes(node.columnIndex, node.rowIndex))
-                .flatMapToInt(children -> Arrays.stream(children))
+                .flatMapToInt(Arrays::stream)
                 .toArray();
 
         // calculate the indexes that get visible afterwards

@@ -57,26 +57,21 @@ public class UpdateEventsCache<T> {
      * blinked. This task cleans them up, by looking at the received time stamp.
      */
     private Runnable getStaleUpdatesCleanupTask() {
-        return new Runnable() {
+        return () -> {
+            Map<String, TimeStampedEvent> recentEvents = new HashMap<String, TimeStampedEvent>();
+            Date recent = new Date(System.currentTimeMillis()
+                    - TIME_TO_LIVE);
 
-            @Override
-            public void run() {
-                Map<String, TimeStampedEvent> recentEvents = new HashMap<String, TimeStampedEvent>();
-                Date recent = new Date(System.currentTimeMillis()
-                        - TIME_TO_LIVE);
-
-                for (Map.Entry<String, TimeStampedEvent> entry : UpdateEventsCache.this.updateEvents
-                        .entrySet()) {
-                    if (entry.getValue().timeRecieved.after(recent)) {
-                        recentEvents.put(entry.getKey(), entry.getValue());
-                    }
-                }
-                synchronized (UpdateEventsCache.this.updateEvents) {
-                    UpdateEventsCache.this.updateEvents = recentEvents;
-                    checkUpdateEvents();
+            for (Map.Entry<String, TimeStampedEvent> entry : UpdateEventsCache.this.updateEvents
+                    .entrySet()) {
+                if (entry.getValue().timeRecieved.after(recent)) {
+                    recentEvents.put(entry.getKey(), entry.getValue());
                 }
             }
-
+            synchronized (UpdateEventsCache.this.updateEvents) {
+                UpdateEventsCache.this.updateEvents = recentEvents;
+                checkUpdateEvents();
+            }
         };
     }
 

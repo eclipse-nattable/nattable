@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.datachange;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,13 +84,7 @@ public class RowInsertDataChangeHandler extends AbstractDataChangeHandler<RowIns
         // for correct calculation the diffs need to be processed from lowest
         // position to highest
         List<StructuralDiff> diffs = new ArrayList<StructuralDiff>(rowDiffs);
-        Collections.sort(diffs, new Comparator<StructuralDiff>() {
-
-            @Override
-            public int compare(StructuralDiff o1, StructuralDiff o2) {
-                return o1.getBeforePositionRange().start - o2.getBeforePositionRange().start;
-            }
-        });
+        Collections.sort(diffs, (o1, o2) -> o1.getBeforePositionRange().start - o2.getBeforePositionRange().start);
 
         List<Integer> toRemove = new ArrayList<Integer>();
         for (StructuralDiff rowDiff : diffs) {
@@ -152,13 +145,7 @@ public class RowInsertDataChangeHandler extends AbstractDataChangeHandler<RowIns
         // for correct calculation the diffs need to be processed from highest
         // position to lowest
         List<StructuralDiff> diffs = new ArrayList<StructuralDiff>(rowDiffs);
-        Collections.sort(diffs, new Comparator<StructuralDiff>() {
-
-            @Override
-            public int compare(StructuralDiff o1, StructuralDiff o2) {
-                return o2.getBeforePositionRange().start - o1.getBeforePositionRange().start;
-            }
-        });
+        Collections.sort(diffs, (o1, o2) -> o2.getBeforePositionRange().start - o1.getBeforePositionRange().start);
 
         for (StructuralDiff rowDiff : diffs) {
             if (rowDiff.getDiffType() != null

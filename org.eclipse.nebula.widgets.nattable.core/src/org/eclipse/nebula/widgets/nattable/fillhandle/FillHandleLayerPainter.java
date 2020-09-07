@@ -13,8 +13,6 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.fillhandle;
 
-import java.util.function.Function;
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
@@ -369,21 +367,17 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
             return;
         }
 
-        BorderCell[][] borderCells = getBorderCells(natLayer, xOffset, yOffset, positionRectangle, new Function<ILayerCell, Boolean>() {
-
-            @Override
-            public Boolean apply(ILayerCell cell) {
-                for (ILayerCell[] cells : FillHandleLayerPainter.this.clipboard.getCopiedCells()) {
-                    for (ILayerCell copyCell : cells) {
-                        if (copyCell != null
-                                && copyCell.getColumnIndex() == cell.getColumnIndex()
-                                && copyCell.getRowIndex() == cell.getRowIndex()) {
-                            return true;
-                        }
+        BorderCell[][] borderCells = getBorderCells(natLayer, xOffset, yOffset, positionRectangle, cell -> {
+            for (ILayerCell[] cells : FillHandleLayerPainter.this.clipboard.getCopiedCells()) {
+                for (ILayerCell copyCell : cells) {
+                    if (copyCell != null
+                            && copyCell.getColumnIndex() == cell.getColumnIndex()
+                            && copyCell.getRowIndex() == cell.getRowIndex()) {
+                        return true;
                     }
                 }
-                return false;
             }
+            return false;
         });
 
         if (borderCells != null) {

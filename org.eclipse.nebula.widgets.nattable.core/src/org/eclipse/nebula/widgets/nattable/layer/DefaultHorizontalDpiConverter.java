@@ -23,13 +23,7 @@ public class DefaultHorizontalDpiConverter extends AbstractDpiConverter {
 
     @Override
     protected void readDpiFromDisplay() {
-        Display.getDefault().syncExec(new Runnable() {
-
-            @Override
-            public void run() {
-                DefaultHorizontalDpiConverter.this.dpi = Display.getDefault().getDPI().x;
-            }
-        });
+        Display.getDefault().syncExec(() -> DefaultHorizontalDpiConverter.this.dpi = Display.getDefault().getDPI().x);
     }
 
 }

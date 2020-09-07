@@ -23,12 +23,7 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public interface IClientAreaProvider {
 
-    IClientAreaProvider DEFAULT = new IClientAreaProvider() {
-        @Override
-        public Rectangle getClientArea() {
-            return new Rectangle(0, 0, 0, 0);
-        }
-    };
+    IClientAreaProvider DEFAULT = () -> new Rectangle(0, 0, 0, 0);
 
     public Rectangle getClientArea();
 }

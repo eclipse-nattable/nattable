@@ -16,8 +16,6 @@ package org.eclipse.nebula.widgets.nattable.fillhandle.action;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillHandleConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.ImageData;
@@ -89,14 +87,7 @@ public class FillHandleCursorAction implements IMouseAction {
 
             this.fillHandleCursor = new Cursor(Display.getDefault(), sourceData, maskData, 7, 7);
 
-            natTable.addDisposeListener(new DisposeListener() {
-
-                @Override
-                public void widgetDisposed(DisposeEvent e) {
-                    FillHandleCursorAction.this.fillHandleCursor.dispose();
-                }
-
-            });
+            natTable.addDisposeListener(e -> FillHandleCursorAction.this.fillHandleCursor.dispose());
         }
 
         natTable.setCursor(this.fillHandleCursor);

@@ -143,13 +143,8 @@ public class InvertedLayer implements IUniqueIndexLayer {
     @Override
     public void setClientAreaProvider(
             final IClientAreaProvider clientAreaProvider) {
-        this.underlyingLayer.setClientAreaProvider(new IClientAreaProvider() {
-            @Override
-            public Rectangle getClientArea() {
-                return InvertUtil.invertRectangle(clientAreaProvider
-                        .getClientArea());
-            }
-        });
+        this.underlyingLayer.setClientAreaProvider(() -> InvertUtil.invertRectangle(clientAreaProvider
+                .getClientArea()));
     }
 
     // Horizontal features

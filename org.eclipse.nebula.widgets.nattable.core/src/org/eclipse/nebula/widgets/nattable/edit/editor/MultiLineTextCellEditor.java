@@ -17,8 +17,6 @@ import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
@@ -146,17 +144,14 @@ public class MultiLineTextCellEditor extends TextCellEditor {
         // the text is modified as the calculateControlBounds method is only
         // called in case of inline editing, this listener shouldn't hurt
         // anybody else
-        getEditorControl().addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-                Point p = getEditorControl().computeSize(widthHint, SWT.DEFAULT, true);
-                Point loc = getEditorControl().getLocation();
-                getEditorControl().setBounds(
-                        loc.x,
-                        loc.y,
-                        MultiLineTextCellEditor.this.lineWrap ? cellBounds.width : Math.max(p.x, cellBounds.width),
-                        Math.max(p.y, cellBounds.height));
-            }
+        getEditorControl().addModifyListener(e -> {
+            Point p = getEditorControl().computeSize(widthHint, SWT.DEFAULT, true);
+            Point loc = getEditorControl().getLocation();
+            getEditorControl().setBounds(
+                    loc.x,
+                    loc.y,
+                    MultiLineTextCellEditor.this.lineWrap ? cellBounds.width : Math.max(p.x, cellBounds.width),
+                    Math.max(p.y, cellBounds.height));
         });
 
         return new Rectangle(

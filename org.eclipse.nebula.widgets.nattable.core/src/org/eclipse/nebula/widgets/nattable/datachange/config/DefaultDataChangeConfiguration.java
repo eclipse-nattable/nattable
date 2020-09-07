@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.datachange.config;
 
-import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -20,12 +19,10 @@ import org.eclipse.nebula.widgets.nattable.datachange.command.SaveDataChangesCom
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.Style;
-import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
 
 /**
  * Default configuration for data changes to register key bindings for data change
@@ -50,20 +47,10 @@ public class DefaultDataChangeConfiguration extends AbstractUiBindingConfigurati
     public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
         uiBindingRegistry.registerKeyBinding(
                 new KeyEventMatcher(SWT.MOD1, 's'),
-                new IKeyAction() {
-                    @Override
-                    public void run(NatTable natTable, KeyEvent event) {
-                        natTable.doCommand(new SaveDataChangesCommand());
-                    }
-                });
+                (natTable, event) -> natTable.doCommand(new SaveDataChangesCommand()));
         uiBindingRegistry.registerKeyBinding(
                 new KeyEventMatcher(SWT.MOD1, 'd'),
-                new IKeyAction() {
-                    @Override
-                    public void run(NatTable natTable, KeyEvent event) {
-                        natTable.doCommand(new DiscardDataChangesCommand());
-                    }
-                });
+                (natTable, event) -> natTable.doCommand(new DiscardDataChangesCommand()));
 
     }
 

@@ -22,8 +22,6 @@ import org.eclipse.nebula.widgets.nattable.reorder.action.ColumnReorderDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
@@ -196,14 +194,7 @@ public class HierarchicalTreeColumnReorderDragMode extends ColumnReorderDragMode
                 if (this.noOpsCursor == null) {
                     this.noOpsCursor = new Cursor(Display.getDefault(), SWT.CURSOR_NO);
 
-                    HierarchicalTreeColumnReorderDragMode.this.natTable.addDisposeListener(new DisposeListener() {
-
-                        @Override
-                        public void widgetDisposed(DisposeEvent e) {
-                            HierarchicalColumnReorderOverlayPainter.this.noOpsCursor.dispose();
-                        }
-
-                    });
+                    HierarchicalTreeColumnReorderDragMode.this.natTable.addDisposeListener(e -> HierarchicalColumnReorderOverlayPainter.this.noOpsCursor.dispose());
                 }
 
                 HierarchicalTreeColumnReorderDragMode.this.natTable.setCursor(this.noOpsCursor);

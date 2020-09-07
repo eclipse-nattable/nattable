@@ -513,10 +513,8 @@ public class GroupModel implements IPersistable {
 
         int[] staticIndexes = Arrays.stream(indexes)
                 .map(this::getPositionByIndex)
-                .filter(pos -> {
-                    return (pos >= group.getVisibleStartPosition()
-                            && pos < (group.getVisibleStartPosition() + group.getVisibleSpan()));
-                })
+                .filter(pos -> (pos >= group.getVisibleStartPosition()
+                        && pos < (group.getVisibleStartPosition() + group.getVisibleSpan())))
                 .toArray();
 
         if (staticIndexes.length > 0) {

@@ -48,7 +48,6 @@ import org.eclipse.nebula.widgets.nattable.selection.command.ClearAllSelectionsC
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -381,15 +380,12 @@ public class SearchDialog extends Dialog {
 
         this.findCombo = new Combo(row, SWT.DROP_DOWN | SWT.BORDER);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(this.findCombo);
-        this.findComboModifyListener = new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-                if (SearchDialog.this.allValue && SearchDialog.this.incrementalButton.isEnabled()
-                        && SearchDialog.this.incrementalButton.getSelection()) {
-                    doIncrementalFind();
-                }
-                SearchDialog.this.findButton.setEnabled(SearchDialog.this.findCombo.getText().length() > 0 && SearchDialog.this.selectionLayer != null);
+        this.findComboModifyListener = e -> {
+            if (SearchDialog.this.allValue && SearchDialog.this.incrementalButton.isEnabled()
+                    && SearchDialog.this.incrementalButton.getSelection()) {
+                doIncrementalFind();
             }
+            SearchDialog.this.findButton.setEnabled(SearchDialog.this.findCombo.getText().length() > 0 && SearchDialog.this.selectionLayer != null);
         };
         this.findCombo.addModifyListener(this.findComboModifyListener);
         this.findCombo.addSelectionListener(new SelectionAdapter() {
@@ -553,12 +549,7 @@ public class SearchDialog extends Dialog {
             command = new ClearAllSelectionsCommand();
         }
         final ILayerCommand finalCommand = command;
-        BusyIndicator.showWhile(getShell().getDisplay(), new Runnable() {
-            @Override
-            public void run() {
-                SearchDialog.this.natTable.doCommand(finalCommand);
-            }
-        });
+        BusyIndicator.showWhile(getShell().getDisplay(), () -> SearchDialog.this.natTable.doCommand(finalCommand));
     }
 
     private class SearchEventListener implements ILayerListener {
@@ -576,52 +567,48 @@ public class SearchDialog extends Dialog {
 
     private void doFind0(final boolean isIncremental, final String text) {
 
-        BusyIndicator.showWhile(getShell().getDisplay(), new Runnable() {
-
-            @Override
-            public void run() {
-                PositionCoordinate previous =
-                        new PositionCoordinate(SearchDialog.this.selections.peek().pos);
-                try {
-                    final SearchCommand searchCommand = createSearchCommand(text, isIncremental);
-                    final SearchEventListener searchEventListener = new SearchEventListener();
-                    searchCommand.setSearchEventListener(searchEventListener);
-                    SearchDialog.this.natTable.doCommand(searchCommand);
-                    if (searchEventListener.pos == null) {
-                        // Beep and show status if not found
-                        SearchDialog.this.statusLabel.setText(Messages.getString("Search.textNotFound")); //$NON-NLS-1$
-                        getShell().getDisplay().beep();
-                    } else {
-                        SelectionItem selection = new SelectionItem(text, searchEventListener.pos);
-                        SearchDialog.this.selections.push(selection);
-                        if (!isIncremental) {
-                            resetIncrementalSelections();
-                        }
-                        // Beep and show status if wrapped
-                        if (previous != null && previous.columnPosition > -1) {
-                            int columnDelta = selection.pos.columnPosition - previous.columnPosition;
-                            int rowDelta = selection.pos.rowPosition - previous.rowPosition;
-                            if (!SearchDialog.this.forwardValue) {
-                                columnDelta = -columnDelta;
-                                rowDelta = -rowDelta;
-                            }
-                            int primaryDelta = SearchDialog.this.columnFirstValue ? columnDelta : rowDelta;
-                            int secondaryDelta = SearchDialog.this.columnFirstValue ? rowDelta : columnDelta;
-                            if (primaryDelta < 0 || !isIncremental
-                                    && primaryDelta == 0 && secondaryDelta <= 0) {
-                                SearchDialog.this.statusLabel.setText(Messages.getString("Search.wrappedSearch")); //$NON-NLS-1$
-                                getShell().getDisplay().beep();
-                            }
-                        }
-                    }
-                    if (!isIncremental) {
-                        updateFindHistory();
-                    }
-                } catch (PatternSyntaxException e) {
-                    SearchDialog.this.statusLabel.setText(e.getLocalizedMessage());
-                    SearchDialog.this.statusLabel.setForeground(JFaceColors.getErrorText(SearchDialog.this.statusLabel.getDisplay()));
+        BusyIndicator.showWhile(getShell().getDisplay(), () -> {
+            PositionCoordinate previous =
+                    new PositionCoordinate(SearchDialog.this.selections.peek().pos);
+            try {
+                final SearchCommand searchCommand = createSearchCommand(text, isIncremental);
+                final SearchEventListener searchEventListener = new SearchEventListener();
+                searchCommand.setSearchEventListener(searchEventListener);
+                SearchDialog.this.natTable.doCommand(searchCommand);
+                if (searchEventListener.pos == null) {
+                    // Beep and show status if not found
+                    SearchDialog.this.statusLabel.setText(Messages.getString("Search.textNotFound")); //$NON-NLS-1$
                     getShell().getDisplay().beep();
+                } else {
+                    SelectionItem selection = new SelectionItem(text, searchEventListener.pos);
+                    SearchDialog.this.selections.push(selection);
+                    if (!isIncremental) {
+                        resetIncrementalSelections();
+                    }
+                    // Beep and show status if wrapped
+                    if (previous != null && previous.columnPosition > -1) {
+                        int columnDelta = selection.pos.columnPosition - previous.columnPosition;
+                        int rowDelta = selection.pos.rowPosition - previous.rowPosition;
+                        if (!SearchDialog.this.forwardValue) {
+                            columnDelta = -columnDelta;
+                            rowDelta = -rowDelta;
+                        }
+                        int primaryDelta = SearchDialog.this.columnFirstValue ? columnDelta : rowDelta;
+                        int secondaryDelta = SearchDialog.this.columnFirstValue ? rowDelta : columnDelta;
+                        if (primaryDelta < 0 || !isIncremental
+                                && primaryDelta == 0 && secondaryDelta <= 0) {
+                            SearchDialog.this.statusLabel.setText(Messages.getString("Search.wrappedSearch")); //$NON-NLS-1$
+                            getShell().getDisplay().beep();
+                        }
+                    }
                 }
+                if (!isIncremental) {
+                    updateFindHistory();
+                }
+            } catch (PatternSyntaxException e) {
+                SearchDialog.this.statusLabel.setText(e.getLocalizedMessage());
+                SearchDialog.this.statusLabel.setForeground(JFaceColors.getErrorText(SearchDialog.this.statusLabel.getDisplay()));
+                getShell().getDisplay().beep();
             }
         });
     }

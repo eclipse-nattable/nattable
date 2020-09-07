@@ -80,9 +80,7 @@ public class RowGroupExpandCollapseLayer extends AbstractRowHideShowLayer {
         } else if (command instanceof RowGroupCollapseCommand) {
             GroupModel groupModel = ((RowGroupCollapseCommand) command).getGroupModel();
             List<Group> groups = ((RowGroupCollapseCommand) command).getGroups();
-            Collections.sort(groups, (Group o1, Group o2) -> {
-                return o2.getVisibleStartPosition() - o1.getVisibleStartPosition();
-            });
+            Collections.sort(groups, (Group o1, Group o2) -> (o2.getVisibleStartPosition() - o1.getVisibleStartPosition()));
 
             MutableIntSet hiddenPositions = IntSets.mutable.empty();
             MutableIntSet hiddenIndexes = IntSets.mutable.empty();

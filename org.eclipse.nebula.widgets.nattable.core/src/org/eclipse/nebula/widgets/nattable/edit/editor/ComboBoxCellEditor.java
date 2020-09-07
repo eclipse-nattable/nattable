@@ -248,13 +248,10 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 
         // filling and populating a multiselect combo could take some time for
         // huge data sets
-        BusyIndicator.showWhile(parent.getDisplay(), new Runnable() {
-            @Override
-            public void run() {
-                fillCombo();
+        BusyIndicator.showWhile(parent.getDisplay(), () -> {
+            fillCombo();
 
-                setCanonicalValue(originalCanonicalValue);
-            }
+            setCanonicalValue(originalCanonicalValue);
         });
 
         // open the dropdown immediately after the Text control of the NatCombo

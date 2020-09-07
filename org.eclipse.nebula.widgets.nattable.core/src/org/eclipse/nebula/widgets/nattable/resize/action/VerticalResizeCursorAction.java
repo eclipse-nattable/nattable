@@ -15,8 +15,6 @@ package org.eclipse.nebula.widgets.nattable.resize.action;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Display;
@@ -36,14 +34,7 @@ public class VerticalResizeCursorAction implements IMouseAction {
         if (this.resizeCursor == null) {
             this.resizeCursor = new Cursor(Display.getDefault(), GUIHelper.getDisplayImage("vertical_resize").getImageData(), 15, 15); //$NON-NLS-1$
 
-            natTable.addDisposeListener(new DisposeListener() {
-
-                @Override
-                public void widgetDisposed(DisposeEvent e) {
-                    VerticalResizeCursorAction.this.resizeCursor.dispose();
-                }
-
-            });
+            natTable.addDisposeListener(e -> VerticalResizeCursorAction.this.resizeCursor.dispose());
         }
 
         natTable.setCursor(this.resizeCursor);

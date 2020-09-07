@@ -14,8 +14,6 @@ package org.eclipse.nebula.widgets.nattable.ui.menu;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Menu;
 
@@ -60,13 +58,10 @@ public class PopupMenuAction implements IMouseAction {
             if (this.menu != null) {
                 this.menu.dispose();
             } else {
-                natTable.addDisposeListener(new DisposeListener() {
-                    @Override
-                    public void widgetDisposed(DisposeEvent e) {
-                        if (PopupMenuAction.this.menu != null
-                                && !PopupMenuAction.this.menu.isDisposed()) {
-                            PopupMenuAction.this.menu.dispose();
-                        }
+                natTable.addDisposeListener(e -> {
+                    if (PopupMenuAction.this.menu != null
+                            && !PopupMenuAction.this.menu.isDisposed()) {
+                        PopupMenuAction.this.menu.dispose();
                     }
                 });
             }

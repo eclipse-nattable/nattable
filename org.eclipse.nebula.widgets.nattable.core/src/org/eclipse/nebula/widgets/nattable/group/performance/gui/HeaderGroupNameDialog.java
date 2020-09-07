@@ -16,8 +16,6 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -142,12 +140,7 @@ public class HeaderGroupNameDialog extends Dialog {
                 .grab(true, false)
                 .applyTo(this.groupNameText);
 
-        this.groupNameText.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-                HeaderGroupNameDialog.this.createButton.setEnabled(HeaderGroupNameDialog.this.groupNameText.getText().length() > 0);
-            }
-        });
+        this.groupNameText.addModifyListener(e -> HeaderGroupNameDialog.this.createButton.setEnabled(HeaderGroupNameDialog.this.groupNameText.getText().length() > 0));
 
         return row;
     }

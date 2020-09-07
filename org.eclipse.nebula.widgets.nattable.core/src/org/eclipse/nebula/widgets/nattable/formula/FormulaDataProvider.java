@@ -26,7 +26,6 @@ import org.eclipse.nebula.widgets.nattable.formula.function.FunctionException;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.util.CalculatedValueCache;
-import org.eclipse.nebula.widgets.nattable.util.ICalculator;
 
 /**
  * {@link IDataProvider} that is able to evaluate formulas. It wraps around a
@@ -80,13 +79,7 @@ public class FormulaDataProvider implements IDataProvider {
         final Object underlying = this.underlyingDataProvider.getDataValue(columnIndex, rowIndex);
         if (this.formulaEvaluationEnabled && underlying != null && this.formulaParser.isFunction(underlying.toString())) {
             if (this.cacheEnabled && this.valueCache != null) {
-                return this.valueCache.getCalculatedValue(columnIndex, rowIndex, true, new ICalculator() {
-
-                    @Override
-                    public Object executeCalculation() {
-                        return processFormula(underlying.toString(), columnIndex, rowIndex);
-                    }
-                });
+                return this.valueCache.getCalculatedValue(columnIndex, rowIndex, true, () -> processFormula(underlying.toString(), columnIndex, rowIndex));
             } else {
                 return processFormula(underlying.toString(), columnIndex, rowIndex);
             }

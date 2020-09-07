@@ -44,16 +44,12 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -118,28 +114,25 @@ public class TableCellEditor extends AbstractCellEditor {
      * conversion and validation rules applied via NatTable IDisplayConverter
      * and IDataValidator
      */
-    protected ICellEditorValidator cellEditorValidator = new ICellEditorValidator() {
-        @Override
-        public String isValid(Object value) {
-            // add validator to check conversion and validation configured in
-            // NatTable
-            if (TableCellEditor.this.displayConverter != null) {
-                Object cValue = null;
-                try {
-                    // check if the information can be converted to the correct
-                    // type
-                    cValue = TableCellEditor.this.displayConverter.displayToCanonicalValue(
-                            TableCellEditor.this.layerCell, TableCellEditor.this.configRegistry, value);
+    protected ICellEditorValidator cellEditorValidator = value -> {
+        // add validator to check conversion and validation configured in
+        // NatTable
+        if (TableCellEditor.this.displayConverter != null) {
+            Object cValue = null;
+            try {
+                // check if the information can be converted to the correct
+                // type
+                cValue = TableCellEditor.this.displayConverter.displayToCanonicalValue(
+                        TableCellEditor.this.layerCell, TableCellEditor.this.configRegistry, value);
 
-                    if (!validateCanonicalValue(cValue)) {
-                        return Messages.getString("AbstractCellEditor.validationFailure"); //$NON-NLS-1$
-                    }
-                } catch (ConversionFailedException | ValidationFailedException e) {
-                    return e.getLocalizedMessage();
+                if (!validateCanonicalValue(cValue)) {
+                    return Messages.getString("AbstractCellEditor.validationFailure"); //$NON-NLS-1$
                 }
+            } catch (ConversionFailedException | ValidationFailedException e) {
+                return e.getLocalizedMessage();
             }
-            return null;
         }
+        return null;
     };
 
     /**
@@ -293,13 +286,7 @@ public class TableCellEditor extends AbstractCellEditor {
                     ? (int) (dpiConverter.getCurrentDpiFactor() * getFixedSubCellHeight())
                     : getFixedSubCellHeight();
 
-            tableControl.addListener(SWT.MeasureItem, new Listener() {
-                @Override
-                public void handleEvent(Event event) {
-                    // +1 because of the grid lines
-                    event.height = height + 1;
-                }
-            });
+            tableControl.addListener(SWT.MeasureItem, event -> event.height = height + 1);
         }
 
         // add a key listener that will close the editor on pressing ESC
@@ -323,34 +310,30 @@ public class TableCellEditor extends AbstractCellEditor {
             }
         });
 
-        tableControl.addListener(SWT.Resize, new Listener() {
+        tableControl.addListener(SWT.Resize, event -> {
+            // it is the second column, because the first column is not
+            // visible as we want to support alignment in the cells
+            tableControl.getColumn(1).setWidth(tableControl.getClientArea().width);
 
-            @Override
-            public void handleEvent(Event event) {
-                // it is the second column, because the first column is not
-                // visible as we want to support alignment in the cells
-                tableControl.getColumn(1).setWidth(tableControl.getClientArea().width);
-
-                // set focus on the table viewer and select the cell where the
-                // mouse is positioned this can only be done when the control is
-                // resized, as the bounds are set in the EditController
-                // dependent on the rendered cell
-                Point mouseLoc = Display.getCurrent().getCursorLocation();
-                Point tablePos = tableControl.toDisplay(0, 0);
-                int relativeX = mouseLoc.x - tablePos.x;
-                int relativeY = mouseLoc.y - tablePos.y;
-                TableItem item = tableControl.getItem(new Point(relativeX, relativeY));
-                if (item != null) {
-                    tableControl.setSelection(item);
-                } else {
-                    tableControl.setSelection(tableControl.getTopIndex());
-                }
-
-                // directly enable editing of the selected item
-                if (tableControl.getItemCount() > 0)
-                    TableCellEditor.this.viewer.editElement(
-                            ((StructuredSelection) TableCellEditor.this.viewer.getSelection()).getFirstElement(), 1);
+            // set focus on the table viewer and select the cell where the
+            // mouse is positioned this can only be done when the control is
+            // resized, as the bounds are set in the EditController
+            // dependent on the rendered cell
+            Point mouseLoc = Display.getCurrent().getCursorLocation();
+            Point tablePos = tableControl.toDisplay(0, 0);
+            int relativeX = mouseLoc.x - tablePos.x;
+            int relativeY = mouseLoc.y - tablePos.y;
+            TableItem item = tableControl.getItem(new Point(relativeX, relativeY));
+            if (item != null) {
+                tableControl.setSelection(item);
+            } else {
+                tableControl.setSelection(tableControl.getTopIndex());
             }
+
+            // directly enable editing of the selected item
+            if (tableControl.getItemCount() > 0)
+                TableCellEditor.this.viewer.editElement(
+                        ((StructuredSelection) TableCellEditor.this.viewer.getSelection()).getFirstElement(), 1);
         });
 
         return tableControl;
@@ -554,21 +537,18 @@ public class TableCellEditor extends AbstractCellEditor {
                 }
             });
 
-            this.editor.getControl().addTraverseListener(new TraverseListener() {
-                @Override
-                public void keyTraversed(TraverseEvent event) {
-                    if (event.keyCode == SWT.TAB) {
-                        TableCellEditingSupport.this.setValue(element, ((Text) TableCellEditingSupport.this.editor.getControl()).getText());
+            this.editor.getControl().addTraverseListener(event -> {
+                if (event.keyCode == SWT.TAB) {
+                    TableCellEditingSupport.this.setValue(element, ((Text) TableCellEditingSupport.this.editor.getControl()).getText());
 
-                        boolean committed = false;
-                        if (event.stateMask == SWT.MOD2) {
-                            committed = commit(MoveDirectionEnum.LEFT);
-                        } else if (event.stateMask == 0) {
-                            committed = commit(MoveDirectionEnum.RIGHT);
-                        }
-                        if (!committed) {
-                            event.doit = false;
-                        }
+                    boolean committed = false;
+                    if (event.stateMask == SWT.MOD2) {
+                        committed = commit(MoveDirectionEnum.LEFT);
+                    } else if (event.stateMask == 0) {
+                        committed = commit(MoveDirectionEnum.RIGHT);
+                    }
+                    if (!committed) {
+                        event.doit = false;
                     }
                 }
             });
@@ -785,15 +765,12 @@ public class TableCellEditor extends AbstractCellEditor {
         @Override
         public void focusLost(final FocusEvent e) {
             this.hasFocus = false;
-            Display.getCurrent().timerExec(100, new Runnable() {
-                @Override
-                public void run() {
-                    if (!InternalFocusListener.this.hasFocus) {
-                        if (!commit(MoveDirectionEnum.NONE, true)) {
-                            if (e.widget instanceof Control
-                                    && !e.widget.isDisposed()) {
-                                ((Control) e.widget).forceFocus();
-                            }
+            Display.getCurrent().timerExec(100, () -> {
+                if (!InternalFocusListener.this.hasFocus) {
+                    if (!commit(MoveDirectionEnum.NONE, true)) {
+                        if (e.widget instanceof Control
+                                && !e.widget.isDisposed()) {
+                            ((Control) e.widget).forceFocus();
                         }
                     }
                 }

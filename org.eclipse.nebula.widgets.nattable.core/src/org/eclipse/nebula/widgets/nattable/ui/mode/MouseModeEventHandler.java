@@ -81,13 +81,10 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
                     // single click or the double click action is exclusive,
                     // wait to see if this mouseUp is part of a doubleClick or
                     // not.
-                    this.delayedSingleClickRunnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            MouseModeEventHandler.this.delayedSingleClickRunnable = null;
-                            if (!MouseModeEventHandler.this.doubleClick && !MouseModeEventHandler.this.skipProcessing) {
-                                executeClickAction(MouseModeEventHandler.this.singleClickAction, event);
-                            }
+                    this.delayedSingleClickRunnable = () -> {
+                        MouseModeEventHandler.this.delayedSingleClickRunnable = null;
+                        if (!MouseModeEventHandler.this.doubleClick && !MouseModeEventHandler.this.skipProcessing) {
+                            executeClickAction(MouseModeEventHandler.this.singleClickAction, event);
                         }
                     };
                     event.display.timerExec(event.display.getDoubleClickTime(), this.delayedSingleClickRunnable);

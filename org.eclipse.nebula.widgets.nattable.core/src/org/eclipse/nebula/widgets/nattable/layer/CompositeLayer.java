@@ -31,7 +31,6 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.TranslatedLayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
-import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -649,12 +648,7 @@ public class CompositeLayer extends AbstractLayer {
         childLayer.addLayerListener(this);
         this.childLayerLayout[layoutX][layoutY] = childLayer;
 
-        childLayer.setClientAreaProvider(new IClientAreaProvider() {
-            @Override
-            public Rectangle getClientArea() {
-                return getChildClientArea(layoutX, layoutY);
-            }
-        });
+        childLayer.setClientAreaProvider(() -> getChildClientArea(layoutX, layoutY));
     }
 
     public IConfigLabelAccumulator getConfigLabelAccumulatorByRegionName(String regionName) {

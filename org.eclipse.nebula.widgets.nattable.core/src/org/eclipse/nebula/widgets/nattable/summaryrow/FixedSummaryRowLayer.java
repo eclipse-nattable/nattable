@@ -21,11 +21,9 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
-import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.painter.layer.GridLineCellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
@@ -223,18 +221,14 @@ public class FixedSummaryRowLayer extends SummaryRowLayer {
 
         // if the layer we are dependent to has changed, we need to update
         if (this.horizontalLayerDependency != null) {
-            horizontalLayerDependency.addLayerListener(new ILayerListener() {
-
-                @Override
-                public void handleLayerEvent(ILayerEvent event) {
-                    // we only propagate events further if we need to handle
-                    // them upwards, otherwise we only clear the cache like the
-                    // SummaryRowLayer does without further processing upwards
-                    if (event.convertToLocal(FixedSummaryRowLayer.this)) {
-                        FixedSummaryRowLayer.this.handleLayerEvent(event.cloneEvent());
-                    } else if (event instanceof IVisualChangeEvent) {
-                        clearCache();
-                    }
+            horizontalLayerDependency.addLayerListener(event -> {
+                // we only propagate events further if we need to handle
+                // them upwards, otherwise we only clear the cache like the
+                // SummaryRowLayer does without further processing upwards
+                if (event.convertToLocal(FixedSummaryRowLayer.this)) {
+                    FixedSummaryRowLayer.this.handleLayerEvent(event.cloneEvent());
+                } else if (event instanceof IVisualChangeEvent) {
+                    clearCache();
                 }
             });
         }

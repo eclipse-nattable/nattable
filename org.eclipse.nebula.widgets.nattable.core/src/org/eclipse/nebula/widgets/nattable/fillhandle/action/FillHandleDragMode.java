@@ -31,8 +31,6 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
 import org.eclipse.nebula.widgets.nattable.viewport.action.AutoScrollDragMode;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MenuAdapter;
 import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.MouseEvent;
@@ -318,23 +316,12 @@ public class FillHandleDragMode extends AutoScrollDragMode {
                     // perform the reset operation asynchronously because on
                     // several OS the hide event is processed BEFORE the
                     // selection event
-                    Display.getDefault().asyncExec(new Runnable() {
-                        @Override
-                        public void run() {
-                            reset(natTable);
-                        }
-                    });
+                    Display.getDefault().asyncExec(() -> reset(natTable));
                 }
             });
 
             // add the dispose listener for disposing the menu
-            natTable.addDisposeListener(new DisposeListener() {
-
-                @Override
-                public void widgetDisposed(DisposeEvent e) {
-                    FillHandleDragMode.this.menu.dispose();
-                }
-            });
+            natTable.addDisposeListener(e -> FillHandleDragMode.this.menu.dispose());
         }
 
         this.menu.setVisible(true);

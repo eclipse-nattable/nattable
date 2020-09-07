@@ -35,8 +35,6 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyAdapter;
@@ -45,8 +43,6 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -420,23 +416,15 @@ public class NatCombo extends Composite {
         // as handling with focus listeners in such a case fails, we add a move
         // listener that will update the position of the dropdown shell if the
         // parent shell moves
-        final Listener moveListener = new Listener() {
-            @Override
-            public void handleEvent(Event event) {
-                calculateBounds();
-            }
-        };
+        final Listener moveListener = event -> calculateBounds();
         getShell().addListener(SWT.Move, moveListener);
 
-        addDisposeListener(new DisposeListener() {
-            @Override
-            public void widgetDisposed(DisposeEvent e) {
-                if (NatCombo.this.dropdownShell != null) {
-                    NatCombo.this.dropdownShell.dispose();
-                }
-                NatCombo.this.text.dispose();
-                NatCombo.this.getShell().removeListener(SWT.Move, moveListener);
+        addDisposeListener(e -> {
+            if (NatCombo.this.dropdownShell != null) {
+                NatCombo.this.dropdownShell.dispose();
             }
+            NatCombo.this.text.dispose();
+            NatCombo.this.getShell().removeListener(SWT.Move, moveListener);
         });
     }
 
@@ -558,28 +546,23 @@ public class NatCombo extends Composite {
         gridData = new GridData(GridData.BEGINNING, SWT.FILL, false, true);
         iconCanvas.setLayoutData(gridData);
 
-        iconCanvas.addPaintListener(new PaintListener() {
+        iconCanvas.addPaintListener(event -> {
+            GC gc = event.gc;
 
-            @Override
-            public void paintControl(PaintEvent event) {
-                GC gc = event.gc;
+            Rectangle iconCanvasBounds = iconCanvas.getBounds();
+            Rectangle iconImageBounds = NatCombo.this.iconImage.getBounds();
+            int horizontalAlignmentPadding =
+                    CellStyleUtil.getHorizontalAlignmentPadding(
+                            HorizontalAlignmentEnum.CENTER, iconCanvasBounds, iconImageBounds.width);
+            int verticalAlignmentPadding =
+                    CellStyleUtil.getVerticalAlignmentPadding(
+                            VerticalAlignmentEnum.MIDDLE, iconCanvasBounds, iconImageBounds.height);
+            gc.drawImage(NatCombo.this.iconImage, horizontalAlignmentPadding, verticalAlignmentPadding);
 
-                Rectangle iconCanvasBounds = iconCanvas.getBounds();
-                Rectangle iconImageBounds = NatCombo.this.iconImage.getBounds();
-                int horizontalAlignmentPadding =
-                        CellStyleUtil.getHorizontalAlignmentPadding(
-                                HorizontalAlignmentEnum.CENTER, iconCanvasBounds, iconImageBounds.width);
-                int verticalAlignmentPadding =
-                        CellStyleUtil.getVerticalAlignmentPadding(
-                                VerticalAlignmentEnum.MIDDLE, iconCanvasBounds, iconImageBounds.height);
-                gc.drawImage(NatCombo.this.iconImage, horizontalAlignmentPadding, verticalAlignmentPadding);
-
-                Color originalFg = gc.getForeground();
-                gc.setForeground(GUIHelper.COLOR_WIDGET_BORDER);
-                gc.drawRectangle(0, 0, iconCanvasBounds.width - 1, iconCanvasBounds.height - 1);
-                gc.setForeground(originalFg);
-            }
-
+            Color originalFg = gc.getForeground();
+            gc.setForeground(GUIHelper.COLOR_WIDGET_BORDER);
+            gc.drawRectangle(0, 0, iconCanvasBounds.width - 1, iconCanvasBounds.height - 1);
+            gc.setForeground(originalFg);
         });
 
         iconCanvas.addMouseListener(new MouseAdapter() {
@@ -1516,14 +1499,11 @@ public class NatCombo extends Composite {
         @Override
         public void focusLost(final FocusEvent e) {
             NatCombo.this.hasFocus = false;
-            Display.getCurrent().timerExec(100, new Runnable() {
-                @Override
-                public void run() {
-                    if (!NatCombo.this.hasFocus) {
-                        List<FocusListener> copy = new ArrayList<FocusListener>(NatCombo.this.focusListener);
-                        for (FocusListener f : copy) {
-                            f.focusLost(e);
-                        }
+            Display.getCurrent().timerExec(100, () -> {
+                if (!NatCombo.this.hasFocus) {
+                    List<FocusListener> copy = new ArrayList<FocusListener>(NatCombo.this.focusListener);
+                    for (FocusListener f : copy) {
+                        f.focusLost(e);
                     }
                 }
             });

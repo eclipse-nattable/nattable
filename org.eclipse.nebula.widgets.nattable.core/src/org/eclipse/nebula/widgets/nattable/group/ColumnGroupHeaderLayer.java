@@ -91,12 +91,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
             addConfiguration(new DefaultColumnGroupHeaderLayerConfiguration(columnGroupModel));
         }
 
-        this.modelChangeListener = new IColumnGroupModelListener() {
-            @Override
-            public void columnGroupModelChanged() {
-                fireLayerEvent(new RowStructuralRefreshEvent(columnHeaderLayer));
-            }
-        };
+        this.modelChangeListener = () -> fireLayerEvent(new RowStructuralRefreshEvent(columnHeaderLayer));
 
         this.model.registerColumnGroupModelListener(this.modelChangeListener);
     }

@@ -22,13 +22,7 @@ public class DefaultVerticalDpiConverter extends AbstractDpiConverter {
 
     @Override
     protected void readDpiFromDisplay() {
-        Display.getDefault().syncExec(new Runnable() {
-
-            @Override
-            public void run() {
-                DefaultVerticalDpiConverter.this.dpi = Display.getDefault().getDPI().y;
-            }
-        });
+        Display.getDefault().syncExec(() -> DefaultVerticalDpiConverter.this.dpi = Display.getDefault().getDPI().y);
     }
 
 }

@@ -20,12 +20,8 @@ import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.StyledString.Styler;
@@ -45,8 +41,6 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
@@ -209,13 +203,9 @@ public class PersistenceDialog extends Dialog {
             }
         });
 
-        this.configNameText.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                if (PersistenceDialog.this.configNameText.getText().length() != 0) {
-                    PersistenceDialog.this.configNameDeco.hide();
-                }
+        this.configNameText.addModifyListener(e -> {
+            if (PersistenceDialog.this.configNameText.getText().length() != 0) {
+                PersistenceDialog.this.configNameDeco.hide();
             }
         });
 
@@ -231,28 +221,18 @@ public class PersistenceDialog extends Dialog {
 
         // add click listener on viewer
         this.viewer
-                .addSelectionChangedListener(new ISelectionChangedListener() {
-
-                    @Override
-                    public void selectionChanged(SelectionChangedEvent event) {
-                        ISelection selection = event.getSelection();
-                        if (selection != null
-                                && selection instanceof IStructuredSelection) {
-                            String configName = ((IStructuredSelection) selection)
-                                    .getFirstElement().toString();
-                            PersistenceDialog.this.configNameText.setText(configName);
-                        }
+                .addSelectionChangedListener(event -> {
+                    ISelection selection = event.getSelection();
+                    if (selection != null
+                            && selection instanceof IStructuredSelection) {
+                        String configName = ((IStructuredSelection) selection)
+                                .getFirstElement().toString();
+                        PersistenceDialog.this.configNameText.setText(configName);
                     }
                 });
 
         // add double click listener
-        this.viewer.addDoubleClickListener(new IDoubleClickListener() {
-
-            @Override
-            public void doubleClick(DoubleClickEvent event) {
-                buttonPressed(LOAD_ID);
-            }
-        });
+        this.viewer.addDoubleClickListener(event -> buttonPressed(LOAD_ID));
 
         this.viewer.add(PersistenceHelper.getAvailableStates(this.properties)
                 .toArray());

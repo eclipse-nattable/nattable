@@ -17,8 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
@@ -53,12 +51,7 @@ public class FilterRowTextCellEditor extends TextCellEditor {
             }
         });
 
-        text.addDisposeListener(new DisposeListener() {
-            @Override
-            public void widgetDisposed(DisposeEvent e) {
-                service.shutdownNow();
-            }
-        });
+        text.addDisposeListener(e -> service.shutdownNow());
 
         return text;
     }
@@ -85,15 +78,12 @@ public class FilterRowTextCellEditor extends TextCellEditor {
         public void run() {
             // the access to the editor needs to be executed in the display
             // thread
-            Display.getDefault().syncExec(new Runnable() {
-                @Override
-                public void run() {
-                    if (getEditorControl() != null
-                            && !getEditorControl().isDisposed()
-                            && KeyPressCommitRunnable.this.toCommit != null
-                            && KeyPressCommitRunnable.this.toCommit.equals(getEditorValue())) {
-                        commit(MoveDirectionEnum.NONE, false);
-                    }
+            Display.getDefault().syncExec(() -> {
+                if (getEditorControl() != null
+                        && !getEditorControl().isDisposed()
+                        && KeyPressCommitRunnable.this.toCommit != null
+                        && KeyPressCommitRunnable.this.toCommit.equals(getEditorValue())) {
+                    commit(MoveDirectionEnum.NONE, false);
                 }
             });
         }

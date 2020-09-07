@@ -80,8 +80,6 @@ import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.PaintEvent;
@@ -145,16 +143,13 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
      * have impact when filtering or dynamic updates cause scrollbars to become
      * visible/invisible, which result in resizing of the NatTable.
      */
-    private Listener closeEditorOnParentResize = new Listener() {
-        @Override
-        public void handleEvent(Event event) {
-            // as resizing doesn't cause the current active editor to loose
-            // focus we are closing the current active editor manually
-            if (!commitAndCloseActiveCellEditor()) {
-                // if committing didn't work out we need to perform a hard close
-                // otherwise the state of the table would be unstale
-                getActiveCellEditor().close();
-            }
+    private Listener closeEditorOnParentResize = event -> {
+        // as resizing doesn't cause the current active editor to loose
+        // focus we are closing the current active editor manually
+        if (!commitAndCloseActiveCellEditor()) {
+            // if committing didn't work out we need to perform a hard close
+            // otherwise the state of the table would be unstale
+            getActiveCellEditor().close();
         }
     };
 
@@ -283,17 +278,12 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
         parent.addListener(SWT.Resize, this.closeEditorOnParentResize);
 
-        addDisposeListener(new DisposeListener() {
+        addDisposeListener(e -> {
+            doCommand(new DisposeResourcesCommand());
+            NatTable.this.conflaterChain.stop();
+            layer.dispose();
 
-            @Override
-            public void widgetDisposed(DisposeEvent e) {
-                doCommand(new DisposeResourcesCommand());
-                NatTable.this.conflaterChain.stop();
-                layer.dispose();
-
-                parent.removeListener(SWT.Resize, NatTable.this.closeEditorOnParentResize);
-            }
-
+            parent.removeListener(SWT.Resize, NatTable.this.closeEditorOnParentResize);
         });
     }
 
@@ -325,26 +315,18 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
     private void internalSetLayer(ILayer layer) {
         if (layer != null) {
             this.underlyingLayer = layer;
-            this.underlyingLayer.setClientAreaProvider(new IClientAreaProvider() {
-
-                @Override
-                public Rectangle getClientArea() {
-                    final Rectangle clientArea = new Rectangle(0, 0, 0, 0);
-                    if (!isDisposed()) {
-                        getDisplay().syncExec(new Runnable() {
-                            @Override
-                            public void run() {
-                                Rectangle natClientArea = NatTable.this.getClientArea();
-                                clientArea.x = natClientArea.x;
-                                clientArea.y = natClientArea.y;
-                                clientArea.width = natClientArea.width;
-                                clientArea.height = natClientArea.height;
-                            }
-                        });
-                    }
-                    return clientArea;
+            this.underlyingLayer.setClientAreaProvider(() -> {
+                final Rectangle clientArea = new Rectangle(0, 0, 0, 0);
+                if (!isDisposed()) {
+                    getDisplay().syncExec(() -> {
+                        Rectangle natClientArea = NatTable.this.getClientArea();
+                        clientArea.x = natClientArea.x;
+                        clientArea.y = natClientArea.y;
+                        clientArea.width = natClientArea.width;
+                        clientArea.height = natClientArea.height;
+                    });
                 }
-
+                return clientArea;
             });
             this.underlyingLayer.addLayerListener(this);
 
@@ -503,12 +485,9 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
         });
 
-        addListener(SWT.Resize, new Listener() {
-            @Override
-            public void handleEvent(final Event e) {
-                doCommand(new ClientAreaResizeCommand(NatTable.this));
-                redraw();
-            }
+        addListener(SWT.Resize, e -> {
+            doCommand(new ClientAreaResizeCommand(NatTable.this));
+            redraw();
         });
     }
 
@@ -782,13 +761,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
             this.activeCellEditor = editorEvent.getEditor();
             Control editorControl = this.activeCellEditor.getEditorControl();
             if (editorControl != null && !editorControl.isDisposed()) {
-                editorControl.addDisposeListener(new DisposeListener() {
-
-                    @Override
-                    public void widgetDisposed(DisposeEvent e) {
-                        NatTable.this.activeCellEditor = null;
-                    }
-                });
+                editorControl.addDisposeListener(e -> NatTable.this.activeCellEditor = null);
             } else {
                 this.activeCellEditor = null;
             }
@@ -808,13 +781,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
      */
     @Override
     public void saveState(final String prefix, final Properties properties) {
-        BusyIndicator.showWhile(null, new Runnable() {
-
-            @Override
-            public void run() {
-                NatTable.this.underlyingLayer.saveState(prefix, properties);
-            }
-        });
+        BusyIndicator.showWhile(null, () -> NatTable.this.underlyingLayer.saveState(prefix, properties));
     }
 
     /**
@@ -825,18 +792,14 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
      */
     @Override
     public void loadState(final String prefix, final Properties properties) {
-        BusyIndicator.showWhile(null, new Runnable() {
+        BusyIndicator.showWhile(null, () -> {
+            // if the initial painting is not finished yet, tell this the
+            // underlying
+            // mechanisms so there will be no refresh events fired
+            if (!NatTable.this.initialPaintComplete)
+                properties.setProperty(INITIAL_PAINT_COMPLETE_FLAG, "true"); //$NON-NLS-1$
 
-            @Override
-            public void run() {
-                // if the initial painting is not finished yet, tell this the
-                // underlying
-                // mechanisms so there will be no refresh events fired
-                if (!NatTable.this.initialPaintComplete)
-                    properties.setProperty(INITIAL_PAINT_COMPLETE_FLAG, "true"); //$NON-NLS-1$
-
-                NatTable.this.underlyingLayer.loadState(prefix, properties);
-            }
+            NatTable.this.underlyingLayer.loadState(prefix, properties);
         });
     }
 

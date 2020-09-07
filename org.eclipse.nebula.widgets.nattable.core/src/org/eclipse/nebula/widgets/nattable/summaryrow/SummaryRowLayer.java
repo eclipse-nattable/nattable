@@ -36,7 +36,6 @@ import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRo
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.nebula.widgets.nattable.util.CalculatedValueCache;
 import org.eclipse.nebula.widgets.nattable.util.ICalculatedValueCache;
-import org.eclipse.nebula.widgets.nattable.util.ICalculator;
 
 /**
  * Adds a summary row at the end. Uses {@link ISummaryProvider} to calculate the
@@ -239,25 +238,21 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
                 columnPosition,
                 getSummaryRowPosition(),
                 calculateInBackground,
-                new ICalculator() {
+                () -> {
+                    LabelStack labelStack = getConfigLabelsByPositionWithoutTransformation(columnPosition, getSummaryRowPosition());
+                    String[] configLabels = labelStack.toArray(ArrayUtil.STRING_TYPE_ARRAY);
 
-                    @Override
-                    public Object executeCalculation() {
-                        LabelStack labelStack = getConfigLabelsByPositionWithoutTransformation(columnPosition, getSummaryRowPosition());
-                        String[] configLabels = labelStack.toArray(ArrayUtil.STRING_TYPE_ARRAY);
+                    final ISummaryProvider summaryProvider = SummaryRowLayer.this.configRegistry.getConfigAttribute(
+                            SummaryRowConfigAttributes.SUMMARY_PROVIDER,
+                            DisplayMode.NORMAL,
+                            configLabels);
 
-                        final ISummaryProvider summaryProvider = SummaryRowLayer.this.configRegistry.getConfigAttribute(
-                                SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                                DisplayMode.NORMAL,
-                                configLabels);
-
-                        // If there is no Summary provider - skip processing
-                        if (summaryProvider == ISummaryProvider.NONE || summaryProvider == null) {
-                            return null;
-                        }
-
-                        return summaryProvider.summarize(columnPosition);
+                    // If there is no Summary provider - skip processing
+                    if (summaryProvider == ISummaryProvider.NONE || summaryProvider == null) {
+                        return null;
                     }
+
+                    return summaryProvider.summarize(columnPosition);
                 });
     }
 

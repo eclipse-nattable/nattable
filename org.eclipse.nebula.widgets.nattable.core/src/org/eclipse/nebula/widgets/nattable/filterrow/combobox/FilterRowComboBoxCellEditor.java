@@ -13,8 +13,6 @@ package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
-import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.nebula.widgets.nattable.data.convert.ConversionFailedException;
 import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
@@ -95,17 +93,13 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
 
         // additionally add the ICheckStateListener so on changing the value of
         // the select all item the change is also committed
-        combo.addCheckStateListener(new ICheckStateListener() {
-
-            @Override
-            public void checkStateChanged(CheckStateChangedEvent event) {
-                if (event.getChecked()) {
-                    setCanonicalValue(EditConstants.SELECT_ALL_ITEMS_VALUE);
-                }
-                commit(MoveDirectionEnum.NONE,
-                        (!FilterRowComboBoxCellEditor.this.multiselect
-                                && FilterRowComboBoxCellEditor.this.editMode == EditModeEnum.INLINE));
+        combo.addCheckStateListener(event -> {
+            if (event.getChecked()) {
+                setCanonicalValue(EditConstants.SELECT_ALL_ITEMS_VALUE);
             }
+            commit(MoveDirectionEnum.NONE,
+                    (!FilterRowComboBoxCellEditor.this.multiselect
+                            && FilterRowComboBoxCellEditor.this.editMode == EditModeEnum.INLINE));
         });
 
         return combo;

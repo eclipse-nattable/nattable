@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ICheckStateProvider;
@@ -39,8 +38,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -264,13 +261,7 @@ public class FilterNatCombo extends NatCombo {
 
         // add a column to be able to resize the item width in the dropdown
         new TableColumn(this.selectAllItemViewer.getTable(), SWT.NONE);
-        this.selectAllItemViewer.getTable().addListener(SWT.Resize,
-                new Listener() {
-                    @Override
-                    public void handleEvent(Event event) {
-                        calculateColumnWidth();
-                    }
-                });
+        this.selectAllItemViewer.getTable().addListener(SWT.Resize, event -> calculateColumnWidth());
 
         FormData data = new FormData();
         if (this.showDropdownFilter) {
@@ -292,10 +283,12 @@ public class FilterNatCombo extends NatCombo {
         this.selectAllItemViewer.setContentProvider(new IStructuredContentProvider() {
 
             @Override
-            public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
+            public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+            }
 
             @Override
-            public void dispose() {}
+            public void dispose() {
+            }
 
             @SuppressWarnings("unchecked")
             @Override
@@ -307,7 +300,8 @@ public class FilterNatCombo extends NatCombo {
         this.selectAllItemViewer.setLabelProvider(new ILabelProvider() {
 
             @Override
-            public void removeListener(ILabelProviderListener listener) {}
+            public void removeListener(ILabelProviderListener listener) {
+            }
 
             @Override
             public boolean isLabelProperty(Object element, String property) {
@@ -315,10 +309,12 @@ public class FilterNatCombo extends NatCombo {
             }
 
             @Override
-            public void dispose() {}
+            public void dispose() {
+            }
 
             @Override
-            public void addListener(ILabelProviderListener listener) {}
+            public void addListener(ILabelProviderListener listener) {
+            }
 
             @Override
             public String getText(Object element) {
@@ -351,34 +347,30 @@ public class FilterNatCombo extends NatCombo {
                     }
                 });
 
-        this.selectAllItemViewer.addCheckStateListener(new ICheckStateListener() {
-
-            @Override
-            public void checkStateChanged(CheckStateChangedEvent event) {
-                if (event.getChecked()) {
-                    // select all
-                    FilterNatCombo.this.dropdownTable.selectAll();
-                } else {
-                    // deselect all
-                    FilterNatCombo.this.dropdownTable.deselectAll();
-                }
-
-                // after selection is performed we need to ensure that
-                // selection and checkboxes are in sync
-                for (TableItem tableItem : FilterNatCombo.this.dropdownTable.getItems()) {
-                    tableItem.setChecked(
-                            FilterNatCombo.this.dropdownTable.isSelected(
-                                    FilterNatCombo.this.itemList.indexOf(tableItem.getText())));
-                }
-
-                // sync the selectionStateMap based on the state of the select
-                // all checkbox
-                for (String item : FilterNatCombo.this.itemList) {
-                    FilterNatCombo.this.selectionStateMap.put(item, event.getChecked());
-                }
-
-                updateTextControl(!FilterNatCombo.this.multiselect);
+        this.selectAllItemViewer.addCheckStateListener(event -> {
+            if (event.getChecked()) {
+                // select all
+                FilterNatCombo.this.dropdownTable.selectAll();
+            } else {
+                // deselect all
+                FilterNatCombo.this.dropdownTable.deselectAll();
             }
+
+            // after selection is performed we need to ensure that
+            // selection and checkboxes are in sync
+            for (TableItem tableItem : FilterNatCombo.this.dropdownTable.getItems()) {
+                tableItem.setChecked(
+                        FilterNatCombo.this.dropdownTable.isSelected(
+                                FilterNatCombo.this.itemList.indexOf(tableItem.getText())));
+            }
+
+            // sync the selectionStateMap based on the state of the select
+            // all checkbox
+            for (String item : FilterNatCombo.this.itemList) {
+                FilterNatCombo.this.selectionStateMap.put(item, event.getChecked());
+            }
+
+            updateTextControl(!FilterNatCombo.this.multiselect);
         });
 
         for (ICheckStateListener l : this.checkStateListener) {

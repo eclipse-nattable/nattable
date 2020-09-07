@@ -18,7 +18,6 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
-import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
@@ -83,14 +82,10 @@ public class AutoResizeHelper {
      * informed about {@link RowResizeEvent} and {@link ColumnResizeEvent} to
      * know if an automatic resize was triggered on rendering.
      */
-    protected ILayerListener resizeListener = new ILayerListener() {
-
-        @Override
-        public void handleLayerEvent(ILayerEvent event) {
-            if (!AutoResizeHelper.this.resizedOnPrinting &&
-                    (event instanceof RowResizeEvent || event instanceof ColumnResizeEvent)) {
-                AutoResizeHelper.this.resizedOnPrinting = true;
-            }
+    protected ILayerListener resizeListener = event -> {
+        if (!AutoResizeHelper.this.resizedOnPrinting &&
+                (event instanceof RowResizeEvent || event instanceof ColumnResizeEvent)) {
+            AutoResizeHelper.this.resizedOnPrinting = true;
         }
     };
 
@@ -98,13 +93,7 @@ public class AutoResizeHelper {
      * The {@link IClientAreaProvider} that is used for rendering the whole
      * layer in-memory.
      */
-    protected IClientAreaProvider clientAreaProvider = new IClientAreaProvider() {
-
-        @Override
-        public Rectangle getClientArea() {
-            return AutoResizeHelper.this.totalArea;
-        }
-    };
+    protected IClientAreaProvider clientAreaProvider = () -> AutoResizeHelper.this.totalArea;
 
     /**
      *

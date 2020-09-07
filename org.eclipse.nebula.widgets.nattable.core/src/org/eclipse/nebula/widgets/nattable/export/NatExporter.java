@@ -170,19 +170,16 @@ public class NatExporter {
             final ILayer layer,
             final IConfigRegistry configRegistry) {
 
-        exportSingle(exporter, new BiConsumer<ILayerExporter, OutputStream>() {
-            @Override
-            public void apply(ILayerExporter exporter, OutputStream outputStream) {
-                try {
-                    exporter.exportBegin(outputStream);
+        exportSingle(exporter, (exp, outputStream) -> {
+            try {
+                exp.exportBegin(outputStream);
 
-                    exportLayer(exporter, outputStream, "", layer, configRegistry); //$NON-NLS-1$
+                exportLayer(exp, outputStream, "", layer, configRegistry); //$NON-NLS-1$
 
-                    exporter.exportEnd(outputStream);
-                } catch (IOException e) {
-                    // exception is handled in the caller
-                    throw new RuntimeException(e);
-                }
+                exp.exportEnd(outputStream);
+            } catch (IOException e) {
+                // exception is handled in the caller
+                throw new RuntimeException(e);
             }
         });
     }
@@ -229,12 +226,7 @@ public class NatExporter {
             final ILayer layer,
             final IConfigRegistry configRegistry) {
 
-        exportSingle(exporter, new BiConsumer<ITableExporter, OutputStream>() {
-            @Override
-            public void apply(ITableExporter exporter, OutputStream outputStream) {
-                exportLayer(exporter, outputStream, layer, configRegistry);
-            }
-        });
+        exportSingle(exporter, (exp, outputStream) -> exportLayer(exp, outputStream, layer, configRegistry));
     }
 
     /**
@@ -259,28 +251,25 @@ public class NatExporter {
      */
     private <T extends IExporter> void exportSingle(final T exporter, final BiConsumer<T, OutputStream> executable) {
 
-        Runnable exportRunnable = new Runnable() {
-            @Override
-            public void run() {
-                final OutputStream outputStream = getOutputStream(exporter);
-                if (outputStream != null) {
+        Runnable exportRunnable = () -> {
+            final OutputStream outputStream = getOutputStream(exporter);
+            if (outputStream != null) {
+                try {
+                    executable.apply(exporter, outputStream);
+
+                    NatExporter.this.exportSucceeded = true;
+                } catch (Exception e1) {
+                    NatExporter.this.exportSucceeded = false;
+                    handleExportException(e1);
+                } finally {
                     try {
-                        executable.apply(exporter, outputStream);
-
-                        NatExporter.this.exportSucceeded = true;
-                    } catch (Exception e) {
-                        NatExporter.this.exportSucceeded = false;
-                        handleExportException(e);
-                    } finally {
-                        try {
-                            outputStream.close();
-                        } catch (IOException e) {
-                            LOG.error("Failed to close the output stream", e); //$NON-NLS-1$
-                        }
+                        outputStream.close();
+                    } catch (IOException e2) {
+                        LOG.error("Failed to close the output stream", e2); //$NON-NLS-1$
                     }
-
-                    openExport(exporter);
                 }
+
+                openExport(exporter);
             }
         };
 
@@ -338,44 +327,41 @@ public class NatExporter {
             final boolean exportOnSameSheet,
             final String sheetName) {
 
-        Runnable exportRunnable = new Runnable() {
-            @Override
-            public void run() {
-                final OutputStream outputStream = getOutputStream(exporter);
-                if (outputStream != null) {
+        Runnable exportRunnable = () -> {
+            final OutputStream outputStream = getOutputStream(exporter);
+            if (outputStream != null) {
+                try {
+                    exporter.exportBegin(outputStream);
+
+                    if (exportOnSameSheet) {
+                        exporter.exportLayerBegin(outputStream, sheetName);
+                    }
+
+                    for (String name : natTablesMap.keySet()) {
+                        NatTable natTable = natTablesMap.get(name);
+                        exportLayer(exporter, outputStream, name, natTable, natTable.getConfigRegistry(), !exportOnSameSheet);
+                    }
+
+                    if (exportOnSameSheet) {
+                        exporter.exportLayerEnd(outputStream, sheetName);
+                    }
+
+                    exporter.exportEnd(outputStream);
+
+                    NatExporter.this.exportSucceeded = true;
+                } catch (Exception e1) {
+                    NatExporter.this.exportSucceeded = false;
+                    handleExportException(e1);
+                } finally {
                     try {
-                        exporter.exportBegin(outputStream);
-
-                        if (exportOnSameSheet) {
-                            exporter.exportLayerBegin(outputStream, sheetName);
-                        }
-
-                        for (String name : natTablesMap.keySet()) {
-                            NatTable natTable = natTablesMap.get(name);
-                            exportLayer(exporter, outputStream, name, natTable, natTable.getConfigRegistry(), !exportOnSameSheet);
-                        }
-
-                        if (exportOnSameSheet) {
-                            exporter.exportLayerEnd(outputStream, sheetName);
-                        }
-
-                        exporter.exportEnd(outputStream);
-
-                        NatExporter.this.exportSucceeded = true;
-                    } catch (Exception e) {
-                        NatExporter.this.exportSucceeded = false;
-                        handleExportException(e);
-                    } finally {
-                        try {
-                            outputStream.close();
-                        } catch (IOException e) {
-                            LOG.error("Failed to close the output stream", e); //$NON-NLS-1$
-                        }
+                        outputStream.close();
+                    } catch (IOException e2) {
+                        LOG.error("Failed to close the output stream", e2); //$NON-NLS-1$
                     }
                 }
-
-                openExport(exporter);
             }
+
+            openExport(exporter);
         };
 
         if (this.shell != null) {
@@ -617,12 +603,7 @@ public class NatExporter {
     protected void setClientAreaToMaximum(ILayer layer) {
         final Rectangle maxClientArea = new Rectangle(0, 0, layer.getWidth(), layer.getHeight());
 
-        layer.setClientAreaProvider(new IClientAreaProvider() {
-            @Override
-            public Rectangle getClientArea() {
-                return maxClientArea;
-            }
-        });
+        layer.setClientAreaProvider(() -> maxClientArea);
 
         layer.doCommand(new PrintEntireGridCommand());
     }

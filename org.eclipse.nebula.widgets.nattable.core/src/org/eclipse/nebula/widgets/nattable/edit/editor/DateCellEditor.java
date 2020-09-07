@@ -180,12 +180,9 @@ public class DateCellEditor extends AbstractCellEditor {
 
         // set focus asynchronously in order to prevent display glitches
         // it seems to be not possible to open the dropdown programmatically
-        parent.getDisplay().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                if (!DateCellEditor.this.dateTime.isDisposed()) {
-                    DateCellEditor.this.dateTime.forceFocus();
-                }
+        parent.getDisplay().asyncExec(() -> {
+            if (!DateCellEditor.this.dateTime.isDisposed()) {
+                DateCellEditor.this.dateTime.forceFocus();
             }
         });
 

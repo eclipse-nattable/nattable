@@ -27,7 +27,6 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowPositionHideCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
-import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -1056,13 +1055,10 @@ public class PopupMenuBuilder {
      */
     public Menu build() {
 
-        this.natTable.addDisposeListener(new DisposeListener() {
-            @Override
-            public void widgetDisposed(DisposeEvent e) {
-                if (PopupMenuBuilder.this.popupMenu != null
-                        && !PopupMenuBuilder.this.popupMenu.isDisposed())
-                    PopupMenuBuilder.this.popupMenu.dispose();
-            }
+        this.natTable.addDisposeListener(e -> {
+            if (PopupMenuBuilder.this.popupMenu != null
+                    && !PopupMenuBuilder.this.popupMenu.isDisposed())
+                PopupMenuBuilder.this.popupMenu.dispose();
         });
 
         return this.popupMenu;

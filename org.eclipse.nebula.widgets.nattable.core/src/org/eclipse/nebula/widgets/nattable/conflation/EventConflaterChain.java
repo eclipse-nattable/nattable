@@ -87,12 +87,9 @@ public class EventConflaterChain implements IEventConflater {
 
     @Override
     public Runnable getConflaterTask() {
-        return new Runnable() {
-            @Override
-            public void run() {
-                for (IEventConflater conflater : EventConflaterChain.this.chain) {
-                    conflater.getConflaterTask().run();
-                }
+        return () -> {
+            for (IEventConflater conflater : EventConflaterChain.this.chain) {
+                conflater.getConflaterTask().run();
             }
         };
     }

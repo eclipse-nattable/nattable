@@ -79,9 +79,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
         } else if (command instanceof ColumnGroupCollapseCommand) {
             GroupModel groupModel = ((ColumnGroupCollapseCommand) command).getGroupModel();
             List<Group> groups = ((ColumnGroupCollapseCommand) command).getGroups();
-            Collections.sort(groups, (Group o1, Group o2) -> {
-                return o2.getVisibleStartPosition() - o1.getVisibleStartPosition();
-            });
+            Collections.sort(groups, (Group o1, Group o2) -> (o2.getVisibleStartPosition() - o1.getVisibleStartPosition()));
 
             MutableIntSet hiddenPositions = IntSets.mutable.empty();
             MutableIntSet hiddenIndexes = IntSets.mutable.empty();

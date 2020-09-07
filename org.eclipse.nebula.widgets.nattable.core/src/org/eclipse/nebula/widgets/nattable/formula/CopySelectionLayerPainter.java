@@ -12,8 +12,6 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.formula;
 
-import java.util.function.Function;
-
 import org.eclipse.nebula.widgets.nattable.command.LayerCommandUtil;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
@@ -141,47 +139,43 @@ public class CopySelectionLayerPainter extends SelectionLayerPainter {
                 return;
             }
 
-            BorderCell[][] borderCells = getBorderCells(natLayer, xOffset, yOffset, positionRectangle, new Function<ILayerCell, Boolean>() {
+            BorderCell[][] borderCells = getBorderCells(natLayer, xOffset, yOffset, positionRectangle, cell -> {
+                if (cell.getColumnIndex() >= 0
+                        && cell.getRowIndex() >= 0) {
+                    ColumnPositionCoordinate convertedColumn = null;
+                    RowPositionCoordinate convertedRow = null;
+                    ILayerCell convertedCell = null;
+                    boolean convertedCalculated = false;
 
-                @Override
-                public Boolean apply(ILayerCell cell) {
-                    if (cell.getColumnIndex() >= 0
-                            && cell.getRowIndex() >= 0) {
-                        ColumnPositionCoordinate convertedColumn = null;
-                        RowPositionCoordinate convertedRow = null;
-                        ILayerCell convertedCell = null;
-                        boolean convertedCalculated = false;
-
-                        for (ILayerCell[] cells : CopySelectionLayerPainter.this.clipboard.getCopiedCells()) {
-                            for (ILayerCell copyCell : cells) {
-                                if (copyCell != null) {
-                                    if (!convertedCalculated) {
-                                        convertedColumn = LayerCommandUtil.convertColumnPositionToTargetContext(
-                                                new ColumnPositionCoordinate(cell.getLayer(), cell.getColumnPosition()),
-                                                copyCell.getLayer());
-                                        convertedRow = LayerCommandUtil.convertRowPositionToTargetContext(
-                                                new RowPositionCoordinate(cell.getLayer(), cell.getRowPosition()),
-                                                copyCell.getLayer());
-                                        if (convertedColumn != null
-                                                && convertedRow != null) {
-                                            convertedCell = convertedColumn.getLayer().getCellByPosition(
-                                                    convertedColumn.getColumnPosition(),
-                                                    convertedRow.getRowPosition());
-                                        }
-                                        convertedCalculated = true;
+                    for (ILayerCell[] cells : CopySelectionLayerPainter.this.clipboard.getCopiedCells()) {
+                        for (ILayerCell copyCell : cells) {
+                            if (copyCell != null) {
+                                if (!convertedCalculated) {
+                                    convertedColumn = LayerCommandUtil.convertColumnPositionToTargetContext(
+                                            new ColumnPositionCoordinate(cell.getLayer(), cell.getColumnPosition()),
+                                            copyCell.getLayer());
+                                    convertedRow = LayerCommandUtil.convertRowPositionToTargetContext(
+                                            new RowPositionCoordinate(cell.getLayer(), cell.getRowPosition()),
+                                            copyCell.getLayer());
+                                    if (convertedColumn != null
+                                            && convertedRow != null) {
+                                        convertedCell = convertedColumn.getLayer().getCellByPosition(
+                                                convertedColumn.getColumnPosition(),
+                                                convertedRow.getRowPosition());
                                     }
+                                    convertedCalculated = true;
+                                }
 
-                                    if (convertedCell != null
-                                            && convertedCell.getOriginColumnPosition() == copyCell.getOriginColumnPosition()
-                                            && convertedCell.getOriginRowPosition() == copyCell.getOriginRowPosition()) {
-                                        return true;
-                                    }
+                                if (convertedCell != null
+                                        && convertedCell.getOriginColumnPosition() == copyCell.getOriginColumnPosition()
+                                        && convertedCell.getOriginRowPosition() == copyCell.getOriginRowPosition()) {
+                                    return true;
                                 }
                             }
                         }
                     }
-                    return false;
                 }
+                return false;
             });
 
             if (borderCells != null) {

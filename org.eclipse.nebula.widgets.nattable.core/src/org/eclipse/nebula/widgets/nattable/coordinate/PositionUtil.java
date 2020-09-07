@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.function.ObjIntConsumer;
@@ -105,7 +104,7 @@ public class PositionUtil {
                         });
 
         return ranges.stream()
-                .map(r -> r.getMembersArray())
+                .map(Range::getMembersArray)
                 .toArray(size -> new int[size][]);
     }
 
@@ -234,15 +233,11 @@ public class PositionUtil {
         ArrayList<Range> sortedRanges = new ArrayList<Range>(ranges);
 
         // sort by 1) start, 2) end position
-        Collections.sort(sortedRanges, new Comparator<Range>() {
-
-            @Override
-            public int compare(Range o1, Range o2) {
-                if (o1.start == o2.start) {
-                    return Integer.compare(o1.end, o2.end);
-                } else {
-                    return Integer.compare(o1.start, o2.start);
-                }
+        Collections.sort(sortedRanges, (o1, o2) -> {
+            if (o1.start == o2.start) {
+                return Integer.compare(o1.end, o2.end);
+            } else {
+                return Integer.compare(o1.start, o2.start);
             }
         });
 

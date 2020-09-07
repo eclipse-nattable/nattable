@@ -45,12 +45,7 @@ public class SortCommandHandler<T> extends AbstractLayerCommandHandler<SortColum
                     : this.sortModel.getSortDirection(columnIndex).getNextSortDirection();
 
             // Fire command - with busy indicator
-            Runnable sortRunner = new Runnable() {
-                @Override
-                public void run() {
-                    SortCommandHandler.this.sortModel.sort(columnIndex, newSortDirection, command.isAccumulate());
-                }
-            };
+            Runnable sortRunner = () -> SortCommandHandler.this.sortModel.sort(columnIndex, newSortDirection, command.isAccumulate());
             BusyIndicator.showWhile(null, sortRunner);
 
             // Fire event

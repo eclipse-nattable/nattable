@@ -120,17 +120,10 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 
         final int columnOffset = natLayer.getColumnPositionByX(xOffset);
         final int rowOffset = natLayer.getRowPositionByY(yOffset);
-        BorderCell[][] borderCells = getBorderCells(natLayer, xOffset, yOffset, positionRectangle, new Function<ILayerCell, Boolean>() {
-
-            @Override
-            public Boolean apply(ILayerCell cell) {
-                // only cells below the offset that are selected
-                return (cell.getColumnPosition() >= columnOffset
-                        && cell.getRowPosition() >= rowOffset)
-                        && (DisplayMode.SELECT.equals(cell.getDisplayMode())
-                                || DisplayMode.SELECT_HOVER.equals(cell.getDisplayMode()));
-            }
-        });
+        BorderCell[][] borderCells = getBorderCells(natLayer, xOffset, yOffset, positionRectangle, cell -> (cell.getColumnPosition() >= columnOffset
+                && cell.getRowPosition() >= rowOffset)
+                && (DisplayMode.SELECT.equals(cell.getDisplayMode())
+                        || DisplayMode.SELECT_HOVER.equals(cell.getDisplayMode())));
 
         if (borderCells != null) {
             // Save gc settings
