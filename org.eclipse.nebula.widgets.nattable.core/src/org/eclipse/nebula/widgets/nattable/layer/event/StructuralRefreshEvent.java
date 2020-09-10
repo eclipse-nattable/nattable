@@ -51,9 +51,7 @@ public class StructuralRefreshEvent implements IStructuralChangeEvent {
 
     @Override
     public Collection<Rectangle> getChangedPositionRectangles() {
-        return Arrays.asList(new Rectangle[] {
-                new Rectangle(0, 0, this.layer.getColumnCount(), this.layer.getRowCount())
-        });
+        return Arrays.asList(new Rectangle(0, 0, this.layer.getColumnCount(), this.layer.getRowCount()));
     }
 
     @Override

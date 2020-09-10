@@ -50,7 +50,7 @@ public class FilterRowHeaderComposite<T> extends CompositeLayer {
         setChildLayer("columnHeader", columnHeaderLayer, 0, 0); //$NON-NLS-1$
 
         this.filterRowDataLayer =
-                new FilterRowDataLayer<T>(
+                new FilterRowDataLayer<>(
                         filterStrategy,
                         columnHeaderLayer,
                         columnHeaderDataProvider,
