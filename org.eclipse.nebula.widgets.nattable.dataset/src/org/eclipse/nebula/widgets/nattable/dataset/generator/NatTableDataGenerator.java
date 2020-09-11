@@ -52,15 +52,13 @@ public class NatTableDataGenerator {
     private void initColumnDataTypes() {
         this.columnDataTypes = new ArrayList<ColumnDataType>();
         for (int i = 0; i < this.numCols; i++) {
-            ColumnDataType dataType = ColumnDataType.values()[(int) (Math
-                    .random() * ColumnDataType.values().length)];
+            ColumnDataType dataType = ColumnDataType.values()[(int) (Math.random() * ColumnDataType.values().length)];
             this.columnDataTypes.add(dataType);
         }
     }
 
-    public void persistData(final String fileName) {
-        try {
-            BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
+    public void persistData(final String fileName) throws IOException, GeneratorException {
+        try (BufferedWriter out = new BufferedWriter(new FileWriter(fileName))) {
             // first write the data types
             for (int i = 0; i < this.columnDataTypes.size(); i++) {
                 ColumnDataType dataType = this.columnDataTypes.get(i);
@@ -78,12 +76,10 @@ public class NatTableDataGenerator {
                     ColumnValueBean<?> value = null;
                     switch (dataType) {
                         case STRING_DATA:
-                            value = stringGenerator
-                                    .generate(StringColumnValueBean.class);
+                            value = stringGenerator.generate(StringColumnValueBean.class);
                             break;
                         case DOUBLE_DATA:
-                            value = doubleGenerator
-                                    .generate(DoubleColumnValueBean.class);
+                            value = doubleGenerator.generate(DoubleColumnValueBean.class);
                             break;
                     }
                     String stringValue = (value == null || value.getValue() == null) ? " "
@@ -102,20 +98,13 @@ public class NatTableDataGenerator {
                 }
                 out.newLine();
             }
-            out.close();
             System.out.println("done");
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(-1);
-        } catch (GeneratorException e) {
-            e.printStackTrace();
-            System.exit(-1);
         }
 
     }
 
     // TODO: file dimensions should be embedded in the file
-    public void getNumRows(String fileName) {
+    public void getNumRows(String fileName) throws IOException {
         try (BufferedReader bro = new BufferedReader(new FileReader(fileName))) {
 
             String stringFromFile = bro.readLine();
@@ -124,17 +113,11 @@ public class NatTableDataGenerator {
                 this.numRows++;
                 stringFromFile = bro.readLine(); // read next line
             }
-        } catch (FileNotFoundException filenotfoundexxption) {
-            System.out.println(fileName + ", does not exist");
-            System.exit(-1);
-        } catch (IOException ioexception) {
-            ioexception.printStackTrace();
-            System.exit(-1);
         }
         this.numRows--; // first row contains the data types of the columns
     }
 
-    public TableDataProvider loadData(final String fileName) {
+    public TableDataProvider loadData(final String fileName) throws FileNotFoundException, IOException {
 
         // need to pass through file first to get matrix dimensions
         getNumRows(fileName);
@@ -167,12 +150,6 @@ public class NatTableDataGenerator {
                     System.out.print(".");
             }
             System.out.println("done");
-        } catch (FileNotFoundException filenotfoundexxption) {
-            System.out.println(fileName + ", does not exist");
-            System.exit(-1);
-        } catch (IOException ioexception) {
-            ioexception.printStackTrace();
-            System.exit(-1);
         }
 
         return new TableDataProvider(tableData, this.numCols, this.numRows);
@@ -251,7 +228,7 @@ public class NatTableDataGenerator {
         }
     };
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws GeneratorException, IOException {
         NatTableDataGenerator dataGenerator;
         String fileName;
 

@@ -61,11 +61,11 @@ public class _4471_EditorTraversalExample extends AbstractNatExample {
         return "";
     }
 
-    public static String COLUMN_ONE_LABEL = "ColumnOneLabel";
-    public static String COLUMN_TWO_LABEL = "ColumnTwoLabel";
-    public static String COLUMN_THREE_LABEL = "ColumnThreeLabel";
-    public static String COLUMN_FOUR_LABEL = "ColumnFourLabel";
-    public static String COLUMN_FIVE_LABEL = "ColumnFiveLabel";
+    public static final String COLUMN_ONE_LABEL = "ColumnOneLabel";
+    public static final String COLUMN_TWO_LABEL = "ColumnTwoLabel";
+    public static final String COLUMN_THREE_LABEL = "ColumnThreeLabel";
+    public static final String COLUMN_FOUR_LABEL = "ColumnFourLabel";
+    public static final String COLUMN_FIVE_LABEL = "ColumnFiveLabel";
 
     @Override
     public Control createExampleControl(Composite parent) {

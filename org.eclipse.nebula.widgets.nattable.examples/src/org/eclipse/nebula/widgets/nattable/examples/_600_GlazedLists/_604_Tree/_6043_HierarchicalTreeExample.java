@@ -86,12 +86,12 @@ public class _6043_HierarchicalTreeExample extends AbstractNatExample {
 
         BodyLayerStack bodyLayerStack = new BodyLayerStack(
                 CarService.getInput(),
-                CarService.PROPERTY_NAMES,
-                new HierarchicalWrapperTreeFormat(CarService.PROPERTY_NAMES));
+                CarService.getPropertyNames(),
+                new HierarchicalWrapperTreeFormat(CarService.getPropertyNames()));
 
         // create the column header layer stack
         IDataProvider columnHeaderDataProvider =
-                new DefaultColumnHeaderDataProvider(CarService.PROPERTY_NAMES, propertyToLabelMap);
+                new DefaultColumnHeaderDataProvider(CarService.getPropertyNames(), propertyToLabelMap);
         ILayer columnHeaderLayer = new ColumnHeaderLayer(
                 new DataLayer(columnHeaderDataProvider),
                 bodyLayerStack,

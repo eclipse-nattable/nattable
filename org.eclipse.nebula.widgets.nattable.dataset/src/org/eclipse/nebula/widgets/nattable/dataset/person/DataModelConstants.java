@@ -41,7 +41,7 @@ public class DataModelConstants {
     public static final String POSTALCODE_PROPERTYNAME = "postalCode";
     public static final String CITY_PROPERTYNAME = "city";
 
-    public static final String[] PERSON_PROPERTY_NAMES = {
+    private static final String[] PERSON_PROPERTY_NAMES = {
             FIRSTNAME_PROPERTYNAME,
             LASTNAME_PROPERTYNAME,
             GENDER_PROPERTYNAME,
@@ -49,7 +49,11 @@ public class DataModelConstants {
             BIRTHDAY_PROPERTYNAME
     };
 
-    public static final String[] PERSONWITHADDRESS_PROPERTY_NAMES = {
+    public static String[] getPersonPropertyNames() {
+        return PERSON_PROPERTY_NAMES;
+    }
+
+    private static final String[] PERSONWITHADDRESS_PROPERTY_NAMES = {
             FIRSTNAME_PROPERTYNAME,
             LASTNAME_PROPERTYNAME,
             GENDER_PROPERTYNAME,
@@ -60,4 +64,8 @@ public class DataModelConstants {
             POSTALCODE_PROPERTYNAME,
             CITY_PROPERTYNAME
     };
+
+    public static String[] getPersonwithaddressPropertyNames() {
+        return PERSONWITHADDRESS_PROPERTY_NAMES;
+    }
 }

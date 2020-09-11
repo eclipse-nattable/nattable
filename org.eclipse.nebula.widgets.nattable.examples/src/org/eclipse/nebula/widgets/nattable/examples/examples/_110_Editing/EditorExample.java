@@ -77,19 +77,19 @@ public class EditorExample extends AbstractNatExample {
         return "";
     }
 
-    public static String COLUMN_ONE_LABEL = "ColumnOneLabel";
-    public static String COLUMN_TWO_LABEL = "ColumnTwoLabel";
-    public static String COLUMN_THREE_LABEL = "ColumnThreeLabel";
-    public static String COLUMN_FOUR_LABEL = "ColumnFourLabel";
-    public static String COLUMN_FIVE_LABEL = "ColumnFiveLabel";
-    public static String COLUMN_SIX_LABEL = "ColumnSixLabel";
-    public static String COLUMN_SEVEN_LABEL = "ColumnSevenLabel";
-    public static String COLUMN_EIGHT_LABEL = "ColumnEightLabel";
-    public static String COLUMN_NINE_LABEL = "ColumnNineLabel";
-    public static String COLUMN_TEN_LABEL = "ColumnTenLabel";
-    public static String COLUMN_ELEVEN_LABEL = "ColumnElevenLabel";
-    public static String COLUMN_TWELVE_LABEL = "ColumnTwelveLabel";
-    public static String COLUMN_THIRTEEN_LABEL = "ColumnThirteenLabel";
+    public static final String COLUMN_ONE_LABEL = "ColumnOneLabel";
+    public static final String COLUMN_TWO_LABEL = "ColumnTwoLabel";
+    public static final String COLUMN_THREE_LABEL = "ColumnThreeLabel";
+    public static final String COLUMN_FOUR_LABEL = "ColumnFourLabel";
+    public static final String COLUMN_FIVE_LABEL = "ColumnFiveLabel";
+    public static final String COLUMN_SIX_LABEL = "ColumnSixLabel";
+    public static final String COLUMN_SEVEN_LABEL = "ColumnSevenLabel";
+    public static final String COLUMN_EIGHT_LABEL = "ColumnEightLabel";
+    public static final String COLUMN_NINE_LABEL = "ColumnNineLabel";
+    public static final String COLUMN_TEN_LABEL = "ColumnTenLabel";
+    public static final String COLUMN_ELEVEN_LABEL = "ColumnElevenLabel";
+    public static final String COLUMN_TWELVE_LABEL = "ColumnTwelveLabel";
+    public static final String COLUMN_THIRTEEN_LABEL = "ColumnThirteenLabel";
 
     @Override
     public Control createExampleControl(Composite parent) {

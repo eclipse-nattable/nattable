@@ -16,30 +16,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public enum ColumnHeaders {
-    ONE("ISIN", "isin", String.class),
-    TWO("Bid", "bid", Double.class),
-    THREE("Ask", "ask", Double.class),
-    FOUR("Pricing Model", "pricingModel", String.class),
-    FIVE("Ask Yield", "askYield", Double.class),
-    SIX("Bid Yield", "bidYield", Double.class),
-    SEVEN("(p) Bid/Ask", "bidOverAsk", Double.class),
-    EIGHT("Bid Ask Type", "bidAskType", String.class),
-    NINE("Base Issue", "baseIssue", String.class),
-    TEN("Closing Price", "closingPrice", Double.class),
-    ELEVEN("Closing Yield", "closingYield", Double.class),
-    TWELVE("Closing Spread", "closingSpread", Double.class),
-    THIRTEEN("Price Change", "priceChange", Double.class),
-    FOURTEEN("Yield Change", "yieldChange", Double.class),
-    FIFTEEN("Spread Change", "spreadChange", Double.class),
-    SIXTEEN("Alias", "alias", String.class),
-    SEVENTEEN("Basis Point Value", "basisPointValue", Double.class),
-    EIGHTEEN("Mod. Duration", "modDuration", Double.class),
-    NINETEEN("Convexity", "convexity", Double.class),
-    TWENTY("Native Trading Group", "nativeTradingGroup", String.class),
-    TWENTYONE("Error Severity", "errorSeverity", Double.class),
-    TWENTYTWO("Error Message", "errorMessage", String.class),
-    TWENTYTHREE("Pricing Source", "pricingSource", String.class),
-    TWENTYFOUR("Security Type", "securityType", String.class);
+    ONE("ISIN", "isin", String.class), TWO("Bid", "bid", Double.class), THREE("Ask", "ask", Double.class), FOUR("Pricing Model", "pricingModel", String.class), FIVE("Ask Yield", "askYield", Double.class), SIX("Bid Yield", "bidYield",
+            Double.class), SEVEN("(p) Bid/Ask", "bidOverAsk", Double.class), EIGHT("Bid Ask Type", "bidAskType", String.class), NINE("Base Issue", "baseIssue", String.class), TEN("Closing Price", "closingPrice", Double.class), ELEVEN(
+                    "Closing Yield", "closingYield", Double.class), TWELVE("Closing Spread", "closingSpread", Double.class), THIRTEEN("Price Change", "priceChange", Double.class), FOURTEEN("Yield Change", "yieldChange",
+                            Double.class), FIFTEEN("Spread Change", "spreadChange", Double.class), SIXTEEN("Alias", "alias", String.class), SEVENTEEN("Basis Point Value", "basisPointValue", Double.class), EIGHTEEN("Mod. Duration",
+                                    "modDuration", Double.class), NINETEEN("Convexity", "convexity", Double.class), TWENTY("Native Trading Group", "nativeTradingGroup", String.class), TWENTYONE("Error Severity", "errorSeverity",
+                                            Double.class), TWENTYTWO("Error Message", "errorMessage", String.class), TWENTYTHREE("Pricing Source", "pricingSource", String.class), TWENTYFOUR("Security Type", "securityType", String.class);
 
     private String label;
     private String property;
@@ -62,10 +44,6 @@ public enum ColumnHeaders {
 
     public String getLabel() {
         return this.label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
     }
 
     public static String[] getProperties() {
@@ -99,10 +77,6 @@ public enum ColumnHeaders {
 
     public String getProperty() {
         return this.property;
-    }
-
-    public void setProperty(String property) {
-        this.property = property;
     }
 
     public Class<?> getType() {

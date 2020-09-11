@@ -20,7 +20,7 @@ import java.util.List;
 
 public class CarService {
 
-    public static String[] PROPERTY_NAMES = {
+    private static final String[] PROPERTY_NAMES = {
             "manufacturer",
             "model",
             "motors.identifier",
@@ -32,7 +32,7 @@ public class CarService {
             "motors.feedbacks.comment"
     };
 
-    public static String[] PROPERTY_NAMES_COMPACT = {
+    private static final String[] PROPERTY_NAMES_COMPACT = {
             "manufacturer",
             "model",
             "motors.identifier",
@@ -84,6 +84,14 @@ public class CarService {
         input.add(car3);
 
         return input;
+    }
+
+    public static String[] getPropertyNames() {
+        return PROPERTY_NAMES;
+    }
+
+    public static String[] getPropertyNamesCompact() {
+        return PROPERTY_NAMES_COMPACT;
     }
 
 }

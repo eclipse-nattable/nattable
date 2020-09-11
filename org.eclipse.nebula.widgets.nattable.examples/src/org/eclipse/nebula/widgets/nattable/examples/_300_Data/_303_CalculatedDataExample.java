@@ -69,11 +69,11 @@ import ca.odell.glazedlists.GlazedLists;
  */
 public class _303_CalculatedDataExample extends AbstractNatExample {
 
-    public static String COLUMN_ONE_LABEL = "ColumnOneLabel";
-    public static String COLUMN_TWO_LABEL = "ColumnTwoLabel";
-    public static String COLUMN_THREE_LABEL = "ColumnThreeLabel";
-    public static String COLUMN_FOUR_LABEL = "ColumnFourLabel";
-    public static String COLUMN_FIVE_LABEL = "ColumnFiveLabel";
+    public static final String COLUMN_ONE_LABEL = "ColumnOneLabel";
+    public static final String COLUMN_TWO_LABEL = "ColumnTwoLabel";
+    public static final String COLUMN_THREE_LABEL = "ColumnThreeLabel";
+    public static final String COLUMN_FOUR_LABEL = "ColumnFourLabel";
+    public static final String COLUMN_FIVE_LABEL = "ColumnFiveLabel";
 
     private EventList<NumberValues> valuesToShow = GlazedLists.eventList(new ArrayList<NumberValues>());
 
@@ -198,8 +198,8 @@ public class _303_CalculatedDataExample extends AbstractNatExample {
                     return rowObject.getColumnTwoNumber()
                             + rowObject.getColumnThreeNumber();
                 case 4: // calculate the percentage
-                    return new Double(rowObject.getColumnTwoNumber()
-                            + rowObject.getColumnThreeNumber())
+                    return new Double((double) rowObject.getColumnTwoNumber()
+                            + (double) rowObject.getColumnThreeNumber())
                             / rowObject.getColumnOneNumber();
             }
             return null;

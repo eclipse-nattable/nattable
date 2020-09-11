@@ -35,7 +35,7 @@ public class HierarchicalTest {
         List<Car> input = new ArrayList<>();
         input.add(new Car("Mercedes", "C Klasse"));
 
-        List<HierarchicalWrapper> result = HierarchicalHelper.deNormalize(input, false, CarService.PROPERTY_NAMES);
+        List<HierarchicalWrapper> result = HierarchicalHelper.deNormalize(input, false, CarService.getPropertyNames());
 
         assertEquals(1, result.size());
     }
@@ -51,7 +51,7 @@ public class HierarchicalTest {
 
         input.add(car);
 
-        List<HierarchicalWrapper> result = HierarchicalHelper.deNormalize(input, false, Arrays.asList(CarService.PROPERTY_NAMES));
+        List<HierarchicalWrapper> result = HierarchicalHelper.deNormalize(input, false, Arrays.asList(CarService.getPropertyNames()));
 
         assertEquals(2, result.size());
     }
@@ -71,7 +71,7 @@ public class HierarchicalTest {
 
         input.add(car);
 
-        List<HierarchicalWrapper> result = HierarchicalHelper.deNormalize(input, false, Arrays.asList(CarService.PROPERTY_NAMES));
+        List<HierarchicalWrapper> result = HierarchicalHelper.deNormalize(input, false, Arrays.asList(CarService.getPropertyNames()));
 
         assertEquals(3, result.size());
 
@@ -99,7 +99,7 @@ public class HierarchicalTest {
         // System.out.println();
 
         // test get data value
-        HierarchicalReflectiveColumnPropertyAccessor accessor = new HierarchicalReflectiveColumnPropertyAccessor(CarService.PROPERTY_NAMES);
+        HierarchicalReflectiveColumnPropertyAccessor accessor = new HierarchicalReflectiveColumnPropertyAccessor(CarService.getPropertyNames());
         assertEquals(Classification.NEUTRAL, accessor.getDataValue(result.get(1), 7));
 
         // test set data value
@@ -118,7 +118,7 @@ public class HierarchicalTest {
         List<Car> input = new ArrayList<>();
         input.add(new Car("Mercedes", "C Klasse"));
 
-        List<HierarchicalWrapper> result = HierarchicalHelper.deNormalize(input, true, Arrays.asList(CarService.PROPERTY_NAMES));
+        List<HierarchicalWrapper> result = HierarchicalHelper.deNormalize(input, true, Arrays.asList(CarService.getPropertyNames()));
 
         assertEquals(1, result.size());
     }
@@ -134,7 +134,7 @@ public class HierarchicalTest {
 
         input.add(car);
 
-        List<HierarchicalWrapper> result = HierarchicalHelper.deNormalize(input, true, Arrays.asList(CarService.PROPERTY_NAMES));
+        List<HierarchicalWrapper> result = HierarchicalHelper.deNormalize(input, true, Arrays.asList(CarService.getPropertyNames()));
 
         assertEquals(3, result.size());
     }
@@ -154,7 +154,7 @@ public class HierarchicalTest {
 
         input.add(car);
 
-        List<HierarchicalWrapper> result = HierarchicalHelper.deNormalize(input, true, Arrays.asList(CarService.PROPERTY_NAMES));
+        List<HierarchicalWrapper> result = HierarchicalHelper.deNormalize(input, true, Arrays.asList(CarService.getPropertyNames()));
 
         assertEquals(5, result.size());
 
@@ -184,7 +184,7 @@ public class HierarchicalTest {
         // test get data value
         // with structure parent objects, first object is Car, second Car +
         // Motor, third Car + Motor + Feedback
-        HierarchicalReflectiveColumnPropertyAccessor accessor = new HierarchicalReflectiveColumnPropertyAccessor(CarService.PROPERTY_NAMES);
+        HierarchicalReflectiveColumnPropertyAccessor accessor = new HierarchicalReflectiveColumnPropertyAccessor(CarService.getPropertyNames());
         HierarchicalWrapper first = result.get(0);
         HierarchicalWrapper second = result.get(1);
         HierarchicalWrapper third = result.get(2);
@@ -232,7 +232,7 @@ public class HierarchicalTest {
 
         input.add(car2);
 
-        List<HierarchicalWrapper> result = HierarchicalHelper.deNormalize(input, true, Arrays.asList(CarService.PROPERTY_NAMES));
+        List<HierarchicalWrapper> result = HierarchicalHelper.deNormalize(input, true, Arrays.asList(CarService.getPropertyNames()));
 
         assertEquals(7, result.size());
 

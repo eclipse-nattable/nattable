@@ -1335,62 +1335,59 @@ public class RowGroupHeaderLayerTest {
 
         // this hides completely the Address and Facts group and the first item
         // of the Personal group via two separate commands
-        if (this.selectionLayer.doCommand(new MultiRowHideCommand(this.selectionLayer, 4, 5, 6, 7))
-                && this.selectionLayer.doCommand(new MultiRowHideCommand(this.selectionLayer, 4, 5, 6, 7))) {
-            assertEquals(6, this.selectionLayer.getRowCount());
+        this.selectionLayer.doCommand(new MultiRowHideCommand(this.selectionLayer, 4, 5, 6, 7));
+        this.selectionLayer.doCommand(new MultiRowHideCommand(this.selectionLayer, 4, 5, 6, 7));
+        assertEquals(6, this.selectionLayer.getRowCount());
 
-            ILayerCell cell = this.rowGroupHeaderLayer.getCellByPosition(0, 0);
-            assertEquals(0, cell.getOriginRowPosition());
-            assertEquals(4, cell.getRowSpan());
-            assertEquals("Person", cell.getDataValue());
-            assertEquals(0, cell.getBounds().y);
-            assertEquals(0, cell.getBounds().x);
-            assertEquals(80, cell.getBounds().height);
-            assertEquals(20, cell.getBounds().width);
+        ILayerCell cell = this.rowGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginRowPosition());
+        assertEquals(4, cell.getRowSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(80, cell.getBounds().height);
+        assertEquals(20, cell.getBounds().width);
 
-            cell = this.rowGroupHeaderLayer.getCellByPosition(0, 4);
-            assertEquals(4, cell.getOriginRowPosition());
-            assertEquals(4, cell.getRowPosition());
-            assertEquals(12, cell.getRowIndex());
-            assertEquals(2, cell.getRowSpan());
-            assertEquals("Personal", cell.getDataValue());
-            assertEquals(80, cell.getBounds().y);
-            assertEquals(0, cell.getBounds().x);
-            assertEquals(40, cell.getBounds().height);
-            assertEquals(20, cell.getBounds().width);
+        cell = this.rowGroupHeaderLayer.getCellByPosition(0, 4);
+        assertEquals(4, cell.getOriginRowPosition());
+        assertEquals(4, cell.getRowPosition());
+        assertEquals(12, cell.getRowIndex());
+        assertEquals(2, cell.getRowSpan());
+        assertEquals("Personal", cell.getDataValue());
+        assertEquals(80, cell.getBounds().y);
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(40, cell.getBounds().height);
+        assertEquals(20, cell.getBounds().width);
 
-            Group group1 = this.rowGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
-            assertEquals(0, group1.getStartIndex());
-            assertEquals(0, group1.getVisibleStartIndex());
-            assertEquals(0, group1.getVisibleStartPosition());
-            assertEquals(4, group1.getOriginalSpan());
-            assertEquals(4, group1.getVisibleSpan());
+        Group group1 = this.rowGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
 
-            Group group4 = this.rowGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
-            assertEquals(11, group4.getStartIndex());
-            assertEquals(12, group4.getVisibleStartIndex());
-            assertEquals(4, group4.getVisibleStartPosition());
-            assertEquals(3, group4.getOriginalSpan());
-            assertEquals(2, group4.getVisibleSpan());
+        Group group4 = this.rowGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(12, group4.getVisibleStartIndex());
+        assertEquals(4, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(2, group4.getVisibleSpan());
 
-            // these groups are not visible by column position, so we retrieve
-            // it by name
-            Group group2 = this.rowGroupHeaderLayer.getGroupModel().getGroupByName("Address");
-            assertEquals(4, group2.getStartIndex());
-            assertEquals(-1, group2.getVisibleStartIndex());
-            assertEquals(-1, group2.getVisibleStartPosition());
-            assertEquals(4, group2.getOriginalSpan());
-            assertEquals(0, group2.getVisibleSpan());
+        // these groups are not visible by column position, so we retrieve
+        // it by name
+        Group group2 = this.rowGroupHeaderLayer.getGroupModel().getGroupByName("Address");
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(-1, group2.getVisibleStartIndex());
+        assertEquals(-1, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(0, group2.getVisibleSpan());
 
-            Group group3 = this.rowGroupHeaderLayer.getGroupModel().getGroupByName("Facts");
-            assertEquals(8, group3.getStartIndex());
-            assertEquals(-1, group3.getVisibleStartIndex());
-            assertEquals(-1, group3.getVisibleStartPosition());
-            assertEquals(3, group3.getOriginalSpan());
-            assertEquals(0, group3.getVisibleSpan());
-        } else {
-            fail("Row not hidden");
-        }
+        Group group3 = this.rowGroupHeaderLayer.getGroupModel().getGroupByName("Facts");
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(-1, group3.getVisibleStartIndex());
+        assertEquals(-1, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(0, group3.getVisibleSpan());
 
         // show again
         if (this.gridLayer.doCommand(new ShowAllRowsCommand())) {

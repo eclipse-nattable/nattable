@@ -48,15 +48,13 @@ public class ColumnChooserUtilsTest {
 
     @Test
     public void getPositionsFromEntries() throws Exception {
-        List<Integer> positions = ColumnChooserUtils
-                .getColumnEntryPositions(this.entriesFixture);
+        List<Integer> positions = ColumnChooserUtils.getColumnEntryPositions(this.entriesFixture);
         assertEquals("[2, 6, 3, 4, 5]", positions.toString());
     }
 
     @Test
     public void getIndexesFromEntries() throws Exception {
-        List<Integer> indexes = ColumnChooserUtils
-                .getColumnEntryIndexes(this.entriesFixture);
+        List<Integer> indexes = ColumnChooserUtils.getColumnEntryIndexes(this.entriesFixture);
         assertEquals("[1, 3, 5, 7, 9]", indexes.toString());
     }
 
@@ -67,15 +65,12 @@ public class ColumnChooserUtilsTest {
     }
 
     @Test
-    public void shouldProvideRenamedLabelsIfTheColumnHasBeenRenamed()
-            throws Exception {
+    public void shouldProvideRenamedLabelsIfTheColumnHasBeenRenamed() throws Exception {
         ColumnHeaderLayerFixture columnHeaderLayer = new ColumnHeaderLayerFixture();
-        assertEquals("[1, 0]",
-                getColumnLabel(columnHeaderLayer, getDataLayer(), 1));
+        assertEquals("[1, 0]", getColumnLabel(columnHeaderLayer, getDataLayer(), 1));
 
         columnHeaderLayer.renameColumnPosition(1, "renamed");
-        assertEquals("renamed*",
-                getColumnLabel(columnHeaderLayer, getDataLayer(), 1));
+        assertEquals("renamed*", getColumnLabel(columnHeaderLayer, getDataLayer(), 1));
     }
 
     @Test
@@ -84,32 +79,31 @@ public class ColumnChooserUtilsTest {
                 RowDataListFixture.getList(),
                 RowDataListFixture.getPropertyNames(),
                 RowDataListFixture.getPropertyToLabelMap());
-        ColumnHideShowLayer columnHideShowLayer = gridLayer.getBodyLayer()
-                .getColumnHideShowLayer();
+        ColumnHideShowLayer columnHideShowLayer = gridLayer.getBodyLayer().getColumnHideShowLayer();
         ColumnHeaderLayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
-        DataLayer columnHeaderDataLayer = (DataLayer) gridLayer
-                .getColumnHeaderDataLayer();
+        DataLayer columnHeaderDataLayer = (DataLayer) gridLayer.getColumnHeaderDataLayer();
 
-        List<ColumnEntry> visibleEntries = ColumnChooserUtils
-                .getVisibleColumnsEntries(columnHideShowLayer,
-                        columnHeaderLayer, columnHeaderDataLayer);
+        List<ColumnEntry> visibleEntries = ColumnChooserUtils.getVisibleColumnsEntries(
+                columnHideShowLayer,
+                columnHeaderLayer,
+                columnHeaderDataLayer);
 
         // All columns shown
-        assertEquals(RowDataListFixture.getPropertyNames().length,
-                visibleEntries.size());
+        assertEquals(RowDataListFixture.getPropertyNames().length, visibleEntries.size());
 
         // Hide a few columns
-        gridLayer.getBodyLayer().getColumnHideShowLayer()
-                .hideColumnPositions(Arrays.asList(1, 2, 3));
+        gridLayer.getBodyLayer().getColumnHideShowLayer().hideColumnPositions(Arrays.asList(1, 2, 3));
         visibleEntries = ColumnChooserUtils.getVisibleColumnsEntries(
-                columnHideShowLayer, columnHeaderLayer, columnHeaderDataLayer);
-        assertEquals(RowDataListFixture.getPropertyNames().length - 3,
-                visibleEntries.size());
+                columnHideShowLayer,
+                columnHeaderLayer,
+                columnHeaderDataLayer);
+        assertEquals(RowDataListFixture.getPropertyNames().length - 3l, visibleEntries.size());
 
         // Check the hidden entries
-        List<ColumnEntry> hiddenEntries = ColumnChooserUtils
-                .getHiddenColumnEntries(columnHideShowLayer, columnHeaderLayer,
-                        columnHeaderDataLayer);
+        List<ColumnEntry> hiddenEntries = ColumnChooserUtils.getHiddenColumnEntries(
+                columnHideShowLayer,
+                columnHeaderLayer,
+                columnHeaderDataLayer);
         assertEquals(3, hiddenEntries.size());
     }
 }

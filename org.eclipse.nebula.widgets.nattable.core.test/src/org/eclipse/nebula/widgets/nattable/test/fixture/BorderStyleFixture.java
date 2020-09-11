@@ -18,9 +18,9 @@ import org.eclipse.swt.graphics.Color;
 
 public class BorderStyleFixture extends BorderStyle {
 
-    public static int THICKNESS = 2;
-    public static Color COLOR = GUIHelper.COLOR_GREEN;
-    public static LineStyleEnum LINE_STYLE = LineStyleEnum.DASHDOT;
+    public static final int THICKNESS = 2;
+    public static final Color COLOR = GUIHelper.COLOR_GREEN;
+    public static final LineStyleEnum LINE_STYLE = LineStyleEnum.DASHDOT;
 
     public BorderStyleFixture() {
         super(2, COLOR, LINE_STYLE);

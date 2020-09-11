@@ -62,12 +62,16 @@ public class GlazedListsEventLayerTest {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         this.listenerFixture.setCountDownLatch(countDownLatch);
         this.listFixture.add(RowDataFixture.getInstance("T1", "A"));
-        countDownLatch.await(500, TimeUnit.MILLISECONDS);
+        boolean completed = countDownLatch.await(500, TimeUnit.MILLISECONDS);
+
+        assertTrue(completed, "Timeout - no event received");
 
         countDownLatch = new CountDownLatch(1);
         this.listenerFixture.setCountDownLatch(countDownLatch);
         this.listFixture.add(RowDataFixture.getInstance("T2", "A"));
-        countDownLatch.await(500, TimeUnit.MILLISECONDS);
+        completed = countDownLatch.await(500, TimeUnit.MILLISECONDS);
+
+        assertTrue(completed, "Timeout - no event received");
 
         assertNotNull(this.listenerFixture.getReceivedEvent(RowStructuralRefreshEvent.class));
     }
@@ -80,12 +84,16 @@ public class GlazedListsEventLayerTest {
         assertFalse(this.layerUnderTest.isDisposed());
 
         this.listFixture.add(RowDataFixture.getInstance("T1", "A"));
-        countDownLatch.await(500, TimeUnit.MILLISECONDS);
+        boolean completed = countDownLatch.await(500, TimeUnit.MILLISECONDS);
+
+        assertTrue(completed, "Timeout - no event received");
 
         countDownLatch = new CountDownLatch(1);
         this.listenerFixture.setCountDownLatch(countDownLatch);
         this.listFixture.add(RowDataFixture.getInstance("T2", "A"));
-        countDownLatch.await(500, TimeUnit.MILLISECONDS);
+        completed = countDownLatch.await(500, TimeUnit.MILLISECONDS);
+
+        assertTrue(completed, "Timeout - no event received");
 
         this.layerUnderTest.doCommand(new DisposeResourcesCommand());
         assertTrue(this.layerUnderTest.isDisposed());

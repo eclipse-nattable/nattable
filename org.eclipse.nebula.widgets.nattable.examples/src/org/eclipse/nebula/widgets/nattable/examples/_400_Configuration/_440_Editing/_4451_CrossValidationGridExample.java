@@ -63,8 +63,8 @@ import ca.odell.glazedlists.GlazedLists;
  */
 public class _4451_CrossValidationGridExample extends AbstractNatExample {
 
-    public static String DATE_LABEL = "DateLabel";
-    public static String INVALID_LABEL = "InvalidLabel";
+    public static final String DATE_LABEL = "DateLabel";
+    public static final String INVALID_LABEL = "InvalidLabel";
 
     private EventList<EventData> valuesToShow = GlazedLists.eventList(new ArrayList<EventData>());
 

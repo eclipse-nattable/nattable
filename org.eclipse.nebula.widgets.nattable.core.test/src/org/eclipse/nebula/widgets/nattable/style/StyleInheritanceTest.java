@@ -60,16 +60,14 @@ public class StyleInheritanceTest {
                 this.superCellStyle);
 
         // Setup even row style
-        this.evenCellStyle = new Style() {
-            {
-                setAttributeValue(
-                        CellStyleAttributes.BACKGROUND_COLOR,
-                        Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
-                setAttributeValue(
-                        CellStyleAttributes.FOREGROUND_COLOR,
-                        Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
-            }
-        };
+        this.evenCellStyle = new Style();
+        this.evenCellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
+                Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
+        this.evenCellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
+                Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+
         this.configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_STYLE,
                 this.evenCellStyle,
@@ -77,13 +75,10 @@ public class StyleInheritanceTest {
                 AlternatingRowConfigLabelAccumulator.ODD_ROW_CONFIG_TYPE);
 
         // Setup odd row style
-        this.oddCellStyle = new Style() {
-            {
-                setAttributeValue(
-                        CellStyleAttributes.FOREGROUND_COLOR,
-                        Display.getDefault().getSystemColor(SWT.COLOR_RED));
-            }
-        };
+        this.oddCellStyle = new Style();
+        this.oddCellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
+                Display.getDefault().getSystemColor(SWT.COLOR_RED));
         this.configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_STYLE,
                 this.oddCellStyle,

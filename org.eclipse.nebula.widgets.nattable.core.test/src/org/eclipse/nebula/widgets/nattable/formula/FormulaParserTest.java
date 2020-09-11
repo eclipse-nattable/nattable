@@ -142,10 +142,10 @@ public class FormulaParserTest {
         assertEquals(new BigDecimal(20 / 2 / 5), result.getValue());
 
         result = this.parser.parseFunction("5 / 2");
-        assertEquals(new BigDecimal(5d / 2), result.getValue());
+        assertEquals(BigDecimal.valueOf(5d / 2), result.getValue());
 
         result = this.parser.parseFunction("100 / 4 / 5 / 2");
-        assertEquals(new BigDecimal(100d / 4 / 5 / 2), result.getValue());
+        assertEquals(BigDecimal.valueOf(100d / 4 / 5 / 2), result.getValue());
 
         result = this.parser.parseFunction("-15 / 3");
         assertEquals(new BigDecimal(-15 / 3), result.getValue());
@@ -172,8 +172,8 @@ public class FormulaParserTest {
         assertEquals(new BigDecimal(29), result.getValue());
 
         result = this.parser.parseFunction("2*5+10/4-3");
-        assertEquals(new BigDecimal(2 * 5 + 10d / 4 - 3), result.getValue());
-        assertEquals(new BigDecimal(9.5), result.getValue());
+        assertEquals(BigDecimal.valueOf(2 * 5 + 10d / 4 - 3), result.getValue());
+        assertEquals(BigDecimal.valueOf(9.5), result.getValue());
     }
 
     @Test(expected = IllegalArgumentException.class)

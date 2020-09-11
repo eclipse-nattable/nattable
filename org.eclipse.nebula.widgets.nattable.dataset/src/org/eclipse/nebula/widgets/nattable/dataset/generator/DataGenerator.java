@@ -35,8 +35,7 @@ public class DataGenerator<T> {
 
             for (Field field : dataClass.getDeclaredFields()) {
 
-                final IValueGenerator generator = generatorFactory
-                        .createValueGenerator(field);
+                final IValueGenerator generator = generatorFactory.createValueGenerator(field);
                 if (generator != null) {
                     setField(dataClass, dataContainer, field, generator);
                 }
@@ -44,23 +43,7 @@ public class DataGenerator<T> {
 
             return dataContainer;
 
-        } catch (InstantiationException ie) {
-            ie.printStackTrace();
-            throw new GeneratorException(ie);
-        } catch (IllegalAccessException iae) {
-            iae.printStackTrace();
-            throw new GeneratorException(iae);
-        } catch (SecurityException se) {
-            se.printStackTrace();
-            throw new GeneratorException(se);
-        } catch (NoSuchMethodException nsme) {
-            nsme.printStackTrace();
-            throw new GeneratorException(nsme);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            throw new GeneratorException(e);
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
             throw new GeneratorException(e);
         }
     }
@@ -81,70 +64,52 @@ public class DataGenerator<T> {
     }
 
     private static interface IValueGeneratorFactory {
-        IValueGenerator createValueGenerator(Field field)
-                throws InstantiationException, IllegalAccessException;
+        IValueGenerator createValueGenerator(Field field) throws InstantiationException, IllegalAccessException;
     }
 
-    private static class DataValueGeneratorFactory implements
-            IValueGeneratorFactory {
+    private static class DataValueGeneratorFactory implements IValueGeneratorFactory {
         @Override
-        public IValueGenerator createValueGenerator(Field field)
-                throws InstantiationException, IllegalAccessException {
+        public IValueGenerator createValueGenerator(Field field) throws InstantiationException, IllegalAccessException {
             field.setAccessible(true);
-            DataValueGenerator annotation = field
-                    .getAnnotation(DataValueGenerator.class);
+            DataValueGenerator annotation = field.getAnnotation(DataValueGenerator.class);
             // Class<? extends IValueGenerator> generatorClass =
             // annotation.value();
-            Class<? extends IValueGenerator> generatorClass = annotation
-                    .value();
+            Class<? extends IValueGenerator> generatorClass = annotation.value();
             return generatorClass.newInstance();
         }
     }
 
-    private static class DoubleValueGeneratorFactory implements
-            IValueGeneratorFactory {
+    private static class DoubleValueGeneratorFactory implements IValueGeneratorFactory {
         @Override
-        public IValueGenerator createValueGenerator(Field field)
-                throws InstantiationException, IllegalAccessException {
+        public IValueGenerator createValueGenerator(Field field) throws InstantiationException, IllegalAccessException {
             field.setAccessible(true);
-            GenerateDouble generateDouble = field
-                    .getAnnotation(GenerateDouble.class);
-            return new DoubleValueGenerator(generateDouble.floor(),
-                    generateDouble.range());
+            GenerateDouble generateDouble = field.getAnnotation(GenerateDouble.class);
+            return new DoubleValueGenerator(generateDouble.floor(), generateDouble.range());
         }
     }
 
-    private static class StringListValueGeneratorFactory implements
-            IValueGeneratorFactory {
+    private static class StringListValueGeneratorFactory implements IValueGeneratorFactory {
         @Override
-        public IValueGenerator createValueGenerator(Field field)
-                throws InstantiationException, IllegalAccessException {
+        public IValueGenerator createValueGenerator(Field field) throws InstantiationException, IllegalAccessException {
             field.setAccessible(true);
-            GenerateListOfStrings generateList = field
-                    .getAnnotation(GenerateListOfStrings.class);
-            return new ListValueGenerator<String>(
-                    generateList.nullLoadFactor(), generateList.values());
+            GenerateListOfStrings generateList = field.getAnnotation(GenerateListOfStrings.class);
+            return new ListValueGenerator<String>(generateList.nullLoadFactor(), generateList.values());
         }
     }
 
-    private static class ValueGeneratorFactory implements
-            IValueGeneratorFactory {
+    private static class ValueGeneratorFactory implements IValueGeneratorFactory {
         @Override
-        public IValueGenerator createValueGenerator(Field field)
-                throws InstantiationException, IllegalAccessException {
+        public IValueGenerator createValueGenerator(Field field) throws InstantiationException, IllegalAccessException {
             if (field.isAnnotationPresent(DataValueGenerator.class)) {
-                return new DataValueGeneratorFactory()
-                        .createValueGenerator(field);
+                return new DataValueGeneratorFactory().createValueGenerator(field);
             }
 
             if (field.isAnnotationPresent(GenerateDouble.class)) {
-                return new DoubleValueGeneratorFactory()
-                        .createValueGenerator(field);
+                return new DoubleValueGeneratorFactory().createValueGenerator(field);
             }
 
             if (field.isAnnotationPresent(GenerateListOfStrings.class)) {
-                return new StringListValueGeneratorFactory()
-                        .createValueGenerator(field);
+                return new StringListValueGeneratorFactory().createValueGenerator(field);
             }
 
             return null;

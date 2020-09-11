@@ -27,9 +27,9 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class ViewportLayerFixture extends ViewportLayer {
 
-    public static Rectangle DEFAULT_CLIENT_AREA = new Rectangle(0, 0, 200, 100);
-    public static IClientAreaProvider DEFAULT_CLIENT_AREA_PROVIDER = getClientAreaProvider(DEFAULT_CLIENT_AREA);
-    public static Scrollable DEFAULT_SCROLLABLE = scrollable();
+    public static final Rectangle DEFAULT_CLIENT_AREA = new Rectangle(0, 0, 200, 100);
+    public static final IClientAreaProvider DEFAULT_CLIENT_AREA_PROVIDER = getClientAreaProvider(DEFAULT_CLIENT_AREA);
+    public static final Scrollable DEFAULT_SCROLLABLE = scrollable();
 
     /**
      * Default Xtor
@@ -41,8 +41,7 @@ public class ViewportLayerFixture extends ViewportLayer {
 
     public ViewportLayerFixture(IUniqueIndexLayer underlingLayer) {
         super(underlingLayer);
-        setClientAreaProvider(getClientAreaProvider(new Rectangle(0, 0, 1000,
-                1000)));
+        setClientAreaProvider(getClientAreaProvider(new Rectangle(0, 0, 1000, 1000)));
         doCommand(new InitializeClientAreaCommandFixture());
     }
 
@@ -61,10 +60,8 @@ public class ViewportLayerFixture extends ViewportLayer {
      * @param rowCount
      *            total number of rows
      */
-    public ViewportLayerFixture(int colCount, int rowCount,
-            int defaultColWidth, int defaultRowHeight) {
-        super(new DataLayerFixture(colCount, rowCount, defaultColWidth,
-                defaultRowHeight));
+    public ViewportLayerFixture(int colCount, int rowCount, int defaultColWidth, int defaultRowHeight) {
+        super(new DataLayerFixture(colCount, rowCount, defaultColWidth, defaultRowHeight));
         setClientAreaProvider(DEFAULT_CLIENT_AREA_PROVIDER);
     }
 
@@ -76,8 +73,7 @@ public class ViewportLayerFixture extends ViewportLayer {
         setClientAreaProvider(getClientAreaProvider(clientArea));
     }
 
-    private static IClientAreaProvider getClientAreaProvider(
-            final Rectangle clientArea) {
+    private static IClientAreaProvider getClientAreaProvider(Rectangle clientArea) {
         return new IClientAreaProvider() {
             @Override
             public Rectangle getClientArea() {
@@ -87,7 +83,6 @@ public class ViewportLayerFixture extends ViewportLayer {
     }
 
     private static Scrollable scrollable() {
-        return new Composite(new Shell(Display.getDefault()), SWT.H_SCROLL
-                | SWT.V_SCROLL);
+        return new Composite(new Shell(Display.getDefault()), SWT.H_SCROLL | SWT.V_SCROLL);
     }
 }

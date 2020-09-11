@@ -75,28 +75,19 @@ public class TextPainter_Examples extends AbstractNatExample {
         tableContainer.setLayout(new GridLayout(6, true));
         GridDataFactory.fillDefaults().grab(true, true).applyTo(tableContainer);
 
-        createNatTable(tableContainer, new GradientBackgroundPainter(
-                new TextPainter(false, false, false), true));
+        createNatTable(tableContainer, new GradientBackgroundPainter(new TextPainter(false, false, false), true));
         createNatTable(tableContainer, new TextPainter(true, true, false));
         createNatTable(tableContainer, new TextPainter(false, true, true));
         createNatTable(tableContainer, new TextPainter(true, true, true));
         createNatTable(tableContainer, new TextPainter(true, true, 5, true));
-        createNatTable(tableContainer, new PaddingDecorator(new TextPainter(
-                true, true, 5, true), 5));
+        createNatTable(tableContainer, new PaddingDecorator(new TextPainter(true, true, 5, true), 5));
 
-        createVerticalHeaderNatTable(tableContainer, new VerticalTextPainter(
-                false, true, false));
-        createVerticalHeaderNatTable(tableContainer, new VerticalTextPainter(
-                true, true, false));
-        createVerticalHeaderNatTable(tableContainer,
-                new GradientBackgroundPainter(new VerticalTextPainter(false,
-                        false, true)));
-        createVerticalHeaderNatTable(tableContainer, new VerticalTextPainter(
-                true, true, true));
-        createVerticalHeaderNatTable(tableContainer, new VerticalTextPainter(
-                true, true, 5, true));
-        createVerticalHeaderNatTable(tableContainer, new PaddingDecorator(
-                new VerticalTextPainter(true, true, 5, true), 5));
+        createVerticalHeaderNatTable(tableContainer, new VerticalTextPainter(false, true, false));
+        createVerticalHeaderNatTable(tableContainer, new VerticalTextPainter(true, true, false));
+        createVerticalHeaderNatTable(tableContainer, new GradientBackgroundPainter(new VerticalTextPainter(false, false, true)));
+        createVerticalHeaderNatTable(tableContainer, new VerticalTextPainter(true, true, true));
+        createVerticalHeaderNatTable(tableContainer, new VerticalTextPainter(true, true, 5, true));
+        createVerticalHeaderNatTable(tableContainer, new PaddingDecorator(new VerticalTextPainter(true, true, 5, true), 5));
 
         TextPainter underlineTextPainer = new TextPainter();
         underlineTextPainer.setUnderline(true);
@@ -109,20 +100,16 @@ public class TextPainter_Examples extends AbstractNatExample {
         underlineStrikethroughTextPainer.setStrikethrough(true);
         createNatTable2(tableContainer, underlineStrikethroughTextPainer);
 
-        VerticalTextPainter vunderlineTextPainer = new VerticalTextPainter(
-                true, true, true);
+        VerticalTextPainter vunderlineTextPainer = new VerticalTextPainter(true, true, true);
         vunderlineTextPainer.setUnderline(true);
         createVerticalHeaderNatTable(tableContainer, vunderlineTextPainer);
-        VerticalTextPainter vstrikethroughTextPainer = new VerticalTextPainter(
-                true, true, true);
+        VerticalTextPainter vstrikethroughTextPainer = new VerticalTextPainter(true, true, true);
         vstrikethroughTextPainer.setStrikethrough(true);
         createVerticalHeaderNatTable(tableContainer, vstrikethroughTextPainer);
-        VerticalTextPainter vunderlineStrikethroughTextPainer = new VerticalTextPainter(
-                true, true, true);
+        VerticalTextPainter vunderlineStrikethroughTextPainer = new VerticalTextPainter(true, true, true);
         vunderlineStrikethroughTextPainer.setUnderline(true);
         vunderlineStrikethroughTextPainer.setStrikethrough(true);
-        createVerticalHeaderNatTable(tableContainer,
-                vunderlineStrikethroughTextPainer);
+        createVerticalHeaderNatTable(tableContainer, vunderlineStrikethroughTextPainer);
 
         // uncomment the following lines to see different calculation
         // configurations with greater font sizes
@@ -176,19 +163,17 @@ public class TextPainter_Examples extends AbstractNatExample {
                 viewportLayer, selectionLayer);
 
         CompositeLayer compositeLayer = new CompositeLayer(1, 2);
-        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER,
-                columnHeaderLayer, 0, 0);
+        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnHeaderLayer, 0, 0);
         compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
 
         NatTable natTable = new NatTable(parent, compositeLayer, false);
 
-        natTable.addConfiguration(new DefaultNatTableStyleConfiguration() {
-            {
-                this.vAlign = VerticalAlignmentEnum.TOP;
-                this.hAlign = HorizontalAlignmentEnum.LEFT;
-                this.cellPainter = new LineBorderDecorator(painter);
-            }
-        });
+        DefaultNatTableStyleConfiguration styleConfig = new DefaultNatTableStyleConfiguration();
+        styleConfig.vAlign = VerticalAlignmentEnum.TOP;
+        styleConfig.hAlign = HorizontalAlignmentEnum.LEFT;
+        styleConfig.cellPainter = new LineBorderDecorator(painter);
+
+        natTable.addConfiguration(styleConfig);
 
         natTable.configure();
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
@@ -202,66 +187,52 @@ public class TextPainter_Examples extends AbstractNatExample {
         ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
         ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
-                new DataLayer(new ExampleHeaderDataProvider()), viewportLayer,
-                selectionLayer, false);
-        columnHeaderLayer
-                .addConfiguration(new DefaultColumnHeaderLayerConfiguration() {
-                    @Override
-                    protected void addColumnHeaderStyleConfig() {
-                        addConfiguration(new DefaultColumnHeaderStyleConfiguration() {
-                            {
-                                this.cellPainter = new BeveledBorderDecorator(
-                                        painter);
-                            }
-                        });
-                    }
-                });
+                new DataLayer(new ExampleHeaderDataProvider()), viewportLayer, selectionLayer, false);
+        columnHeaderLayer.addConfiguration(new DefaultColumnHeaderLayerConfiguration() {
+            @Override
+            protected void addColumnHeaderStyleConfig() {
+                DefaultColumnHeaderStyleConfiguration styleConfig = new DefaultColumnHeaderStyleConfiguration();
+                styleConfig.cellPainter = new BeveledBorderDecorator(painter);
+                addConfiguration(styleConfig);
+            }
+        });
 
         CompositeLayer compositeLayer = new CompositeLayer(1, 2);
-        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER,
-                columnHeaderLayer, 0, 0);
+        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnHeaderLayer, 0, 0);
         compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
 
         NatTable natTable = new NatTable(parent, compositeLayer, false);
 
-        natTable.addConfiguration(new DefaultNatTableStyleConfiguration() {
-            {
-                this.vAlign = VerticalAlignmentEnum.TOP;
-                this.hAlign = HorizontalAlignmentEnum.LEFT;
-                this.cellPainter = new LineBorderDecorator(painter);
-            }
-        });
+        DefaultNatTableStyleConfiguration styleConfig = new DefaultNatTableStyleConfiguration();
+        styleConfig.vAlign = VerticalAlignmentEnum.TOP;
+        styleConfig.hAlign = HorizontalAlignmentEnum.LEFT;
+        styleConfig.cellPainter = new LineBorderDecorator(painter);
+
+        natTable.addConfiguration(styleConfig);
 
         natTable.configure();
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
     }
 
-    private void createVerticalHeaderNatTable(Composite parent,
-            final ICellPainter painter) {
+    private void createVerticalHeaderNatTable(Composite parent, final ICellPainter painter) {
         IDataProvider bodyDataProvider = new ExampleHeaderDataProvider();
-        SelectionLayer selectionLayer = new SelectionLayer(new DataLayer(
-                bodyDataProvider));
+        SelectionLayer selectionLayer = new SelectionLayer(new DataLayer(bodyDataProvider));
         ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
         ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
                 new DataLayer(new ExampleHeaderDataProvider()), viewportLayer,
                 selectionLayer, false);
-        columnHeaderLayer
-                .addConfiguration(new DefaultColumnHeaderLayerConfiguration() {
-                    @Override
-                    protected void addColumnHeaderStyleConfig() {
-                        addConfiguration(new DefaultColumnHeaderStyleConfiguration() {
-                            {
-                                this.cellPainter = new BeveledBorderDecorator(
-                                        painter);
-                            }
-                        });
-                    }
-                });
+        columnHeaderLayer.addConfiguration(new DefaultColumnHeaderLayerConfiguration() {
+            @Override
+            protected void addColumnHeaderStyleConfig() {
+                DefaultColumnHeaderStyleConfiguration styleConfig = new DefaultColumnHeaderStyleConfiguration();
+                styleConfig.cellPainter = new BeveledBorderDecorator(painter);
+                addConfiguration(styleConfig);
+            }
+        });
 
         CompositeLayer compositeLayer = new CompositeLayer(1, 2);
-        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER,
-                columnHeaderLayer, 0, 0);
+        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnHeaderLayer, 0, 0);
         compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
 
         NatTable natTable = new NatTable(parent, compositeLayer);
@@ -282,31 +253,27 @@ public class TextPainter_Examples extends AbstractNatExample {
                 viewportLayer, selectionLayer);
 
         CompositeLayer compositeLayer = new CompositeLayer(1, 2);
-        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER,
-                columnHeaderLayer, 0, 0);
+        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnHeaderLayer, 0, 0);
         compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
 
         NatTable natTable = new NatTable(parent, compositeLayer, false);
 
-        natTable.addConfiguration(new DefaultNatTableStyleConfiguration() {
-            {
-                this.vAlign = VerticalAlignmentEnum.TOP;
-                this.hAlign = HorizontalAlignmentEnum.LEFT;
-                this.cellPainter = new LineBorderDecorator(painter);
-                this.font = GUIHelper.getFont(new FontData("Arial", 20, SWT.NORMAL));
-            }
-        });
+        DefaultNatTableStyleConfiguration styleConfig = new DefaultNatTableStyleConfiguration();
+        styleConfig.vAlign = VerticalAlignmentEnum.TOP;
+        styleConfig.hAlign = HorizontalAlignmentEnum.LEFT;
+        styleConfig.cellPainter = new LineBorderDecorator(painter);
+        styleConfig.font = GUIHelper.getFont(new FontData("Arial", 20, SWT.NORMAL));
+
+        natTable.addConfiguration(styleConfig);
 
         natTable.configure();
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
     }
 
     @SuppressWarnings("unused")
-    private void createVerticalNatTable(Composite parent,
-            final ICellPainter painter) {
+    private void createVerticalNatTable(Composite parent, final ICellPainter painter) {
         IDataProvider bodyDataProvider = new ExampleHeaderDataProvider();
-        SelectionLayer selectionLayer = new SelectionLayer(new DataLayer(
-                bodyDataProvider, 20, 100));
+        SelectionLayer selectionLayer = new SelectionLayer(new DataLayer(bodyDataProvider, 20, 100));
         ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
         ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
@@ -314,34 +281,28 @@ public class TextPainter_Examples extends AbstractNatExample {
                         bodyDataProvider), 20, 100),
                 viewportLayer,
                 selectionLayer);
-        columnHeaderLayer
-                .addConfiguration(new DefaultColumnHeaderLayerConfiguration() {
-                    @Override
-                    protected void addColumnHeaderStyleConfig() {
-                        addConfiguration(new DefaultColumnHeaderStyleConfiguration() {
-                            {
-                                this.cellPainter = new BeveledBorderDecorator(
-                                        new VerticalTextPainter());
-                            }
-                        });
-                    }
-                });
+        columnHeaderLayer.addConfiguration(new DefaultColumnHeaderLayerConfiguration() {
+            @Override
+            protected void addColumnHeaderStyleConfig() {
+                DefaultColumnHeaderStyleConfiguration styleConfig = new DefaultColumnHeaderStyleConfiguration();
+                styleConfig.cellPainter = new BeveledBorderDecorator(new VerticalTextPainter());
+                addConfiguration(styleConfig);
+            }
+        });
 
         CompositeLayer compositeLayer = new CompositeLayer(1, 2);
-        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER,
-                columnHeaderLayer, 0, 0);
+        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnHeaderLayer, 0, 0);
         compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
 
         NatTable natTable = new NatTable(parent, compositeLayer, false);
 
-        natTable.addConfiguration(new DefaultNatTableStyleConfiguration() {
-            {
-                this.vAlign = VerticalAlignmentEnum.MIDDLE;
-                this.hAlign = HorizontalAlignmentEnum.LEFT;
-                this.cellPainter = new LineBorderDecorator(painter);
-                this.font = GUIHelper.getFont(new FontData("Arial", 20, SWT.NORMAL));
-            }
-        });
+        DefaultNatTableStyleConfiguration styleConfig = new DefaultNatTableStyleConfiguration();
+        styleConfig.vAlign = VerticalAlignmentEnum.MIDDLE;
+        styleConfig.hAlign = HorizontalAlignmentEnum.LEFT;
+        styleConfig.cellPainter = new LineBorderDecorator(painter);
+        styleConfig.font = GUIHelper.getFont(new FontData("Arial", 20, SWT.NORMAL));
+
+        natTable.addConfiguration(styleConfig);
 
         natTable.configure();
 

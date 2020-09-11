@@ -109,8 +109,7 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
     @Override
     public Control createExampleControl(Composite parent) {
         final String[] propertyNames = RowDataListFixture.getPropertyNames();
-        final Map<String, String> propertyToLabelMap = RowDataListFixture
-                .getPropertyToLabelMap();
+        final Map<String, String> propertyToLabelMap = RowDataListFixture.getPropertyToLabelMap();
 
         ConfigRegistry configRegistry = new ConfigRegistry();
         ColumnGroupModel columnGroupModel = new ColumnGroupModel();
@@ -118,15 +117,12 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
         // Body
 
         LinkedList<BlinkingRowDataFixture> rowData = new LinkedList<>();
-        this.baseEventList = GlazedLists.threadSafeList(GlazedLists
-                .eventList(rowData));
+        this.baseEventList = GlazedLists.threadSafeList(GlazedLists.eventList(rowData));
         ObservableElementList<BlinkingRowDataFixture> observableElementList = new ObservableElementList<>(
                 this.baseEventList,
                 GlazedLists.beanConnector(BlinkingRowDataFixture.class));
-        FilterList<BlinkingRowDataFixture> filterList = new FilterList<>(
-                observableElementList);
-        SortedList<BlinkingRowDataFixture> sortedList = new SortedList<>(
-                filterList, null);
+        FilterList<BlinkingRowDataFixture> filterList = new FilterList<>(observableElementList);
+        SortedList<BlinkingRowDataFixture> sortedList = new SortedList<>(filterList, null);
 
         FullFeaturedBodyLayerStack<BlinkingRowDataFixture> bodyLayer =
                 new FullFeaturedBodyLayerStack<>(
@@ -147,34 +143,38 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
         registerBlinkingConfigCells(configRegistry);
 
         // Column header
-        FullFeaturedColumnHeaderLayerStack<BlinkingRowDataFixture> columnHeaderLayer = new FullFeaturedColumnHeaderLayerStack<>(
-                sortedList, filterList, propertyNames, propertyToLabelMap,
-                bodyLayer, bodyLayer.getSelectionLayer(), columnGroupModel,
-                configRegistry);
+        FullFeaturedColumnHeaderLayerStack<BlinkingRowDataFixture> columnHeaderLayer =
+                new FullFeaturedColumnHeaderLayerStack<>(
+                        sortedList,
+                        filterList,
+                        propertyNames,
+                        propertyToLabelMap,
+                        bodyLayer,
+                        bodyLayer.getSelectionLayer(),
+                        columnGroupModel,
+                        configRegistry);
 
         // column groups
         setUpColumnGroups(columnHeaderLayer);
 
         // Row header
-        final DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultSummaryRowHeaderDataProvider(
-                this.bodyDataProvider);
-        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
+        final DefaultRowHeaderDataProvider rowHeaderDataProvider =
+                new DefaultSummaryRowHeaderDataProvider(this.bodyDataProvider);
+        DefaultRowHeaderDataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
         rowHeaderDataLayer.setDefaultColumnWidth(50);
-        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                bodyLayer, bodyLayer.getSelectionLayer());
+        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
 
         // Corner
-        final DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderLayer.getColumnHeaderDataProvider(),
-                rowHeaderDataProvider);
+        final DefaultCornerDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(
+                        columnHeaderLayer.getColumnHeaderDataProvider(),
+                        rowHeaderDataProvider);
         DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
-                columnHeaderLayer);
+        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
 
         // Grid
-        GridLayer gridLayer = new GridLayer(bodyLayer, columnHeaderLayer,
-                rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer = new GridLayer(bodyLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 
         this.natTable = new NatTable(parent, gridLayer, false);
 
@@ -193,13 +193,11 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
         this.natTable.addConfiguration(new SingleClickSortConfiguration());
 
         // Editing
-        ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
-                bodyLayer.getBodyDataLayer());
-        bodyLayer.getBodyDataLayer().setConfigLabelAccumulator(
-                columnLabelAccumulator);
-        this.natTable.addConfiguration(EditableGridExample
-                .editableGridConfiguration(columnLabelAccumulator,
-                        this.bodyDataProvider));
+        ColumnOverrideLabelAccumulator columnLabelAccumulator =
+                new ColumnOverrideLabelAccumulator(bodyLayer.getBodyDataLayer());
+        bodyLayer.getBodyDataLayer().setConfigLabelAccumulator(columnLabelAccumulator);
+        this.natTable.addConfiguration(
+                EditableGridExample.editableGridConfiguration(columnLabelAccumulator, this.bodyDataProvider));
         this.natTable.addConfiguration(new FilterRowGridExample.FilterRowCustomConfiguration());
 
         // Column chooser
@@ -212,19 +210,15 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
         bodyLayer.registerCommandHandler(columnChooserCommandHandler);
 
         // Summary row configuration
-        this.natTable.addConfiguration(new MySummaryRow<>(
-                this.bodyDataProvider));
+        this.natTable.addConfiguration(new MySummaryRow<>(this.bodyDataProvider));
         this.natTable.configure();
 
         return this.natTable;
     }
 
-    private void setUpColumnGroups(
-            FullFeaturedColumnHeaderLayerStack<BlinkingRowDataFixture> headerLayer) {
-        headerLayer.getColumnGroupHeaderLayer().addColumnsIndexesToGroup(
-                "TestGroup", 1, 2);
-        headerLayer.getColumnGroupHeaderLayer().addColumnsIndexesToGroup(
-                "TestGroup1", 5, 6, 7);
+    private void setUpColumnGroups(FullFeaturedColumnHeaderLayerStack<BlinkingRowDataFixture> headerLayer) {
+        headerLayer.getColumnGroupHeaderLayer().addColumnsIndexesToGroup("TestGroup", 1, 2);
+        headerLayer.getColumnGroupHeaderLayer().addColumnsIndexesToGroup("TestGroup1", 5, 6, 7);
         headerLayer.getColumnGroupHeaderLayer().setGroupUnbreakable(5);
         headerLayer.getColumnGroupHeaderLayer().setGroupAsCollapsed(5);
     }
@@ -254,21 +248,30 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
 
     private void registerBlinkingConfigCells(ConfigRegistry configRegistry) {
         configRegistry.registerConfigAttribute(
-                BlinkConfigAttributes.BLINK_RESOLVER, getBlinkResolver(),
+                BlinkConfigAttributes.BLINK_RESOLVER,
+                getBlinkResolver(),
                 DisplayMode.NORMAL);
 
         // Styles
         Style cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 GUIHelper.COLOR_GREEN);
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                cellStyle, DisplayMode.NORMAL, BLINK_UP_CONFIG_LABEL);
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_STYLE,
+                cellStyle,
+                DisplayMode.NORMAL,
+                BLINK_UP_CONFIG_LABEL);
 
         cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 GUIHelper.COLOR_RED);
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                cellStyle, DisplayMode.NORMAL, BLINK_DOWN_CONFIG_LABEL);
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_STYLE,
+                cellStyle,
+                DisplayMode.NORMAL,
+                BLINK_DOWN_CONFIG_LABEL);
     }
 
     private IBlinkingCellResolver getBlinkResolver() {
@@ -279,7 +282,8 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
             public String[] resolve(Object oldValue, Object newValue) {
                 double old = ((Double) oldValue).doubleValue();
                 double latest = ((Double) newValue).doubleValue();
-                this.configLabels[0] = (latest > old ? BLINK_UP_CONFIG_LABEL
+                this.configLabels[0] = (latest > old
+                        ? BLINK_UP_CONFIG_LABEL
                         : BLINK_DOWN_CONFIG_LABEL);
                 return this.configLabels;
             }
@@ -305,8 +309,7 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
         private final String waitMsg = "Loading data. Please wait... ";
         private WaitDialog dialog;
 
-        public DataLoader(PropertyChangeListener changeListener,
-                EventList<BlinkingRowDataFixture> baseEventList) {
+        public DataLoader(PropertyChangeListener changeListener, EventList<BlinkingRowDataFixture> baseEventList) {
             this.changeListener = changeListener;
             this.list = baseEventList;
         }
@@ -332,8 +335,7 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
                     // Add to buffer
                     List<BlinkingRowDataFixture> buffer = new ArrayList<>();
                     for (int i = 0; i < 100; i++) {
-                        buffer.addAll(BlinkingRowDataFixture
-                                .getList(this.changeListener));
+                        buffer.addAll(BlinkingRowDataFixture.getList(this.changeListener));
                     }
                     // Load as a batch
                     this.list.addAll(buffer);
@@ -399,7 +401,7 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
                             // System.out.println("Ask:
                             // "+rowObject.getAsk_price()+" --> "+nextAsk);
                             rowObject.setAsk_price(nextAsk);
-                            rowObject.setBid_price(-1 * nextAsk);
+                            rowObject.setBid_price(-1d * nextAsk);
                         }
                     }
                 }

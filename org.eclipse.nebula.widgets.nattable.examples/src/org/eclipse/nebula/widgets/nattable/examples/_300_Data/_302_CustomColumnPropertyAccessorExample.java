@@ -197,12 +197,12 @@ public class _302_CustomColumnPropertyAccessorExample extends
 
         @Override
         public String getColumnProperty(int columnIndex) {
-            return DataModelConstants.PERSONWITHADDRESS_PROPERTY_NAMES[columnIndex];
+            return DataModelConstants.getPersonwithaddressPropertyNames()[columnIndex];
         }
 
         @Override
         public int getColumnIndex(String propertyName) {
-            return Arrays.asList(DataModelConstants.PERSONWITHADDRESS_PROPERTY_NAMES).indexOf(propertyName);
+            return Arrays.asList(DataModelConstants.getPersonwithaddressPropertyNames()).indexOf(propertyName);
         }
 
     }

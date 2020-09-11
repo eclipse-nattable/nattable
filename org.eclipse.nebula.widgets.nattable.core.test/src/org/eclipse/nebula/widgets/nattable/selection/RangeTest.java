@@ -49,7 +49,8 @@ public class RangeTest {
 
     @Test
     public void shouldIdentifyEquality() {
-        assertTrue(new Range(3, 10).equals(new Range(3, 10)));
+        Range test = new Range(3, 10);
+        assertTrue(test.equals(new Range(3, 10)));
     }
 
     @Test

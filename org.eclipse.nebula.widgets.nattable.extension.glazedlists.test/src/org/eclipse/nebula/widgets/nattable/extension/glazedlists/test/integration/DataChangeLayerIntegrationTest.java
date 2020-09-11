@@ -134,7 +134,9 @@ public class DataChangeLayerIntegrationTest {
 
         // give the GlazedListsEventLayer some time to trigger the
         // RowStructuralRefreshEvent
-        this.lock.await(1000, TimeUnit.MILLISECONDS);
+        boolean completed = this.lock.await(1000, TimeUnit.MILLISECONDS);
+
+        assertTrue("Timeout - no event received", completed);
 
         assertEquals(9, this.filterList.size());
         assertFalse(this.dataChangeLayer.getDataChanges().isEmpty());
@@ -145,7 +147,9 @@ public class DataChangeLayerIntegrationTest {
 
         // give the GlazedListsEventLayer some time to trigger the
         // RowStructuralRefreshEvent
-        this.lock.await(1000, TimeUnit.MILLISECONDS);
+        completed = this.lock.await(1000, TimeUnit.MILLISECONDS);
+
+        assertTrue("Timeout - no event received", completed);
 
         assertEquals(18, this.filterList.size());
         assertFalse(this.dataChangeLayer.getDataChanges().isEmpty());
@@ -174,7 +178,9 @@ public class DataChangeLayerIntegrationTest {
 
         // give the GlazedListsEventLayer some time to trigger the
         // RowStructuralRefreshEvent
-        this.lock.await(1000, TimeUnit.MILLISECONDS);
+        boolean completed = this.lock.await(1000, TimeUnit.MILLISECONDS);
+
+        assertTrue("Timeout - no event received", completed);
 
         assertEquals(18, this.filterList.size());
         assertFalse(this.dataChangeLayer.getDataChanges().isEmpty());

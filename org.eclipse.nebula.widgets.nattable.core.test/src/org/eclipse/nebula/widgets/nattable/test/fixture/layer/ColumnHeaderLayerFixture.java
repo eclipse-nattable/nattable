@@ -20,20 +20,19 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 public class ColumnHeaderLayerFixture extends ColumnHeaderLayer {
 
     // Viewport is 400px wide
-    public static DataLayer dataLayer = new DataLayerFixture();
-    public static SelectionLayer selectionLayer = new SelectionLayer(dataLayer);
-    public static ViewportLayer bodyLayer = new ViewportLayerFixture(
-            selectionLayer);
+    public static final DataLayer DATA_LAYER = new DataLayerFixture();
+    public static final SelectionLayer SELECTION_LAYER = new SelectionLayer(DATA_LAYER);
+    public static final ViewportLayer BODY_LAYER = new ViewportLayerFixture(SELECTION_LAYER);
 
     public ColumnHeaderLayerFixture() {
-        super(dataLayer, bodyLayer, selectionLayer);
+        super(DATA_LAYER, BODY_LAYER, SELECTION_LAYER);
     }
 
     public ColumnHeaderLayerFixture(ViewportLayer viewportLayer) {
-        super(dataLayer, viewportLayer, selectionLayer);
+        super(DATA_LAYER, viewportLayer, SELECTION_LAYER);
     }
 
     public static DataLayer getDataLayer() {
-        return dataLayer;
+        return DATA_LAYER;
     }
 }

@@ -99,13 +99,13 @@ public class HierarchicalTreeLayerTest {
     @Before
     public void setup() {
         // de-normalize the object graph without parent structure objects
-        this.data = HierarchicalHelper.deNormalize(CarService.getInput(), false, CarService.PROPERTY_NAMES_COMPACT);
+        this.data = HierarchicalHelper.deNormalize(CarService.getInput(), false, CarService.getPropertyNamesCompact());
 
         HierarchicalReflectiveColumnPropertyAccessor columnPropertyAccessor =
-                new HierarchicalReflectiveColumnPropertyAccessor(CarService.PROPERTY_NAMES_COMPACT);
+                new HierarchicalReflectiveColumnPropertyAccessor(CarService.getPropertyNamesCompact());
 
         this.bodyDataProvider = new ListDataProvider<>(this.data, columnPropertyAccessor);
-        HierarchicalSpanningDataProvider spanningDataProvider = new HierarchicalSpanningDataProvider(this.bodyDataProvider, CarService.PROPERTY_NAMES_COMPACT);
+        HierarchicalSpanningDataProvider spanningDataProvider = new HierarchicalSpanningDataProvider(this.bodyDataProvider, CarService.getPropertyNamesCompact());
         this.bodyDataLayer = new SpanningDataLayer(spanningDataProvider);
 
         // simply apply labels for every column by index
@@ -114,7 +114,7 @@ public class HierarchicalTreeLayerTest {
         this.columnHideShowLayer = new ColumnHideShowLayer(this.columnReorderLayer);
         this.rowHideShowLayer = new RowHideShowLayer(this.columnHideShowLayer);
         this.selectionLayer = new SelectionLayer(this.rowHideShowLayer);
-        this.treeLayer = new HierarchicalTreeLayer(this.selectionLayer, this.data, CarService.PROPERTY_NAMES_COMPACT);
+        this.treeLayer = new HierarchicalTreeLayer(this.selectionLayer, this.data, CarService.getPropertyNamesCompact());
 
         this.layerListener = new LayerListenerFixture();
         this.treeLayer.addLayerListener(this.layerListener);
@@ -637,7 +637,7 @@ public class HierarchicalTreeLayerTest {
 
     @Test
     public void testGetDisplayModeByPositionWithSelectionLayer() {
-        this.treeLayer = new HierarchicalTreeLayer(this.selectionLayer, this.data, CarService.PROPERTY_NAMES_COMPACT, this.selectionLayer);
+        this.treeLayer = new HierarchicalTreeLayer(this.selectionLayer, this.data, CarService.getPropertyNamesCompact(), this.selectionLayer);
 
         // first test that all cells in a row are NORMAL
         for (int i = 0; i < this.treeLayer.getColumnCount(); i++) {

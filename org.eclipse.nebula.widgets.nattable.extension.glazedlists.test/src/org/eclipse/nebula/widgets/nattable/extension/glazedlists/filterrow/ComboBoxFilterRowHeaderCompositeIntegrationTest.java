@@ -324,7 +324,9 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         // edit one entry
         natTable.doCommand(new UpdateDataCommand(natTable, 1, 3, "Bort"));
 
-        countDown.await(2000, TimeUnit.MILLISECONDS);
+        boolean completed = countDown.await(2000, TimeUnit.MILLISECONDS);
+
+        assertTrue("Timeout - no event received", completed);
 
         assertEquals(1, listener.getEventsCount());
 
@@ -350,7 +352,9 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
 
         natTable.doCommand(new UpdateDataCommand(natTable, 1, 3, "Bart"));
 
-        countDown.await(2000, TimeUnit.MILLISECONDS);
+        completed = countDown.await(2000, TimeUnit.MILLISECONDS);
+
+        assertTrue("Timeout - no event received", completed);
 
         assertEquals(1, listener.getEventsCount());
 
@@ -395,9 +399,11 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         bodyLayer.eventList.add(entry);
 
         // long start = System.currentTimeMillis();
-        countDown.await(2000, TimeUnit.MILLISECONDS);
+        boolean completed = countDown.await(2000, TimeUnit.MILLISECONDS);
         // long end = System.currentTimeMillis();
         // System.out.println("duration " + (end - start));
+
+        assertTrue("Timeout - no event received", completed);
 
         assertEquals(2, listener.getEventsCount());
 
@@ -433,9 +439,11 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         listener.setCountDown(countDown);
 
         // start = System.currentTimeMillis();
-        countDown.await(2000, TimeUnit.MILLISECONDS);
+        completed = countDown.await(2000, TimeUnit.MILLISECONDS);
         // end = System.currentTimeMillis();
         // System.out.println("duration " + (end - start));
+
+        assertTrue("Timeout - no event received", completed);
 
         filterRowHeaderLayer.comboBoxDataProvider.removeCacheUpdateListener(listener);
     }

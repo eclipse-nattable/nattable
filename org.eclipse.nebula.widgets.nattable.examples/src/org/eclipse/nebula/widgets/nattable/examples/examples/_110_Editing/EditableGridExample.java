@@ -550,8 +550,7 @@ public class EditableGridExample extends AbstractNatExample {
                         valid = isAlpha(alphabeticPart)
                                 && isNumeric(numericPart);
                     } else {
-                        String alphabeticPart = value.substring(0, value.length());
-                        valid = isAlpha(alphabeticPart);
+                        valid = isAlpha(value);
                     }
                 }
 

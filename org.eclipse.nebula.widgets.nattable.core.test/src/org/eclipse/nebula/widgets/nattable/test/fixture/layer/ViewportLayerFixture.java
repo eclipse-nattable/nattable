@@ -28,9 +28,9 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class ViewportLayerFixture extends ViewportLayer {
 
-    public static Rectangle DEFAULT_CLIENT_AREA = new Rectangle(0, 0, 200, 100);
-    public static IClientAreaProvider DEFAULT_CLIENT_AREA_PROVIDER = getClientAreaProvider(DEFAULT_CLIENT_AREA);
-    public static Scrollable DEFAULT_SCROLLABLE = scrollable();
+    public static final Rectangle DEFAULT_CLIENT_AREA = new Rectangle(0, 0, 200, 100);
+    public static final IClientAreaProvider DEFAULT_CLIENT_AREA_PROVIDER = getClientAreaProvider(DEFAULT_CLIENT_AREA);
+    public static final Scrollable DEFAULT_SCROLLABLE = scrollable();
 
     /**
      * Default Xtor

@@ -128,7 +128,7 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
 
         assertEquals(1, this.selectionLayer.getFullySelectedRowPositions().length);
         assertEquals(1, this.selectionLayer.getSelectedRowCount());
-        assertEquals(this.listFixture.size() - 1, this.selectionLayer.getFullySelectedRowPositions()[0]);
+        assertEquals(this.listFixture.size() - 1l, this.selectionLayer.getFullySelectedRowPositions()[0]);
     }
 
     @Test

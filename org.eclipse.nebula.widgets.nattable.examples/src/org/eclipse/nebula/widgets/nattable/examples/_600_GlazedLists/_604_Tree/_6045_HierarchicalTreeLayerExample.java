@@ -139,11 +139,11 @@ public class _6045_HierarchicalTreeLayerExample extends AbstractNatExample {
 
         BodyLayerStack bodyLayerStack = new BodyLayerStack(
                 CarService.getInput(),
-                CarService.PROPERTY_NAMES);
+                CarService.getPropertyNames());
 
         // create the column header layer stack
         IDataProvider columnHeaderDataProvider =
-                new DefaultColumnHeaderDataProvider(CarService.PROPERTY_NAMES, propertyToLabelMap);
+                new DefaultColumnHeaderDataProvider(CarService.getPropertyNames(), propertyToLabelMap);
         DataLayer columnHeaderDataLayer = new DataLayer(columnHeaderDataProvider);
         ILayer columnHeaderLayer = new ColumnHeaderLayer(
                 columnHeaderDataLayer,
@@ -195,8 +195,7 @@ public class _6045_HierarchicalTreeLayerExample extends AbstractNatExample {
             protected void addAlternateRowColoringConfig(CompositeLayer gridLayer) {
                 // do nothing to avoid the default grid alternate row coloring
                 // needed because the alternate row coloring in the hierarchical
-                // tree
-                // is based on the spanned cells and not per individual row
+                // tree is based on the spanned cells and not per individual row
                 // position
             }
         });
@@ -204,13 +203,11 @@ public class _6045_HierarchicalTreeLayerExample extends AbstractNatExample {
         NatTable natTable = new NatTable(container, compositeLayer, false);
         natTable.setConfigRegistry(configRegistry);
 
-        natTable.addConfiguration(new DefaultNatTableStyleConfiguration() {
-            {
-                this.vAlign = VerticalAlignmentEnum.TOP;
-                this.hAlign = HorizontalAlignmentEnum.LEFT;
-                this.cellPainter = new PaddingDecorator(new TextPainter(), 2);
-            }
-        });
+        DefaultNatTableStyleConfiguration styleConfig = new DefaultNatTableStyleConfiguration();
+        styleConfig.vAlign = VerticalAlignmentEnum.TOP;
+        styleConfig.hAlign = HorizontalAlignmentEnum.LEFT;
+        styleConfig.cellPainter = new PaddingDecorator(new TextPainter(), 2);
+        natTable.addConfiguration(styleConfig);
 
         // add editing configuration
         natTable.addConfiguration(new AbstractRegistryConfiguration() {

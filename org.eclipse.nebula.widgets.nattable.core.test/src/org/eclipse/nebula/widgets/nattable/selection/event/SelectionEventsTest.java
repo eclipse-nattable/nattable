@@ -26,26 +26,26 @@ import org.junit.Test;
 
 public class SelectionEventsTest {
 
-    public static boolean NO_SHIFT = false;
-    public static boolean NO_CTRL = false;
+    public static final boolean NO_SHIFT = false;
+    public static final boolean NO_CTRL = false;
 
-    public static boolean WITH_SHIFT = true;
-    public static boolean WITH_CTRL = true;
+    public static final boolean WITH_SHIFT = true;
+    public static final boolean WITH_CTRL = true;
 
-    NatTableFixture nattable;
+    NatTableFixture natTable;
     private LayerListenerFixture listener;
 
     @Before
     public void setup() {
-        this.nattable = new NatTableFixture();
+        this.natTable = new NatTableFixture();
         this.listener = new LayerListenerFixture();
-        this.nattable.addLayerListener(this.listener);
+        this.natTable.addLayerListener(this.listener);
     }
 
     @Test
     public void shouldFireCellSelectionEvent() {
         // Grid coordinates
-        this.nattable.doCommand(new SelectCellCommand(this.nattable, 1, 5, NO_SHIFT, NO_CTRL));
+        this.natTable.doCommand(new SelectCellCommand(this.natTable, 1, 5, NO_SHIFT, NO_CTRL));
 
         assertEquals(1, this.listener.getEventsCount());
         assertTrue(this.listener.containsInstanceOf(CellSelectionEvent.class));
@@ -58,7 +58,7 @@ public class SelectionEventsTest {
     @Test
     public void shouldFireRowSelectionEvent() {
         // Select single row
-        this.nattable.doCommand(new SelectRowsCommand(this.nattable, 5, 5, NO_SHIFT, NO_CTRL));
+        this.natTable.doCommand(new SelectRowsCommand(this.natTable, 5, 5, NO_SHIFT, NO_CTRL));
 
         assertEquals(1, this.listener.getEventsCount());
         assertTrue(this.listener.containsInstanceOf(RowSelectionEvent.class));
@@ -68,7 +68,7 @@ public class SelectionEventsTest {
         assertEquals(6, event.getRowPositionRanges().iterator().next().end);
 
         // Select additional rows with shift
-        this.nattable.doCommand(new SelectRowsCommand(this.nattable, 5, 7, WITH_SHIFT, NO_CTRL));
+        this.natTable.doCommand(new SelectRowsCommand(this.natTable, 5, 7, WITH_SHIFT, NO_CTRL));
         assertEquals(2, this.listener.getEventsCount());
         assertTrue(this.listener.containsInstanceOf(RowSelectionEvent.class));
 
@@ -81,7 +81,7 @@ public class SelectionEventsTest {
 
     @Test
     public void shouldFireColumnSelectionEvent() {
-        this.nattable.doCommand(new SelectColumnCommand(this.nattable, 5, 5, NO_SHIFT, NO_CTRL));
+        this.natTable.doCommand(new SelectColumnCommand(this.natTable, 5, 5, NO_SHIFT, NO_CTRL));
 
         assertEquals(2, this.listener.getEventsCount());
         assertTrue(this.listener.containsInstanceOf(ColumnSelectionEvent.class));

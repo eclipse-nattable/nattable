@@ -59,7 +59,7 @@ public class ColumnSelectionTest {
 
         // Last selected cell should be part of last row
         assertEquals(2, this.selectionLayer.getLastSelectedCellPosition().getColumnPosition());
-        assertEquals(rowCount - 1, this.selectionLayer.getLastSelectedCellPosition().getRowPosition());
+        assertEquals(rowCount - 1l, this.selectionLayer.getLastSelectedCellPosition().getRowPosition());
 
         // Cells in between should have been selected
         assertEquals(rowCount, this.selectionLayer.getSelectedRowCount());
@@ -170,7 +170,7 @@ public class ColumnSelectionTest {
         // Last selected cell should be part of last row
         assertEquals(1, this.selectionLayer.getLastSelectedCellPosition().getColumnPosition());
         final int lastRowPosition = this.selectionLayer.getLastSelectedCellPosition().getRowPosition();
-        assertEquals(rowCount - 1, lastRowPosition);
+        assertEquals(rowCount - 1l, lastRowPosition);
 
         // Cells in column should have been selected
         assertEquals(rowCount, this.selectionLayer.getSelectedRowCount());

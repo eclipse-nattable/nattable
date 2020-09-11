@@ -86,11 +86,11 @@ import ca.odell.glazedlists.GlazedLists;
  */
 public class _803_CachedCalculatingGridExample extends AbstractNatExample {
 
-    public static String COLUMN_ONE_LABEL = "ColumnOneLabel";
-    public static String COLUMN_TWO_LABEL = "ColumnTwoLabel";
-    public static String COLUMN_THREE_LABEL = "ColumnThreeLabel";
-    public static String COLUMN_FOUR_LABEL = "ColumnFourLabel";
-    public static String COLUMN_FIVE_LABEL = "ColumnFiveLabel";
+    public static final String COLUMN_ONE_LABEL = "ColumnOneLabel";
+    public static final String COLUMN_TWO_LABEL = "ColumnTwoLabel";
+    public static final String COLUMN_THREE_LABEL = "ColumnThreeLabel";
+    public static final String COLUMN_FOUR_LABEL = "ColumnFourLabel";
+    public static final String COLUMN_FIVE_LABEL = "ColumnFiveLabel";
 
     private EventList<NumberValues> valuesToShow = GlazedLists.eventList(new ArrayList<NumberValues>());
 
@@ -278,6 +278,7 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
                                 try {
                                     Thread.sleep(500);
                                 } catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
                                 }
                                 return colTwo + colThree;
                             }
@@ -292,15 +293,16 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
                             @Override
                             public Object executeCalculation() {
                                 // calculate the percentage
-                                int colOne = (Integer) getDataValue(0, rowIndex);
-                                int colTwo = (Integer) getDataValue(1, rowIndex);
-                                int colThree = (Integer) getDataValue(2, rowIndex);
+                                Integer colOne = (Integer) getDataValue(0, rowIndex);
+                                Integer colTwo = (Integer) getDataValue(1, rowIndex);
+                                Integer colThree = (Integer) getDataValue(2, rowIndex);
                                 // add some delay
                                 try {
                                     Thread.sleep(500);
                                 } catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
                                 }
-                                return new Double(colTwo + colThree) / colOne;
+                                return new Double(colTwo.doubleValue() + colThree.doubleValue()) / colOne.doubleValue();
                             }
                         });
 

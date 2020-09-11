@@ -1338,62 +1338,60 @@ public class ColumnGroupHeaderLayerTest {
 
         // this hides completely the Address and Facts group and the first item
         // of the Personal group via two separate commands
-        if (this.selectionLayer.doCommand(new MultiColumnHideCommand(this.selectionLayer, 4, 5, 6, 7))
-                && this.selectionLayer.doCommand(new MultiColumnHideCommand(this.selectionLayer, 4, 5, 6, 7))) {
-            assertEquals(6, this.selectionLayer.getColumnCount());
+        this.selectionLayer.doCommand(new MultiColumnHideCommand(this.selectionLayer, 4, 5, 6, 7));
+        this.selectionLayer.doCommand(new MultiColumnHideCommand(this.selectionLayer, 4, 5, 6, 7));
 
-            ILayerCell cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
-            assertEquals(0, cell.getOriginColumnPosition());
-            assertEquals(4, cell.getColumnSpan());
-            assertEquals("Person", cell.getDataValue());
-            assertEquals(0, cell.getBounds().x);
-            assertEquals(0, cell.getBounds().y);
-            assertEquals(400, cell.getBounds().width);
-            assertEquals(20, cell.getBounds().height);
+        assertEquals(6, this.selectionLayer.getColumnCount());
 
-            cell = this.columnGroupHeaderLayer.getCellByPosition(4, 0);
-            assertEquals(4, cell.getOriginColumnPosition());
-            assertEquals(4, cell.getColumnPosition());
-            assertEquals(12, cell.getColumnIndex());
-            assertEquals(2, cell.getColumnSpan());
-            assertEquals("Personal", cell.getDataValue());
-            assertEquals(400, cell.getBounds().x);
-            assertEquals(0, cell.getBounds().y);
-            assertEquals(200, cell.getBounds().width);
-            assertEquals(20, cell.getBounds().height);
+        ILayerCell cell = this.columnGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginColumnPosition());
+        assertEquals(4, cell.getColumnSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(400, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
 
-            Group group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
-            assertEquals(0, group1.getStartIndex());
-            assertEquals(0, group1.getVisibleStartIndex());
-            assertEquals(0, group1.getVisibleStartPosition());
-            assertEquals(4, group1.getOriginalSpan());
-            assertEquals(4, group1.getVisibleSpan());
+        cell = this.columnGroupHeaderLayer.getCellByPosition(4, 0);
+        assertEquals(4, cell.getOriginColumnPosition());
+        assertEquals(4, cell.getColumnPosition());
+        assertEquals(12, cell.getColumnIndex());
+        assertEquals(2, cell.getColumnSpan());
+        assertEquals("Personal", cell.getDataValue());
+        assertEquals(400, cell.getBounds().x);
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(200, cell.getBounds().width);
+        assertEquals(20, cell.getBounds().height);
 
-            Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
-            assertEquals(11, group4.getStartIndex());
-            assertEquals(12, group4.getVisibleStartIndex());
-            assertEquals(4, group4.getVisibleStartPosition());
-            assertEquals(3, group4.getOriginalSpan());
-            assertEquals(2, group4.getVisibleSpan());
+        Group group1 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(0);
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
 
-            // these groups are not visible by column position, so we retrieve
-            // it by name
-            Group group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByName("Address");
-            assertEquals(4, group2.getStartIndex());
-            assertEquals(-1, group2.getVisibleStartIndex());
-            assertEquals(-1, group2.getVisibleStartPosition());
-            assertEquals(4, group2.getOriginalSpan());
-            assertEquals(0, group2.getVisibleSpan());
+        Group group4 = this.columnGroupHeaderLayer.getGroupModel().getGroupByPosition(4);
+        assertEquals(11, group4.getStartIndex());
+        assertEquals(12, group4.getVisibleStartIndex());
+        assertEquals(4, group4.getVisibleStartPosition());
+        assertEquals(3, group4.getOriginalSpan());
+        assertEquals(2, group4.getVisibleSpan());
 
-            Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByName("Facts");
-            assertEquals(8, group3.getStartIndex());
-            assertEquals(-1, group3.getVisibleStartIndex());
-            assertEquals(-1, group3.getVisibleStartPosition());
-            assertEquals(3, group3.getOriginalSpan());
-            assertEquals(0, group3.getVisibleSpan());
-        } else {
-            fail("Column not hidden");
-        }
+        // these groups are not visible by column position, so we retrieve
+        // it by name
+        Group group2 = this.columnGroupHeaderLayer.getGroupModel().getGroupByName("Address");
+        assertEquals(4, group2.getStartIndex());
+        assertEquals(-1, group2.getVisibleStartIndex());
+        assertEquals(-1, group2.getVisibleStartPosition());
+        assertEquals(4, group2.getOriginalSpan());
+        assertEquals(0, group2.getVisibleSpan());
+
+        Group group3 = this.columnGroupHeaderLayer.getGroupModel().getGroupByName("Facts");
+        assertEquals(8, group3.getStartIndex());
+        assertEquals(-1, group3.getVisibleStartIndex());
+        assertEquals(-1, group3.getVisibleStartPosition());
+        assertEquals(3, group3.getOriginalSpan());
+        assertEquals(0, group3.getVisibleSpan());
 
         // show again
         if (this.gridLayer.doCommand(new ShowAllColumnsCommand())) {

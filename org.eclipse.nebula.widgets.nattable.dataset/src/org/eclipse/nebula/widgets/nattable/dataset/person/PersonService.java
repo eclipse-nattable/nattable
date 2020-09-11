@@ -287,7 +287,7 @@ public class PersonService {
         try {
             result.setBirthday(sdf.parse("" + year + "-" + month + "-" + day));
         } catch (ParseException e) {
-            e.printStackTrace();
+            // do nothing as there should be no parse exception;
         }
 
         result.setMoney(randomGenerator.nextDouble() * 100);

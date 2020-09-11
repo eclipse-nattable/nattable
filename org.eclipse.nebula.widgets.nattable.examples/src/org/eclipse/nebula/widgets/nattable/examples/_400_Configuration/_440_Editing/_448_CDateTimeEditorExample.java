@@ -72,12 +72,12 @@ import ca.odell.glazedlists.GlazedLists;
  */
 public class _448_CDateTimeEditorExample extends AbstractNatExample {
 
-    public static String COLUMN_ONE_LABEL = "ColumnOneLabel";
-    public static String COLUMN_TWO_LABEL = "ColumnTwoLabel";
-    public static String COLUMN_THREE_LABEL = "ColumnThreeLabel";
-    public static String COLUMN_FOUR_LABEL = "ColumnFourLabel";
-    public static String COLUMN_FIVE_LABEL = "ColumnFiveLabel";
-    public static String COLUMN_SIX_LABEL = "ColumnSixLabel";
+    public static final String COLUMN_ONE_LABEL = "ColumnOneLabel";
+    public static final String COLUMN_TWO_LABEL = "ColumnTwoLabel";
+    public static final String COLUMN_THREE_LABEL = "ColumnThreeLabel";
+    public static final String COLUMN_FOUR_LABEL = "ColumnFourLabel";
+    public static final String COLUMN_FIVE_LABEL = "ColumnFiveLabel";
+    public static final String COLUMN_SIX_LABEL = "ColumnSixLabel";
 
     private EventList<DateValues> valuesToShow = GlazedLists.eventList(new ArrayList<DateValues>());
 
@@ -311,7 +311,7 @@ public class _448_CDateTimeEditorExample extends AbstractNatExample {
                             if (canonicalValue != null) {
                                 canonical = (Calendar) canonicalValue;
                             }
-                            return super.canonicalToDisplayValue(canonical.getTime());
+                            return super.canonicalToDisplayValue(canonical != null ? canonical.getTime() : null);
                         }
 
                         @Override

@@ -59,7 +59,7 @@ public class AbstractE4NatExamplePart extends AbstractNatExample {
                 if (!path.startsWith("/")) {
                     path = "/" + path;
                 }
-                String source = getResourceAsString("/src" + path + ".java");
+                String source = getResourceAsText("/src" + path + ".java");
                 if (source != null) {
                     viewSource(part.getLabel(), source);
                 }
@@ -73,7 +73,7 @@ public class AbstractE4NatExamplePart extends AbstractNatExample {
         final SelectionAdapter cssLinkSelectionListener = new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
-                String source = getResourceAsString(event.text);
+                String source = getResourceAsText(event.text);
                 if (source != null) {
                     viewSource("default.css", source);
                 }
@@ -82,7 +82,7 @@ public class AbstractE4NatExamplePart extends AbstractNatExample {
         cssLink.addSelectionListener(cssLinkSelectionListener);
     }
 
-    private String getResourceAsString(String resource) {
+    private String getResourceAsText(String resource) {
         try (InputStream inStream = getClass().getResourceAsStream(resource)) {
             if (inStream != null) {
                 StringBuilder builder = new StringBuilder();

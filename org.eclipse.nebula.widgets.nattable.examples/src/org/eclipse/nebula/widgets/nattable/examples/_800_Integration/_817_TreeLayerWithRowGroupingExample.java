@@ -300,7 +300,7 @@ public class _817_TreeLayerWithRowGroupingExample extends AbstractNatExample {
             // identify the parent node element
             String current = null;
             for (Person p : this.values) {
-                if (p.getLastName() != current) {
+                if (!p.getLastName().equals(current)) {
                     this.firstElementMapping.put(p.getLastName(), p);
                     current = p.getLastName();
                 }

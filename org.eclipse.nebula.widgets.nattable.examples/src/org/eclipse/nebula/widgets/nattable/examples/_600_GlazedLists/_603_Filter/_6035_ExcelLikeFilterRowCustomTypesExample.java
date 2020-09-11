@@ -134,16 +134,10 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends AbstractNatExamp
                         columnHeaderLayer, columnHeaderDataProvider, configRegistry,
                         false);
         final IComboBoxDataProvider comboBoxDataProvider = filterRowHeaderLayer.getComboBoxDataProvider();
-        filterRowHeaderLayer.addConfiguration(new ComboBoxFilterRowConfiguration() {
-            {
-                this.cellEditor = new FilterRowComboBoxCellEditor(
-                        comboBoxDataProvider, 5);
-                this.filterIconPainter = new ComboBoxFilterIconPainter(
-                        comboBoxDataProvider, GUIHelper
-                                .getImage("filter"),
-                        null);
-            }
-        });
+        filterRowHeaderLayer.addConfiguration(
+                new ComboBoxFilterRowConfiguration(
+                        new FilterRowComboBoxCellEditor(comboBoxDataProvider, 5),
+                        new ComboBoxFilterIconPainter(comboBoxDataProvider, GUIHelper.getImage("filter"), null)));
 
         // build the row header layer
         IDataProvider rowHeaderDataProvider =

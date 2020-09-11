@@ -42,13 +42,13 @@ public class HierarchicalTreeColumnReorderDragModeTest {
     @Before
     public void setup() {
         // de-normalize the object graph without parent structure objects
-        List<HierarchicalWrapper> data = HierarchicalHelper.deNormalize(CarService.getInput(), false, CarService.PROPERTY_NAMES_COMPACT);
+        List<HierarchicalWrapper> data = HierarchicalHelper.deNormalize(CarService.getInput(), false, CarService.getPropertyNamesCompact());
 
         HierarchicalReflectiveColumnPropertyAccessor columnPropertyAccessor =
-                new HierarchicalReflectiveColumnPropertyAccessor(CarService.PROPERTY_NAMES_COMPACT);
+                new HierarchicalReflectiveColumnPropertyAccessor(CarService.getPropertyNamesCompact());
 
         IRowDataProvider<HierarchicalWrapper> bodyDataProvider = new ListDataProvider<>(data, columnPropertyAccessor);
-        HierarchicalSpanningDataProvider spanningDataProvider = new HierarchicalSpanningDataProvider(bodyDataProvider, CarService.PROPERTY_NAMES_COMPACT);
+        HierarchicalSpanningDataProvider spanningDataProvider = new HierarchicalSpanningDataProvider(bodyDataProvider, CarService.getPropertyNamesCompact());
         DataLayer bodyDataLayer = new SpanningDataLayer(spanningDataProvider);
 
         // simply apply labels for every column by index
@@ -56,7 +56,7 @@ public class HierarchicalTreeColumnReorderDragModeTest {
         ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
         ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
         SelectionLayer selectionLayer = new SelectionLayer(columnHideShowLayer);
-        this.treeLayer = new HierarchicalTreeLayer(selectionLayer, data, CarService.PROPERTY_NAMES_COMPACT);
+        this.treeLayer = new HierarchicalTreeLayer(selectionLayer, data, CarService.getPropertyNamesCompact());
     }
 
     @Test

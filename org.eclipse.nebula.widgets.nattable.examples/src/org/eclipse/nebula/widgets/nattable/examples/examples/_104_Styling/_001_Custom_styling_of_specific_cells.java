@@ -87,10 +87,8 @@ public class _001_Custom_styling_of_specific_cells extends AbstractNatExample {
         // Custom label "FOO" for cell at column, row index (1, 5)
         IConfigLabelAccumulator cellLabelAccumulator = new IConfigLabelAccumulator() {
             @Override
-            public void accumulateConfigLabels(LabelStack configLabels,
-                    int columnPosition, int rowPosition) {
-                int columnIndex = bodyLayer
-                        .getColumnIndexByPosition(columnPosition);
+            public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+                int columnIndex = bodyLayer.getColumnIndexByPosition(columnPosition);
                 int rowIndex = bodyLayer.getRowIndexByPosition(rowPosition);
                 if (columnIndex == 1 && rowIndex == 5) {
                     configLabels.addLabel(FOO_LABEL);
@@ -101,18 +99,14 @@ public class _001_Custom_styling_of_specific_cells extends AbstractNatExample {
 
                 // add labels for surrounding borders
                 if (rowIndex == 13) {
-                    configLabels
-                            .addLabel(CustomLineBorderDecorator.TOP_LINE_BORDER_LABEL);
-                    configLabels
-                            .addLabel(CustomLineBorderDecorator.BOTTOM_LINE_BORDER_LABEL);
+                    configLabels.addLabel(CustomLineBorderDecorator.TOP_LINE_BORDER_LABEL);
+                    configLabels.addLabel(CustomLineBorderDecorator.BOTTOM_LINE_BORDER_LABEL);
 
                     if (columnIndex == 0) {
-                        configLabels
-                                .addLabel(CustomLineBorderDecorator.LEFT_LINE_BORDER_LABEL);
+                        configLabels.addLabel(CustomLineBorderDecorator.LEFT_LINE_BORDER_LABEL);
                     }
                     if (columnIndex == 2) {
-                        configLabels
-                                .addLabel(CustomLineBorderDecorator.RIGHT_LINE_BORDER_LABEL);
+                        configLabels.addLabel(CustomLineBorderDecorator.RIGHT_LINE_BORDER_LABEL);
                     }
                 }
             }
@@ -121,16 +115,15 @@ public class _001_Custom_styling_of_specific_cells extends AbstractNatExample {
 
         NatTable natTable = new NatTable(parent, gridLayer, false);
 
-        natTable.addConfiguration(new DefaultNatTableStyleConfiguration() {
-            {
-                // override the LineBorderDecorator here to show how to paint
-                // borders on single sides of a cell
-                this.cellPainter = new CustomLineBorderDecorator(new TextPainter());
-                // set a border style
-                this.borderStyle = new BorderStyle(2, GUIHelper.COLOR_BLUE,
-                        LineStyleEnum.DASHDOT);
-            }
-        });
+        DefaultNatTableStyleConfiguration styleConfig = new DefaultNatTableStyleConfiguration();
+        // override the LineBorderDecorator here to show how to paint
+        // borders on single sides of a cell
+        styleConfig.cellPainter = new CustomLineBorderDecorator(new TextPainter());
+        // set a border style
+        styleConfig.borderStyle = new BorderStyle(2, GUIHelper.COLOR_BLUE, LineStyleEnum.DASHDOT);
+
+        natTable.addConfiguration(styleConfig);
+
         // Custom style for label "FOO"
         natTable.addConfiguration(new AbstractRegistryConfiguration() {
             @Override
@@ -140,7 +133,8 @@ public class _001_Custom_styling_of_specific_cells extends AbstractNatExample {
                         CellStyleAttributes.BACKGROUND_COLOR,
                         GUIHelper.COLOR_GREEN);
                 configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.CELL_STYLE, cellStyle,
+                        CellConfigAttributes.CELL_STYLE,
+                        cellStyle,
                         DisplayMode.NORMAL, FOO_LABEL);
 
                 cellStyle = new Style();
@@ -148,7 +142,8 @@ public class _001_Custom_styling_of_specific_cells extends AbstractNatExample {
                         CellStyleAttributes.TEXT_DECORATION,
                         TextDecorationEnum.UNDERLINE_STRIKETHROUGH);
                 configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.CELL_STYLE, cellStyle,
+                        CellConfigAttributes.CELL_STYLE,
+                        cellStyle,
                         DisplayMode.NORMAL, BAR_LABEL);
             }
         });

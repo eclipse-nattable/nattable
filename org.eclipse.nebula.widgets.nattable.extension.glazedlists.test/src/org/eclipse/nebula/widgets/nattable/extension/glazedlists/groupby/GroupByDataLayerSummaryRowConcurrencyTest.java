@@ -84,7 +84,7 @@ public class GroupByDataLayerSummaryRowConcurrencyTest {
                     try {
                         Thread.sleep(80);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        Thread.currentThread().interrupt();
                     }
                 }
                 return rowObject.value;
@@ -170,7 +170,7 @@ public class GroupByDataLayerSummaryRowConcurrencyTest {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         }
 

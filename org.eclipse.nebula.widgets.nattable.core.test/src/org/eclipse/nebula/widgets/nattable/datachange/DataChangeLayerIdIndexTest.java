@@ -617,6 +617,7 @@ public class DataChangeLayerIdIndexTest {
     }
 
     @Test
+    @SuppressWarnings("java:S2259")
     public void shouldUpdateChangeOnSortAndSaveWithTemp() {
         // enable temp data storage to test update on save
         this.dataChangeLayer = new DataChangeLayer(this.dataLayer,

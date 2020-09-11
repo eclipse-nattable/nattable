@@ -182,7 +182,7 @@ public class FunctionTest {
         values.add(new BigDecimalFunctionValue(4));
         values.add(new BigDecimalFunctionValue(2));
         FunctionValue function = new QuotientFunction(values);
-        assertEquals(new BigDecimal(20d / 4d / 2d), function.getValue());
+        assertEquals(BigDecimal.valueOf(20d / 4d / 2d), function.getValue());
     }
 
     @Test

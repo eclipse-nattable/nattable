@@ -68,8 +68,8 @@ import org.eclipse.swt.widgets.Display;
 
 public class _774_MultiExportExample extends AbstractNatExample {
 
-    public static String COLUMN_ONE_LABEL = "ColumnOneLabel";
-    public static String COLUMN_TWO_LABEL = "ColumnTwoLabel";
+    public static final String COLUMN_ONE_LABEL = "ColumnOneLabel";
+    public static final String COLUMN_TWO_LABEL = "ColumnTwoLabel";
 
     public static void main(String[] args) throws Exception {
         StandaloneNatExampleRunner.run(600, 480, new _774_MultiExportExample());

@@ -25,8 +25,7 @@ public class VisualChangeEventConflaterTest {
     @Test
     public void shouldAccumulateEvents() throws Exception {
         NatTableFixture natTable = new NatTableFixture();
-        VisualChangeEventConflater conflater = new VisualChangeEventConflater(
-                natTable);
+        VisualChangeEventConflater conflater = new VisualChangeEventConflater(natTable);
         EventConflaterChain chain = new EventConflaterChain();
         chain.add(conflater);
 

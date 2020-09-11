@@ -80,12 +80,18 @@ public class LayerCell extends AbstractLayerCell {
 
     @Override
     public int getColumnIndex() {
-        return getLayer().getColumnIndexByPosition(getColumnPosition());
+        if (getLayer() != null) {
+            return getLayer().getColumnIndexByPosition(getColumnPosition());
+        }
+        return getColumnPosition();
     }
 
     @Override
     public int getRowIndex() {
-        return getLayer().getRowIndexByPosition(getRowPosition());
+        if (getLayer() != null) {
+            return getLayer().getRowIndexByPosition(getRowPosition());
+        }
+        return getRowPosition();
     }
 
     @Override

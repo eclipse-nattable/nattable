@@ -35,8 +35,7 @@ import org.eclipse.swt.graphics.GC;
  * FilterRowComboBoxCellEditor as editor for the filter row with its necessary
  * configurations regarding matching mode, converter and painter.
  */
-public class ComboBoxFilterRowConfiguration extends
-        AbstractRegistryConfiguration {
+public class ComboBoxFilterRowConfiguration extends AbstractRegistryConfiguration {
 
     /**
      * The ICellEditor that should be used for the filter cells. Usually it
@@ -70,20 +69,35 @@ public class ComboBoxFilterRowConfiguration extends
      *            The IComboBoxDataProvider that is used to fill the filter row
      *            comboboxes.
      */
-    public ComboBoxFilterRowConfiguration(
-            IComboBoxDataProvider comboBoxDataProvider) {
-        this.cellEditor = new FilterRowComboBoxCellEditor(comboBoxDataProvider,
-                10);
-        this.filterIconPainter = new ComboBoxFilterIconPainter(
-                comboBoxDataProvider);
+    public ComboBoxFilterRowConfiguration(IComboBoxDataProvider comboBoxDataProvider) {
+        this.cellEditor = new FilterRowComboBoxCellEditor(comboBoxDataProvider, 10);
+        this.filterIconPainter = new ComboBoxFilterIconPainter(comboBoxDataProvider);
+    }
+
+    /**
+     * Create a ComboBoxFilterRowConfiguration with the given filter cell editor
+     * and filter icon painter.
+     *
+     * @param cellEditor
+     *            The {@link ICellEditor} that should be used in the filter row.
+     * @param filterIconPainter
+     *            The {@link ImagePainter} that should be used to render a
+     *            filter icon in the filter row.
+     * @since 2.0
+     */
+    public ComboBoxFilterRowConfiguration(ICellEditor cellEditor, ImagePainter filterIconPainter) {
+        this.cellEditor = cellEditor;
+        this.filterIconPainter = filterIconPainter;
     }
 
     @Override
     public void configureRegistry(IConfigRegistry configRegistry) {
 
         configRegistry.registerConfigAttribute(
-                EditConfigAttributes.CELL_EDITOR, this.cellEditor,
-                DisplayMode.NORMAL, GridRegion.FILTER_ROW);
+                EditConfigAttributes.CELL_EDITOR,
+                this.cellEditor,
+                DisplayMode.NORMAL,
+                GridRegion.FILTER_ROW);
 
         configRegistry.registerConfigAttribute(
                 FilterRowConfigAttributes.TEXT_MATCHING_MODE,
@@ -99,21 +113,21 @@ public class ComboBoxFilterRowConfiguration extends
             // selection will be taken into account for auto resizing
 
             @Override
-            public int getPreferredWidth(ILayerCell cell, GC gc,
-                    IConfigRegistry configRegistry) {
+            public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
                 return 0;
             }
 
             @Override
-            public int getPreferredHeight(ILayerCell cell, GC gc,
-                    IConfigRegistry configRegistry) {
+            public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
                 return 0;
             }
         }, CellEdgeEnum.RIGHT, this.filterIconPainter);
 
         configRegistry.registerConfigAttribute(
-                CellConfigAttributes.CELL_PAINTER, cellPainter,
-                DisplayMode.NORMAL, GridRegion.FILTER_ROW);
+                CellConfigAttributes.CELL_PAINTER,
+                cellPainter,
+                DisplayMode.NORMAL,
+                GridRegion.FILTER_ROW);
     }
 
 }

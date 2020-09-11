@@ -24,8 +24,7 @@ public class DataGeneratorTest {
     @Test
     public void testGenerate() {
         try {
-            PricingDataBean pricingDataBean = new DataGenerator<PricingDataBean>()
-                    .generate(PricingDataBean.class);
+            PricingDataBean pricingDataBean = new DataGenerator<PricingDataBean>().generate(PricingDataBean.class);
 
             assertNotNull(pricingDataBean);
             assertTrue(pricingDataBean.getBid() >= 0.0d);
@@ -39,7 +38,6 @@ public class DataGeneratorTest {
 
             assertNotNull(pricingDataBean.getPricingSource());
         } catch (GeneratorException e) {
-            e.printStackTrace();
             fail(e.getMessage() + " : " + e.getCause().getMessage());
         }
     }

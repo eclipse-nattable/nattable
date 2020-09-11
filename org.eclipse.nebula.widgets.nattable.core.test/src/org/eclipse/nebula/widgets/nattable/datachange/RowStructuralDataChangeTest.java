@@ -355,7 +355,7 @@ public class RowStructuralDataChangeTest {
         assertEquals(1, this.dataChangeLayer.dataChanges.size());
         assertEquals(1, this.deleteHandler.dataChanges.size());
 
-        RowDeleteDataChange change = this.deleteHandler.dataChanges.get(10);
+        RowDeleteDataChange change = this.deleteHandler.dataChanges.get(Integer.valueOf(10));
         assertNotNull(change);
         assertEquals(10, change.getKey());
         assertEquals(toDelete, change.getValue());
@@ -379,7 +379,7 @@ public class RowStructuralDataChangeTest {
         assertFalse("Cell 0/10 is dirty", this.dataChangeLayer.isCellDirty(0, 10));
         assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 10).hasLabel(DataChangeLayer.DIRTY));
 
-        RowDeleteDataChange change = this.deleteHandler.dataChanges.get(10);
+        RowDeleteDataChange change = this.deleteHandler.dataChanges.get(Integer.valueOf(10));
         assertNotNull(change);
         assertEquals(10, change.getKey());
         assertEquals(toDelete, change.getValue());

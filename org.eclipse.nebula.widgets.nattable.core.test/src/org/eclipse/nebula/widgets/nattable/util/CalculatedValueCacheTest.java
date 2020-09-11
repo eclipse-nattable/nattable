@@ -33,6 +33,7 @@ public class CalculatedValueCacheTest {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
 
             return Integer.valueOf(42);

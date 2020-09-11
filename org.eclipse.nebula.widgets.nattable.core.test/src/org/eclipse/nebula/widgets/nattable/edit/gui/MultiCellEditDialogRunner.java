@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.gui;
 
+import static org.junit.Assert.assertEquals;
+
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
@@ -27,7 +29,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Assert;
 
 public class MultiCellEditDialogRunner {
 
@@ -60,16 +61,14 @@ public class MultiCellEditDialogRunner {
         IDataValidator dataValidator = new DataValidator() {
 
             @Override
-            public boolean validate(int columnIndex, int rowIndex,
-                    Object newValue) {
-                Assert.assertEquals(newValue, newValue);
+            public boolean validate(int columnIndex, int rowIndex, Object newValue) {
+                assertEquals(newValue, newValue);
                 return false;
             }
 
         };
 
-        Shell shell = new Shell(Display.getDefault(), SWT.H_SCROLL
-                | SWT.V_SCROLL | SWT.RESIZE);
+        Shell shell = new Shell(Display.getDefault(), SWT.H_SCROLL | SWT.V_SCROLL | SWT.RESIZE);
 
         ConfigRegistry configRegistry = new ConfigRegistry();
         configRegistry.registerConfigAttribute(
@@ -79,8 +78,7 @@ public class MultiCellEditDialogRunner {
                 EditConfigAttributes.DATA_VALIDATOR,
                 dataValidator);
 
-        final CellEditDialog dialog = new CellEditDialog(shell,
-                newValue, cell, cellEditor, configRegistry);
+        final CellEditDialog dialog = new CellEditDialog(shell, newValue, cell, cellEditor, configRegistry);
 
         if (!this.interactive) {
             Display.getDefault().asyncExec(new Runnable() {
@@ -89,7 +87,7 @@ public class MultiCellEditDialogRunner {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        Thread.currentThread().interrupt();
                     } finally {
                         dialog.close();
                     }

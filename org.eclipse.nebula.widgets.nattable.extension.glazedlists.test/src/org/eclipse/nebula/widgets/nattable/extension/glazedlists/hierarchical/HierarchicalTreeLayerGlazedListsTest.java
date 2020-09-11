@@ -83,22 +83,22 @@ public class HierarchicalTreeLayerGlazedListsTest {
     public void setup() {
         this.input = CarService.getInput();
         // de-normalize the object graph without parent structure objects
-        List<HierarchicalWrapper> data = HierarchicalHelper.deNormalize(this.input, false, CarService.PROPERTY_NAMES_COMPACT);
+        List<HierarchicalWrapper> data = HierarchicalHelper.deNormalize(this.input, false, CarService.getPropertyNamesCompact());
 
         this.eventList = GlazedLists.eventList(data);
         TransformedList<HierarchicalWrapper, HierarchicalWrapper> rowObjectsGlazedList = GlazedLists.threadSafeList(this.eventList);
 
-        this.columnPropertyAccessor = new HierarchicalReflectiveColumnPropertyAccessor(CarService.PROPERTY_NAMES_COMPACT);
+        this.columnPropertyAccessor = new HierarchicalReflectiveColumnPropertyAccessor(CarService.getPropertyNamesCompact());
 
         this.sortedList = new SortedList<>(
                 rowObjectsGlazedList,
                 new HierarchicalWrapperComparator(
                         this.columnPropertyAccessor,
-                        HierarchicalHelper.getLevelIndexMapping(CarService.PROPERTY_NAMES_COMPACT)));
+                        HierarchicalHelper.getLevelIndexMapping(CarService.getPropertyNamesCompact())));
         this.filterList = new FilterList<>(this.sortedList);
 
         this.bodyDataProvider = new ListDataProvider<>(this.filterList, this.columnPropertyAccessor);
-        HierarchicalSpanningDataProvider spanningDataProvider = new HierarchicalSpanningDataProvider(this.bodyDataProvider, CarService.PROPERTY_NAMES_COMPACT);
+        HierarchicalSpanningDataProvider spanningDataProvider = new HierarchicalSpanningDataProvider(this.bodyDataProvider, CarService.getPropertyNamesCompact());
         this.bodyDataLayer = new SpanningDataLayer(spanningDataProvider);
 
         // simply apply labels for every column by index
@@ -109,7 +109,7 @@ public class HierarchicalTreeLayerGlazedListsTest {
         glazedListsEventLayer.setTestMode(true);
 
         this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
-        this.treeLayer = new HierarchicalTreeLayer(this.selectionLayer, this.filterList, CarService.PROPERTY_NAMES_COMPACT);
+        this.treeLayer = new HierarchicalTreeLayer(this.selectionLayer, this.filterList, CarService.getPropertyNamesCompact());
 
         // create a dummy config registry
         this.configRegistry = new ConfigRegistry();
@@ -117,7 +117,7 @@ public class HierarchicalTreeLayerGlazedListsTest {
                 SortConfigAttributes.SORT_COMPARATOR,
                 DefaultComparator.getInstance());
 
-        this.columnHeaderDataLayer = new DataLayer(new DefaultColumnHeaderDataProvider(CarService.PROPERTY_NAMES_COMPACT));
+        this.columnHeaderDataLayer = new DataLayer(new DefaultColumnHeaderDataProvider(CarService.getPropertyNamesCompact()));
 
         this.sortModel = new HierarchicalWrapperSortModel(
                 this.sortedList, this.columnPropertyAccessor, this.treeLayer.getLevelIndexMapping(), this.columnHeaderDataLayer, this.configRegistry);
@@ -934,7 +934,7 @@ public class HierarchicalTreeLayerGlazedListsTest {
 
         this.input.add(car4);
 
-        List<HierarchicalWrapper> data = HierarchicalHelper.deNormalize(this.input, false, CarService.PROPERTY_NAMES_COMPACT);
+        List<HierarchicalWrapper> data = HierarchicalHelper.deNormalize(this.input, false, CarService.getPropertyNamesCompact());
         this.eventList.clear();
         this.eventList.addAll(data);
 

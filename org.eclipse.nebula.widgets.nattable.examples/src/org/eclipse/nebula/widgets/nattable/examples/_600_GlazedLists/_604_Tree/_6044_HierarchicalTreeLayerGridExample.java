@@ -102,11 +102,11 @@ public class _6044_HierarchicalTreeLayerGridExample extends AbstractNatExample {
 
         ConfigRegistry configRegistry = new ConfigRegistry();
 
-        BodyLayerStack bodyLayerStack = new BodyLayerStack(CarService.getInput(), CarService.PROPERTY_NAMES);
+        BodyLayerStack bodyLayerStack = new BodyLayerStack(CarService.getInput(), CarService.getPropertyNames());
 
         // create the column header layer stack
         IDataProvider columnHeaderDataProvider =
-                new DefaultColumnHeaderDataProvider(CarService.PROPERTY_NAMES, propertyToLabelMap);
+                new DefaultColumnHeaderDataProvider(CarService.getPropertyNames(), propertyToLabelMap);
         DataLayer columnHeaderDataLayer = new DataLayer(columnHeaderDataProvider);
         ILayer columnHeaderLayer = new ColumnHeaderLayer(
                 columnHeaderDataLayer,
@@ -145,13 +145,12 @@ public class _6044_HierarchicalTreeLayerGridExample extends AbstractNatExample {
 
         NatTable natTable = new NatTable(parent, gridLayer, false);
         natTable.setConfigRegistry(configRegistry);
-        natTable.addConfiguration(new DefaultNatTableStyleConfiguration() {
-            {
-                this.vAlign = VerticalAlignmentEnum.TOP;
-                this.hAlign = HorizontalAlignmentEnum.LEFT;
-                this.cellPainter = new PaddingDecorator(new TextPainter(), 2);
-            }
-        });
+
+        DefaultNatTableStyleConfiguration styleConfig = new DefaultNatTableStyleConfiguration();
+        styleConfig.vAlign = VerticalAlignmentEnum.TOP;
+        styleConfig.hAlign = HorizontalAlignmentEnum.LEFT;
+        styleConfig.cellPainter = new PaddingDecorator(new TextPainter(), 2);
+        natTable.addConfiguration(styleConfig);
 
         // adds the key bindings that allows pressing space bar to
         // expand/collapse tree nodes
