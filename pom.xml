@@ -48,7 +48,7 @@
 	</modules>
 
 	<properties>
-		<tycho-version>1.7.0</tycho-version>
+		<tycho-version>2.0.0</tycho-version>
         <cbi-version>1.1.8-SNAPSHOT</cbi-version>
         <nattable-version>2.0.0-SNAPSHOT</nattable-version>
 		
@@ -59,6 +59,27 @@
 		<sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../org.eclipse.nebula.widgets.nattable.updatesite/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 		<sonar.surefire.reportsPath>${project.basedir}/../${project.artifactId}.test/target/surefire-reports/</sonar.surefire.reportsPath>
 		<sonar.java.source>8</sonar.java.source>
+		<!-- coverage exclusions -->
+<!--
+		<sonar.coverage.exclusions>
+			org.eclipse.nebula.widgets.nattable.core.test/**/*.java,
+			org.eclipse.nebula.widgets.nattable.extension.glazedlists.test/**/*.java,
+			org.eclipse.nebula.widgets.nattable.examples/**/*.java,
+			org.eclipse.nebula.widgets.nattable.examples.e4/**/*.java,
+			org.eclipse.nebula.widgets.nattable.dataset/**/*.java
+		</sonar.coverage.exclusions>
+-->
+		<!-- duplication exclusion -->
+<!--
+		<sonar.cpd.exclusions>
+			org.eclipse.nebula.widgets.nattable.core.test/**/*.java,
+			org.eclipse.nebula.widgets.nattable.extension.glazedlists.test/**/*.java,
+			org.eclipse.nebula.widgets.nattable.examples/**/*.java,
+			org.eclipse.nebula.widgets.nattable.examples.e4/**/*.java,
+			org.eclipse.nebula.widgets.nattable.dataset/**/*.java
+		</sonar.cpd.exclusions>
+-->
+
 		<sonar.exclusions>
 			org.eclipse.nebula.widgets.nattable.core.test/**/*.java,
 			org.eclipse.nebula.widgets.nattable.extension.glazedlists.test/**/*.java,
@@ -151,7 +172,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.10.3</version>
+					<version>3.1.0</version>
 					<configuration>
 						<tags>
 							<tag>
