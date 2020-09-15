@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboUpdateEvent;
@@ -28,6 +26,8 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.util.Scheduler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
@@ -51,7 +51,7 @@ import ca.odell.glazedlists.event.ListEventListener;
 public class GlazedListsFilterRowComboBoxDataProvider<T> extends
         FilterRowComboBoxDataProvider<T> implements ListEventListener<T> {
 
-    private static final Log LOG = LogFactory.getLog(GlazedListsFilterRowComboBoxDataProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GlazedListsFilterRowComboBoxDataProvider.class);
 
     private static final Scheduler SCHEDULER = new Scheduler("GlazedListsFilterRowComboBoxDataProvider"); //$NON-NLS-1$
 

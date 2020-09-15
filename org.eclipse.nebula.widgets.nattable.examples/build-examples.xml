@@ -58,6 +58,12 @@
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/org.eclipse.collections_10.4.0.v20200820-2049.jar"/>
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.slf4j.api_1.7.30.v20200204-2150.jar"/>
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.slf4j.binding.simple_1.7.30.v20200204-2150.jar"/>
         </jar>
 
     </target>

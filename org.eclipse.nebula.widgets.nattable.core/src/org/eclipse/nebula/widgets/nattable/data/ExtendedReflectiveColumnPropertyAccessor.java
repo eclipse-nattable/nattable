@@ -17,12 +17,12 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExtendedReflectiveColumnPropertyAccessor<R> extends ReflectiveColumnPropertyAccessor<R> {
 
-    private static final Log LOG = LogFactory.getLog(ExtendedReflectiveColumnPropertyAccessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ExtendedReflectiveColumnPropertyAccessor.class);
 
     private static final String ERROR_LOG_STATEMENT = "Error on accessing the data model via reflection"; //$NON-NLS-1$
 

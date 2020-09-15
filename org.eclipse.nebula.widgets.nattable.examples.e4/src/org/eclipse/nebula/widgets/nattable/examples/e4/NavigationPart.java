@@ -51,8 +51,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.wiring.BundleWiring;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NavigationPart {
+
+    private static final Logger LOG = LoggerFactory.getLogger(NavigationPart.class);
 
     public static final String E4_EXAMPLES_PREFIX = "E4 Examples/";
     public static final String E4_BASE_PATH = "/org/eclipse/nebula/widgets/nattable/examples/e4/part";
@@ -164,8 +168,7 @@ public class NavigationPart {
     private String[] getExamplePaths() {
         List<String> examples = null;
 
-        try {
-            InputStream inputStream = NatTableExamples.class.getResourceAsStream("/src/examples.index");
+        try (InputStream inputStream = NatTableExamples.class.getResourceAsStream("/src/examples.index")) {
             if (inputStream != null) {
                 examples = new ArrayList<>();
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
@@ -190,7 +193,7 @@ public class NavigationPart {
             examples.add(E4_EXAMPLES_PREFIX + "/org/eclipse/nebula/widgets/nattable/examples/e4/part/SelectionListenerExample");
             examples.add(E4_EXAMPLES_PREFIX + "/org/eclipse/nebula/widgets/nattable/examples/e4/part/MenuExample");
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Error on reading examples.index", e);
         }
 
         return examples != null ? examples.toArray(new String[0]) : null;

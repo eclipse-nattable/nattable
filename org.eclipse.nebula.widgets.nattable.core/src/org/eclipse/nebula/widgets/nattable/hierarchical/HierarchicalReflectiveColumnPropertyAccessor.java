@@ -16,9 +16,9 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Specialization of {@link ReflectiveColumnPropertyAccessor} to access fields
@@ -28,7 +28,7 @@ import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor
  */
 public class HierarchicalReflectiveColumnPropertyAccessor extends ReflectiveColumnPropertyAccessor<HierarchicalWrapper> {
 
-    private static final Log LOG = LogFactory.getLog(HierarchicalReflectiveColumnPropertyAccessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HierarchicalReflectiveColumnPropertyAccessor.class);
 
     /**
      * @param propertyNames
@@ -58,7 +58,7 @@ public class HierarchicalReflectiveColumnPropertyAccessor extends ReflectiveColu
                 Method readMethod = propertyDesc.getReadMethod();
                 return readMethod.invoke(levelObject);
             } catch (Exception e) {
-                LOG.warn(e);
+                LOG.warn("Error on getting data value", e); //$NON-NLS-1$
                 throw new RuntimeException(e);
             }
         }
@@ -83,7 +83,7 @@ public class HierarchicalReflectiveColumnPropertyAccessor extends ReflectiveColu
             } catch (IllegalArgumentException ex) {
                 LOG.error("Data type being set does not match the data type of the setter method in the backing bean", ex); //$NON-NLS-1$
             } catch (Exception e) {
-                LOG.error(e);
+                LOG.error("Error while setting data value", e); //$NON-NLS-1$
                 throw new RuntimeException("Error while setting data value"); //$NON-NLS-1$
             }
         }

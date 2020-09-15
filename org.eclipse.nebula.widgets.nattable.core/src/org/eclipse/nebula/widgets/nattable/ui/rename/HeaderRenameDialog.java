@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.rename;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.style.editor.AbstractStyleEditorDialog;
 import org.eclipse.swt.SWT;
@@ -23,6 +21,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Dialog to support renaming of header cells, e.g. the column header or
@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class HeaderRenameDialog extends AbstractStyleEditorDialog {
 
-    private static final Log LOG = LogFactory.getLog(HeaderRenameDialog.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HeaderRenameDialog.class);
 
     public enum RenameDialogLabels {
         COLUMN_RENAME(
@@ -92,7 +92,7 @@ public class HeaderRenameDialog extends AbstractStyleEditorDialog {
         try {
             this.headerLabelPanel.edit(this.renamedLabel);
         } catch (Exception e) {
-            LOG.warn(e);
+            LOG.warn("Error on header label editing", e); //$NON-NLS-1$
         }
     }
 

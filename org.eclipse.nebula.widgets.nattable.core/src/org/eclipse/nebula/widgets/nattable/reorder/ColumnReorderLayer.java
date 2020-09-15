@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.collections.api.list.primitive.MutableIntList;
 import org.eclipse.collections.api.map.primitive.MutableIntIntMap;
 import org.eclipse.collections.impl.factory.primitive.IntIntMaps;
@@ -48,6 +46,8 @@ import org.eclipse.nebula.widgets.nattable.reorder.command.ResetColumnReorderCom
 import org.eclipse.nebula.widgets.nattable.reorder.config.DefaultColumnReorderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Layer that is used to add the functionality for column reordering.
@@ -56,7 +56,7 @@ import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
  */
 public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
 
-    private static final Log LOG = LogFactory.getLog(ColumnReorderLayer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ColumnReorderLayer.class);
 
     public static final String PERSISTENCE_KEY_COLUMN_INDEX_ORDER = ".columnIndexOrder"; //$NON-NLS-1$
 
@@ -208,17 +208,16 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
      */
     protected boolean isRestoredStateValid(int[] newColumnIndexOrder) {
         if (newColumnIndexOrder.length != getColumnCount()) {
-            LOG.error("Number of persisted columns (" + newColumnIndexOrder.length + ") " + //$NON-NLS-1$ //$NON-NLS-2$
-                    "is not the same as the number of columns in the data source (" //$NON-NLS-1$
-                    + getColumnCount() + ").\n" + //$NON-NLS-1$
-                    "Skipping restore of column ordering"); //$NON-NLS-1$
+            LOG.error("Number of persisted columns ({}) " + //$NON-NLS-1$
+                    "is not the same as the number of columns in the data source ({}).\n" + //$NON-NLS-1$
+                    "Skipping restore of column ordering", newColumnIndexOrder.length, getColumnCount()); //$NON-NLS-1$
             return false;
         }
 
         for (int index : newColumnIndexOrder) {
             if (!this.indexPositionMapping.containsKey(index)) {
-                LOG.error("Column index: " + index + " being restored, is not a available in the data soure.\n" + //$NON-NLS-1$ //$NON-NLS-2$
-                        "Skipping restore of column ordering"); //$NON-NLS-1$
+                LOG.error("Column index: {} being restored, is not a available in the data soure.\n" + //$NON-NLS-1$
+                        "Skipping restore of column ordering", index); //$NON-NLS-1$
                 return false;
             }
         }

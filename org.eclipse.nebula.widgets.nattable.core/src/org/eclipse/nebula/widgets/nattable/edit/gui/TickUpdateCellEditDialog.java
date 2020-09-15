@@ -12,8 +12,6 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.gui;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -35,6 +33,8 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Specialization of {@link CellEditDialog} that adds additional functionality
@@ -47,7 +47,7 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class TickUpdateCellEditDialog extends CellEditDialog {
 
-    private static final Log LOG = LogFactory.getLog(TickUpdateCellEditDialog.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TickUpdateCellEditDialog.class);
 
     private static final String SET = Messages.getString("TickUpdateCellEditDialog.set"); //$NON-NLS-1$
     private static final String INCREASE_BY = Messages.getString("TickUpdateCellEditDialog.increase"); //$NON-NLS-1$
@@ -263,12 +263,10 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
             if (this.validator.validate(this.cell, this.configRegistry, newValue)) {
                 return newValue;
             } else {
-                LOG.warn("Tick update failed for value " + newValue //$NON-NLS-1$
-                        + ". New value is not valid!"); //$NON-NLS-1$
+                LOG.warn("Tick update failed for value {}. New value is not valid!", newValue); //$NON-NLS-1$
             }
         } catch (Exception e) {
-            LOG.warn("Tick update failed for value " + newValue //$NON-NLS-1$
-                    + ". " + e.getLocalizedMessage()); //$NON-NLS-1$
+            LOG.warn("Tick update failed for value {}. {}", newValue, e.getLocalizedMessage()); //$NON-NLS-1$
         }
 
         // return the unprocessed value because after the tick the value is

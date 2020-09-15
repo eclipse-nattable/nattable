@@ -24,6 +24,8 @@ import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.XMLEvent;
 
 import org.eclipse.nebula.widgets.richtext.RichTextPainter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link MarkupProcessor} implementation that is able to process regular
@@ -34,6 +36,8 @@ import org.eclipse.nebula.widgets.richtext.RichTextPainter;
  * @since 1.1
  */
 public class RegexMarkupValue implements MarkupProcessor {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RegexMarkupValue.class);
 
     private static final String GROUP_INDEX_PLACEHOLDER = "$1";
 
@@ -101,13 +105,13 @@ public class RegexMarkupValue implements MarkupProcessor {
                     }
                 }
             } catch (XMLStreamException e) {
-                e.printStackTrace();
+                LOG.error("Error on XML processing", e);
             } finally {
                 if (parser != null) {
                     try {
                         parser.close();
                     } catch (XMLStreamException e) {
-                        e.printStackTrace();
+                        LOG.error("Error on closing the XMLEventReader", e);
                     }
                 }
             }

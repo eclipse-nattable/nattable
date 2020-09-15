@@ -15,8 +15,6 @@ package org.eclipse.nebula.widgets.nattable.edit.gui;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.nebula.widgets.nattable.Messages;
@@ -40,6 +38,8 @@ import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract implementation of a {@link ICellEditor} that is also a
@@ -53,13 +53,10 @@ import org.eclipse.swt.widgets.Control;
  * <p>
  * By using this implementation, the {@link CellEditDialogFactory} will return
  * the instance of this editor, after it was activated previously.
- *
- * @author Dirk Fauth
- *
  */
 public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEditDialog {
 
-    private static final Log log = LogFactory.getLog(AbstractDialogCellEditor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractDialogCellEditor.class);
 
     /**
      * The parent Composite, needed for the creation of the dialog.
@@ -304,7 +301,7 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
                 // if another exception occured that wasn't thrown by us, it
                 // should at least be logged without killing the whole
                 // application
-                log.error("Error on updating cell value: " + e.getLocalizedMessage(), e); //$NON-NLS-1$
+                LOG.error("Error on updating cell value: {}", e.getLocalizedMessage(), e); //$NON-NLS-1$
             }
         }
         return false;

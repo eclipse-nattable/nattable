@@ -22,8 +22,12 @@ import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LifecycleManager {
+
+    private static final Logger LOG = LoggerFactory.getLogger(LifecycleManager.class);
 
     public static final String CLOSE_ON_SHUTDOWN_TAG = "CloseOnShutdown";
 
@@ -31,8 +35,7 @@ public class LifecycleManager {
     void preSave(EModelService modelService, MApplication app) {
         List<String> tags = new ArrayList<>();
         tags.add(CLOSE_ON_SHUTDOWN_TAG);
-        List<MPart> elementsWithTags = modelService.findElements(app, null,
-                MPart.class, tags);
+        List<MPart> elementsWithTags = modelService.findElements(app, null, MPart.class, tags);
 
         for (MPart part : elementsWithTags) {
             try {
@@ -41,7 +44,7 @@ public class LifecycleManager {
                 MElementContainer<MUIElement> parent = part.getParent();
                 parent.getChildren().remove(part);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.error("Error on preSave", e);
             }
         }
     }

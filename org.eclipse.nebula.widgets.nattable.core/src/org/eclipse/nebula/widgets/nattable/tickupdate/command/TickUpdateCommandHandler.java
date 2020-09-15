@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.tickupdate.command;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
@@ -28,6 +26,8 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.tickupdate.ITickUpdateHandler;
 import org.eclipse.nebula.widgets.nattable.tickupdate.TickUpdateConfigAttributes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The command handler that will handle {@link TickUpdateCommand}s on selected
@@ -35,7 +35,7 @@ import org.eclipse.nebula.widgets.nattable.tickupdate.TickUpdateConfigAttributes
  */
 public class TickUpdateCommandHandler extends AbstractLayerCommandHandler<TickUpdateCommand> {
 
-    private static final Log LOG = LogFactory.getLog(TickUpdateCommandHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TickUpdateCommandHandler.class);
 
     /**
      * The {@link SelectionLayer} needed to retrieve the selected cells on which
@@ -146,12 +146,10 @@ public class TickUpdateCommandHandler extends AbstractLayerCommandHandler<TickUp
                                         selectedPosition.rowPosition,
                                         newValue));
                     } else {
-                        LOG.warn("Tick update failed for cell at " + selectedPosition + " and value " + newValue //$NON-NLS-1$ //$NON-NLS-2$
-                                + ". New value is not valid!"); //$NON-NLS-1$
+                        LOG.warn("Tick update failed for cell at {} and value {}. New value is not valid!", selectedPosition, newValue); //$NON-NLS-1$
                     }
                 } catch (Exception e) {
-                    LOG.warn("Tick update failed for cell at " + selectedPosition + " and value " + newValue //$NON-NLS-1$ //$NON-NLS-2$
-                            + ". " + e.getLocalizedMessage()); //$NON-NLS-1$
+                    LOG.warn("Tick update failed for cell at {} and value {}. {}", selectedPosition, newValue, e.getLocalizedMessage()); //$NON-NLS-1$
                 }
             }
         }

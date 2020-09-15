@@ -15,8 +15,6 @@ package org.eclipse.nebula.widgets.nattable.export.image;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.export.FileOutputStreamProvider;
 import org.eclipse.nebula.widgets.nattable.export.IOutputStreamProvider;
@@ -31,6 +29,8 @@ import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used to export a NatTable to different types of image.
@@ -47,7 +47,7 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class ImageExporter implements ITableExporter {
 
-    private static final Log LOG = LogFactory.getLog(ImageExporter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ImageExporter.class);
 
     private static final String DEFAULT_IMAGE_NAME = "table_export.bmp"; //$NON-NLS-1$
 

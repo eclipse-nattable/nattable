@@ -17,16 +17,12 @@
                value="icons/nebula_logo_16.png,icons/nebula_logo_32.png,icons/nebula_logo_64.png">
          </property>
          <property
-               name="applicationCSS"
-               value="platform:/plugin/org.eclipse.nebula.widgets.nattable.examples.e4/css/default.css">
-         </property>
-         <property
-               name="applicationCSSResources"
-               value="platform:/plugin/org.eclipse.nebula.widgets.nattable.examples.e4/icons/">
-         </property>
-         <property
                name="appName"
                value="org.eclipse.nebula.widgets.nattable.examples.e4">
+         </property>
+         <property
+               name="applicationCSS"
+               value="platform:/plugin/org.eclipse.nebula.widgets.nattable.examples.e4/css/default.css">
          </property>
       </product>
    </extension>

@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.jface.window.Window;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
@@ -31,13 +29,15 @@ import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Controller to handle the activation of the edit mode of NatTable cells.
  */
 public class EditController {
 
-    private static final Log LOG = LogFactory.getLog(EditController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EditController.class);
 
     /**
      * Activates the edit mode for the given cell. Will determine whether the
@@ -66,7 +66,7 @@ public class EditController {
             Object initialCanonicalValue, final IConfigRegistry configRegistry) {
 
         if (cell == null) {
-            LOG.error("Cell being edited is no longer available. Initial value: " + initialCanonicalValue); //$NON-NLS-1$
+            LOG.error("Cell being edited is no longer available. Initial value: {}", initialCanonicalValue); //$NON-NLS-1$
             return;
         }
 
@@ -127,7 +127,7 @@ public class EditController {
                 editCells(cells, parent, initialCanonicalValue, configRegistry);
             }
         } catch (Exception e) {
-            LOG.error("Error while editing cell: Cell: " + cell + "; Initial value: " + initialCanonicalValue, e); //$NON-NLS-1$ //$NON-NLS-2$
+            LOG.error("Error while editing cell: Cell: {}; Initial value: {}", cell, initialCanonicalValue, e); //$NON-NLS-1$
         }
     }
 

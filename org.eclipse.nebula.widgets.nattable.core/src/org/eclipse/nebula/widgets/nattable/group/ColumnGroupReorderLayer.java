@@ -18,8 +18,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.group.command.GroupColumnReorderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.command.GroupColumnReorderEndCommandHandler;
@@ -33,13 +31,15 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Adds functionality allowing the reordering of the the column groups.
  */
 public class ColumnGroupReorderLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
 
-    private static final Log LOG = LogFactory.getLog(ColumnGroupReorderLayer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ColumnGroupReorderLayer.class);
 
     private final ColumnGroupModel model;
 
@@ -275,8 +275,7 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
         }
 
         if (fromColumnPosition == -1 || toColumnPosition == -1) {
-            LOG.error("Invalid reorder positions, fromPosition: " + fromColumnPosition //$NON-NLS-1$
-                    + ", toPosition: " + toColumnPosition); //$NON-NLS-1$
+            LOG.error("Invalid reorder positions, fromPosition: {}, toPosition: {}", fromColumnPosition, toColumnPosition); //$NON-NLS-1$
         }
 
         boolean jump = Math.abs(fromColumnPosition - toColumnPosition) > 1;

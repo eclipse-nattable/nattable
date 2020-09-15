@@ -25,8 +25,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -60,10 +58,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Shell;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class PoiExcelExporter implements ILayerExporter {
 
-    private static final Log LOG = LogFactory.getLog(PoiExcelExporter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PoiExcelExporter.class);
 
     private final IOutputStreamProvider outputStreamProvider;
 

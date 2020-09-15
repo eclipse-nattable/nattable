@@ -19,6 +19,10 @@
       [Enter License Description here.]
    </license>
 
+   <requires>
+      <import plugin="org.slf4j.api"/>
+   </requires>
+
    <plugin
          id="org.eclipse.nebula.widgets.nattable.examples.e4"
          download-size="0"
@@ -35,6 +39,21 @@
 
    <plugin
          id="org.eclipse.nebula.widgets.nattable.examples"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.slf4j.binding.simple"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="org.slf4j.api"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -16,8 +16,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
@@ -27,10 +25,12 @@ import org.eclipse.nebula.widgets.nattable.ui.matcher.IKeyEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.IMouseEventMatcher;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UiBindingRegistry implements IUiBindingRegistry {
 
-    private static final Log log = LogFactory.getLog(UiBindingRegistry.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UiBindingRegistry.class);
 
     private NatTable natTable;
 
@@ -127,7 +127,7 @@ public class UiBindingRegistry implements IUiBindingRegistry {
                 }
             }
         } catch (Exception e) {
-            log.error("Exception on retrieving a mouse event action", e); //$NON-NLS-1$
+            LOG.error("Exception on retrieving a mouse event action", e); //$NON-NLS-1$
         }
         return null;
     }

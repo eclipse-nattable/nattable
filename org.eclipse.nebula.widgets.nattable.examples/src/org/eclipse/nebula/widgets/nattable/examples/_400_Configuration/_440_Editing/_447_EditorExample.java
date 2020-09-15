@@ -209,7 +209,7 @@ public class _447_EditorExample extends AbstractNatExample {
             try {
                 keystroke = KeyStroke.getInstance("Ctrl+Space");
             } catch (ParseException e) {
-                e.printStackTrace();
+                // should not happen as the string is correct
             }
             String backspace = "\b"; //$NON-NLS-1$
             String delete = "\u007F"; //$NON-NLS-1$

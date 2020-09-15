@@ -18,9 +18,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles persisting of the sorting state. The sorting state is read from and
@@ -31,7 +31,7 @@ import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
  */
 public class SortStatePersistor<T> implements IPersistable {
 
-    private static final Log log = LogFactory.getLog(SortStatePersistor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SortStatePersistor.class);
 
     public static final String PERSISTENCE_KEY_SORTING_STATE = ".SortHeaderLayer.sortingState"; //$NON-NLS-1$
     private final ISortModel sortModel;
@@ -106,8 +106,7 @@ public class SortStatePersistor<T> implements IPersistable {
             }
         } catch (Exception ex) {
             this.sortModel.clear();
-            log.error(
-                    "Error while restoring sorting state: " + ex.getLocalizedMessage(), ex); //$NON-NLS-1$
+            LOG.error("Error while restoring sorting state: {}", ex.getLocalizedMessage(), ex); //$NON-NLS-1$
         }
     }
 

@@ -3,7 +3,6 @@
 
 <product name="org.eclipse.nebula.widgets.nattable.examples.e4" uid="org.eclipse.nebula.widgets.nattable.examples.e4.product" id="org.eclipse.nebula.widgets.nattable.examples.e4.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.0.0.qualifier" useFeatures="true" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -16,13 +15,11 @@
 
    <windowImages i16="/org.eclipse.nebula.widgets.nattable.examples.e4/icons/nebula_logo_16.png" i32="/org.eclipse.nebula.widgets.nattable.examples.e4/icons/nebula_logo_32.png" i64="/org.eclipse.nebula.widgets.nattable.examples.e4/icons/nebula_logo_64.png"/>
 
-
    <launcher name="nattable_examples">
       <win useIco="false">
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
    </vm>
@@ -339,6 +336,7 @@ version(s), and exceptions or additional permissions here}.&quot;
    </preferencesInfo>
 
    <cssInfo>
+      <file path="/org.eclipse.nebula.widgets.nattable.examples.e4/css/default.css"/>
    </cssInfo>
 
 </product>

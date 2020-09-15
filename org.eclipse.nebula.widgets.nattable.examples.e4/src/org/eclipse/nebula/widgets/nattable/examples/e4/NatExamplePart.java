@@ -39,8 +39,12 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NatExamplePart {
+
+    private static final Logger LOG = LoggerFactory.getLogger(NatExamplePart.class);
 
     INatExample example;
     Control exampleControl;
@@ -110,7 +114,7 @@ public class NatExamplePart {
                 MessageDialog.openError(null, "Error", "null stream for resource " + resource);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Error on reading resource {}", resource, e);
         }
 
         return null;

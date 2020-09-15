@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.datachange.event.KeyRowInsertEvent;
@@ -30,6 +28,8 @@ import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowInsertEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link DataChangeHandler} to track row insert operations. Registers as
@@ -42,7 +42,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
  */
 public class RowInsertDataChangeHandler extends AbstractDataChangeHandler<RowInsertDataChange> implements ILayerEventHandler<RowInsertEvent> {
 
-    private static final Log LOG = LogFactory.getLog(RowInsertDataChangeHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RowInsertDataChangeHandler.class);
 
     /**
      *
@@ -226,7 +226,7 @@ public class RowInsertDataChangeHandler extends AbstractDataChangeHandler<RowIns
                             // store the change in the DataChangeLayer
                             this.layer.addDataChange(new RowInsertDataChange(key, this.keyHandler));
                         } else {
-                            LOG.warn("key was null for position " + i); //$NON-NLS-1$
+                            LOG.warn("key was null for position {}", i); //$NON-NLS-1$
                         }
                     }
                 }

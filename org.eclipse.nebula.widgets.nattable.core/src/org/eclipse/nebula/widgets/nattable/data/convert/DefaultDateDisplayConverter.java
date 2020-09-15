@@ -16,17 +16,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Converts a java.util.Date object to a given format and vice versa
  */
 public class DefaultDateDisplayConverter extends DisplayConverter {
 
-    private static final Log log = LogFactory.getLog(DefaultDateDisplayConverter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultDateDisplayConverter.class);
 
     private SimpleDateFormat dateFormat;
 
@@ -69,7 +69,7 @@ public class DefaultDateDisplayConverter extends DisplayConverter {
                 return this.dateFormat.format(canonicalValue);
             }
         } catch (Exception e) {
-            log.warn(e);
+            LOG.warn("Error on conversion", e); //$NON-NLS-1$
         }
         return canonicalValue;
     }

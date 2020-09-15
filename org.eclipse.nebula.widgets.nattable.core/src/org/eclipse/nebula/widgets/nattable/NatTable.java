@@ -21,8 +21,6 @@ import java.util.Properties;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
@@ -94,11 +92,13 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //this warning suppression is because of the ActiveCellEditorRegistry usage to ensure backwards compatibility
 public class NatTable extends Canvas implements ILayer, PaintListener, IClientAreaProvider, ILayerListener, IPersistable {
 
-    private static final Log LOG = LogFactory.getLog(NatTable.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NatTable.class);
 
     public static final int DEFAULT_STYLE_OPTIONS = SWT.NO_BACKGROUND
             | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.V_SCROLL

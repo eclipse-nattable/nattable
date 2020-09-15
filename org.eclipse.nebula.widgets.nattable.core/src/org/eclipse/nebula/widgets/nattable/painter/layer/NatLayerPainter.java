@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.layer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -21,6 +19,8 @@ import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter2;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ILayerPainter implementation that is rendering the background of the space
@@ -33,7 +33,7 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public class NatLayerPainter implements ILayerPainter {
 
-    private static final Log LOG = LogFactory.getLog(NatLayerPainter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NatLayerPainter.class);
 
     /**
      * The NatTable instance to paint on.

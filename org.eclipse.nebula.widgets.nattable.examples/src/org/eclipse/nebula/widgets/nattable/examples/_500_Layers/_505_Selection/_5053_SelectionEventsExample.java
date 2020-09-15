@@ -162,11 +162,12 @@ public class _5053_SelectionEventsExample extends AbstractNatExample {
                     // and access the data via IRowDataProvider
                     Collection<Range> selections = selectionLayer.getSelectedRowPositions();
                     StringBuilder builder = new StringBuilder("Selected Persons: ")
-                            .append(selectionLayer.getSelectedRowPositions())
+                            .append(selections)
                             .append("[");
                     for (Range r : selections) {
                         for (int i = r.start; i < r.end; i++) {
-                            Person p = bodyDataProvider.getRowObject(i);
+                            int rowIndex = selectionLayer.getRowIndexByPosition(i);
+                            Person p = bodyDataProvider.getRowObject(rowIndex);
                             if (p != null) {
                                 if (!builder.toString().endsWith("[")) {
                                     builder.append(", ");

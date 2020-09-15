@@ -20,8 +20,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
@@ -32,6 +30,8 @@ import org.eclipse.nebula.widgets.nattable.filterrow.ParseResult.MatchType;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
@@ -49,7 +49,7 @@ import ca.odell.glazedlists.util.concurrent.ReadWriteLock;
 
 public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 
-    private static final Log LOG = LogFactory.getLog(DefaultGlazedListsFilterStrategy.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultGlazedListsFilterStrategy.class);
 
     protected final IColumnAccessor<T> columnAccessor;
     protected final IConfigRegistry configRegistry;
@@ -201,7 +201,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
                                     matchOperation));
                         }
                     } catch (PatternSyntaxException e) {
-                        LOG.warn("Error on applying a filter: " + e.getLocalizedMessage()); //$NON-NLS-1$
+                        LOG.warn("Error on applying a filter: {}", e.getLocalizedMessage()); //$NON-NLS-1$
                     }
                 }
 

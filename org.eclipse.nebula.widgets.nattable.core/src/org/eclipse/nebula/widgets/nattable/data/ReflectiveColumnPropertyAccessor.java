@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Convenience class which uses java reflection to get/set property names from
@@ -36,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAccessor<R> {
 
-    private static final Log LOG = LogFactory.getLog(ReflectiveColumnPropertyAccessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ReflectiveColumnPropertyAccessor.class);
 
     private final List<String> propertyNames;
 
@@ -71,7 +71,7 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
             Method readMethod = propertyDesc.getReadMethod();
             return readMethod.invoke(rowObj);
         } catch (Exception e) {
-            LOG.warn(e);
+            LOG.warn("Error on getting data value", e); //$NON-NLS-1$
             throw new IllegalStateException(e);
         }
     }
@@ -89,7 +89,7 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
         } catch (IllegalArgumentException ex) {
             LOG.error("Data type being set does not match the data type of the setter method in the backing bean", ex); //$NON-NLS-1$
         } catch (Exception e) {
-            LOG.error(e);
+            LOG.error("Error while setting data value", e); //$NON-NLS-1$
             throw new IllegalStateException("Error while setting data value"); //$NON-NLS-1$
         }
     }

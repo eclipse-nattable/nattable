@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.columnRename;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.style.editor.AbstractStyleEditorDialog;
 import org.eclipse.swt.SWT;
@@ -23,10 +21,12 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ColumnRenameDialog extends AbstractStyleEditorDialog {
 
-    private static final Log log = LogFactory.getLog(ColumnRenameDialog.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ColumnRenameDialog.class);
 
     private ColumnLabelPanel columnLabelPanel;
     private final String columnLabel;
@@ -66,7 +66,7 @@ public class ColumnRenameDialog extends AbstractStyleEditorDialog {
         try {
             this.columnLabelPanel.edit(this.renamedColumnLabel);
         } catch (Exception e) {
-            log.warn(e);
+            LOG.warn("Error on edit", e); //$NON-NLS-1$
         }
     }
 

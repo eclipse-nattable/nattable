@@ -34,8 +34,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AbstractE4NatExamplePart extends AbstractNatExample {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractE4NatExamplePart.class);
 
     @Inject
     MPart part;
@@ -96,7 +100,7 @@ public class AbstractE4NatExamplePart extends AbstractNatExample {
                 MessageDialog.openError(null, "Error", "null stream for resource " + resource);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Error on reading resource {}", resource, e);
         }
 
         return null;

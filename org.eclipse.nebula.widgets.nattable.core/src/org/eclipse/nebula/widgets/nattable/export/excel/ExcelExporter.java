@@ -21,8 +21,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.export.FileOutputStreamProvider;
 import org.eclipse.nebula.widgets.nattable.export.ILayerExporter;
@@ -36,6 +34,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Shell;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used to export a NatTable to an Excel spreadsheet by using a
@@ -43,7 +43,7 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class ExcelExporter implements ILayerExporter {
 
-    private static final Log log = LogFactory.getLog(ExcelExporter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ExcelExporter.class);
 
     private static final String EXCEL_HEADER_FILE = "excelExportHeader.txt"; //$NON-NLS-1$
 
@@ -110,11 +110,8 @@ public class ExcelExporter implements ILayerExporter {
      *             content file
      */
     private void writeHeader(OutputStream outputStream) throws IOException {
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(
-                    new InputStreamReader(
-                            this.getClass().getResourceAsStream(EXCEL_HEADER_FILE)));
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(this.getClass().getResourceAsStream(EXCEL_HEADER_FILE)));) {
 
             String line = null;
             while ((line = reader.readLine()) != null) {
@@ -127,11 +124,7 @@ public class ExcelExporter implements ILayerExporter {
                 }
             }
         } catch (Exception e) {
-            log.error("Excel Exporter failed: " + e.getMessage(), e); //$NON-NLS-1$
-        } finally {
-            if (reader != null) {
-                reader.close();
-            }
+            LOG.error("Excel Exporter failed: {}", e.getMessage(), e); //$NON-NLS-1$
         }
     }
 

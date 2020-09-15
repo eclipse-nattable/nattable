@@ -20,15 +20,18 @@ import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractNatExample implements INatExample {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractNatExample.class);
 
     private Text outputArea;
 
     @Override
     public String getName() {
-        return getClass().getSimpleName().replaceAll("^_[0-9]*_", "")
-                .replace('_', ' ');
+        return getClass().getSimpleName().replaceAll("^_[0-9]*_", "").replace('_', ' ');
     }
 
     @Override
@@ -39,8 +42,7 @@ public abstract class AbstractNatExample implements INatExample {
 
     @Override
     public String getDescription() {
-        String description = getResourceAsString(getClass().getSimpleName()
-                + ".txt");
+        String description = getResourceAsString(getClass().getSimpleName() + ".txt");
         if (description != null) {
             return description;
         } else {
@@ -68,7 +70,7 @@ public abstract class AbstractNatExample implements INatExample {
                 return strBuf.toString();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Error on reading resource {}", resource, e);
         }
 
         return null;

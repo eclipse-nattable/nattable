@@ -19,15 +19,12 @@
       %license
    </license>
 
-   <plugin
-         id="org.eclipse.nebula.widgets.nattable.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <requires>
+      <import plugin="org.slf4j.api"/>
+   </requires>
 
    <plugin
-         id="org.apache.commons.logging"
+         id="org.eclipse.nebula.widgets.nattable.core"
          download-size="0"
          install-size="0"
          version="0.0.0"

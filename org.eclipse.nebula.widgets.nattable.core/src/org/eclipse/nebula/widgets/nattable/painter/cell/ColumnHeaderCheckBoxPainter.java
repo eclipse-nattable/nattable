@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
@@ -24,10 +22,12 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ColumnHeaderCheckBoxPainter extends ImagePainter {
 
-    private static final Log LOG = LogFactory.getLog(ColumnHeaderCheckBoxPainter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ColumnHeaderCheckBoxPainter.class);
 
     private final Image checkedImg;
     private final Image semicheckedImg;
@@ -125,7 +125,7 @@ public class ColumnHeaderCheckBoxPainter extends ImagePainter {
                         (Boolean) displayConverter.canonicalToDisplayValue(
                                 cell, configRegistry, cell.getDataValue());
             } catch (Exception e) {
-                LOG.debug(e);
+                LOG.warn("Conversion failed", e); //$NON-NLS-1$
             }
         }
         if (convertedValue == null) {

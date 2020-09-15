@@ -14,18 +14,18 @@ package org.eclipse.nebula.widgets.nattable.columnCategories.gui;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.columnCategories.Node;
 import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnChooserUtils;
 import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnEntry;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ColumnCategoriesLabelProvider extends LabelProvider {
 
-    private static final Log log = LogFactory.getLog(ColumnCategoriesLabelProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ColumnCategoriesLabelProvider.class);
 
     List<ColumnEntry> hiddenEntries;
 
@@ -43,9 +43,7 @@ public class ColumnCategoriesLabelProvider extends LabelProvider {
                 int index = Integer.parseInt(node.getData());
                 ColumnEntry columnEntry = ColumnChooserUtils.find(this.hiddenEntries, index);
                 if (ObjectUtils.isNull(columnEntry)) {
-                    log.error("Column index " + index + " is present " + //$NON-NLS-1$ //$NON-NLS-2$
-                            "in the Column Categories model, " + //$NON-NLS-1$
-                            "but not in the underlying data"); //$NON-NLS-1$
+                    LOG.error("Column index {} is present in the Column Categories model, but not in the underlying data", index); //$NON-NLS-1$
                     return String.valueOf(index);
                 }
                 return columnEntry.getLabel();

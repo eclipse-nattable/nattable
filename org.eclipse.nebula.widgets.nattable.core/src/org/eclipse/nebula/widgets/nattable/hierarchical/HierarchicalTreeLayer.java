@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.collections.api.list.primitive.MutableIntList;
 import org.eclipse.collections.api.set.primitive.MutableIntSet;
 import org.eclipse.collections.impl.factory.primitive.IntLists;
@@ -79,6 +77,8 @@ import org.eclipse.nebula.widgets.nattable.tree.config.TreeConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.swt.graphics.Rectangle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This layer is used to show a hierarchical object model in a tree structure.
@@ -89,7 +89,7 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
 
-    private static final Log LOG = LogFactory.getLog(HierarchicalTreeLayer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HierarchicalTreeLayer.class);
 
     /**
      * Label that gets applied to cells in the level header columns.

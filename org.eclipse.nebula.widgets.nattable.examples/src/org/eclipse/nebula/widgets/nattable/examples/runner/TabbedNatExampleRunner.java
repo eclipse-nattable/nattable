@@ -45,8 +45,12 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TabbedNatExampleRunner {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TabbedNatExampleRunner.class);
 
     private static CTabFolder tabFolder;
     private static Map<INatExample, Control> exampleControlMap = new HashMap<>();
@@ -257,7 +261,7 @@ public class TabbedNatExampleRunner {
                 System.out.println("null stream for resource " + resource);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Failed to read resource {}", resource, e);
         }
 
         return null;

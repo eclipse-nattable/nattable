@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.collections.api.list.primitive.MutableIntList;
 import org.eclipse.collections.impl.factory.primitive.IntLists;
 import org.eclipse.nebula.widgets.nattable.NatTable;
@@ -80,6 +78,8 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.swt.graphics.Rectangle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Adds the column grouping functionality to the column header. Also persists
@@ -100,7 +100,7 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
-    private static final Log LOG = LogFactory.getLog(ColumnGroupHeaderLayer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ColumnGroupHeaderLayer.class);
 
     private static final String PERSISTENCE_KEY_COLUMN_GROUPS = ".columnGroups"; //$NON-NLS-1$
 
@@ -2552,8 +2552,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
             }
 
             if (fromColumnPosition == -1 || toColumnPosition == -1) {
-                LOG.error("Invalid reorder positions, fromPosition: " + fromColumnPosition //$NON-NLS-1$
-                        + ", toPosition: " + toColumnPosition); //$NON-NLS-1$
+                LOG.error("Invalid reorder positions, fromPosition: {}, toPosition: {}", fromColumnPosition, toColumnPosition); //$NON-NLS-1$
                 return;
             }
 

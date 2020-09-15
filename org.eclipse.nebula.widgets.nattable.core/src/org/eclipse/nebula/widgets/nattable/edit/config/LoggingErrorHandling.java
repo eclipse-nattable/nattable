@@ -12,14 +12,14 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.config;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.data.convert.ConversionFailedException;
 import org.eclipse.nebula.widgets.nattable.data.validate.ValidationFailedException;
 import org.eclipse.nebula.widgets.nattable.edit.editor.AbstractEditErrorHandler;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IEditErrorHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Error handling strategy that simply writes conversion/validation errors to
@@ -27,7 +27,7 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.IEditErrorHandler;
  */
 public class LoggingErrorHandling extends AbstractEditErrorHandler {
 
-    private static final Log log = LogFactory.getLog(LoggingErrorHandling.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LoggingErrorHandling.class);
 
     /**
      * Create a new {@link LoggingErrorHandling} with no underlying
@@ -61,9 +61,9 @@ public class LoggingErrorHandling extends AbstractEditErrorHandler {
         // stack trace to find unexpected exceptions
         if (!(e instanceof ConversionFailedException)
                 && !(e instanceof ValidationFailedException)) {
-            log.warn(Messages.getString("LoggingErrorHandling.logPrefix"), e); //$NON-NLS-1$
+            LOG.warn(Messages.getString("LoggingErrorHandling.logPrefix"), e); //$NON-NLS-1$
         } else {
-            log.warn(Messages.getString("LoggingErrorHandling.logPrefix") + ": " + e.getLocalizedMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+            LOG.warn(Messages.getString("LoggingErrorHandling.logPrefix") + ": " + e.getLocalizedMessage()); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 }

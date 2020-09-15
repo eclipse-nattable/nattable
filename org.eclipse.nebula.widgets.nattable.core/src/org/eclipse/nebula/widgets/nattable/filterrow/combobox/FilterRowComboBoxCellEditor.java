@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.data.convert.ConversionFailedException;
 import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
@@ -26,6 +24,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Specialisation of ComboBoxCellEditor that can only be created using an
@@ -36,7 +36,7 @@ import org.eclipse.swt.widgets.Display;
  */
 public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
 
-    private static final Log log = LogFactory.getLog(FilterRowComboBoxCellEditor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FilterRowComboBoxCellEditor.class);
 
     /**
      * This object remembers the current value in the editor. This is necessary
@@ -152,7 +152,7 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
                 // if another exception occured that wasn't thrown by us, it
                 // should at least be logged without killing the whole
                 // application
-                log.error("Error on updating cell value: " + e.getLocalizedMessage(), e); //$NON-NLS-1$
+                LOG.error("Error on updating cell value: {}", e.getLocalizedMessage(), e); //$NON-NLS-1$
             }
         }
         return false;

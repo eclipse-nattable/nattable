@@ -12,12 +12,12 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.command;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.edit.event.DataUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link ILayerCommandHandler} that handles {@link UpdateDataCommand}s by
@@ -26,7 +26,7 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
  */
 public class UpdateDataCommandHandler extends AbstractLayerCommandHandler<UpdateDataCommand> {
 
-    private static final Log LOG = LogFactory.getLog(UpdateDataCommandHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UpdateDataCommandHandler.class);
 
     /**
      * The {@link DataLayer} on which the data model updates should be executed.
@@ -94,7 +94,7 @@ public class UpdateDataCommandHandler extends AbstractLayerCommandHandler<Update
             }
             return true;
         } catch (Exception e) {
-            LOG.error("Failed to update value to: " + command.getNewValue(), e); //$NON-NLS-1$
+            LOG.error("Failed to update value to: {}", command.getNewValue(), e); //$NON-NLS-1$
             return false;
         }
     }

@@ -18,8 +18,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.collections.api.set.primitive.MutableIntSet;
 import org.eclipse.collections.impl.factory.primitive.IntSets;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
@@ -44,10 +42,12 @@ import org.eclipse.nebula.widgets.nattable.tree.config.DefaultTreeLayerConfigura
 import org.eclipse.nebula.widgets.nattable.tree.config.TreeConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TreeLayer extends AbstractRowHideShowLayer {
 
-    private static final Log LOG = LogFactory.getLog(TreeLayer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TreeLayer.class);
 
     public static final String TREE_COLUMN_CELL = "TREE_COLUMN_CELL"; //$NON-NLS-1$
 

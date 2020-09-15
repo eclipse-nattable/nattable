@@ -20,14 +20,14 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.util.PersistenceUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper class for handling column renaming by user interactions on the column
@@ -35,7 +35,7 @@ import org.eclipse.nebula.widgets.nattable.util.PersistenceUtils;
  */
 public class RenameColumnHelper implements IPersistable {
 
-    private static final Log log = LogFactory.getLog(RenameColumnHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RenameColumnHelper.class);
 
     public static final String PERSISTENCE_KEY_RENAMED_COLUMN_HEADERS = ".renamedColumnHeaders"; //$NON-NLS-1$
 
@@ -200,8 +200,8 @@ public class RenameColumnHelper implements IPersistable {
         try {
             this.renamedColumnsLabelsByIndex = PersistenceUtils.parseString(property);
         } catch (Exception e) {
-            log.error("Error while restoring renamed column headers: " + e.getMessage()); //$NON-NLS-1$
-            log.error("Skipping restore."); //$NON-NLS-1$
+            LOG.error("Error while restoring renamed column headers: {}", e.getMessage()); //$NON-NLS-1$
+            LOG.error("Skipping restore."); //$NON-NLS-1$
             this.renamedColumnsLabelsByIndex.clear();
         }
     }

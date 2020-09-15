@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.collections.api.list.primitive.MutableIntList;
 import org.eclipse.collections.impl.factory.primitive.IntLists;
 import org.eclipse.nebula.widgets.nattable.NatTable;
@@ -78,6 +76,8 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.swt.graphics.Rectangle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Adds the row grouping functionality to the row header. Also persists the
@@ -98,7 +98,7 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public class RowGroupHeaderLayer extends AbstractLayerTransform {
 
-    private static final Log LOG = LogFactory.getLog(RowGroupHeaderLayer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RowGroupHeaderLayer.class);
 
     private static final String PERSISTENCE_KEY_ROW_GROUPS = ".rowGroups"; //$NON-NLS-1$
 
@@ -2543,8 +2543,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
             }
 
             if (fromRowPosition == -1 || toRowPosition == -1) {
-                LOG.error("Invalid reorder positions, fromPosition: " + fromRowPosition //$NON-NLS-1$
-                        + ", toPosition: " + toRowPosition); //$NON-NLS-1$
+                LOG.error("Invalid reorder positions, fromPosition: {}, toPosition: {}", fromRowPosition, toRowPosition); //$NON-NLS-1$
                 return;
             }
 

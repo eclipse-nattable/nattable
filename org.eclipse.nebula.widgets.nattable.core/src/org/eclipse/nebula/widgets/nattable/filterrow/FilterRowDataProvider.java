@@ -19,8 +19,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
@@ -31,6 +29,8 @@ import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 import org.eclipse.nebula.widgets.nattable.util.PersistenceUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Data provider for the filter row
@@ -42,7 +42,7 @@ import org.eclipse.nebula.widgets.nattable.util.PersistenceUtils;
  */
 public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 
-    private static final Log LOG = LogFactory.getLog(FilterRowDataProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FilterRowDataProvider.class);
 
     /**
      * Replacement for the pipe character | that is used for persistence. If

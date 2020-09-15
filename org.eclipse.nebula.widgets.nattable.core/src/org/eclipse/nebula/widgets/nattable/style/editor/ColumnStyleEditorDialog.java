@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style.editor;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
@@ -28,10 +26,12 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ColumnStyleEditorDialog extends AbstractStyleEditorDialog {
 
-    private static final Log LOG = LogFactory.getLog(ColumnStyleEditorDialog.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ColumnStyleEditorDialog.class);
 
     // Tabs in the dialog
     private CellStyleEditorPanel cellStyleEditorPanel;

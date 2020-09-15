@@ -16,5 +16,6 @@ Require-Bundle: ca.odell.glazedlists,
 Bundle-Vendor: Eclipse Nebula NatTable
 Export-Package: org.eclipse.nebula.widgets.nattable.examples,
  org.eclipse.nebula.widgets.nattable.examples.runner
-Import-Package: org.eclipse.nebula.widgets.cdatetime
+Import-Package: org.eclipse.nebula.widgets.cdatetime,
+ org.slf4j;version="1.7.2"
 Automatic-Module-Name: org.eclipse.nebula.widgets.nattable.examples

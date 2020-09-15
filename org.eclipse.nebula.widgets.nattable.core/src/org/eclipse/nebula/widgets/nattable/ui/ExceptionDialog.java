@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -31,6 +29,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Dialog that can be used to show an error with an additional stacktrace.
@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.Text;
  */
 public class ExceptionDialog extends Dialog {
 
-    private static final Log LOG = LogFactory.getLog(ExceptionDialog.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ExceptionDialog.class);
 
     private String title;
     private String message;

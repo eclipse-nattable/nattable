@@ -14,8 +14,6 @@ package org.eclipse.nebula.widgets.nattable.edit.editor;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -43,6 +41,8 @@ import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract implementation of {@link ICellEditor} that wraps SWT controls to be
@@ -57,7 +57,7 @@ import org.eclipse.swt.widgets.Control;
  */
 public abstract class AbstractCellEditor implements ICellEditor {
 
-    private static final Log log = LogFactory.getLog(AbstractCellEditor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractCellEditor.class);
 
     /**
      * Flag indicating if the editor is closed or not.
@@ -389,7 +389,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
                 // if another exception occured that wasn't thrown by us, it
                 // should at least be logged without killing the whole
                 // application
-                log.error("Error on updating cell value: " + e.getLocalizedMessage(), e); //$NON-NLS-1$
+                LOG.error("Error on updating cell value: {}", e.getLocalizedMessage(), e); //$NON-NLS-1$
             }
         }
         return false;

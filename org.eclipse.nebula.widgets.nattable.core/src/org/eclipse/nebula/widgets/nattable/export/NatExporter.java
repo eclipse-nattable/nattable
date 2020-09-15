@@ -18,8 +18,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -40,6 +38,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used to perform exports of a NatTable or {@link ILayer} in a
@@ -51,7 +51,7 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class NatExporter {
 
-    private static final Log LOG = LogFactory.getLog(NatExporter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NatExporter.class);
 
     /**
      * The {@link Shell} that should be used to open sub-dialogs and perform

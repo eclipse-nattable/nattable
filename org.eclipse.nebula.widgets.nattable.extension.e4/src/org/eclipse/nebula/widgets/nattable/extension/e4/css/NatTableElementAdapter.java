@@ -30,12 +30,16 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 @SuppressWarnings("restriction")
 public class NatTableElementAdapter extends WidgetElement {
+
+    private static final Logger LOG = LoggerFactory.getLogger(NatTableElementAdapter.class);
 
     /**
      * Static flag to ensure that the update listener is only applied once to
@@ -143,7 +147,7 @@ public class NatTableElementAdapter extends WidgetElement {
                             method.invoke(this.engine, ((NatTableWrapperElementAdapter) node).natTableWrapper);
                         }
                     } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                        e.printStackTrace();
+                        LOG.error("Error on disposal", e);
                     }
                 }
             }

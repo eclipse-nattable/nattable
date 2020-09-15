@@ -23,6 +23,7 @@
       <import plugin="org.eclipse.e4.ui.css.core"/>
       <import plugin="org.eclipse.e4.ui.css.swt"/>
       <import plugin="org.eclipse.e4.ui.css.swt.theme"/>
+      <import plugin="org.slf4j.api"/>
    </requires>
 
    <plugin

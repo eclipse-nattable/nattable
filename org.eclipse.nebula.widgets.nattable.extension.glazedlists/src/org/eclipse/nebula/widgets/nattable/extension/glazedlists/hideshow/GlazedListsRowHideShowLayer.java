@@ -25,8 +25,6 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
@@ -39,6 +37,8 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommandHa
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
@@ -59,7 +59,7 @@ import ca.odell.glazedlists.matchers.MatcherEditor;
  */
 public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform implements IRowHideShowLayer, IUniqueIndexLayer {
 
-    private static final Log LOG = LogFactory.getLog(GlazedListsRowHideShowLayer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GlazedListsRowHideShowLayer.class);
 
     /**
      * Key for persisting the number of hidden row id's. This is necessary

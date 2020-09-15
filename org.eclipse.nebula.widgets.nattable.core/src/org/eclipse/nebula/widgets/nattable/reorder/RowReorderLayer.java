@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.collections.api.list.primitive.MutableIntList;
 import org.eclipse.collections.api.map.primitive.MutableIntIntMap;
 import org.eclipse.collections.impl.factory.primitive.IntIntMaps;
@@ -46,6 +44,8 @@ import org.eclipse.nebula.widgets.nattable.reorder.command.RowReorderStartComman
 import org.eclipse.nebula.widgets.nattable.reorder.config.DefaultRowReorderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.reorder.event.RowReorderEvent;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Layer that is used to add the functionality for row reordering.
@@ -54,7 +54,7 @@ import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
  */
 public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
 
-    private static final Log LOG = LogFactory.getLog(RowReorderLayer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RowReorderLayer.class);
 
     public static final String PERSISTENCE_KEY_ROW_INDEX_ORDER = ".rowIndexOrder"; //$NON-NLS-1$
 
@@ -213,17 +213,15 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
      */
     protected boolean isRestoredStateValid(int[] newRowIndexOrder) {
         if (newRowIndexOrder.length != getRowCount()) {
-            LOG.error("Number of persisted rows (" + newRowIndexOrder.length + ") " + //$NON-NLS-1$ //$NON-NLS-2$
-                    "is not the same as the number of rows in the data source (" //$NON-NLS-1$
-                    + getRowCount() + ").\n" + //$NON-NLS-1$
-                    "Skipping restore of row ordering"); //$NON-NLS-1$
+            LOG.error("Number of persisted rows ({}) is not the same as the number of rows in the data source ({}).\n" + //$NON-NLS-1$
+                    "Skipping restore of row ordering", newRowIndexOrder.length, getRowCount()); //$NON-NLS-1$
             return false;
         }
 
         for (int index : newRowIndexOrder) {
             if (!this.indexPositionMapping.containsKey(index)) {
-                LOG.error("Row index: " + index + " being restored, is not a available in the data soure.\n" + //$NON-NLS-1$ //$NON-NLS-2$
-                        "Skipping restore of row ordering"); //$NON-NLS-1$
+                LOG.error("Row index: {} being restored, is not a available in the data soure.\n" + //$NON-NLS-1$
+                        "Skipping restore of row ordering", index); //$NON-NLS-1$
                 return false;
             }
         }

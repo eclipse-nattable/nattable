@@ -5,8 +5,7 @@ Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.extension.poi
 Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.eclipse.nebula.widgets.nattable.extension.poi;version="2.0.0"
-Import-Package: org.apache.commons.logging;version="[1.0.0,2.0.0)",
- org.eclipse.nebula.widgets.nattable.config;version="[2.0.0,3.0.0)",
+Import-Package: org.eclipse.nebula.widgets.nattable.config;version="[2.0.0,3.0.0)",
  org.eclipse.nebula.widgets.nattable.export;version="[2.0.0,3.0.0)",
  org.eclipse.nebula.widgets.nattable.formula;version="[2.0.0,3.0.0)",
  org.eclipse.nebula.widgets.nattable.layer;version="[2.0.0,3.0.0)",
@@ -16,7 +15,8 @@ Import-Package: org.apache.commons.logging;version="[1.0.0,2.0.0)",
  org.eclipse.nebula.widgets.nattable.style;version="[2.0.0,3.0.0)",
  org.eclipse.swt,
  org.eclipse.swt.graphics,
- org.eclipse.swt.widgets
+ org.eclipse.swt.widgets,
+ org.slf4j;version="1.7.2"
 Bundle-Vendor: Eclipse Nebula NatTable
 Require-Bundle: org.apache.poi;bundle-version="3.9.0"
 Automatic-Module-Name: org.eclipse.nebula.widgets.nattable.extension.poi

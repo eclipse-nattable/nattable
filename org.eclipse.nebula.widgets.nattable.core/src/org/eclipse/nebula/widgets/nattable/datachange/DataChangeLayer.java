@@ -17,8 +17,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.datachange.command.DiscardDataChangesCommandHandler;
 import org.eclipse.nebula.widgets.nattable.datachange.command.SaveDataChangesCommandHandler;
@@ -34,6 +32,8 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link ILayer} that can be used to add a mechanism that highlights cells
@@ -43,7 +43,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
  */
 public class DataChangeLayer extends AbstractIndexLayerTransform {
 
-    private static final Log LOG = LogFactory.getLog(DataChangeLayer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DataChangeLayer.class);
 
     /**
      * Label that is applied to cells that are marked as modified/dirty in this
