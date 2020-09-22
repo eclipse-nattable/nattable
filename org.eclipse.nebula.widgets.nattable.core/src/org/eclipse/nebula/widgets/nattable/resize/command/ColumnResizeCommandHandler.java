@@ -30,7 +30,7 @@ public class ColumnResizeCommandHandler extends AbstractLayerCommandHandler<Colu
 
     @Override
     protected boolean doCommand(ColumnResizeCommand command) {
-        int newColumnWidth = command.downScaleValue()
+        int newColumnWidth = (command.downScaleValue() && !this.dataLayer.isColumnPercentageSizing(command.getColumnPosition()))
                 ? this.dataLayer.downScaleColumnWidth(command.getNewColumnWidth())
                 : command.getNewColumnWidth();
         this.dataLayer.setColumnWidthByPosition(command.getColumnPosition(), newColumnWidth);

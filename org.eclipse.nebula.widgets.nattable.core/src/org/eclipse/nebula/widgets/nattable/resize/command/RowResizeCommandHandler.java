@@ -30,7 +30,7 @@ public class RowResizeCommandHandler extends AbstractLayerCommandHandler<RowResi
 
     @Override
     protected boolean doCommand(RowResizeCommand command) {
-        int newRowHeight = command.downScaleValue()
+        int newRowHeight = (command.downScaleValue() && !this.dataLayer.isRowPercentageSizing(command.getRowPosition()))
                 ? this.dataLayer.downScaleRowHeight(command.getNewHeight())
                 : command.getNewHeight();
         this.dataLayer.setRowHeightByPosition(command.getRowPosition(), newRowHeight);

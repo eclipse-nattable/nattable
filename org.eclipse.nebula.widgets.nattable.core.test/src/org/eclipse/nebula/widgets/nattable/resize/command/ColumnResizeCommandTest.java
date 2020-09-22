@@ -14,10 +14,12 @@ package org.eclipse.nebula.widgets.nattable.resize.command;
 
 import static org.junit.Assert.assertEquals;
 
+import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.FixedScalingDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
+import org.eclipse.swt.graphics.Rectangle;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -84,5 +86,60 @@ public class ColumnResizeCommandTest {
         // is first down scaled on setting the value and then up scaled to 150
         // again on accessing the width
         assertEquals(150, this.dataLayer.getColumnWidthByPosition(3));
+    }
+
+    @Test
+    public void shouldResizePercentageSizedColumn() {
+        this.dataLayer.setColumnPercentageSizing(true);
+
+        ClientAreaResizeCommand resizeCommand = new ClientAreaResizeCommand(null);
+        resizeCommand.setCalcArea(new Rectangle(0, 0, 1000, 100));
+        this.dataLayer.doCommand(resizeCommand);
+
+        assertEquals(100, this.dataLayer.getColumnWidthByPosition(3));
+
+        ColumnResizeCommand columnResizeCommand = new ColumnResizeCommand(this.dataLayer, 3, 150, true);
+        this.dataLayer.doCommand(columnResizeCommand);
+
+        assertEquals(150, this.dataLayer.getColumnWidthByPosition(3));
+        assertEquals(50, this.dataLayer.getColumnWidthByPosition(4));
+    }
+
+    @Test
+    public void shouldResizePercentageSizedColumnWithoutDownscale() {
+        this.dataLayer.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(144)));
+
+        this.dataLayer.setColumnPercentageSizing(true);
+
+        ClientAreaResizeCommand resizeCommand = new ClientAreaResizeCommand(null);
+        resizeCommand.setCalcArea(new Rectangle(0, 0, 1000, 100));
+        this.dataLayer.doCommand(resizeCommand);
+
+        assertEquals(100, this.dataLayer.getColumnWidthByPosition(3));
+
+        ColumnResizeCommand columnResizeCommand = new ColumnResizeCommand(this.dataLayer, 3, 150);
+        this.dataLayer.doCommand(columnResizeCommand);
+
+        assertEquals(150, this.dataLayer.getColumnWidthByPosition(3));
+        assertEquals(50, this.dataLayer.getColumnWidthByPosition(4));
+    }
+
+    @Test
+    public void shouldResizePercentageSizedColumnWithDownscale() {
+        this.dataLayer.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(144)));
+
+        this.dataLayer.setColumnPercentageSizing(true);
+
+        ClientAreaResizeCommand resizeCommand = new ClientAreaResizeCommand(null);
+        resizeCommand.setCalcArea(new Rectangle(0, 0, 1000, 100));
+        this.dataLayer.doCommand(resizeCommand);
+
+        assertEquals(100, this.dataLayer.getColumnWidthByPosition(3));
+
+        ColumnResizeCommand columnResizeCommand = new ColumnResizeCommand(this.dataLayer, 3, 150, true);
+        this.dataLayer.doCommand(columnResizeCommand);
+
+        assertEquals(150, this.dataLayer.getColumnWidthByPosition(3));
+        assertEquals(50, this.dataLayer.getColumnWidthByPosition(4));
     }
 }
