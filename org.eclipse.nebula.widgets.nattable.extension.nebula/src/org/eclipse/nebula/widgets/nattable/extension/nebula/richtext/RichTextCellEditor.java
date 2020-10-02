@@ -16,6 +16,7 @@ package org.eclipse.nebula.widgets.nattable.extension.nebula.richtext;
 import org.eclipse.nebula.widgets.nattable.edit.editor.AbstractCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.richtext.RichTextEditor;
 import org.eclipse.nebula.widgets.richtext.RichTextEditorConfiguration;
 import org.eclipse.nebula.widgets.richtext.toolbar.JavaCallbackListener;
@@ -200,6 +201,8 @@ public class RichTextCellEditor extends AbstractCellEditor {
      * @return The minimum dimension used for the rich text editor control.
      */
     protected Point getMinimumDimension() {
-        return new Point(370, 200);
+        return new Point(
+                GUIHelper.convertHorizontalPixelToDpi(370, true),
+                GUIHelper.convertVerticalPixelToDpi(220, true));
     }
 }
