@@ -223,6 +223,41 @@ public class EditIntegrationTest {
         this.natTable.doCommand(new EditCellCommand(this.natTable, this.natTable
                 .getConfigRegistry(), cell));
 
+        // Press tab
+        Text textControl = ((Text) this.natTable.getActiveCellEditor()
+                .getEditorControl());
+        assertEquals("Col: 1, Row: 1", textControl.getText());
+
+        textControl.notifyListeners(SWT.Traverse, SWTUtils.keyEvent(SWT.TAB));
+
+        // Verify new cell selection
+        PositionCoordinate lastSelectedCellPosition = this.gridLayerStack
+                .getBodyLayer().getSelectionLayer().getSelectionAnchor();
+        assertEquals(1, lastSelectedCellPosition.columnPosition);
+        assertEquals(0, lastSelectedCellPosition.rowPosition);
+
+        // Verify that the traversed cell is being edited
+        assertNotNull(this.natTable.getActiveCellEditor());
+        textControl = ((Text) this.natTable.getActiveCellEditor().getEditorControl());
+        assertEquals("Col: 2, Row: 1", textControl.getText());
+    }
+
+    @Test
+    public void navigationWithTabNoActivate() throws Exception {
+        this.natTable.enableEditingOnAllCells();
+
+        // disable activation on traversal
+        this.natTable.getConfigRegistry().registerConfigAttribute(
+                EditConfigAttributes.ACTIVATE_EDITOR_ON_TRAVERSAL,
+                Boolean.FALSE);
+
+        this.natTable.doCommand(new SelectCellCommand(this.natTable, 1, 1, false, false));
+
+        // Edit cell
+        ILayerCell cell = this.natTable.getCellByPosition(1, 1);
+        this.natTable.doCommand(new EditCellCommand(this.natTable, this.natTable
+                .getConfigRegistry(), cell));
+
         // Press tab - 3 times
         Text textControl = ((Text) this.natTable.getActiveCellEditor()
                 .getEditorControl());

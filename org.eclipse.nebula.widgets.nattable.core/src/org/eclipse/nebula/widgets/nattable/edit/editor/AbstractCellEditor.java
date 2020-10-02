@@ -369,7 +369,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
                     if (committed && closeAfterCommit) {
                         close();
 
-                        if (direction != MoveDirectionEnum.NONE && openAdjacentEditor()) {
+                        if (direction != MoveDirectionEnum.NONE && (openAdjacentEditor() || activateOnTraversal(this.configRegistry, this.labelStack))) {
                             this.layerCell.getLayer().doCommand(
                                     new EditSelectionCommand(this.parent, this.configRegistry, true));
                         }
