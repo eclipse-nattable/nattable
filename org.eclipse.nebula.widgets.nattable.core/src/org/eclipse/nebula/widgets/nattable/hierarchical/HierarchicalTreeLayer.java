@@ -740,7 +740,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
                 int rowSpan = cell.getRowSpan();
                 int rowIndex = this.underlyingLayer.getRowIndexByPosition(cell.getOriginRowPosition());
                 for (int row = 0; row < cell.getRowSpan(); row++) {
-                    if (isRowIndexHidden(rowIndex)) {
+                    if (isRowIndexHidden(rowIndex) && !isHiddenInUnderlyingLayer(rowIndex)) {
                         rowSpan--;
                         rowSpanUpdated = true;
                     }
@@ -755,7 +755,6 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
             } else {
                 cell = localCell;
             }
-
         }
 
         return cell;

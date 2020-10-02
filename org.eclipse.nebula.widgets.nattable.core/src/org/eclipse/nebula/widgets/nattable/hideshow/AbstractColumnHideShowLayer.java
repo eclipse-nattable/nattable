@@ -22,7 +22,6 @@ import org.eclipse.collections.api.map.primitive.MutableIntIntMap;
 import org.eclipse.collections.impl.factory.primitive.IntIntMaps;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
-import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
@@ -338,10 +337,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
     // Hide/show
 
     /**
-     * Will check if the column at the specified index is hidden or not. Checks
-     * this layer and also the sublayers for the visibility. Note: As the
-     * {@link ColumnGroup}s are created index based, this method only works
-     * correctly with indexes rather than positions.
+     * Will check if the column at the specified index is hidden or not.
      *
      * @param columnIndex
      *            The column index of the column whose visibility state should
@@ -399,10 +395,14 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
         if (cell != null && cell.isSpannedCell()) {
             // the spanning needs to be updated to reflect the
             // hiding accordingly
+            int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
+            int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
+            ILayerCell underlyingCell = this.underlyingLayer.getCellByPosition(underlyingColumnPosition, underlyingRowPosition);
+
             boolean columnSpanUpdated = false;
-            int columnSpan = cell.getColumnSpan();
-            for (int column = 0; column < cell.getColumnSpan(); column++) {
-                int columnIndex = this.getColumnIndexByPosition(cell.getOriginColumnPosition() + column);
+            int columnSpan = underlyingCell.getColumnSpan();
+            for (int column = 0; column < underlyingCell.getColumnSpan(); column++) {
+                int columnIndex = this.underlyingLayer.getColumnIndexByPosition(underlyingCell.getOriginColumnPosition() + column);
                 if (isColumnIndexHidden(columnIndex)) {
                     columnSpan--;
                     columnSpanUpdated = true;

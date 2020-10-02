@@ -21,9 +21,15 @@ import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.ISpanningDataProvider;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowColumnPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorConstants;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.SpanningDataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.DataCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.test.fixture.data.DataProviderFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ColumnHideShowLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
@@ -412,4 +418,56 @@ public class ColumnHideShowLayerTest {
         assertFalse(this.columnHideShowLayer.hasHiddenColumns());
     }
 
+    @Test
+    public void shouldHandleHiddenColumnsInSpanning() {
+        ISpanningDataProvider dataProvider = new ISpanningDataProvider() {
+
+            private final IDataProvider underlyingDataProvider = new DataProviderFixture(5, 5);
+
+            @Override
+            public Object getDataValue(int columnIndex, int rowIndex) {
+                return this.underlyingDataProvider.getDataValue(columnIndex, rowIndex);
+            }
+
+            @Override
+            public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+                this.underlyingDataProvider.setDataValue(columnIndex, rowIndex, newValue);
+            }
+
+            @Override
+            public int getColumnCount() {
+                return this.underlyingDataProvider.getColumnCount();
+            }
+
+            @Override
+            public int getRowCount() {
+                return this.underlyingDataProvider.getRowCount();
+            }
+
+            @Override
+            public DataCell getCellByPosition(int columnPosition, int rowPosition) {
+                if (columnPosition == 0) {
+                    return new DataCell(columnPosition, rowPosition);
+                }
+                // span column 1 to 4
+                return new DataCell(1, rowPosition, getColumnCount() - 1, 1);
+            }
+
+        };
+
+        this.columnHideShowLayer = new ColumnHideShowLayer(new SpanningDataLayer(dataProvider));
+
+        // test spanned cell
+        ILayerCell cell = this.columnHideShowLayer.getCellByPosition(1, 1);
+        assertEquals(1, cell.getOriginColumnPosition());
+        assertEquals(4, cell.getColumnSpan());
+
+        // hide column
+        this.columnHideShowLayer.hideColumnPositions(3);
+
+        // test spanning decreased
+        cell = this.columnHideShowLayer.getCellByPosition(1, 1);
+        assertEquals(1, cell.getOriginColumnPosition());
+        assertEquals(3, cell.getColumnSpan());
+    }
 }

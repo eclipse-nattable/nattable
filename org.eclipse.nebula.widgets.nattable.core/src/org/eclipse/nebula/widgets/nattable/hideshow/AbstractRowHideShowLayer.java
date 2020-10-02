@@ -385,10 +385,14 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
         if (cell != null && cell.isSpannedCell()) {
             // the spanning needs to be updated to reflect the
             // hiding accordingly
+            int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
+            int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
+            ILayerCell underlyingCell = this.underlyingLayer.getCellByPosition(underlyingColumnPosition, underlyingRowPosition);
+
             boolean rowSpanUpdated = false;
-            int rowSpan = cell.getRowSpan();
-            for (int row = 0; row < cell.getRowSpan(); row++) {
-                int rowIndex = this.getRowIndexByPosition(cell.getOriginRowPosition() + row);
+            int rowSpan = underlyingCell.getRowSpan();
+            for (int row = 0; row < underlyingCell.getRowSpan(); row++) {
+                int rowIndex = this.underlyingLayer.getRowIndexByPosition(underlyingCell.getOriginRowPosition() + row);
                 if (isRowIndexHidden(rowIndex)) {
                     rowSpan--;
                     rowSpanUpdated = true;
