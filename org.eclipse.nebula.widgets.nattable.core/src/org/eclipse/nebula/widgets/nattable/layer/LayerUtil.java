@@ -46,6 +46,10 @@ public class LayerUtil {
     protected static final int findColumnPosition(
             int xOffset, int columnOffset, ILayer layer, int x, int totalWidth, int columnCount) {
 
+        if (columnOffset == columnCount) {
+            return columnCount;
+        }
+
         double size = (double) (totalWidth - xOffset) / (columnCount - columnOffset);
         int columnPosition = columnOffset + (int) ((x - xOffset) / size);
 
@@ -75,6 +79,10 @@ public class LayerUtil {
 
     protected static final int findRowPosition(
             int yOffset, int rowOffset, ILayer layer, int y, int totalHeight, int rowCount) {
+
+        if (rowOffset == rowCount) {
+            return rowCount;
+        }
 
         double size = (double) (totalHeight - yOffset) / (rowCount - rowOffset);
         int rowPosition = rowOffset + (int) ((y - yOffset) / size);
