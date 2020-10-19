@@ -1019,7 +1019,13 @@ public class PopupMenuBuilder {
      * @see MenuItemProviders#separatorMenuItemProvider()
      */
     public PopupMenuBuilder withSeparator(String id) {
-        return withMenuItemProvider(id, MenuItemProviders.separatorMenuItemProvider());
+        IMenuItemProvider menuItemProvider = MenuItemProviders.separatorMenuItemProvider();
+        if (this.menuManager == null) {
+            menuItemProvider.addMenuItem(this.natTable, this.popupMenu);
+        } else {
+            this.menuManager.add(new PopupContributionItem(id, menuItemProvider, true));
+        }
+        return this;
     }
 
     /**
@@ -1126,14 +1132,23 @@ public class PopupMenuBuilder {
     protected class PopupContributionItem extends ContributionItem {
 
         private IMenuItemProvider provider;
+        private boolean separator;
 
         public PopupContributionItem(IMenuItemProvider provider) {
             this(null, provider);
         }
 
         public PopupContributionItem(String id, IMenuItemProvider provider) {
+            this(id, provider, false);
+        }
+
+        /**
+         * @since 2.0
+         */
+        public PopupContributionItem(String id, IMenuItemProvider provider, boolean separator) {
             super(id);
             this.provider = provider;
+            this.separator = separator;
         }
 
         @Override
@@ -1184,5 +1199,9 @@ public class PopupMenuBuilder {
             return true;
         }
 
+        @Override
+        public boolean isSeparator() {
+            return this.separator;
+        }
     }
 }
