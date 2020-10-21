@@ -1407,4 +1407,91 @@ public class SizeConfigPercentageTest {
         assertEquals(187, scaledSizeConfig.getSize(2));
         assertEquals(563, scaledSizeConfig.getAggregateSize(3));
     }
+
+    @Test
+    public void setSizeMixedScaled() {
+        // use dpi of 144 which will result in a dpi factor of 1.5
+        this.sizeConfigMixedMode.setDpiConverter(new FixedScalingDpiConverter(144));
+        this.sizeConfigMixedMode.calculatePercentages(750, 3);
+
+        assertEquals(150, this.sizeConfigMixedMode.getSize(0));
+        assertEquals(150, this.sizeConfigMixedMode.getSize(1));
+        assertEquals(450, this.sizeConfigMixedMode.getSize(2));
+
+        // resize position 0 to 200
+        this.sizeConfigMixedMode.setSize(0, 200);
+
+        // the position itself needs to be 200
+        assertEquals(300, this.sizeConfigMixedMode.getSize(0));
+        assertEquals(150, this.sizeConfigMixedMode.getSize(1));
+        assertEquals(300, this.sizeConfigMixedMode.getSize(2));
+
+        // as we're in percentage mode, the aggregate size shouldn't have
+        // changed
+        assertEquals(750, this.sizeConfigMixedMode.getAggregateSize(3));
+
+        // resize position 1 to 200
+        this.sizeConfigMixedMode.setSize(1, 200);
+
+        // the position itself needs to be 200
+        assertEquals(300, this.sizeConfigMixedMode.getSize(0));
+        assertEquals(300, this.sizeConfigMixedMode.getSize(1));
+        assertEquals(150, this.sizeConfigMixedMode.getSize(2));
+
+        // as we're in percentage mode, the aggregate size shouldn't have
+        // changed
+        assertEquals(750, this.sizeConfigMixedMode.getAggregateSize(3));
+
+        // resize position 2
+        this.sizeConfigMixedMode.setSize(2, 500);
+
+        // no changes as last column should take remaining space
+        assertEquals(300, this.sizeConfigMixedMode.getSize(0));
+        assertEquals(300, this.sizeConfigMixedMode.getSize(1));
+        assertEquals(150, this.sizeConfigMixedMode.getSize(2));
+
+        // as we're in percentage mode, the aggregate size shouldn't have
+        // changed
+        assertEquals(750, this.sizeConfigMixedMode.getAggregateSize(3));
+    }
+
+    @Test
+    public void setSizeMixedScaled2() {
+        // use dpi of 144 which will result in a dpi factor of 1.5
+        this.sizeConfigMixedMode.setDpiConverter(new FixedScalingDpiConverter(144));
+        this.sizeConfigMixedMode.calculatePercentages(750, 3);
+
+        assertEquals(150, this.sizeConfigMixedMode.getSize(0));
+        assertEquals(150, this.sizeConfigMixedMode.getSize(1));
+        assertEquals(450, this.sizeConfigMixedMode.getSize(2));
+
+        this.sizeConfigMixedMode.setSize(1, 350);
+
+        assertEquals(150, this.sizeConfigMixedMode.getSize(0));
+        assertEquals(525, this.sizeConfigMixedMode.getSize(1));
+        assertEquals(75, this.sizeConfigMixedMode.getSize(2));
+
+        // as we're in percentage mode, the aggregate size shouldn't have
+        // changed
+        assertEquals(750, this.sizeConfigMixedMode.getAggregateSize(3));
+    }
+
+    @Test
+    public void setSizeMixed2() {
+
+        assertEquals(100, this.sizeConfigMixedMode.getSize(0));
+        assertEquals(100, this.sizeConfigMixedMode.getSize(1));
+        assertEquals(300, this.sizeConfigMixedMode.getSize(2));
+
+        this.sizeConfigMixedMode.setSize(1, 350);
+
+        assertEquals(100, this.sizeConfigMixedMode.getSize(0));
+        assertEquals(350, this.sizeConfigMixedMode.getSize(1));
+        assertEquals(50, this.sizeConfigMixedMode.getSize(2));
+
+        // as we're in percentage mode, the aggregate size shouldn't have
+        // changed
+        assertEquals(500, this.sizeConfigMixedMode.getAggregateSize(3));
+    }
+
 }

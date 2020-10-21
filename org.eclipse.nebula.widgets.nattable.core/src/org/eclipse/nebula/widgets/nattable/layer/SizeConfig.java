@@ -586,7 +586,7 @@ public class SizeConfig implements IPersistable {
                     fixPercentageValues(percentageSpace);
 
                     // now update the adjacent positions
-                    double diffPercentage = ((double) diff * 100) / percentageSpace;
+                    double diffPercentage = ((double) upScale(diff) * 100) / percentageSpace;
                     updateAdjacent(position, diffPercentage, percentageSpace);
                 }
             } else if (this.availableSpace > 0) {
@@ -1230,7 +1230,7 @@ public class SizeConfig implements IPersistable {
                 toModify.put(i, this.realSizeMap.get(i));
                 modifySum += positionPercentageValue;
             } else if (!isPercentageSizing(i) && positionValue != -1) {
-                fixedSum += positionValue;
+                fixedSum += upScale(positionValue);
             }
         }
 
