@@ -21,8 +21,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
-import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ISpanningDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.WrappingSpanningDataProvider;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowColumnPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorConstants;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
@@ -420,29 +420,7 @@ public class ColumnHideShowLayerTest {
 
     @Test
     public void shouldHandleHiddenColumnsInSpanning() {
-        ISpanningDataProvider dataProvider = new ISpanningDataProvider() {
-
-            private final IDataProvider underlyingDataProvider = new DataProviderFixture(5, 5);
-
-            @Override
-            public Object getDataValue(int columnIndex, int rowIndex) {
-                return this.underlyingDataProvider.getDataValue(columnIndex, rowIndex);
-            }
-
-            @Override
-            public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-                this.underlyingDataProvider.setDataValue(columnIndex, rowIndex, newValue);
-            }
-
-            @Override
-            public int getColumnCount() {
-                return this.underlyingDataProvider.getColumnCount();
-            }
-
-            @Override
-            public int getRowCount() {
-                return this.underlyingDataProvider.getRowCount();
-            }
+        ISpanningDataProvider dataProvider = new WrappingSpanningDataProvider(new DataProviderFixture(5, 5)) {
 
             @Override
             public DataCell getCellByPosition(int columnPosition, int rowPosition) {
