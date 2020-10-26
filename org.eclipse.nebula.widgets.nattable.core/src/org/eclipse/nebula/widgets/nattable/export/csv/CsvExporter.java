@@ -34,6 +34,8 @@ public class CsvExporter implements ILayerExporter {
     private static final String CSV_FILE_EXTENSION = "*.csv"; //$NON-NLS-1$
     private static final String CSV_FILE_FILTER = "CSV (*.csv)"; //$NON-NLS-1$
     private static final String DEFAULT_EXPORT_FILE_NAME = "csv_export.csv"; //$NON-NLS-1$
+    private static final String NEW_LINE_REGEX = "\\n\\r|\\r\\n|\\n|\\r"; //$NON-NLS-1$
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator"); //$NON-NLS-1$
     private final IOutputStreamProvider outputStreamProvider;
     private String charset = "windows-1252"; //$NON-NLS-1$
     private String delimiter = ";"; //$NON-NLS-1$
@@ -122,7 +124,7 @@ public class CsvExporter implements ILayerExporter {
 
     @Override
     public void exportRowEnd(final OutputStream outputStream, final int rowPosition) throws IOException {
-        this.currentRow.append(System.getProperty("line.separator")); //$NON-NLS-1$
+        this.currentRow.append(LINE_SEPARATOR);
         outputStream.write(this.currentRow.toString().getBytes(this.usedCharset));
     }
 
@@ -145,7 +147,21 @@ public class CsvExporter implements ILayerExporter {
         }
 
         if (exportDisplayValue != null) {
-            this.currentRow.append(exportDisplayValue);
+            // handle values according to RFC4180
+            String value = exportDisplayValue.toString();
+
+            // If double-quotes are used to enclose fields, then a double-quote
+            // appearing inside a field must be escaped by preceding it with
+            // another double quote.
+            value = value.replaceAll("\"", "\"\""); //$NON-NLS-1$ //$NON-NLS-2$
+
+            // Fields containing line breaks (CRLF), double quotes, and commas
+            // should be enclosed in double-quotes.
+            if (value.contains("\"") || value.contains(",") || value.split(NEW_LINE_REGEX).length > 1) { //$NON-NLS-1$ //$NON-NLS-2$
+                value = "\"" + value + "\""; //$NON-NLS-1$ //$NON-NLS-2$
+            }
+
+            this.currentRow.append(value);
         }
     }
 
