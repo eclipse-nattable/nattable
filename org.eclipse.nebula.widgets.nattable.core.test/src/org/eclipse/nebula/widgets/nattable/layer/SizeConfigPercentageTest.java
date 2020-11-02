@@ -1494,4 +1494,70 @@ public class SizeConfigPercentageTest {
         assertEquals(500, this.sizeConfigMixedMode.getAggregateSize(3));
     }
 
+    @Test
+    public void shouldInitiallySetSizeAsPercentage() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        sizeConfig.setPercentageSizing(true);
+        sizeConfig.setSize(0, 25);
+        sizeConfig.setSize(1, 25);
+        sizeConfig.setSize(2, 50);
+        sizeConfig.calculatePercentages(1000, 3);
+
+        assertEquals(250, sizeConfig.getSize(0));
+        assertEquals(250, sizeConfig.getSize(1));
+        assertEquals(500, sizeConfig.getSize(2));
+    }
+
+    @Test
+    public void shouldInitiallySetSizeAsPercentageAfter() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        sizeConfig.setSize(0, 25);
+        sizeConfig.setSize(1, 25);
+        sizeConfig.setSize(2, 50);
+        sizeConfig.setPercentageSizing(true);
+        sizeConfig.calculatePercentages(1000, 3);
+
+        assertEquals(250, sizeConfig.getSize(0));
+        assertEquals(250, sizeConfig.getSize(1));
+        assertEquals(500, sizeConfig.getSize(2));
+    }
+
+    @Test
+    public void shouldKeepConsistentPercentagesOnExceedingSpace() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        sizeConfig.setPercentageSizing(true);
+        sizeConfig.calculatePercentages(900, 3);
+
+        assertEquals(300, sizeConfig.getSize(0));
+        assertEquals(300, sizeConfig.getSize(1));
+        assertEquals(300, sizeConfig.getSize(2));
+
+        // resize column 0 to be larger than available
+        sizeConfig.setSize(0, 1000);
+
+        assertEquals(882, sizeConfig.getSize(0));
+        assertEquals(9, sizeConfig.getSize(1));
+        assertEquals(9, sizeConfig.getSize(2));
+
+        // resize column 0 to 300
+        sizeConfig.setSize(0, 300);
+
+        assertEquals(300, sizeConfig.getSize(0));
+        assertEquals(591, sizeConfig.getSize(1));
+        assertEquals(9, sizeConfig.getSize(2));
+
+        // resize column 1 to 300
+        sizeConfig.setSize(1, 300);
+
+        assertEquals(301, sizeConfig.getSize(0));
+        assertEquals(300, sizeConfig.getSize(1));
+        assertEquals(299, sizeConfig.getSize(2));
+
+        // increase column 1 by 9 pixels (1%)
+        sizeConfig.setSize(1, 309);
+
+        assertEquals(301, sizeConfig.getSize(0));
+        assertEquals(309, sizeConfig.getSize(1));
+        assertEquals(290, sizeConfig.getSize(2));
+    }
 }

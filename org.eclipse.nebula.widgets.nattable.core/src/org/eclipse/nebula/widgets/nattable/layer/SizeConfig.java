@@ -641,6 +641,20 @@ public class SizeConfig implements IPersistable {
                     // take the remaining space
                     this.percentageSizeMap.remove(position);
                 }
+
+                // if the percentage sum is bigger than 100 after setSize, we
+                // need to modify the set value so 100 is not exceeded to avoid
+                // resize errors as a follow up
+                if (percentage > 100) {
+                    double adjusted = 100 - this.percentageSizeMap.select((key, value) -> key != position).sum();
+                    this.percentageSizeMap.put(position, adjusted);
+                }
+
+            } else {
+                // if a size is set, the position is configured for percentage
+                // sizing but the available space is 0 we simply store the size
+                // value as percentage value
+                this.percentageSizeMap.put(position, size);
             }
 
             calculatePercentages(this.availableSpace, this.realSizeMap.size());
@@ -898,6 +912,16 @@ public class SizeConfig implements IPersistable {
     public void setPercentageSizing(boolean percentageSizing) {
         this.percentageSizing = percentageSizing;
         this.isAggregatedSizeCacheValid = false;
+
+        // if sizes are already configured, check if the sizes need to be
+        // transferred to percentages
+        if (!this.sizeMap.isEmpty()) {
+            MutableIntIntMap transfer = this.sizeMap.select((key, value) -> isPercentageSizing(key));
+            transfer.forEachKeyValue((key, value) -> {
+                this.percentageSizeMap.put(key, value);
+                this.sizeMap.remove(key);
+            });
+        }
     }
 
     /**

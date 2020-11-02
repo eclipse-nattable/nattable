@@ -14,6 +14,7 @@ package org.eclipse.nebula.widgets.nattable.layer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Properties;
@@ -42,7 +43,8 @@ public class DataLayerPersistenceTest {
 
         assertEquals(11, properties.size());
         assertEquals("100", properties.getProperty("prefix.columnWidth.defaultSize"));
-        assertEquals("5:10,", properties.getProperty("prefix.columnWidth.sizes"));
+        assertNull(properties.getProperty("prefix.columnWidth.sizes"));
+        assertEquals("5:10.0,", properties.getProperty("prefix.columnWidth.percentageSizes"));
         assertTrue(Boolean.valueOf(properties.getProperty("prefix.columnWidth.resizableByDefault")));
         assertTrue(Boolean.valueOf(properties.getProperty("prefix.columnWidth.percentageSizing")));
         assertTrue(Boolean.valueOf(properties.getProperty("prefix.columnWidth.distributeRemainingSpace")));
