@@ -21,6 +21,7 @@ import org.eclipse.collections.api.list.primitive.MutableIntList;
 import org.eclipse.collections.api.set.primitive.MutableIntSet;
 import org.eclipse.collections.impl.factory.primitive.IntLists;
 import org.eclipse.collections.impl.factory.primitive.IntSets;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.HideRowByIndexCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowShowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommandHandler;
@@ -54,6 +55,7 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
         registerCommandHandler(new MultiRowShowCommandHandler(this));
         registerCommandHandler(new RowPositionHideCommandHandler(this));
         registerCommandHandler(new RowShowCommandHandler(this));
+        registerCommandHandler(new HideRowByIndexCommandHandler(this));
     }
 
     @Override

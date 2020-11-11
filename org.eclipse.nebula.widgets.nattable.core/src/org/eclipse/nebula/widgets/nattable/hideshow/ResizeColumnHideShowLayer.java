@@ -27,6 +27,7 @@ import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnShowCommandHandler;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.HideColumnByIndexCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnShowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommandHandler;
@@ -96,6 +97,7 @@ public class ResizeColumnHideShowLayer extends AbstractIndexLayerTransform imple
         registerCommandHandler(new ShowAllColumnsCommandHandler(this));
         registerCommandHandler(new MultiColumnShowCommandHandler(this));
         registerCommandHandler(new ColumnShowCommandHandler(this));
+        registerCommandHandler(new HideColumnByIndexCommandHandler(this));
     }
 
     // Persistence

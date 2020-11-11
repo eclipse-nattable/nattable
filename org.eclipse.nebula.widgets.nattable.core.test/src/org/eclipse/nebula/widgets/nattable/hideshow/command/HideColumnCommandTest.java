@@ -47,4 +47,20 @@ public class HideColumnCommandTest {
                 () -> assertEquals(4, this.columnHideShowLayer.getColumnIndexByPosition(3)));
     }
 
+    @Test
+    public void shouldHideColumnByIndex() {
+        ILayerCommand hideColumnCommand = new HideColumnByIndexCommand(2);
+
+        assertEquals(5, this.columnHideShowLayer.getColumnCount());
+
+        this.columnHideShowLayer.doCommand(hideColumnCommand);
+
+        assertAll("column hidden",
+                () -> assertEquals(4, this.columnHideShowLayer.getColumnCount()),
+                () -> assertEquals(0, this.columnHideShowLayer.getColumnIndexByPosition(0)),
+                () -> assertEquals(1, this.columnHideShowLayer.getColumnIndexByPosition(1)),
+                () -> assertEquals(3, this.columnHideShowLayer.getColumnIndexByPosition(2)),
+                () -> assertEquals(4, this.columnHideShowLayer.getColumnIndexByPosition(3)));
+    }
+
 }

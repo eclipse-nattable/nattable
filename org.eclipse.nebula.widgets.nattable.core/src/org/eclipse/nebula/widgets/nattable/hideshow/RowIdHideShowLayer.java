@@ -29,6 +29,7 @@ import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.HideRowByIndexCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowShowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommandHandler;
@@ -84,6 +85,7 @@ public class RowIdHideShowLayer<T> extends AbstractRowHideShowLayer implements I
         registerCommandHandler(new MultiRowShowCommandHandler(this));
         registerCommandHandler(new RowPositionHideCommandHandler(this));
         registerCommandHandler(new RowShowCommandHandler(this));
+        registerCommandHandler(new HideRowByIndexCommandHandler(this));
     }
 
     @Override

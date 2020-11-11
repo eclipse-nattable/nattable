@@ -29,6 +29,7 @@ import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.hideshow.IRowHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.HideRowByIndexCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowShowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommandHandler;
@@ -218,6 +219,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
         registerCommandHandler(new ShowAllRowsCommandHandler(this));
         registerCommandHandler(new MultiRowShowCommandHandler(this));
         registerCommandHandler(new RowPositionHideCommandHandler(this));
+        registerCommandHandler(new HideRowByIndexCommandHandler(this));
     }
 
     /**

@@ -51,6 +51,24 @@ public class HideRowCommandTest {
     }
 
     @Test
+    public void shouldHideRowByIndex() {
+        ILayerCommand hideRowCommand = new HideRowByIndexCommand(2);
+
+        assertEquals(7, this.rowHideShowLayer.getRowCount());
+
+        this.rowHideShowLayer.doCommand(hideRowCommand);
+
+        assertAll("row hidden",
+                () -> assertEquals(6, this.rowHideShowLayer.getRowCount()),
+                () -> assertEquals(0, this.rowHideShowLayer.getRowIndexByPosition(0)),
+                () -> assertEquals(1, this.rowHideShowLayer.getRowIndexByPosition(1)),
+                () -> assertEquals(3, this.rowHideShowLayer.getRowIndexByPosition(2)),
+                () -> assertEquals(4, this.rowHideShowLayer.getRowIndexByPosition(3)),
+                () -> assertEquals(5, this.rowHideShowLayer.getRowIndexByPosition(4)),
+                () -> assertEquals(6, this.rowHideShowLayer.getRowIndexByPosition(5)));
+    }
+
+    @Test
     public void shouldNotConvertOnInvalidPosition() {
         RowReorderLayer layer = new RowReorderLayer(this.rowHideShowLayer);
         ILayerCommand hideRowCommand = new MultiRowHideCommand(layer, 10);

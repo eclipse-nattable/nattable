@@ -23,6 +23,7 @@ import org.eclipse.collections.impl.factory.primitive.IntLists;
 import org.eclipse.collections.impl.factory.primitive.IntSets;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnShowCommandHandler;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.HideColumnByIndexCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnShowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommandHandler;
@@ -61,6 +62,7 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer implements 
         registerCommandHandler(new ShowAllColumnsCommandHandler(this));
         registerCommandHandler(new MultiColumnShowCommandHandler(this));
         registerCommandHandler(new ColumnShowCommandHandler(this));
+        registerCommandHandler(new HideColumnByIndexCommandHandler(this));
     }
 
     @Override
