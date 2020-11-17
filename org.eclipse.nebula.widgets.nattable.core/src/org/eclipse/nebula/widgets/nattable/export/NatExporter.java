@@ -335,6 +335,10 @@ public class NatExporter {
                 try {
                     exporter.exportBegin(outputStream);
 
+                    // ensure that the exporter also respects the
+                    // exportOnSameSheet parameter
+                    exporter.setExportOnSameSheet(exportOnSameSheet);
+
                     if (exportOnSameSheet) {
                         exporter.exportLayerBegin(outputStream, sheetName);
                     }

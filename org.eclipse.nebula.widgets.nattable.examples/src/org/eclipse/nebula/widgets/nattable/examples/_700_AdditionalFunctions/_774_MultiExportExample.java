@@ -15,6 +15,7 @@ package org.eclipse.nebula.widgets.nattable.examples._700_AdditionalFunctions;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -281,7 +282,7 @@ public class _774_MultiExportExample extends AbstractNatExample {
                         ExportConfigAttributes.EXPORTER,
                         DisplayMode.NORMAL);
 
-                Map<String, NatTable> export = new HashMap<>();
+                Map<String, NatTable> export = new LinkedHashMap<>();
                 export.put("Persons", natTable);
                 export.put("Numbers", numberNatTable);
                 new NatExporter(Display.getCurrent().getActiveShell())

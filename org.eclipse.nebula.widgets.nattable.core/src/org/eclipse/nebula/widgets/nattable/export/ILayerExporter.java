@@ -153,4 +153,20 @@ public interface ILayerExporter extends IExporter {
     void exportCell(OutputStream outputStream, Object exportDisplayValue,
             ILayerCell cell, IConfigRegistry configRegistry) throws IOException;
 
+    /**
+     * Configure whether multiple table instances should be exported on the same
+     * sheet. Only relevant for export formats that support multiple sheets like
+     * Excel.
+     *
+     * @param sameSheet
+     *            <code>true</code> if multiple NatTable instances should be
+     *            exported on the same sheet, <code>false</code> if every
+     *            instance should be exported on separate sheets. Default is
+     *            <code>false</code>.
+     *
+     * @since 2.0
+     */
+    default void setExportOnSameSheet(boolean sameSheet) {
+    }
+
 }

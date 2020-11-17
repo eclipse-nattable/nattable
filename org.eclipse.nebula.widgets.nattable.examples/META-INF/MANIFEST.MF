@@ -7,12 +7,14 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: ca.odell.glazedlists,
  org.eclipse.swt,
  org.eclipse.jface,
- org.eclipse.nebula.widgets.richtext,
  org.eclipse.nebula.widgets.nattable.core,
  org.eclipse.nebula.widgets.nattable.dataset,
  org.eclipse.nebula.widgets.nattable.extension.glazedlists,
  org.eclipse.nebula.widgets.nattable.extension.nebula,
- org.eclipse.nebula.widgets.nattable.extension.poi
+ org.eclipse.nebula.widgets.nattable.extension.poi,
+ org.eclipse.nebula.widgets.richtext,
+ org.apache.commons.math3,
+ org.apache.commons.collections4
 Bundle-Vendor: Eclipse Nebula NatTable
 Export-Package: org.eclipse.nebula.widgets.nattable.examples,
  org.eclipse.nebula.widgets.nattable.examples.runner

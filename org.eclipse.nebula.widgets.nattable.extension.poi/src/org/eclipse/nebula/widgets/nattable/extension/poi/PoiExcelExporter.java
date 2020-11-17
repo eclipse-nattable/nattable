@@ -25,15 +25,19 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Picture;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.util.IOUtils;
@@ -87,7 +91,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
     protected NumberFormat nf = NumberFormat.getInstance();
 
     protected CreationHelper helper;
-    protected Drawing drawing;
+    protected Drawing<?> drawing;
 
     protected boolean exportOnSameSheet = false;
     protected int currentRow = 0;
@@ -341,7 +345,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
             if (this.applyBackgroundColor) {
                 // Note: xl fill foreground = background
                 setFillForegroundColor(xlCellStyle, bg);
-                xlCellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+                xlCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             }
 
             Font xlFont = this.xlWorkbook.createFont();
@@ -357,32 +361,32 @@ public abstract class PoiExcelExporter implements ILayerExporter {
                 xlCellStyle.setWrapText(wrap);
 
             if (border) {
-                xlCellStyle.setBorderTop(CellStyle.BORDER_THIN);
-                xlCellStyle.setBorderRight(CellStyle.BORDER_THIN);
-                xlCellStyle.setBorderBottom(CellStyle.BORDER_THIN);
-                xlCellStyle.setBorderLeft(CellStyle.BORDER_THIN);
+                xlCellStyle.setBorderTop(BorderStyle.THIN);
+                xlCellStyle.setBorderRight(BorderStyle.THIN);
+                xlCellStyle.setBorderBottom(BorderStyle.THIN);
+                xlCellStyle.setBorderLeft(BorderStyle.THIN);
             }
 
             switch (hAlign) {
                 case SWT.CENTER:
-                    xlCellStyle.setAlignment(CellStyle.ALIGN_CENTER);
+                    xlCellStyle.setAlignment(HorizontalAlignment.CENTER);
                     break;
                 case SWT.LEFT:
-                    xlCellStyle.setAlignment(CellStyle.ALIGN_LEFT);
+                    xlCellStyle.setAlignment(HorizontalAlignment.LEFT);
                     break;
                 case SWT.RIGHT:
-                    xlCellStyle.setAlignment(CellStyle.ALIGN_RIGHT);
+                    xlCellStyle.setAlignment(HorizontalAlignment.RIGHT);
                     break;
             }
             switch (vAlign) {
                 case SWT.TOP:
-                    xlCellStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+                    xlCellStyle.setVerticalAlignment(VerticalAlignment.TOP);
                     break;
                 case SWT.CENTER:
-                    xlCellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
+                    xlCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                     break;
                 case SWT.BOTTOM:
-                    xlCellStyle.setVerticalAlignment(CellStyle.VERTICAL_BOTTOM);
+                    xlCellStyle.setVerticalAlignment(VerticalAlignment.BOTTOM);
                     break;
             }
 
@@ -645,6 +649,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
      *
      * @since 1.5
      */
+    @Override
     public void setExportOnSameSheet(boolean sameSheet) {
         this.exportOnSameSheet = sameSheet;
     }
