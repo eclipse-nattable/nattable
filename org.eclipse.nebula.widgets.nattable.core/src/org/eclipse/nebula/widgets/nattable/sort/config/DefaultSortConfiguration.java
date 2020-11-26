@@ -61,6 +61,7 @@ public class DefaultSortConfiguration implements IConfiguration {
 
     @Override
     public void configureLayer(ILayer layer) {
+        // no specific layer configuration applied
     }
 
     @Override

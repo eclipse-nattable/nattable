@@ -47,6 +47,7 @@ public class DefaultExportBindings implements IConfiguration {
 
     @Override
     public void configureLayer(ILayer layer) {
+        // no specific layer configuration applied by this configuration
     }
 
 }

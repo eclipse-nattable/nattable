@@ -19,6 +19,7 @@ public class NoOpMouseAction implements IMouseAction {
 
     @Override
     public void run(NatTable natTable, MouseEvent event) {
+        // no action should be performed
     }
 
 }

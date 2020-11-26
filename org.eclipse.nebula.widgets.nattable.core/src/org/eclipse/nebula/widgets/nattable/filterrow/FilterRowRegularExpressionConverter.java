@@ -45,6 +45,7 @@ import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
  *
  * @since 1.4
  */
+@SuppressWarnings("java:S5361") // suppress false positive Sonar findings
 public class FilterRowRegularExpressionConverter extends DisplayConverter {
 
     @Override

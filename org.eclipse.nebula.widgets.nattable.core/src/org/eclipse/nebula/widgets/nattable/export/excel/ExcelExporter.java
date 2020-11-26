@@ -93,6 +93,7 @@ public class ExcelExporter implements ILayerExporter {
 
     @Override
     public void exportEnd(OutputStream outputStream) throws IOException {
+        // no specific action needed on export end in this exporter
     }
 
     @Override

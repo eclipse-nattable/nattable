@@ -128,6 +128,7 @@ public class RowSpanningCopyDataCommandHandler extends CopyDataCommandHandler {
      * disabling formula evaluation.
      */
     protected void preInternalCopy() {
+        // no specific action needed to be performed by default
     }
 
     /**

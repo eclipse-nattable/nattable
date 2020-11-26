@@ -17,8 +17,8 @@ import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
@@ -105,7 +105,7 @@ public class MultiLineTextCellEditor extends TextCellEditor {
         // will only be performed if CTRL + ENTER is pressed.
         if (openInline) {
             this.commitOnEnter = true;
-            textControl.addKeyListener(new KeyListener() {
+            textControl.addKeyListener(new KeyAdapter() {
 
                 @Override
                 public void keyReleased(KeyEvent event) {
@@ -115,10 +115,6 @@ public class MultiLineTextCellEditor extends TextCellEditor {
                             textControl.insert(textControl.getLineDelimiter());
                         }
                     }
-                }
-
-                @Override
-                public void keyPressed(KeyEvent e) {
                 }
             });
         }

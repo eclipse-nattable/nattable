@@ -45,42 +45,40 @@ public class ColumnGroupExpandCollapseCommandHandler extends AbstractLayerComman
 
         // if group of columnIndex is not collapseable return without any
         // further operation ...
-        if (columnGroup == null || !columnGroup.isCollapseable()) {
-            return true;
+        if (columnGroup != null && columnGroup.isCollapseable()) {
+            ArrayList<Integer> columnIndexes = new ArrayList<>(columnGroup.getMembers());
+            columnIndexes.removeAll(columnGroup.getStaticColumnIndexes());
+
+            boolean wasCollapsed = columnGroup.isCollapsed();
+
+            if (wasCollapsed) {
+                // we need to cleanup the column position list before we toggle
+                // because the columns are hidden before the toggle and will be
+                // visible afterwards
+                cleanupColumnIndexes(columnIndexes);
+            }
+
+            columnGroup.toggleCollapsed();
+
+            if (!wasCollapsed) {
+                // we need to cleanup the column position list after we toggle
+                // because the columns are hidden now
+                cleanupColumnIndexes(columnIndexes);
+            }
+
+            ILayerEvent event;
+            if (wasCollapsed) {
+                event = new ShowColumnPositionsEvent(
+                        this.columnGroupExpandCollapseLayer,
+                        columnIndexes.stream().mapToInt(Integer::intValue).toArray());
+            } else {
+                event = new HideColumnPositionsEvent(
+                        this.columnGroupExpandCollapseLayer,
+                        columnIndexes.stream().mapToInt(Integer::intValue).toArray());
+            }
+
+            this.columnGroupExpandCollapseLayer.fireLayerEvent(event);
         }
-
-        ArrayList<Integer> columnIndexes = new ArrayList<>(columnGroup.getMembers());
-        columnIndexes.removeAll(columnGroup.getStaticColumnIndexes());
-
-        boolean wasCollapsed = columnGroup.isCollapsed();
-
-        if (wasCollapsed) {
-            // we need to cleanup the column position list before we toggle
-            // because the columns are hidden before the toggle and will be
-            // visible afterwards
-            cleanupColumnIndexes(columnIndexes);
-        }
-
-        columnGroup.toggleCollapsed();
-
-        if (!wasCollapsed) {
-            // we need to cleanup the column position list after we toggle
-            // because the columns are hidden now
-            cleanupColumnIndexes(columnIndexes);
-        }
-
-        ILayerEvent event;
-        if (wasCollapsed) {
-            event = new ShowColumnPositionsEvent(
-                    this.columnGroupExpandCollapseLayer,
-                    columnIndexes.stream().mapToInt(Integer::intValue).toArray());
-        } else {
-            event = new HideColumnPositionsEvent(
-                    this.columnGroupExpandCollapseLayer,
-                    columnIndexes.stream().mapToInt(Integer::intValue).toArray());
-        }
-
-        this.columnGroupExpandCollapseLayer.fireLayerEvent(event);
 
         return true;
     }

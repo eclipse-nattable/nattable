@@ -286,10 +286,12 @@ public class FilterNatCombo extends NatCombo {
 
             @Override
             public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+                // no action on inputChanged
             }
 
             @Override
             public void dispose() {
+                // no action on dispose
             }
 
             @SuppressWarnings("unchecked")
@@ -303,6 +305,7 @@ public class FilterNatCombo extends NatCombo {
 
             @Override
             public void removeListener(ILabelProviderListener listener) {
+                // no additional listener support
             }
 
             @Override
@@ -312,10 +315,12 @@ public class FilterNatCombo extends NatCombo {
 
             @Override
             public void dispose() {
+                // no action on dispose
             }
 
             @Override
             public void addListener(ILabelProviderListener listener) {
+                // no additional listener support
             }
 
             @Override

@@ -117,15 +117,15 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
     private final EventConflaterChain conflaterChain;
 
-    private final List<IOverlayPainter> overlayPainters = new ArrayList<IOverlayPainter>();
+    private final List<IOverlayPainter> overlayPainters = new ArrayList<>();
 
-    private final List<IPersistable> persistables = new LinkedList<IPersistable>();
+    private final List<IPersistable> persistables = new LinkedList<>();
 
     private ILayer underlyingLayer;
 
     private IConfigRegistry configRegistry;
 
-    protected final Collection<IConfiguration> configurations = new LinkedList<IConfiguration>();
+    protected final Collection<IConfiguration> configurations = new LinkedList<>();
 
     protected String id = GUIHelper.getSequenceNumber();
 
@@ -463,6 +463,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
     @Override
     protected void checkSubclass() {
+        /* Do nothing - Subclassing is allowed */
     }
 
     protected void initInternalListener() {
@@ -491,11 +492,6 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
             doCommand(new ClientAreaResizeCommand(NatTable.this));
             redraw();
         });
-    }
-
-    @Override
-    public boolean forceFocus() {
-        return super.forceFocus();
     }
 
     // Painting ///////////////////////////////////////////////////////////////
@@ -674,9 +670,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
             throw new IllegalStateException("Layer must be set before configure is called"); //$NON-NLS-1$
         }
 
-        if (this.underlyingLayer != null) {
-            this.underlyingLayer.configure(getConfigRegistry(), getUiBindingRegistry());
-        }
+        this.underlyingLayer.configure(getConfigRegistry(), getUiBindingRegistry());
 
         for (IConfiguration configuration : this.configurations) {
             configuration.configureLayer(this);
@@ -844,7 +838,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
     // Events
 
-    private List<ILayerListener> listeners = new ArrayList<ILayerListener>();
+    private List<ILayerListener> listeners = new ArrayList<>();
 
     /**
      * {@link ReadWriteLock} that is used to ensure that no concurrent
@@ -863,7 +857,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
     public void addLayerListener(ILayerListener listener) {
         this.eventListenerLock.writeLock().lock();
         try {
-            this.listeners = new ArrayList<ILayerListener>(this.listeners);
+            this.listeners = new ArrayList<>(this.listeners);
             this.listeners.add(listener);
         } finally {
             this.eventListenerLock.writeLock().unlock();
@@ -874,7 +868,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
     public void removeLayerListener(ILayerListener listener) {
         this.eventListenerLock.writeLock().lock();
         try {
-            this.listeners = new ArrayList<ILayerListener>(this.listeners);
+            this.listeners = new ArrayList<>(this.listeners);
             this.listeners.remove(listener);
         } finally {
             this.eventListenerLock.writeLock().unlock();
@@ -974,7 +968,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
     @Override
     public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
-        Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
+        Collection<ILayer> underlyingLayers = new HashSet<>();
         underlyingLayers.add(this.underlyingLayer);
         return underlyingLayers;
     }
@@ -1062,7 +1056,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
     @Override
     public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {
-        Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
+        Collection<ILayer> underlyingLayers = new HashSet<>();
         underlyingLayers.add(this.underlyingLayer);
         return underlyingLayers;
     }

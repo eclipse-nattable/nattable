@@ -50,6 +50,8 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -190,6 +192,19 @@ public class _6036_SingleFieldFilterExample extends AbstractNatExample {
                     String text = input.getText();
                     matcherEditor.setFilterText(new String[] { text });
                     regexMarkup.setRegexValue(text.isEmpty() ? "" : "(" + text + ")");
+                    natTable.refresh(false);
+                }
+            }
+        });
+
+        input.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(ModifyEvent e) {
+                String text = input.getText();
+                if (text == null || text.isEmpty()) {
+                    matcherEditor.setFilterText(new String[] {});
+                    regexMarkup.setRegexValue("");
                     natTable.refresh(false);
                 }
             }

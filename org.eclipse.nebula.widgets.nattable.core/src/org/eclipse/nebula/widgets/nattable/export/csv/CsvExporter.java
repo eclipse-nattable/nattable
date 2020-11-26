@@ -153,7 +153,7 @@ public class CsvExporter implements ILayerExporter {
             // If double-quotes are used to enclose fields, then a double-quote
             // appearing inside a field must be escaped by preceding it with
             // another double quote.
-            value = value.replaceAll("\"", "\"\""); //$NON-NLS-1$ //$NON-NLS-2$
+            value = value.replace("\"", "\"\""); //$NON-NLS-1$ //$NON-NLS-2$
 
             // Fields containing line breaks (CRLF), double quotes, and commas
             // should be enclosed in double-quotes.

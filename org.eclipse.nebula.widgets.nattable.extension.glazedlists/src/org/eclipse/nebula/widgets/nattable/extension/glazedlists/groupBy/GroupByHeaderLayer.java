@@ -189,8 +189,8 @@ public class GroupByHeaderLayer extends DimensionallyDependentLayer {
             }
 
             @Override
-            public void setDataValue(int columnIndex, int rowIndex,
-                    Object newValue) {
+            public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+                // no local data storage
             }
 
             @Override

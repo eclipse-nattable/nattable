@@ -218,10 +218,12 @@ public class RowGroupModel<T> implements IRowGroupModel<T> {
 
     @Override
     public void saveState(String prefix, Properties properties) {
+        // no additional states that need to be saved
     }
 
     @Override
     public void loadState(String prefix, Properties properties) {
+        // no additional states that need to be saved
     }
 
     @Override

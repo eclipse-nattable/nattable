@@ -536,6 +536,7 @@ public class TableCellEditor extends AbstractCellEditor {
 
                 @Override
                 public void applyEditorValue() {
+                    // no additional or adjusted action needed
                 }
             });
 

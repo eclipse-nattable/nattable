@@ -78,20 +78,18 @@ public class DisplayColumnStyleEditorCommandHandler
         this.dialog = new ColumnStyleEditorDialog(Display.getCurrent().getActiveShell(), clickedCellStyle);
         this.dialog.open();
 
-        if (this.dialog.isCancelPressed()) {
-            return true;
-        }
-
-        int[] selectedColumns = getSelectedColumnIndeces();
-        if (selectedColumns.length > 0) {
-            applySelectedStyleToColumns(command, selectedColumns);
-            // fire refresh event
-            this.selectionLayer.fireLayerEvent(
-                    new ColumnVisualUpdateEvent(this.selectionLayer, this.selectionLayer.getSelectedColumnPositions()));
-        } else {
-            applySelectedStyle();
-            // fire refresh event
-            this.selectionLayer.fireLayerEvent(new VisualRefreshEvent(this.selectionLayer));
+        if (!this.dialog.isCancelPressed()) {
+            int[] selectedColumns = getSelectedColumnIndeces();
+            if (selectedColumns.length > 0) {
+                applySelectedStyleToColumns(command, selectedColumns);
+                // fire refresh event
+                this.selectionLayer.fireLayerEvent(
+                        new ColumnVisualUpdateEvent(this.selectionLayer, this.selectionLayer.getSelectedColumnPositions()));
+            } else {
+                applySelectedStyle();
+                // fire refresh event
+                this.selectionLayer.fireLayerEvent(new VisualRefreshEvent(this.selectionLayer));
+            }
         }
 
         return true;

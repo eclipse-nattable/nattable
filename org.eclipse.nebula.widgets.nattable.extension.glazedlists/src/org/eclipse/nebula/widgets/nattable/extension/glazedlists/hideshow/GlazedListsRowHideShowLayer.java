@@ -14,7 +14,6 @@ package org.eclipse.nebula.widgets.nattable.extension.glazedlists.hideshow;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -366,10 +365,8 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
                     + PERSISTENCE_KEY_HIDDEN_ROW_IDS_COUNT,
                     Integer.valueOf(this.rowIdsToHide.size()).toString());
 
-            ObjectOutputStream out = null;
-            try {
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                out = new ObjectOutputStream(bos);
+            try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    ObjectOutputStream out = new ObjectOutputStream(bos)) {
                 for (Serializable serializable : this.rowIdsToHide) {
                     out.writeObject(serializable);
                 }
@@ -377,14 +374,6 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
                         new String(Base64.encodeBase64(bos.toByteArray())));
             } catch (Exception e) {
                 LOG.error("Error while persisting GlazedListsRowHideShowLayer state", e); //$NON-NLS-1$
-            } finally {
-                if (out != null) {
-                    try {
-                        out.close();
-                    } catch (IOException e) {
-                        LOG.error("Error on closing the output stream", e); //$NON-NLS-1$
-                    }
-                }
             }
         }
 
@@ -398,10 +387,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
         int count = property != null ? Integer.valueOf(property) : 0;
         property = properties.getProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_IDS);
         if (property != null) {
-            ObjectInputStream in = null;
-            try {
-                ByteArrayInputStream bis = new ByteArrayInputStream(Base64.decodeBase64(property.getBytes()));
-                in = new ObjectInputStream(bis);
+            try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(Base64.decodeBase64(property.getBytes())))) {
                 Serializable ser = null;
                 for (int i = 0; i < count; i++) {
                     ser = (Serializable) in.readObject();
@@ -409,14 +395,6 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
                 }
             } catch (Exception e) {
                 LOG.error("Error while restoring GlazedListsRowHideShowLayer state", e); //$NON-NLS-1$
-            } finally {
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (IOException e) {
-                        LOG.error("Error on closing the input stream", e); //$NON-NLS-1$
-                    }
-                }
             }
         }
         this.hideRowByIdMatcherEditor.fireChange();

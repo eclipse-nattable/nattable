@@ -171,6 +171,7 @@ public class InternalPasteDataCommandHandler extends AbstractLayerCommandHandler
      * disabling formula evaluation.
      */
     protected void preInternalPaste() {
+        // no specific action needed to be performed by default
     }
 
     /**
@@ -178,6 +179,7 @@ public class InternalPasteDataCommandHandler extends AbstractLayerCommandHandler
      * enabling formula evaluation.
      */
     protected void postInternalPaste() {
+        // no specific action needed to be performed by default
     }
 
     @Override

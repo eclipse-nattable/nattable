@@ -21,9 +21,6 @@ import java.util.Comparator;
  */
 public class CellValueAsStringComparator<T extends Comparable<String>> implements Comparator<T> {
 
-    public CellValueAsStringComparator() {
-    }
-
     @Override
     public int compare(T firstValue, T secondValue) {
         String firstCellValue = firstValue.toString();

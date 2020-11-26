@@ -123,7 +123,6 @@ import org.eclipse.nebula.widgets.nattable.style.theme.ThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
-import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
@@ -135,7 +134,6 @@ import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -919,20 +917,10 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
         public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
             uiBindingRegistry.registerKeyBinding(
                     new KeyEventMatcher(SWT.MOD1, 's'),
-                    new IKeyAction() {
-                        @Override
-                        public void run(NatTable natTable, KeyEvent event) {
-                            natTable.doCommand(new SaveDataChangesCommand());
-                        }
-                    });
+                    (natTable, event) -> natTable.doCommand(new SaveDataChangesCommand()));
             uiBindingRegistry.registerKeyBinding(
                     new KeyEventMatcher(SWT.MOD1, 'd'),
-                    new IKeyAction() {
-                        @Override
-                        public void run(NatTable natTable, KeyEvent event) {
-                            natTable.doCommand(new DiscardDataChangesCommand());
-                        }
-                    });
+                    (natTable, event) -> natTable.doCommand(new DiscardDataChangesCommand()));
 
         }
 

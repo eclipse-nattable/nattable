@@ -77,9 +77,8 @@ public class RegexMarkupValue implements MarkupProcessor {
         String result = "";
         if (getOriginalRegexValue() != null && !getOriginalRegexValue().isEmpty()) {
             XMLEventReader parser = null;
-            try {
-                parser = this.factory.createXMLEventReader(
-                        new StringReader(RichTextPainter.FAKE_ROOT_TAG_START + input + RichTextPainter.FAKE_ROOT_TAG_END));
+            try (StringReader reader = new StringReader(RichTextPainter.FAKE_ROOT_TAG_START + input + RichTextPainter.FAKE_ROOT_TAG_END)) {
+                parser = this.factory.createXMLEventReader(reader);
 
                 while (parser.hasNext()) {
                     XMLEvent event = parser.nextEvent();

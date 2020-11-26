@@ -42,46 +42,57 @@ public class AbstractModeEventHandler implements IModeEventHandler {
 
     @Override
     public void cleanup() {
+        // not implemented
     }
 
     @Override
     public void keyPressed(KeyEvent event) {
+        // not implemented
     }
 
     @Override
     public void keyReleased(KeyEvent event) {
+        // not implemented
     }
 
     @Override
     public void mouseDoubleClick(MouseEvent event) {
+        // not implemented
     }
 
     @Override
     public void mouseDown(MouseEvent event) {
+        // not implemented
     }
 
     @Override
     public void mouseUp(MouseEvent event) {
+        // not implemented
     }
 
     @Override
     public void mouseMove(MouseEvent event) {
+        // not implemented
     }
 
     @Override
     public void mouseEnter(MouseEvent e) {
+        // not implemented
     }
 
     @Override
     public void mouseExit(MouseEvent e) {
+        // not implemented
     }
 
     @Override
     public void mouseHover(MouseEvent e) {
+        // not implemented
     }
 
     @Override
     public void focusGained(FocusEvent event) {
+        // not implemented
     }
 
     @Override

@@ -61,9 +61,6 @@ public class ParseResult {
     private MatchType matchType = MatchType.NONE;
     private String valueToMatch;
 
-    public ParseResult() {
-    }
-
     public MatchType getMatchOperation() {
         return this.matchType;
     }

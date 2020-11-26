@@ -15,7 +15,4 @@ package org.eclipse.nebula.widgets.nattable.viewport.command;
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 
 public class RecalculateScrollBarsCommand extends AbstractContextFreeCommand {
-
-    public RecalculateScrollBarsCommand() {
-    }
 }

@@ -35,23 +35,21 @@ public class GroupByDragMode implements IDragMode {
     @Override
     public void mouseDown(NatTable natTable, MouseEvent event) {
         int columnPosition = natTable.getColumnPositionByX(event.x);
-        this.selectedColumnIndex = natTable
-                .getColumnIndexByPosition(columnPosition);
+        this.selectedColumnIndex = natTable.getColumnIndexByPosition(columnPosition);
     }
 
     @Override
     public void mouseMove(NatTable natTable, MouseEvent event) {
+        // no action on mouse move
     }
 
     @Override
     public void mouseUp(NatTable natTable, MouseEvent event) {
-        LabelStack regionLabels = natTable
-                .getRegionLabelsByXY(event.x, event.y);
+        LabelStack regionLabels = natTable.getRegionLabelsByXY(event.x, event.y);
         if (regionLabels != null
                 && regionLabels.hasLabel(GroupByHeaderLayer.GROUP_BY_REGION)
                 && this.selectedColumnIndex != -1) {
-            natTable.doCommand(new GroupByColumnIndexCommand(
-                    this.selectedColumnIndex));
+            natTable.doCommand(new GroupByColumnIndexCommand(this.selectedColumnIndex));
             this.selectedColumnIndex = -1;
         }
     }
