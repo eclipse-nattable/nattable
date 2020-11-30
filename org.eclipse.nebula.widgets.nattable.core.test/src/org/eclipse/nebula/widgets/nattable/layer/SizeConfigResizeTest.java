@@ -216,16 +216,15 @@ public class SizeConfigResizeTest {
         assertEquals(90, this.sizeConfig.getSize(3));
         // 90 because of min size
         assertEquals(90, this.sizeConfig.getSize(4));
-        // should be 141 because the next dynamic column and we reduce by 23
-        // but there seems to be some rounding issue on the way therefore 142
-        assertEquals(142, this.sizeConfig.getSize(5));
+        // 141 because the next dynamic column and we reduce by 23
+        assertEquals(141, this.sizeConfig.getSize(5));
         assertEquals(85, this.sizeConfig.getSize(6));
         assertEquals(60, this.sizeConfig.getSize(7));
         assertEquals(135, this.sizeConfig.getSize(8));
         assertEquals(164, this.sizeConfig.getSize(9));
         assertEquals(200, this.sizeConfig.getSize(10));
         assertEquals(164, this.sizeConfig.getSize(11));
-        assertEquals(59, this.sizeConfig.getSize(12));
+        assertEquals(60, this.sizeConfig.getSize(12));
 
         // percentage adjusted to match the current active min size
         assertEquals(16.4, this.sizeConfig.getConfiguredPercentageSize(10), 0.1);
@@ -246,13 +245,8 @@ public class SizeConfigResizeTest {
         assertEquals(55, this.defaultMinSizeConfig.getSize(3));
         assertEquals(366, this.defaultMinSizeConfig.getAggregateSize(4));
 
-        // rounding issue when calculating the pixels for fixed percentage
-        // 5% of 1219 is 60.95 which resolves to 60 pixels in simple integer
-        // conversion
-        // but 60 of 1219 is 4.922%
-        // therefore we loose a 1 pixel precision
-        assertEquals(103, this.defaultMinSizeConfig.getSize(4));
-        assertEquals(59, this.defaultMinSizeConfig.getSize(12));
+        assertEquals(102, this.defaultMinSizeConfig.getSize(4));
+        assertEquals(60, this.defaultMinSizeConfig.getSize(12));
 
         assertEquals(1500, this.defaultMinSizeConfig.getAggregateSize(13));
     }
@@ -268,9 +262,8 @@ public class SizeConfigResizeTest {
         assertEquals(30, this.defaultMinSizeConfig.getSize(3));
         assertEquals(341, this.defaultMinSizeConfig.getAggregateSize(4));
 
-        // some rounding issue
-        assertEquals(128, this.defaultMinSizeConfig.getSize(4));
-        assertEquals(59, this.defaultMinSizeConfig.getSize(12));
+        assertEquals(127, this.defaultMinSizeConfig.getSize(4));
+        assertEquals(60, this.defaultMinSizeConfig.getSize(12));
 
         assertEquals(1500, this.defaultMinSizeConfig.getAggregateSize(13));
     }
@@ -287,8 +280,8 @@ public class SizeConfigResizeTest {
         assertEquals(376, this.defaultMinSizeConfig.getAggregateSize(4));
 
         // some rounding issue
-        assertEquals(93, this.defaultMinSizeConfig.getSize(4));
-        assertEquals(59, this.defaultMinSizeConfig.getSize(12));
+        assertEquals(92, this.defaultMinSizeConfig.getSize(4));
+        assertEquals(60, this.defaultMinSizeConfig.getSize(12));
 
         assertEquals(1500, this.defaultMinSizeConfig.getAggregateSize(13));
     }
@@ -306,9 +299,8 @@ public class SizeConfigResizeTest {
         assertEquals(90, this.defaultMinSizeConfig.getSize(4));
         assertEquals(431, this.defaultMinSizeConfig.getAggregateSize(4));
 
-        // some rounding issue
-        assertEquals(112, this.defaultMinSizeConfig.getSize(5));
-        assertEquals(59, this.defaultMinSizeConfig.getSize(12));
+        assertEquals(111, this.defaultMinSizeConfig.getSize(5));
+        assertEquals(60, this.defaultMinSizeConfig.getSize(12));
 
         assertEquals(1500, this.defaultMinSizeConfig.getAggregateSize(13));
     }
@@ -320,8 +312,9 @@ public class SizeConfigResizeTest {
 
         this.defaultMinSizeConfig.setSize(5, 160);
 
+        // rounding issue
         assertEquals(160, this.defaultMinSizeConfig.getSize(5));
-        assertEquals(628, this.defaultMinSizeConfig.getAggregateSize(6));
+        assertEquals(629, this.defaultMinSizeConfig.getAggregateSize(6));
 
         assertEquals(1500, this.defaultMinSizeConfig.getAggregateSize(13));
     }
@@ -961,9 +954,9 @@ public class SizeConfigResizeTest {
         // rounding issue in Java
         assertEquals(249, this.noDynamicPercentageSizeConfig.getSize(10));
         assertEquals(200, this.noDynamicPercentageSizeConfig.getMinSize(10));
-        assertEquals(1335, this.noDynamicPercentageSizeConfig.getAggregateSize(11));
+        assertEquals(1336, this.noDynamicPercentageSizeConfig.getAggregateSize(11));
 
-        assertEquals(93, this.noDynamicPercentageSizeConfig.getSize(11));
+        assertEquals(92, this.noDynamicPercentageSizeConfig.getSize(11));
 
         assertEquals(1500, this.noDynamicPercentageSizeConfig.getAggregateSize(13));
     }

@@ -678,9 +678,7 @@ public class SizeConfig implements IPersistable {
                     if (isMinSizeConfigured(pos) && calculated < getMinSize(pos)) {
                         double minPercentageValue = ((double) getMinSize(pos) * 100) / percentageSpace;
                         this.percentageSizeMap.put(pos, minPercentageValue);
-                    } else if (this.distributeRemainingSpace
-                            && this.realSizeMap.containsKey(pos)
-                            && calculated < this.realSizeMap.get(pos)) {
+                    } else if (this.realSizeMap.containsKey(pos)) {
                         double distributedPercentageValue = ((double) this.realSizeMap.get(pos) * 100) / percentageSpace;
                         this.percentageSizeMap.put(pos, distributedPercentageValue);
                     }
@@ -1155,11 +1153,14 @@ public class SizeConfig implements IPersistable {
                             pos = 0;
                         }
 
-                        // only increase columns that are not configured to
+                        // only increase positions that are not configured to
                         // be hidden or fixed size
                         int posValue = this.realSizeMap.getIfAbsent(pos, -1);
                         while (posValue != -1 && (posValue == 0 || !isPercentageSizing(pos) || getMinSize(pos) == posValue)) {
                             pos++;
+                            if (pos > this.realSizeMap.keySet().max()) {
+                                break;
+                            }
                             posValue = this.realSizeMap.get(pos);
                         }
 

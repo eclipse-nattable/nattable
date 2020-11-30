@@ -1549,15 +1549,87 @@ public class SizeConfigPercentageTest {
         // resize column 1 to 300
         sizeConfig.setSize(1, 300);
 
-        assertEquals(301, sizeConfig.getSize(0));
+        assertEquals(300, sizeConfig.getSize(0));
         assertEquals(300, sizeConfig.getSize(1));
-        assertEquals(299, sizeConfig.getSize(2));
+        assertEquals(300, sizeConfig.getSize(2));
 
         // increase column 1 by 9 pixels (1%)
         sizeConfig.setSize(1, 309);
 
-        assertEquals(301, sizeConfig.getSize(0));
+        assertEquals(300, sizeConfig.getSize(0));
         assertEquals(309, sizeConfig.getSize(1));
-        assertEquals(290, sizeConfig.getSize(2));
+        assertEquals(291, sizeConfig.getSize(2));
+    }
+    
+    @Test
+    public void shouldResizeCorrectlyAfterResizeOfFixedPosition() {
+        SizeConfig sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        
+        /*
+            Name ... 20%
+            Data Type ... 20 %
+            Comment ... rest
+            Scope ... fixed (80px)
+            ID .. 15%
+            Unit .. fixed (50px)
+            Value .. 10%
+            Min value .. 10%
+            Max value .. 10%
+            User level .. fixed (100px)
+            Active ... fixed (50 px)
+         */
+        
+        sizeConfig.setPercentage(0, 20);
+        sizeConfig.setPercentage(1, 20);
+        sizeConfig.setPercentageSizing(2, true);
+        sizeConfig.setPercentageSizing(3, false);
+        sizeConfig.setSize(3, 80);
+        sizeConfig.setPercentage(4, 15);
+        sizeConfig.setPercentageSizing(5, false);
+        sizeConfig.setSize(5, 50);
+        sizeConfig.setPercentage(6, 10);
+        sizeConfig.setPercentage(7, 10);
+        sizeConfig.setPercentage(8, 10);
+        sizeConfig.setPercentageSizing(9, false);
+        sizeConfig.setSize(9, 100);
+        sizeConfig.setPercentageSizing(10, false);
+        sizeConfig.setSize(10, 50);
+        
+        // set percentage sizing globally at the end
+        sizeConfig.setPercentageSizing(true);
+        
+        sizeConfig.calculatePercentages(1280, 11);
+        
+        assertEquals(200, sizeConfig.getSize(0));
+        assertEquals(200, sizeConfig.getSize(1));
+        assertEquals(150, sizeConfig.getSize(2));
+        assertEquals(80, sizeConfig.getSize(3));
+        assertEquals(150, sizeConfig.getSize(4));
+        assertEquals(50, sizeConfig.getSize(5));
+        assertEquals(100, sizeConfig.getSize(6));
+        assertEquals(100, sizeConfig.getSize(7));
+        assertEquals(100, sizeConfig.getSize(8));
+        assertEquals(100, sizeConfig.getSize(9));
+        assertEquals(50, sizeConfig.getSize(10));
+        
+        // resize unit (fixed) and ensure that value (percentage) shrinks
+        sizeConfig.setSize(5, 100);
+        
+        assertEquals(100, sizeConfig.getSize(5));
+        assertEquals(50, sizeConfig.getSize(6));
+        
+        sizeConfig.setSize(5, 50);
+        
+        assertEquals(50, sizeConfig.getSize(5));
+        assertEquals(100, sizeConfig.getSize(6));
+        
+        // verify resize of percentage column is still correct
+        sizeConfig.setSize(0, 300);
+        assertEquals(300, sizeConfig.getSize(0));
+        assertEquals(100, sizeConfig.getSize(1));
+        sizeConfig.setSize(0, 200);
+        assertEquals(200, sizeConfig.getSize(0));
+        assertEquals(200, sizeConfig.getSize(1));
+
     }
 }
