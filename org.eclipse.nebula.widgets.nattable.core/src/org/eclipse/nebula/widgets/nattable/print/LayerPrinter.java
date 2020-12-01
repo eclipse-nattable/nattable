@@ -683,7 +683,8 @@ public class LayerPrinter {
             printDialog.getPrinterData().orientation = orientation;
         }
 
-        if (this.calculatePageCount) {
+        PrinterData defaultPrinterData = Printer.getDefaultPrinterData();
+        if (this.calculatePageCount && defaultPrinterData != null) {
             // if pre-rendering is enabled, render in-memory to
             // trigger content based auto-resizing
             if (LayerPrinter.this.preRender) {
@@ -699,7 +700,7 @@ public class LayerPrinter {
             }
 
             try {
-                Printer defaultPrinter = new Printer();
+                Printer defaultPrinter = new Printer(defaultPrinterData);
                 int pageCount = getPageCount(defaultPrinter);
                 defaultPrinter.dispose();
 
