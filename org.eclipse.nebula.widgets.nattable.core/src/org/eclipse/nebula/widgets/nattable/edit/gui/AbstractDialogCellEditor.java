@@ -287,16 +287,10 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
 
                     return committed;
                 }
-            } catch (ConversionFailedException e) {
-                // do nothing as exceptions caused by conversion are handled
-                // already we just need this catch block for stopping the
-                // process
-                // if conversion failed with an exception
-            } catch (ValidationFailedException e) {
-                // do nothing as exceptions caused by validation are handled
-                // already we just need this catch block for stopping the
-                // process
-                // if validation failed with an exception
+            } catch (ConversionFailedException | ValidationFailedException e) {
+                // do nothing as exceptions caused by conversion/validation are
+                // handled already we just need this catch block for stopping
+                // the process if conversion failed with an exception
             } catch (Exception e) {
                 // if another exception occured that wasn't thrown by us, it
                 // should at least be logged without killing the whole

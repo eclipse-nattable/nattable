@@ -71,7 +71,7 @@ public class RowResizeDragMode implements IDragMode {
         } else {
             int overlayExtent = RowResizeOverlayPainter.ROW_RESIZE_OVERLAY_HEIGHT / 2;
 
-            Set<Integer> rowsToRepaint = new HashSet<Integer>();
+            Set<Integer> rowsToRepaint = new HashSet<>();
 
             rowsToRepaint.add(natTable.getRowPositionByY(this.currentY - overlayExtent));
             rowsToRepaint.add(natTable.getRowPositionByY(this.currentY + overlayExtent));

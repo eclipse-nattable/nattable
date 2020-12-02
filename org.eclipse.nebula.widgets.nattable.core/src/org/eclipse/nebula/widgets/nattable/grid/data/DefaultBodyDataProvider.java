@@ -20,7 +20,7 @@ import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor
 public class DefaultBodyDataProvider<T> extends ListDataProvider<T> {
 
     public DefaultBodyDataProvider(List<T> rowData, String[] propertyNames) {
-        super(rowData, new ReflectiveColumnPropertyAccessor<T>(propertyNames));
+        super(rowData, new ReflectiveColumnPropertyAccessor<>(propertyNames));
     }
 
 }

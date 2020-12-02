@@ -16,6 +16,7 @@ import static org.eclipse.nebula.widgets.nattable.columnChooser.ColumnChooserUti
 import static org.eclipse.nebula.widgets.nattable.test.fixture.layer.ColumnHeaderLayerFixture.getDataLayer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -41,31 +42,34 @@ public class ColumnChooserUtilsTest {
     }
 
     @Test
-    public void find() throws Exception {
+    public void find() {
         ColumnEntry found = ColumnChooserUtils.find(this.entriesFixture, 5);
         assertEquals("Index5", found.getLabel());
+
+        found = ColumnChooserUtils.find(this.entriesFixture, 42);
+        assertNull(found);
     }
 
     @Test
-    public void getPositionsFromEntries() throws Exception {
+    public void getPositionsFromEntries() {
         List<Integer> positions = ColumnChooserUtils.getColumnEntryPositions(this.entriesFixture);
         assertEquals("[2, 6, 3, 4, 5]", positions.toString());
     }
 
     @Test
-    public void getIndexesFromEntries() throws Exception {
+    public void getIndexesFromEntries() {
         List<Integer> indexes = ColumnChooserUtils.getColumnEntryIndexes(this.entriesFixture);
         assertEquals("[1, 3, 5, 7, 9]", indexes.toString());
     }
 
     @Test
-    public void listContainsEntry() throws Exception {
+    public void listContainsEntry() {
         assertTrue(ColumnChooserUtils.containsIndex(this.entriesFixture, 9));
         assertFalse(ColumnChooserUtils.containsIndex(this.entriesFixture, -9));
     }
 
     @Test
-    public void shouldProvideRenamedLabelsIfTheColumnHasBeenRenamed() throws Exception {
+    public void shouldProvideRenamedLabelsIfTheColumnHasBeenRenamed() {
         ColumnHeaderLayerFixture columnHeaderLayer = new ColumnHeaderLayerFixture();
         assertEquals("[1, 0]", getColumnLabel(columnHeaderLayer, getDataLayer(), 1));
 
@@ -74,7 +78,7 @@ public class ColumnChooserUtilsTest {
     }
 
     @Test
-    public void getVisibleColumnEntries() throws Exception {
+    public void getVisibleColumnEntries() {
         DefaultGridLayer gridLayer = new DefaultGridLayer(
                 RowDataListFixture.getList(),
                 RowDataListFixture.getPropertyNames(),

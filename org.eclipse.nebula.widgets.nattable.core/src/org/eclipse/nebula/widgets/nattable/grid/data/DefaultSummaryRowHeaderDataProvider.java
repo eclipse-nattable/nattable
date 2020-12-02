@@ -31,6 +31,8 @@ public class DefaultSummaryRowHeaderDataProvider extends DefaultRowHeaderDataPro
     }
 
     /**
+     * @param bodyDataProvider
+     *            The data provider of the connected body region.
      * @param summaryRowLabel
      *            label to display in the row header for the Summary Row
      */

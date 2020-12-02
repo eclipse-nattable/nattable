@@ -54,6 +54,8 @@ import org.eclipse.swt.graphics.Image;
  *
  * @since 2.0
  */
+// fields are public by design to make it easy for adapters to customize a theme
+@SuppressWarnings("java:S1104")
 public class DefaultHierarchicalTreeLayerThemeExtension implements IThemeExtension {
 
     // default cell style

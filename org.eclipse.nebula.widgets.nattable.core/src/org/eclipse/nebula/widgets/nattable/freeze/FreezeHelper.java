@@ -36,7 +36,11 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
  * @see FreezeSelectionCommand
  * @see UnFreezeGridCommand
  */
-public class FreezeHelper {
+public final class FreezeHelper {
+
+    private FreezeHelper() {
+        // private default constructor for helper class
+    }
 
     /**
      * Freezes the grid at the specified position. This method is for internal

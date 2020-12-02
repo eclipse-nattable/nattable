@@ -24,7 +24,7 @@ public class DummyModifiableBodyDataProvider implements IDataProvider {
 
     private int rowCount;
 
-    private Map<Point, Object> values = new HashMap<Point, Object>();
+    private Map<Point, Object> values = new HashMap<>();
 
     public DummyModifiableBodyDataProvider(int columnCount, int rowCount) {
         this.columnCount = columnCount;
@@ -47,6 +47,7 @@ public class DummyModifiableBodyDataProvider implements IDataProvider {
      * after using this method for refreshing the NatTable.
      *
      * @param columnCount
+     *            The column count to use.
      */
     public void setColumnCount(int columnCount) {
         this.columnCount = columnCount;
@@ -58,6 +59,7 @@ public class DummyModifiableBodyDataProvider implements IDataProvider {
      * after using this method for refreshing the NatTable.
      *
      * @param rowCount
+     *            The row count to use.
      */
     public void setRowCount(int rowCount) {
         this.rowCount = rowCount;

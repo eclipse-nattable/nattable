@@ -23,7 +23,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 
-public class ColorPersistor {
+public final class ColorPersistor {
+
+    private ColorPersistor() {
+        // private default constructor for helper class
+    }
 
     public static final String STYLE_PERSISTENCE_PREFIX = "color"; //$NON-NLS-1$
     public static final Color DEFAULT_COLOR = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
@@ -49,7 +53,11 @@ public class ColorPersistor {
     }
 
     /**
-     * Create a String representation of the SWT Color
+     *
+     * @param color
+     *            The {@link Color} for which the String representation is
+     *            requested.
+     * @return The String representation of the provided SWT {@link Color}.
      */
     public static String asString(Color color) {
         return StringConverter.asString(color.getRGB());
@@ -57,7 +65,11 @@ public class ColorPersistor {
 
     /**
      * Create a Color instance using the String created by
-     * {@link ColorPersistor#asColor(String)}
+     * {@link ColorPersistor#asColor(String)}.
+     *
+     * @param colorAsString
+     *            The String representation of a SWT {@link Color}.
+     * @return The SWT {@link Color} for the given String.
      */
     public static Color asColor(String colorAsString) {
         try {

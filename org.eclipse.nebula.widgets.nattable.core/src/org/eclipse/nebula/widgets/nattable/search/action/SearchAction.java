@@ -131,7 +131,7 @@ public class SearchAction implements IKeyAction {
         setActiveContext();
         if (this.dialog == null) {
             this.dialog = new SearchDialog(this.natTable.getShell(),
-                    new CellValueAsStringComparator<String>(),
+                    new CellValueAsStringComparator<>(),
                     this.modal ? SWT.NONE : SWT.APPLICATION_MODAL);
             this.dialog.setInput(this.natTable, this.dialogSettings);
         }

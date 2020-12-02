@@ -295,6 +295,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      * @param columnPosition
      *            position of any column belonging to the group
      *
+     * @return the column span
      * @since 1.6
      */
     public int getColumnSpan(int columnPosition) {
@@ -426,9 +427,6 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         return this.model.isPartOfAGroup(bodyColumnIndex);
     }
 
-    /**
-     * @see ColumnGroup#setUnbreakable(boolean)
-     */
     public void setGroupUnbreakable(int columnIndex) {
         ColumnGroup columnGroup = this.model.getColumnGroupByIndex(columnIndex);
         columnGroup.setUnbreakable(true);
@@ -468,8 +466,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         labels.add(DefaultColumnGroupHeaderLayerConfiguration.GROUP_EXPANDED_CONFIG_TYPE);
 
         // add the labels configured via IConfigLabelAccumulator
-        if (getConfigLabelAccumulator() != null
-                && getConfigLabelAccumulator() instanceof IConfigLabelProvider) {
+        if (getConfigLabelAccumulator() instanceof IConfigLabelProvider) {
             labels.addAll(((IConfigLabelProvider) getConfigLabelAccumulator()).getProvidedLabels());
         }
 

@@ -31,7 +31,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.RowInsertEvent;
  */
 public class KeyRowInsertEvent extends RowInsertEvent {
 
-    private final List<Object> keys = new ArrayList<Object>();
+    private final List<Object> keys = new ArrayList<>();
     private final CellKeyHandler<?> keyHandler;
 
     /**

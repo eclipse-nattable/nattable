@@ -59,14 +59,12 @@ public abstract class AbstractLayer implements ILayer {
     private IClientAreaProvider clientAreaProvider = IClientAreaProvider.DEFAULT;
     private IConfigLabelAccumulator configLabelAccumulator;
 
-    protected final Map<Class<? extends ILayerCommand>, ILayerCommandHandler<? extends ILayerCommand>> commandHandlers =
-            new LinkedHashMap<Class<? extends ILayerCommand>, ILayerCommandHandler<? extends ILayerCommand>>();
-    protected Map<Class<? extends ILayerEvent>, ILayerEventHandler<? extends ILayerEvent>> eventHandlers =
-            new HashMap<Class<? extends ILayerEvent>, ILayerEventHandler<? extends ILayerEvent>>();
+    protected final Map<Class<? extends ILayerCommand>, ILayerCommandHandler<? extends ILayerCommand>> commandHandlers = new LinkedHashMap<>();
+    protected Map<Class<? extends ILayerEvent>, ILayerEventHandler<? extends ILayerEvent>> eventHandlers = new HashMap<>();
 
-    private final List<IPersistable> persistables = new LinkedList<IPersistable>();
-    private final Set<ILayerListener> listeners = new LinkedHashSet<ILayerListener>();
-    private final Collection<IConfiguration> configurations = new LinkedList<IConfiguration>();
+    private final List<IPersistable> persistables = new LinkedList<>();
+    private final Set<ILayerListener> listeners = new LinkedHashSet<>();
+    private final Collection<IConfiguration> configurations = new LinkedList<>();
 
     private boolean configurationApplied = false;
 
@@ -273,7 +271,7 @@ public abstract class AbstractLayer implements ILayer {
     public void registerEventHandler(ILayerEventHandler<?> eventHandler) {
         this.eventHelperLock.writeLock().lock();
         try {
-            this.eventHandlers = new HashMap<Class<? extends ILayerEvent>, ILayerEventHandler<? extends ILayerEvent>>(this.eventHandlers);
+            this.eventHandlers = new HashMap<>(this.eventHandlers);
             this.eventHandlers.put(eventHandler.getLayerEventClass(), eventHandler);
         } finally {
             this.eventHelperLock.writeLock().unlock();
@@ -283,7 +281,7 @@ public abstract class AbstractLayer implements ILayer {
     public void unregisterEventHandler(ILayerEventHandler<?> eventHandler) {
         this.eventHelperLock.writeLock().lock();
         try {
-            this.eventHandlers = new HashMap<Class<? extends ILayerEvent>, ILayerEventHandler<? extends ILayerEvent>>(this.eventHandlers);
+            this.eventHandlers = new HashMap<>(this.eventHandlers);
             this.eventHandlers.remove(eventHandler.getLayerEventClass());
         } finally {
             this.eventHelperLock.writeLock().unlock();
@@ -296,7 +294,7 @@ public abstract class AbstractLayer implements ILayer {
      */
     @Override
     public void fireLayerEvent(ILayerEvent event) {
-        if (this.listeners.size() > 0) {
+        if (!this.listeners.isEmpty()) {
             Iterator<ILayerListener> it = this.listeners.iterator();
             boolean isLastListener = false;
             do {
@@ -440,8 +438,7 @@ public abstract class AbstractLayer implements ILayer {
         }
 
         // add the labels configured via IConfigLabelAccumulator
-        if (this.configLabelAccumulator != null
-                && this.configLabelAccumulator instanceof IConfigLabelProvider) {
+        if (this.configLabelAccumulator instanceof IConfigLabelProvider) {
             labels.addAll(((IConfigLabelProvider) this.configLabelAccumulator).getProvidedLabels());
         }
 

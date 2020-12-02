@@ -28,7 +28,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
  */
 public class AggregateConfigLabelAccumulator implements IConfigLabelProvider {
 
-    private List<IConfigLabelAccumulator> accumulators = new ArrayList<IConfigLabelAccumulator>();
+    private List<IConfigLabelAccumulator> accumulators = new ArrayList<>();
 
     public void add(IConfigLabelAccumulator r) {
         if (r == null)
@@ -56,7 +56,7 @@ public class AggregateConfigLabelAccumulator implements IConfigLabelProvider {
      */
     @Override
     public Collection<String> getProvidedLabels() {
-        Collection<String> result = new HashSet<String>();
+        Collection<String> result = new HashSet<>();
         for (IConfigLabelAccumulator accumulator : this.accumulators) {
             if (accumulator instanceof IConfigLabelProvider) {
                 result.addAll(((IConfigLabelProvider) accumulator).getProvidedLabels());

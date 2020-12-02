@@ -14,7 +14,11 @@ package org.eclipse.nebula.widgets.nattable.layer;
 
 import org.eclipse.swt.graphics.Rectangle;
 
-public class InvertUtil {
+public final class InvertUtil {
+
+    private InvertUtil() {
+        // private default constructor for helper class
+    }
 
     public static Rectangle invertRectangle(Rectangle rect) {
         if (rect != null)

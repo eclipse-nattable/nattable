@@ -80,7 +80,7 @@ public class DefaultDateDisplayConverter extends DisplayConverter {
             return this.dateFormat.parse(displayValue.toString());
         } catch (Exception e) {
             throw new ConversionFailedException(Messages.getString("DefaultDateDisplayConverter.failure", //$NON-NLS-1$
-                    new Object[] { displayValue, this.dateFormat.toPattern() }), e);
+                    displayValue, this.dateFormat.toPattern()), e);
         }
     }
 

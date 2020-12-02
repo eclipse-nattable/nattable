@@ -18,7 +18,6 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 public class DefaultBodyLayerStack extends AbstractIndexLayerTransform {
@@ -36,11 +35,6 @@ public class DefaultBodyLayerStack extends AbstractIndexLayerTransform {
         setUnderlyingLayer(this.viewportLayer);
 
         registerCommandHandler(new CopyDataCommandHandler(this.selectionLayer));
-    }
-
-    @Override
-    public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
-        super.setClientAreaProvider(clientAreaProvider);
     }
 
     public ColumnReorderLayer getColumnReorderLayer() {

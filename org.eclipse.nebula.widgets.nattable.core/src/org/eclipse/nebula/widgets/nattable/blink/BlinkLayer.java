@@ -70,10 +70,10 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements
     private int blinkDurationInMilis = 1000;
 
     /** Track the updates which are currently blinking */
-    Map<String, PropertyUpdateEvent<T>> blinkingUpdates = new HashMap<String, PropertyUpdateEvent<T>>();
+    Map<String, PropertyUpdateEvent<T>> blinkingUpdates = new HashMap<>();
 
     /** Track the blinking tasks which are currently running */
-    Map<String, ScheduledFuture<?>> blinkingTasks = new HashMap<String, ScheduledFuture<?>>();
+    Map<String, ScheduledFuture<?>> blinkingTasks = new HashMap<>();
 
     public BlinkLayer(IUniqueIndexLayer dataLayer,
             IRowDataProvider<T> listDataProvider,
@@ -108,7 +108,7 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements
         this.columnPropertyResolver = columnPropertyResolver;
         this.configRegistry = configRegistry;
         this.scheduler = scheduler;
-        this.updateEventsCache = new UpdateEventsCache<T>(rowIdAccessor,
+        this.updateEventsCache = new UpdateEventsCache<>(rowIdAccessor,
                 triggerBlinkOnRowUpdate ? new RowKeyStrategyImpl()
                         : new CellKeyStrategyImpl(),
                 scheduler);
@@ -243,10 +243,8 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements
     @SuppressWarnings("unchecked")
     @Override
     public void handleLayerEvent(ILayerEvent event) {
-        if (this.blinkingEnabled) {
-            if (event instanceof PropertyUpdateEvent) {
-                this.updateEventsCache.put((PropertyUpdateEvent<T>) event);
-            }
+        if (this.blinkingEnabled && event instanceof PropertyUpdateEvent) {
+            this.updateEventsCache.put((PropertyUpdateEvent<T>) event);
         }
         super.handleLayerEvent(event);
     }

@@ -166,7 +166,6 @@ public class _807_SortableFilterableColumnGroupExample extends
         ColumnGroupGroupHeaderLayer sndGroup =
                 new ColumnGroupGroupHeaderLayer(
                         columnGroupHeaderLayer,
-                        bodyLayer.getSelectionLayer(),
                         this.sndColumnGroupModel);
 
         sndGroup.addColumnsIndexesToGroup("PersonWithAddress", 0, 1, 2, 3, 4, 5, 6, 7);

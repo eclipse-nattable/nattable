@@ -103,7 +103,7 @@ public class Real_time_data_updates extends AbstractNatExample {
                 .getBodyDataProvider();
 
         // Select complete rows
-        RowOnlySelectionConfiguration<RowDataFixture> selectionConfig = new RowOnlySelectionConfiguration<>();
+        RowOnlySelectionConfiguration selectionConfig = new RowOnlySelectionConfiguration();
         selectionLayer.addConfiguration(selectionConfig);
         this.nattable.addConfiguration(new RowOnlySelectionBindings());
 

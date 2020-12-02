@@ -72,7 +72,7 @@ public class ColumnResizeDragMode implements IDragMode {
         } else {
             int overlayExtent = ColumnResizeOverlayPainter.COLUMN_RESIZE_OVERLAY_WIDTH / 2;
 
-            Set<Integer> columnsToRepaint = new HashSet<Integer>();
+            Set<Integer> columnsToRepaint = new HashSet<>();
 
             columnsToRepaint.add(natTable.getColumnPositionByX(this.currentX - overlayExtent));
             columnsToRepaint.add(natTable.getColumnPositionByX(this.currentX + overlayExtent));

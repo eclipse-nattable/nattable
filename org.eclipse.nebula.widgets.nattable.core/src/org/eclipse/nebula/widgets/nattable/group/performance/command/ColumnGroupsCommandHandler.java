@@ -113,7 +113,7 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
                 }
             }
 
-            HashSet<Group> existingGroups = new HashSet<Group>();
+            HashSet<Group> existingGroups = new HashSet<>();
             for (MutableIntIterator it = positionsToGroup.intIterator(); it.hasNext();) {
                 int column = it.next();
                 Group group = model.getGroupByPosition(column);

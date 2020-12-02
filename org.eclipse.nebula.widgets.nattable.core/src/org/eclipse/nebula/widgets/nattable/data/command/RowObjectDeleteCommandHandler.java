@@ -59,7 +59,7 @@ public class RowObjectDeleteCommandHandler<T> implements ILayerCommandHandler<Ro
         // changes via DataChangeLayer in the correct order again
         int[] indexes = new int[command.getObjectsToDelete().size()];
         int idx = 0;
-        Map<Integer, T> deleted = new TreeMap<Integer, T>();
+        Map<Integer, T> deleted = new TreeMap<>();
         for (Object rowObject : command.getObjectsToDelete()) {
             int index = this.bodyData.indexOf(rowObject);
             deleted.put(index, (T) rowObject);

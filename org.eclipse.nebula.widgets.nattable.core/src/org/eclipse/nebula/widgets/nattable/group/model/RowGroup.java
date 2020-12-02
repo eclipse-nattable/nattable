@@ -24,6 +24,7 @@ import java.util.Map;
  * @author Stefan Bolton
  *
  * @param <T>
+ *            the type of the row objects.
  */
 public class RowGroup<T> implements IRowGroup<T> {
 
@@ -37,7 +38,7 @@ public class RowGroup<T> implements IRowGroup<T> {
     private final RowGroupModel<T> rowGroupModel;
 
     // The rows and static rows in this group.
-    private List<T> rowMembers;;
+    private List<T> rowMembers;
     private List<T> staticRowMembers;
 
     // A list of child groups.
@@ -72,7 +73,7 @@ public class RowGroup<T> implements IRowGroup<T> {
                 .synchronizedList(new ArrayList<T>());
         this.childGroups = Collections
                 .synchronizedList(new ArrayList<IRowGroup<T>>());
-        this.data = new HashMap<String, Object>();
+        this.data = new HashMap<>();
     }
 
     @Override
@@ -171,8 +172,8 @@ public class RowGroup<T> implements IRowGroup<T> {
                 // Bump row positions to compensate.
                 this.rowGroupModel.removeMemberRow(row);
 
-                if ((getOwnMemberRows(false).size() == 0)
-                        && (getRowGroups().size() == 0)) {
+                if ((getOwnMemberRows(false).isEmpty())
+                        && (getRowGroups().isEmpty())) {
                     // If there are no more member rows, then clean-up any
                     // static rows and remove the group from the model.
                     for (T staticRow : this.getOwnStaticMemberRows()) {
@@ -195,7 +196,7 @@ public class RowGroup<T> implements IRowGroup<T> {
 
                         if (removed) {
                             // Remove empty child groups from the model.
-                            if (rowGroup.getOwnMemberRows(false).size() == 0) {
+                            if (rowGroup.getOwnMemberRows(false).isEmpty()) {
                                 this.childGroups.remove(rowGroup);
                             }
                             break;
@@ -293,7 +294,7 @@ public class RowGroup<T> implements IRowGroup<T> {
      */
     @Override
     public List<T> getOwnMemberRows(final boolean includeStaticRows) {
-        List<T> rows = new ArrayList<T>(this.rowMembers);
+        List<T> rows = new ArrayList<>(this.rowMembers);
 
         if (includeStaticRows) {
             rows.addAll(this.staticRowMembers);
@@ -336,7 +337,7 @@ public class RowGroup<T> implements IRowGroup<T> {
 
     @Override
     public List<T> getMemberRows(final boolean includeStaticRows) {
-        final List<T> memberRows = new ArrayList<T>();
+        final List<T> memberRows = new ArrayList<>();
 
         // Return all the member rows from nested groups.
         synchronized (this.childGroups) {
@@ -353,7 +354,7 @@ public class RowGroup<T> implements IRowGroup<T> {
 
     @Override
     public List<T> getStaticMemberRows() {
-        final List<T> staticMemberRows = new ArrayList<T>();
+        final List<T> staticMemberRows = new ArrayList<>();
 
         // Return all the member rows from nested groups.
         synchronized (this.childGroups) {
@@ -419,7 +420,7 @@ public class RowGroup<T> implements IRowGroup<T> {
             sb.append(String.format("*%s", row.toString())); //$NON-NLS-1$
         }
 
-        if (this.childGroups.size() > 0) {
+        if (!this.childGroups.isEmpty()) {
             sb.append(String.format("Start Child Groups for [%s] :- \n", getGroupName())); //$NON-NLS-1$
             for (final IRowGroup<T> rowGroup : this.childGroups) {
                 sb.append(rowGroup.toString());

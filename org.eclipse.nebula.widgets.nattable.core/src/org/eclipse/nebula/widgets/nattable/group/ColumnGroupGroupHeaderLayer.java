@@ -47,6 +47,18 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
     private final ColumnGroupModel model;
     private final ColumnGroupHeaderLayer columnGroupHeaderLayer;
 
+    /**
+     *
+     * @param columnGroupHeaderLayer
+     *            The {@link ColumnGroupHeaderLayer} to stack on.
+     * @param selectionLayer
+     *            unused
+     * @param columnGroupModel
+     *            The {@link ColumnGroupModel} used to build the column groups.
+     *
+     * @deprecated Use constructor without SelectionLayer parameter
+     */
+    @Deprecated
     public ColumnGroupGroupHeaderLayer(
             ColumnGroupHeaderLayer columnGroupHeaderLayer,
             SelectionLayer selectionLayer,
@@ -54,9 +66,66 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
         this(columnGroupHeaderLayer, selectionLayer, columnGroupModel, true);
     }
 
+    /**
+     *
+     * @param columnGroupHeaderLayer
+     *            The {@link ColumnGroupHeaderLayer} to stack on.
+     * @param selectionLayer
+     *            unused
+     * @param columnGroupModel
+     *            The {@link ColumnGroupModel} used to build the column groups.
+     * @param useDefaultConfiguration
+     *            <code>true</code> if the default configuration should be
+     *            applied, <code>false</code> if not.
+     *
+     * @deprecated Use constructor without SelectionLayer parameter
+     */
+    @Deprecated
     public ColumnGroupGroupHeaderLayer(
             ColumnGroupHeaderLayer columnGroupHeaderLayer,
             SelectionLayer selectionLayer,
+            ColumnGroupModel columnGroupModel,
+            boolean useDefaultConfiguration) {
+        super(columnGroupHeaderLayer);
+        this.columnGroupHeaderLayer = columnGroupHeaderLayer;
+        this.model = columnGroupModel;
+
+        registerCommandHandler(new ConfigureScalingCommandHandler(null, this.rowHeightConfig));
+
+        if (useDefaultConfiguration) {
+            addConfiguration(new DefaultColumnGroupHeaderLayerConfiguration(columnGroupModel));
+        }
+    }
+
+    /**
+     *
+     * @param columnGroupHeaderLayer
+     *            The {@link ColumnGroupHeaderLayer} to stack on.
+     * @param columnGroupModel
+     *            The {@link ColumnGroupModel} used to build the column groups.
+     *
+     * @since 2.0
+     */
+    public ColumnGroupGroupHeaderLayer(
+            ColumnGroupHeaderLayer columnGroupHeaderLayer,
+            ColumnGroupModel columnGroupModel) {
+        this(columnGroupHeaderLayer, columnGroupModel, true);
+    }
+
+    /**
+     *
+     * @param columnGroupHeaderLayer
+     *            The {@link ColumnGroupHeaderLayer} to stack on.
+     * @param columnGroupModel
+     *            The {@link ColumnGroupModel} used to build the column groups.
+     * @param useDefaultConfiguration
+     *            <code>true</code> if the default configuration should be
+     *            applied, <code>false</code> if not.
+     *
+     * @since 2.0
+     */
+    public ColumnGroupGroupHeaderLayer(
+            ColumnGroupHeaderLayer columnGroupHeaderLayer,
             ColumnGroupModel columnGroupModel,
             boolean useDefaultConfiguration) {
         super(columnGroupHeaderLayer);
@@ -244,7 +313,7 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
      *
      * @param columnPosition
      *            position of any column belonging to the group
-     *
+     * @return the column span
      * @since 1.6
      */
     public int getColumnSpan(int columnPosition) {
@@ -399,9 +468,6 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
         return this.model.isPartOfAGroup(bodyColumnIndex);
     }
 
-    /**
-     * @see ColumnGroup#setUnbreakable(boolean)
-     */
     public void setGroupUnbreakable(int columnIndex) {
         ColumnGroup columnGroup = this.model.getColumnGroupByIndex(columnIndex);
         columnGroup.setUnbreakable(true);
@@ -424,8 +490,7 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
         labels.add(DefaultColumnGroupHeaderLayerConfiguration.GROUP_EXPANDED_CONFIG_TYPE);
 
         // add the labels configured via IConfigLabelAccumulator
-        if (getConfigLabelAccumulator() != null
-                && getConfigLabelAccumulator() instanceof IConfigLabelProvider) {
+        if (getConfigLabelAccumulator() instanceof IConfigLabelProvider) {
             labels.addAll(((IConfigLabelProvider) getConfigLabelAccumulator()).getProvidedLabels());
         }
 

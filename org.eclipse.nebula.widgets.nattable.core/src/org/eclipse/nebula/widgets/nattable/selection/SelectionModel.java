@@ -64,7 +64,7 @@ public class SelectionModel implements ISelectionModel {
         this.selectionLayer = selectionLayer;
         this.multipleSelectionAllowed = multipleSelectionAllowed;
 
-        this.selections = new LinkedList<Rectangle>();
+        this.selections = new LinkedList<>();
         this.selectionsLock = new ReentrantReadWriteLock();
     }
 
@@ -105,7 +105,7 @@ public class SelectionModel implements ISelectionModel {
                         if (intersection.equals(r)) {
                             // r is a subset of intersection
                             if (itemsToRemove == null) {
-                                itemsToRemove = new ArrayList<Rectangle>();
+                                itemsToRemove = new ArrayList<>();
                             }
 
                             itemsToRemove.add(r);
@@ -152,8 +152,8 @@ public class SelectionModel implements ISelectionModel {
     @Override
     public void clearSelection(Rectangle removedSelection) {
 
-        List<Rectangle> removedItems = new LinkedList<Rectangle>();
-        List<Rectangle> addedItems = new LinkedList<Rectangle>();
+        List<Rectangle> removedItems = new LinkedList<>();
+        List<Rectangle> addedItems = new LinkedList<>();
 
         this.selectionsLock.readLock().lock();
 
@@ -187,7 +187,7 @@ public class SelectionModel implements ISelectionModel {
             this.selectionsLock.readLock().unlock();
         }
 
-        if (removedItems.size() > 0) {
+        if (!removedItems.isEmpty()) {
             this.selectionsLock.writeLock().lock();
             try {
                 this.selections.removeAll(removedItems);
@@ -198,7 +198,7 @@ public class SelectionModel implements ISelectionModel {
             removedItems.clear();
         }
 
-        if (addedItems.size() > 0) {
+        if (!addedItems.isEmpty()) {
             this.selectionsLock.writeLock().lock();
             try {
                 this.selections.addAll(addedItems);
@@ -257,7 +257,7 @@ public class SelectionModel implements ISelectionModel {
 
     @Override
     public int[] getSelectedColumnPositions() {
-        TreeSet<Integer> selectedColumns = new TreeSet<Integer>();
+        TreeSet<Integer> selectedColumns = new TreeSet<>();
 
         this.selectionsLock.readLock().lock();
 
@@ -286,7 +286,7 @@ public class SelectionModel implements ISelectionModel {
      * @since 1.5
      */
     protected Set<Range> internalGetSelectedColumnPositions() {
-        Set<Range> selectedColumnsRange = new HashSet<Range>();
+        Set<Range> selectedColumnsRange = new HashSet<>();
 
         this.selectionsLock.readLock().lock();
 
@@ -302,9 +302,9 @@ public class SelectionModel implements ISelectionModel {
             this.selectionsLock.readLock().unlock();
         }
 
-        ArrayList<Range> ranges = new ArrayList<Range>(selectedColumnsRange);
+        ArrayList<Range> ranges = new ArrayList<>(selectedColumnsRange);
         Range.sortByStart(ranges);
-        List<Range> uniqueRanges = new ArrayList<Range>(ranges.size());
+        List<Range> uniqueRanges = new ArrayList<>(ranges.size());
 
         // Adjust for overlaps - between consecutive selections
         for (int i = 0; i < ranges.size(); i++) {
@@ -323,7 +323,7 @@ public class SelectionModel implements ISelectionModel {
                 uniqueRanges.add(ranges.get(i));
             }
         }
-        return new HashSet<Range>(uniqueRanges);
+        return new HashSet<>(uniqueRanges);
     }
 
     @Override
@@ -371,7 +371,7 @@ public class SelectionModel implements ISelectionModel {
         try {
             // Aggregate all rectangles in the column which are in the selection
             // model
-            List<Rectangle> selectedRectanglesInColumn = new ArrayList<Rectangle>(this.selections.size());
+            List<Rectangle> selectedRectanglesInColumn = new ArrayList<>(this.selections.size());
 
             // If X is same add up the height of the selected area
             for (Rectangle r : this.selections) {
@@ -432,7 +432,7 @@ public class SelectionModel implements ISelectionModel {
 
     @Override
     public Set<Range> getSelectedRowPositions() {
-        Set<Range> selectedRowsRange = new HashSet<Range>();
+        Set<Range> selectedRowsRange = new HashSet<>();
 
         this.selectionsLock.readLock().lock();
 
@@ -448,9 +448,9 @@ public class SelectionModel implements ISelectionModel {
             this.selectionsLock.readLock().unlock();
         }
 
-        ArrayList<Range> ranges = new ArrayList<Range>(selectedRowsRange);
+        ArrayList<Range> ranges = new ArrayList<>(selectedRowsRange);
         Range.sortByStart(ranges);
-        List<Range> uniqueRanges = new ArrayList<Range>(ranges.size());
+        List<Range> uniqueRanges = new ArrayList<>(ranges.size());
 
         // Adjust for overlaps - between consecutive selections
         for (int i = 0; i < ranges.size(); i++) {
@@ -469,7 +469,7 @@ public class SelectionModel implements ISelectionModel {
                 uniqueRanges.add(ranges.get(i));
             }
         }
-        return new HashSet<Range>(uniqueRanges);
+        return new HashSet<>(uniqueRanges);
     }
 
     @Override
@@ -513,7 +513,7 @@ public class SelectionModel implements ISelectionModel {
         try {
             // Aggregate all rectangles in the row which are in the selection
             // model
-            List<Rectangle> selectedRectanglesInRow = new ArrayList<Rectangle>(this.selections.size());
+            List<Rectangle> selectedRectanglesInRow = new ArrayList<>(this.selections.size());
 
             // If X is same add up the width of the selected area
             for (Rectangle r : this.selections) {
@@ -575,12 +575,11 @@ public class SelectionModel implements ISelectionModel {
 
     private Rectangle getLeftSelection(Rectangle intersection, Rectangle selection) {
         if (intersection.x > selection.x) {
-            Rectangle leftSelection = new Rectangle(
+            return new Rectangle(
                     selection.x,
                     selection.y,
                     intersection.x - selection.x,
                     selection.height);
-            return leftSelection;
         }
 
         return null;
@@ -590,13 +589,11 @@ public class SelectionModel implements ISelectionModel {
         int newX = intersection.x + intersection.width;
 
         if (newX < selection.x + selection.width) {
-            Rectangle rightSelection = new Rectangle(
+            return new Rectangle(
                     newX,
                     selection.y,
                     selection.x + selection.width - newX,
                     selection.height);
-
-            return rightSelection;
         }
 
         return null;
@@ -604,12 +601,11 @@ public class SelectionModel implements ISelectionModel {
 
     private Rectangle getTopSelection(Rectangle intersection, Rectangle selection) {
         if (intersection.y > selection.y) {
-            Rectangle topSelection = new Rectangle(
+            return new Rectangle(
                     selection.x,
                     selection.y,
                     selection.width,
                     intersection.y - selection.y);
-            return topSelection;
         }
         return null;
     }
@@ -618,12 +614,11 @@ public class SelectionModel implements ISelectionModel {
         int newY = intersection.y + intersection.height;
 
         if (newY < selection.y + selection.height) {
-            Rectangle bottomSelection = new Rectangle(
+            return new Rectangle(
                     selection.x,
                     newY,
                     selection.width,
                     selection.y + selection.height - newY);
-            return bottomSelection;
         }
 
         return null;
@@ -725,11 +720,7 @@ public class SelectionModel implements ISelectionModel {
         }
 
         // if the selection layer is empty, we should clear the selection also
-        if (this.selectionLayer.getRowCount() == 0 && !this.isEmpty()) {
-            return true;
-        }
-
-        return false;
+        return (this.selectionLayer.getRowCount() == 0 && !this.isEmpty());
     }
 
     private boolean selectedColumnModified(Range changedRange) {

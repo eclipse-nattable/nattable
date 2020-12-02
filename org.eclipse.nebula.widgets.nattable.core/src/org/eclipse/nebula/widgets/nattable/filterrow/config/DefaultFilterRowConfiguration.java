@@ -33,6 +33,8 @@ import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
 import org.eclipse.swt.SWT;
 
+//fields are public by design to make it easy for adapters to customize configuration
+@SuppressWarnings("java:S1104")
 public class DefaultFilterRowConfiguration extends AbstractRegistryConfiguration {
 
     public FilterRowPainter cellPainter = new FilterRowPainter();

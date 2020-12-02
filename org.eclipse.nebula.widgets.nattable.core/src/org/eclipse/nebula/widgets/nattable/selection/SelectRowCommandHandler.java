@@ -116,7 +116,7 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
             boolean withControlMask,
             int rowPositionToMoveIntoViewport) {
 
-        HashSet<Range> changedRowRanges = new HashSet<Range>();
+        HashSet<Range> changedRowRanges = new HashSet<>();
 
         for (int rowPosition : rowPositions) {
             changedRowRanges.addAll(
@@ -152,7 +152,7 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
             int columnPosition, int rowPosition,
             boolean withShiftMask, boolean withControlMask) {
 
-        HashSet<Range> changedRowRanges = new HashSet<Range>();
+        HashSet<Range> changedRowRanges = new HashSet<>();
 
         if (noShiftOrControl(withShiftMask, withControlMask)) {
             changedRowRanges.addAll(this.selectionLayer.getSelectedRowPositions());

@@ -72,7 +72,7 @@ public class FilterNatCombo extends NatCombo {
      * once it is created. Kept locally because the table creation is deferred
      * to the first access.
      */
-    private List<ICheckStateListener> checkStateListener = new ArrayList<ICheckStateListener>();
+    private List<ICheckStateListener> checkStateListener = new ArrayList<>();
 
     /**
      * Creates a new FilterNatCombo using the given IStyle for rendering,
@@ -335,7 +335,7 @@ public class FilterNatCombo extends NatCombo {
         });
 
         final String selectAllLabel = Messages.getString("FilterNatCombo.selectAll"); //$NON-NLS-1$
-        List<String> input = new ArrayList<String>();
+        List<String> input = new ArrayList<>();
         input.add(selectAllLabel);
         this.selectAllItemViewer.setInput(input);
 

@@ -24,12 +24,16 @@ import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
  *
  * @since 1.4
  */
-public interface SelectionConfigAttributes {
+public final class SelectionConfigAttributes {
+
+    private SelectionConfigAttributes() {
+        // private default constructor for constants class
+    }
 
     /**
      * ConfigAttribute to configure the line style used to render the selection
      * border around selected cells. This is the line that surrounds an active
      * selection. By default this is the black dotted one pixel line.
      */
-    ConfigAttribute<BorderStyle> SELECTION_GRID_LINE_STYLE = new ConfigAttribute<BorderStyle>();
+    public static final ConfigAttribute<BorderStyle> SELECTION_GRID_LINE_STYLE = new ConfigAttribute<>();
 }

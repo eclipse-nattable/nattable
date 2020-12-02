@@ -75,7 +75,7 @@ public class ColumnDeleteEvent extends ColumnStructuralChangeEvent {
     @Override
     public Collection<StructuralDiff> getColumnDiffs() {
         Collection<StructuralDiff> columnDiffs =
-                new ArrayList<StructuralDiff>(getColumnPositionRanges().size());
+                new ArrayList<>(getColumnPositionRanges().size());
 
         for (Range range : getColumnPositionRanges()) {
             columnDiffs.add(new StructuralDiff(

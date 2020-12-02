@@ -37,7 +37,7 @@ import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.extension.e4.painterfactory.CellPainterFactory;
 import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillHandleConfigAttributes;
-import org.eclipse.nebula.widgets.nattable.freeze.IFreezeConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.freeze.FreezeConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
@@ -100,7 +100,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
 
         if (natTable != null) {
             context = engine.getCSSElementContext(control);
-            Boolean resolvePainter = NatTableCSSHelper.resolvePainter(context, natTableContext, displayMode);
+            boolean resolvePainter = NatTableCSSHelper.resolvePainter(context, natTableContext, displayMode);
 
             // check property
             if (NatTableCSSConstants.PAINTER_RESOLUTION.equalsIgnoreCase(property)) {
@@ -389,14 +389,14 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
             } else if (NatTableCSSConstants.FREEZE_SEPARATOR_COLOR.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 natTable.getConfigRegistry().registerConfigAttribute(
-                        IFreezeConfigAttributes.SEPARATOR_COLOR,
+                        FreezeConfigAttributes.SEPARATOR_COLOR,
                         (Color) engine.convert(value, Color.class, natTable.getDisplay()),
                         displayMode,
                         label);
             } else if (NatTableCSSConstants.FREEZE_SEPARATOR_WIDTH.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 natTable.getConfigRegistry().registerConfigAttribute(
-                        IFreezeConfigAttributes.SEPARATOR_WIDTH,
+                        FreezeConfigAttributes.SEPARATOR_WIDTH,
                         (int) ((CSSPrimitiveValue) value).getFloatValue(CSSPrimitiveValue.CSS_PT),
                         displayMode,
                         label);
@@ -1107,14 +1107,14 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                 ICSSValueConverter cssValueConverter = engine.getCSSValueConverter(String.class);
                 return cssValueConverter.convert(
                         natTable.getConfigRegistry().getConfigAttribute(
-                                IFreezeConfigAttributes.SEPARATOR_COLOR,
+                                FreezeConfigAttributes.SEPARATOR_COLOR,
                                 displayMode,
                                 label),
                         engine,
                         null);
             } else if (NatTableCSSConstants.FREEZE_SEPARATOR_WIDTH.equalsIgnoreCase(property)) {
                 Integer width = natTable.getConfigRegistry().getConfigAttribute(
-                        IFreezeConfigAttributes.SEPARATOR_WIDTH,
+                        FreezeConfigAttributes.SEPARATOR_WIDTH,
                         displayMode,
                         label);
                 if (width == null) {
@@ -1645,7 +1645,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
             }
 
             Object pv = NatTableCSSHelper.getContextValue(context, displayMode, NatTableCSSConstants.PAINTER);
-            if (pv != null && pv instanceof List<?>) {
+            if (pv instanceof List<?>) {
                 @SuppressWarnings("unchecked")
                 List<String> painterValues = (List<String>) pv;
 

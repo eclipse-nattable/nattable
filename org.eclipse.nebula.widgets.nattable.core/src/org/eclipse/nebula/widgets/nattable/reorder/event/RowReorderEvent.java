@@ -238,7 +238,7 @@ public class RowReorderEvent extends RowStructuralChangeEvent {
 
     @Override
     public Collection<StructuralDiff> getRowDiffs() {
-        Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
+        Collection<StructuralDiff> rowDiffs = new ArrayList<>();
 
         Collection<Range> beforeFromRowPositionRanges = getBeforeFromRowPositionRanges();
 

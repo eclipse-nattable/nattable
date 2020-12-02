@@ -24,7 +24,7 @@ import java.util.ResourceBundle.Control;
 public class Messages {
 
     private static final String BUNDLE_NAME = "org.eclipse.nebula.widgets.nattable.messages"; //$NON-NLS-1$
-    private static ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
+    private static ResourceBundle resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME);
 
     private Messages() {
     }
@@ -40,7 +40,7 @@ public class Messages {
      */
     public static String getString(String key) {
         try {
-            return RESOURCE_BUNDLE.getString(key);
+            return resourceBundle.getString(key);
         } catch (MissingResourceException e) {
             return '!' + key + '!';
         }
@@ -59,7 +59,7 @@ public class Messages {
      *         {@link Locale} with replaced placeholders.
      */
     public static String getString(String key, Object... args) {
-        return MessageFormat.format(RESOURCE_BUNDLE.getString(key), args);
+        return MessageFormat.format(resourceBundle.getString(key), args);
     }
 
     /**
@@ -95,7 +95,7 @@ public class Messages {
      * @since 1.4
      */
     public static void changeLocale(Locale locale) {
-        RESOURCE_BUNDLE = ResourceBundle.getBundle(
+        resourceBundle = ResourceBundle.getBundle(
                 BUNDLE_NAME,
                 locale,
                 ResourceBundle.Control.getNoFallbackControl(Control.FORMAT_DEFAULT));

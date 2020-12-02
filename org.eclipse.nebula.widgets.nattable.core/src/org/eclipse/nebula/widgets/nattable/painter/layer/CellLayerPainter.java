@@ -71,7 +71,7 @@ public class CellLayerPainter implements ILayerPainter {
 
         calculateDimensionInfo(positionRectangle);
 
-        Collection<ILayerCell> spannedCells = new HashSet<ILayerCell>();
+        Collection<ILayerCell> spannedCells = new HashSet<>();
 
         for (int columnPosition = positionRectangle.x; columnPosition < positionRectangle.x
                 + positionRectangle.width; columnPosition++) {
@@ -108,6 +108,8 @@ public class CellLayerPainter implements ILayerPainter {
      *            behaviour is used. Only for special cases like split viewports
      *            with one header, per position a different behaviour may be
      *            needed.
+     * @return <code>true</code> if the left cell will be clipped,
+     *         <code>false</code> if the right cell will be clipped.
      */
     protected boolean isClipLeft(int position) {
         return this.clipLeft;
@@ -124,6 +126,8 @@ public class CellLayerPainter implements ILayerPainter {
      *            requested. By default for all rows the same clipping behaviour
      *            is used. Only for special cases like split viewports with one
      *            header, per position a different behaviour may be needed.
+     * @return <code>true</code> if the top cell will be clipped,
+     *         <code>false</code> if the bottom cell will be clipped.
      */
     protected boolean isClipTop(int position) {
         return this.clipTop;
@@ -131,7 +135,7 @@ public class CellLayerPainter implements ILayerPainter {
 
     private void calculateDimensionInfo(Rectangle positionRectangle) {
         {
-            this.horizontalPositionToPixelMap = new HashMap<Integer, Integer>();
+            this.horizontalPositionToPixelMap = new HashMap<>();
             final int startPosition = positionRectangle.x;
             final int endPosition = startPosition + positionRectangle.width;
             int previousEndX = (startPosition > 0)
@@ -151,7 +155,7 @@ public class CellLayerPainter implements ILayerPainter {
             }
         }
         {
-            this.verticalPositionToPixelMap = new HashMap<Integer, Integer>();
+            this.verticalPositionToPixelMap = new HashMap<>();
             final int startPosition = positionRectangle.y;
             final int endPosition = startPosition + positionRectangle.height;
             int previousEndY = (startPosition > 0)

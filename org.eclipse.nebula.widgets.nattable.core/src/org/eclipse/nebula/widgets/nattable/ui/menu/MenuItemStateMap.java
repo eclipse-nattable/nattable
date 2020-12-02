@@ -43,9 +43,9 @@ public class MenuItemStateMap {
      */
     protected boolean isActive(String id, NatEventData natEventData) {
         if (this.states != null) {
-            List<IMenuItemState> states = this.states.get(id);
-            if (states != null) {
-                for (IMenuItemState state : states) {
+            List<IMenuItemState> menuItemStates = this.states.get(id);
+            if (menuItemStates != null) {
+                for (IMenuItemState state : menuItemStates) {
                     if (!state.isActive(natEventData)) {
                         return false;
                     }
@@ -66,16 +66,12 @@ public class MenuItemStateMap {
      */
     public void addMenuItemState(String id, IMenuItemState state) {
         if (this.states == null) {
-            this.states = new HashMap<String, List<IMenuItemState>>();
+            this.states = new HashMap<>();
         }
 
-        List<IMenuItemState> states = this.states.get(id);
-        if (states == null) {
-            states = new ArrayList<IMenuItemState>();
-            this.states.put(id, states);
-        }
+        List<IMenuItemState> menuItemStates = this.states.computeIfAbsent(id, i -> new ArrayList<>());
 
-        states.add(state);
+        menuItemStates.add(state);
     }
 
 }

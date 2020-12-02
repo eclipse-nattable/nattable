@@ -54,7 +54,6 @@ import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.util.CalculatedValueCache;
 import org.eclipse.nebula.widgets.nattable.util.ICalculatedValueCache;
 import org.eclipse.nebula.widgets.nattable.util.ICalculatedValueCacheKey;
-import org.eclipse.nebula.widgets.nattable.util.ICalculator;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
 
@@ -153,13 +152,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      * {@link Matcher} to filter for {@link GroupByObject}s in the
      * {@link TreeList}.
      */
-    private Matcher<Object> groupByMatcher = new Matcher<Object>() {
-
-        @Override
-        public boolean matches(Object item) {
-            return item instanceof GroupByObject;
-        }
-    };
+    private Matcher<Object> groupByMatcher = item -> item instanceof GroupByObject;
 
     /**
      * Create a new {@link GroupByDataLayer} with the given configuration that:
@@ -470,7 +463,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         this.groupByColumnAccessor = new GroupByColumnAccessor(columnAccessor);
 
         this.treeFormat = createGroupByTreeFormat(groupByModel, (IColumnAccessor<T>) this.groupByColumnAccessor);
-        this.treeFormat.setComparator(new GroupByComparator<T>(groupByModel, columnAccessor, this));
+        this.treeFormat.setComparator(new GroupByComparator<>(groupByModel, columnAccessor, this));
 
         if (expansionModel == null) {
             this.groupByExpansionModel = new GroupByExpansionModel();
@@ -479,8 +472,8 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
             this.treeList = new TreeList(eventList, this.treeFormat, expansionModel);
         }
 
-        this.treeData = new GlazedListTreeData<Object>(this.treeList);
-        this.treeRowModel = new GlazedListTreeRowModel<Object>(this.treeData);
+        this.treeData = new GlazedListTreeData<>(this.treeList);
+        this.treeRowModel = new GlazedListTreeRowModel<>(this.treeData);
 
         this.configRegistry = configRegistry;
 
@@ -506,7 +499,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      *         structure.
      */
     protected GroupByTreeFormat<T> createGroupByTreeFormat(GroupByModel groupByModel, IColumnAccessor<T> groupByColumnAccessor) {
-        return new GroupByTreeFormat<T>(groupByModel, groupByColumnAccessor);
+        return new GroupByTreeFormat<>(groupByModel, groupByColumnAccessor);
     }
 
     /**
@@ -587,36 +580,30 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         // Perform the update showing the busy indicator, as creating the
         // groupby structure costs time. This is related to dynamically building
         // a tree structure with additional objects
-        BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
+        BusyIndicator.showWhile(Display.getDefault(), () -> {
+            GroupByDataLayer.this.eventList.getReadWriteLock().writeLock().lock();
+            try {
+                /*
+                 * The workaround for the update issue suggested on the mailing
+                 * list iterates over the whole list. This causes a lot of list
+                 * change events, which also cost processing time. Instead we
+                 * are performing a clear()-addAll() which is slightly faster.
+                 */
+                EventList<T> temp = GlazedLists.eventList(GroupByDataLayer.this.eventList);
+                GroupByDataLayer.this.eventList.clear();
+                GroupByDataLayer.this.eventList.addAll(temp);
 
-            @Override
-            public void run() {
-                GroupByDataLayer.this.eventList.getReadWriteLock().writeLock().lock();
-                try {
-                    /*
-                     * The workaround for the update issue suggested on the
-                     * mailing list iterates over the whole list. This causes a
-                     * lot of list change events, which also cost processing
-                     * time. Instead we are performing a clear()-addAll() which
-                     * is slightly faster.
-                     */
-                    EventList<T> temp = GlazedLists.eventList(GroupByDataLayer.this.eventList);
-                    GroupByDataLayer.this.eventList.clear();
-                    GroupByDataLayer.this.eventList.addAll(temp);
-
-                    /*
-                     * Collect the created GroupByObjects and cleanup local
-                     * caches
-                     */
-                    if (GroupByDataLayer.this.groupByExpansionModel != null) {
-                        FilterList<Object> groupByObjects = new FilterList<Object>(
-                                GroupByDataLayer.this.treeList,
-                                GroupByDataLayer.this.groupByMatcher);
-                        GroupByDataLayer.this.groupByExpansionModel.cleanupCollapsed(groupByObjects);
-                    }
-                } finally {
-                    GroupByDataLayer.this.eventList.getReadWriteLock().writeLock().unlock();
+                /*
+                 * Collect the created GroupByObjects and cleanup local caches
+                 */
+                if (GroupByDataLayer.this.groupByExpansionModel != null) {
+                    FilterList<Object> groupByObjects = new FilterList<>(
+                            GroupByDataLayer.this.treeList,
+                            GroupByDataLayer.this.groupByMatcher);
+                    GroupByDataLayer.this.groupByExpansionModel.cleanupCollapsed(groupByObjects);
                 }
+            } finally {
+                GroupByDataLayer.this.eventList.getReadWriteLock().writeLock().unlock();
             }
         });
     }
@@ -746,12 +733,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
                         rowPosition,
                         new GroupByValueCacheKey(columnPosition, rowPosition, groupByObject),
                         calculateInBackground,
-                        new ICalculator() {
-                            @Override
-                            public Object executeCalculation() {
-                                return summaryProvider.summarize(columnPosition, children);
-                            }
-                        });
+                        () -> summaryProvider.summarize(columnPosition, children));
             }
         }
         return super.getDataValueByPosition(columnPosition, rowPosition);
@@ -830,12 +812,12 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
                             GroupByObject groupByObject = (GroupByObject) this.treeData.getDataAtIndex(i);
                             final List<T> children = getItemsInGroup(groupByObject);
                             final int col = j;
-                            this.valueCache.getCalculatedValue(j, i, new GroupByValueCacheKey(j, i, groupByObject), false, new ICalculator() {
-                                @Override
-                                public Object executeCalculation() {
-                                    return summaryProvider.summarize(col, children);
-                                }
-                            });
+                            this.valueCache.getCalculatedValue(
+                                    j,
+                                    i,
+                                    new GroupByValueCacheKey(j, i, groupByObject),
+                                    false,
+                                    () -> summaryProvider.summarize(col, children));
                         }
                     }
                 }
@@ -897,7 +879,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
     private class GroupByExpansionModel implements TreeList.ExpansionModel<Object> {
 
         // remember collapsed states because of update workaround
-        Set<Object> collapsed = new HashSet<Object>();
+        Set<Object> collapsed = new HashSet<>();
 
         /**
          * Determine the specified element's initial expand/collapse state.
@@ -949,18 +931,16 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      * @since 1.5
      */
     public List<T> getItemsInGroup(GroupByObject group) {
-        List<T> elementsInGroup = this.itemsByGroup.get(group);
-        if (elementsInGroup == null) {
+        return this.itemsByGroup.computeIfAbsent(group, g -> {
+
             this.eventList.getReadWriteLock().readLock().lock();
             try {
-                FilterList<T> filterList = new FilterList<T>(this.eventList, getGroupDescriptorMatcher(group, this.columnAccessor));
-                elementsInGroup = new ArrayList<T>(filterList);
-                this.itemsByGroup.put(group, elementsInGroup);
+                FilterList<T> filterList = new FilterList<>(this.eventList, getGroupDescriptorMatcher(g, this.columnAccessor));
+                return new ArrayList<>(filterList);
             } finally {
                 this.eventList.getReadWriteLock().readLock().unlock();
             }
-        }
-        return elementsInGroup;
+        });
     }
 
     /**
@@ -977,7 +957,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      * @see GroupDescriptorMatcher
      */
     protected Matcher<T> getGroupDescriptorMatcher(GroupByObject group, IColumnAccessor<T> columnAccessor) {
-        return new GroupDescriptorMatcher<T>(group, columnAccessor);
+        return new GroupDescriptorMatcher<>(group, columnAccessor);
     }
 
     /**

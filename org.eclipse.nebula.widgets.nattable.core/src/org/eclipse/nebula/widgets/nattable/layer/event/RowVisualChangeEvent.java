@@ -134,7 +134,7 @@ public abstract class RowVisualChangeEvent implements IVisualChangeEvent {
      * @return The row position ranges for the rows that have changed.
      */
     public Collection<Range> getRowPositionRanges() {
-        return this.rowPositionRanges != null ? this.rowPositionRanges : new ArrayList<Range>(0);
+        return this.rowPositionRanges != null ? this.rowPositionRanges : new ArrayList<>(0);
     }
 
     /**
@@ -174,7 +174,7 @@ public abstract class RowVisualChangeEvent implements IVisualChangeEvent {
 
         this.layer = localLayer;
 
-        return this.rowPositionRanges != null && this.rowPositionRanges.size() > 0;
+        return this.rowPositionRanges != null && !this.rowPositionRanges.isEmpty();
     }
 
     @Override

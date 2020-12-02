@@ -35,6 +35,8 @@ import org.eclipse.swt.graphics.FontData;
  * Sets up column header styling. Added by
  * {@link DefaultColumnHeaderLayerConfiguration}
  */
+// fields are public by design to make it easy for adapters to customize styling
+@SuppressWarnings("java:S1104")
 public class DefaultColumnHeaderStyleConfiguration extends AbstractRegistryConfiguration {
 
     public Font font = GUIHelper.getFont(new FontData("Verdana", 10, SWT.NORMAL)); //$NON-NLS-1$

@@ -59,7 +59,7 @@ public class RowIdHideShowLayer<T> extends AbstractRowHideShowLayer implements I
     protected final IRowDataProvider<T> rowDataProvider;
     protected final IRowIdAccessor<T> rowIdAccessor;
 
-    protected Map<Serializable, T> hiddenRows = new TreeMap<Serializable, T>();
+    protected Map<Serializable, T> hiddenRows = new TreeMap<>();
 
     protected IDisplayConverter idConverter;
 
@@ -126,7 +126,7 @@ public class RowIdHideShowLayer<T> extends AbstractRowHideShowLayer implements I
         String property = properties.getProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_IDS);
         if (property != null) {
             StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
-            Set<Serializable> ids = new HashSet<Serializable>();
+            Set<Serializable> ids = new HashSet<>();
             while (tok.hasMoreTokens()) {
                 String id = tok.nextToken();
                 if (this.idConverter != null) {
@@ -215,7 +215,7 @@ public class RowIdHideShowLayer<T> extends AbstractRowHideShowLayer implements I
 
     @Override
     public void hideRowPositions(int... rowPositions) {
-        Map<Serializable, T> toHide = new HashMap<Serializable, T>();
+        Map<Serializable, T> toHide = new HashMap<>();
         for (int rowPosition : rowPositions) {
             T rowObject = getRowObjectByPosition(rowPosition);
             toHide.put(this.rowIdAccessor.getRowId(rowObject), rowObject);
@@ -321,8 +321,7 @@ public class RowIdHideShowLayer<T> extends AbstractRowHideShowLayer implements I
     private T getRowObjectByIndex(int rowIndex) {
         if (rowIndex >= 0) {
             try {
-                T rowObject = this.rowDataProvider.getRowObject(rowIndex);
-                return rowObject;
+                return this.rowDataProvider.getRowObject(rowIndex);
             } catch (Exception e) {
                 // row index is invalid for the data provider
             }

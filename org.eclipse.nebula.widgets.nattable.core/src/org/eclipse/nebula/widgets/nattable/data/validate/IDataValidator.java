@@ -34,7 +34,8 @@ public interface IDataValidator {
      *
      * @see IDataProvider#getDataValue(int, int)
      *
-     * @return true is newValue is valid. False otherwise.
+     * @return <code>true</code> if newValue is valid, <code>false</code>
+     *         otherwise.
      */
     public boolean validate(int columnIndex, int rowIndex, Object newValue);
 
@@ -43,6 +44,8 @@ public interface IDataValidator {
      * @param cell
      *            LayerCell which should be validated
      * @param configRegistry
+     *            The {@link IConfigRegistry} used to retrieve contextual
+     *            information for the cell.
      * @param newValue
      *            Value entered through the edit control text box, combo box
      *            etc. Note: In case of the {@link TextCellEditor} the text
@@ -51,16 +54,15 @@ public interface IDataValidator {
      *
      * @see IDataProvider#getDataValue(int, int)
      *
-     * @return true is newValue is valid. False otherwise.
+     * @return <code>true</code> if newValue is valid, <code>false</code>
+     *         otherwise.
      */
-    public boolean validate(ILayerCell cell, IConfigRegistry configRegistry,
-            Object newValue);
+    public boolean validate(ILayerCell cell, IConfigRegistry configRegistry, Object newValue);
 
     public static final IDataValidator ALWAYS_VALID = new IDataValidator() {
 
         @Override
-        public boolean validate(ILayerCell cell,
-                IConfigRegistry configRegistry, Object newValue) {
+        public boolean validate(ILayerCell cell, IConfigRegistry configRegistry, Object newValue) {
             return true;
         }
 
@@ -74,8 +76,7 @@ public interface IDataValidator {
     public static final IDataValidator NEVER_VALID = new IDataValidator() {
 
         @Override
-        public boolean validate(ILayerCell cell,
-                IConfigRegistry configRegistry, Object newValue) {
+        public boolean validate(ILayerCell cell, IConfigRegistry configRegistry, Object newValue) {
             return false;
         }
 

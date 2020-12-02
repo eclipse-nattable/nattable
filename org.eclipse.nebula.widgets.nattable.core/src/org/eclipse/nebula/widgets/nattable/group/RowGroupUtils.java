@@ -39,7 +39,11 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
  * @author Matt Biggs
  *
  */
-public class RowGroupUtils {
+public final class RowGroupUtils {
+
+    private RowGroupUtils() {
+        // private default constructor for helper class
+    }
 
     public static <T> IRowGroup<T> getRowGroupForRowIndex(final IRowGroupModel<T> model, final int rowIndex) {
         final T row = model.getRowFromIndexCache(rowIndex);

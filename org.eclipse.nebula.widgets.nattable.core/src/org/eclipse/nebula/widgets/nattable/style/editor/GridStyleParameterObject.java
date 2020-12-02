@@ -21,6 +21,8 @@ import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 
+//fields are public by design to make it easy for adapters to customize styling
+@SuppressWarnings("java:S1104")
 public class GridStyleParameterObject {
 
     public Font tableFont;

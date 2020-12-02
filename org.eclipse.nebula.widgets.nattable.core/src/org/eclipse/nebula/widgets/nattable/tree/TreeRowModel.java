@@ -29,7 +29,7 @@ import java.util.Set;
  */
 public class TreeRowModel<T> extends AbstractTreeRowModel<T> {
 
-    protected final Set<Integer> parentIndexes = new HashSet<Integer>();
+    protected final Set<Integer> parentIndexes = new HashSet<>();
 
     public TreeRowModel(ITreeData<T> treeData) {
         super(treeData);
@@ -65,7 +65,7 @@ public class TreeRowModel<T> extends AbstractTreeRowModel<T> {
 
     @Override
     public List<Integer> collapseAll() {
-        Set<Integer> collapsedChildren = new HashSet<Integer>();
+        Set<Integer> collapsedChildren = new HashSet<>();
 
         for (int i = (getTreeData().getElementCount() - 1); i >= 0; i--) {
             if (hasChildren(i) && !isCollapsed(i)) {
@@ -73,7 +73,7 @@ public class TreeRowModel<T> extends AbstractTreeRowModel<T> {
             }
         }
 
-        List<Integer> children = new ArrayList<Integer>(collapsedChildren);
+        List<Integer> children = new ArrayList<>(collapsedChildren);
         Collections.sort(children);
         notifyListeners();
         return children;
@@ -81,7 +81,7 @@ public class TreeRowModel<T> extends AbstractTreeRowModel<T> {
 
     @Override
     public List<Integer> expand(int index) {
-        List<Integer> children = new ArrayList<Integer>(internalExpand(index));
+        List<Integer> children = new ArrayList<>(internalExpand(index));
         Collections.sort(children);
         notifyListeners();
         return children;
@@ -100,7 +100,7 @@ public class TreeRowModel<T> extends AbstractTreeRowModel<T> {
     protected Collection<Integer> internalExpand(int index) {
         this.parentIndexes.remove(index);
         List<Integer> directChildren = getDirectChildIndexes(index);
-        Set<Integer> expandedChildren = new HashSet<Integer>(directChildren);
+        Set<Integer> expandedChildren = new HashSet<>(directChildren);
         for (Integer child : directChildren) {
             if (hasChildren(child) && !isCollapsed(child)) {
                 expandedChildren.addAll(internalExpand(child));
@@ -111,12 +111,12 @@ public class TreeRowModel<T> extends AbstractTreeRowModel<T> {
 
     @Override
     public List<Integer> expandAll() {
-        Set<Integer> expandedChildren = new HashSet<Integer>();
+        Set<Integer> expandedChildren = new HashSet<>();
         for (int index : this.parentIndexes) {
             expandedChildren.addAll(getChildIndexes(index));
         }
         this.parentIndexes.clear();
-        List<Integer> children = new ArrayList<Integer>(expandedChildren);
+        List<Integer> children = new ArrayList<>(expandedChildren);
         Collections.sort(children);
         notifyListeners();
         return children;
@@ -124,13 +124,13 @@ public class TreeRowModel<T> extends AbstractTreeRowModel<T> {
 
     @Override
     public List<Integer> expandToLevel(int level) {
-        Set<Integer> expandedChildren = new HashSet<Integer>();
-        List<Integer> parentCopy = new ArrayList<Integer>(this.parentIndexes);
+        Set<Integer> expandedChildren = new HashSet<>();
+        List<Integer> parentCopy = new ArrayList<>(this.parentIndexes);
         for (int index : parentCopy) {
             expandedChildren.addAll(internalExpandToLevel(index, level));
         }
 
-        List<Integer> children = new ArrayList<Integer>(expandedChildren);
+        List<Integer> children = new ArrayList<>(expandedChildren);
         Collections.sort(children);
         notifyListeners();
         return children;
@@ -138,7 +138,7 @@ public class TreeRowModel<T> extends AbstractTreeRowModel<T> {
 
     @Override
     public List<Integer> expandToLevel(int parentIndex, int level) {
-        List<Integer> children = new ArrayList<Integer>(internalExpandToLevel(parentIndex, level));
+        List<Integer> children = new ArrayList<>(internalExpandToLevel(parentIndex, level));
         Collections.sort(children);
         notifyListeners();
         return children;
@@ -158,7 +158,7 @@ public class TreeRowModel<T> extends AbstractTreeRowModel<T> {
      *         visible by performing the expand operation.
      */
     protected Collection<Integer> internalExpandToLevel(int index, int level) {
-        Set<Integer> expandedChildren = new HashSet<Integer>();
+        Set<Integer> expandedChildren = new HashSet<>();
         if (depth(index) <= (level - 1)) {
             this.parentIndexes.remove(index);
 

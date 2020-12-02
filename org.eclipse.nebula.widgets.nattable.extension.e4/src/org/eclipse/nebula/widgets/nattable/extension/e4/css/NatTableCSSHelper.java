@@ -68,7 +68,11 @@ import org.w3c.dom.css.CSSValueList;
  * Helper class for converting and applying CSS styles.
  */
 @SuppressWarnings("restriction")
-public class NatTableCSSHelper {
+public final class NatTableCSSHelper {
+
+    private NatTableCSSHelper() {
+        // private default constructor for helper class
+    }
 
     private static final IDisplayModeOrdering displayModeOrdering = new DefaultDisplayModeOrdering();
 
@@ -293,6 +297,8 @@ public class NatTableCSSHelper {
      * inheritance model to always retrieve a style configuration attribute if
      * there is one configured at any level.
      *
+     * @param <T>
+     *            The type of the configuration attribute.
      * @param natTable
      *            The NatTable whose {@link ConfigRegistry} should be checked
      *            for the style configuration.
@@ -318,6 +324,8 @@ public class NatTableCSSHelper {
      * Apply a style attribute value for the {@link IStyle} registered for
      * {@link CellConfigAttributes#CELL_STYLE}.
      *
+     * @param <T>
+     *            The type of the configuration attribute.
      * @param natTable
      *            The NatTable to apply the style configuration to.
      * @param styleConfig
@@ -344,6 +352,8 @@ public class NatTableCSSHelper {
      * Apply a style attribute value for the {@link IStyle} registered for the
      * given styleAttribute.
      *
+     * @param <T>
+     *            The type of the configuration attribute.
      * @param natTable
      *            The NatTable to apply the style configuration to.
      * @param styleAttribute

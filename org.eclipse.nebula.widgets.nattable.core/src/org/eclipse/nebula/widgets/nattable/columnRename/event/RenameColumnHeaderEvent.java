@@ -23,6 +23,11 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 public class RenameColumnHeaderEvent extends ColumnVisualChangeEvent {
 
     /**
+     *
+     * @param layer
+     *            The layer to which the column position matches.
+     * @param columnPosition
+     *            The renamed column position.
      * @since 1.4
      */
     public RenameColumnHeaderEvent(ILayer layer, int columnPosition) {

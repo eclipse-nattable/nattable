@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -45,7 +44,7 @@ public class SelectionSearchStrategy extends AbstractSearchStrategy {
     }
 
     @Override
-    public PositionCoordinate executeSearch(Object valueToMatch) throws PatternSyntaxException {
+    public PositionCoordinate executeSearch(Object valueToMatch) {
         ILayer contextLayer = getContextLayer();
         if (!(contextLayer instanceof SelectionLayer)) {
             throw new RuntimeException("For the SelectionSearchStrategy to work it needs the selectionLayer to be passed as the contextLayer."); //$NON-NLS-1$
@@ -89,7 +88,7 @@ public class SelectionSearchStrategy extends AbstractSearchStrategy {
             int index = coordinates.indexOf(selectionAnchor);
             // reorder to make the selection anchor the first element in the
             // list
-            List<PositionCoordinate> reordered = new ArrayList<PositionCoordinate>(coordinates.subList(index + 1, coordinates.size()));
+            List<PositionCoordinate> reordered = new ArrayList<>(coordinates.subList(index + 1, coordinates.size()));
             if (this.wrapSearch) {
                 reordered.addAll(coordinates.subList(0, index + 1));
             }

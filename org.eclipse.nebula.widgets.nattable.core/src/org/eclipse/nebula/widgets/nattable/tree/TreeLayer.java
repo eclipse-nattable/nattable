@@ -278,12 +278,10 @@ public class TreeLayer extends AbstractRowHideShowLayer {
         IndentedTreeImagePainter result = null;
         if (painter instanceof IndentedTreeImagePainter) {
             result = (IndentedTreeImagePainter) painter;
-        } else if (painter != null
-                && painter instanceof CellPainterWrapper
+        } else if (painter instanceof CellPainterWrapper
                 && ((CellPainterWrapper) painter).getWrappedPainter() != null) {
             result = findIndentedTreeImagePainter(((CellPainterWrapper) painter).getWrappedPainter());
-        } else if (painter != null
-                && painter instanceof CellPainterDecorator) {
+        } else if (painter instanceof CellPainterDecorator) {
             result = findIndentedTreeImagePainter(((CellPainterDecorator) painter).getBaseCellPainter());
             if (result == null) {
                 result = findIndentedTreeImagePainter(((CellPainterDecorator) painter).getDecoratorCellPainter());
@@ -525,7 +523,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
     protected boolean handleMultiRowHideCommand(MultiRowHideCommand command) {
         // transform position to index
         if (command.convertToTargetLayer(this)) {
-            List<Integer> rowPositionsToHide = new ArrayList<Integer>();
+            List<Integer> rowPositionsToHide = new ArrayList<>();
             for (int rowPos : command.getRowPositionsArray()) {
                 rowPositionsToHide.add(rowPos);
                 int rowIndex = getRowIndexByPosition(rowPos);

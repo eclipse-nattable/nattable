@@ -45,7 +45,7 @@ public class SortHeaderLayer<T> extends AbstractLayerTransform implements IPersi
         this.sortModel = sortModel;
 
         registerPersistable(new SortStatePersistor<T>(sortModel));
-        registerCommandHandler(new SortCommandHandler<T>(sortModel, this));
+        registerCommandHandler(new SortCommandHandler<>(sortModel, this));
 
         if (useDefaultConfiguration) {
             addConfiguration(new DefaultSortConfiguration());
@@ -75,13 +75,10 @@ public class SortHeaderLayer<T> extends AbstractLayerTransform implements IPersi
 
                 SortDirectionEnum sortDirection = this.sortModel.getSortDirection(columnIndex);
 
-                switch (sortDirection) {
-                    case ASC:
-                        configLabels.addLabelOnTop(DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
-                        break;
-                    case DESC:
-                        configLabels.addLabelOnTop(DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
-                        break;
+                if (sortDirection == SortDirectionEnum.ASC) {
+                    configLabels.addLabelOnTop(DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
+                } else if (sortDirection == SortDirectionEnum.DESC) {
+                    configLabels.addLabelOnTop(DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
                 }
 
                 configLabels.addLabelOnTop(DefaultSortConfiguration.SORT_CONFIG_TYPE);

@@ -41,9 +41,9 @@ public class HierarchicalWrapperTreeFormat implements TreeList.Format<Hierarchic
             this.levels = Math.max(this.levels, property.split(HierarchicalHelper.PROPERTY_SEPARATOR_REGEX).length);
         }
 
-        this.parentMapping = new ArrayList<Map<Object, HierarchicalWrapper>>(this.levels);
+        this.parentMapping = new ArrayList<>(this.levels);
         for (int i = 0; i < this.levels; i++) {
-            this.parentMapping.add(new HashMap<Object, HierarchicalWrapper>());
+            this.parentMapping.add(new HashMap<>());
         }
     }
 

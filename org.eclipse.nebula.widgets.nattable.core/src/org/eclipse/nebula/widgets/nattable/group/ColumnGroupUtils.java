@@ -29,7 +29,11 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 
-public class ColumnGroupUtils {
+public final class ColumnGroupUtils {
+
+    private ColumnGroupUtils() {
+        // private default constructor for helper class
+    }
 
     /**
      * Calculates the move direction based on the from and to position.
@@ -67,42 +71,110 @@ public class ColumnGroupUtils {
      * column will be used.
      *
      * @param columnIndex
+     *            The column index to check.
      * @param layer
+     *            unused
      * @param underlyingLayer
+     *            The underlying layer.
      * @param model
+     *            The column group model.
      *
      * @return <code>TRUE</code> if the given <code>columnIndex</code> is either
      *         a defined static column or (if not) the first visible column the
      *         it's group
+     *
+     * @deprecated Use
+     *             {@link #isStaticOrFirstVisibleColumn(int, IUniqueIndexLayer, ColumnGroupModel)}
      */
+    @Deprecated
     public static boolean isStaticOrFirstVisibleColumn(
             int columnIndex, ILayer layer, IUniqueIndexLayer underlyingLayer, ColumnGroupModel model) {
+        return isStaticOrFirstVisibleColumn(columnIndex, underlyingLayer, model);
+    }
+
+    /**
+     * Checks whether <code>columnIndex</code> is either a defined static column
+     * or (if not) the first visible column in the group containing group. This
+     * method provides downward compatibility for all group definitions without
+     * static columns. When no static columns are defined the first visible
+     * column will be used.
+     *
+     * @param columnIndex
+     *            The column index to check.
+     * @param underlyingLayer
+     *            The underlying layer.
+     * @param model
+     *            The column group model.
+     *
+     * @return <code>TRUE</code> if the given <code>columnIndex</code> is either
+     *         a defined static column or (if not) the first visible column the
+     *         it's group
+     *
+     * @since 2.0
+     */
+    public static boolean isStaticOrFirstVisibleColumn(
+            int columnIndex, IUniqueIndexLayer underlyingLayer, ColumnGroupModel model) {
 
         ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
 
-        if (columnGroup.getStaticColumnIndexes().size() == 0) {
-            return isFirstVisibleColumnIndexInGroup(columnIndex, layer, underlyingLayer, model);
+        if (columnGroup.getStaticColumnIndexes().isEmpty()) {
+            return isFirstVisibleColumnIndexInGroup(columnIndex, underlyingLayer, model);
         } else {
             return model.isStaticColumn(columnIndex);
         }
     }
 
+    /**
+     *
+     * @param columnIndex
+     *            The column index to check.
+     * @param layer
+     *            unused
+     * @param underlyingLayer
+     *            The underlying layer.
+     * @param model
+     *            The column group model.
+     * @return <code>true</code> if the given column index is the first column
+     *         in a column group.
+     *
+     * @deprecated Use
+     *             {@link #isFirstVisibleColumnIndexInGroup(int, IUniqueIndexLayer, ColumnGroupModel)}
+     */
+    @Deprecated
     public static boolean isFirstVisibleColumnIndexInGroup(
             int columnIndex, ILayer layer, IUniqueIndexLayer underlyingLayer, ColumnGroupModel model) {
+        return isFirstVisibleColumnIndexInGroup(columnIndex, underlyingLayer, model);
+    }
 
-        if (isColumnIndexHiddenInUnderLyingLayer(columnIndex, layer, underlyingLayer)) {
+    /**
+     *
+     * @param columnIndex
+     *            The column index to check.
+     * @param underlyingLayer
+     *            The underlying layer.
+     * @param model
+     *            The column group model.
+     * @return <code>true</code> if the given column index is the first column
+     *         in a column group.
+     *
+     * @since 2.0
+     */
+    public static boolean isFirstVisibleColumnIndexInGroup(
+            int columnIndex, IUniqueIndexLayer underlyingLayer, ColumnGroupModel model) {
+
+        if (isColumnIndexHiddenInUnderLyingLayer(columnIndex, underlyingLayer)) {
             return false;
         }
 
         int columnPosition = underlyingLayer.getColumnPositionByIndex(columnIndex);
         List<Integer> columnIndexesInGroup = model.getColumnGroupByIndex(columnIndex).getMembers();
-        List<Integer> previousVisibleColumnIndexes = new ArrayList<Integer>();
+        List<Integer> previousVisibleColumnIndexes = new ArrayList<>();
 
         // All other indexes in the column group which are visible and
         // are positioned before me
         for (Integer currentIndex : columnIndexesInGroup) {
             int currentPosition = underlyingLayer.getColumnPositionByIndex(currentIndex.intValue());
-            if (!isColumnIndexHiddenInUnderLyingLayer(currentIndex.intValue(), layer, underlyingLayer)
+            if (!isColumnIndexHiddenInUnderLyingLayer(currentIndex.intValue(), underlyingLayer)
                     && currentPosition < columnPosition) {
                 previousVisibleColumnIndexes.add(currentIndex);
             }
@@ -111,23 +183,93 @@ public class ColumnGroupUtils {
         return previousVisibleColumnIndexes.isEmpty();
     }
 
+    /**
+     *
+     * @param columnIndex
+     *            The column index to check.
+     * @param layer
+     *            unused
+     * @param underlyingLayer
+     *            The underlying layer.
+     * @param model
+     *            The column group model.
+     * @return <code>true</code> if the given column index is the last column in
+     *         a column group.
+     *
+     * @deprecated Use
+     *             {@link #isLastVisibleColumnIndexInGroup(int, IUniqueIndexLayer, ColumnGroupModel)}
+     */
+    @Deprecated
     public static boolean isLastVisibleColumnIndexInGroup(
             int columnIndex, ILayer layer, IUniqueIndexLayer underlyingLayer, ColumnGroupModel model) {
+        return isLastVisibleColumnIndexInGroup(columnIndex, underlyingLayer, model);
+    }
 
-        if (isColumnIndexHiddenInUnderLyingLayer(columnIndex, layer, underlyingLayer)) {
+    /**
+     *
+     * @param columnIndex
+     *            The column index to check.
+     * @param underlyingLayer
+     *            The underlying layer.
+     * @param model
+     *            The column group model.
+     * @return <code>true</code> if the given column index is the last column in
+     *         a column group.
+     *
+     * @since 2.0
+     */
+    public static boolean isLastVisibleColumnIndexInGroup(
+            int columnIndex, IUniqueIndexLayer underlyingLayer, ColumnGroupModel model) {
+
+        if (isColumnIndexHiddenInUnderLyingLayer(columnIndex, underlyingLayer)) {
             return false;
         }
 
-        List<Integer> visibleIndexesToTheRight = getVisibleIndexesToTheRight(columnIndex, layer, underlyingLayer, model);
+        List<Integer> visibleIndexesToTheRight = getVisibleIndexesToTheRight(columnIndex, underlyingLayer, model);
         return visibleIndexesToTheRight.size() == 1
                 && visibleIndexesToTheRight.get(0).intValue() == columnIndex;
     }
 
     /**
-     * Inclusive of the columnIndex passed as the parameter.
+     *
+     * @param columnIndex
+     *            The index to check.
+     * @param layer
+     *            unused
+     * @param underlyingLayer
+     *            The underlying layer to retrieve the visible columns to the
+     *            right.
+     * @param model
+     *            The {@link ColumnGroupModel} to get the group from.
+     * @return The column indexes to the right of the given column index
+     *         (inclusive)
+     *
+     * @deprecated Use
+     *             {@link #getVisibleIndexesToTheRight(int, IUniqueIndexLayer, ColumnGroupModel)}
      */
+    @Deprecated
     public static List<Integer> getVisibleIndexesToTheRight(
             int columnIndex, ILayer layer, IUniqueIndexLayer underlyingLayer, ColumnGroupModel model) {
+
+        return getVisibleIndexesToTheRight(columnIndex, underlyingLayer, model);
+    }
+
+    /**
+     *
+     * @param columnIndex
+     *            The index to check.
+     * @param underlyingLayer
+     *            The underlying layer to retrieve the visible columns to the
+     *            right.
+     * @param model
+     *            The {@link ColumnGroupModel} to get the group from.
+     * @return The column indexes to the right of the given column index
+     *         (inclusive)
+     *
+     * @since 2.0
+     */
+    public static List<Integer> getVisibleIndexesToTheRight(
+            int columnIndex, IUniqueIndexLayer underlyingLayer, ColumnGroupModel model) {
 
         ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
 
@@ -137,11 +279,11 @@ public class ColumnGroupUtils {
 
         List<Integer> columnIndexesInGroup = columnGroup.getMembers();
         int columnPosition = underlyingLayer.getColumnPositionByIndex(columnIndex);
-        List<Integer> visibleColumnIndexesOnRight = new ArrayList<Integer>();
+        List<Integer> visibleColumnIndexesOnRight = new ArrayList<>();
 
         for (Integer currentIndex : columnIndexesInGroup) {
             int currentPosition = underlyingLayer.getColumnPositionByIndex(currentIndex.intValue());
-            if (!isColumnIndexHiddenInUnderLyingLayer(currentIndex.intValue(), layer, underlyingLayer)
+            if (!isColumnIndexHiddenInUnderLyingLayer(currentIndex.intValue(), underlyingLayer)
                     && currentPosition >= columnPosition) {
                 visibleColumnIndexesOnRight.add(currentIndex);
             }
@@ -150,14 +292,74 @@ public class ColumnGroupUtils {
         return visibleColumnIndexesOnRight;
     }
 
+    /**
+     *
+     * @param columnIndex
+     *            The column index to check.
+     * @param layer
+     *            unused
+     * @param underlyingLayer
+     *            The underlying layer to check against.
+     * @return <code>true</code> if the column is hidden in the underlying
+     *         layer, <code>false</code> if not.
+     *
+     * @deprecated Use
+     *             {@link #isColumnIndexHiddenInUnderLyingLayer(int, IUniqueIndexLayer)}
+     */
+    @Deprecated
     public static boolean isColumnIndexHiddenInUnderLyingLayer(int columnIndex, ILayer layer, IUniqueIndexLayer underlyingLayer) {
+        return isColumnIndexHiddenInUnderLyingLayer(columnIndex, underlyingLayer);
+    }
+
+    /**
+     *
+     * @param columnIndex
+     *            The column index to check.
+     * @param underlyingLayer
+     *            The underlying layer to check against.
+     * @return <code>true</code> if the column is hidden in the underlying
+     *         layer, <code>false</code> if not.
+     *
+     * @since 2.0
+     */
+    public static boolean isColumnIndexHiddenInUnderLyingLayer(int columnIndex, IUniqueIndexLayer underlyingLayer) {
         return underlyingLayer.getColumnPositionByIndex(columnIndex) == -1;
     }
 
+    /**
+     *
+     * @param columnPosition
+     *            The column position matching the underlying layer.
+     * @param layer
+     *            unused
+     * @param underlyingLayer
+     *            The underlying layer to check against.
+     * @return <code>true</code> if the column position is hidden in the
+     *         underlying layer, <code>false</code> if not.
+     *
+     * @deprecated Use
+     *             {@link #isColumnPositionHiddenInUnderLyingLayer(int, IUniqueIndexLayer)}
+     */
+    @Deprecated
     public static boolean isColumnPositionHiddenInUnderLyingLayer(int columnPosition, ILayer layer, IUniqueIndexLayer underlyingLayer) {
+        return isColumnPositionHiddenInUnderLyingLayer(columnPosition, underlyingLayer);
+    }
+
+    /**
+     *
+     * @param columnPosition
+     *            The column position matching the underlying layer.
+     * @param underlyingLayer
+     *            The underlying layer to check against.
+     * @return <code>true</code> if the column position is hidden in the
+     *         underlying layer, <code>false</code> if not.
+     *
+     * @since 2.0
+     */
+    public static boolean isColumnPositionHiddenInUnderLyingLayer(int columnPosition, IUniqueIndexLayer underlyingLayer) {
         if (columnPosition < underlyingLayer.getColumnCount() && columnPosition >= 0) {
             int columnIndex = underlyingLayer.getColumnIndexByPosition(columnPosition);
-            return isColumnIndexHiddenInUnderLyingLayer(columnIndex, layer, underlyingLayer);
+            return isColumnIndexHiddenInUnderLyingLayer(columnIndex, underlyingLayer);
         }
         return true;
     }

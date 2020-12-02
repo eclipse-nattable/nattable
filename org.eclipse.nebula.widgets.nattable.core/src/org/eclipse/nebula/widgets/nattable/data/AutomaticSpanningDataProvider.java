@@ -71,14 +71,14 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
      * <b>Note: </b>If this list is empty, all columns will do auto row
      * spanning.
      */
-    private List<Integer> autoSpanColumns = new ArrayList<Integer>();
+    private List<Integer> autoSpanColumns = new ArrayList<>();
     /**
      * List of row positions for which automatic spanning is enabled.
      * <p>
      * <b>Note: </b>If this list is empty, all rows will do auto column
      * spanning.
      */
-    private List<Integer> autoSpanRows = new ArrayList<Integer>();
+    private List<Integer> autoSpanRows = new ArrayList<>();
 
     /**
      *
@@ -433,12 +433,12 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
     public void saveState(String prefix, Properties properties) {
         properties.setProperty(
                 prefix + PERSISTENCE_KEY_AUTO_COLUMN_SPAN,
-                Boolean.valueOf(this.autoColumnSpan).toString());
+                Boolean.toString(this.autoColumnSpan));
         properties.setProperty(
                 prefix + PERSISTENCE_KEY_AUTO_ROW_SPAN,
-                Boolean.valueOf(this.autoRowSpan).toString());
+                Boolean.toString(this.autoRowSpan));
 
-        if (this.autoSpanColumns.size() > 0) {
+        if (!this.autoSpanColumns.isEmpty()) {
             StringBuilder strBuilder = new StringBuilder();
             for (Integer index : this.autoSpanColumns) {
                 strBuilder.append(index);
@@ -449,7 +449,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
                     strBuilder.toString());
         }
 
-        if (this.autoSpanRows.size() > 0) {
+        if (!this.autoSpanRows.isEmpty()) {
             StringBuilder strBuilder = new StringBuilder();
             for (Integer index : this.autoSpanRows) {
                 strBuilder.append(index);
@@ -476,7 +476,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
         this.autoSpanColumns.clear();
         property = properties.getProperty(prefix + PERSISTENCE_KEY_AUTO_SPAN_COLUMNS);
         if (property != null) {
-            List<Integer> newAutoSpanColumns = new ArrayList<Integer>();
+            List<Integer> newAutoSpanColumns = new ArrayList<>();
             StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
             while (tok.hasMoreTokens()) {
                 String index = tok.nextToken();
@@ -489,7 +489,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
         this.autoSpanRows.clear();
         property = properties.getProperty(prefix + PERSISTENCE_KEY_AUTO_SPAN_ROWS);
         if (property != null) {
-            List<Integer> newAutoSpanRows = new ArrayList<Integer>();
+            List<Integer> newAutoSpanRows = new ArrayList<>();
             StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
             while (tok.hasMoreTokens()) {
                 String index = tok.nextToken();

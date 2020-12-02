@@ -68,8 +68,7 @@ public class CellVisualChangeEvent implements IVisualChangeEvent {
 
     @Override
     public Collection<Rectangle> getChangedPositionRectangles() {
-        return Arrays.asList(new Rectangle[] { new Rectangle(this.columnPosition,
-                this.rowPosition, 1, 1) });
+        return Arrays.asList(new Rectangle(this.columnPosition, this.rowPosition, 1, 1));
     }
 
     @Override

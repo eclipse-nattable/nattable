@@ -26,11 +26,10 @@ import org.eclipse.swt.graphics.Color;
 
 public class HSSFExcelExporter extends PoiExcelExporter {
 
-    private List<Color> colorIndex = new ArrayList<Color>();
+    private List<Color> colorIndex = new ArrayList<>();
 
     public HSSFExcelExporter() {
-        super(
-                new FileOutputStreamProvider("table_export.xls", new String[] { "Excel Workbook (*.xls)" }, new String[] { "*.xls" })); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        super(new FileOutputStreamProvider("table_export.xls", new String[] { "Excel Workbook (*.xls)" }, new String[] { "*.xls" })); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     public HSSFExcelExporter(IOutputStreamProvider outputStreamProvider) {
@@ -39,7 +38,7 @@ public class HSSFExcelExporter extends PoiExcelExporter {
 
     @Override
     protected Workbook createWorkbook() {
-        this.colorIndex = new ArrayList<Color>();
+        this.colorIndex = new ArrayList<>();
         return new HSSFWorkbook();
     }
 

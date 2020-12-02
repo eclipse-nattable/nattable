@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.search.command;
 
-import java.util.regex.PatternSyntaxException;
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -35,10 +33,10 @@ public class SearchGridCellsCommandHandler implements ILayerCommandHandler<Searc
     @Override
     public Class<SearchCommand> getCommandClass() {
         return SearchCommand.class;
-    };
+    }
 
     @Override
-    public boolean doCommand(ILayer targetLayer, SearchCommand searchCommand) throws PatternSyntaxException {
+    public boolean doCommand(ILayer targetLayer, SearchCommand searchCommand) {
         searchCommand.convertToTargetLayer(targetLayer);
 
         final ILayerListener searchEventListener = searchCommand.getSearchEventListener();

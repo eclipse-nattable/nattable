@@ -21,6 +21,7 @@ import java.util.List;
  * @author Stefan Bolton
  *
  * @param <T>
+ *            the type of the row objects.
  */
 public interface IRowGroup<T> {
 

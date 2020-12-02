@@ -16,29 +16,29 @@ import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 
 /**
  * Configuration attributes that are used to configure the export functionality.
- *
- * @noimplement This interface is not intended to be implemented by clients.
- * @noextend This interface is not intended to be extended by clients.
- *
  */
-public interface ExportConfigAttributes {
+public final class ExportConfigAttributes {
+
+    private ExportConfigAttributes() {
+        // private default constructor for constants class
+    }
 
     /**
      * The configuration attribute for specifying the concrete implementation
      * instance of {@link ILayerExporter} that should be used for exporting the
      * NatTable.
      */
-    ConfigAttribute<ILayerExporter> EXPORTER = new ConfigAttribute<ILayerExporter>();
+    public static final ConfigAttribute<ILayerExporter> EXPORTER = new ConfigAttribute<>();
     /**
      * The configuration attribute for specifying a formatter that should be
      * used to format the values for the export.
      */
-    ConfigAttribute<IExportFormatter> EXPORT_FORMATTER = new ConfigAttribute<IExportFormatter>();
+    public static final ConfigAttribute<IExportFormatter> EXPORT_FORMATTER = new ConfigAttribute<>();
     /**
      * The configuration attribute for specifying the format that should be used
      * for exporting Calendar or Date objects appropriately.
      */
-    ConfigAttribute<String> DATE_FORMAT = new ConfigAttribute<String>();
+    public static final ConfigAttribute<String> DATE_FORMAT = new ConfigAttribute<>();
     /**
      * The configuration attribute for specifying the concrete implementation
      * instance of ITableExporter that should be used for exporting the
@@ -46,5 +46,5 @@ public interface ExportConfigAttributes {
      *
      * @since 1.5
      */
-    ConfigAttribute<ITableExporter> TABLE_EXPORTER = new ConfigAttribute<ITableExporter>();
+    public static final ConfigAttribute<ITableExporter> TABLE_EXPORTER = new ConfigAttribute<>();
 }

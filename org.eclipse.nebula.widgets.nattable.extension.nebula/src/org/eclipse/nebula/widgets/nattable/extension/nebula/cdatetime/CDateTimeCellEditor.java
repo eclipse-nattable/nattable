@@ -26,8 +26,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -180,21 +178,17 @@ public class CDateTimeCellEditor extends AbstractCellEditor {
             @Override
             protected void addTextListener() {
                 super.addTextListener();
-                this.text.getControl().addTraverseListener(new TraverseListener() {
-
-                    @Override
-                    public void keyTraversed(TraverseEvent event) {
-                        boolean committed = false;
-                        if (event.keyCode == SWT.TAB && event.stateMask == SWT.MOD2) {
-                            committed = commit(MoveDirectionEnum.LEFT);
-                        } else if (event.keyCode == SWT.TAB && event.stateMask == 0) {
-                            committed = commit(MoveDirectionEnum.RIGHT);
-                        } else if (event.detail == SWT.TRAVERSE_ESCAPE) {
-                            close();
-                        }
-                        if (!committed) {
-                            event.doit = false;
-                        }
+                this.text.getControl().addTraverseListener(event -> {
+                    boolean committed = false;
+                    if (event.keyCode == SWT.TAB && event.stateMask == SWT.MOD2) {
+                        committed = commit(MoveDirectionEnum.LEFT);
+                    } else if (event.keyCode == SWT.TAB && event.stateMask == 0) {
+                        committed = commit(MoveDirectionEnum.RIGHT);
+                    } else if (event.detail == SWT.TRAVERSE_ESCAPE) {
+                        close();
+                    }
+                    if (!committed) {
+                        event.doit = false;
                     }
                 });
             }
@@ -212,7 +206,7 @@ public class CDateTimeCellEditor extends AbstractCellEditor {
         dateControl.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetDefaultSelected(SelectionEvent event) {
-                boolean commit = (event.stateMask == SWT.MOD3) ? false : true;
+                boolean commit = (event.stateMask != SWT.MOD3);
                 MoveDirectionEnum move = MoveDirectionEnum.NONE;
                 if (CDateTimeCellEditor.this.moveSelectionOnEnter
                         && CDateTimeCellEditor.this.editMode == EditModeEnum.INLINE) {
@@ -223,8 +217,9 @@ public class CDateTimeCellEditor extends AbstractCellEditor {
                     }
                 }
 
-                if (commit)
+                if (commit) {
                     commit(move);
+                }
 
                 if (CDateTimeCellEditor.this.editMode == EditModeEnum.DIALOG) {
                     parent.forceFocus();

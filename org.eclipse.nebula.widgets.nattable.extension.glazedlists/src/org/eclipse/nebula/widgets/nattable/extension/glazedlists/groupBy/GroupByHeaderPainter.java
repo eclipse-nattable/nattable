@@ -44,7 +44,7 @@ public class GroupByHeaderPainter extends AbstractCellPainter {
     private final IDataProvider columnHeaderDataProvider;
     private final ColumnHeaderLayer columnHeaderLayer;
 
-    private List<Rectangle> groupByCellBounds = new ArrayList<Rectangle>();
+    private List<Rectangle> groupByCellBounds = new ArrayList<>();
 
     /**
      *
@@ -102,16 +102,16 @@ public class GroupByHeaderPainter extends AbstractCellPainter {
         gc.setTextAntialias(GUIHelper.DEFAULT_TEXT_ANTIALIAS);
 
         List<Integer> groupByColumnIndexes = this.groupByModel.getGroupByColumnIndexes();
-        if (groupByColumnIndexes.size() > 0) {
+        if (!groupByColumnIndexes.isEmpty()) {
 
             int textHeight = gc.textExtent("X").y; //$NON-NLS-1$
 
             int x0 = bounds.x + LEFT_INDENT;
             int y0 = bounds.y + bounds.height / 2 - textHeight / 2 - Y_PADDING;
-            int y_height = Y_PADDING + textHeight + Y_PADDING;
+            int yHeight = Y_PADDING + textHeight + Y_PADDING;
 
             // Draw leftmost edge
-            gc.drawLine(x0, y0, x0, y0 + y_height);
+            gc.drawLine(x0, y0, x0, y0 + yHeight);
             x0++;
 
             // Draw group by columns
@@ -127,11 +127,11 @@ public class GroupByHeaderPainter extends AbstractCellPainter {
                 }
                 int textWidth = gc.textExtent(columnName).x;
 
-                this.groupByCellBounds.add(new Rectangle(x0, y0, X_PADDING + textWidth + X_PADDING, y_height));
+                this.groupByCellBounds.add(new Rectangle(x0, y0, X_PADDING + textWidth + X_PADDING, yHeight));
 
-                gc.fillRectangle(x0, y0, X_PADDING + textWidth + X_PADDING, y_height);
+                gc.fillRectangle(x0, y0, X_PADDING + textWidth + X_PADDING, yHeight);
                 gc.drawLine(x0, y0, x0 + X_PADDING + textWidth + X_PADDING, y0);
-                gc.drawLine(x0, y0 + y_height, x0 + X_PADDING + textWidth + X_PADDING, y0 + y_height);
+                gc.drawLine(x0, y0 + yHeight, x0 + X_PADDING + textWidth + X_PADDING, y0 + yHeight);
 
                 gc.drawText(columnName, x0 + X_PADDING, y0 + Y_PADDING);
 
@@ -139,14 +139,14 @@ public class GroupByHeaderPainter extends AbstractCellPainter {
 
                 // Draw end cap
                 if (i < lastColumnIndex) {
-                    gc.fillRectangle(x0, y0, ENDCAP_WIDTH, y_height);
+                    gc.fillRectangle(x0, y0, ENDCAP_WIDTH, yHeight);
                     gc.drawLine(x0, y0, x0 + ENDCAP_WIDTH, y0);
-                    gc.drawLine(x0, y0 + y_height, x0 + ENDCAP_WIDTH, y0 + y_height);
+                    gc.drawLine(x0, y0 + yHeight, x0 + ENDCAP_WIDTH, y0 + yHeight);
                 } else {
-                    gc.fillPolygon(new int[] { x0, y0, x0 + ENDCAP_WIDTH, y0 + y_height / 2, x0, y0 + y_height });
+                    gc.fillPolygon(new int[] { x0, y0, x0 + ENDCAP_WIDTH, y0 + yHeight / 2, x0, y0 + yHeight });
                 }
-                gc.drawLine(x0, y0, x0 + ENDCAP_WIDTH - 1, y0 + y_height / 2);
-                gc.drawLine(x0, y0 + y_height, x0 + ENDCAP_WIDTH - 1, y0 + y_height / 2);
+                gc.drawLine(x0, y0, x0 + ENDCAP_WIDTH - 1, y0 + yHeight / 2);
+                gc.drawLine(x0, y0 + yHeight, x0 + ENDCAP_WIDTH - 1, y0 + yHeight / 2);
 
                 x0 += ENDCAP_WIDTH;
             }

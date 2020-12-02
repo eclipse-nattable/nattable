@@ -131,7 +131,7 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
     public List<Integer> getColumnGroupPositions(int fromColumnIndex) {
         List<Integer> fromColumnIndexes =
                 this.model.getColumnGroupByIndex(fromColumnIndex).getMembers();
-        List<Integer> fromColumnPositions = new ArrayList<Integer>(fromColumnIndexes.size());
+        List<Integer> fromColumnPositions = new ArrayList<>(fromColumnIndexes.size());
 
         for (Integer columnIndex : fromColumnIndexes) {
             fromColumnPositions.add(

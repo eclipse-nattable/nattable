@@ -25,6 +25,8 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 
+//fields are public by design to make it easy for adapters to customize styling
+@SuppressWarnings("java:S1104")
 public class DefaultNatTableStyleConfiguration extends AbstractRegistryConfiguration {
 
     public Color bgColor = GUIHelper.COLOR_WHITE;

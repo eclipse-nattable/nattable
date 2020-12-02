@@ -37,7 +37,11 @@ import org.eclipse.swt.graphics.FontData;
  * Foreground color - Background color - Horizontal alignment - Vertical
  * alignment - Font - Border style
  */
-public class StylePersistor {
+public final class StylePersistor {
+
+    private StylePersistor() {
+        // private default constructor for helper class
+    }
 
     // Style prefix constants
     public static final String STYLE_PERSISTENCE_PREFIX = "style"; //$NON-NLS-1$

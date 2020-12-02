@@ -160,11 +160,6 @@ public class CreateColumnGroupDialog extends Dialog {
         close();
     }
 
-    @Override
-    public boolean close() {
-        return super.close();
-    }
-
     private void doColumnGrouping() {
         BusyIndicator.showWhile(super.getShell().getDisplay(), () -> {
             final CreateColumnGroupCommand command = new CreateColumnGroupCommand(

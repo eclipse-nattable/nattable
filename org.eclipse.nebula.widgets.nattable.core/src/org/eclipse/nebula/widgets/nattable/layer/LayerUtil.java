@@ -13,7 +13,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
-public class LayerUtil {
+public final class LayerUtil {
+
+    private LayerUtil() {
+        // private default constructor for helper class
+    }
 
     /**
      * Modifier that is used by layers if they add additional columns or rows.
@@ -119,12 +123,10 @@ public class LayerUtil {
             return sourceColumnPosition;
         }
         int columnIndex = sourceLayer.getColumnIndexByPosition(sourceColumnPosition);
-        if (columnIndex < 0) {
+        if (columnIndex < 0 && (columnIndex % ADDITIONAL_POSITION_MODIFIER != 0)) {
             // if the negative index is multiplied with the additional position
             // modifier we assume that the back conversion is possible
-            if (columnIndex % ADDITIONAL_POSITION_MODIFIER != 0) {
-                return -1;
-            }
+            return -1;
         }
         return targetLayer.getColumnPositionByIndex(columnIndex);
     }
@@ -147,12 +149,10 @@ public class LayerUtil {
             return sourceRowPosition;
         }
         int rowIndex = sourceLayer.getRowIndexByPosition(sourceRowPosition);
-        if (rowIndex < 0) {
+        if (rowIndex < 0 && (rowIndex % ADDITIONAL_POSITION_MODIFIER != 0)) {
             // if the negative index is multiplied with the additional position
             // modifier we assume that the back conversion is possible
-            if (rowIndex % ADDITIONAL_POSITION_MODIFIER != 0) {
-                return -1;
-            }
+            return -1;
         }
         return targetLayer.getRowPositionByIndex(rowIndex);
     }

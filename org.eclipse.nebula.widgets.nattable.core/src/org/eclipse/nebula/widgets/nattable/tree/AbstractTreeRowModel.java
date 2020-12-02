@@ -71,12 +71,12 @@ public abstract class AbstractTreeRowModel<T> implements ITreeRowModel<T> {
     @Override
     public List<Integer> collapse(T object) {
         return collapse(this.getTreeData().indexOf(object));
-    };
+    }
 
     @Override
     public List<Integer> expand(T object) {
         return expand(this.getTreeData().indexOf(object));
-    };
+    }
 
     @Override
     public List<Integer> expandToLevel(T object, int level) {

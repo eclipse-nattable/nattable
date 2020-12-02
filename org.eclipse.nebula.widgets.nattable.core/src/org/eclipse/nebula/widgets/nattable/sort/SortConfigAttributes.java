@@ -16,8 +16,12 @@ import java.util.Comparator;
 
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 
-public interface SortConfigAttributes {
+public final class SortConfigAttributes {
 
-    public static final ConfigAttribute<Comparator<?>> SORT_COMPARATOR = new ConfigAttribute<Comparator<?>>();
+    private SortConfigAttributes() {
+        // private default constructor for constants class
+    }
+
+    public static final ConfigAttribute<Comparator<?>> SORT_COMPARATOR = new ConfigAttribute<>();
 
 }

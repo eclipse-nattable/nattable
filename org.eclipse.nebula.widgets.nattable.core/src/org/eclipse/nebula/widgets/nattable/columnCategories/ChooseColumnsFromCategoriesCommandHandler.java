@@ -140,7 +140,7 @@ public class ChooseColumnsFromCategoriesCommandHandler
      * @return a List of destination positions
      */
     protected List<Integer> getDestinationPositions(MoveDirectionEnum direction, List<List<Integer>> selectedPositions) {
-        List<Integer> destinationPositions = new ArrayList<Integer>();
+        List<Integer> destinationPositions = new ArrayList<>();
         for (List<Integer> contiguousPositions : selectedPositions) {
             switch (direction) {
                 case UP:

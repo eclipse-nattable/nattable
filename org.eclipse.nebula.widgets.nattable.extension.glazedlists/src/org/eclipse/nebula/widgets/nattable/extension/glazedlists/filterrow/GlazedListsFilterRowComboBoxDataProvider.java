@@ -119,50 +119,46 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
     public void listChanged(ListEvent<T> listChanges) {
         if (!this.changeHandlingProcessing.getAndSet(true)) {
             // a new row was added or a row was deleted
-            SCHEDULER.schedule(new Runnable() {
+            SCHEDULER.schedule(() -> {
+                List<FilterRowComboUpdateEvent> updateEvents = new ArrayList<>();
+                getValueCacheLock().writeLock().lock();
+                try {
+                    // remember the cache before updating
+                    Map<Integer, List<?>> cacheBefore = new HashMap<>(getValueCache());
 
-                @Override
-                public void run() {
-                    List<FilterRowComboUpdateEvent> updateEvents = new ArrayList<FilterRowComboUpdateEvent>();
-                    getValueCacheLock().writeLock().lock();
-                    try {
-                        // remember the cache before updating
-                        Map<Integer, List<?>> cacheBefore = new HashMap<Integer, List<?>>(getValueCache());
+                    // perform a refresh of the whole cache
+                    getValueCache().clear();
 
-                        // perform a refresh of the whole cache
-                        getValueCache().clear();
-
-                        if (!GlazedListsFilterRowComboBoxDataProvider.this.lazyLoading) {
-                            buildValueCache();
-                        } else {
-                            // to determine the diff for the update event
-                            // the current values need to be collected,
-                            // otherwise on clear() - addAll() a full reset
-                            // will be triggered since there are no cached
-                            // values
-                            for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
-                                getValueCache().put(entry.getKey(),
-                                        collectValues(entry.getKey()));
-                            }
-                        }
-
-                        // fire events for every column that has cached data
+                    if (!GlazedListsFilterRowComboBoxDataProvider.this.lazyLoading) {
+                        buildValueCache();
+                    } else {
+                        // to determine the diff for the update event
+                        // the current values need to be collected,
+                        // otherwise on clear() - addAll() a full reset
+                        // will be triggered since there are no cached
+                        // values
                         for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
-                            updateEvents.add(buildUpdateEvent(
-                                    entry.getKey(),
-                                    entry.getValue(),
-                                    getValueCache().get(entry.getKey())));
+                            getValueCache().put(entry.getKey(),
+                                    collectValues(entry.getKey()));
                         }
-
-                        GlazedListsFilterRowComboBoxDataProvider.this.changeHandlingProcessing.set(false);
-                    } finally {
-                        getValueCacheLock().writeLock().unlock();
                     }
 
-                    if (isUpdateEventsEnabled()) {
-                        for (FilterRowComboUpdateEvent event : updateEvents) {
-                            fireCacheUpdateEvent(event);
-                        }
+                    // fire events for every column that has cached data
+                    for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
+                        updateEvents.add(buildUpdateEvent(
+                                entry.getKey(),
+                                entry.getValue(),
+                                getValueCache().get(entry.getKey())));
+                    }
+
+                    GlazedListsFilterRowComboBoxDataProvider.this.changeHandlingProcessing.set(false);
+                } finally {
+                    getValueCacheLock().writeLock().unlock();
+                }
+
+                if (isUpdateEventsEnabled()) {
+                    for (FilterRowComboUpdateEvent event : updateEvents) {
+                        fireCacheUpdateEvent(event);
                     }
                 }
             }, 100);
@@ -172,38 +168,30 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
     @Override
     public void handleLayerEvent(final ILayerEvent event) {
         // we only need to perform event handling if caching is enabled
-        if (this.cachingEnabled) {
-            if (event instanceof CellVisualChangeEvent) {
-                SCHEDULER.schedule(new Runnable() {
+        if (this.cachingEnabled && event instanceof CellVisualChangeEvent) {
+            SCHEDULER.schedule(() -> {
+                // usually this is fired for data updates so we need to update
+                // the value cache for the updated column
+                getValueCacheLock().writeLock().lock();
+                try {
+                    int column = ((CellVisualChangeEvent) event).getColumnPosition();
 
-                    @Override
-                    public void run() {
-                        // usually this is fired for data updates
-                        // so we need to update the value cache for the updated
-                        // column
-                        getValueCacheLock().writeLock().lock();
-                        try {
-                            int column = ((CellVisualChangeEvent) event).getColumnPosition();
+                    List<?> cacheBefore = getValueCache().get(column);
 
-                            List<?> cacheBefore = getValueCache().get(column);
-
-                            // only update the cache in case a cache was build
-                            // already
-                            if (!GlazedListsFilterRowComboBoxDataProvider.this.lazyLoading
-                                    || cacheBefore != null) {
-                                getValueCache().put(column, collectValues(column));
-                            }
-
-                            if (isUpdateEventsEnabled()) {
-                                // get the diff and fire the event
-                                fireCacheUpdateEvent(buildUpdateEvent(column, cacheBefore, getValueCache().get(column)));
-                            }
-                        } finally {
-                            getValueCacheLock().writeLock().unlock();
-                        }
+                    // only update the cache in case a cache was build already
+                    if (!GlazedListsFilterRowComboBoxDataProvider.this.lazyLoading
+                            || cacheBefore != null) {
+                        getValueCache().put(column, collectValues(column));
                     }
-                }, 0);
-            }
+
+                    if (isUpdateEventsEnabled()) {
+                        // get the diff and fire the event
+                        fireCacheUpdateEvent(buildUpdateEvent(column, cacheBefore, getValueCache().get(column)));
+                    }
+                } finally {
+                    getValueCacheLock().writeLock().unlock();
+                }
+            }, 0);
         }
     }
 

@@ -26,7 +26,11 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
  * Helper class providing support for modifying cached index lists for
  * IStructuralChangeEvents.
  */
-public class StructuralChangeEventHelper {
+public final class StructuralChangeEventHelper {
+
+    private StructuralChangeEventHelper() {
+        // private default constructor for helper class
+    }
 
     /**
      * Will check for events that indicate that rows has been deleted. In that

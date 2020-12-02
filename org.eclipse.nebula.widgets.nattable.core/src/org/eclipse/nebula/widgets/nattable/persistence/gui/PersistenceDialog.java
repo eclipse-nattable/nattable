@@ -127,7 +127,7 @@ public class PersistenceDialog extends Dialog {
      * List of {@link IStateChangedListener}s that will be notified if states
      * are changed using this dialog.
      */
-    private List<IStateChangedListener> stateChangeListeners = new ArrayList<IStateChangedListener>();
+    private List<IStateChangedListener> stateChangeListeners = new ArrayList<>();
 
     /**
      * Create a new dialog for handling NatTable state.
@@ -225,8 +225,7 @@ public class PersistenceDialog extends Dialog {
         this.viewer
                 .addSelectionChangedListener(event -> {
                     ISelection selection = event.getSelection();
-                    if (selection != null
-                            && selection instanceof IStructuredSelection) {
+                    if (selection instanceof IStructuredSelection) {
                         String configName = ((IStructuredSelection) selection)
                                 .getFirstElement().toString();
                         PersistenceDialog.this.configNameText.setText(configName);
@@ -304,7 +303,7 @@ public class PersistenceDialog extends Dialog {
                     StateChangeType.CREATE));
         } else if (buttonId == DELETE_ID) {
             ISelection selection = this.viewer.getSelection();
-            if (selection != null && selection instanceof IStructuredSelection) {
+            if (selection instanceof IStructuredSelection) {
                 String configName = ((IStructuredSelection) selection)
                         .getFirstElement().toString();
                 PersistenceHelper.deleteState(configName, this.properties);
@@ -318,7 +317,7 @@ public class PersistenceDialog extends Dialog {
             }
         } else if (buttonId == LOAD_ID) {
             ISelection selection = this.viewer.getSelection();
-            if (selection != null && selection instanceof IStructuredSelection) {
+            if (selection instanceof IStructuredSelection) {
                 String configName = ((IStructuredSelection) selection)
                         .getFirstElement().toString();
                 this.natTable.loadState(configName, this.properties);
@@ -342,7 +341,7 @@ public class PersistenceDialog extends Dialog {
         return new Point(
                 GUIHelper.convertHorizontalPixelToDpi(500, true),
                 GUIHelper.convertVerticalPixelToDpi(300, true));
-    };
+    }
 
     /**
      * @return The Properties instance that is used for saving and loading.
@@ -448,7 +447,7 @@ public class PersistenceDialog extends Dialog {
         private Styler italicStyler;
 
         ViewConfigurationNameLabelProvider() {
-            this.italicFont = GUIHelper.getFont(new FontData[] { new FontData("Arial", 8, SWT.ITALIC) }); //$NON-NLS-1$
+            this.italicFont = GUIHelper.getFont(new FontData("Arial", 8, SWT.ITALIC)); //$NON-NLS-1$
             this.italicStyler = new Styler() {
                 @Override
                 public void applyStyles(TextStyle textStyle) {

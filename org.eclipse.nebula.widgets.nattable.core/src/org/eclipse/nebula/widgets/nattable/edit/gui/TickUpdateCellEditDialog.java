@@ -206,19 +206,14 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
                 int selectionIndex = TickUpdateCellEditDialog.this.updateCombo.getSelectionIndex();
 
                 if (TickUpdateCellEditDialog.this.useAdjustBy) {
-                    switch (selectionIndex) {
-                        case 1:
-                            TickUpdateCellEditDialog.this.editType = EditTypeEnum.ADJUST;
-                            break;
+                    if (selectionIndex == 1) {
+                        TickUpdateCellEditDialog.this.editType = EditTypeEnum.ADJUST;
                     }
                 } else {
-                    switch (selectionIndex) {
-                        case 1:
-                            TickUpdateCellEditDialog.this.editType = EditTypeEnum.INCREASE;
-                            break;
-                        case 2:
-                            TickUpdateCellEditDialog.this.editType = EditTypeEnum.DECREASE;
-                            break;
+                    if (selectionIndex == 1) {
+                        TickUpdateCellEditDialog.this.editType = EditTypeEnum.INCREASE;
+                    } else if (selectionIndex == 2) {
+                        TickUpdateCellEditDialog.this.editType = EditTypeEnum.DECREASE;
                     }
                 }
             }
@@ -240,7 +235,7 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
                 ? 0
                 : (processValue instanceof Number)
                         ? ((Number) processValue).doubleValue()
-                        : Double.valueOf((String) processValue).doubleValue());
+                        : Double.parseDouble((String) processValue));
         if (this.editType == EditTypeEnum.ADJUST) {
             if (delta >= 0) {
                 this.editType = EditTypeEnum.INCREASE;
@@ -250,13 +245,11 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
         }
 
         Object newValue = null;
-        switch (this.editType) {
-            case INCREASE:
-                newValue = this.tickUpdateHandler.getIncrementedValue(currentValue, delta);
-                break;
-            case DECREASE:
-                newValue = this.tickUpdateHandler.getDecrementedValue(currentValue, delta);
-                break;
+        EditTypeEnum editType = this.editType;
+        if (editType == EditTypeEnum.INCREASE) {
+            newValue = this.tickUpdateHandler.getIncrementedValue(currentValue, delta);
+        } else if (editType == EditTypeEnum.DECREASE) {
+            newValue = this.tickUpdateHandler.getDecrementedValue(currentValue, delta);
         }
 
         try {

@@ -17,7 +17,6 @@ package org.eclipse.nebula.widgets.nattable.search.strategy;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
@@ -47,11 +46,11 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
     }
 
     @Override
-    public PositionCoordinate executeSearch(Object valueToMatch) throws PatternSyntaxException {
+    public PositionCoordinate executeSearch(Object valueToMatch) {
 
         ILayer contextLayer = getContextLayer();
         if (!(contextLayer instanceof SelectionLayer)) {
-            throw new RuntimeException("For the GridSearchStrategy to work it needs the selectionLayer to be passed as the contextLayer."); //$NON-NLS-1$
+            throw new IllegalStateException("For the GridSearchStrategy to work it needs the selectionLayer to be passed as the contextLayer."); //$NON-NLS-1$
         }
         SelectionLayer selectionLayer = (SelectionLayer) contextLayer;
         PositionCoordinate selectionAnchor = selectionLayer.getSelectionAnchor();
@@ -166,7 +165,7 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
             int firstDimPosition, int secondDimPosition, int direction,
             int firstDimStart, int firstDimEnd, int secondDimStart, int secondDimEnd) {
 
-        List<GridRectangle> gridRanges = new ArrayList<GridRectangle>();
+        List<GridRectangle> gridRanges = new ArrayList<>();
         GridRectangle gridRange;
 
         // One first-dimension slice starting at the second

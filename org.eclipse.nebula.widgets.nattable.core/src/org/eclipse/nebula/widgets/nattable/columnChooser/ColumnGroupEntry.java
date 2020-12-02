@@ -106,7 +106,7 @@ public class ColumnGroupEntry {
     }
 
     public static List<Integer> getColumnGroupEntryPositions(List<ColumnGroupEntry> columnEntries) {
-        List<Integer> columnGroupEntryPositions = new ArrayList<Integer>();
+        List<Integer> columnGroupEntryPositions = new ArrayList<>();
         for (ColumnGroupEntry columnGroupEntry : columnEntries) {
             columnGroupEntryPositions.add(columnGroupEntry.getFirstElementPosition());
         }

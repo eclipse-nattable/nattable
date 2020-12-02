@@ -62,7 +62,7 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
     /**
      * Collection of ISelectionChangedListeners to this ISelectionProvider
      */
-    private Set<ISelectionChangedListener> listeners = new HashSet<ISelectionChangedListener>();
+    private Set<ISelectionChangedListener> listeners = new HashSet<>();
     /**
      * Locally stored previous selection which is used to determine if a
      * SelectionChangedEvent should be fired. It is used to avoid firing events
@@ -238,7 +238,7 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
             }
             if (!selection.isEmpty()) {
                 List<T> rowObjects = ((IStructuredSelection) selection).toList();
-                Set<Integer> rowPositions = new HashSet<Integer>();
+                Set<Integer> rowPositions = new HashSet<>();
                 for (T rowObject : rowObjects) {
                     int rowIndex = this.rowDataProvider.indexOfRowObject(rowObject);
                     int rowPosition = this.selectionLayer.getRowPositionByIndex(rowIndex);

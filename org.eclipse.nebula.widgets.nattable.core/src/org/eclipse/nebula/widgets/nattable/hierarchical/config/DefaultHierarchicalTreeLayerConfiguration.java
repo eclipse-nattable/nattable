@@ -13,9 +13,9 @@
 package org.eclipse.nebula.widgets.nattable.hierarchical.config;
 
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
-import org.eclipse.nebula.widgets.nattable.config.EditableRule;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
@@ -56,6 +56,8 @@ import org.eclipse.swt.graphics.Color;
  *
  * @since 1.6
  */
+// fields are public by design to make it easy for adapters to customize styling
+@SuppressWarnings("java:S1104")
 public class DefaultHierarchicalTreeLayerConfiguration implements IConfiguration {
 
     protected HierarchicalTreeLayer treeLayer;
@@ -189,21 +191,21 @@ public class DefaultHierarchicalTreeLayerConfiguration implements IConfiguration
         // disable editing always for level header columns
         configRegistry.registerConfigAttribute(
                 EditConfigAttributes.CELL_EDITABLE_RULE,
-                EditableRule.NEVER_EDITABLE,
+                IEditableRule.NEVER_EDITABLE,
                 DisplayMode.NORMAL,
                 HierarchicalTreeLayer.LEVEL_HEADER_CELL);
 
         // disable editing always for collapsed childs
         configRegistry.registerConfigAttribute(
                 EditConfigAttributes.CELL_EDITABLE_RULE,
-                EditableRule.NEVER_EDITABLE,
+                IEditableRule.NEVER_EDITABLE,
                 DisplayMode.NORMAL,
                 HierarchicalTreeLayer.COLLAPSED_CHILD);
 
         // disable editing always for empty childs
         configRegistry.registerConfigAttribute(
                 EditConfigAttributes.CELL_EDITABLE_RULE,
-                EditableRule.NEVER_EDITABLE,
+                IEditableRule.NEVER_EDITABLE,
                 DisplayMode.NORMAL,
                 HierarchicalTreeLayer.NO_OBJECT_IN_LEVEL);
     }

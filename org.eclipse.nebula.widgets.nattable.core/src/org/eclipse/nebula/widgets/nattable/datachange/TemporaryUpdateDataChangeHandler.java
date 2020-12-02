@@ -43,7 +43,7 @@ public class TemporaryUpdateDataChangeHandler extends UpdateDataChangeHandler<Te
      *            for a specific key.
      */
     public TemporaryUpdateDataChangeHandler(DataChangeLayer layer, CellKeyHandler<?> keyHandler) {
-        super(layer, keyHandler, new ConcurrentHashMap<Object, TemporaryUpdateDataChange>());
+        super(layer, keyHandler, new ConcurrentHashMap<>());
     }
 
     @Override

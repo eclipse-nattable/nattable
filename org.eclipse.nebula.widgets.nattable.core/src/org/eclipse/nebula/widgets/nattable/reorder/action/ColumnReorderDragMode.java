@@ -106,13 +106,10 @@ public class ColumnReorderDragMode extends AutoScrollDragMode {
         int dragToGridColumnPosition = -1;
 
         if (moveDirection != null) {
-            switch (moveDirection) {
-                case LEFT:
-                    dragToGridColumnPosition = gridColumnPosition;
-                    break;
-                case RIGHT:
-                    dragToGridColumnPosition = gridColumnPosition + 1;
-                    break;
+            if (moveDirection == CellEdgeEnum.LEFT) {
+                dragToGridColumnPosition = gridColumnPosition;
+            } else if (moveDirection == CellEdgeEnum.RIGHT) {
+                dragToGridColumnPosition = gridColumnPosition + 1;
             }
         }
 
@@ -184,13 +181,10 @@ public class ColumnReorderDragMode extends AutoScrollDragMode {
                 if (moveDirection != null) {
                     Rectangle selectedColumnHeaderRect = getColumnCell(ColumnReorderDragMode.this.currentEvent.x).getBounds();
 
-                    switch (moveDirection) {
-                        case LEFT:
-                            dragToColumnHandleX = selectedColumnHeaderRect.x;
-                            break;
-                        case RIGHT:
-                            dragToColumnHandleX = selectedColumnHeaderRect.x + selectedColumnHeaderRect.width;
-                            break;
+                    if (moveDirection == CellEdgeEnum.LEFT) {
+                        dragToColumnHandleX = selectedColumnHeaderRect.x;
+                    } else if (moveDirection == CellEdgeEnum.RIGHT) {
+                        dragToColumnHandleX = selectedColumnHeaderRect.x + selectedColumnHeaderRect.width;
                     }
                 }
 

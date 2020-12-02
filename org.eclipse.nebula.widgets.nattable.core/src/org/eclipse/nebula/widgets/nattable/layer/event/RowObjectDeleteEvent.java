@@ -27,7 +27,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
  */
 public class RowObjectDeleteEvent extends RowDeleteEvent {
 
-    private Map<Integer, Object> deletedObjects = new HashMap<Integer, Object>();
+    private Map<Integer, Object> deletedObjects = new HashMap<>();
 
     /**
      * Creates a {@link RowObjectDeleteEvent} for one deleted row object.

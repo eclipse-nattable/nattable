@@ -26,7 +26,7 @@ public class MultipleValueFunctionValue implements FunctionValue {
     protected List<FunctionValue> values;
 
     public MultipleValueFunctionValue() {
-        this(new ArrayList<FunctionValue>());
+        this(new ArrayList<>());
     }
 
     public MultipleValueFunctionValue(List<FunctionValue> values) {

@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.Event;
  */
 public class FormulaTooltipErrorReporter extends NatTableContentTooltip implements FormulaErrorReporter {
 
-    protected Map<IndexCoordinate, String> formulaErrors = new HashMap<IndexCoordinate, String>();
+    protected Map<IndexCoordinate, String> formulaErrors = new HashMap<>();
     protected IUniqueIndexLayer bodyDataLayer;
 
     /**

@@ -76,8 +76,7 @@ public class Selection_events extends AbstractNatExample {
 
                 }));
 
-        selectionLayer
-                .addConfiguration(new RowOnlySelectionConfiguration<RowDataFixture>());
+        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration());
         this.nattable.addConfiguration(new RowOnlySelectionBindings());
 
         this.nattable.configure();
@@ -86,8 +85,7 @@ public class Selection_events extends AbstractNatExample {
 
         // Layout widgets
         parent.setLayout(new GridLayout(1, true));
-        this.nattable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true,
-                true));
+        this.nattable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setupTextArea(parent);
 
         return this.nattable;

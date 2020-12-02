@@ -33,7 +33,7 @@ public class ModFunction extends AbstractMathFunction {
 
         if (values.size() > 2) {
             throw new FunctionException("#N/A", //$NON-NLS-1$
-                    Messages.getString("FormulaParser.error.wrongNumberOfArguments", new Object[] { 2, values.size() })); //$NON-NLS-1$
+                    Messages.getString("FormulaParser.error.wrongNumberOfArguments", 2, values.size())); //$NON-NLS-1$
         }
     }
 
@@ -41,7 +41,7 @@ public class ModFunction extends AbstractMathFunction {
     public BigDecimal getValue() {
         if (this.values.size() != 2) {
             throw new FunctionException("#N/A", //$NON-NLS-1$
-                    Messages.getString("FormulaParser.error.wrongNumberOfArguments", new Object[] { 2, this.values.size() })); //$NON-NLS-1$
+                    Messages.getString("FormulaParser.error.wrongNumberOfArguments", 2, this.values.size())); //$NON-NLS-1$
         }
 
         BigDecimal number = convertValue(this.values.get(0).getValue());

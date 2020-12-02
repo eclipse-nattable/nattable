@@ -39,7 +39,7 @@ public class VisualChangeEventConflater extends AbstractEventConflater {
     @Override
     public Runnable getConflaterTask() {
         return () -> {
-            if (VisualChangeEventConflater.this.queue.size() > 0) {
+            if (!VisualChangeEventConflater.this.queue.isEmpty()) {
                 clearQueue();
 
                 VisualChangeEventConflater.this.natTable.getDisplay().asyncExec(VisualChangeEventConflater.this.natTable::updateResize);

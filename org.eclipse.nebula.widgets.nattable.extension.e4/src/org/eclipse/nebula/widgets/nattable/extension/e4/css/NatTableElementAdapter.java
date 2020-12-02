@@ -23,16 +23,11 @@ import org.eclipse.e4.ui.css.core.impl.engine.AbstractCSSEngine;
 import org.eclipse.e4.ui.css.swt.dom.WidgetElement;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -68,13 +63,7 @@ public class NatTableElementAdapter extends WidgetElement {
             addVirtualChild(label);
         }
 
-        natTable.addDisposeListener(new DisposeListener() {
-
-            @Override
-            public void widgetDisposed(DisposeEvent e) {
-                dispose();
-            }
-        });
+        natTable.addDisposeListener(e -> dispose());
 
         // the special NatTable related update listener should only be
         // registered once, there is no need to add additional listeners for
@@ -89,8 +78,7 @@ public class NatTableElementAdapter extends WidgetElement {
         Control control = getControl();
         Composite parent = control.getParent();
         if (parent != null) {
-            Element element = getElement(parent);
-            return element;
+            return getElement(parent);
         }
         return null;
     }
@@ -139,7 +127,7 @@ public class NatTableElementAdapter extends WidgetElement {
             if (node instanceof NatTableWrapperElementAdapter) {
                 ((NatTableWrapperElementAdapter) node).dispose();
 
-                if (this.engine != null && this.engine instanceof AbstractCSSEngine) {
+                if (this.engine instanceof AbstractCSSEngine) {
                     try {
                         Method method = AbstractCSSEngine.class.getDeclaredMethod("handleWidgetDisposed", Object.class);
                         if (method != null) {
@@ -174,12 +162,9 @@ public class NatTableElementAdapter extends WidgetElement {
         public NatTableSkinListener(Display display, final CSSEngine cssEngine) {
             this.engine = cssEngine;
 
-            display.addListener(SWT.Skin, new Listener() {
-                @Override
-                public void handleEvent(Event event) {
-                    if (NatTableSkinListener.this.engine != null && event.widget instanceof NatTable) {
-                        NatTableSkinListener.this.engine.applyStyles(event.widget, true);
-                    }
+            display.addListener(SWT.Skin, event -> {
+                if (NatTableSkinListener.this.engine != null && event.widget instanceof NatTable) {
+                    NatTableSkinListener.this.engine.applyStyles(event.widget, true);
                 }
             });
         }

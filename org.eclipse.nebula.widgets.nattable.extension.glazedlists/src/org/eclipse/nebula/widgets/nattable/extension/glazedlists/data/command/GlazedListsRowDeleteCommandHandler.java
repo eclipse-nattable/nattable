@@ -58,7 +58,7 @@ public class GlazedListsRowDeleteCommandHandler<T> implements ILayerCommandHandl
         // convert the transported position to the target layer
         if (command.convertToTargetLayer(targetLayer)) {
             int[] positions = command.getRowPositionsArray();
-            Map<Integer, T> deleted = new HashMap<Integer, T>();
+            Map<Integer, T> deleted = new HashMap<>();
 
             this.bodyData.getReadWriteLock().writeLock().lock();
             try {

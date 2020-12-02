@@ -240,38 +240,38 @@ public class NatCombo extends Composite {
      * list of listeners because the two controls that are combined in this
      * control share the same focus.
      */
-    private List<FocusListener> focusListener = new ArrayList<FocusListener>();
+    private List<FocusListener> focusListener = new ArrayList<>();
 
     /**
      * List of KeyListener that should be added to the dropdown table once it is
      * created. Kept locally because the table creation is deferred to the first
      * access.
      */
-    private List<KeyListener> keyListener = new ArrayList<KeyListener>();
+    private List<KeyListener> keyListener = new ArrayList<>();
     /**
      * List of TraverseListener that should be added to the dropdown table once
      * it is created. Kept locally because the table creation is deferred to the
      * first access.
      */
-    private List<TraverseListener> traverseListener = new ArrayList<TraverseListener>();
+    private List<TraverseListener> traverseListener = new ArrayList<>();
     /**
      * List of MouseListener that should be added to the dropdown table once it
      * is created. Kept locally because the table creation is deferred to the
      * first access.
      */
-    private List<MouseListener> mouseListener = new ArrayList<MouseListener>();
+    private List<MouseListener> mouseListener = new ArrayList<>();
     /**
      * List of SelectionListener that should be added to the dropdown table once
      * it is created. Kept locally because the table creation is deferred to the
      * first access.
      */
-    private List<SelectionListener> selectionListener = new ArrayList<SelectionListener>();
+    private List<SelectionListener> selectionListener = new ArrayList<>();
     /**
      * List of ShellListener that should be added to the dropdown table once it
      * is created. Kept locally because the table creation is deferred to the
      * first access.
      */
-    private List<ShellListener> shellListener = new ArrayList<ShellListener>();
+    private List<ShellListener> shellListener = new ArrayList<>();
 
     /**
      * Creates a new NatCombo using the given IStyle for rendering, showing the
@@ -440,7 +440,7 @@ public class NatCombo extends Composite {
     public void setItems(String[] items) {
         if (items != null) {
             this.itemList = Arrays.asList(items);
-            this.selectionStateMap = new LinkedHashMap<String, Boolean>();
+            this.selectionStateMap = new LinkedHashMap<>();
             for (String item : items) {
                 this.selectionStateMap.put(item, Boolean.FALSE);
             }
@@ -744,7 +744,7 @@ public class NatCombo extends Composite {
 
                 @Override
                 public boolean select(Viewer viewer, Object parentElement, Object element) {
-                    if (null != element && element instanceof String) {
+                    if (element instanceof String) {
                         return ((String) element).toLowerCase().contains(NatCombo.this.filterBox.getText().toLowerCase());
                     }
                     return false;
@@ -972,7 +972,7 @@ public class NatCombo extends Composite {
      */
     public int[] getSelectionIndices() {
         if (this.selectionStateMap != null) {
-            List<Integer> selectedIndices = new ArrayList<Integer>();
+            List<Integer> selectedIndices = new ArrayList<>();
             for (String item : this.selectionStateMap.keySet()) {
                 if (this.selectionStateMap.get(item)) {
                     selectedIndices.add(this.itemList.indexOf(item));
@@ -1000,7 +1000,7 @@ public class NatCombo extends Composite {
      */
     public int getSelectionCount() {
         if (this.selectionStateMap != null) {
-            List<Integer> selectedIndices = new ArrayList<Integer>();
+            List<Integer> selectedIndices = new ArrayList<>();
             for (String item : this.selectionStateMap.keySet()) {
                 if (this.selectionStateMap.get(item)) {
                     selectedIndices.add(this.itemList.indexOf(item));
@@ -1306,7 +1306,7 @@ public class NatCombo extends Composite {
      * @return Array containing all selected TableItem text attributes
      */
     protected String[] getTransformedSelection() {
-        List<String> selectedItems = new ArrayList<String>();
+        List<String> selectedItems = new ArrayList<>();
         for (String item : this.selectionStateMap.keySet()) {
             Boolean isSelected = this.selectionStateMap.get(item);
             if (isSelected != null && isSelected) {
@@ -1326,7 +1326,7 @@ public class NatCombo extends Composite {
      */
     protected void setDropdownSelection(String[] selection) {
         java.util.List<String> selectionList = Arrays.asList(selection);
-        java.util.List<TableItem> selectedItems = new ArrayList<TableItem>();
+        java.util.List<TableItem> selectedItems = new ArrayList<>();
         for (TableItem item : getDropdownTable().getItems()) {
             if (selectionList.contains(EditConstants.SELECT_ALL_ITEMS_VALUE)
                     || selectionList.contains(item.getText())) {
@@ -1503,7 +1503,7 @@ public class NatCombo extends Composite {
             NatCombo.this.hasFocus = false;
             Display.getCurrent().timerExec(100, () -> {
                 if (!NatCombo.this.hasFocus) {
-                    List<FocusListener> copy = new ArrayList<FocusListener>(NatCombo.this.focusListener);
+                    List<FocusListener> copy = new ArrayList<>(NatCombo.this.focusListener);
                     for (FocusListener f : copy) {
                         f.focusLost(e);
                     }

@@ -129,7 +129,7 @@ public final class HierarchicalHelper {
                     HierarchicalWrapper rootWrapper = new HierarchicalWrapper(nestedArray.length + 1);
                     rootWrapper.setObject(0, root);
                     result.addAll(deNormalizeWithDirectChildren(rootWrapper, 0, nestedArray,
-                            new HashMap<Class<?>, Map<String, PropertyDescriptor>>(), addParentObject));
+                            new HashMap<>(), addParentObject));
                 }
             }
         }
@@ -290,7 +290,7 @@ public final class HierarchicalHelper {
                 if (split.length == currentLevel) {
                     columns.add(col);
                 } else if (split.length > currentLevel) {
-                    columns = new ArrayList<Integer>();
+                    columns = new ArrayList<>();
                     columns.add(col);
                     levelIndexMapping.put(currentLevel, columns);
                     currentLevel++;

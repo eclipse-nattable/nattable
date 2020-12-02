@@ -19,11 +19,12 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 
 /**
  * Constants class for NatTable CSS support.
- *
- * @noextend This interface is not intended to be extended by clients.
- * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface NatTableCSSConstants {
+public final class NatTableCSSConstants {
+
+    private NatTableCSSConstants() {
+        // private default constructor for helper class
+    }
 
     // CSS properties
 
@@ -31,12 +32,12 @@ public interface NatTableCSSConstants {
      * CSS property for the NatTable background color. This has effect on the
      * area that does not show cells or cells with a transparent background.
      */
-    String BACKGROUND_COLOR = "background-color";
+    public static final String BACKGROUND_COLOR = "background-color";
     /**
      * CSS property for the NatTable background image. This has effect on the
      * area that does not show cells or cells with a transparent background.
      */
-    String BACKGROUND_IMAGE = "background-image";
+    public static final String BACKGROUND_IMAGE = "background-image";
     /**
      * CSS property to specify the border color that is applied around the
      * NatTable. Triggers the usage of the NatTableBorderOverlayPainter to apply
@@ -46,7 +47,7 @@ public interface NatTableCSSConstants {
      * the table border color.
      * </p>
      */
-    String TABLE_BORDER_COLOR = "table-border-color";
+    public static final String TABLE_BORDER_COLOR = "table-border-color";
     /**
      * CSS property for enabling/disabling the automatic painter resolution
      * based on CSS properties.
@@ -54,7 +55,7 @@ public interface NatTableCSSConstants {
      * Available values: <code>true, false</code>
      * </p>
      */
-    String PAINTER_RESOLUTION = "painter-resolution";
+    public static final String PAINTER_RESOLUTION = "painter-resolution";
     /**
      * CSS property for configuring the painter.
      * <p>
@@ -67,7 +68,7 @@ public interface NatTableCSSConstants {
      * .
      * </p>
      */
-    String PAINTER = "painter";
+    public static final String PAINTER = "painter";
     /**
      * CSS property for configuring the tree structure painter. Similar to
      * {@link #PAINTER} but specific for the tree structure configuration as it
@@ -84,72 +85,72 @@ public interface NatTableCSSConstants {
      * evaluated dynamically.
      * </p>
      */
-    String TREE_STRUCTURE_PAINTER = "tree-structure-painter";
+    public static final String TREE_STRUCTURE_PAINTER = "tree-structure-painter";
     /**
      * CSS property for {@link CellStyleAttributes#BACKGROUND_COLOR}.
      */
-    String CELL_BACKGROUND_COLOR = "cell-background-color";
+    public static final String CELL_BACKGROUND_COLOR = "cell-background-color";
     /**
      * CSS property for configuring a background based on an image.
      */
-    String CELL_BACKGROUND_IMAGE = "cell-background-image";
+    public static final String CELL_BACKGROUND_IMAGE = "cell-background-image";
     /**
      * CSS property for {@link CellStyleAttributes#FOREGROUND_COLOR}.
      */
-    String FOREGROUND_COLOR = "color";
+    public static final String FOREGROUND_COLOR = "color";
     /**
      * CSS property for {@link CellStyleAttributes#HORIZONTAL_ALIGNMENT}.
      */
-    String HORIZONTAL_ALIGNMENT = "text-align";
+    public static final String HORIZONTAL_ALIGNMENT = "text-align";
     /**
      * CSS property for {@link CellStyleAttributes#VERTICAL_ALIGNMENT}.
      */
-    String VERTICAL_ALIGNMENT = "vertical-align";
+    public static final String VERTICAL_ALIGNMENT = "vertical-align";
     /**
      * CSS property for {@link CellStyleAttributes#FONT}.
      */
-    String FONT = "font";
+    public static final String FONT = "font";
     /**
      * CSS property for {@link CellStyleAttributes#FONT}.
      */
-    String FONT_FAMILY = "font-family";
+    public static final String FONT_FAMILY = "font-family";
     /**
      * CSS property for {@link CellStyleAttributes#FONT}.
      */
-    String FONT_SIZE = "font-size";
+    public static final String FONT_SIZE = "font-size";
     /**
      * CSS property for {@link CellStyleAttributes#FONT}.
      */
-    String FONT_STYLE = "font-style";
+    public static final String FONT_STYLE = "font-style";
     /**
      * CSS property for {@link CellStyleAttributes#FONT}.
      */
-    String FONT_WEIGHT = "font-weight";
+    public static final String FONT_WEIGHT = "font-weight";
     /**
      * CSS property for {@link CellStyleAttributes#IMAGE}. Triggers the usage of
      * the ImagePainter.
      */
-    String IMAGE = "image";
+    public static final String IMAGE = "image";
     /**
      * CSS property for {@link CellStyleAttributes#BORDER_STYLE}. Triggers the
      * usage of the LineBorderDecorator.
      */
-    String BORDER = "border";
+    public static final String BORDER = "border";
     /**
      * CSS property for {@link CellStyleAttributes#BORDER_STYLE}. Triggers the
      * usage of the LineBorderDecorator.
      */
-    String BORDER_COLOR = "border-color";
+    public static final String BORDER_COLOR = "border-color";
     /**
      * CSS property for {@link CellStyleAttributes#BORDER_STYLE}. Triggers the
      * usage of the LineBorderDecorator.
      */
-    String BORDER_STYLE = "border-style";
+    public static final String BORDER_STYLE = "border-style";
     /**
      * CSS property for {@link CellStyleAttributes#BORDER_STYLE}. Triggers the
      * usage of the LineBorderDecorator.
      */
-    String BORDER_WIDTH = "border-width";
+    public static final String BORDER_WIDTH = "border-width";
     /**
      * CSS property for {@link CellStyleAttributes#BORDER_STYLE}. Triggers the
      * usage of the LineBorderDecorator.
@@ -159,13 +160,13 @@ public interface NatTableCSSConstants {
      *
      * @since 1.1
      */
-    String BORDER_MODE = "border-mode";
+    public static final String BORDER_MODE = "border-mode";
     /**
      * CSS property for {@link CellStyleAttributes#PASSWORD_ECHO_CHAR}. Does not
      * trigger the usage of the PasswordTextPainter. This needs to be done via
      * additional {@link IConfiguration} or <i>painter</i> CSS property.
      */
-    String PASSWORD_ECHO_CHAR = "password-echo-char";
+    public static final String PASSWORD_ECHO_CHAR = "password-echo-char";
     /**
      * CSS property for {@link CellStyleAttributes#TEXT_DECORATION}.
      * <p>
@@ -175,32 +176,32 @@ public interface NatTableCSSConstants {
      * Combinations are possible via space separated list.
      * </p>
      */
-    String TEXT_DECORATION = "text-decoration";
+    public static final String TEXT_DECORATION = "text-decoration";
     /**
      * CSS property for the color of the freeze separator.
      */
-    String FREEZE_SEPARATOR_COLOR = "freeze-separator-color";
+    public static final String FREEZE_SEPARATOR_COLOR = "freeze-separator-color";
     /**
      * CSS property for the width of the freeze separator.
      *
      * @since 1.2
      */
-    String FREEZE_SEPARATOR_WIDTH = "freeze-separator-width";
+    public static final String FREEZE_SEPARATOR_WIDTH = "freeze-separator-width";
     /**
      * CSS property for the color of the grid lines.
      */
-    String GRID_LINE_COLOR = "grid-line-color";
+    public static final String GRID_LINE_COLOR = "grid-line-color";
     /**
      * CSS property for the width of the grid lines.
      */
-    String GRID_LINE_WIDTH = "grid-line-width";
+    public static final String GRID_LINE_WIDTH = "grid-line-width";
     /**
      * CSS property to specify whether grid lines should be rendered or not.
      * <p>
      * Available values: <code>true, false</code>
      * </p>
      */
-    String RENDER_GRID_LINES = "render-grid-lines";
+    public static final String RENDER_GRID_LINES = "render-grid-lines";
     /**
      * CSS property to specify whether words should automatically or not.
      * Default is <code>false</code>.
@@ -210,7 +211,7 @@ public interface NatTableCSSConstants {
      *
      * @since 1.1
      */
-    String WORD_WRAP = "word-wrap";
+    public static final String WORD_WRAP = "word-wrap";
     /**
      * CSS property to specify whether text should automatically wrapped between
      * words or not. Default is <code>false</code>.
@@ -218,7 +219,7 @@ public interface NatTableCSSConstants {
      * Available values: <code>true, false</code>
      * </p>
      */
-    String TEXT_WRAP = "text-wrap";
+    public static final String TEXT_WRAP = "text-wrap";
     /**
      * CSS property to specify whether text should be trimmed on rendering words
      * or not. Default is <code>true</code>.
@@ -226,7 +227,7 @@ public interface NatTableCSSConstants {
      * Available values: <code>true, false</code>
      * </p>
      */
-    String TEXT_TRIM = "text-trim";
+    public static final String TEXT_TRIM = "text-trim";
     /**
      * CSS property to specify whether text should be rendered horizontally or
      * vertically. Default is <code>horizontal</code>.
@@ -234,7 +235,7 @@ public interface NatTableCSSConstants {
      * Available values: <code>horizontal, vertical</code>
      * </p>
      */
-    String TEXT_DIRECTION = "text-direction";
+    public static final String TEXT_DIRECTION = "text-direction";
     /**
      * CSS property to specify an additional spacing between lines in a text. By
      * default this value is zero which means the line height is specified only
@@ -242,7 +243,7 @@ public interface NatTableCSSConstants {
      *
      * @since 1.1
      */
-    String LINE_SPACING = "line-spacing";
+    public static final String LINE_SPACING = "line-spacing";
     /**
      * CSS property to configure the column width. Available values are:
      * <ul>
@@ -254,7 +255,7 @@ public interface NatTableCSSConstants {
      * <li>number value (e.g. 100px)- configure column width</li>
      * </ul>
      */
-    String COLUMN_WIDTH = "column-width";
+    public static final String COLUMN_WIDTH = "column-width";
     /**
      * CSS property to configure the row height. Available values are:
      * <ul>
@@ -266,7 +267,7 @@ public interface NatTableCSSConstants {
      * <li>number value (e.g. 100px)- configure row height</li>
      * </ul>
      */
-    String ROW_HEIGHT = "row-height";
+    public static final String ROW_HEIGHT = "row-height";
     /**
      * CSS property to configure the display converter. Possible values are:
      * <ul>
@@ -285,7 +286,7 @@ public interface NatTableCSSConstants {
      * <li>big-decimal [min-fraction-digits] [max-fraction-digits]</li>
      * </ul>
      */
-    String CONVERTER = "converter";
+    public static final String CONVERTER = "converter";
     /**
      * CSS property to configure a decoration. Consists of 4 values:
      * <ul>
@@ -296,7 +297,7 @@ public interface NatTableCSSConstants {
      * <li>true|false to configure decoration dependent rendering</li>
      * </ul>
      */
-    String DECORATION = "decoration";
+    public static final String DECORATION = "decoration";
     /**
      * CSS property to configure whether default decorator icons should be
      * inverted.
@@ -304,162 +305,162 @@ public interface NatTableCSSConstants {
      * Available values: <code>true, false</code>
      * </p>
      */
-    String INVERT_ICONS = "invert-icons";
+    public static final String INVERT_ICONS = "invert-icons";
     /**
      * CSS property to specify the border style of the fill region.
      */
-    String FILL_REGION_BORDER = "fill-region-border";
+    public static final String FILL_REGION_BORDER = "fill-region-border";
     /**
      * CSS property to specify the border of the fill drag handle.
      */
-    String FILL_HANDLE_BORDER = "fill-handle-border";
+    public static final String FILL_HANDLE_BORDER = "fill-handle-border";
     /**
      * CSS property to specify the color of the fill drag handle.
      */
-    String FILL_HANDLE_COLOR = "fill-handle-color";
+    public static final String FILL_HANDLE_COLOR = "fill-handle-color";
     /**
      * CSS property to specify cell padding. Triggers usage of the
      * PaddingDecorator if painter resolution is enabled.
      */
-    String PADDING = "padding";
+    public static final String PADDING = "padding";
     /**
      * CSS property to specify the top padding of a cell. Triggers usage of the
      * PaddingDecorator if painter resolution is enabled.
      */
-    String PADDING_TOP = "padding-top";
+    public static final String PADDING_TOP = "padding-top";
     /**
      * CSS property to specify the right padding of a cell. Triggers usage of
      * the PaddingDecorator if painter resolution is enabled.
      */
-    String PADDING_RIGHT = "padding-right";
+    public static final String PADDING_RIGHT = "padding-right";
     /**
      * CSS property to specify the bottom padding of a cell. Triggers usage of
      * the PaddingDecorator if painter resolution is enabled.
      */
-    String PADDING_BOTTOM = "padding-bottom";
+    public static final String PADDING_BOTTOM = "padding-bottom";
     /**
      * CSS property to specify the left padding of a cell. Triggers usage of the
      * PaddingDecorator if painter resolution is enabled.
      */
-    String PADDING_LEFT = "padding-left";
+    public static final String PADDING_LEFT = "padding-left";
     /**
      * CSS property for configuring the colors to use with the
      * PercentageBarDecorator.
      */
-    String PERCENTAGE_DECORATOR_COLORS = "percentage-decorator-colors";
+    public static final String PERCENTAGE_DECORATOR_COLORS = "percentage-decorator-colors";
     /**
      * CSS property for specifying the font of a text cell editor on conversion
      * error.
      */
-    String CONVERSION_ERROR_FONT = "conversion-error-font";
+    public static final String CONVERSION_ERROR_FONT = "conversion-error-font";
     /**
      * CSS property for specifying the font family of a text cell editor on
      * conversion error.
      */
-    String CONVERSION_ERROR_FONT_FAMILY = "conversion-error-font-family";
+    public static final String CONVERSION_ERROR_FONT_FAMILY = "conversion-error-font-family";
     /**
      * CSS property for specifying the font size of a text cell editor on
      * conversion error.
      */
-    String CONVERSION_ERROR_FONT_SIZE = "conversion-error-font-size";
+    public static final String CONVERSION_ERROR_FONT_SIZE = "conversion-error-font-size";
     /**
      * CSS property for specifying the font style of a text cell editor on
      * conversion error.
      */
-    String CONVERSION_ERROR_FONT_STYLE = "conversion-error-font-style";
+    public static final String CONVERSION_ERROR_FONT_STYLE = "conversion-error-font-style";
     /**
      * CSS property for specifying the font weight of a text cell editor on
      * conversion error.
      */
-    String CONVERSION_ERROR_FONT_WEIGHT = "conversion-error-font-weight";
+    public static final String CONVERSION_ERROR_FONT_WEIGHT = "conversion-error-font-weight";
     /**
      * CSS property for specifying the background color of a text cell editor on
      * conversion error.
      */
-    String CONVERSION_ERROR_BACKGROUND_COLOR = "conversion-error-background-color";
+    public static final String CONVERSION_ERROR_BACKGROUND_COLOR = "conversion-error-background-color";
     /**
      * CSS property for specifying the foreground color of a text cell editor on
      * conversion error.
      */
-    String CONVERSION_ERROR_FOREGROUND_COLOR = "conversion-error-color";
+    public static final String CONVERSION_ERROR_FOREGROUND_COLOR = "conversion-error-color";
     /**
      * CSS property for specifying the font of a text cell editor on validation
      * error.
      */
-    String VALIDATION_ERROR_FONT = "validation-error-font";
+    public static final String VALIDATION_ERROR_FONT = "validation-error-font";
     /**
      * CSS property for specifying the font family of a text cell editor on
      * validation error.
      */
-    String VALIDATION_ERROR_FONT_FAMILY = "validation-error-font-family";
+    public static final String VALIDATION_ERROR_FONT_FAMILY = "validation-error-font-family";
     /**
      * CSS property for specifying the font size of a text cell editor on
      * validation error.
      */
-    String VALIDATION_ERROR_FONT_SIZE = "validation-error-font-size";
+    public static final String VALIDATION_ERROR_FONT_SIZE = "validation-error-font-size";
     /**
      * CSS property for specifying the font style of a text cell editor on
      * validation error.
      */
-    String VALIDATION_ERROR_FONT_STYLE = "validation-error-font-style";
+    public static final String VALIDATION_ERROR_FONT_STYLE = "validation-error-font-style";
     /**
      * CSS property for specifying the font weight of a text cell editor on
      * validation error.
      */
-    String VALIDATION_ERROR_FONT_WEIGHT = "validation-error-font-weight";
+    public static final String VALIDATION_ERROR_FONT_WEIGHT = "validation-error-font-weight";
     /**
      * CSS property for specifying the background color of a text cell editor on
      * validation error.
      */
-    String VALIDATION_ERROR_BACKGROUND_COLOR = "validation-error-background-color";
+    public static final String VALIDATION_ERROR_BACKGROUND_COLOR = "validation-error-background-color";
     /**
      * CSS property for specifying the foreground color of a text cell editor on
      * validation error.
      */
-    String VALIDATION_ERROR_FOREGROUND_COLOR = "validation-error-color";
+    public static final String VALIDATION_ERROR_FOREGROUND_COLOR = "validation-error-color";
     /**
      * CSS property for the color of the hide indicator.
      *
      * @since 2.0
      */
-    String HIDE_INDICATOR_COLOR = "hide-indicator-color";
+    public static final String HIDE_INDICATOR_COLOR = "hide-indicator-color";
     /**
      * CSS property for the width of the hide indicator.
      *
      * @since 2.0
      */
-    String HIDE_INDICATOR_WIDTH = "hide-indicator-width";
+    public static final String HIDE_INDICATOR_WIDTH = "hide-indicator-width";
 
     // context value keys
 
     /**
      * Context value key for background painter
      */
-    String CV_BACKGROUND_PAINTER = "bg-painter";
+    public static final String CV_BACKGROUND_PAINTER = "bg-painter";
     /**
      * Context value key for decorator painter list
      */
-    String CV_DECORATOR_PAINTER = "decorator-painter";
+    public static final String CV_DECORATOR_PAINTER = "decorator-painter";
     /**
      * Context value key for content painter
      */
-    String CV_CONTENT_PAINTER = "content-painter";
+    public static final String CV_CONTENT_PAINTER = "content-painter";
     /**
      * Context value key for content painter configuration values
      */
-    String CV_PAINTER_CONFIGURATION = "content-painter-config";
+    public static final String CV_PAINTER_CONFIGURATION = "content-painter-config";
     /**
      * Context value key for border properties
      */
-    String CV_BORDER_CONFIGURATION = "border-config";
+    public static final String CV_BORDER_CONFIGURATION = "border-config";
     /**
      * Context value key for conversion error font properties
      */
-    String CV_CONVERSION_ERROR_FONT_PROPERTIES = "conversion-error-font";
+    public static final String CV_CONVERSION_ERROR_FONT_PROPERTIES = "conversion-error-font";
     /**
      * Context value key for validation error font properties
      */
-    String CV_VALIDATION_ERROR_FONT_PROPERTIES = "validation-error-font";
+    public static final String CV_VALIDATION_ERROR_FONT_PROPERTIES = "validation-error-font";
 
     // painter properties map key
 
@@ -467,35 +468,35 @@ public interface NatTableCSSConstants {
      * Painter properties key to store whether a GradientBackgroundPainter
      * should sweep from top to bottom or from left to right.
      */
-    String GRADIENT_BACKGROUND_VERTICAL = "gradient-background-vertical";
+    public static final String GRADIENT_BACKGROUND_VERTICAL = "gradient-background-vertical";
     /**
      * Painter properties key to store the decorator spacing used by the
      * CellPainterDecorator.
      */
-    String DECORATOR_SPACING = "decorator-spacing";
+    public static final String DECORATOR_SPACING = "decorator-spacing";
     /**
      * Painter properties key to store the decorator cell edge used by the
      * CellPainterDecorator.
      */
-    String DECORATOR_EDGE = "decorator-edge";
+    public static final String DECORATOR_EDGE = "decorator-edge";
     /**
      * Painter properties key to store the decorator image used by the
      * CellPainterDecorator.
      */
-    String DECORATOR_IMAGE = "decorator-image";
+    public static final String DECORATOR_IMAGE = "decorator-image";
     /**
      * Painter properties key to store the value for decorator dependent flag
      * used by the CellPainterDecorator.
      */
-    String PAINT_DECORATION_DEPENDENT = "decoration-dependent";
+    public static final String PAINT_DECORATION_DEPENDENT = "decoration-dependent";
     /**
      * Painter properties key to specify whether the cell/row height should be
      * calculated dependent on the content. Default is <code>false</code>.
      */
-    String CALCULATE_CELL_HEIGHT = "calculate-cell-height";
+    public static final String CALCULATE_CELL_HEIGHT = "calculate-cell-height";
     /**
      * Painter properties key to specify whether the cell/column width should be
      * calculated dependent on the content. Default is <code>false</code>.
      */
-    String CALCULATE_CELL_WIDTH = "calculate-cell-width";
+    public static final String CALCULATE_CELL_WIDTH = "calculate-cell-width";
 }

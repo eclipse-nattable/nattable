@@ -25,6 +25,10 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
  */
 public class LayerCommandUtil {
 
+    private LayerCommandUtil() {
+        // private default constructor for helper class
+    }
+
     /**
      * Convert the given {@link PositionCoordinate} to the given target
      * {@link ILayer}.

@@ -279,6 +279,8 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
     }
 
     /**
+     * @param columnPosition
+     *            the column position for which the original label is requested
      * @return column header as defined by the data source
      */
     public String getOriginalColumnLabel(int columnPosition) {
@@ -287,6 +289,8 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
     }
 
     /**
+     * @param columnPosition
+     *            the column position for which the renamed label is requested
      * @return renamed column header if the column has been renamed, NULL
      *         otherwise
      */
@@ -296,6 +300,8 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
     }
 
     /**
+     * @param columnIndex
+     *            the column index for which the renamed label is requested
      * @return renamed column header if the column has been renamed, NULL
      *         otherwise
      */
@@ -304,8 +310,10 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
     }
 
     /**
-     * @return TRUE if the column at the given index has been given a custom
-     *         name by the user.
+     * @param columnIndex
+     *            the column index that should be checked
+     * @return <code>true</code> if the column at the given index has been given
+     *         a custom name by the user.
      */
     public boolean isColumnRenamed(int columnIndex) {
         return this.renameColumnHelper.isColumnRenamed(columnIndex);

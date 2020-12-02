@@ -665,12 +665,6 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
         return this.cachedWidth;
     }
 
-    @Override
-    public int getColumnWidthByPosition(int columnPosition) {
-        int width = super.getColumnWidthByPosition(columnPosition);
-        return width;
-    }
-
     // Column resize
 
     @Override
@@ -772,12 +766,6 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
             recalculateAvailableHeightAndRowCount();
         }
         return this.cachedHeight;
-    }
-
-    @Override
-    public int getRowHeightByPosition(int rowPosition) {
-        int height = super.getRowHeightByPosition(rowPosition);
-        return height;
     }
 
     // Row resize
@@ -1190,6 +1178,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      *
      * @param originX
      *            The origin x value to adjust if necessary.
+     * @return the adjusted x
      */
     protected int adjustOriginX(int originX) {
         if (getColumnCount() == 0) {
@@ -1244,6 +1233,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      *
      * @param originY
      *            The origin y value to adjust if necessary.
+     * @return the adjusted y
      */
     protected int adjustOriginY(int originY) {
         if (getRowCount() == 0) {

@@ -82,7 +82,7 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
     }
 
     private List<T> getNodeChildren(Node<T> treeNode) {
-        List<T> children = new ArrayList<T>();
+        List<T> children = new ArrayList<>();
         for (Node<T> child : treeNode.getChildren()) {
             children.add(child.getElement());
             children.addAll(getNodeChildren(child));
@@ -92,7 +92,7 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 
     @Override
     public List<T> getChildren(T object, boolean fullDepth) {
-        if (fullDepth == false) {
+        if (!fullDepth) {
             return getChildren(object);
         }
         int index = indexOf(object);
@@ -106,7 +106,7 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
     @Override
     public List<T> getChildren(int index) {
         if (!isValidIndex(index)) {
-            return null;
+            return new ArrayList<>();
         }
 
         List<T> children = null;
@@ -114,13 +114,13 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
             Node<T> treeNode = this.treeList.getTreeNode(index);
             if (treeNode != null) {
                 List<Node<T>> childrenNodes = treeNode.getChildren();
-                children = new ArrayList<T>(childrenNodes.size());
+                children = new ArrayList<>(childrenNodes.size());
                 for (Node<T> node : childrenNodes) {
                     children.add(node.getElement());
                 }
             }
         }
-        return children != null ? children : new ArrayList<T>();
+        return children != null ? children : new ArrayList<>();
     }
 
     @Override
@@ -130,7 +130,7 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 
     @Override
     public boolean isValidIndex(int index) {
-        return (!(index < 0) && index < this.treeList.size());
+        return (index >= 0 && index < this.treeList.size());
     }
 
     /**

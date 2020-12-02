@@ -24,7 +24,7 @@ import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
  */
 public class AggregateConfiguration implements IConfiguration {
 
-    private final Collection<IConfiguration> configurations = new LinkedList<IConfiguration>();
+    private final Collection<IConfiguration> configurations = new LinkedList<>();
 
     public void addConfiguration(IConfiguration configuration) {
         this.configurations.add(configuration);

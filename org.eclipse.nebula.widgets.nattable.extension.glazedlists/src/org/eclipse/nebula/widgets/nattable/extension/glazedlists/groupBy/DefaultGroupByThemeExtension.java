@@ -53,6 +53,8 @@ import org.eclipse.swt.graphics.Image;
  * </pre>
  *
  */
+// fields are public by design to make it easy for adapters to customize a theme
+@SuppressWarnings("java:S1104")
 public class DefaultGroupByThemeExtension implements IThemeExtension {
 
     // group by header background color
@@ -717,11 +719,11 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      *            which the style configuration should be applied to.
      */
     protected void configureGroupByHint(IConfigRegistry configRegistry) {
-        String groupByHint = getGroupByHint();
-        if (groupByHint != null && groupByHint.length() > 0) {
+        String hint = getGroupByHint();
+        if (hint != null && hint.length() > 0) {
             configRegistry.registerConfigAttribute(
                     GroupByConfigAttributes.GROUP_BY_HINT,
-                    groupByHint);
+                    hint);
         }
 
         IStyle hintStyle = getGroupByHintStyle();
@@ -796,11 +798,11 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
                     GroupByHeaderLayer.GROUP_BY_REGION);
         }
 
-        String groupByHint = getGroupByHint();
-        if (groupByHint != null && groupByHint.length() > 0) {
+        String hint = getGroupByHint();
+        if (hint != null && hint.length() > 0) {
             configRegistry.unregisterConfigAttribute(
                     GroupByConfigAttributes.GROUP_BY_HINT,
-                    groupByHint);
+                    hint);
         }
 
         if (!ThemeConfiguration.isStyleEmpty(getGroupByObjectStyle())) {

@@ -73,11 +73,11 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      * GlazedLists for example, the combobox would only contain the value which
      * is currently used for filtering.
      */
-    private final Map<Integer, List<?>> valueCache = new HashMap<Integer, List<?>>();
+    private final Map<Integer, List<?>> valueCache = new HashMap<>();
     /**
      * List of listeners that get informed if the value cache gets updated.
      */
-    private List<IFilterRowComboUpdateListener> cacheUpdateListener = new ArrayList<IFilterRowComboUpdateListener>();
+    private List<IFilterRowComboUpdateListener> cacheUpdateListener = new ArrayList<>();
     /**
      * Flag to indicate whether the combo box content should be loaded lazily.
      *
@@ -292,7 +292,7 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
                 this.valueCacheLock.writeLock().lock();
                 try {
                     // remember the cache before updating
-                    Map<Integer, List<?>> cacheBefore = new HashMap<Integer, List<?>>(this.valueCache);
+                    Map<Integer, List<?>> cacheBefore = new HashMap<>(this.valueCache);
 
                     // perform a refresh of the whole cache
                     this.valueCache.clear();
@@ -330,8 +330,8 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      *         <code>null</code> if nothing has changed.
      */
     protected FilterRowComboUpdateEvent buildUpdateEvent(int columnIndex, List<?> cacheBefore, List<?> cacheAfter) {
-        Set<Object> addedValues = new HashSet<Object>();
-        Set<Object> removedValues = new HashSet<Object>();
+        Set<Object> addedValues = new HashSet<>();
+        Set<Object> removedValues = new HashSet<>();
 
         // find the added values
         if (cacheAfter != null && cacheBefore != null) {

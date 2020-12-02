@@ -26,6 +26,8 @@ import org.eclipse.swt.graphics.Color;
  * Sets up alternate row coloring. Applied by
  * {@link DefaultGridLayerConfiguration}
  */
+// fields are public by design to make it easy for adapters to customize styling
+@SuppressWarnings("java:S1104")
 public class DefaultRowStyleConfiguration extends AbstractRegistryConfiguration {
 
     public Color evenRowBgColor = GUIHelper.COLOR_WIDGET_BACKGROUND;

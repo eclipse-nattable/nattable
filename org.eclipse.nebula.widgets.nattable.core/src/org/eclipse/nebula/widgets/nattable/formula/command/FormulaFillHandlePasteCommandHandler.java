@@ -82,8 +82,7 @@ public class FormulaFillHandlePasteCommandHandler extends FillHandlePasteCommand
                 }
                 cellValue = e.getErrorMarkup();
             }
-        } else if (cellValue != null
-                && cellValue instanceof String
+        } else if (cellValue instanceof String
                 && this.dataProvider.getFormulaParser().isNumber((String) cellValue)) {
             final BigDecimal converted = this.dataProvider.getFormulaParser().convertToBigDecimal((String) cellValue);
             ILayerCell temp = new LayerCell(cell.getLayer(),

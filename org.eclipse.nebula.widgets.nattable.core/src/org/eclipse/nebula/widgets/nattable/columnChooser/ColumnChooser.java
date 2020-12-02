@@ -50,7 +50,7 @@ public class ColumnChooser {
 
     private final org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer columnGroupHeaderLayer;
 
-    List<Integer> nonModifiableColumns = new ArrayList<Integer>();
+    List<Integer> nonModifiableColumns = new ArrayList<>();
 
     /**
      * Constructor to be used with the old column grouping feature.

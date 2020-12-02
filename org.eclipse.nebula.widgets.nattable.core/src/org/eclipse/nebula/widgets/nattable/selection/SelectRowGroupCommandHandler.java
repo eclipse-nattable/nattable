@@ -100,7 +100,7 @@ public class SelectRowGroupCommandHandler<T> extends AbstractLayerCommandHandler
             int rowPositionToMoveIntoViewport,
             boolean moveAnchorToTopOfGroup) {
 
-        HashSet<Range> changedRowRanges = new HashSet<Range>();
+        HashSet<Range> changedRowRanges = new HashSet<>();
 
         if (rowPositions.length > 0) {
             changedRowRanges.addAll(internalSelectRow(
@@ -132,7 +132,7 @@ public class SelectRowGroupCommandHandler<T> extends AbstractLayerCommandHandler
             boolean withControlMask,
             boolean moveAnchorToTopOfGroup) {
 
-        HashSet<Range> changedRowRanges = new HashSet<Range>();
+        HashSet<Range> changedRowRanges = new HashSet<>();
 
         if (noShiftOrControl(withShiftMask, withControlMask)) {
             changedRowRanges.addAll(this.selectionLayer.getSelectedRowPositions());

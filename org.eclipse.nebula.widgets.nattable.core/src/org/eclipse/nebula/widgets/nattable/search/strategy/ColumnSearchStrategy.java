@@ -15,7 +15,6 @@ package org.eclipse.nebula.widgets.nattable.search.strategy;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
@@ -40,7 +39,7 @@ public class ColumnSearchStrategy extends AbstractSearchStrategy {
     }
 
     @Override
-    public PositionCoordinate executeSearch(Object valueToMatch) throws PatternSyntaxException {
+    public PositionCoordinate executeSearch(Object valueToMatch) {
         @SuppressWarnings("unchecked")
         Comparator<String> comparator = (Comparator<String>) getComparator();
         return CellDisplayValueSearchUtil.findCell(
@@ -64,7 +63,7 @@ public class ColumnSearchStrategy extends AbstractSearchStrategy {
     }
 
     protected PositionCoordinate[] getColumnCellsToSearch(ILayer contextLayer) {
-        List<PositionCoordinate> cellsToSearch = new ArrayList<PositionCoordinate>();
+        List<PositionCoordinate> cellsToSearch = new ArrayList<>();
         int rowPosition = this.startingRowPosition;
         // See how many rows we can add, depends on where the search is starting
         // from

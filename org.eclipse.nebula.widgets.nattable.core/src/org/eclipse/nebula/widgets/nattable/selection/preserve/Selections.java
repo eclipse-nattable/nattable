@@ -39,7 +39,7 @@ class Selections<T> {
     /**
      * A map for looking up rows given their row IDs
      */
-    private HashMap<Serializable, Row<T>> selectedRows = new HashMap<Serializable, Row<T>>();
+    private HashMap<Serializable, Row<T>> selectedRows = new HashMap<>();
 
     /**
      * A map for looking up columns given their column positions
@@ -123,7 +123,7 @@ class Selections<T> {
             this.selectedColumns.remove(columnPosition);
         }
 
-        HashSet<Serializable> toRemove = new HashSet<Serializable>();
+        HashSet<Serializable> toRemove = new HashSet<>();
         for (Map.Entry<Serializable, Row<T>> entry : this.selectedRows.entrySet()) {
             entry.getValue().removeItem(columnPosition);
             if (!entry.getValue().hasSelection()) {
@@ -148,8 +148,8 @@ class Selections<T> {
 
                 // also update the row references
                 for (Row<T> row : this.selectedRows.values()) {
-                    HashSet<Integer> toRemove = new HashSet<Integer>();
-                    HashSet<Integer> toAdd = new HashSet<Integer>();
+                    HashSet<Integer> toRemove = new HashSet<>();
+                    HashSet<Integer> toAdd = new HashSet<>();
                     for (Integer col : row.getItems()) {
                         if (col <= i) {
                             toRemove.add(i);
@@ -175,8 +175,8 @@ class Selections<T> {
 
                 // also update the row references
                 for (Row<T> row : this.selectedRows.values()) {
-                    HashSet<Integer> toRemove = new HashSet<Integer>();
-                    HashSet<Integer> toAdd = new HashSet<Integer>();
+                    HashSet<Integer> toRemove = new HashSet<>();
+                    HashSet<Integer> toAdd = new HashSet<>();
                     for (Integer col : row.getItems()) {
                         if (col >= i) {
                             toRemove.add(i);
@@ -249,10 +249,10 @@ class Selections<T> {
      * @return all selected cell positions
      */
     Collection<CellPosition<T>> getSelections() {
-        ArrayList<CellPosition<T>> selectedCells = new ArrayList<CellPosition<T>>();
+        ArrayList<CellPosition<T>> selectedCells = new ArrayList<>();
         for (Row<T> row : this.selectedRows.values()) {
             for (int columnPosition : row.getItems()) {
-                CellPosition<T> cell = new CellPosition<T>(row.getRowObject(), columnPosition);
+                CellPosition<T> cell = new CellPosition<>(row.getRowObject(), columnPosition);
                 selectedCells.add(cell);
             }
         }
@@ -310,7 +310,7 @@ class Selections<T> {
     private Row<T> retrieveRow(Serializable rowId, T rowObject) {
         Row<T> row = getSelectedColumns(rowId);
         if (row == null) {
-            row = new Row<T>(rowId, rowObject);
+            row = new Row<>(rowId, rowObject);
             this.selectedRows.put(rowId, row);
         }
         return row;
@@ -413,7 +413,7 @@ class Selections<T> {
         /**
          * The selected items
          */
-        private HashSet<S> content = new HashSet<S>();
+        private HashSet<S> content = new HashSet<>();
 
         /**
          * Creates a line with the specified ID

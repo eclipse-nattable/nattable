@@ -22,12 +22,6 @@ public interface ISelectionTreeListener {
 
     void itemsRemoved(List<ColumnEntry> removedItems);
 
-    /**
-     * If columns moved are adjacent to each other, they are grouped together.
-     *
-     * @param direction
-     * @param selectedColumnGroupEntries
-     */
     void itemsMoved(MoveDirectionEnum direction,
             List<ColumnGroupEntry> selectedColumnGroupEntries,
             List<ColumnEntry> movedColumnEntries,

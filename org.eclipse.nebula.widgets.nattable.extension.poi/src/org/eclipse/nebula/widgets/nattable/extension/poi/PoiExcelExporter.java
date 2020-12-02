@@ -96,7 +96,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
     protected boolean exportOnSameSheet = false;
     protected int currentRow = 0;
 
-    private Set<Integer> hiddenColumnPositions = new HashSet<Integer>();
+    private Set<Integer> hiddenColumnPositions = new HashSet<>();
 
     public PoiExcelExporter(IOutputStreamProvider outputStreamProvider) {
         this.outputStreamProvider = outputStreamProvider;
@@ -109,7 +109,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 
     @Override
     public void exportBegin(OutputStream outputStream) throws IOException {
-        this.xlCellStyles = new HashMap<ExcelCellStyleAttributes, CellStyle>();
+        this.xlCellStyles = new HashMap<>();
         this.xlWorkbook = createWorkbook();
         // the hidden column positions are determined by inspection so
         // it needs to be cleared at the beginning
@@ -225,8 +225,8 @@ public abstract class PoiExcelExporter implements ILayerExporter {
                 CellConfigAttributes.CELL_PAINTER,
                 DisplayMode.NORMAL,
                 cell.getConfigLabels());
-        boolean vertical = this.applyVerticalTextConfiguration ? isVertical(cellPainter) : false;
-        boolean wrap = this.applyTextWrapping ? wrapText(cellPainter) : false;
+        boolean vertical = this.applyVerticalTextConfiguration && isVertical(cellPainter);
+        boolean wrap = this.applyTextWrapping && wrapText(cellPainter);
 
         CellStyle xlCellStyle = getExcelCellStyle(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical, wrap, this.applyCellBorders);
         xlCell.setCellStyle(xlCellStyle);

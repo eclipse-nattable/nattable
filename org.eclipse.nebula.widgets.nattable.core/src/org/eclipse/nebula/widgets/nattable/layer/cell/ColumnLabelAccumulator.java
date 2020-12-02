@@ -69,7 +69,7 @@ public class ColumnLabelAccumulator implements IConfigLabelProvider {
      */
     @Override
     public Collection<String> getProvidedLabels() {
-        Collection<String> result = new HashSet<String>();
+        Collection<String> result = new HashSet<>();
         if (this.dataProvider != null) {
             for (int i = 0; i < this.dataProvider.getColumnCount(); i++) {
                 result.add(COLUMN_LABEL_PREFIX + i);

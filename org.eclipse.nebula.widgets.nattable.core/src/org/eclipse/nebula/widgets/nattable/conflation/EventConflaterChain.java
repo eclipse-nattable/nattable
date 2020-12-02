@@ -30,7 +30,7 @@ public class EventConflaterChain implements IEventConflater {
     public static final long DEFAULT_REFRESH_INTERVAL = 20;
     private static final Scheduler scheduler = new Scheduler("EventConflaterChain"); //$NON-NLS-1$
 
-    private final List<IEventConflater> chain = new LinkedList<IEventConflater>();
+    private final List<IEventConflater> chain = new LinkedList<>();
     private ScheduledFuture<?> future;
     private boolean started;
     private final long refreshInterval;
@@ -41,6 +41,12 @@ public class EventConflaterChain implements IEventConflater {
     }
 
     /**
+     *
+     * @param refreshInterval
+     *            the delay between the termination of one execution and the
+     *            commencement of the next
+     * @param initialDelay
+     *            the time to delay first execution
      * @since 2.0
      */
     public EventConflaterChain(long refreshInterval, long initialDelay) {

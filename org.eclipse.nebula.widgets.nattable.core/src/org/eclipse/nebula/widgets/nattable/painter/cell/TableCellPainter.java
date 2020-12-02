@@ -280,7 +280,7 @@ public class TableCellPainter extends BackgroundPainter {
      *         calculate inner cells.
      */
     protected ILayerCell createSubLayerCell(final ILayerCell cell, final Object dataValue) {
-        LayerCell subCell = new LayerCell(cell.getLayer(),
+        return new LayerCell(cell.getLayer(),
                 cell.getOriginColumnPosition(), cell.getOriginRowPosition(),
                 // no spanning
                 cell.getColumnPosition(), cell.getRowPosition(), 0, 0) {
@@ -292,8 +292,6 @@ public class TableCellPainter extends BackgroundPainter {
                 return dataValue;
             }
         };
-
-        return subCell;
     }
 
     /**

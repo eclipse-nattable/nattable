@@ -96,13 +96,10 @@ public final class CellStyleUtil {
 
         int padding = 0;
 
-        switch (horizontalAlignment) {
-            case CENTER:
-                padding = (rectangle.width - contentWidth) / 2;
-                break;
-            case RIGHT:
-                padding = rectangle.width - contentWidth;
-                break;
+        if (horizontalAlignment == HorizontalAlignmentEnum.CENTER) {
+            padding = (rectangle.width - contentWidth) / 2;
+        } else if (horizontalAlignment == HorizontalAlignmentEnum.RIGHT) {
+            padding = rectangle.width - contentWidth;
         }
 
         if (padding < 0) {
@@ -163,13 +160,10 @@ public final class CellStyleUtil {
 
         int padding = 0;
 
-        switch (verticalAlignment) {
-            case MIDDLE:
-                padding = (rectangle.height - contentHeight) / 2;
-                break;
-            case BOTTOM:
-                padding = rectangle.height - contentHeight;
-                break;
+        if (verticalAlignment == VerticalAlignmentEnum.MIDDLE) {
+            padding = (rectangle.height - contentHeight) / 2;
+        } else if (verticalAlignment == VerticalAlignmentEnum.BOTTOM) {
+            padding = rectangle.height - contentHeight;
         }
 
         if (padding < 0) {

@@ -23,7 +23,7 @@ public class AggregateDragMode implements IDragMode {
     private MouseEvent initialEvent;
     private MouseEvent currentEvent;
 
-    private final Collection<IDragMode> dragModes = new LinkedHashSet<IDragMode>();
+    private final Collection<IDragMode> dragModes = new LinkedHashSet<>();
 
     public AggregateDragMode() {
     }

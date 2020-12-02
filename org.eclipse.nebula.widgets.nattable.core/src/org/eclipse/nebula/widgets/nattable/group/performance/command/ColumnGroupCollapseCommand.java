@@ -38,12 +38,12 @@ public class ColumnGroupCollapseCommand extends AbstractContextFreeCommand {
 
     public ColumnGroupCollapseCommand(GroupModel groupModel, Collection<Group> groups) {
         this.groupModel = groupModel;
-        this.groups = new ArrayList<Group>(groups);
+        this.groups = new ArrayList<>(groups);
     }
 
     protected ColumnGroupCollapseCommand(ColumnGroupCollapseCommand command) {
         this.groupModel = command.groupModel;
-        this.groups = new ArrayList<Group>(command.groups);
+        this.groups = new ArrayList<>(command.groups);
     }
 
     @Override

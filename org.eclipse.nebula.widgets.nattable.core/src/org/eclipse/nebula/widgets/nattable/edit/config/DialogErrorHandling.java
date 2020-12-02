@@ -157,34 +157,37 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
     /**
      * Shows a warning dialog if the conversion or the validation returned an
      * error message. Otherwise nothing happens.
+     *
+     * @param dialogMessage
+     *            the dialog message
+     * @param dialogTitle
+     *            the dialog title
      */
     protected void showWarningDialog(String dialogMessage, String dialogTitle) {
-        if (!isWarningDialogActive()) {
+        if (!isWarningDialogActive() && dialogMessage != null) {
             // conversion/validation failed - so open dialog with error message
 
-            if (dialogMessage != null) {
-                String[] buttonLabels = this.allowCommit ? new String[] { getChangeButtonLabel(), getDiscardButtonLabel(), getCommitButtonLabel() }
-                        : new String[] { getChangeButtonLabel(), getDiscardButtonLabel() };
+            String[] buttonLabels = this.allowCommit ? new String[] { getChangeButtonLabel(), getDiscardButtonLabel(), getCommitButtonLabel() }
+                    : new String[] { getChangeButtonLabel(), getDiscardButtonLabel() };
 
-                MessageDialog warningDialog = new MessageDialog(
-                        Display.getDefault().getActiveShell(),
-                        dialogTitle,
-                        null,
-                        dialogMessage,
-                        MessageDialog.WARNING,
-                        buttonLabels,
-                        0);
+            MessageDialog warningDialog = new MessageDialog(
+                    Display.getDefault().getActiveShell(),
+                    dialogTitle,
+                    null,
+                    dialogMessage,
+                    MessageDialog.WARNING,
+                    buttonLabels,
+                    0);
 
-                // if discard was selected close the editor
-                int returnCode = warningDialog.open();
-                if (returnCode == 1) {
-                    this.editor.close();
-                }
-                // if commit was selected, commit the value by skipping the
-                // validation
-                else if (returnCode == 2) {
-                    this.editor.commit(MoveDirectionEnum.NONE, true, true);
-                }
+            // if discard was selected close the editor
+            int returnCode = warningDialog.open();
+            if (returnCode == 1) {
+                this.editor.close();
+            }
+            // if commit was selected, commit the value by skipping the
+            // validation
+            else if (returnCode == 2) {
+                this.editor.commit(MoveDirectionEnum.NONE, true, true);
             }
         }
     }
@@ -200,13 +203,10 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
         // check if the current active shell is a conversion or validation
         // failure warning dialog
         Shell control = Display.getDefault().getActiveShell();
-        if (control != null
+        return (control != null
                 && (getConversionFailureShellTitle().equals(control.getText())
                         || getValidationFailureShellTitle().equals(control.getText())
-                        || getFailureShellTitle().equals(control.getText()))) {
-            return true;
-        }
-        return false;
+                        || getFailureShellTitle().equals(control.getText())));
     }
 
     /**

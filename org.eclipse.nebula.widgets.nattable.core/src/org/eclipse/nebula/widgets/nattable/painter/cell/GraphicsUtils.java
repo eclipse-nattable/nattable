@@ -33,7 +33,11 @@ import org.eclipse.swt.widgets.Display;
  *      "http://java-gui.info/Apress-The.Definitive.Guide.to.SWT.and.JFace/8886final/LiB0095.html">GC
  *      snippets</a>
  */
-public class GraphicsUtils {
+public final class GraphicsUtils {
+
+    private GraphicsUtils() {
+        // private default constructor for helper class
+    }
 
     /**
      * Draws text vertically (rotates plus or minus 90 degrees). Uses the
@@ -59,8 +63,7 @@ public class GraphicsUtils {
      *            Note: Only one of the style UP or DOWN may be specified.
      *            </p>
      */
-    public static void drawVerticalText(String string, int x, int y, GC gc,
-            int style) {
+    public static void drawVerticalText(String string, int x, int y, GC gc, int style) {
         drawVerticalText(string, x, y, false, false, true, gc, style);
     }
 
@@ -106,7 +109,6 @@ public class GraphicsUtils {
             SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
 
         // Determine string's dimensions
-        // FontMetrics fm = gc.getFontMetrics();
         Point pt = gc.textExtent(string.trim());
 
         // Create an image the same size as the string
@@ -297,7 +299,6 @@ public class GraphicsUtils {
         gc.setFont(font);
 
         // Determine string's dimensions
-        // FontMetrics fm = gc.getFontMetrics();
         Point pt = gc.textExtent(text);
 
         // Dispose that gc

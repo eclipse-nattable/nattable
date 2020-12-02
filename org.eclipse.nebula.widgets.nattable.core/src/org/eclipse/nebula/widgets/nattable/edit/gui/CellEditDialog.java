@@ -135,7 +135,7 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
                 shellTitle = settingsShellTitle;
             }
             Object settingsShellImage = this.editDialogSettings.get(DIALOG_SHELL_ICON);
-            if (settingsShellImage != null && settingsShellImage instanceof Image) {
+            if (settingsShellImage instanceof Image) {
                 shellIcon = (Image) settingsShellImage;
             }
         }
@@ -152,7 +152,7 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
     protected Point getInitialLocation(Point initialSize) {
         if (this.editDialogSettings != null) {
             Object settingsLocation = this.editDialogSettings.get(DIALOG_SHELL_LOCATION);
-            if (settingsLocation != null && settingsLocation instanceof Point) {
+            if (settingsLocation instanceof Point) {
                 return (Point) settingsLocation;
             }
         }
@@ -163,7 +163,7 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
     protected Point getInitialSize() {
         if (this.editDialogSettings != null) {
             Object settingsSize = this.editDialogSettings.get(DIALOG_SHELL_SIZE);
-            if (settingsSize != null && settingsSize instanceof Point) {
+            if (settingsSize instanceof Point) {
                 return (Point) settingsSize;
             }
         }
@@ -297,7 +297,7 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
         // otherwise this configuration wouldn't have any effect.
         if (this.editDialogSettings != null) {
             Object settingsResizable = this.editDialogSettings.get(DIALOG_SHELL_RESIZABLE);
-            if (settingsResizable != null && settingsResizable instanceof Boolean) {
+            if (settingsResizable instanceof Boolean) {
                 if ((Boolean) settingsResizable) {
                     setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.MAX | SWT.RESIZE | getDefaultOrientation());
                 } else {

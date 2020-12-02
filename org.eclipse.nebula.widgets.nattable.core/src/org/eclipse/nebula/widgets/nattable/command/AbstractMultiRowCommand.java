@@ -94,7 +94,7 @@ public abstract class AbstractMultiRowCommand implements ILayerCommand {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toCollection(HashSet::new));
 
-        if (converted.size() > 0) {
+        if (!converted.isEmpty()) {
             this.rowPositionCoordinates = converted;
             return true;
         } else {

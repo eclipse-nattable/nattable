@@ -75,7 +75,7 @@ import org.eclipse.swt.graphics.Rectangle;
  * header layer, and corner layer:
  * </p>
  * <table border=1>
- * <caption></caption>
+ * <caption>layer composition</caption>
  * <tr>
  * <td>corner</td>
  * <td>column header</td>
@@ -652,7 +652,7 @@ public interface ILayer extends ILayerListener, IPersistable {
      * @since 2.0
      */
     public default Collection<String> getProvidedLabels() {
-        return new LinkedHashSet<String>();
+        return new LinkedHashSet<>();
     }
 
 }

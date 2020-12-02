@@ -25,7 +25,7 @@ import org.eclipse.nebula.widgets.nattable.style.IDisplayModeOrdering;
 public class ConfigRegistry implements IConfigRegistry {
 
     // Map<configAttributeType, Map<displayMode, Map<configLabel, value>>>
-    Map<ConfigAttribute<?>, Map<String, Map<String, ?>>> configRegistry = new HashMap<ConfigAttribute<?>, Map<String, Map<String, ?>>>();
+    Map<ConfigAttribute<?>, Map<String, Map<String, ?>>> registry = new HashMap<>();
 
     @Override
     public <T> T getConfigAttribute(
@@ -48,7 +48,7 @@ public class ConfigRegistry implements IConfigRegistry {
 
         T attributeValue = null;
 
-        Map<String, Map<String, ?>> displayModeConfigAttributeMap = this.configRegistry.get(configAttribute);
+        Map<String, Map<String, ?>> displayModeConfigAttributeMap = this.registry.get(configAttribute);
         if (displayModeConfigAttributeMap != null) {
             for (String displayMode : this.displayModeOrdering.getDisplayModeOrdering(targetDisplayMode)) {
                 Map<String, T> configAttributeMap = (Map<String, T>) displayModeConfigAttributeMap.get(displayMode);
@@ -81,7 +81,7 @@ public class ConfigRegistry implements IConfigRegistry {
 
         T attributeValue = null;
 
-        Map<String, Map<String, ?>> displayModeConfigAttributeMap = this.configRegistry.get(configAttribute);
+        Map<String, Map<String, ?>> displayModeConfigAttributeMap = this.registry.get(configAttribute);
         if (displayModeConfigAttributeMap != null) {
             Map<String, T> configAttributeMap = (Map<String, T>) displayModeConfigAttributeMap.get(displayMode);
             if (configAttributeMap != null) {
@@ -120,20 +120,14 @@ public class ConfigRegistry implements IConfigRegistry {
             String displayMode,
             String configLabel) {
 
-        Map<String, Map<String, ?>> displayModeConfigAttributeMap = this.configRegistry.get(configAttribute);
-        if (displayModeConfigAttributeMap == null) {
-            displayModeConfigAttributeMap = new HashMap<String, Map<String, ?>>();
-            this.configRegistry.put(configAttribute, displayModeConfigAttributeMap);
-        }
+        Map<String, Map<String, ?>> displayModeConfigAttributeMap =
+                this.registry.computeIfAbsent(configAttribute, cf -> new HashMap<>());
 
-        Map<String, T> configAttributeMap = (Map<String, T>) displayModeConfigAttributeMap.get(displayMode);
-        if (configAttributeMap == null) {
-            configAttributeMap = new HashMap<String, T>();
-            displayModeConfigAttributeMap.put(displayMode, configAttributeMap);
-        }
+        Map<String, T> configAttributeMap =
+                (Map<String, T>) displayModeConfigAttributeMap.computeIfAbsent(displayMode, dm -> new HashMap<>());
 
         configAttributeMap.put(configLabel, attributeValue);
-    };
+    }
 
     @Override
     public <T> void unregisterConfigAttribute(
@@ -157,7 +151,7 @@ public class ConfigRegistry implements IConfigRegistry {
             String displayMode,
             String configLabel) {
 
-        Map<String, Map<String, ?>> displayModeConfigAttributeMap = this.configRegistry.get(configAttributeType);
+        Map<String, Map<String, ?>> displayModeConfigAttributeMap = this.registry.get(configAttributeType);
         if (displayModeConfigAttributeMap != null) {
             Map<String, T> configAttributeMap = (Map<String, T>) displayModeConfigAttributeMap.get(displayMode);
             if (configAttributeMap != null) {

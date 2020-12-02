@@ -62,7 +62,7 @@ public class GlazedListsRowObjectDeleteCommandHandler<T> implements ILayerComman
         // changes via DataChangeLayer in the correct order again
         int[] indexes = new int[command.getObjectsToDelete().size()];
         int idx = 0;
-        Map<Integer, T> deleted = new TreeMap<Integer, T>();
+        Map<Integer, T> deleted = new TreeMap<>();
 
         this.bodyData.getReadWriteLock().writeLock().lock();
         try {

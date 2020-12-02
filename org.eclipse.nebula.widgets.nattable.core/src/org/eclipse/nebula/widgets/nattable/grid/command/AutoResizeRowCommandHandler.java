@@ -93,7 +93,7 @@ public class AutoResizeRowCommandHandler implements ILayerCommandHandler<AutoRes
 
         // only perform further actions if the heights could be calculated
         // could fail and return null for example if the GCFactory fails
-        if (gridRowHeights != null) {
+        if (gridRowHeights != null && gridRowHeights.length > 0) {
             this.commandLayer.doCommand(
                     new MultiRowResizeCommand(this.commandLayer, gridRowPositions, gridRowHeights, true));
 

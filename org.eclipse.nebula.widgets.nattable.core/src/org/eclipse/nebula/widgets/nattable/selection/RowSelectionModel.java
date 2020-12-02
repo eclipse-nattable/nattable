@@ -64,7 +64,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
         this.rowIdAccessor = rowIdAccessor;
         this.multipleSelectionAllowed = multipleSelectionAllowed;
 
-        this.selectedRows = new HashMap<Serializable, R>();
+        this.selectedRows = new HashMap<>();
         this.selectionsLock = new ReentrantReadWriteLock();
     }
 
@@ -181,7 +181,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
         } finally {
             this.selectionsLock.writeLock().unlock();
         }
-    };
+    }
 
     @Override
     public boolean isEmpty() {
@@ -379,8 +379,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
     private Serializable getRowIdByPosition(int rowPosition) {
         R rowObject = getRowObjectByPosition(rowPosition);
         if (rowObject != null) {
-            Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
-            return rowId;
+            return this.rowIdAccessor.getRowId(rowObject);
         }
         return null;
     }
@@ -392,8 +391,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
             int rowIndex = this.selectionLayer.getRowIndexByPosition(rowPosition);
             if (rowIndex >= 0) {
                 try {
-                    R rowObject = this.rowDataProvider.getRowObject(rowIndex);
-                    return rowObject;
+                    return this.rowDataProvider.getRowObject(rowIndex);
                 } catch (Exception e) {
                     // row index is invalid for the data provider
                 }
@@ -414,8 +412,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
             if (rowIndex == -1) {
                 return -1;
             }
-            int rowPosition = this.selectionLayer.getRowPositionByIndex(rowIndex);
-            return rowPosition;
+            return this.selectionLayer.getRowPositionByIndex(rowIndex);
         } finally {
             this.selectionsLock.readLock().unlock();
         }

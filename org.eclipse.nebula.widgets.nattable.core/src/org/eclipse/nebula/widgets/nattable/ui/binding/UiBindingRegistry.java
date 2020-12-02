@@ -34,11 +34,11 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 
     private NatTable natTable;
 
-    private LinkedList<KeyBinding> keyBindings = new LinkedList<KeyBinding>();
+    private LinkedList<KeyBinding> keyBindings = new LinkedList<>();
 
-    private Map<MouseEventTypeEnum, LinkedList<MouseBinding>> mouseBindingsMap = new HashMap<MouseEventTypeEnum, LinkedList<MouseBinding>>();
+    private Map<MouseEventTypeEnum, LinkedList<MouseBinding>> mouseBindingsMap = new HashMap<>();
 
-    private LinkedList<DragBinding> dragBindings = new LinkedList<DragBinding>();
+    private LinkedList<DragBinding> dragBindings = new LinkedList<>();
 
     public UiBindingRegistry(NatTable natTable) {
         this.natTable = natTable;
@@ -273,11 +273,7 @@ public class UiBindingRegistry implements IUiBindingRegistry {
     // /////////////////////////////////////////////////////////////////////////
 
     private void registerMouseBinding(boolean first, MouseEventTypeEnum mouseEventType, IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
-        LinkedList<MouseBinding> mouseEventBindings = this.mouseBindingsMap.get(mouseEventType);
-        if (mouseEventBindings == null) {
-            mouseEventBindings = new LinkedList<MouseBinding>();
-            this.mouseBindingsMap.put(mouseEventType, mouseEventBindings);
-        }
+        LinkedList<MouseBinding> mouseEventBindings = this.mouseBindingsMap.computeIfAbsent(mouseEventType, type -> new LinkedList<>());
         if (first) {
             mouseEventBindings.addFirst(new MouseBinding(mouseEventMatcher, action));
         } else {

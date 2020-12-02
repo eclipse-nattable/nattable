@@ -170,7 +170,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
             boolean useDefaultConfiguration) {
 
         this(filterList,
-                new GlazedListsFilterRowComboBoxDataProvider<T>(
+                new GlazedListsFilterRowComboBoxDataProvider<>(
                         bodyLayer,
                         baseCollection,
                         bodyDataColumnAccessor),
@@ -232,7 +232,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
             boolean useDefaultConfiguration) {
 
         this(filterList,
-                new GlazedListsFilterRowComboBoxDataProvider<T>(
+                new GlazedListsFilterRowComboBoxDataProvider<>(
                         bodyLayer,
                         baseCollection,
                         bodyDataColumnAccessor,
@@ -302,7 +302,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 
         this(filterList,
                 matcherEditor,
-                new GlazedListsFilterRowComboBoxDataProvider<T>(
+                new GlazedListsFilterRowComboBoxDataProvider<>(
                         bodyLayer,
                         baseCollection,
                         bodyDataColumnAccessor),
@@ -375,7 +375,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 
         this(filterList,
                 matcherEditor,
-                new GlazedListsFilterRowComboBoxDataProvider<T>(
+                new GlazedListsFilterRowComboBoxDataProvider<>(
                         bodyLayer,
                         baseCollection,
                         bodyDataColumnAccessor,
@@ -472,7 +472,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
             boolean useDefaultConfiguration) {
 
         this(
-                new ComboBoxGlazedListsFilterStrategy<T>(
+                new ComboBoxGlazedListsFilterStrategy<>(
                         comboBoxDataProvider,
                         filterList,
                         bodyDataColumnAccessor,
@@ -536,7 +536,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
             boolean useDefaultConfiguration) {
 
         this(
-                new ComboBoxGlazedListsFilterStrategy<T>(
+                new ComboBoxGlazedListsFilterStrategy<>(
                         comboBoxDataProvider,
                         filterList,
                         matcherEditor,
@@ -596,7 +596,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
         this.comboBoxDataProvider.addCacheUpdateListener(this);
 
         this.filterRowDataLayer =
-                new FilterRowDataLayer<T>(
+                new FilterRowDataLayer<>(
                         this.filterStrategy,
                         columnHeaderLayer,
                         columnHeaderDataProvider,
@@ -752,7 +752,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
         Map<Integer, Object> filterIndexToObjectMap =
                 this.filterRowDataLayer.getFilterRowDataProvider().getFilterIndexToObjectMap();
         Object filterObject = filterIndexToObjectMap.get(event.getColumnIndex());
-        if (filterObject != null && filterObject instanceof Collection) {
+        if (filterObject instanceof Collection) {
             Collection filterCollection = (Collection) filterObject;
             // if a new value was added than ensure it is also added to the
             // filter

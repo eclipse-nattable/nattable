@@ -32,9 +32,6 @@ public class ViewportLayerFixture extends ViewportLayer {
     public static final IClientAreaProvider DEFAULT_CLIENT_AREA_PROVIDER = getClientAreaProvider(DEFAULT_CLIENT_AREA);
     public static final Scrollable DEFAULT_SCROLLABLE = scrollable();
 
-    /**
-     * Default Xtor
-     */
     public ViewportLayerFixture() {
         super(new DataLayerFixture());
         setClientAreaProvider(getClientAreaProvider(DEFAULT_CLIENT_AREA));
@@ -47,21 +44,10 @@ public class ViewportLayerFixture extends ViewportLayer {
         doCommand(new InitializeClientAreaCommandFixture());
     }
 
-    /**
-     * Xtor Fixture with all columns equal width and all rows equal height.
-     */
     public ViewportLayerFixture(int width, int height) {
         super(new DataLayerFixture(width, height));
     }
 
-    /**
-     * Xtor Fixture with all columns equal width and all rows equal height.
-     *
-     * @param colCount
-     *            total number of columns
-     * @param rowCount
-     *            total number of rows
-     */
     public ViewportLayerFixture(int colCount, int rowCount,
             int defaultColWidth, int defaultRowHeight) {
         super(new DataLayerFixture(colCount, rowCount, defaultColWidth,
@@ -69,9 +55,6 @@ public class ViewportLayerFixture extends ViewportLayer {
         setClientAreaProvider(DEFAULT_CLIENT_AREA_PROVIDER);
     }
 
-    /**
-     * Xtor Provide your own <i>clientArea</i>
-     */
     public ViewportLayerFixture(final Rectangle clientArea) {
         super(new DataLayerFixture());
         setClientAreaProvider(getClientAreaProvider(clientArea));

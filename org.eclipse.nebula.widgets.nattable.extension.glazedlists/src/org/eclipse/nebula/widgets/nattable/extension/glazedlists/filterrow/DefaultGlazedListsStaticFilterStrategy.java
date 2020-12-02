@@ -36,7 +36,7 @@ import ca.odell.glazedlists.matchers.MatcherEditor;
  */
 public class DefaultGlazedListsStaticFilterStrategy<T> extends DefaultGlazedListsFilterStrategy<T> {
 
-    protected Map<Matcher<T>, MatcherEditor<T>> staticMatcherEditor = new HashMap<Matcher<T>, MatcherEditor<T>>();
+    protected Map<Matcher<T>, MatcherEditor<T>> staticMatcherEditor = new HashMap<>();
 
     /**
      * Create a new DefaultGlazedListsStaticFilterStrategy on top of the given

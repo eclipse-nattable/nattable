@@ -522,6 +522,9 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
      * @param configRegistry
      *            The {@link ConfigRegistry} to retrieve the style information
      *            from.
+     *
+     * @return the border style that should be used
+     *
      * @since 1.6
      */
     protected BorderStyle getCopyBorderStyle(IConfigRegistry configRegistry) {

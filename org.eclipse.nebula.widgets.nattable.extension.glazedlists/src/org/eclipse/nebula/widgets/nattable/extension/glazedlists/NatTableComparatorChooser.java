@@ -61,7 +61,7 @@ public class NatTableComparatorChooser<T> extends
 
     private void removeSortingColumnIndex(int columnIndex) {
         // Save comparators
-        List<ComparatorInfo> comparatorInfos = new ArrayList<ComparatorInfo>();
+        List<ComparatorInfo> comparatorInfos = new ArrayList<>();
         for (int sortingColumnIndex : getSortingColumns()) {
             if (sortingColumnIndex != columnIndex) {
                 boolean reverse = isColumnReverse(sortingColumnIndex);

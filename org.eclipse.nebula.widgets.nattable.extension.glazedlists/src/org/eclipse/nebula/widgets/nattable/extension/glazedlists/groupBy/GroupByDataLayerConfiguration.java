@@ -15,8 +15,8 @@ package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
-import org.eclipse.nebula.widgets.nattable.config.EditableRule;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -55,7 +55,7 @@ public class GroupByDataLayerConfiguration<T> extends AbstractRegistryConfigurat
         // changed
         configRegistry.registerConfigAttribute(
                 EditConfigAttributes.CELL_EDITABLE_RULE,
-                EditableRule.NEVER_EDITABLE,
+                IEditableRule.NEVER_EDITABLE,
                 DisplayMode.NORMAL,
                 GroupByDataLayer.GROUP_BY_OBJECT);
     }

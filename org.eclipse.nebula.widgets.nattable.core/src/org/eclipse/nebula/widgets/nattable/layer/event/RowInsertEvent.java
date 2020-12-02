@@ -80,7 +80,7 @@ public class RowInsertEvent extends RowStructuralChangeEvent {
 
     @Override
     public Collection<StructuralDiff> getRowDiffs() {
-        Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>(getRowPositionRanges().size());
+        Collection<StructuralDiff> rowDiffs = new ArrayList<>(getRowPositionRanges().size());
 
         for (Range range : getRowPositionRanges()) {
             rowDiffs.add(new StructuralDiff(

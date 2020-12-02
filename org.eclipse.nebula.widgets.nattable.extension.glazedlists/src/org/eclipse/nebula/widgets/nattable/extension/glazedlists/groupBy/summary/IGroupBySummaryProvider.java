@@ -22,6 +22,8 @@ public interface IGroupBySummaryProvider<T> {
      * @param columnIndex
      *            The column index of the column for which the summary should be
      *            calculated.
+     * @param children
+     *            The child objects to operate on.
      * @return The calculated summary value for the column.
      */
     public Object summarize(int columnIndex, List<T> children);

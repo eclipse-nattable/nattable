@@ -152,11 +152,11 @@ public class BorderPainter {
     // -----
     //
     // when considering the cell in (1,1) it should draw a top border between it
-    // and the outside cell at (1,0);
+    // and the outside cell at (1,0)
     // but it can't use the width of cell (1,1) otherwise it will draw a border
-    // also under the inside cell (0,0);
+    // also under the inside cell (0,0)
     // therefore its upper cell (1,0) is considered to find the correct position
-    // and width of the border line;
+    // and width of the border line
     // in this case:
     // x = max((1,1).x0, (1,0).x0)
     // l = min((1,1).x1, (1,0).x1) - x

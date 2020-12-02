@@ -112,7 +112,7 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
             Rectangle rectangle, IConfigRegistry configRegistry) {
         Boolean renderConfig = null;
         LabelStack stack = natLayer.getRegionLabelsByXY(xOffset, yOffset);
-        List<String> labels = new ArrayList<String>();
+        List<String> labels = new ArrayList<>();
         if (stack != null) {
             labels = stack;
             // check if there is a configuration telling to not rendering grid
@@ -158,6 +158,19 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
     }
 
     /**
+     *
+     * @param natLayer
+     *            The layer to paint on.
+     * @param gc
+     *            GC used for painting
+     * @param rectangle
+     *            area the layer can paint in
+     * @param configRegistry
+     *            {@link IConfigRegistry} in use, needed to retrieve configured
+     *            grid line color.
+     * @param labels
+     *            region labels needed to retrieve the configured grid line
+     *            color.
      * @since 1.4
      */
     protected void drawGridLines(ILayer natLayer, GC gc, Rectangle rectangle, IConfigRegistry configRegistry, List<String> labels) {

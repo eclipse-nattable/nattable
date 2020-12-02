@@ -86,13 +86,15 @@ public class _302_CustomColumnPropertyAccessorExample extends
     }
 
     /**
-     * Creates the {@link IDataProvider} for the column header of this
-     * {@link GridLayer}. Should always return the same column count and values
-     * for all columns that are defined within the {@link IDataProvider} of the
-     * body layer stack. Uses the {@link DefaultColumnHeaderDataProvider} which
-     * simply checks for the property name within the propertyNames array and
-     * returns the corresponding value out of the propertyToLabelMap. Another
-     * approach is to implement a completely new {@link IDataProvider}
+     *
+     * @return The {@link IDataProvider} for the column header of this
+     *         {@link GridLayer}. Should always return the same column count and
+     *         values for all columns that are defined within the
+     *         {@link IDataProvider} of the body layer stack. Uses the
+     *         {@link DefaultColumnHeaderDataProvider} which simply checks for
+     *         the property name within the propertyNames array and returns the
+     *         corresponding value out of the propertyToLabelMap. Another
+     *         approach is to implement a completely new {@link IDataProvider}.
      */
     protected IDataProvider createColumnHeaderDataProvider() {
         String[] propertyNames = {

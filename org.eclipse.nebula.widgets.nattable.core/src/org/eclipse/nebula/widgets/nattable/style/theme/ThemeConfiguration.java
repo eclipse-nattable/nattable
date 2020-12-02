@@ -23,7 +23,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
 import org.eclipse.nebula.widgets.nattable.datachange.DataChangeLayer;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillHandleConfigAttributes;
-import org.eclipse.nebula.widgets.nattable.freeze.IFreezeConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.freeze.FreezeConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.grid.layer.config.DefaultGridLayerConfiguration;
@@ -2401,13 +2401,13 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
     protected void configureFreezeStyle(IConfigRegistry configRegistry) {
         if (getFreezeSeparatorColor() != null) {
             configRegistry.registerConfigAttribute(
-                    IFreezeConfigAttributes.SEPARATOR_COLOR,
+                    FreezeConfigAttributes.SEPARATOR_COLOR,
                     getFreezeSeparatorColor());
         }
 
         if (getFreezeSeparatorWidth() != null) {
             configRegistry.registerConfigAttribute(
-                    IFreezeConfigAttributes.SEPARATOR_WIDTH,
+                    FreezeConfigAttributes.SEPARATOR_WIDTH,
                     getFreezeSeparatorWidth());
         }
     }
@@ -3303,12 +3303,12 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 
         // unregister freeze separator color
         if (getFreezeSeparatorColor() != null) {
-            configRegistry.unregisterConfigAttribute(IFreezeConfigAttributes.SEPARATOR_COLOR);
+            configRegistry.unregisterConfigAttribute(FreezeConfigAttributes.SEPARATOR_COLOR);
         }
 
         // unregister freeze separator width
         if (getFreezeSeparatorWidth() != null) {
-            configRegistry.unregisterConfigAttribute(IFreezeConfigAttributes.SEPARATOR_WIDTH);
+            configRegistry.unregisterConfigAttribute(FreezeConfigAttributes.SEPARATOR_WIDTH);
         }
 
         // unregister grid line configuration

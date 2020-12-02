@@ -129,15 +129,15 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
      * Mapping of level to the first column index of the level which is showing
      * the tree nodes.
      */
-    private Map<Integer, Integer> nodeColumnMapping = new LinkedHashMap<Integer, Integer>();
+    private Map<Integer, Integer> nodeColumnMapping = new LinkedHashMap<>();
     /**
      * Mapping of the level to the list of all columns belonging to a level.
      */
-    private Map<Integer, List<Integer>> levelIndexMapping = new LinkedHashMap<Integer, List<Integer>>();
+    private Map<Integer, List<Integer>> levelIndexMapping = new LinkedHashMap<>();
     /**
      * Set of tree node coordinates based on indexes that are collapsed.
      */
-    protected final Set<HierarchicalTreeNode> collapsedNodes = new HashSet<HierarchicalTreeNode>();
+    protected final Set<HierarchicalTreeNode> collapsedNodes = new HashSet<>();
     /**
      * Collection of all row indexes that are hidden if tree nodes are
      * collapsed.
@@ -319,7 +319,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
         if (propertyNames.length > 0) {
             int currentLevel = 1;
             this.nodeColumnMapping.put(0, 0);
-            List<Integer> columns = new ArrayList<Integer>();
+            List<Integer> columns = new ArrayList<>();
             columns.add(0);
             this.levelIndexMapping.put(0, columns);
             for (int col = 1; col < propertyNames.length; col++) {
@@ -328,7 +328,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
                     columns.add(col);
                 } else if (split.length > currentLevel) {
                     this.nodeColumnMapping.put(currentLevel, col);
-                    columns = new ArrayList<Integer>();
+                    columns = new ArrayList<>();
                     columns.add(col);
                     this.levelIndexMapping.put(currentLevel, columns);
                     currentLevel++;
@@ -498,7 +498,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
                 // build a new collection of nodes to avoid duplication clashes
                 // as nodes are equal per column and row index
                 int negativeIndex = -1;
-                Set<HierarchicalTreeNode> updatedCollapsedNodes = new HashSet<HierarchicalTreeNode>();
+                Set<HierarchicalTreeNode> updatedCollapsedNodes = new HashSet<>();
                 for (HierarchicalTreeNode node : this.collapsedNodes) {
                     int newRowIndex = findTopRowIndex(node.columnIndex, node.rowObject);
                     // add the updated node if the row object still exists in
@@ -695,12 +695,10 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
         IndentedTreeImagePainter result = null;
         if (painter instanceof IndentedTreeImagePainter) {
             result = (IndentedTreeImagePainter) painter;
-        } else if (painter != null
-                && painter instanceof CellPainterWrapper
+        } else if (painter instanceof CellPainterWrapper
                 && ((CellPainterWrapper) painter).getWrappedPainter() != null) {
             result = findIndentedTreeImagePainter(((CellPainterWrapper) painter).getWrappedPainter());
-        } else if (painter != null
-                && painter instanceof CellPainterDecorator) {
+        } else if (painter instanceof CellPainterDecorator) {
             result = findIndentedTreeImagePainter(((CellPainterDecorator) painter).getBaseCellPainter());
             if (result == null) {
                 result = findIndentedTreeImagePainter(((CellPainterDecorator) painter).getDecoratorCellPainter());
@@ -1620,7 +1618,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
     @Override
     public Collection<Range> underlyingToLocalColumnPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges) {
         if (isShowTreeLevelHeader()) {
-            Collection<Range> localColumnPositionRanges = new ArrayList<Range>();
+            Collection<Range> localColumnPositionRanges = new ArrayList<>();
 
             for (Range underlyingColumnPositionRange : underlyingColumnPositionRanges) {
                 int start = underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingColumnPositionRange.start);

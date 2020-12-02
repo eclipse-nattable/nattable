@@ -210,7 +210,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
     @Override
     public Collection<Range> underlyingToLocalColumnPositions(
             ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges) {
-        Collection<Range> localColumnPositionRanges = new ArrayList<Range>(underlyingColumnPositionRanges.size());
+        Collection<Range> localColumnPositionRanges = new ArrayList<>(underlyingColumnPositionRanges.size());
 
         for (Range underlyingColumnPositionRange : underlyingColumnPositionRanges) {
             int startColumnPosition = getAdjustedUnderlyingToLocalStartPosition(

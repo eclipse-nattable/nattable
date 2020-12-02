@@ -25,7 +25,7 @@ public abstract class AbstractFunction implements FunctionValue, OperatorFunctio
     protected List<FunctionValue> values;
 
     public AbstractFunction() {
-        this(new ArrayList<FunctionValue>());
+        this(new ArrayList<>());
     }
 
     public AbstractFunction(List<FunctionValue> values) {

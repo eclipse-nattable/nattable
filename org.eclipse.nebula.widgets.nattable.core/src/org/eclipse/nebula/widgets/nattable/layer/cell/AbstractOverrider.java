@@ -23,7 +23,7 @@ import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
 public abstract class AbstractOverrider implements IConfigLabelProvider {
 
-    private Map<Serializable, List<String>> overrides = new HashMap<Serializable, List<String>>();
+    private Map<Serializable, List<String>> overrides = new HashMap<>();
 
     /**
      * Remove all registered labels from the key-label overrides for the given
@@ -140,7 +140,7 @@ public abstract class AbstractOverrider implements IConfigLabelProvider {
      */
     @Override
     public Collection<String> getProvidedLabels() {
-        Collection<String> result = new HashSet<String>();
+        Collection<String> result = new HashSet<>();
         for (List<String> labels : this.overrides.values()) {
             result.addAll(labels);
         }

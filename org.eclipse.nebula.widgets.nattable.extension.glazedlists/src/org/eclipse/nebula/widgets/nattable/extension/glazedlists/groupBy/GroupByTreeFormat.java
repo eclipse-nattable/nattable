@@ -72,7 +72,7 @@ public class GroupByTreeFormat<T> implements TreeList.Format<Object> {
     public void getPath(List<Object> path, Object element) {
         List<Integer> groupByColumns = this.model.getGroupByColumnIndexes();
         if (!groupByColumns.isEmpty()) {
-            LinkedHashMap<Integer, Object> descriptor = new LinkedHashMap<Integer, Object>();
+            LinkedHashMap<Integer, Object> descriptor = new LinkedHashMap<>();
             for (int columnIndex : groupByColumns) {
                 // Build a unique descriptor for the group
                 Object columnValue = this.columnAccessor.getDataValue((T) element, columnIndex);
@@ -95,7 +95,7 @@ public class GroupByTreeFormat<T> implements TreeList.Format<Object> {
      * @return The {@link GroupByObject} for the given value and descriptor.
      */
     protected GroupByObject getGroupByObject(Object columnValue, Map<Integer, Object> descriptor) {
-        return new GroupByObject(columnValue, new LinkedHashMap<Integer, Object>(descriptor));
+        return new GroupByObject(columnValue, new LinkedHashMap<>(descriptor));
     }
 
     @Override

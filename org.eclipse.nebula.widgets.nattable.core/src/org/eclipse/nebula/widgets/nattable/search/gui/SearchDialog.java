@@ -13,12 +13,12 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.search.gui;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -91,7 +91,7 @@ public class SearchDialog extends Dialog {
      * when the search term is shortened. In non-incremental mode, the stack
      * contains only the most recent selection.
      */
-    private Stack<SelectionItem> selections = new Stack<SelectionItem>();
+    private ArrayDeque<SelectionItem> selections = new ArrayDeque<>();
 
     // Dialog settings
     private IDialogSettings originalSettings;
@@ -101,7 +101,7 @@ public class SearchDialog extends Dialog {
 
     // Find Combo box
     private Combo findCombo;
-    private List<String> findHistory = new ArrayList<String>(5);
+    private List<String> findHistory = new ArrayList<>(5);
 
     // Direction radio
     private Button forwardButton;
@@ -150,7 +150,7 @@ public class SearchDialog extends Dialog {
         this.natTable = natTable;
         if (natTable != null) {
             ILayer result = findSelectionLayer(this.natTable.getLayer());
-            if (result != null && result instanceof SelectionLayer) {
+            if (result instanceof SelectionLayer) {
                 this.selectionLayer = (SelectionLayer) result;
                 if (this.findButton != null && !this.findButton.isDisposed()) {
                     this.findButton.setEnabled(true);
@@ -223,7 +223,7 @@ public class SearchDialog extends Dialog {
 
         // search SelectionLayer in layer stack
         ILayer result = findSelectionLayer(this.natTable.getLayer());
-        if (result != null && result instanceof SelectionLayer) {
+        if (result instanceof SelectionLayer) {
             this.selectionLayer = (SelectionLayer) result;
         }
 
@@ -833,7 +833,7 @@ public class SearchDialog extends Dialog {
      */
     private void writeHistory(List<String> history, IDialogSettings settings, String sectionName) {
         int itemCount = history.size();
-        Set<String> distinctItems = new HashSet<String>(itemCount);
+        Set<String> distinctItems = new HashSet<>(itemCount);
         for (int i = 0; i < itemCount; i++) {
             String item = history.get(i);
             if (distinctItems.contains(item)) {

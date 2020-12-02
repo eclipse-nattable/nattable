@@ -136,7 +136,7 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
      * @return The column position ranges for the columns that have changed.
      */
     public Collection<Range> getColumnPositionRanges() {
-        return this.columnPositionRanges != null ? this.columnPositionRanges : new ArrayList<Range>(0);
+        return this.columnPositionRanges != null ? this.columnPositionRanges : new ArrayList<>(0);
     }
 
     /**
@@ -176,7 +176,7 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
 
         this.layer = localLayer;
 
-        return this.columnPositionRanges != null && this.columnPositionRanges.size() > 0;
+        return this.columnPositionRanges != null && !this.columnPositionRanges.isEmpty();
     }
 
     @Override

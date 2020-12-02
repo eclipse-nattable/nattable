@@ -33,7 +33,7 @@ public class PercentageDisplayConverter extends DisplayConverter {
                     displayString.length() - 1);
         }
         displayString = displayString.trim();
-        int displayInt = Integer.valueOf(displayString).intValue();
+        int displayInt = Integer.parseInt(displayString);
         double percentageValue = (double) displayInt / 100;
         return Double.valueOf(percentageValue);
     }

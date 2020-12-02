@@ -157,7 +157,7 @@ public class AbstractIndexLayerTransform extends AbstractLayer implements IUniqu
     public Collection<Range> underlyingToLocalColumnPositions(
             ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges) {
 
-        Collection<Range> localColumnPositionRanges = new ArrayList<Range>(underlyingColumnPositionRanges.size());
+        Collection<Range> localColumnPositionRanges = new ArrayList<>(underlyingColumnPositionRanges.size());
         for (Range underlyingColumnPositionRange : underlyingColumnPositionRanges) {
             localColumnPositionRanges.add(new Range(
                     underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingColumnPositionRange.start),
@@ -213,7 +213,7 @@ public class AbstractIndexLayerTransform extends AbstractLayer implements IUniqu
 
     @Override
     public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
-        Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
+        Collection<ILayer> underlyingLayers = new HashSet<>();
         underlyingLayers.add(this.underlyingLayer);
         return underlyingLayers;
     }
@@ -254,7 +254,7 @@ public class AbstractIndexLayerTransform extends AbstractLayer implements IUniqu
     public Collection<Range> underlyingToLocalRowPositions(
             ILayer sourceUnderlyingLayer,
             Collection<Range> underlyingRowPositionRanges) {
-        Collection<Range> localRowPositionRanges = new ArrayList<Range>(underlyingRowPositionRanges.size());
+        Collection<Range> localRowPositionRanges = new ArrayList<>(underlyingRowPositionRanges.size());
         for (Range underlyingRowPositionRange : underlyingRowPositionRanges) {
             localRowPositionRanges.add(new Range(
                     underlyingToLocalRowPosition(sourceUnderlyingLayer, underlyingRowPositionRange.start),
@@ -310,7 +310,7 @@ public class AbstractIndexLayerTransform extends AbstractLayer implements IUniqu
 
     @Override
     public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {
-        Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
+        Collection<ILayer> underlyingLayers = new HashSet<>();
         underlyingLayers.add(this.underlyingLayer);
         return underlyingLayers;
     }

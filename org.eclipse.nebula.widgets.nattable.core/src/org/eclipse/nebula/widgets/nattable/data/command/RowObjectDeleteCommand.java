@@ -28,7 +28,7 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
  */
 public class RowObjectDeleteCommand<T> extends AbstractContextFreeCommand {
 
-    private List<T> objectsToDelete = new ArrayList<T>();
+    private List<T> objectsToDelete = new ArrayList<>();
 
     /**
      * Creates a {@link RowObjectDeleteCommand}.

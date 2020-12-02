@@ -57,7 +57,7 @@ public class GlazedListTreeRowModel<T> extends AbstractTreeRowModel<T> {
             notifyListeners();
         }
 
-        return new ArrayList<Integer>();
+        return new ArrayList<>();
     }
 
     /**
@@ -94,7 +94,7 @@ public class GlazedListTreeRowModel<T> extends AbstractTreeRowModel<T> {
         }
 
         notifyListeners();
-        return new ArrayList<Integer>();
+        return new ArrayList<>();
     }
 
     /**
@@ -114,7 +114,7 @@ public class GlazedListTreeRowModel<T> extends AbstractTreeRowModel<T> {
             notifyListeners();
         }
 
-        return new ArrayList<Integer>();
+        return new ArrayList<>();
     }
 
     @Override
@@ -124,7 +124,7 @@ public class GlazedListTreeRowModel<T> extends AbstractTreeRowModel<T> {
             notifyListeners();
         }
 
-        return new ArrayList<Integer>();
+        return new ArrayList<>();
     }
 
     /**
@@ -164,7 +164,7 @@ public class GlazedListTreeRowModel<T> extends AbstractTreeRowModel<T> {
     public List<Integer> expandAll() {
         internalExpandAll();
         notifyListeners();
-        return new ArrayList<Integer>();
+        return new ArrayList<>();
     }
 
     /**
@@ -213,7 +213,7 @@ public class GlazedListTreeRowModel<T> extends AbstractTreeRowModel<T> {
     public List<Integer> expandToLevel(int level) {
         internalExpandToLevel(level);
         notifyListeners();
-        return new ArrayList<Integer>();
+        return new ArrayList<>();
     }
 
     /**

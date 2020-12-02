@@ -24,11 +24,12 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 /**
  * Helper class that will retrieve edit configuration values out of the
  * {@link IConfigRegistry}.
- *
- * @author Dirk Fauth
- *
  */
-public class EditConfigHelper {
+public final class EditConfigHelper {
+
+    private EditConfigHelper() {
+        // private default constructor for helper class
+    }
 
     /**
      * Searches for the registered {@link IEditErrorHandler} that should be used

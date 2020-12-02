@@ -23,7 +23,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
  *
  * @see DefaultMoveSelectionConfiguration
  */
-public class RowOnlySelectionConfiguration<T> extends AbstractLayerConfiguration<SelectionLayer> {
+public class RowOnlySelectionConfiguration extends AbstractLayerConfiguration<SelectionLayer> {
 
     @Override
     public void configureTypedLayer(SelectionLayer layer) {

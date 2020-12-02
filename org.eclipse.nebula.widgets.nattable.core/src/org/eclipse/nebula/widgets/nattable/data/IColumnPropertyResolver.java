@@ -21,12 +21,14 @@ public interface IColumnPropertyResolver {
     /**
      * @param columnIndex
      *            i.e the order of the column in the backing bean
+     * @return the column property name for the provided column index.
      */
     public String getColumnProperty(int columnIndex);
 
     /**
      * @param propertyName
      *            i.e the name of the column in the backing bean
+     * @return the column index for the provided property name.
      */
     public int getColumnIndex(String propertyName);
 

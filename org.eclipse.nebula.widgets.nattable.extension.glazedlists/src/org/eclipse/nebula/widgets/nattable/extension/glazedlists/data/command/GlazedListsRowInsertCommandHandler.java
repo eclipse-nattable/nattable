@@ -72,10 +72,8 @@ public class GlazedListsRowInsertCommandHandler<T> implements ILayerCommandHandl
                 this.bodyData.getReadWriteLock().writeLock().unlock();
             }
 
-            if (event != null) {
-                // fire the event to refresh
-                targetLayer.fireLayerEvent(event);
-            }
+            // fire the event to refresh
+            targetLayer.fireLayerEvent(event);
             return true;
         }
         return false;

@@ -23,40 +23,41 @@ import org.eclipse.swt.graphics.Color;
  * This interface contains {@link ConfigAttribute}s that can be used to
  * configure the fill handle behavior.
  *
- * @noimplement This interface is not intended to be implemented by clients.
- * @noextend This interface is not intended to be extended by clients.
- *
  * @since 1.4
  */
-public interface FillHandleConfigAttributes {
+public final class FillHandleConfigAttributes {
+
+    private FillHandleConfigAttributes() {
+        // private default constructor for constants class
+    }
 
     /**
      * ConfigAttribute to configure the line style used to render a special
      * border on dragging the fill handle.
      */
-    ConfigAttribute<BorderStyle> FILL_HANDLE_REGION_BORDER_STYLE = new ConfigAttribute<BorderStyle>();
+    public static final ConfigAttribute<BorderStyle> FILL_HANDLE_REGION_BORDER_STYLE = new ConfigAttribute<>();
 
     /**
      * ConfigAttribute to configure the border style of the fill handle itself.
      */
-    ConfigAttribute<BorderStyle> FILL_HANDLE_BORDER_STYLE = new ConfigAttribute<BorderStyle>();
+    public static final ConfigAttribute<BorderStyle> FILL_HANDLE_BORDER_STYLE = new ConfigAttribute<>();
 
     /**
      * ConfigAttribute to configure the color of the fill handle.
      */
-    ConfigAttribute<Color> FILL_HANDLE_COLOR = new ConfigAttribute<Color>();
+    public static final ConfigAttribute<Color> FILL_HANDLE_COLOR = new ConfigAttribute<>();
 
     /**
      * ConfigAttribute to configure the date field that should be incremented
      * when inserting a series via fill handle. Fields from the {@link Calendar}
      * class should be used for configuration.
      */
-    ConfigAttribute<Integer> INCREMENT_DATE_FIELD = new ConfigAttribute<Integer>();
+    public static final ConfigAttribute<Integer> INCREMENT_DATE_FIELD = new ConfigAttribute<>();
 
     /**
      * ConfigAttribute to configure the directions that are allowed for the fill
      * handle. If nothing is specified {@link Direction#BOTH} will be used
      * implicitly.
      */
-    ConfigAttribute<Direction> ALLOWED_FILL_DIRECTION = new ConfigAttribute<Direction>();
+    public static final ConfigAttribute<Direction> ALLOWED_FILL_DIRECTION = new ConfigAttribute<>();
 }

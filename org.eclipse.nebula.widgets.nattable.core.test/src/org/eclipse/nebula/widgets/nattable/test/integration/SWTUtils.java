@@ -106,6 +106,8 @@ public class SWTUtils {
     /**
      * Some of the tests do not run on Unix, due to issues with Xvfb. This check
      * helps skipping those tests.
+     *
+     * @return true if we are running on a Unix system.
      */
     public static boolean isRunningOnUnix() {
         return System.getProperty("os.name").equals("Linux");

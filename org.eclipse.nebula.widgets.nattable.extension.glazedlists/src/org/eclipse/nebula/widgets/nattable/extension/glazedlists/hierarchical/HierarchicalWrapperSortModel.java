@@ -14,6 +14,8 @@
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.hierarchical;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -48,7 +50,7 @@ public class HierarchicalWrapperSortModel implements ISortModel {
     private DataLayer columnHeaderDataLayer;
     private ConfigRegistry configRegistry;
 
-    private Map<Integer, SortDirectionEnum> sortingState = new LinkedHashMap<Integer, SortDirectionEnum>();
+    private Map<Integer, SortDirectionEnum> sortingState = new LinkedHashMap<>();
 
     /**
      *
@@ -83,7 +85,7 @@ public class HierarchicalWrapperSortModel implements ISortModel {
 
     @Override
     public List<Integer> getSortedColumnIndexes() {
-        return new ArrayList<Integer>(this.sortingState.keySet());
+        return new ArrayList<>(this.sortingState.keySet());
     }
 
     @Override
@@ -108,16 +110,7 @@ public class HierarchicalWrapperSortModel implements ISortModel {
     public List<Comparator> getComparatorsForColumnIndex(int columnIndex) {
         SortDirectionEnum sort = this.sortingState.get(columnIndex);
         // we only support one comparator per column
-        if (sort == null) {
-            return null;
-        } else {
-            List<Comparator> result = new ArrayList<Comparator>();
-            result.add(getColumnComparator(columnIndex));
-            return result;
-        }
-        // this does not compile with Java 6 but would with Java 8
-        // return sort != null ? Arrays.asList(getColumnComparator(columnIndex))
-        // : null;
+        return sort != null ? Arrays.asList(getColumnComparator(columnIndex)) : Collections.emptyList();
     }
 
     @Override

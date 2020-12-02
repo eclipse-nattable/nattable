@@ -93,16 +93,16 @@ public class CellPainterFactory {
     /**
      * Singleton instance
      */
-    private static CellPainterFactory INSTANCE;
+    private static CellPainterFactory instance;
 
     /**
      * @return The singleton instance of {@link CellPainterFactory}
      */
     public static CellPainterFactory getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new CellPainterFactory();
+        if (instance == null) {
+            instance = new CellPainterFactory();
         }
-        return INSTANCE;
+        return instance;
     }
 
     /**
@@ -112,9 +112,7 @@ public class CellPainterFactory {
         // default background painter initializations
         this.backgroundPainter.put(
                 BACKGROUND_PAINTER_KEY,
-                (painterProperties, underlying) -> {
-                    return new BackgroundPainter(underlying);
-                });
+                (painterProperties, underlying) -> new BackgroundPainter(underlying));
         this.backgroundPainter.put(
                 BACKGROUND_IMAGE_PAINTER_KEY,
                 (painterProperties, underlying) -> {
@@ -134,19 +132,13 @@ public class CellPainterFactory {
         // default decorator painter initializations
         this.decoratorPainter.put(
                 LINE_BORDER_DECORATOR_KEY,
-                (painterProperties, underlying) -> {
-                    return new LineBorderDecorator(underlying);
-                });
+                (painterProperties, underlying) -> new LineBorderDecorator(underlying));
         this.decoratorPainter.put(
                 CUSTOM_LINE_BORDER_DECORATOR_KEY,
-                (painterProperties, underlying) -> {
-                    return new CustomLineBorderDecorator(underlying);
-                });
+                (painterProperties, underlying) -> new CustomLineBorderDecorator(underlying));
         this.decoratorPainter.put(
                 BEVELED_BORDER_DECORATOR_KEY,
-                (painterProperties, underlying) -> {
-                    return new BeveledBorderDecorator(underlying);
-                });
+                (painterProperties, underlying) -> new BeveledBorderDecorator(underlying));
 
         this.decoratorPainter.put(
                 PADDING_DECORATOR_KEY,
@@ -290,14 +282,10 @@ public class CellPainterFactory {
                 });
         this.contentPainter.put(
                 PASSWORD_PAINTER_KEY,
-                (painterProperties, underlying) -> {
-                    return new PasswordTextPainter(false, false);
-                });
+                (painterProperties, underlying) -> new PasswordTextPainter(false, false));
         this.contentPainter.put(
                 PERCENTAGEBAR_PAINTER_KEY,
-                (painterProperties, underlying) -> {
-                    return new PercentageBarCellPainter();
-                });
+                (painterProperties, underlying) -> new PercentageBarCellPainter());
         this.contentPainter.put(
                 TABLE_PAINTER_KEY,
                 (painterProperties, underlying) -> {
@@ -363,16 +351,16 @@ public class CellPainterFactory {
         ICellPainter painter = null;
 
         // resolve content painter
-        ICellPainter contentPainter = null;
+        ICellPainter cp = null;
         if (isContentPainterKey(contentKey)) {
-            contentPainter = getContentPainter(contentKey, painterProperties);
+            cp = getContentPainter(contentKey, painterProperties);
         } else if (!NONE.equalsIgnoreCase(contentKey)) {
             // fallback for unknown content painter key
-            contentPainter = getContentPainter(TEXT_PAINTER_KEY, painterProperties);
+            cp = getContentPainter(TEXT_PAINTER_KEY, painterProperties);
         }
 
         // intermediate result = content painter
-        painter = contentPainter;
+        painter = cp;
 
         // resolve decorators
         String decoratorKey = null;

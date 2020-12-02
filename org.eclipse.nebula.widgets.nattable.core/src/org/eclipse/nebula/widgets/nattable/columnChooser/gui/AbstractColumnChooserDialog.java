@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public abstract class AbstractColumnChooserDialog extends Dialog {
 
-    private IDialogSettings dialogSettings;;
+    private IDialogSettings dialogSettings;
 
     public AbstractColumnChooserDialog(Shell parent) {
         super(parent);

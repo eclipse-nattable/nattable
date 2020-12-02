@@ -329,11 +329,11 @@ public class AutoResizeHelper {
                 // only perform further actions if the heights could be
                 // calculated
                 // could fail and return null for example if the GCFactory fails
-                if (calculatedRowHeights != null) {
+                if (calculatedRowHeights != null && calculatedRowHeights.length > 0) {
                     // only perform row resize where necessary
                     // avoid unnecessary commands
-                    final List<Integer> positions = new ArrayList<Integer>(rowPos.length);
-                    final List<Integer> heights = new ArrayList<Integer>(rowPos.length);
+                    final List<Integer> positions = new ArrayList<>(rowPos.length);
+                    final List<Integer> heights = new ArrayList<>(rowPos.length);
                     for (int i = 0; i < rowPos.length; i++) {
 
                         if (this.cancelled) {

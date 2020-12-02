@@ -44,7 +44,7 @@ public class ButtonCellPainter extends AbstractCellPainter implements
     private int columnPosClicked;
     private int rowPosClicked;
     private boolean recentlyClicked;
-    private final List<IMouseAction> clickLiseners = new ArrayList<IMouseAction>();
+    private final List<IMouseAction> clickLiseners = new ArrayList<>();
 
     /**
      * @param interiorPainter

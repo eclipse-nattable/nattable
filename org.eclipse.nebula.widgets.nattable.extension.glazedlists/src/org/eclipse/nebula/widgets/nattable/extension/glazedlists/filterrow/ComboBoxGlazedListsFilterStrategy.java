@@ -134,7 +134,7 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
         // we need to create a new Map for applying a filter using the parent
         // class otherwise we would remove the previous added pre-selected
         // values
-        Map<Integer, Object> newIndexToObjectMap = new HashMap<Integer, Object>();
+        Map<Integer, Object> newIndexToObjectMap = new HashMap<>();
         newIndexToObjectMap.putAll(filterIndexToObjectMap);
 
         // remove all complete selected
@@ -148,7 +148,7 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
 
                 // selecting all is transported as String to support lazy
                 // loading of combo box values
-                Collection filterCollection = (filterObject != null && filterObject instanceof Collection) ? (Collection) filterObject : null;
+                Collection filterCollection = (filterObject instanceof Collection) ? (Collection) filterObject : null;
                 if (filterCollection == null || filterCollection.isEmpty()) {
                     // for one column there are no items selected in the combo,
                     // therefore nothing matches

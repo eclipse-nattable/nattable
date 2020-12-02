@@ -40,11 +40,11 @@ public class ResizeStructuralRefreshEvent extends StructuralRefreshEvent {
 
     @Override
     public Collection<StructuralDiff> getColumnDiffs() {
-        return new ArrayList<StructuralDiff>();
+        return new ArrayList<>();
     }
 
     @Override
     public Collection<StructuralDiff> getRowDiffs() {
-        return new ArrayList<StructuralDiff>();
+        return new ArrayList<>();
     }
 }

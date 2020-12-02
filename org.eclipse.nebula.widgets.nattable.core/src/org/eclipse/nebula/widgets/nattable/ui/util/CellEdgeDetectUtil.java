@@ -24,7 +24,11 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
-public class CellEdgeDetectUtil {
+public final class CellEdgeDetectUtil {
+
+    private CellEdgeDetectUtil() {
+        // private default constructor for helper class
+    }
 
     /**
      * Calculate the column position depending on the cursor's position on the
@@ -42,11 +46,11 @@ public class CellEdgeDetectUtil {
     public static int getColumnPosition(ILayer layer, Point clickPoint) {
         int columnPosition = layer.getColumnPositionByX(clickPoint.x);
         if (columnPosition >= 0) {
-            switch (getHorizontalCellEdge(layer, clickPoint, DEFAULT_RESIZE_HANDLE_SIZE)) {
-                case LEFT:
-                    return columnPosition - 1;
-                case RIGHT:
-                    return columnPosition;
+            CellEdgeEnum horizontalCellEdge = getHorizontalCellEdge(layer, clickPoint, DEFAULT_RESIZE_HANDLE_SIZE);
+            if (horizontalCellEdge == CellEdgeEnum.LEFT) {
+                return columnPosition - 1;
+            } else if (horizontalCellEdge == CellEdgeEnum.RIGHT) {
+                return columnPosition;
             }
         }
         return -1;
@@ -69,15 +73,15 @@ public class CellEdgeDetectUtil {
     public static int getColumnPositionToResize(ILayer layer, Point clickPoint) {
         int columnPosition = layer.getColumnPositionByX(clickPoint.x);
         if (columnPosition >= 0) {
-            switch (getHorizontalCellEdge(layer, clickPoint, DEFAULT_RESIZE_HANDLE_SIZE)) {
-                case LEFT:
-                    if (columnPosition == 1) {
-                        // can't resize left edge of first column
-                        break;
-                    }
-                    return columnPosition - 1;
-                case RIGHT:
-                    return columnPosition;
+            CellEdgeEnum horizontalCellEdge = getHorizontalCellEdge(layer, clickPoint, DEFAULT_RESIZE_HANDLE_SIZE);
+            if (horizontalCellEdge == CellEdgeEnum.LEFT) {
+                if (columnPosition == 1) {
+                    // can't resize left edge of first column
+                    return -1;
+                }
+                return columnPosition - 1;
+            } else if (horizontalCellEdge == CellEdgeEnum.RIGHT) {
+                return columnPosition;
             }
         }
         return -1;
@@ -99,11 +103,11 @@ public class CellEdgeDetectUtil {
     public static int getRowPosition(ILayer layer, Point clickPoint) {
         int rowPosition = layer.getRowPositionByY(clickPoint.y);
         if (rowPosition >= 0) {
-            switch (getVerticalCellEdge(layer, clickPoint, DEFAULT_RESIZE_HANDLE_SIZE)) {
-                case TOP:
-                    return rowPosition - 1;
-                case BOTTOM:
-                    return rowPosition;
+            CellEdgeEnum verticalCellEdge = getVerticalCellEdge(layer, clickPoint, DEFAULT_RESIZE_HANDLE_SIZE);
+            if (verticalCellEdge == CellEdgeEnum.TOP) {
+                return rowPosition - 1;
+            } else if (verticalCellEdge == CellEdgeEnum.BOTTOM) {
+                return rowPosition;
             }
         }
         return -1;
@@ -126,15 +130,15 @@ public class CellEdgeDetectUtil {
     public static int getRowPositionToResize(ILayer layer, Point clickPoint) {
         int rowPosition = layer.getRowPositionByY(clickPoint.y);
         if (rowPosition >= 0) {
-            switch (getVerticalCellEdge(layer, clickPoint, DEFAULT_RESIZE_HANDLE_SIZE)) {
-                case TOP:
-                    if (rowPosition == 1) {
-                        // can't resize top edge of first row
-                        break;
-                    }
-                    return rowPosition - 1;
-                case BOTTOM:
-                    return rowPosition;
+            CellEdgeEnum verticalCellEdge = getVerticalCellEdge(layer, clickPoint, DEFAULT_RESIZE_HANDLE_SIZE);
+            if (verticalCellEdge == CellEdgeEnum.TOP) {
+                if (rowPosition == 1) {
+                    // can't resize top edge of first row
+                    return -1;
+                }
+                return rowPosition - 1;
+            } else if (verticalCellEdge == CellEdgeEnum.BOTTOM) {
+                return rowPosition;
             }
         }
         return -1;

@@ -32,6 +32,7 @@ import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
  * @author Stefan Bolton
  *
  * @param <T>
+ *            the type of the row objects.
  */
 public class RowGroupModel<T> implements IRowGroupModel<T> {
 
@@ -55,10 +56,10 @@ public class RowGroupModel<T> implements IRowGroupModel<T> {
     private boolean suppressNoficiations;
 
     public RowGroupModel() {
-        this.rowToGroups = new ConcurrentHashMap<T, IRowGroup<T>>();
-        this.namesToGroups = new ConcurrentHashMap<String, IRowGroup<T>>();
-        this.rowCache = new RowCache<T>();
-        this.listeners = new HashSet<IRowGroupModelListener>();
+        this.rowToGroups = new ConcurrentHashMap<>();
+        this.namesToGroups = new ConcurrentHashMap<>();
+        this.rowCache = new RowCache<>();
+        this.listeners = new HashSet<>();
         this.suppressNoficiations = false;
     }
 
@@ -70,7 +71,7 @@ public class RowGroupModel<T> implements IRowGroupModel<T> {
     @Override
     public int getIndexFromRowCache(final T row) {
         return this.rowCache.getIndexFromRowCache(row);
-    };
+    }
 
     @Override
     public void invalidateIndexCache() {
@@ -248,8 +249,8 @@ public class RowGroupModel<T> implements IRowGroupModel<T> {
         private final Map<E, Integer> rowsToIndexes;
 
         public RowCache() {
-            this.indexesToRows = new LinkedHashMap<Integer, E>();
-            this.rowsToIndexes = new LinkedHashMap<E, Integer>();
+            this.indexesToRows = new LinkedHashMap<>();
+            this.rowsToIndexes = new LinkedHashMap<>();
         }
 
         public IRowDataProvider<E> getDataProvider() {

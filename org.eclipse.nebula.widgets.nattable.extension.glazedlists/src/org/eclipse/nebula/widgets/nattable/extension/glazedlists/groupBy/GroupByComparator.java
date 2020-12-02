@@ -56,7 +56,7 @@ public class GroupByComparator<T> implements IGroupByComparator<T> {
      * information whether a column is a summary column is only retrieved once
      * and not calculated everytime.
      */
-    protected Map<Integer, Boolean> summaryColumnCache = new HashMap<Integer, Boolean>();
+    protected Map<Integer, Boolean> summaryColumnCache = new HashMap<>();
 
     /**
      * Cache that is used to increase the performance on sorting by summary
@@ -73,8 +73,7 @@ public class GroupByComparator<T> implements IGroupByComparator<T> {
      * cleared on every structural change.
      * </p>
      */
-    protected Map<GroupByObject, GroupByObjectValueCache> groupByObjectComparatorCache =
-            new HashMap<GroupByObject, GroupByObjectValueCache>();
+    protected Map<GroupByObject, GroupByObjectValueCache> groupByObjectComparatorCache = new HashMap<>();
 
     /**
      *
@@ -321,11 +320,7 @@ public class GroupByComparator<T> implements IGroupByComparator<T> {
         if (this.dataLayer != null) {
 
             // check if a cache object is already there
-            GroupByObjectValueCache cache = this.groupByObjectComparatorCache.get(groupBy);
-            if (cache == null) {
-                cache = new GroupByObjectValueCache();
-                this.groupByObjectComparatorCache.put(groupBy, cache);
-            }
+            GroupByObjectValueCache cache = this.groupByObjectComparatorCache.computeIfAbsent(groupBy, g -> new GroupByObjectValueCache());
 
             // check if the cache object already contains information about the
             // column
@@ -382,6 +377,6 @@ public class GroupByComparator<T> implements IGroupByComparator<T> {
      * a {@link GroupByObject}.
      */
     class GroupByObjectValueCache {
-        Map<Integer, Object> valueCache = new HashMap<Integer, Object>();
+        Map<Integer, Object> valueCache = new HashMap<>();
     }
 }

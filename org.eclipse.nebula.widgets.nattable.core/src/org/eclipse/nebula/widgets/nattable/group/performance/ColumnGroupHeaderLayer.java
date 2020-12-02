@@ -156,7 +156,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
     /**
      * Map in which it is stored if reordering is supported per level.
      */
-    private Map<Integer, Boolean> reorderSupportedOnLevel = new HashMap<Integer, Boolean>();
+    private Map<Integer, Boolean> reorderSupportedOnLevel = new HashMap<>();
 
     /**
      * The {@link CompositeFreezeLayer} in case it is part of the layer
@@ -388,7 +388,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
             }
         };
 
-        this.model = new ArrayList<GroupModel>(numberOfGroupLevels);
+        this.model = new ArrayList<>(numberOfGroupLevels);
         for (int i = 0; i < numberOfGroupLevels; i++) {
             GroupModel groupModel = new GroupModel();
             groupModel.setIndexPositionConverter(this.indexPositionConverter);
@@ -521,7 +521,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
     List<ILayer> findLayerPath(ILayer layer, int columnPosition) {
 
         if (layer == getPositionLayer()) {
-            List<ILayer> result = new ArrayList<ILayer>();
+            List<ILayer> result = new ArrayList<>();
             result.add(layer);
             return result;
         }
@@ -664,7 +664,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
             // load the group model
             groupModel.loadState(prefix + PERSISTENCE_KEY_COLUMN_GROUPS + "_" + level, properties); //$NON-NLS-1$
             // trigger real collapse of collapsed groups in model
-            List<Group> collapsedGroups = new ArrayList<Group>();
+            List<Group> collapsedGroups = new ArrayList<>();
             for (Group group : groupModel.getGroups()) {
                 if (group.isCollapsed()) {
                     collapsedGroups.add(group);
@@ -1082,8 +1082,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         if (posColumn > -1) {
             GroupModel groupModel = getGroupModel(level);
             if (groupModel != null) {
-                Group group = groupModel.getGroupByPosition(posColumn);
-                return group;
+                return groupModel.getGroupByPosition(posColumn);
             }
         }
         return null;
@@ -2292,8 +2291,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         labels.add(GroupHeaderConfigLabels.GROUP_EXPANDED_CONFIG_TYPE);
 
         // add the labels configured via IConfigLabelAccumulator
-        if (getConfigLabelAccumulator() != null
-                && getConfigLabelAccumulator() instanceof IConfigLabelProvider) {
+        if (getConfigLabelAccumulator() instanceof IConfigLabelProvider) {
             labels.addAll(((IConfigLabelProvider) getConfigLabelAccumulator()).getProvidedLabels());
         }
 
@@ -2343,7 +2341,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                             updateVisibleStartPositions();
 
                             for (GroupModel groupModel : ColumnGroupHeaderLayer.this.model) {
-                                Map<Group, UpdateColumnGroupCollapseCommand> collapseUpdates = new HashMap<Group, UpdateColumnGroupCollapseCommand>();
+                                Map<Group, UpdateColumnGroupCollapseCommand> collapseUpdates = new HashMap<>();
 
                                 // find group and update visible span
                                 for (int i = diff.getAfterPositionRange().start; i < diff.getAfterPositionRange().end; i++) {
@@ -2482,7 +2480,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
                             // find the positions in the group
                             // that are hidden
-                            MutableIntList hiddenGroupPositions = groupPositions.select(groupPos -> groupPositionList.contains(groupPos));
+                            MutableIntList hiddenGroupPositions = groupPositions.select(groupPositionList::contains);
 
                             // update the positionList as we
                             // handled the hidden columns

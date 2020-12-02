@@ -358,7 +358,7 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
         for (String configLabel : cell.getConfigLabels()) {
             if (configLabel.startsWith(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE)) {
                 String[] tokens = configLabel.split("_"); //$NON-NLS-1$
-                depth = Integer.valueOf(tokens[tokens.length - 1]).intValue();
+                depth = Integer.parseInt(tokens[tokens.length - 1]);
             }
         }
 

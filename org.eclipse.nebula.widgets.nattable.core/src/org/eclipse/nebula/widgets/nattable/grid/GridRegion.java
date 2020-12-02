@@ -19,7 +19,11 @@ package org.eclipse.nebula.widgets.nattable.grid;
  * For example all the cells in the column header are painted differently and
  * can respond to sorting actions.
  */
-public interface GridRegion {
+public final class GridRegion {
+
+    private GridRegion() {
+        // private default constructor for constants class
+    }
 
     public static final String CORNER = "CORNER"; //$NON-NLS-1$
     public static final String COLUMN_HEADER = "COLUMN_HEADER"; //$NON-NLS-1$

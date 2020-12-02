@@ -19,12 +19,13 @@ import org.eclipse.nebula.widgets.nattable.style.IStyle;
 /**
  * Configuration attributes that are used to configure printing.
  *
- * @noimplement This interface is not intended to be implemented by clients.
- * @noextend This interface is not intended to be extended by clients.
- *
  * @since 1.5
  */
-public interface PrintConfigAttributes {
+public final class PrintConfigAttributes {
+
+    private PrintConfigAttributes() {
+        // private default constructor for constants class
+    }
 
     /**
      * Configuration attribute to configure the scaling mode on printing.
@@ -39,7 +40,7 @@ public interface PrintConfigAttributes {
      * and rows are printed on one page</li>
      * </ul>
      */
-    ConfigAttribute<Direction> FITTING_MODE = new ConfigAttribute<Direction>();
+    public static final ConfigAttribute<Direction> FITTING_MODE = new ConfigAttribute<>();
 
     /**
      * Configuration attribute to configure a scaling option in case
@@ -52,28 +53,28 @@ public interface PrintConfigAttributes {
      * {@link Direction#HORIZONTAL}.
      * </p>
      */
-    ConfigAttribute<Boolean> STRETCH = new ConfigAttribute<Boolean>();
+    public static final ConfigAttribute<Boolean> STRETCH = new ConfigAttribute<>();
 
     /**
      * Configuration attribute to configure the date format that is used for
      * rendering the print date in the footer region. If not specified the
      * default value <i>EEE, d MMM yyyy HH:mm a</i> will be used.
      */
-    ConfigAttribute<String> DATE_FORMAT = new ConfigAttribute<String>();
+    public static final ConfigAttribute<String> DATE_FORMAT = new ConfigAttribute<>();
 
     /**
      * Configuration attribute to configure the height of the footer. Needs to
      * be specified in printer DPI value. If not set the default value 300 will
      * be used.
      */
-    ConfigAttribute<Integer> FOOTER_HEIGHT = new ConfigAttribute<Integer>();
+    public static final ConfigAttribute<Integer> FOOTER_HEIGHT = new ConfigAttribute<>();
 
     /**
      * Configuration attribute to configure the style that should be used to
      * print the footer. Currently only background color, foreground color and
      * font style attributes are supported.
      */
-    ConfigAttribute<IStyle> FOOTER_STYLE = new ConfigAttribute<IStyle>();
+    public static final ConfigAttribute<IStyle> FOOTER_STYLE = new ConfigAttribute<>();
 
     /**
      * Configuration attribute to configure the pattern for rendering the page
@@ -81,7 +82,7 @@ public interface PrintConfigAttributes {
      * current page and the total page count, where {0} = current page and {1} =
      * total page count, e.g. <i>Page {0}/{1}</i> to show <i>Page 1/6</i>
      */
-    ConfigAttribute<String> FOOTER_PAGE_PATTERN = new ConfigAttribute<String>();
+    public static final ConfigAttribute<String> FOOTER_PAGE_PATTERN = new ConfigAttribute<>();
 
     /**
      * Configuration attribute to configure the default orientation of the paper
@@ -90,5 +91,5 @@ public interface PrintConfigAttributes {
      *
      * @since 1.6
      */
-    ConfigAttribute<Integer> DEFAULT_PAGE_ORIENTATION = new ConfigAttribute<Integer>();
+    public static final ConfigAttribute<Integer> DEFAULT_PAGE_ORIENTATION = new ConfigAttribute<>();
 }

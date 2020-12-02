@@ -53,9 +53,7 @@ public class HideMultipleColumnsIntegrationTest {
         this.natTableFixture.addLayerListener(this.listenerFixture);
     }
 
-    /**
-     * Exposing bug: http://nattable.org/jira/browse/NTBL-471
-     */
+    // Exposing bug: http://nattable.org/jira/browse/NTBL-471
     @Test
     public void hideAllColumnsWithColumnGroupsEnabled() throws Exception {
         assertEquals(37, this.bodyLayerStackFixture.getBodyDataProvider().getColumnCount());

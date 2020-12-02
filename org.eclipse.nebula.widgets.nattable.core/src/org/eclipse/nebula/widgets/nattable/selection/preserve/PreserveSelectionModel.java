@@ -630,7 +630,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
                 this.selectionAnchor = null;
             } else {
                 this.selectionAnchor =
-                        new CellPosition<T>(getRowObjectByPosition(coordinate.y), coordinate.x);
+                        new CellPosition<>(getRowObjectByPosition(coordinate.y), coordinate.x);
             }
         } finally {
             this.selectionsLock.writeLock().unlock();
@@ -647,7 +647,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
                 this.lastSelectedCell = null;
             } else {
                 this.lastSelectedCell =
-                        new CellPosition<T>(getRowObjectByPosition(coordinate.y), coordinate.x);
+                        new CellPosition<>(getRowObjectByPosition(coordinate.y), coordinate.x);
             }
         } finally {
             this.selectionsLock.writeLock().unlock();
@@ -708,7 +708,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
                 // first handle deletion, then handle insert
                 // this is to avoid mixed operations that might lead to
                 // confusing indexes
-                List<Integer> removed = new ArrayList<Integer>();
+                List<Integer> removed = new ArrayList<>();
                 for (StructuralDiff columnDiff : diffs) {
                     if (columnDiff.getDiffType() != null
                             && columnDiff.getDiffType().equals(DiffTypeEnum.DELETE)) {
@@ -752,7 +752,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
         if (event.isVerticalStructureChanged()) {
             // the change is already done and we don't know about indexes, so we
             // need to check if the selected objects still exist
-            Collection<Serializable> keysToRemove = new ArrayList<Serializable>();
+            Collection<Serializable> keysToRemove = new ArrayList<>();
             for (Selections.Row<T> row : this.selections.getRows()) {
                 if (!ignoreVerticalChange(row)) {
                     int rowIndex = this.rowDataProvider.indexOfRowObject(row.getRowObject());

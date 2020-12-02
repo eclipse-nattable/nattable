@@ -69,7 +69,7 @@ public class KeyRowInsertCommandHandler<T> implements ILayerCommandHandler<RowIn
 
                 this.bodyData.addAll(command.getObjects());
 
-                List<Object> keys = new ArrayList<Object>();
+                List<Object> keys = new ArrayList<>();
                 for (int i = 0; i < command.getObjects().size(); i++) {
                     keys.add(this.keyHandler.getKey(-1, start + i));
                 }
@@ -83,7 +83,7 @@ public class KeyRowInsertCommandHandler<T> implements ILayerCommandHandler<RowIn
             } else {
                 this.bodyData.addAll(command.getRowIndex(), command.getObjects());
 
-                List<Object> keys = new ArrayList<Object>();
+                List<Object> keys = new ArrayList<>();
                 for (int i = 0; i < command.getObjects().size(); i++) {
                     keys.add(this.keyHandler.getKey(-1, command.getRowIndex() + i));
                 }

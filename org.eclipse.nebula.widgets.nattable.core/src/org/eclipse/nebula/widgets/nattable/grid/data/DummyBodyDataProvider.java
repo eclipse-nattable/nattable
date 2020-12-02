@@ -24,7 +24,7 @@ public class DummyBodyDataProvider implements IDataProvider {
 
     private final int rowCount;
 
-    private Map<Point, Object> values = new HashMap<Point, Object>();
+    private Map<Point, Object> values = new HashMap<>();
 
     public DummyBodyDataProvider(int columnCount, int rowCount) {
         this.columnCount = columnCount;

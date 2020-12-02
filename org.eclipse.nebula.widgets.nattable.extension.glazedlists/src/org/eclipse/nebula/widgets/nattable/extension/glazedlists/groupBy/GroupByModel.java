@@ -29,7 +29,7 @@ public class GroupByModel extends Observable implements IPersistable {
 
     public static final String PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES = ".groupByColumnIndexes"; //$NON-NLS-1$
 
-    private List<Integer> groupByColumnIndexes = new ArrayList<Integer>();
+    private List<Integer> groupByColumnIndexes = new ArrayList<>();
 
     /**
      * Add the given column index to the list of column indexes that are
@@ -66,7 +66,7 @@ public class GroupByModel extends Observable implements IPersistable {
             update();
             return true;
         } else {
-            // unchanged;
+            // unchanged
             return false;
         }
     }

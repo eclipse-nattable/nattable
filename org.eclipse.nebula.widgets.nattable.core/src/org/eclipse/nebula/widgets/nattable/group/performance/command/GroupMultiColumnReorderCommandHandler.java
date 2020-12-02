@@ -100,9 +100,7 @@ public class GroupMultiColumnReorderCommandHandler extends AbstractLayerCommandH
             int toIndex = this.columnGroupHeaderLayer.getPositionLayer().getColumnIndexByPosition(toColumnPosition);
 
             // expand all collapsed groups
-            collapsed.forEach((model, collapsedGroups) -> {
-                collapsedGroups.forEach(group -> this.columnGroupHeaderLayer.expandGroup(model, group));
-            });
+            collapsed.forEach((model, collapsedGroups) -> collapsedGroups.forEach(group -> this.columnGroupHeaderLayer.expandGroup(model, group)));
 
             // update fromColumnPositions and toColumnPosition
             int[] fromPositions = Arrays.stream(fromIndexes)

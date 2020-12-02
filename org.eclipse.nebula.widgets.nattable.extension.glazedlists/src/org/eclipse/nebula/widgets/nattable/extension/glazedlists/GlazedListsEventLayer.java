@@ -79,21 +79,18 @@ public class GlazedListsEventLayer<T>
      *         NatTable refresh event.
      */
     protected Runnable getEventNotifier() {
-        return new Runnable() {
-            @Override
-            public void run() {
-                if (GlazedListsEventLayer.this.eventsToProcess && GlazedListsEventLayer.this.active) {
-                    ILayerEvent layerEvent;
-                    if (GlazedListsEventLayer.this.structuralChangeEventsToProcess) {
-                        layerEvent = new RowStructuralRefreshEvent(getUnderlyingLayer());
-                    } else {
-                        layerEvent = new VisualRefreshEvent(getUnderlyingLayer());
-                    }
-                    fireEventFromSWTDisplayThread(layerEvent);
-
-                    GlazedListsEventLayer.this.eventsToProcess = false;
-                    GlazedListsEventLayer.this.structuralChangeEventsToProcess = false;
+        return () -> {
+            if (GlazedListsEventLayer.this.eventsToProcess && GlazedListsEventLayer.this.active) {
+                ILayerEvent layerEvent;
+                if (GlazedListsEventLayer.this.structuralChangeEventsToProcess) {
+                    layerEvent = new RowStructuralRefreshEvent(getUnderlyingLayer());
+                } else {
+                    layerEvent = new VisualRefreshEvent(getUnderlyingLayer());
                 }
+                fireEventFromSWTDisplayThread(layerEvent);
+
+                GlazedListsEventLayer.this.eventsToProcess = false;
+                GlazedListsEventLayer.this.structuralChangeEventsToProcess = false;
             }
         };
     }
@@ -117,7 +114,7 @@ public class GlazedListsEventLayer<T>
     @SuppressWarnings("unchecked")
     public void propertyChange(PropertyChangeEvent event) {
         // We can cast since we know that the EventList is of type T
-        PropertyUpdateEvent<T> updateEvent = new PropertyUpdateEvent<T>(
+        PropertyUpdateEvent<T> updateEvent = new PropertyUpdateEvent<>(
                 this,
                 (T) event.getSource(),
                 event.getPropertyName(),
@@ -138,12 +135,7 @@ public class GlazedListsEventLayer<T>
      */
     protected void fireEventFromSWTDisplayThread(final ILayerEvent event) {
         if (!this.testMode && Display.getCurrent() == null) {
-            Display.getDefault().asyncExec(new Runnable() {
-                @Override
-                public void run() {
-                    fireLayerEvent(event);
-                }
-            });
+            Display.getDefault().asyncExec(() -> fireLayerEvent(event));
         } else {
             fireLayerEvent(event);
         }

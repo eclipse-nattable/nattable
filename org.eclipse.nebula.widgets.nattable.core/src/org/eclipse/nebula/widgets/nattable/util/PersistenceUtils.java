@@ -16,7 +16,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-public class PersistenceUtils {
+public final class PersistenceUtils {
+
+    private PersistenceUtils() {
+        // private default constructor for helper class
+    }
 
     /**
      * The character that is used to separate the column and the value that
@@ -33,7 +37,7 @@ public class PersistenceUtils {
      *            from the properties file.
      */
     public static Map<Integer, String> parseString(Object property) {
-        TreeMap<Integer, String> map = new TreeMap<Integer, String>();
+        TreeMap<Integer, String> map = new TreeMap<>();
 
         if (property != null) {
             String value = (String) property;
@@ -71,7 +75,7 @@ public class PersistenceUtils {
      * reconstruct this Map object from the String.
      */
     public static String mapAsString(Map<Integer, String> map) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (Entry<Integer, String> entry : map.entrySet()) {
             buffer.append(entry.getKey() + COLUMN_VALUE_SEPARATOR
                     + entry.getValue() + "|"); //$NON-NLS-1$

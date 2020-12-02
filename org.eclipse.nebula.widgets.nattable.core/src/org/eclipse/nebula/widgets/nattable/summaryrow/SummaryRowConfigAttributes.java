@@ -20,12 +20,16 @@ import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
  *
  * @see SummaryRowLayer
  */
-public class SummaryRowConfigAttributes {
+public final class SummaryRowConfigAttributes {
+
+    private SummaryRowConfigAttributes() {
+        // private default constructor for constants class
+    }
 
     /**
      * The configuration attribute that is used to calculate the summary for a
      * column.
      */
-    public static final ConfigAttribute<ISummaryProvider> SUMMARY_PROVIDER = new ConfigAttribute<ISummaryProvider>();
+    public static final ConfigAttribute<ISummaryProvider> SUMMARY_PROVIDER = new ConfigAttribute<>();
 
 }

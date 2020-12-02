@@ -179,7 +179,7 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
      */
     protected ILayerCell[][] assembleCopiedDataStructure() {
         final Set<Range> selectedRows = this.selectionLayer.getSelectedRowPositions();
-        final List<ILayerCell[]> copiedCells = new ArrayList<ILayerCell[]>();
+        final List<ILayerCell[]> copiedCells = new ArrayList<>();
 
         final ILayerCell[][] columnHeaderCells = assembleColumnHeaders();
         for (ILayerCell[] cells : columnHeaderCells) {
@@ -192,7 +192,7 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
         // this is needed because taking only the Range.start into account leads
         // to overriding values in the array instead of adding if there are
         // multiple Ranges returned
-        Set<Integer> selectedRowPositions = new TreeSet<Integer>();
+        Set<Integer> selectedRowPositions = new TreeSet<>();
         for (Range range : selectedRows) {
             for (int rowPosition = range.start; rowPosition < range.end; rowPosition++) {
                 if (this.selectionLayer.getRowHeightByPosition(rowPosition) > 0) {
@@ -331,7 +331,7 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
      * @since 1.6
      */
     protected int[] getSelectedColumnPositions() {
-        List<Integer> selected = new ArrayList<Integer>();
+        List<Integer> selected = new ArrayList<>();
         for (int pos : this.selectionLayer.getSelectedColumnPositions()) {
             if (this.selectionLayer.getColumnWidthByPosition(pos) > 0) {
                 selected.add(pos);

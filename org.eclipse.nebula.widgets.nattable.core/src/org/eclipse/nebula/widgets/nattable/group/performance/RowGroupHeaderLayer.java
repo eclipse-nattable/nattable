@@ -154,7 +154,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
     /**
      * Map in which it is stored if reordering is supported per level.
      */
-    private Map<Integer, Boolean> reorderSupportedOnLevel = new HashMap<Integer, Boolean>();
+    private Map<Integer, Boolean> reorderSupportedOnLevel = new HashMap<>();
 
     /**
      * The {@link CompositeFreezeLayer} in case it is part of the layer
@@ -382,7 +382,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
             }
         };
 
-        this.model = new ArrayList<GroupModel>(numberOfGroupLevels);
+        this.model = new ArrayList<>(numberOfGroupLevels);
         for (int i = 0; i < numberOfGroupLevels; i++) {
             GroupModel groupModel = new GroupModel();
             groupModel.setIndexPositionConverter(this.indexPositionConverter);
@@ -514,7 +514,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
     List<ILayer> findLayerPath(ILayer layer, int rowPosition) {
 
         if (layer == getPositionLayer()) {
-            List<ILayer> result = new ArrayList<ILayer>();
+            List<ILayer> result = new ArrayList<>();
             result.add(layer);
             return result;
         }
@@ -657,7 +657,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
             // load the group model
             groupModel.loadState(prefix + PERSISTENCE_KEY_ROW_GROUPS + "_" + level, properties); //$NON-NLS-1$
             // trigger real collapse of collapsed groups in model
-            List<Group> collapsedGroups = new ArrayList<Group>();
+            List<Group> collapsedGroups = new ArrayList<>();
             for (Group group : groupModel.getGroups()) {
                 if (group.isCollapsed()) {
                     collapsedGroups.add(group);
@@ -1075,8 +1075,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
         if (posRow > -1) {
             GroupModel groupModel = getGroupModel(level);
             if (groupModel != null) {
-                Group group = groupModel.getGroupByPosition(posRow);
-                return group;
+                return groupModel.getGroupByPosition(posRow);
             }
         }
         return null;
@@ -2283,8 +2282,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
         labels.add(GroupHeaderConfigLabels.GROUP_EXPANDED_CONFIG_TYPE);
 
         // add the labels configured via IConfigLabelAccumulator
-        if (getConfigLabelAccumulator() != null
-                && getConfigLabelAccumulator() instanceof IConfigLabelProvider) {
+        if (getConfigLabelAccumulator() instanceof IConfigLabelProvider) {
             labels.addAll(((IConfigLabelProvider) getConfigLabelAccumulator()).getProvidedLabels());
         }
 
@@ -2334,7 +2332,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                             updateVisibleStartPositions();
 
                             for (GroupModel groupModel : RowGroupHeaderLayer.this.model) {
-                                Map<Group, UpdateRowGroupCollapseCommand> collapseUpdates = new HashMap<Group, UpdateRowGroupCollapseCommand>();
+                                Map<Group, UpdateRowGroupCollapseCommand> collapseUpdates = new HashMap<>();
 
                                 // find group and update visible span
                                 for (int i = diff.getAfterPositionRange().start; i < diff.getAfterPositionRange().end; i++) {
@@ -2473,7 +2471,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
 
                             // find the positions in the group
                             // that are hidden
-                            MutableIntList hiddenGroupPositions = groupPositions.select(groupPos -> groupPositionList.contains(groupPos));
+                            MutableIntList hiddenGroupPositions = groupPositions.select(groupPositionList::contains);
 
                             // update the positionList as we
                             // handled the hidden rows

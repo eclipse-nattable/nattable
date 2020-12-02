@@ -42,7 +42,7 @@ public class RowResizeEvent extends RowStructuralChangeEvent {
 
     @Override
     public Collection<StructuralDiff> getRowDiffs() {
-        Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>(getRowPositionRanges().size());
+        Collection<StructuralDiff> rowDiffs = new ArrayList<>(getRowPositionRanges().size());
 
         for (Range range : getRowPositionRanges()) {
             new StructuralDiff(DiffTypeEnum.CHANGE, range, range);

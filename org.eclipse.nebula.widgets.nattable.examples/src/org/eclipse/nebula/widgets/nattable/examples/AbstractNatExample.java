@@ -77,7 +77,10 @@ public abstract class AbstractNatExample implements INatExample {
     }
 
     /**
-     * Text area at the bottom
+     *
+     * @param parent
+     *            The parent composite.
+     * @return The Text area at the bottom.
      */
     public Text setupTextArea(Composite parent) {
         this.outputArea = new Text(parent, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);

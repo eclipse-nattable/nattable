@@ -20,41 +20,42 @@ import org.eclipse.swt.graphics.Color;
 
 /**
  * Interface that specifies configuration attributes for cell rendering.
- *
- * @noextend This interface is not intended to be extended by clients.
- * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface CellConfigAttributes {
+public final class CellConfigAttributes {
+
+    private CellConfigAttributes() {
+        // private default constructor for constants class
+    }
 
     /**
      * Attribute for configuring the ICellPainter that should be used to render
      * a cell.
      */
-    ConfigAttribute<ICellPainter> CELL_PAINTER = new ConfigAttribute<ICellPainter>();
+    public static final ConfigAttribute<ICellPainter> CELL_PAINTER = new ConfigAttribute<>();
 
     /**
      * Attribute for configuring the IStyle that should be used to render a
      * cell.
      */
-    ConfigAttribute<IStyle> CELL_STYLE = new ConfigAttribute<IStyle>();
+    public static final ConfigAttribute<IStyle> CELL_STYLE = new ConfigAttribute<>();
 
     /**
      * Attribute for configuring the IDisplayConverter that should be used to
      * convert the data in a cell for rendering.
      */
-    ConfigAttribute<IDisplayConverter> DISPLAY_CONVERTER = new ConfigAttribute<IDisplayConverter>();
+    public static final ConfigAttribute<IDisplayConverter> DISPLAY_CONVERTER = new ConfigAttribute<>();
 
     /**
      * Attribute for configuring the Color that should be used to render the
      * grid lines. Will be interpreted by the GridLineCellLayerPainter.
      */
-    ConfigAttribute<Color> GRID_LINE_COLOR = new ConfigAttribute<Color>();
+    public static final ConfigAttribute<Color> GRID_LINE_COLOR = new ConfigAttribute<>();
 
     /**
      * Attribute for configuring whether grid lines should be rendered or not.
      * Will be interpreted by the GridLineCellLayerPainter.
      */
-    ConfigAttribute<Boolean> RENDER_GRID_LINES = new ConfigAttribute<Boolean>();
+    public static final ConfigAttribute<Boolean> RENDER_GRID_LINES = new ConfigAttribute<>();
 
     /**
      * Attribute for configuring the width of the grid lines. Is for example
@@ -62,5 +63,5 @@ public interface CellConfigAttributes {
      *
      * @since 1.4
      */
-    ConfigAttribute<Integer> GRID_LINE_WIDTH = new ConfigAttribute<Integer>();
+    public static final ConfigAttribute<Integer> GRID_LINE_WIDTH = new ConfigAttribute<>();
 }

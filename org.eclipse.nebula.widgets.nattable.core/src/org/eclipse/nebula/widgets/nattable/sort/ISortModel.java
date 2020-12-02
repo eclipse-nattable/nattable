@@ -29,17 +29,24 @@ public interface ISortModel {
     public List<Integer> getSortedColumnIndexes();
 
     /**
-     * @return TRUE if the column with the given index is sorted at the moment.
+     * @param columnIndex
+     *            The column index to check.
+     * @return <code>true</code> if the column with the given index is sorted at
+     *         the moment.
      */
     public boolean isColumnIndexSorted(int columnIndex);
 
     /**
+     * @param columnIndex
+     *            The column index for which the sort direction is requested.
      * @return the direction in which the column with the given index is
      *         currently sorted
      */
     public SortDirectionEnum getSortDirection(int columnIndex);
 
     /**
+     * @param columnIndex
+     *            The column index for which the sort order is requested.
      * @return when multiple columns are sorted, this returns the order of the
      *         column index in the sort
      *         <p>
@@ -72,6 +79,10 @@ public interface ISortModel {
      * This method is called by the {@link SortCommandHandler} in response to a
      * sort command. It is responsible for sorting the requested column.
      *
+     * @param columnIndex
+     *            The column index to sort.
+     * @param sortDirection
+     *            The sort direction to apply.
      * @param accumulate
      *            flag indicating if the column should added to a previous sort.
      */

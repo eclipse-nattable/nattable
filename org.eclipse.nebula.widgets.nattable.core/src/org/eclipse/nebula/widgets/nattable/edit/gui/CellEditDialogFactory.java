@@ -27,7 +27,11 @@ import org.eclipse.swt.widgets.Shell;
  * Factory to create {@link ICellEditDialog} instances that should be opened for
  * editing cell values.
  */
-public class CellEditDialogFactory {
+public final class CellEditDialogFactory {
+
+    private CellEditDialogFactory() {
+        // private default constructor for helper class
+    }
 
     /**
      * Will determine and return the {@link ICellEditDialog} to open for editing

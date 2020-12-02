@@ -161,7 +161,7 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
     public ColumnReorderEvent(ColumnReorderEvent event) {
         super(event);
         this.beforeLayer = event.beforeLayer;
-        this.beforeFromColumnPositionRanges = new ArrayList<Range>(event.beforeFromColumnPositionRanges);
+        this.beforeFromColumnPositionRanges = new ArrayList<>(event.beforeFromColumnPositionRanges);
         this.beforeFromColumnIndexes = IntLists.mutable.ofAll(event.beforeFromColumnIndexes);
         this.beforeToColumnPosition = event.beforeToColumnPosition;
         this.beforeToColumnIndex = event.beforeToColumnIndex;
@@ -239,7 +239,7 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 
     @Override
     public Collection<StructuralDiff> getColumnDiffs() {
-        Collection<StructuralDiff> columnDiffs = new ArrayList<StructuralDiff>();
+        Collection<StructuralDiff> columnDiffs = new ArrayList<>();
 
         Collection<Range> beforeFromColumnPositionRanges = getBeforeFromColumnPositionRanges();
 

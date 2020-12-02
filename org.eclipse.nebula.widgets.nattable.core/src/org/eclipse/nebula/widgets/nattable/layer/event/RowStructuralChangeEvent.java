@@ -100,7 +100,7 @@ public abstract class RowStructuralChangeEvent extends RowVisualChangeEvent impl
         Collection<Rectangle> changedPositionRectangles = new ArrayList<>();
 
         Collection<Range> ranges = getRowPositionRanges();
-        if (ranges != null && ranges.size() > 0) {
+        if (ranges != null && !ranges.isEmpty()) {
             int topmostColumnPosition = Integer.MAX_VALUE;
             for (Range range : ranges) {
                 if (range.start < topmostColumnPosition) {

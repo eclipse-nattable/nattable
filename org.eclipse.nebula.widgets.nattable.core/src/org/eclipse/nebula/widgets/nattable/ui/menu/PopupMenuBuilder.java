@@ -225,7 +225,7 @@ public class PopupMenuBuilder {
         // if the menu is build up using a MenuManager, remember that for
         // further use
         Object mgr = menu.getData("org.eclipse.jface.action.MenuManager.managerKey"); //$NON-NLS-1$
-        if (mgr != null && mgr instanceof MenuManager) {
+        if (mgr instanceof MenuManager) {
             this.menuManager = (MenuManager) mgr;
         }
     }
@@ -1179,7 +1179,7 @@ public class PopupMenuBuilder {
                 Object eventData = (PopupMenuBuilder.this.popupMenu != null && !PopupMenuBuilder.this.popupMenu.isDisposed())
                         ? PopupMenuBuilder.this.popupMenu.getData(MenuItemProviders.NAT_EVENT_DATA_KEY)
                         : PopupMenuBuilder.this.menuManager.getMenu().getData(MenuItemProviders.NAT_EVENT_DATA_KEY);
-                if (eventData != null && eventData instanceof NatEventData) {
+                if (eventData instanceof NatEventData) {
                     return PopupMenuBuilder.this.enablement.isActive(getId(), (NatEventData) eventData);
                 }
             }
@@ -1192,7 +1192,7 @@ public class PopupMenuBuilder {
                 Object eventData = (PopupMenuBuilder.this.popupMenu != null && !PopupMenuBuilder.this.popupMenu.isDisposed())
                         ? PopupMenuBuilder.this.popupMenu.getData(MenuItemProviders.NAT_EVENT_DATA_KEY)
                         : PopupMenuBuilder.this.menuManager.getMenu().getData(MenuItemProviders.NAT_EVENT_DATA_KEY);
-                if (eventData != null && eventData instanceof NatEventData) {
+                if (eventData instanceof NatEventData) {
                     return PopupMenuBuilder.this.visibility.isActive(getId(), (NatEventData) eventData);
                 }
             }

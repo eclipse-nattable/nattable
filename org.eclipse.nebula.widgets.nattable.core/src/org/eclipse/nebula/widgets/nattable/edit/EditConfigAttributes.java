@@ -27,19 +27,23 @@ import org.eclipse.nebula.widgets.nattable.style.IStyle;
 /**
  * The configuration attributes for configuring editing behavior.
  */
-public interface EditConfigAttributes {
+public final class EditConfigAttributes {
+
+    private EditConfigAttributes() {
+        // private default constructor for constants class
+    }
 
     /**
      * The configuration attribute for the {@link IEditableRule} that is used to
      * determine whether a cell is editable or not.
      */
-    public static final ConfigAttribute<IEditableRule> CELL_EDITABLE_RULE = new ConfigAttribute<IEditableRule>();
+    public static final ConfigAttribute<IEditableRule> CELL_EDITABLE_RULE = new ConfigAttribute<>();
 
     /**
      * The configuration attribute for the {@link ICellEditor} that should be
      * used for editing a cell value.
      */
-    public static final ConfigAttribute<ICellEditor> CELL_EDITOR = new ConfigAttribute<ICellEditor>();
+    public static final ConfigAttribute<ICellEditor> CELL_EDITOR = new ConfigAttribute<>();
 
     /**
      * The configuration attribute to register the {@link IDataValidator} that
@@ -48,19 +52,19 @@ public interface EditConfigAttributes {
      * might also be used without editing, e.g. converting a date for correct
      * display.
      */
-    public static final ConfigAttribute<IDataValidator> DATA_VALIDATOR = new ConfigAttribute<IDataValidator>();
+    public static final ConfigAttribute<IDataValidator> DATA_VALIDATOR = new ConfigAttribute<>();
 
     /**
      * The configuration attribute for the {@link IEditErrorHandler} that should
      * be used for conversion failure handling.
      */
-    public static final ConfigAttribute<IEditErrorHandler> CONVERSION_ERROR_HANDLER = new ConfigAttribute<IEditErrorHandler>();
+    public static final ConfigAttribute<IEditErrorHandler> CONVERSION_ERROR_HANDLER = new ConfigAttribute<>();
 
     /**
      * The configuration attribute for the {@link IEditErrorHandler} that should
      * be used for validation failure handling.
      */
-    public static final ConfigAttribute<IEditErrorHandler> VALIDATION_ERROR_HANDLER = new ConfigAttribute<IEditErrorHandler>();
+    public static final ConfigAttribute<IEditErrorHandler> VALIDATION_ERROR_HANDLER = new ConfigAttribute<>();
 
     /**
      * The configuration attribute for the style that should be used on just in
@@ -70,7 +74,7 @@ public interface EditConfigAttributes {
      * TextCellEditor in combination with the RenderErrorHandling for just in
      * time conversion error rendering.
      */
-    public static final ConfigAttribute<IStyle> CONVERSION_ERROR_STYLE = new ConfigAttribute<IStyle>();
+    public static final ConfigAttribute<IStyle> CONVERSION_ERROR_STYLE = new ConfigAttribute<>();
 
     /**
      * The configuration attribute for the style that should be used on just in
@@ -80,7 +84,7 @@ public interface EditConfigAttributes {
      * TextCellEditor in combination with the RenderErrorHandling for just in
      * time validation error rendering.
      */
-    public static final ConfigAttribute<IStyle> VALIDATION_ERROR_STYLE = new ConfigAttribute<IStyle>();
+    public static final ConfigAttribute<IStyle> VALIDATION_ERROR_STYLE = new ConfigAttribute<>();
 
     /**
      * The configuration attribute to specify if cell editors should be opened
@@ -90,7 +94,7 @@ public interface EditConfigAttributes {
      * @see ICellEditor#openInline(IConfigRegistry configRegistry, List
      *      configLabels)
      */
-    public static final ConfigAttribute<Boolean> OPEN_IN_DIALOG = new ConfigAttribute<Boolean>();
+    public static final ConfigAttribute<Boolean> OPEN_IN_DIALOG = new ConfigAttribute<>();
 
     /**
      * The configuration attribute to specify behavior after committing a value
@@ -101,7 +105,7 @@ public interface EditConfigAttributes {
      * registered, the default value used is <code>false</code> as this is the
      * default behavior prior to this.
      */
-    public static final ConfigAttribute<Boolean> OPEN_ADJACENT_EDITOR = new ConfigAttribute<Boolean>();
+    public static final ConfigAttribute<Boolean> OPEN_ADJACENT_EDITOR = new ConfigAttribute<>();
 
     /**
      * The configuration attribute to specify whether an editor should be
@@ -112,7 +116,7 @@ public interface EditConfigAttributes {
      *
      * @see EditConfigAttributes#OPEN_ADJACENT_EDITOR
      */
-    public static final ConfigAttribute<Boolean> ACTIVATE_EDITOR_ON_TRAVERSAL = new ConfigAttribute<Boolean>();
+    public static final ConfigAttribute<Boolean> ACTIVATE_EDITOR_ON_TRAVERSAL = new ConfigAttribute<>();
 
     /**
      * The configuration attribute to specify whether an editor supports multi
@@ -124,7 +128,7 @@ public interface EditConfigAttributes {
      * conditional validation, where a value is validated against another value
      * in the data model.
      */
-    public static final ConfigAttribute<Boolean> SUPPORT_MULTI_EDIT = new ConfigAttribute<Boolean>();
+    public static final ConfigAttribute<Boolean> SUPPORT_MULTI_EDIT = new ConfigAttribute<>();
 
     /**
      * The configuration attribute to specify custom dialog settings for edit
@@ -140,5 +144,5 @@ public interface EditConfigAttributes {
      * @see ICellEditDialog#DIALOG_SHELL_RESIZABLE
      * @see ICellEditDialog#DIALOG_MESSAGE
      */
-    public static final ConfigAttribute<Map<String, Object>> EDIT_DIALOG_SETTINGS = new ConfigAttribute<Map<String, Object>>();
+    public static final ConfigAttribute<Map<String, Object>> EDIT_DIALOG_SETTINGS = new ConfigAttribute<>();
 }

@@ -17,14 +17,18 @@ import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.swt.graphics.Color;
 
-public interface GroupByConfigAttributes {
+public final class GroupByConfigAttributes {
+
+    private GroupByConfigAttributes() {
+        // private constructor for helper class
+    }
 
     /**
      * The configuration attribute that is used to calculate the summary for a
      * column.
      */
     @SuppressWarnings("rawtypes")
-    ConfigAttribute<IGroupBySummaryProvider> GROUP_BY_SUMMARY_PROVIDER = new ConfigAttribute<IGroupBySummaryProvider>();
+    public static final ConfigAttribute<IGroupBySummaryProvider> GROUP_BY_SUMMARY_PROVIDER = new ConfigAttribute<>();
 
     /**
      * Configuration attribute to specify a pattern that is used to render the
@@ -36,25 +40,25 @@ public interface GroupByConfigAttributes {
      * </li>
      * </ul>
      */
-    ConfigAttribute<String> GROUP_BY_CHILD_COUNT_PATTERN = new ConfigAttribute<String>();
+    public static final ConfigAttribute<String> GROUP_BY_CHILD_COUNT_PATTERN = new ConfigAttribute<>();
 
     /**
      * Configuration attribute to specify a hint that should be shown in case no
      * grouping is applied.
      */
-    ConfigAttribute<String> GROUP_BY_HINT = new ConfigAttribute<String>();
+    public static final ConfigAttribute<String> GROUP_BY_HINT = new ConfigAttribute<>();
 
     /**
      * Configuration attribute to specify the style of a group by hint. Setting
      * the values for foreground, background and font is supported.
      */
-    ConfigAttribute<IStyle> GROUP_BY_HINT_STYLE = new ConfigAttribute<IStyle>();
+    public static final ConfigAttribute<IStyle> GROUP_BY_HINT_STYLE = new ConfigAttribute<>();
 
     /**
      * Attribute for configuring the Color that should be used to render the
      * background of the GroupByHeaderLayer. Will be interpreted by the
      * GroupByHeaderPainter.
      */
-    ConfigAttribute<Color> GROUP_BY_HEADER_BACKGROUND_COLOR = new ConfigAttribute<Color>();
+    public static final ConfigAttribute<Color> GROUP_BY_HEADER_BACKGROUND_COLOR = new ConfigAttribute<>();
 
 }

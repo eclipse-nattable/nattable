@@ -141,7 +141,7 @@ public class _5112_TwoLevelColumnGroupingExample extends AbstractNatExample {
         columnGroupHeaderLayer.setGroupUnbreakable(1);
 
         ColumnGroupGroupHeaderLayer sndGroup =
-                new ColumnGroupGroupHeaderLayer(columnGroupHeaderLayer, selectionLayer, sndColumnGroupModel);
+                new ColumnGroupGroupHeaderLayer(columnGroupHeaderLayer, sndColumnGroupModel);
 
         sndGroup.addColumnsIndexesToGroup("PersonWithAddress", 0, 1, 2, 3, 4, 5, 6, 7);
         sndGroup.addColumnsIndexesToGroup("Additional Information", 8, 9, 10, 11, 12, 13);

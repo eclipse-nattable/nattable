@@ -33,6 +33,26 @@ public class ExcelCellStyleAttributes {
     }
 
     /**
+     *
+     * @param fg
+     *            The foreground color.
+     * @param bg
+     *            The background color.
+     * @param fontData
+     *            The font data.
+     * @param dataFormat
+     *            The data format.
+     * @param hAlign
+     *            The horizontal alignment.
+     * @param vAlign
+     *            The vertical alignment.
+     * @param vertical
+     *            Flag to indicate that text is rendered vertically.
+     * @param wrap
+     *            Flag to indicate that word wrapping is enabled.
+     * @param border
+     *            Flag to indicate that borders should be applied.
+     *
      * @since 1.5
      */
     public ExcelCellStyleAttributes(Color fg, Color bg, FontData fontData,

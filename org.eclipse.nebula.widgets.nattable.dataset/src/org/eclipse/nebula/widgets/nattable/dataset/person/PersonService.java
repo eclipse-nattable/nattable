@@ -27,7 +27,11 @@ import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
  * Class that acts as service for accessing numerous {@link Person}s. The values
  * are randomly put together out of names and places from "The Simpsons"
  */
-public class PersonService {
+public final class PersonService {
+
+    private PersonService() {
+        // private default constructor for helper class
+    }
 
     private static Random randomGenerator = new SecureRandom();
 
@@ -58,7 +62,7 @@ public class PersonService {
      * @return A list containing the given amount of random generated persons.
      */
     public static List<Person> getRandomPersons(int numberOfPersons) {
-        List<Person> result = new ArrayList<Person>();
+        List<Person> result = new ArrayList<>();
 
         for (int i = 0; i < numberOfPersons; i++) {
             result.add(createPerson(i));
@@ -68,117 +72,89 @@ public class PersonService {
     }
 
     /**
-     * Creates a fixed list of {@link Person}s.
+     *
+     * @return A fixed list of {@link Person}s.
      */
     public static List<Person> getFixedPersons() {
-        List<Person> result = new ArrayList<Person>();
+        List<Person> result = new ArrayList<>();
 
         // create 10 Simpsons
         // 3 Homer
-        result.add(new Person(1, maleNames[1], lastNames[0], Gender.MALE, true,
-                new Date(), 100d));
-        result.add(new Person(2, maleNames[1], lastNames[0], Gender.MALE, true,
-                new Date(), 100d));
-        result.add(new Person(3, maleNames[1], lastNames[0], Gender.MALE, true,
-                new Date(), 100d));
+        result.add(new Person(1, maleNames[1], lastNames[0], Gender.MALE, true, new Date(), 100d));
+        result.add(new Person(2, maleNames[1], lastNames[0], Gender.MALE, true, new Date(), 100d));
+        result.add(new Person(3, maleNames[1], lastNames[0], Gender.MALE, true, new Date(), 100d));
         // 3 Bart
-        result.add(new Person(4, maleNames[0], lastNames[0], Gender.MALE,
-                false, new Date(), 100d));
-        result.add(new Person(5, maleNames[0], lastNames[0], Gender.MALE,
-                false, new Date(), 100d));
-        result.add(new Person(6, maleNames[0], lastNames[0], Gender.MALE,
-                false, new Date(), 100d));
+        result.add(new Person(4, maleNames[0], lastNames[0], Gender.MALE, false, new Date(), 100d));
+        result.add(new Person(5, maleNames[0], lastNames[0], Gender.MALE, false, new Date(), 100d));
+        result.add(new Person(6, maleNames[0], lastNames[0], Gender.MALE, false, new Date(), 100d));
         // 2 Marge
-        result.add(new Person(7, femaleNames[0], lastNames[0], Gender.FEMALE,
-                true, new Date(), 100d));
-        result.add(new Person(8, femaleNames[0], lastNames[0], Gender.FEMALE,
-                true, new Date(), 100d));
+        result.add(new Person(7, femaleNames[0], lastNames[0], Gender.FEMALE, true, new Date(), 100d));
+        result.add(new Person(8, femaleNames[0], lastNames[0], Gender.FEMALE, true, new Date(), 100d));
         // 2 Lisa
-        result.add(new Person(9, femaleNames[1], lastNames[0], Gender.FEMALE,
-                false, new Date(), 100d));
-        result.add(new Person(10, femaleNames[1], lastNames[0], Gender.FEMALE,
-                false, new Date(), 100d));
+        result.add(new Person(9, femaleNames[1], lastNames[0], Gender.FEMALE, false, new Date(), 100d));
+        result.add(new Person(10, femaleNames[1], lastNames[0], Gender.FEMALE, false, new Date(), 100d));
 
         // create 8 Flanders
         // 2 Ned
-        result.add(new Person(11, maleNames[5], lastNames[4], Gender.MALE,
-                true, new Date(), 100d));
-        result.add(new Person(12, maleNames[5], lastNames[4], Gender.MALE,
-                true, new Date(), 100d));
+        result.add(new Person(11, maleNames[5], lastNames[4], Gender.MALE, true, new Date(), 100d));
+        result.add(new Person(12, maleNames[5], lastNames[4], Gender.MALE, true, new Date(), 100d));
         // 2 Maude
-        result.add(new Person(13, femaleNames[6], lastNames[4], Gender.FEMALE,
-                true, new Date(), 100d));
-        result.add(new Person(14, femaleNames[6], lastNames[4], Gender.FEMALE,
-                true, new Date(), 100d));
+        result.add(new Person(13, femaleNames[6], lastNames[4], Gender.FEMALE, true, new Date(), 100d));
+        result.add(new Person(14, femaleNames[6], lastNames[4], Gender.FEMALE, true, new Date(), 100d));
         // 2 Rod
-        result.add(new Person(15, maleNames[7], lastNames[4], Gender.MALE,
-                false, new Date(), 100d));
-        result.add(new Person(16, maleNames[7], lastNames[4], Gender.MALE,
-                false, new Date(), 100d));
+        result.add(new Person(15, maleNames[7], lastNames[4], Gender.MALE, false, new Date(), 100d));
+        result.add(new Person(16, maleNames[7], lastNames[4], Gender.MALE, false, new Date(), 100d));
         // 2 Tod
-        result.add(new Person(17, maleNames[8], lastNames[4], Gender.MALE,
-                false, new Date(), 100d));
-        result.add(new Person(18, maleNames[8], lastNames[4], Gender.MALE,
-                false, new Date(), 100d));
+        result.add(new Person(17, maleNames[8], lastNames[4], Gender.MALE, false, new Date(), 100d));
+        result.add(new Person(18, maleNames[8], lastNames[4], Gender.MALE, false, new Date(), 100d));
 
         return result;
     }
 
     /**
-     * Creates a fixed list of {@link Person}s with a few null values.
+     *
+     * @return A fixed list of {@link Person}s with a few null values.
      */
     public static List<Person> getFixedPersonsWithNull() {
-        List<Person> result = new ArrayList<Person>();
+        List<Person> result = new ArrayList<>();
 
         // create 5 Simpsons
         // 2 Homer
-        result.add(new Person(1, maleNames[1], lastNames[0], Gender.MALE, true,
-                new Date(), 100d));
-        result.add(new Person(3, maleNames[1], lastNames[0], Gender.MALE, true,
-                new Date(), 100d));
+        result.add(new Person(1, maleNames[1], lastNames[0], Gender.MALE, true, new Date(), 100d));
+        result.add(new Person(3, maleNames[1], lastNames[0], Gender.MALE, true, new Date(), 100d));
         // 2 Marge
-        result.add(new Person(7, femaleNames[0], lastNames[0], Gender.FEMALE,
-                true, new Date(), 100d));
-        result.add(new Person(8, femaleNames[0], lastNames[0], Gender.FEMALE,
-                true, new Date(), 100d));
+        result.add(new Person(7, femaleNames[0], lastNames[0], Gender.FEMALE, true, new Date(), 100d));
+        result.add(new Person(8, femaleNames[0], lastNames[0], Gender.FEMALE, true, new Date(), 100d));
         // 1 Bart without money
-        result.add(new Person(7, femaleNames[0], lastNames[0], Gender.FEMALE,
-                true, new Date(), null));
+        result.add(new Person(7, femaleNames[0], lastNames[0], Gender.FEMALE, true, new Date(), null));
 
         // create 2 Flanders without last name
         // 1 Ned
-        result.add(new Person(11, maleNames[5], null, Gender.MALE,
-                true, new Date(), 100d));
+        result.add(new Person(11, maleNames[5], null, Gender.MALE, true, new Date(), 100d));
         // 1 Maude
-        result.add(new Person(13, femaleNames[6], null, Gender.FEMALE,
-                true, new Date(), 100d));
+        result.add(new Person(13, femaleNames[6], null, Gender.FEMALE, true, new Date(), 100d));
 
         return result;
     }
 
+    /**
+     *
+     * @return A fixed list of {@link Person}s with a few double values.
+     */
     public static List<Person> getFixedMixedPersons() {
-        List<Person> result = new ArrayList<Person>();
+        List<Person> result = new ArrayList<>();
 
-        result.add(new Person(21, maleNames[0], lastNames[2], Gender.MALE,
-                true, new Date(), 100d));
-        result.add(new Person(22, maleNames[1], lastNames[2], Gender.MALE,
-                true, new Date(), 100d));
-        result.add(new Person(23, maleNames[5], lastNames[2], Gender.MALE,
-                true, new Date(), 100d));
-        result.add(new Person(24, femaleNames[0], lastNames[2], Gender.FEMALE,
-                false, new Date(), 100d));
-        result.add(new Person(25, femaleNames[6], lastNames[2], Gender.FEMALE,
-                false, new Date(), 100d));
+        result.add(new Person(21, maleNames[0], lastNames[2], Gender.MALE, true, new Date(), 100d));
+        result.add(new Person(22, maleNames[1], lastNames[2], Gender.MALE, true, new Date(), 100d));
+        result.add(new Person(23, maleNames[5], lastNames[2], Gender.MALE, true, new Date(), 100d));
+        result.add(new Person(24, femaleNames[0], lastNames[2], Gender.FEMALE, false, new Date(), 100d));
+        result.add(new Person(25, femaleNames[6], lastNames[2], Gender.FEMALE, false, new Date(), 100d));
 
         // add doubles
-        result.add(new Person(30, maleNames[1], lastNames[0], Gender.MALE,
-                true, new Date(), 100d));
-        result.add(new Person(31, maleNames[1], lastNames[0], Gender.MALE,
-                true, new Date(), 100d));
-        result.add(new Person(32, maleNames[1], lastNames[2], Gender.MALE,
-                true, new Date(), 100d));
-        result.add(new Person(33, maleNames[1], lastNames[2], Gender.MALE,
-                true, new Date(), 100d));
+        result.add(new Person(30, maleNames[1], lastNames[0], Gender.MALE, true, new Date(), 100d));
+        result.add(new Person(31, maleNames[1], lastNames[0], Gender.MALE, true, new Date(), 100d));
+        result.add(new Person(32, maleNames[1], lastNames[2], Gender.MALE, true, new Date(), 100d));
+        result.add(new Person(33, maleNames[1], lastNames[2], Gender.MALE, true, new Date(), 100d));
 
         return result;
     }
@@ -188,10 +164,10 @@ public class PersonService {
      *
      * @param numberOfPersons
      *            The number of {@link Person}s that should be generated.
-     * @return
+     * @return A list of {@link Person}s.
      */
     public static List<Person> getPersons(int numberOfPersons) {
-        List<Person> result = new ArrayList<Person>();
+        List<Person> result = new ArrayList<>();
 
         for (int i = 0; i < numberOfPersons; i++) {
             result.add(createPerson(i));
@@ -205,10 +181,10 @@ public class PersonService {
      *
      * @param number
      *            The number of {@link Address} that should be generated.
-     * @return
+     * @return A list of {@link Address}.
      */
     public static List<Address> getAddress(int number) {
-        List<Address> result = new ArrayList<Address>();
+        List<Address> result = new ArrayList<>();
 
         for (int i = 0; i < number; i++) {
             result.add(createAddress());
@@ -223,11 +199,10 @@ public class PersonService {
      * @param numberOfPersons
      *            The number of {@link PersonWithAddress} that should be
      *            generated.
-     * @return
+     * @return A list of {@link PersonWithAddress}.
      */
-    public static List<PersonWithAddress> getPersonsWithAddress(
-            int numberOfPersons) {
-        List<PersonWithAddress> result = new ArrayList<PersonWithAddress>();
+    public static List<PersonWithAddress> getPersonsWithAddress(int numberOfPersons) {
+        List<PersonWithAddress> result = new ArrayList<>();
 
         for (int i = 0; i < numberOfPersons; i++) {
             result.add(createPersonWithAddress(i));
@@ -242,11 +217,10 @@ public class PersonService {
      * @param numberOfPersons
      *            The number of {@link ExtendedPersonWithAddress} that should be
      *            generated.
-     * @return
+     * @return A list of {@link ExtendedPersonWithAddress}.
      */
-    public static List<ExtendedPersonWithAddress> getExtendedPersonsWithAddress(
-            int numberOfPersons) {
-        List<ExtendedPersonWithAddress> result = new ArrayList<ExtendedPersonWithAddress>();
+    public static List<ExtendedPersonWithAddress> getExtendedPersonsWithAddress(int numberOfPersons) {
+        List<ExtendedPersonWithAddress> result = new ArrayList<>();
 
         for (int i = 0; i < numberOfPersons; i++) {
             result.add(createExtendedPersonWithAddress(i));
@@ -259,7 +233,9 @@ public class PersonService {
      * Creates a random person out of names which are taken from "The Simpsons"
      * and enrich them with random generated married state and birthday date.
      *
-     * @return
+     * @param id
+     *            A unique id for the person.
+     * @return A random person.
      */
     private static Person createPerson(int id) {
         Person result = new Person(id);
@@ -287,7 +263,7 @@ public class PersonService {
         try {
             result.setBirthday(sdf.parse("" + year + "-" + month + "-" + day));
         } catch (ParseException e) {
-            // do nothing as there should be no parse exception;
+            // do nothing as there should be no parse exception
         }
 
         result.setMoney(randomGenerator.nextDouble() * 100);
@@ -299,7 +275,7 @@ public class PersonService {
      * which are taken from "The Simpsons" (i haven't found postal codes, so
      * here i invented some for the example)
      *
-     * @return
+     * @return A random address.
      */
     public static Address createAddress() {
         String[] streets = getStreetNames();
@@ -324,7 +300,9 @@ public class PersonService {
      * names which are taken from "The Simpsons" (i haven't found postal codes,
      * so here i invented some for the example)
      *
-     * @return
+     * @param id
+     *            A unique id for the person.
+     * @return A random person with a random address.
      */
     public static PersonWithAddress createPersonWithAddress(int id) {
         return new PersonWithAddress(createPerson(id), createAddress());
@@ -339,13 +317,20 @@ public class PersonService {
      * like a password, a random long description text, a money balance and
      * collections of favourite food and drinks.
      *
-     * @return
+     * @param id
+     *            A unique id for the person.
+     * @return A random person with a random address and some random extended
+     *         information.
      */
     public static ExtendedPersonWithAddress createExtendedPersonWithAddress(int id) {
-        return new ExtendedPersonWithAddress(createPerson(id),
-                createAddress(), generateSimplePassword(),
-                createRandomLengthText(), createRandomMoneyAmount(),
-                createFavouriteFood(), createFavouriteDrinks());
+        return new ExtendedPersonWithAddress(
+                createPerson(id),
+                createAddress(),
+                generateSimplePassword(),
+                createRandomLengthText(),
+                createRandomMoneyAmount(),
+                createFavouriteFood(),
+                createFavouriteDrinks());
     }
 
     /**

@@ -267,7 +267,7 @@ public class DimensionallyDependentLayer extends AbstractLayer {
 
     @Override
     public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
-        Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
+        Collection<ILayer> underlyingLayers = new HashSet<>();
         underlyingLayers.add(this.baseLayer);
         return underlyingLayers;
     }
@@ -358,7 +358,7 @@ public class DimensionallyDependentLayer extends AbstractLayer {
 
     @Override
     public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {
-        Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
+        Collection<ILayer> underlyingLayers = new HashSet<>();
         underlyingLayers.add(this.baseLayer);
         return underlyingLayers;
     }

@@ -28,6 +28,8 @@ public @interface GenerateListOfStrings {
      * generated with the weighting given (eg adding 6 nulls to a list of 6
      * strings ought to produce nulls 50% of the time). Default is zero ie no
      * nulls.
+     *
+     * @return the number of nulls to generate
      */
     int nullLoadFactor() default 0;
 

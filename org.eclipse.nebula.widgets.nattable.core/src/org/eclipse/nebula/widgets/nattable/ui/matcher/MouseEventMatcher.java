@@ -46,13 +46,18 @@ public class MouseEventMatcher implements IMouseEventMatcher {
      * Constructor
      *
      * @param stateMask
-     * @see "org.eclipse.swt.events.MouseEvent.stateMask"
+     *            the state of the keyboard modifier keys and mouse masks at the
+     *            time the event was generated.
      * @param eventRegion
-     *            {@linkplain org.eclipse.nebula.widgets.nattable.grid.GridRegion}
+     *            the grid region in which the mouse event should be matched
      * @param button
+     *            the button that was pressed or released, e.g.
+     *            {@link MouseEventMatcher#LEFT_BUTTON},
+     *            {@link MouseEventMatcher#RIGHT_BUTTON}
+     *
+     * @see org.eclipse.swt.events.MouseEvent#stateMask
+     * @see org.eclipse.nebula.widgets.nattable.grid.GridRegion
      * @see org.eclipse.swt.events.MouseEvent#button
-     *      {@link MouseEventMatcher#LEFT_BUTTON},
-     *      {@link MouseEventMatcher#RIGHT_BUTTON} can be used for convenience
      */
     public MouseEventMatcher(int stateMask, String eventRegion, int button) {
         this.stateMask = stateMask;
@@ -130,13 +135,11 @@ public class MouseEventMatcher implements IMouseEventMatcher {
     }
 
     public static MouseEventMatcher columnHeaderLeftClick(int mask) {
-        return new MouseEventMatcher(mask, GridRegion.COLUMN_HEADER,
-                LEFT_BUTTON);
+        return new MouseEventMatcher(mask, GridRegion.COLUMN_HEADER, LEFT_BUTTON);
     }
 
     public static MouseEventMatcher columnHeaderRightClick(int mask) {
-        return new MouseEventMatcher(mask, GridRegion.COLUMN_HEADER,
-                RIGHT_BUTTON);
+        return new MouseEventMatcher(mask, GridRegion.COLUMN_HEADER, RIGHT_BUTTON);
     }
 
     public static MouseEventMatcher rowHeaderLeftClick(int mask) {
@@ -156,22 +159,18 @@ public class MouseEventMatcher implements IMouseEventMatcher {
     }
 
     public static MouseEventMatcher columnGroupHeaderLeftClick(int mask) {
-        return new MouseEventMatcher(mask, GridRegion.COLUMN_GROUP_HEADER,
-                LEFT_BUTTON);
+        return new MouseEventMatcher(mask, GridRegion.COLUMN_GROUP_HEADER, LEFT_BUTTON);
     }
 
     public static MouseEventMatcher columnGroupHeaderRightClick(int mask) {
-        return new MouseEventMatcher(mask, GridRegion.COLUMN_GROUP_HEADER,
-                RIGHT_BUTTON);
+        return new MouseEventMatcher(mask, GridRegion.COLUMN_GROUP_HEADER, RIGHT_BUTTON);
     }
 
     public static MouseEventMatcher rowGroupHeaderLeftClick(int mask) {
-        return new MouseEventMatcher(mask, GridRegion.ROW_GROUP_HEADER,
-                LEFT_BUTTON);
+        return new MouseEventMatcher(mask, GridRegion.ROW_GROUP_HEADER, LEFT_BUTTON);
     }
 
     public static MouseEventMatcher rowGroupHeaderRightClick(int mask) {
-        return new MouseEventMatcher(mask, GridRegion.ROW_GROUP_HEADER,
-                RIGHT_BUTTON);
+        return new MouseEventMatcher(mask, GridRegion.ROW_GROUP_HEADER, RIGHT_BUTTON);
     }
 }

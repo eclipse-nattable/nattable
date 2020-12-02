@@ -136,11 +136,16 @@ public class RowGroupDataFixture {
     // }
     /**
      * Convenience method to quickly get a new instance
+     *
+     * @param description
+     *            The description.
+     * @param rating
+     *            The rating.
+     * @return A new {@link RowGroupDataFixture} instance.
      */
-    public static RowGroupDataFixture getInstance(String descrition,
-            String rating) {
+    public static RowGroupDataFixture getInstance(String description, String rating) {
         return new RowGroupDataFixture(
-                "US" + RowDataFixture.getRandomNumber(1000), descrition, rating,
+                "US" + RowDataFixture.getRandomNumber(1000), description, rating,
                 RowDataFixture.getRandomDate(), PRICING_MANUAL, 1.000, 10, 1000, true, 1.00,
                 1.01, -.01, 1000, 1000, 1000D);
     }

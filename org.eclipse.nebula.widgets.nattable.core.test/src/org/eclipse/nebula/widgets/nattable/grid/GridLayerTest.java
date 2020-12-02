@@ -27,7 +27,6 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.InitializeClientAreaComm
 import org.eclipse.nebula.widgets.nattable.test.fixture.command.LayerCommandFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.BaseDataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.GridLayerFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ViewportLayerFixture;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.graphics.Rectangle;
@@ -55,7 +54,7 @@ public class GridLayerTest {
     }
 
     @Test
-    public void getLayers() throws Exception {
+    public void getLayers() {
         assertNotNull(this.gridLayerUnderTest.getBodyLayer());
         assertNotNull(this.gridLayerUnderTest.getColumnHeaderLayer());
         assertNotNull(this.gridLayerUnderTest.getRowHeaderLayer());
@@ -63,7 +62,7 @@ public class GridLayerTest {
     }
 
     @Test
-    public void doCommandInvokesBodyFirst() throws Exception {
+    public void doCommandInvokesBodyFirst() {
         DummyCommandHandler bodyCommandHandler = new DummyCommandHandler(true);
         DummyCommandHandler columnHeaderCommandHandler = new DummyCommandHandler(true);
         DummyCommandHandler rowHeaderCommandHandler = new DummyCommandHandler(true);
@@ -85,7 +84,7 @@ public class GridLayerTest {
     }
 
     @Test
-    public void doCommandInvokesOtherLayers() throws Exception {
+    public void doCommandInvokesOtherLayers() {
         DummyCommandHandler bodyCommandHandler = new DummyCommandHandler(false);
         DummyCommandHandler columnHeaderCommandHandler = new DummyCommandHandler(false);
         DummyCommandHandler rowHeaderCommandHandler = new DummyCommandHandler(false);
@@ -108,11 +107,8 @@ public class GridLayerTest {
 
     // **** New tests using fixtures ****
 
-    /**
-     * @see ViewportLayerFixture#DEFAULT_CLIENT_AREA
-     */
     @Test
-    public void initBodyLayer() throws Exception {
+    public void initBodyLayer() {
         DefaultGridLayer gridLayer = new GridLayerFixture();
 
         ViewportLayer viewport = gridLayer.getBodyLayer().getViewportLayer();
@@ -134,7 +130,7 @@ public class GridLayerTest {
     }
 
     @Test
-    public void initRowHeaderHeight() throws Exception {
+    public void initRowHeaderHeight() {
         GridLayer gridLayer = new GridLayerFixture();
         gridLayer.doCommand(new InitializeClientAreaCommandFixture());
 
@@ -145,7 +141,7 @@ public class GridLayerTest {
     }
 
     @Test
-    public void initCorner() throws Exception {
+    public void initCorner() {
         GridLayer gridLayer = new GridLayerFixture();
 
         ILayer colHeader = gridLayer.getCornerLayer();

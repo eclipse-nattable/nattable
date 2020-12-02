@@ -13,24 +13,26 @@
 package org.eclipse.nebula.widgets.nattable.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class ArrayUtil {
+public final class ArrayUtil {
+
+    private ArrayUtil() {
+        // private default constructor for helper class
+    }
 
     public static final String[] STRING_TYPE_ARRAY = new String[] {};
     public static final int[] INT_TYPE_ARRAY = new int[] {};
 
     public static <T> List<T> asList(T[] array) {
-        return new ArrayList<T>(ArrayUtil.asCollection(array));
+        return new ArrayList<>(ArrayUtil.asCollection(array));
     }
 
     public static <T> Collection<T> asCollection(T[] array) {
-        List<T> list = new ArrayList<T>(array.length);
-        for (int i = 0; i < array.length; i++) {
-            list.add(array[i]);
-        }
-        return list;
+        return Arrays.asList(array);
     }
 
     public static int[] asIntArray(int... ints) {
@@ -38,11 +40,7 @@ public class ArrayUtil {
     }
 
     public static List<Integer> asIntegerList(int... ints) {
-        ArrayList<Integer> list = new ArrayList<Integer>(ints.length);
-        for (Integer integer : ints) {
-            list.add(integer);
-        }
-        return list;
+        return Arrays.stream(ints).boxed().collect(Collectors.toList());
     }
 
     public static boolean isEmpty(int[] array) {
@@ -93,7 +91,7 @@ public class ArrayUtil {
      */
     public static int[] subarray(int[] array, int startIndexInclusive, int endIndexExclusive) {
         if (array == null) {
-            return null;
+            return new int[0];
         }
         if (startIndexInclusive < 0) {
             startIndexInclusive = 0;

@@ -23,9 +23,9 @@ public class Node implements Serializable {
 
     private static final long serialVersionUID = 7855L;
 
-    public static enum Type {
+    public enum Type {
         ROOT, COLUMN, CATEGORY, UNKNOWN
-    };
+    }
 
     private Type type;
     private String data;
@@ -67,7 +67,7 @@ public class Node implements Serializable {
      */
     public List<Node> getChildren() {
         if (this.children == null) {
-            return new ArrayList<Node>();
+            return new ArrayList<>();
         }
         return this.children;
     }
@@ -94,7 +94,7 @@ public class Node implements Serializable {
      */
     public Node addChild(Node child) {
         if (this.children == null) {
-            this.children = new ArrayList<Node>();
+            this.children = new ArrayList<>();
         }
         this.children.add(child);
         child.setParent(this);
@@ -119,18 +119,14 @@ public class Node implements Serializable {
      *            the position to insert at.
      * @param child
      *            the Node object to insert.
-     * @throws IndexOutOfBoundsException
-     *             if thrown.
      */
-    public void insertChildAt(int index, Node child)
-            throws IndexOutOfBoundsException {
+    public void insertChildAt(int index, Node child) {
         if (index == getNumberOfChildren()) {
             // this is really an append
             addChild(child);
-            return;
         } else {
-            this.children.get(index); // just to throw the exception, and stop
-                                      // here
+            // just to throw the exception, and stop here
+            this.children.get(index);
             this.children.add(index, child);
         }
     }
@@ -140,10 +136,8 @@ public class Node implements Serializable {
      *
      * @param index
      *            the index of the element to delete.
-     * @throws IndexOutOfBoundsException
-     *             if thrown.
      */
-    public void removeChildAt(int index) throws IndexOutOfBoundsException {
+    public void removeChildAt(int index) {
         this.children.remove(index);
     }
 
@@ -158,13 +152,13 @@ public class Node implements Serializable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("{").append(this.type).append(",").append(getData().toString()).append(",["); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        sb.append("{").append(this.type).append(",").append(getData()).append(",["); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         int i = 0;
         for (Node e : getChildren()) {
             if (i > 0) {
                 sb.append(","); //$NON-NLS-1$
             }
-            sb.append(e.getData().toString());
+            sb.append(e.getData());
             i++;
         }
         sb.append("]").append("}"); //$NON-NLS-1$ //$NON-NLS-2$

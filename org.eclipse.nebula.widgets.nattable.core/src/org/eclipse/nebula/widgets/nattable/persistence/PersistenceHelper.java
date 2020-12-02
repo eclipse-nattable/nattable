@@ -24,7 +24,11 @@ import org.eclipse.nebula.widgets.nattable.persistence.gui.PersistenceDialog;
 /**
  * Helper class for dealing with persistence of NatTable states.
  */
-public class PersistenceHelper {
+public final class PersistenceHelper {
+
+    private PersistenceHelper() {
+        // private default constructor for helper class
+    }
 
     /**
      * Deletes the keys for a state that is identified by given prefix out of
@@ -47,7 +51,7 @@ public class PersistenceHelper {
             String keyPrefix = prefix + IPersistable.DOT;
 
             // collect the keys to remove
-            List<Object> keysToRemove = new ArrayList<Object>();
+            List<Object> keysToRemove = new ArrayList<>();
             for (Object key : properties.keySet()) {
                 if (key.toString().startsWith(keyPrefix)) {
                     keysToRemove.add(key);
@@ -73,7 +77,7 @@ public class PersistenceHelper {
      *         properties.
      */
     public static Collection<String> getAvailableStates(Properties properties) {
-        Set<String> stateNames = new HashSet<String>();
+        Set<String> stateNames = new HashSet<>();
         if (properties != null && !properties.isEmpty()) {
             for (Object key : properties.keySet()) {
                 String keyString = key.toString();

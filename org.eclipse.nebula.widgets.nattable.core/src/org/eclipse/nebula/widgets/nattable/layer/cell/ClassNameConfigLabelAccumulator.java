@@ -44,7 +44,7 @@ public class ClassNameConfigLabelAccumulator implements IConfigLabelProvider {
      */
     @Override
     public Collection<String> getProvidedLabels() {
-        Collection<String> result = new HashSet<String>();
+        Collection<String> result = new HashSet<>();
         for (int i = 0; i < this.dataProvider.getColumnCount(); i++) {
             Object value = this.dataProvider.getDataValue(i, 0);
             if (value != null) {

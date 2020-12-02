@@ -139,10 +139,16 @@ public class RowDataFixture {
 
     /**
      * Convenience method to quickly get a new instance
+     *
+     * @param description
+     *            The description.
+     * @param rating
+     *            The rating.
+     * @return A new {@link RowDataFixture} instance.
      */
-    public static RowDataFixture getInstance(String descrition, String rating) {
+    public static RowDataFixture getInstance(String description, String rating) {
         return new RowDataFixture("US" + getRandomNumber(1000),
-                descrition, rating, getRandomDate(), PRICING_MANUAL, 1.000, 10,
+                description, rating, getRandomDate(), PRICING_MANUAL, 1.000, 10,
                 1000, true, 1.00, 1.01, -.01, 1000, 1000, 1000D);
     }
 
@@ -163,6 +169,8 @@ public class RowDataFixture {
     }
 
     /**
+     * @param max
+     *            The upper bound
      * @return random Integer number between 0 and parameter max
      */
     public static int getRandomNumber(int max) {

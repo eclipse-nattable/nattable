@@ -156,11 +156,9 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                     // copy
                     if (diff != null) {
                         if (value instanceof Byte) {
-                            byte result = (byte) (((Byte) value).byteValue() + (Byte) diff);
-                            return result;
+                            return (byte) (((Byte) value).byteValue() + (Byte) diff);
                         } else if (value instanceof Short) {
-                            short result = (short) (((Short) value).shortValue() + (Short) diff);
-                            return result;
+                            return (short) (((Short) value).shortValue() + (Short) diff);
                         } else if (value instanceof Integer) {
                             return (Integer) value + (Integer) diff;
                         } else if (value instanceof Long) {
@@ -212,8 +210,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                         return null;
                     }
                 }
-                byte result = (byte) (diff * rowDiff);
-                return result;
+                return (byte) (diff * rowDiff);
             } else if (type == Short.class) {
                 Short diff = calculateShortDiff(cells[1][columnArrayIndex], cells[0][columnArrayIndex]);
                 if (diff == null) {
@@ -226,8 +223,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                         return null;
                     }
                 }
-                short result = (short) (diff * rowDiff);
-                return result;
+                return (short) (diff * rowDiff);
             } else if (type == Integer.class) {
                 Integer diff = calculateIntDiff(cells[1][columnArrayIndex], cells[0][columnArrayIndex]);
                 if (diff == null) {
@@ -345,8 +341,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                         return null;
                     }
                 }
-                byte result = (byte) (diff * columnDiff);
-                return result;
+                return (byte) (diff * columnDiff);
             } else if (type == Short.class) {
                 Short diff = calculateShortDiff(cells[rowArrayIndex][1], cells[rowArrayIndex][0]);
                 if (diff == null) {
@@ -359,8 +354,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                         return null;
                     }
                 }
-                short result = (short) (diff * columnDiff);
-                return result;
+                return (short) (diff * columnDiff);
             } else if (type == Integer.class) {
                 Integer diff = calculateIntDiff(cells[rowArrayIndex][1], cells[rowArrayIndex][0]);
                 if (diff == null) {

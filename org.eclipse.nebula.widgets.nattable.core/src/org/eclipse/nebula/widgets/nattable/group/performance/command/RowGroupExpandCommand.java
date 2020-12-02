@@ -38,12 +38,12 @@ public class RowGroupExpandCommand extends AbstractContextFreeCommand {
 
     public RowGroupExpandCommand(GroupModel groupModel, Collection<Group> groups) {
         this.groupModel = groupModel;
-        this.groups = new ArrayList<Group>(groups);
+        this.groups = new ArrayList<>(groups);
     }
 
     protected RowGroupExpandCommand(RowGroupExpandCommand command) {
         this.groupModel = command.groupModel;
-        this.groups = new ArrayList<Group>(command.groups);
+        this.groups = new ArrayList<>(command.groups);
     }
 
     @Override

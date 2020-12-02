@@ -68,11 +68,9 @@ public class CheckBoxCellEditor extends AbstractCellEditor {
 
         commit(MoveDirectionEnum.NONE, false);
 
-        if (this.editMode == EditModeEnum.INLINE) {
+        if (this.editMode == EditModeEnum.INLINE && this.canvas != null && !this.canvas.isDisposed()) {
             // Close editor so it will react to subsequent clicks on the cell
-            if (this.canvas != null && !this.canvas.isDisposed()) {
-                close();
-            }
+            close();
         }
 
         return this.canvas;
@@ -103,7 +101,7 @@ public class CheckBoxCellEditor extends AbstractCellEditor {
             if (value instanceof Boolean) {
                 this.checked = ((Boolean) value).booleanValue();
             } else if (value instanceof String) {
-                this.checked = Boolean.valueOf((String) value).booleanValue();
+                this.checked = Boolean.parseBoolean((String) value);
             } else {
                 this.checked = false;
             }
@@ -117,17 +115,17 @@ public class CheckBoxCellEditor extends AbstractCellEditor {
 
     @Override
     public Canvas createEditorControl(Composite parent) {
-        final Canvas canvas = new Canvas(parent, SWT.NONE);
+        final Canvas checkboxCanvas = new Canvas(parent, SWT.NONE);
 
-        canvas.addMouseListener(new MouseAdapter() {
+        checkboxCanvas.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseUp(MouseEvent e) {
                 CheckBoxCellEditor.this.checked = !CheckBoxCellEditor.this.checked;
-                canvas.redraw();
+                checkboxCanvas.redraw();
             }
         });
 
-        return canvas;
+        return checkboxCanvas;
     }
 
     @Override

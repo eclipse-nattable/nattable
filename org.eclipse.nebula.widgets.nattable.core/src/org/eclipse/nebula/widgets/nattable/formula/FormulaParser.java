@@ -189,7 +189,7 @@ public class FormulaParser {
      *         of the parsed function string.
      */
     public FunctionValue parseFunction(String function) {
-        return parseFunction(function, new HashMap<Integer, FunctionValue>(), new LinkedHashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        return parseFunction(function, new HashMap<>(), new LinkedHashMap<>(), null);
     }
 
     /**
@@ -210,7 +210,7 @@ public class FormulaParser {
      */
     protected FunctionValue parseFunction(String function,
             Map<IndexCoordinate, Set<IndexCoordinate>> parsedReferences, IndexCoordinate referer) {
-        return parseFunction(function, new HashMap<Integer, FunctionValue>(), parsedReferences, referer);
+        return parseFunction(function, new HashMap<>(), parsedReferences, referer);
     }
 
     /**
@@ -742,7 +742,7 @@ public class FormulaParser {
             // avoid circular references
             IndexCoordinate ref = new IndexCoordinate(column, row);
             if (!parsedReferences.containsKey(ref)) {
-                parsedReferences.put(ref, new HashSet<IndexCoordinate>());
+                parsedReferences.put(ref, new HashSet<>());
             }
             if (referer != null) {
                 parsedReferences.get(referer).add(ref);

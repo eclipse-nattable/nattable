@@ -67,12 +67,12 @@ public class GlazedListsSortModel<T> implements ISortModel, ILayerListener {
 
     protected NatTableComparatorChooser<T> getComparatorChooser() {
         if (this.comparatorChooser == null) {
-            this.tableFormat = new NatColumnTableFormat<T>(
+            this.tableFormat = new NatColumnTableFormat<>(
                     this.columnAccessor,
                     this.columnPropertyResolver,
                     this.configRegistry,
                     this.columnHeaderDataLayer);
-            this.comparatorChooser = new NatTableComparatorChooser<T>(
+            this.comparatorChooser = new NatTableComparatorChooser<>(
                     this.sortedList,
                     this.tableFormat);
         }

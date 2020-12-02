@@ -38,7 +38,7 @@ public class PersistenceUpdateDataChangeHandler extends UpdateDataChangeHandler<
      *            for a specific key.
      */
     public PersistenceUpdateDataChangeHandler(DataChangeLayer layer, CellKeyHandler<?> keyHandler) {
-        super(layer, keyHandler, new ConcurrentHashMap<Object, PersistenceUpdateDataChange>());
+        super(layer, keyHandler, new ConcurrentHashMap<>());
     }
 
     @Override

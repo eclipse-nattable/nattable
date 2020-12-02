@@ -321,7 +321,7 @@ public class CompositeLayer extends AbstractLayer {
 
     @Override
     public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
-        Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
+        Collection<ILayer> underlyingLayers = new HashSet<>();
 
         for (int layoutX = 0; layoutX < this.childLayerLayout.length; layoutX++) {
             int columnPositionOffset = getColumnPositionOffset(layoutX);
@@ -490,7 +490,7 @@ public class CompositeLayer extends AbstractLayer {
 
     @Override
     public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {
-        Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
+        Collection<ILayer> underlyingLayers = new HashSet<>();
 
         for (int layoutY = 0; layoutY < this.childLayerLayout[0].length; layoutY++) {
             int rowPositionOffset = getRowPositionOffset(layoutY);
@@ -659,6 +659,11 @@ public class CompositeLayer extends AbstractLayer {
     /**
      * Sets the IConfigLabelAccumulator for the given named region. Replaces any
      * existing IConfigLabelAccumulator.
+     *
+     * @param regionName
+     *            the region name.
+     * @param configLabelAccumulator
+     *            the {@link IConfigLabelAccumulator} to set.
      */
     public void setConfigLabelAccumulatorForRegion(
             String regionName, IConfigLabelAccumulator configLabelAccumulator) {
@@ -667,6 +672,11 @@ public class CompositeLayer extends AbstractLayer {
 
     /**
      * Adds the configLabelAccumulator to the existing label accumulators.
+     *
+     * @param regionName
+     *            the region name.
+     * @param configLabelAccumulator
+     *            the {@link IConfigLabelAccumulator} to add.
      */
     public void addConfigLabelAccumulatorForRegion(
             String regionName, IConfigLabelAccumulator configLabelAccumulator) {
@@ -732,9 +742,7 @@ public class CompositeLayer extends AbstractLayer {
                 childLayer.getPreferredWidth(),
                 childLayer.getPreferredHeight());
 
-        final Rectangle intersection = compositeClientArea.intersection(childClientArea);
-
-        return intersection;
+        return compositeClientArea.intersection(childClientArea);
     }
 
     /**
@@ -1023,7 +1031,7 @@ public class CompositeLayer extends AbstractLayer {
                 labels.add(regionName);
 
                 IConfigLabelAccumulator accumulator = this.regionNameToConfigLabelAccumulatorMap.get(regionName);
-                if (accumulator != null && accumulator instanceof IConfigLabelProvider) {
+                if (accumulator instanceof IConfigLabelProvider) {
                     labels.addAll(((IConfigLabelProvider) accumulator).getProvidedLabels());
                 }
 

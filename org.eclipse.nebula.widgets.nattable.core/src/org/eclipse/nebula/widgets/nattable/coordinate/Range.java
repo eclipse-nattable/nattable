@@ -52,6 +52,8 @@ public class Range {
     /**
      * Check if the given position is contained in this {@link Range}.
      *
+     * @param position
+     *            the position to check.
      * @return <code>true</code> if the range contains the given position.
      */
     public boolean contains(int position) {
@@ -78,7 +80,7 @@ public class Range {
      * @return The values represented by this {@link Range}.
      */
     public Set<Integer> getMembers() {
-        Set<Integer> members = new HashSet<Integer>();
+        Set<Integer> members = new HashSet<>();
         for (int i = this.start; i < this.end; i++) {
             members.add(Integer.valueOf(i));
         }

@@ -57,7 +57,7 @@ public class CalculatedValueCache implements ICalculatedValueCache {
      * updates, and will be used to determine whether a new calculation is
      * necessary.
      */
-    private Map<ICalculatedValueCacheKey, Object> cache = new ConcurrentHashMap<ICalculatedValueCacheKey, Object>();
+    private Map<ICalculatedValueCacheKey, Object> cache = new ConcurrentHashMap<>();
 
     /**
      * Cache copy of the calculated values.
@@ -70,7 +70,7 @@ public class CalculatedValueCache implements ICalculatedValueCache {
      * calculation has finished instead of switching to the default calculation
      * value on updates.
      */
-    private Map<ICalculatedValueCacheKey, Object> cacheCopy = new ConcurrentHashMap<ICalculatedValueCacheKey, Object>();
+    private Map<ICalculatedValueCacheKey, Object> cacheCopy = new ConcurrentHashMap<>();
 
     /**
      * Flag to specify if the column position should be used as cache key.
@@ -155,7 +155,7 @@ public class CalculatedValueCache implements ICalculatedValueCache {
                 Runtime.getRuntime().availableProcessors() + 1,
                 5000,
                 TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>());
+                new LinkedBlockingQueue<>());
 
         ((ThreadPoolExecutor) this.executor).allowCoreThreadTimeOut(true);
 

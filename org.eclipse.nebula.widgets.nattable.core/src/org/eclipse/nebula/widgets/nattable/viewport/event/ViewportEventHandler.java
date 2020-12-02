@@ -19,6 +19,7 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 public class ViewportEventHandler implements ILayerEventHandler<IStructuralChangeEvent> {
@@ -58,29 +59,27 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
                                     .getMinimumOrigin().getX());
                 }
                 for (StructuralDiff columnDiff : columnDiffs) {
-                    switch (columnDiff.getDiffType()) {
-                        case ADD:
-                            Range afterPositionRange = columnDiff
-                                    .getAfterPositionRange();
-                            if (minimumOriginColumnPosition > 0) {
-                                for (int i = afterPositionRange.start; i < afterPositionRange.end; i++) {
-                                    if (i < minimumOriginColumnPosition) {
-                                        minimumOriginColumnPosition++;
-                                    }
+                    DiffTypeEnum diffType = columnDiff.getDiffType();
+                    if (diffType == DiffTypeEnum.ADD) {
+                        Range afterPositionRange = columnDiff
+                                .getAfterPositionRange();
+                        if (minimumOriginColumnPosition > 0) {
+                            for (int i = afterPositionRange.start; i < afterPositionRange.end; i++) {
+                                if (i < minimumOriginColumnPosition) {
+                                    minimumOriginColumnPosition++;
                                 }
                             }
-                            break;
-                        case DELETE:
-                            Range beforePositionRange = columnDiff
-                                    .getBeforePositionRange();
-                            if (minimumOriginColumnPosition > 0) {
-                                for (int i = beforePositionRange.start; i < beforePositionRange.end; i++) {
-                                    if (i < minimumOriginColumnPosition) {
-                                        columnOffset -= 1;
-                                    }
+                        }
+                    } else if (diffType == DiffTypeEnum.DELETE) {
+                        Range beforePositionRange = columnDiff
+                                .getBeforePositionRange();
+                        if (minimumOriginColumnPosition > 0) {
+                            for (int i = beforePositionRange.start; i < beforePositionRange.end; i++) {
+                                if (i < minimumOriginColumnPosition) {
+                                    columnOffset -= 1;
                                 }
                             }
-                            break;
+                        }
                     }
                 }
             }
@@ -136,29 +135,27 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
                                     .getY());
                 }
                 for (StructuralDiff rowDiff : rowDiffs) {
-                    switch (rowDiff.getDiffType()) {
-                        case ADD:
-                            Range afterPositionRange = rowDiff
-                                    .getAfterPositionRange();
-                            if (minimumOriginRowPosition > 0) {
-                                for (int i = afterPositionRange.start; i < afterPositionRange.end; i++) {
-                                    if (i < minimumOriginRowPosition) {
-                                        minimumOriginRowPosition++;
-                                    }
+                    DiffTypeEnum diffType = rowDiff.getDiffType();
+                    if (diffType == DiffTypeEnum.ADD) {
+                        Range afterPositionRange = rowDiff
+                                .getAfterPositionRange();
+                        if (minimumOriginRowPosition > 0) {
+                            for (int i = afterPositionRange.start; i < afterPositionRange.end; i++) {
+                                if (i < minimumOriginRowPosition) {
+                                    minimumOriginRowPosition++;
                                 }
                             }
-                            break;
-                        case DELETE:
-                            Range beforePositionRange = rowDiff
-                                    .getBeforePositionRange();
-                            if (minimumOriginRowPosition > 0) {
-                                for (int i = beforePositionRange.start; i < beforePositionRange.end; i++) {
-                                    if (i < minimumOriginRowPosition) {
-                                        rowOffset -= 1;
-                                    }
+                        }
+                    } else if (diffType == DiffTypeEnum.DELETE) {
+                        Range beforePositionRange = rowDiff
+                                .getBeforePositionRange();
+                        if (minimumOriginRowPosition > 0) {
+                            for (int i = beforePositionRange.start; i < beforePositionRange.end; i++) {
+                                if (i < minimumOriginRowPosition) {
+                                    rowOffset -= 1;
                                 }
                             }
-                            break;
+                        }
                     }
                 }
             }

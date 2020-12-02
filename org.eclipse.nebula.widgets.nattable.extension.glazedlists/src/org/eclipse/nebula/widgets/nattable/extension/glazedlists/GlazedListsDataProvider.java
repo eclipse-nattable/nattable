@@ -18,7 +18,6 @@ import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
 
 /**
  * This class implements "last row" caching for much faster column value access
@@ -54,18 +53,15 @@ public class GlazedListsDataProvider<T> extends ListDataProvider<T> {
         // of the current row we have cached, we update as well, inserts we
         // don't need to as they are new items and the index will never be the
         // same anyway.
-        list.addListEventListener(new ListEventListener<T>() {
-            @Override
-            public void listChanged(ListEvent<T> event) {
-                while (event.next()) {
-                    int sourceIndex = event.getIndex();
-                    int changeType = event.getType();
+        list.addListEventListener(event -> {
+            while (event.next()) {
+                int sourceIndex = event.getIndex();
+                int changeType = event.getType();
 
-                    if (changeType == ListEvent.DELETE
-                            || sourceIndex == GlazedListsDataProvider.this.lastRowIndex) {
-                        inputChanged();
-                        break;
-                    }
+                if (changeType == ListEvent.DELETE
+                        || sourceIndex == GlazedListsDataProvider.this.lastRowIndex) {
+                    inputChanged();
+                    break;
                 }
             }
         });

@@ -46,7 +46,7 @@ public class DisplayPersistenceDialogCommandHandler extends AbstractLayerCommand
      * while this handler will deal the correct registering.
      * </p>
      */
-    private List<IStateChangedListener> stateChangeListeners = new ArrayList<IStateChangedListener>();
+    private List<IStateChangedListener> stateChangeListeners = new ArrayList<>();
 
     /**
      * Create a new {@link DisplayPersistenceDialogCommandHandler}. Using this

@@ -62,7 +62,7 @@ public class GroupModel implements IPersistable {
     /**
      * Collection of groups managed by this GroupModel.
      */
-    private final List<Group> groups = new LinkedList<Group>();
+    private final List<Group> groups = new LinkedList<>();
 
     /**
      *
@@ -419,7 +419,7 @@ public class GroupModel implements IPersistable {
      * @return The collection of {@link Group}s that have been modified.
      */
     public Collection<Group> removePositionsFromGroup(int... positions) {
-        Set<Group> changed = new HashSet<Group>();
+        Set<Group> changed = new HashSet<>();
         Group group = null;
         Arrays.sort(positions);
         for (int i = positions.length - 1; i >= 0; i--) {
@@ -708,7 +708,7 @@ public class GroupModel implements IPersistable {
      *         {@link GroupModel}.
      */
     public boolean isEmpty() {
-        return this.groups.size() == 0;
+        return this.groups.isEmpty();
     }
 
     /**

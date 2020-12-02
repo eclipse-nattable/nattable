@@ -55,13 +55,13 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
      * The {@link DataChangeHandler} registered with this
      * {@link DataChangeLayer} to keep track of data changes.
      */
-    protected final List<DataChangeHandler> dataChangeHandler = new ArrayList<DataChangeHandler>();
+    protected final List<DataChangeHandler> dataChangeHandler = new ArrayList<>();
 
     /**
      * The list of {@link DataChange}s that need to be handled on save or
      * discard.
      */
-    protected final List<DataChange> dataChanges = new ArrayList<DataChange>();
+    protected final List<DataChange> dataChanges = new ArrayList<>();
 
     /**
      * Data provider that returns temporary stored data changes.

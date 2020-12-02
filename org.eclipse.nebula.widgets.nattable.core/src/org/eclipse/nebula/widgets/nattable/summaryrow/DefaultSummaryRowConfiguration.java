@@ -27,6 +27,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 
+//fields are public by design to make it easy for adapters to customize configuration
+@SuppressWarnings("java:S1104")
 public class DefaultSummaryRowConfiguration extends AbstractRegistryConfiguration {
 
     public BorderStyle summaryRowBorderStyle = new BorderStyle(0, GUIHelper.COLOR_BLACK, LineStyleEnum.DOTTED);

@@ -279,7 +279,7 @@ public class MultiRowReorderCommand implements ILayerCommand {
         RowPositionCoordinate targetToRowPositionCoordinate =
                 LayerCommandUtil.convertRowPositionToTargetContext(this.toRowPositionCoordinate, targetLayer);
 
-        if (convertedFromRowPositionCoordinates.size() > 0
+        if (!convertedFromRowPositionCoordinates.isEmpty()
                 && targetToRowPositionCoordinate != null) {
             this.fromRowPositionCoordinates = convertedFromRowPositionCoordinates;
             this.toRowPositionCoordinate = targetToRowPositionCoordinate;

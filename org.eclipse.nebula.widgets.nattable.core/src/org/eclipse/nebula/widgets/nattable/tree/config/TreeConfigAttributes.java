@@ -21,7 +21,11 @@ import org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter
  * Configuration attributes for configuring the visualization of a tree
  * representation.
  */
-public interface TreeConfigAttributes {
+public final class TreeConfigAttributes {
+
+    private TreeConfigAttributes() {
+        // private default constructor for constants class
+    }
 
     /**
      * Configuration attribute to specify the painter that should be used to
@@ -31,6 +35,6 @@ public interface TreeConfigAttributes {
      * {@link IndentedTreeImagePainter} in the painter hierarchy, this
      * configuration attribute will be ignored by the TreeLayer.
      */
-    ConfigAttribute<ICellPainter> TREE_STRUCTURE_PAINTER = new ConfigAttribute<ICellPainter>();
+    public static final ConfigAttribute<ICellPainter> TREE_STRUCTURE_PAINTER = new ConfigAttribute<>();
 
 }

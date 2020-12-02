@@ -26,7 +26,11 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 /**
  * Helper class to operate with selections.
  */
-public class SelectionUtils {
+public final class SelectionUtils {
+
+    private SelectionUtils() {
+        // private default constructor for helper class
+    }
 
     /**
      *
@@ -209,7 +213,7 @@ public class SelectionUtils {
             IRowDataProvider<T> rowDataProvider,
             boolean fullySelectedRowsOnly) {
 
-        List<RowObjectIndexHolder<T>> rows = new ArrayList<RowObjectIndexHolder<T>>();
+        List<RowObjectIndexHolder<T>> rows = new ArrayList<>();
 
         if (selectionLayer != null) {
             if (fullySelectedRowsOnly) {
@@ -226,7 +230,7 @@ public class SelectionUtils {
             }
         }
         Collections.sort(rows);
-        List<T> rowObjects = new ArrayList<T>(rows.size());
+        List<T> rowObjects = new ArrayList<>(rows.size());
         for (RowObjectIndexHolder<T> holder : rows) {
             rowObjects.add(holder.getRow());
         }
@@ -242,7 +246,7 @@ public class SelectionUtils {
         int rowIndex = selectionLayer.getRowIndexByPosition(rowPosition);
         if (rowIndex >= 0 && rowIndex < rowDataProvider.getRowCount()) {
             T rowObject = rowDataProvider.getRowObject(rowIndex);
-            rows.add(new RowObjectIndexHolder<T>(rowIndex, rowObject));
+            rows.add(new RowObjectIndexHolder<>(rowIndex, rowObject));
         }
     }
 

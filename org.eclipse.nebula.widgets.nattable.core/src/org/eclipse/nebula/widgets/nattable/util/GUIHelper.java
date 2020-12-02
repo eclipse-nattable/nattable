@@ -35,7 +35,11 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
-public class GUIHelper {
+public final class GUIHelper {
+
+    private GUIHelper() {
+        // private default constructor for helper class
+    }
 
     private static final String KEY_PREFIX = GUIHelper.class.getCanonicalName() + "."; //$NON-NLS-1$
 
@@ -92,8 +96,8 @@ public class GUIHelper {
 
     public static final int DEFAULT_RESIZE_HANDLE_SIZE = 4;
     public static final int DEFAULT_MIN_DISPLAY_SIZE = 5;
-    public static final int DEFAULT_ANTIALIAS = SWT.DEFAULT;;
-    public static final int DEFAULT_TEXT_ANTIALIAS = SWT.DEFAULT;;
+    public static final int DEFAULT_ANTIALIAS = SWT.DEFAULT;
+    public static final int DEFAULT_TEXT_ANTIALIAS = SWT.DEFAULT;
 
     public static Font getFont(FontData... fontDatas) {
         StringBuilder keyBuilder = new StringBuilder();

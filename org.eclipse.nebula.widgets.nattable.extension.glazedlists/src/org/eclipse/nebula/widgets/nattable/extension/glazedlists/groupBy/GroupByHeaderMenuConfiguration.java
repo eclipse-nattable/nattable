@@ -21,7 +21,6 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
-import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
 import org.eclipse.nebula.widgets.nattable.ui.menu.MenuItemProviders;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
@@ -94,28 +93,25 @@ public class GroupByHeaderMenuConfiguration extends AbstractUiBindingConfigurati
      */
     protected PopupMenuBuilder createGroupByHeaderMenu(NatTable natTable) {
         return new PopupMenuBuilder(natTable).withMenuItemProvider(UNGROUP_BY_MENU_ITEM_ID,
-                new IMenuItemProvider() {
-                    @Override
-                    public void addMenuItem(final NatTable natTable, Menu popupMenu) {
-                        MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
-                        menuItem.setText(Messages.getLocalizedMessage("%GroupByHeaderMenuConfiguration.ungroupBy")); //$NON-NLS-1$
-                        menuItem.setEnabled(true);
+                (natTable1, popupMenu) -> {
+                    MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+                    menuItem.setText(Messages.getLocalizedMessage("%GroupByHeaderMenuConfiguration.ungroupBy")); //$NON-NLS-1$
+                    menuItem.setEnabled(true);
 
-                        menuItem.addSelectionListener(new SelectionAdapter() {
-                            @Override
-                            public void widgetSelected(SelectionEvent event) {
-                                NatEventData natEventData = MenuItemProviders.getNatEventData(event);
-                                MouseEvent originalEvent = natEventData.getOriginalEvent();
+                    menuItem.addSelectionListener(new SelectionAdapter() {
+                        @Override
+                        public void widgetSelected(SelectionEvent event) {
+                            NatEventData natEventData = MenuItemProviders.getNatEventData(event);
+                            MouseEvent originalEvent = natEventData.getOriginalEvent();
 
-                                int groupByColumnIndex =
-                                        GroupByHeaderMenuConfiguration.this.groupByHeaderLayer.getGroupByColumnIndexAtXY(
-                                                originalEvent.x,
-                                                originalEvent.y);
+                            int groupByColumnIndex =
+                                    GroupByHeaderMenuConfiguration.this.groupByHeaderLayer.getGroupByColumnIndexAtXY(
+                                            originalEvent.x,
+                                            originalEvent.y);
 
-                                natTable.doCommand(new UngroupByColumnIndexCommand(groupByColumnIndex));
-                            }
-                        });
-                    }
+                            natTable1.doCommand(new UngroupByColumnIndexCommand(groupByColumnIndex));
+                        }
+                    });
                 });
     }
 }

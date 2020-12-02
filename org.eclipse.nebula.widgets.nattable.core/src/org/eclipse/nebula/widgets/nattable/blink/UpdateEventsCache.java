@@ -51,7 +51,7 @@ public class UpdateEventsCache<T> {
         this.rowIdAccessor = rowIdAccessor;
         this.keyStrategy = keyStrategy;
         this.cleanupScheduler = cleanupScheduler;
-        this.updateEvents = new HashMap<String, TimeStampedEvent>();
+        this.updateEvents = new HashMap<>();
     }
 
     /**
@@ -60,7 +60,7 @@ public class UpdateEventsCache<T> {
      */
     private Runnable getStaleUpdatesCleanupTask() {
         return () -> {
-            Map<String, TimeStampedEvent> recentEvents = new HashMap<String, TimeStampedEvent>();
+            Map<String, TimeStampedEvent> recentEvents = new HashMap<>();
             Date recent = new Date(System.currentTimeMillis()
                     - TIME_TO_LIVE);
 

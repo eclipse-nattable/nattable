@@ -37,7 +37,7 @@ import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
-import org.eclipse.nebula.widgets.nattable.freeze.IFreezeConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.freeze.FreezeConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.freeze.config.DefaultFreezeGridBindings;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -166,7 +166,7 @@ public class _816_EditableFixedSummaryRowWithFreezeExample extends AbstractNatEx
                         DisplayMode.NORMAL);
 
                 configRegistry.registerConfigAttribute(
-                        IFreezeConfigAttributes.SEPARATOR_COLOR,
+                        FreezeConfigAttributes.SEPARATOR_COLOR,
                         GUIHelper.COLOR_RED);
             }
         });
@@ -251,7 +251,7 @@ public class _816_EditableFixedSummaryRowWithFreezeExample extends AbstractNatEx
                         DisplayMode.NORMAL);
 
                 configRegistry.registerConfigAttribute(
-                        IFreezeConfigAttributes.SEPARATOR_COLOR,
+                        FreezeConfigAttributes.SEPARATOR_COLOR,
                         GUIHelper.COLOR_RED);
             }
         });

@@ -17,19 +17,25 @@ import org.eclipse.swt.graphics.Color;
 
 /**
  * Configuration attributes for the freeze separator visualization.
+ *
+ * @since 2.0
  */
-public interface IFreezeConfigAttributes {
+public final class FreezeConfigAttributes {
+
+    private FreezeConfigAttributes() {
+        // private default constructor for constants class
+    }
 
     /**
      * Configuration attribute to configure the color of the separator line.
      */
-    ConfigAttribute<Color> SEPARATOR_COLOR = new ConfigAttribute<Color>();
+    public static final ConfigAttribute<Color> SEPARATOR_COLOR = new ConfigAttribute<>();
 
     /**
      * Configuration attribute to configure the width of the separator line.
      *
      * @since 1.6
      */
-    ConfigAttribute<Integer> SEPARATOR_WIDTH = new ConfigAttribute<Integer>();
+    public static final ConfigAttribute<Integer> SEPARATOR_WIDTH = new ConfigAttribute<>();
 
 }

@@ -256,25 +256,19 @@ public class PaddingDecorator extends CellPainterWrapper {
         HorizontalAlignmentEnum horizontalAlignment =
                 cellStyle.getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT);
         int horizontalAlignmentPadding = 0;
-        switch (horizontalAlignment) {
-            case LEFT:
-                horizontalAlignmentPadding = GUIHelper.convertHorizontalPixelToDpi(this.leftPadding, configRegistry);
-                break;
-            case CENTER:
-                horizontalAlignmentPadding = GUIHelper.convertHorizontalPixelToDpi(this.leftPadding, configRegistry) / 2;
-                break;
+        if (horizontalAlignment == HorizontalAlignmentEnum.LEFT) {
+            horizontalAlignmentPadding = GUIHelper.convertHorizontalPixelToDpi(this.leftPadding, configRegistry);
+        } else if (horizontalAlignment == HorizontalAlignmentEnum.CENTER) {
+            horizontalAlignmentPadding = GUIHelper.convertHorizontalPixelToDpi(this.leftPadding, configRegistry) / 2;
         }
 
         VerticalAlignmentEnum verticalAlignment =
                 cellStyle.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT);
         int verticalAlignmentPadding = 0;
-        switch (verticalAlignment) {
-            case TOP:
-                verticalAlignmentPadding = GUIHelper.convertVerticalPixelToDpi(this.topPadding, configRegistry);
-                break;
-            case MIDDLE:
-                verticalAlignmentPadding = GUIHelper.convertVerticalPixelToDpi(this.topPadding, configRegistry) / 2;
-                break;
+        if (verticalAlignment == VerticalAlignmentEnum.TOP) {
+            verticalAlignmentPadding = GUIHelper.convertVerticalPixelToDpi(this.topPadding, configRegistry);
+        } else if (verticalAlignment == VerticalAlignmentEnum.MIDDLE) {
+            verticalAlignmentPadding = GUIHelper.convertVerticalPixelToDpi(this.topPadding, configRegistry) / 2;
         }
 
         return super.getCellPainterAt(

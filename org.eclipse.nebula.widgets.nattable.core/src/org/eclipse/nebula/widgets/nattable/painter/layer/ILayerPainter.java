@@ -27,26 +27,36 @@ public interface ILayerPainter {
 
     /**
      * @param natLayer
+     *            The layer to paint.
      * @param gc
      *            GC used for painting
      * @param xOffset
-     *            of the layer from the origin of the table
+     *            x offset of the layer from the origin of the table
      * @param yOffset
-     *            of the layer from the origin of the table
+     *            y offset of the layer from the origin of the table
      * @param rectangle
      *            area the layer can paint in
      * @param configuration
-     *            in use by NatTable. Useful for looking up associated painters.
+     *            {@link IConfigRegistry} in use by NatTable. Useful for looking
+     *            up associated painters.
      */
-    public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset,
+    public void paintLayer(ILayer natLayer, GC gc,
+            int xOffset, int yOffset,
             Rectangle rectangle, IConfigRegistry configuration);
 
     /**
      * This method is used to adjust the cell bounds when painting the layer.
      * This is most often used to reduce the size of the cell to accommodate
      * grid lines.
+     *
+     * @param columnPosition
+     *            The column position.
+     * @param rowPosition
+     *            The row position.
+     * @param cellBounds
+     *            The actual cell bounds.
+     * @return The adjusted cell bounds.
      */
-    public Rectangle adjustCellBounds(int columnPosition, int rowPosition,
-            Rectangle cellBounds);
+    public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle cellBounds);
 
 }

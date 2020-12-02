@@ -25,6 +25,9 @@ public class DisplayColumnRenameDialogCommand extends AbstractColumnCommand {
     private final NatTable natTable;
 
     /**
+     * @param natTable
+     *            The NatTable instance (top level layer) to which the column
+     *            position matches.
      * @param columnPosition
      *            of the column to be renamed
      */

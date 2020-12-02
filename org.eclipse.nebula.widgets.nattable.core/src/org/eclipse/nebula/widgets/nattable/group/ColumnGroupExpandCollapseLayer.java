@@ -65,7 +65,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
         IUniqueIndexLayer underlyingLayer = getUnderlyingLayer();
 
         boolean isHiddeninUnderlyingLayer =
-                ColumnGroupUtils.isColumnIndexHiddenInUnderLyingLayer(columnIndex, this, underlyingLayer);
+                ColumnGroupUtils.isColumnIndexHiddenInUnderLyingLayer(columnIndex, underlyingLayer);
 
         if (isHiddeninUnderlyingLayer) {
             return true;
@@ -75,7 +75,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
             ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
             boolean isCollapsedAndStaticColumn = columnGroup != null
                     && columnGroup.isCollapsed()
-                    && !ColumnGroupUtils.isStaticOrFirstVisibleColumn(columnIndex, underlyingLayer, underlyingLayer, model);
+                    && !ColumnGroupUtils.isStaticOrFirstVisibleColumn(columnIndex, underlyingLayer, model);
 
             if (isCollapsedAndStaticColumn) {
                 return true;
@@ -103,7 +103,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
                 ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
 
                 if (columnGroup != null && columnGroup.isCollapsed()) {
-                    if (!ColumnGroupUtils.isStaticOrFirstVisibleColumn(columnIndex, underlyingLayer, underlyingLayer, model)) {
+                    if (!ColumnGroupUtils.isStaticOrFirstVisibleColumn(columnIndex, underlyingLayer, model)) {
                         hiddenColumnIndexes.add(columnIndex);
                     }
                 }

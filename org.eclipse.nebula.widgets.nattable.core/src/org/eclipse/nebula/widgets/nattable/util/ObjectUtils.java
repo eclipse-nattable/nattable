@@ -23,20 +23,28 @@ import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
-public class ObjectUtils {
+public final class ObjectUtils {
+
+    private ObjectUtils() {
+        // private default constructor for helper class
+    }
 
     /**
-     * Transfers the iterator to an unmodifiable collection.
+     * Transfers the given iterator to an unmodifiable collection.
      *
-     * @return Contents of the Iterator&lt;Cell&gt; as a Collection.
+     * @param <T>
+     *            The type of the objects contained in the iterator.
+     * @param iterator
+     *            The iterator to transfer.
+     * @return Contents of the iterator as an unmodifiable Collection.
      */
     public static <T> Collection<T> asCollection(Iterator<T> iterator) {
-        Collection<T> collection = new ArrayList<T>();
+        Collection<T> collection = new ArrayList<>();
         return addToCollection(iterator, collection);
     }
 
     public static <T> List<T> asList(Collection<T> collection) {
-        return new ArrayList<T>(collection);
+        return new ArrayList<>(collection);
     }
 
     public static int[] asIntArray(Collection<Integer> collection) {
@@ -52,20 +60,23 @@ public class ObjectUtils {
     }
 
     /**
-     * Returns an unmodifiable ordered collection.
+     * Transfers the given iterator into an unmodifiable ordered collection
+     * based on the given comparator.
      *
      * @param <T>
+     *            The type of the objects contained in the iterator.
      * @param iterator
-     * @return An unmodified ordered collection.
+     *            The iterator to transfer.
+     * @param comparator
+     *            The comparator to order the collection.
+     * @return Contents of the iterator as an unmodifiable ordered Collection.
      */
-    public static <T> Collection<T> asOrderedCollection(Iterator<T> iterator,
-            Comparator<T> comparator) {
-        Collection<T> collection = new TreeSet<T>(comparator);
+    public static <T> Collection<T> asOrderedCollection(Iterator<T> iterator, Comparator<T> comparator) {
+        Collection<T> collection = new TreeSet<>(comparator);
         return addToCollection(iterator, collection);
     }
 
-    private static <T> Collection<T> addToCollection(Iterator<T> iterator,
-            Collection<T> collection) {
+    private static <T> Collection<T> addToCollection(Iterator<T> iterator, Collection<T> collection) {
         while (iterator.hasNext()) {
             T object = iterator.next();
             collection.add(object);
@@ -80,8 +91,9 @@ public class ObjectUtils {
         String out = "[ "; //$NON-NLS-1$
         int count = 1;
         for (T object : collection) {
-            if (object == null)
+            if (object == null) {
                 continue;
+            }
             out = out + object.toString();
             if (collection.size() != count) {
                 out = out + ";\n"; //$NON-NLS-1$
@@ -97,42 +109,70 @@ public class ObjectUtils {
     }
 
     /**
-     * @return TRUE is collection is null or contains no elements
+     *
+     * @param <T>
+     *            The type of objects in the collection.
+     * @param collection
+     *            The collection to check.
+     * @return <code>true</code> if the given collection is <code>null</code> or
+     *         empty.
      */
     public static <T> boolean isEmpty(Collection<T> collection) {
-        return collection == null || collection.size() == 0;
+        return collection == null || collection.isEmpty();
     }
 
     /**
-     * @return TRUE if string == null || string.length() == 0
+     *
+     * @param string
+     *            The string to check.
+     * @return <code>true</code> if the given string is <code>null</code> or
+     *         empty.
      */
-    public static <T> boolean isEmpty(String string) {
+    public static boolean isEmpty(String string) {
         return string == null || string.length() == 0;
     }
 
     /**
-     * @return TRUE if string != null &amp;&amp; string.length() &gt; 0
+     *
+     * @param string
+     *            The string to check.
+     * @return <code>true</code> if the given string is not <code>null</code>
+     *         and not empty.
      */
-    public static <T> boolean isNotEmpty(String string) {
+    public static boolean isNotEmpty(String string) {
         return string != null && string.length() > 0;
     }
 
     /**
-     * @see ObjectUtils#isEmpty(Collection)
+     *
+     * @param <T>
+     *            The type of objects in the collection.
+     * @param collection
+     *            The collection to check.
+     * @return <code>true</code> if the given collection is not
+     *         <code>null</code> and not empty.
      */
     public static <T> boolean isNotEmpty(Collection<T> collection) {
         return !isEmpty(collection);
     }
 
     /**
-     * @return TRUE if object reference is null
+     *
+     * @param object
+     *            The object to check.
+     * @return <code>true</code> if the given object reference is
+     *         <code>null</code>.
      */
     public static boolean isNull(Object object) {
         return object == null;
     }
 
     /**
-     * @return TRUE if object reference is NOT null
+     *
+     * @param object
+     *            The object to check.
+     * @return <code>true</code> if the given object reference is not
+     *         <code>null</code>.
      */
     public static boolean isNotNull(Object object) {
         return object != null;
@@ -155,6 +195,9 @@ public class ObjectUtils {
     }
 
     /**
+     *
+     * @param max
+     *            the upper bound (exclusive)
      * @return random Integer number between 0 and parameter max
      */
     public static int getRandomNumber(int max) {

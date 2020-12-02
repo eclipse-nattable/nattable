@@ -27,7 +27,11 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
  *
  * @since 2.0
  */
-public class ScalingUtil {
+public final class ScalingUtil {
+
+    private ScalingUtil() {
+        // private default constructor for helper class
+    }
 
     /**
      * Performs a {@link ConfigureScalingCommand} to increase the scaling to

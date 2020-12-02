@@ -27,19 +27,19 @@ public final class NatTableConfigAttributes {
      * Configuration attribute for registering an {@link IDpiConverter} to
      * convert dimensions horizontally.
      */
-    public static final ConfigAttribute<IDpiConverter> HORIZONTAL_DPI_CONVERTER = new ConfigAttribute<IDpiConverter>();
+    public static final ConfigAttribute<IDpiConverter> HORIZONTAL_DPI_CONVERTER = new ConfigAttribute<>();
 
     /**
      * Configuration attribute for registering an {@link IDpiConverter} to
      * convert dimensions vertically.
      */
-    public static final ConfigAttribute<IDpiConverter> VERTICAL_DPI_CONVERTER = new ConfigAttribute<IDpiConverter>();
+    public static final ConfigAttribute<IDpiConverter> VERTICAL_DPI_CONVERTER = new ConfigAttribute<>();
 
     /**
      * Configuration attribute for registering the font scaling factor in case
      * scaling is active.
      */
-    public static final ConfigAttribute<Float> FONT_SCALING_FACTOR = new ConfigAttribute<Float>();
+    public static final ConfigAttribute<Float> FONT_SCALING_FACTOR = new ConfigAttribute<>();
 
     private NatTableConfigAttributes() {
         // empty default constructor

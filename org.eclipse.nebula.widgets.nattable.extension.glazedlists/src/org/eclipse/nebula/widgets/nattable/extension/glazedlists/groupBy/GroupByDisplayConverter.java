@@ -53,8 +53,8 @@ public class GroupByDisplayConverter<T> extends ContextualDisplayConverter {
 
     private Object defaultSummaryValue = ISummaryProvider.DEFAULT_SUMMARY_VALUE;
 
-    protected final Map<Integer, IDisplayConverter> wrappedConverters = new HashMap<Integer, IDisplayConverter>();
-    protected final Map<Integer, IDisplayConverter> converterCache = new HashMap<Integer, IDisplayConverter>();
+    protected final Map<Integer, IDisplayConverter> wrappedConverters = new HashMap<>();
+    protected final Map<Integer, IDisplayConverter> converterCache = new HashMap<>();
 
     protected final GroupByDataLayer<T> groupByDataLayer;
 

@@ -75,8 +75,8 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
     private Color originalForeground;
     private Font originalFont;
 
-    private static Map<String, Integer> temporaryMap = new WeakHashMap<String, Integer>();
-    private static Map<org.eclipse.swt.graphics.Font, FontData[]> fontDataCache = new WeakHashMap<org.eclipse.swt.graphics.Font, FontData[]>();
+    private static Map<String, Integer> temporaryMap = new WeakHashMap<>();
+    private static Map<org.eclipse.swt.graphics.Font, FontData[]> fontDataCache = new WeakHashMap<>();
 
     public AbstractTextPainter() {
         this(false, true);
@@ -185,6 +185,12 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
     /**
      * Convert the data value of the cell using the {@link IDisplayConverter}
      * from the {@link IConfigRegistry}
+     *
+     * @param cell
+     *            The cell whose data value should be converted.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} to retrieve the converter.
+     * @return The data value converted to a String.
      */
     protected String convertDataType(ILayerCell cell, IConfigRegistry configRegistry) {
         return CellDisplayConversionUtils.convertDataType(cell, configRegistry);
@@ -219,6 +225,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      * Reset the GC to the original values.
      *
      * @param gc
+     *            The {@link GC} that is used for rendering.
      *
      * @since 1.4
      */
@@ -310,11 +317,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
             }
         }
         text = buffer.toString();
-        Integer width = temporaryMap.get(text);
-        if (width == null) {
-            width = Integer.valueOf(gc.textExtent(originalString).x);
-            temporaryMap.put(text, width);
-        }
+        Integer width = temporaryMap.computeIfAbsent(text, t -> Integer.valueOf(gc.textExtent(originalString).x));
 
         return width.intValue();
     }
@@ -720,26 +723,24 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      * @since 1.4
      */
     protected void paintDecoration(IStyle cellStyle, GC gc, int x, int y, int length, int fontHeight) {
-        boolean underline = renderUnderlined(cellStyle);
-        boolean strikethrough = renderStrikethrough(cellStyle);
+        boolean ul = renderUnderlined(cellStyle);
+        boolean st = renderStrikethrough(cellStyle);
 
-        if (underline || strikethrough) {
-            if (length > 0) {
-                // check and draw underline and strikethrough separately
-                // so it is possible to combine both
-                if (underline) {
-                    // y = start y of text + font height - half of the font
-                    // descent so the underline is between baseline and bottom
-                    int underlineY = y + fontHeight - (gc.getFontMetrics().getDescent() / 2);
-                    gc.drawLine(x, underlineY, x + length, underlineY);
-                }
+        if ((ul || st) && length > 0) {
+            // check and draw underline and strikethrough separately
+            // so it is possible to combine both
+            if (ul) {
+                // y = start y of text + font height - half of the font
+                // descent so the underline is between baseline and bottom
+                int underlineY = y + fontHeight - (gc.getFontMetrics().getDescent() / 2);
+                gc.drawLine(x, underlineY, x + length, underlineY);
+            }
 
-                if (strikethrough) {
-                    // y = start y of text + half of font height + ascent
-                    // this way lower case characters are also strikethrough
-                    int strikeY = y + (fontHeight / 2) + (gc.getFontMetrics().getLeading() / 2);
-                    gc.drawLine(x, strikeY, x + length, strikeY);
-                }
+            if (st) {
+                // y = start y of text + half of font height + ascent
+                // this way lower case characters are also strikethrough
+                int strikeY = y + (fontHeight / 2) + (gc.getFontMetrics().getLeading() / 2);
+                gc.drawLine(x, strikeY, x + length, strikeY);
             }
         }
     }

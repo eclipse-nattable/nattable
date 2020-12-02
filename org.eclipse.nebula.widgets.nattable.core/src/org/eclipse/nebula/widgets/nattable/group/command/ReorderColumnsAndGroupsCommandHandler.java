@@ -44,10 +44,10 @@ public class ReorderColumnsAndGroupsCommandHandler extends
     protected boolean doCommand(ReorderColumnsAndGroupsCommand command) {
         final ILayer underlyingLayer = this.columnGroupReorderLayer
                 .getUnderlyingLayer();
-        List<String> groupsProcessed = new ArrayList<String>();
+        List<String> groupsProcessed = new ArrayList<>();
 
         List<Integer> fromColumnPositions = command.getFromColumnPositions();
-        List<Integer> fromColumnPositionsWithGroupColumns = new ArrayList<Integer>();
+        List<Integer> fromColumnPositionsWithGroupColumns = new ArrayList<>();
 
         for (Integer fromColumnPosition : fromColumnPositions) {
             int fromColumnIndex = underlyingLayer

@@ -34,8 +34,6 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
-import org.eclipse.nebula.widgets.nattable.sort.command.SortColumnCommand;
-import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
@@ -61,13 +59,6 @@ public class GlazedListsGridLayer<T> extends GridLayer {
         this(eventList, propertyNames, propertyToLabelMap, configRegistry, true);
     }
 
-    /**
-     * The underlying {@link DataLayer} created is able to handle Events raised
-     * by GlazedLists and fire corresponding NatTable events.
-     *
-     * The {@link SortHeaderLayer} triggers sorting on the the underlying
-     * SortedList when a {@link SortColumnCommand} is received.
-     */
     public GlazedListsGridLayer(EventList<T> eventList, String[] propertyNames,
             Map<String, String> propertyToLabelMap,
             IConfigRegistry configRegistry, boolean useDefaultConfiguration) {
@@ -121,11 +112,6 @@ public class GlazedListsGridLayer<T> extends GridLayer {
 
     public ColumnOverrideLabelAccumulator getColumnLabelAccumulator() {
         return this.columnLabelAccumulator;
-    }
-
-    @Override
-    public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
-        super.setClientAreaProvider(clientAreaProvider);
     }
 
     public DataLayer getBodyDataLayer() {

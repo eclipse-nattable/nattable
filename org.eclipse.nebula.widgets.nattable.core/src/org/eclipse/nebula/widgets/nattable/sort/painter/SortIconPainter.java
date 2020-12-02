@@ -109,7 +109,7 @@ public class SortIconPainter extends ImagePainter {
         for (String configLabel : cell.getConfigLabels()) {
             if (configLabel.startsWith(DefaultSortConfiguration.SORT_SEQ_CONFIG_TYPE)) {
                 String[] tokens = configLabel.split("_"); //$NON-NLS-1$
-                sortSeq = Integer.valueOf(tokens[tokens.length - 1]).intValue();
+                sortSeq = Integer.parseInt(tokens[tokens.length - 1]);
             }
         }
         return sortSeq;

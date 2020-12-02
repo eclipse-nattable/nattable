@@ -87,10 +87,10 @@ public class MarkupDisplayConverter extends ContextualDisplayConverter {
      *            The String that will be added as suffix to the value.
      */
     public void registerMarkup(String value, String markupPrefix, String markupSuffix) {
-        MarkupValue markup = new MarkupValue();
-        markup.originalValue = value;
-        markup.markupValue = markupPrefix + value + markupSuffix;
-        registerMarkup(value, markup);
+        MarkupValue markupValue = new MarkupValue();
+        markupValue.original = value;
+        markupValue.markup = markupPrefix + value + markupSuffix;
+        registerMarkup(value, markupValue);
     }
 
     /**
@@ -158,15 +158,15 @@ public class MarkupDisplayConverter extends ContextualDisplayConverter {
      * replacement.
      */
     protected class MarkupValue implements MarkupProcessor {
-        String originalValue;
-        String markupValue;
+        String original;
+        String markup;
 
         /**
          * @since 1.1
          */
         @Override
         public String applyMarkup(String input) {
-            return input.replaceAll(this.originalValue, this.markupValue);
+            return input.replaceAll(this.original, this.markup);
         }
 
         /**
@@ -174,7 +174,7 @@ public class MarkupDisplayConverter extends ContextualDisplayConverter {
          */
         @Override
         public String removeMarkup(String input) {
-            return input.replaceAll(this.markupValue, this.originalValue);
+            return input.replaceAll(this.markup, this.original);
         }
     }
 }

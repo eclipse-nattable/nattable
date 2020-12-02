@@ -19,7 +19,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -572,13 +571,7 @@ public class DataChangeLayerIdIndexTest {
         assertEquals("Zoolander", this.dataLayer.getDataValue(1, 2));
 
         // sort
-        Collections.sort(this.dataModel, new Comparator<Person>() {
-
-            @Override
-            public int compare(Person o1, Person o2) {
-                return o1.getLastName().compareTo(o2.getLastName());
-            }
-        });
+        Collections.sort(this.dataModel, (o1, o2) -> o1.getLastName().compareTo(o2.getLastName()));
         // fire event to trigger update of cached row indexes
         this.dataLayer.fireLayerEvent(new RowStructuralRefreshEvent(this.dataLayer));
 
@@ -617,7 +610,6 @@ public class DataChangeLayerIdIndexTest {
     }
 
     @Test
-    @SuppressWarnings("java:S2259")
     public void shouldUpdateChangeOnSortAndSaveWithTemp() {
         // enable temp data storage to test update on save
         this.dataChangeLayer = new DataChangeLayer(this.dataLayer,
@@ -652,13 +644,7 @@ public class DataChangeLayerIdIndexTest {
         // NOTE: this is because we are storing the data temporary and therefore
         // sorting for lastname would not respect the shown data.
         this.dataLayer.setDataValueByPosition(0, 2, "Yosefine");
-        Collections.sort(this.dataModel, new Comparator<Person>() {
-
-            @Override
-            public int compare(Person o1, Person o2) {
-                return o1.getFirstName().compareTo(o2.getFirstName());
-            }
-        });
+        Collections.sort(this.dataModel, (o1, o2) -> o1.getFirstName().compareTo(o2.getFirstName()));
         // fire event to trigger update of cached row indexes
         this.dataLayer.fireLayerEvent(new RowStructuralRefreshEvent(this.dataLayer));
 

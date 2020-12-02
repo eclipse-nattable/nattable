@@ -26,7 +26,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 public class MultiRowResizeCommand extends AbstractMultiRowCommand {
 
     private int commonRowHeight = -1;
-    protected Map<RowPositionCoordinate, Integer> rowPositionToHeight = new HashMap<RowPositionCoordinate, Integer>();
+    protected Map<RowPositionCoordinate, Integer> rowPositionToHeight = new HashMap<>();
     private final boolean downScale;
 
     /**
@@ -122,7 +122,7 @@ public class MultiRowResizeCommand extends AbstractMultiRowCommand {
     protected MultiRowResizeCommand(MultiRowResizeCommand command) {
         super(command);
         this.commonRowHeight = command.commonRowHeight;
-        this.rowPositionToHeight = new HashMap<RowPositionCoordinate, Integer>(command.rowPositionToHeight);
+        this.rowPositionToHeight = new HashMap<>(command.rowPositionToHeight);
         this.downScale = command.downScale;
     }
 
@@ -164,7 +164,7 @@ public class MultiRowResizeCommand extends AbstractMultiRowCommand {
 
     @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
-        Map<RowPositionCoordinate, Integer> newRowPositionToHeight = new HashMap<RowPositionCoordinate, Integer>();
+        Map<RowPositionCoordinate, Integer> newRowPositionToHeight = new HashMap<>();
 
         for (RowPositionCoordinate rowPositionCoordinate : this.rowPositionToHeight.keySet()) {
             RowPositionCoordinate convertedRowPositionCoordinate =

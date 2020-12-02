@@ -92,7 +92,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
             IColumnAccessor<T> columnAccessor,
             IConfigRegistry configRegistry) {
 
-        this(filterList, new CompositeMatcherEditor<T>(), columnAccessor, configRegistry);
+        this(filterList, new CompositeMatcherEditor<>(), columnAccessor, configRegistry);
         this.matcherEditor.setMode(CompositeMatcherEditor.AND);
     }
 
@@ -157,7 +157,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
         }
 
         try {
-            EventList<MatcherEditor<T>> matcherEditors = new BasicEventList<MatcherEditor<T>>();
+            EventList<MatcherEditor<T>> matcherEditors = new BasicEventList<>();
 
             for (Entry<Integer, Object> mapEntry : filterIndexToObjectMap.entrySet()) {
                 Integer columnIndex = mapEntry.getKey();
@@ -180,7 +180,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 
                 List<ParseResult> parseResults = FilterRowUtils.parse(filterText, textDelimiter, textMatchingMode);
 
-                EventList<MatcherEditor<T>> stringMatcherEditors = new BasicEventList<MatcherEditor<T>>();
+                EventList<MatcherEditor<T>> stringMatcherEditors = new BasicEventList<>();
                 for (ParseResult parseResult : parseResults) {
                     try {
                         MatchType matchOperation = parseResult.getMatchOperation();
@@ -205,9 +205,8 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
                     }
                 }
 
-                if (stringMatcherEditors.size() > 0) {
-                    final CompositeMatcherEditor<T> stringCompositeMatcherEditor =
-                            new CompositeMatcherEditor<T>(stringMatcherEditors);
+                if (!stringMatcherEditors.isEmpty()) {
+                    CompositeMatcherEditor<T> stringCompositeMatcherEditor = new CompositeMatcherEditor<>(stringMatcherEditors);
                     stringCompositeMatcherEditor.setMode(CompositeMatcherEditor.OR);
                     matcherEditors.add(stringCompositeMatcherEditor);
                 }
@@ -233,9 +232,9 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 
                 // Add the new matchers that are added from
                 // 'filterIndexToObjectMap'
-                for (final MatcherEditor<T> matcherEditor : matcherEditors) {
-                    if (!containsMatcherEditor(this.matcherEditor.getMatcherEditors(), matcherEditor)) {
-                        this.matcherEditor.getMatcherEditors().add(matcherEditor);
+                for (final MatcherEditor<T> me : matcherEditors) {
+                    if (!containsMatcherEditor(this.matcherEditor.getMatcherEditors(), me)) {
+                        this.matcherEditor.getMatcherEditors().add(me);
                         changed = true;
                     }
                 }
@@ -340,7 +339,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
             MatchType matchOperation) {
 
         ThresholdMatcherEditor<T, Object> thresholdMatcherEditor =
-                new ThresholdMatcherEditor<T, Object>(threshold, null, comparator, columnValueProvider);
+                new ThresholdMatcherEditor<>(threshold, null, comparator, columnValueProvider);
 
         FilterRowUtils.setMatchOperation(thresholdMatcherEditor, matchOperation);
         return thresholdMatcherEditor;
@@ -355,12 +354,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
      *         index from a row object
      */
     protected FunctionList.Function<T, Object> getColumnValueProvider(final int columnIndex) {
-        return new FunctionList.Function<T, Object>() {
-            @Override
-            public Object evaluate(T rowObject) {
-                return DefaultGlazedListsFilterStrategy.this.columnAccessor.getDataValue(rowObject, columnIndex);
-            }
-        };
+        return rowObject -> DefaultGlazedListsFilterStrategy.this.columnAccessor.getDataValue(rowObject, columnIndex);
     }
 
     /**
@@ -383,7 +377,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
             TextMatchingMode textMatchingMode,
             IDisplayConverter converter,
             String filterText) {
-        final TextMatcherEditor<T> textMatcherEditor = new TextMatcherEditor<T>(getTextFilterator(columnIndex, converter));
+        TextMatcherEditor<T> textMatcherEditor = new TextMatcherEditor<>(getTextFilterator(columnIndex, converter));
         textMatcherEditor.setFilterText(new String[] { filterText });
         textMatcherEditor.setMode(getGlazedListsTextMatcherEditorMode(textMatchingMode));
         return textMatcherEditor;

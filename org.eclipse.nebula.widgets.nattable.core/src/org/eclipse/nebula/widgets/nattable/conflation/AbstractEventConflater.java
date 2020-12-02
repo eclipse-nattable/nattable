@@ -19,7 +19,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 
 public abstract class AbstractEventConflater implements IEventConflater {
 
-    protected List<ILayerEvent> queue = new LinkedList<ILayerEvent>();
+    protected List<ILayerEvent> queue = new LinkedList<>();
 
     @Override
     public void addEvent(ILayerEvent event) {

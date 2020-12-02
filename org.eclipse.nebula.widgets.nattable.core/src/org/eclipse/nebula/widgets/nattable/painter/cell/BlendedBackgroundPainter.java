@@ -90,7 +90,7 @@ public class BlendedBackgroundPainter extends TextPainter {
             colours.add(cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
         }
 
-        if (colours.size() == 0) {
+        if (colours.isEmpty()) {
             return null;
         } else if (colours.size() == 1) {
             return colours.get(0);

@@ -74,7 +74,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
         registerCommandHandlers();
 
         if (useDefaultConfiguration) {
-            addConfiguration(new DefaultRowGroupHeaderLayerConfiguration<T>());
+            addConfiguration(new DefaultRowGroupHeaderLayerConfiguration());
         }
     }
 
@@ -101,7 +101,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 
     @Override
     protected void registerCommandHandlers() {
-        registerCommandHandler(new SelectRowGroupCommandHandler<T>(this.model, this.selectionLayer, this));
+        registerCommandHandler(new SelectRowGroupCommandHandler<>(this.model, this.selectionLayer, this));
         registerCommandHandler(new ConfigureScalingCommandHandler(this.columnWidthConfig, null));
     }
 
@@ -348,7 +348,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
     }
 
     private List<Integer> convertToRowIndexes(final int[] rowPositions) {
-        final List<Integer> rowIndexes = new ArrayList<Integer>(rowPositions.length);
+        final List<Integer> rowIndexes = new ArrayList<>(rowPositions.length);
         for (final Integer rowPosition : rowPositions) {
             rowIndexes.add(this.selectionLayer.getRowIndexByPosition(rowPosition));
         }

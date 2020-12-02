@@ -287,7 +287,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
         int[] selectedColumnPositions = getSelectedColumnPositions();
         Set<Range> selectedRowPositions = getSelectedRowPositions();
 
-        List<PositionCoordinate> selectedCells = new LinkedList<PositionCoordinate>();
+        List<PositionCoordinate> selectedCells = new LinkedList<>();
 
         for (int columnPositionIndex = 0; columnPositionIndex < selectedColumnPositions.length; columnPositionIndex++) {
             final int columnPosition = selectedColumnPositions[columnPositionIndex];
@@ -311,7 +311,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      * @return The selected ILayerCells
      */
     public Collection<ILayerCell> getSelectedCells() {
-        Set<ILayerCell> selectedCells = new LinkedHashSet<ILayerCell>();
+        Set<ILayerCell> selectedCells = new LinkedHashSet<>();
 
         PositionCoordinate[] selectedCoords = getSelectedCellPositions();
         for (PositionCoordinate coord : selectedCoords) {

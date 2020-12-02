@@ -177,7 +177,7 @@ public class RowGroupDataListFixture {
     }
 
     public static Map<String, String> getPropertyToLabelMap() {
-        Map<String, String> propertyToLabelMap = new LinkedHashMap<String, String>();
+        Map<String, String> propertyToLabelMap = new LinkedHashMap<>();
         propertyToLabelMap.put(SECURITY_ID_PROP_NAME, "ISIN");
         propertyToLabelMap.put(SECURITY_DESCRIPTION_PROP_NAME, "Sec Desc");
         // rating
@@ -194,8 +194,7 @@ public class RowGroupDataListFixture {
         propertyToLabelMap.put(EPS_PROP_NAME, "EPS");
         propertyToLabelMap.put(VOLUME_PROP_NAME, "Volume");
         propertyToLabelMap.put(MARKET_CAP_PROP_NAME, "Market Cap.");
-        propertyToLabelMap
-                .put(INSTITUTION_OWNED_PROP_NAME, "Institution Owned");
+        propertyToLabelMap.put(INSTITUTION_OWNED_PROP_NAME, "Institution Owned");
 
         propertyToLabelMap.put(FIELD_20_PROP_NAME, "Field 20");
         propertyToLabelMap.put(FIELD_21_PROP_NAME, "Field 21");
@@ -227,12 +226,9 @@ public class RowGroupDataListFixture {
         return Arrays.asList(RowGroupDataListFixture.getPropertyNames());
     }
 
-    /**
-     * Get the index of the property name. This will be same as the order in
-     * which the columns/properties were initially supplied.
-     */
     public static int getColumnIndexOfProperty(String propertyName) {
-        return RowGroupDataListFixture.getPropertyNamesAsList().indexOf(
-                propertyName);
+        // Get the index of the property name. This will be same as the order in
+        // which the columns/properties were initially supplied.
+        return RowGroupDataListFixture.getPropertyNamesAsList().indexOf(propertyName);
     }
 }

@@ -96,7 +96,7 @@ public class AutoResizeColumnCommandHandler implements ILayerCommandHandler<Auto
 
         // only perform further actions if the widths could be calculated
         // could fail and return null for example if the GCFactory fails
-        if (gridColumnWidths != null) {
+        if (gridColumnWidths != null && gridColumnWidths.length > 0) {
             this.commandLayer.doCommand(
                     new MultiColumnResizeCommand(this.commandLayer, gridColumnPositions, gridColumnWidths, true));
             targetLayer.doCommand(new TurnViewportOnCommand());

@@ -42,7 +42,7 @@ public class RowDeleteDataChangeHandler extends AbstractDataChangeHandler<RowDel
      *            for a specific key.
      */
     public RowDeleteDataChangeHandler(DataChangeLayer layer, CellKeyHandler<?> keyHandler) {
-        super(layer, keyHandler, new ConcurrentHashMap<Object, RowDeleteDataChange>());
+        super(layer, keyHandler, new ConcurrentHashMap<>());
     }
 
     @Override
@@ -74,7 +74,7 @@ public class RowDeleteDataChangeHandler extends AbstractDataChangeHandler<RowDel
                 // we need to ensure that the data changes are in reverse order
                 // to ensure that inserting them back again insert in the
                 // correct places
-                Map<Integer, Object> map = new TreeMap<Integer, Object>(Collections.reverseOrder());
+                Map<Integer, Object> map = new TreeMap<>(Collections.reverseOrder());
                 map.putAll(event.getDeletedObjects());
                 for (Map.Entry<Integer, Object> deleted : map.entrySet()) {
                     // store the change locally

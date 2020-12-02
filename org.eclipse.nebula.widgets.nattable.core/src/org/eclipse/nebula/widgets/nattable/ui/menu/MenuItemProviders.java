@@ -70,7 +70,11 @@ import org.eclipse.swt.widgets.Widget;
  * that can be used within a popup menu in the NatTable to execute NatTable
  * specific actions.
  */
-public class MenuItemProviders {
+public final class MenuItemProviders {
+
+    private MenuItemProviders() {
+        // private default constructor for helper class
+    }
 
     /**
      * Key that is used to put the NatEventData into the data of a menu.
@@ -87,7 +91,7 @@ public class MenuItemProviders {
      */
     public static NatEventData getNatEventData(SelectionEvent selectionEvent) {
         Widget widget = selectionEvent.widget;
-        if (widget == null || !(widget instanceof MenuItem)) {
+        if (!(widget instanceof MenuItem)) {
             return null;
         }
 

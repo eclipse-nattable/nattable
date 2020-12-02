@@ -34,7 +34,7 @@ public class RowGroupExpandCollapseLayer<T> extends AbstractRowHideShowLayer imp
 
         model.registerRowGroupModelListener(this);
 
-        registerCommandHandler(new RowGroupExpandCollapseCommandHandler<T>(this));
+        registerCommandHandler(new RowGroupExpandCollapseCommandHandler<>(this));
     }
 
     public IRowGroupModel<T> getModel() {

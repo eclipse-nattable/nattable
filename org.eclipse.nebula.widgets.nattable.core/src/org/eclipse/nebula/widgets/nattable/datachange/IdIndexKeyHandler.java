@@ -59,7 +59,7 @@ public class IdIndexKeyHandler<T> implements CellKeyHandler<IdIndexIdentifier<T>
             // added to the underlying list
             if (rowObject.getClass().equals(this.clazz)) {
                 Object rowId = this.rowIdAccessor.getRowId(rowObject);
-                return new IdIndexIdentifier<T>(columnIndex, rowId, rowObject);
+                return new IdIndexIdentifier<>(columnIndex, rowId, rowObject);
             }
         }
         return null;
@@ -67,7 +67,7 @@ public class IdIndexKeyHandler<T> implements CellKeyHandler<IdIndexIdentifier<T>
 
     @Override
     public IdIndexIdentifier<T> getKeyWithColumnUpdate(IdIndexIdentifier<T> oldKey, int columnIndex) {
-        return new IdIndexIdentifier<T>(columnIndex, oldKey.rowId, oldKey.rowObject);
+        return new IdIndexIdentifier<>(columnIndex, oldKey.rowId, oldKey.rowObject);
     }
 
     @Override

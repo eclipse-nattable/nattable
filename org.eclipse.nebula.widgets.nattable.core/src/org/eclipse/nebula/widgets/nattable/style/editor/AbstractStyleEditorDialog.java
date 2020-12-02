@@ -59,7 +59,10 @@ public abstract class AbstractStyleEditorDialog extends Dialog {
     }
 
     /**
-     * Create all widgets to be displayed in the editor
+     * Create all widgets to be displayed in the editor.
+     *
+     * @param shell
+     *            the parent shell
      */
     protected abstract void initComponents(Shell shell);
 
@@ -87,6 +90,9 @@ public abstract class AbstractStyleEditorDialog extends Dialog {
 
     /**
      * Create OK, Reset and Cancel buttons
+     *
+     * @param shell
+     *            the parent shell
      */
     protected void createButtons(final Shell shell) {
         Composite buttonPanel = new Composite(shell, SWT.NONE);
@@ -147,6 +153,9 @@ public abstract class AbstractStyleEditorDialog extends Dialog {
 
     /**
      * Respond to the OK button press. Read new state from the form.
+     *
+     * @param shell
+     *            the parent shell
      */
     protected abstract void doFormOK(Shell shell);
 

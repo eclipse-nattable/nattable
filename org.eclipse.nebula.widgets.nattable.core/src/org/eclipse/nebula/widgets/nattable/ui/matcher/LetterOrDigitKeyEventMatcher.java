@@ -88,8 +88,7 @@ public class LetterOrDigitKeyEventMatcher implements IKeyEventMatcher {
     public static boolean isLetterOrDigit(char character) {
         return Character.isLetterOrDigit(character)
                 || Character
-                        .valueOf(character)
-                        .toString()
+                        .toString(character)
                         .matches("[\\.:,;\\-_#\'+*~!?§$%&/()\\[\\]\\{\\}=\\\\\"]"); //$NON-NLS-1$
     }
 

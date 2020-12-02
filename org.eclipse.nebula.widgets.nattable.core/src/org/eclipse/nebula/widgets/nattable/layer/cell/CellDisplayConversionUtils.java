@@ -16,7 +16,11 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 
-public class CellDisplayConversionUtils {
+public final class CellDisplayConversionUtils {
+
+    private CellDisplayConversionUtils() {
+        // private default constructor for helper class
+    }
 
     public static String convertDataType(ILayerCell cell, IConfigRegistry configRegistry) {
         Object canonicalValue = cell.getDataValue();

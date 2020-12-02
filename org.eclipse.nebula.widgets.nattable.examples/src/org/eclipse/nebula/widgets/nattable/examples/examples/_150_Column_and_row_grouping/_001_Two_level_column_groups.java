@@ -92,7 +92,6 @@ public class _001_Two_level_column_groups extends AbstractNatExample {
         ColumnGroupGroupHeaderLayer sndGroup =
                 new ColumnGroupGroupHeaderLayer(
                         columnGroupHeaderLayer,
-                        bodyLayer.getSelectionLayer(),
                         this.sndColumnGroupModel);
 
         sndGroup.addColumnsIndexesToGroup("GroupGroup 1", 1, 2, 3, 4, 5, 6, 7);

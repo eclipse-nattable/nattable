@@ -62,7 +62,7 @@ public class Tree implements Serializable {
      * @return a List&lt;Node&gt;.
      */
     public List<Node> toList() {
-        List<Node> list = new ArrayList<Node>();
+        List<Node> list = new ArrayList<>();
         walk(this.rootElement, list);
         return list;
     }

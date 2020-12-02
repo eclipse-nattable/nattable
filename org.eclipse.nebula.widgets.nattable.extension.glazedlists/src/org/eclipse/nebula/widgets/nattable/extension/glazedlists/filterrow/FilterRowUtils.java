@@ -26,11 +26,18 @@ import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 
 import ca.odell.glazedlists.matchers.ThresholdMatcherEditor;
 
-public class FilterRowUtils {
+public final class FilterRowUtils {
 
-    public static List<ParseResult> parse(String string, String textDelimiter,
+    private FilterRowUtils() {
+        // private default constructor for helper class
+    }
+
+    public static List<ParseResult> parse(
+            String string,
+            String textDelimiter,
             TextMatchingMode textMatchingMode) {
-        List<ParseResult> parseResults = new ArrayList<ParseResult>();
+
+        List<ParseResult> parseResults = new ArrayList<>();
 
         if (textDelimiter != null) {
             StringTokenizer tok = new StringTokenizer(string, textDelimiter);
@@ -44,21 +51,20 @@ public class FilterRowUtils {
         return parseResults;
     }
 
-    private static void parse(String string, TextMatchingMode textMatchingMode,
+    private static void parse(
+            String string,
+            TextMatchingMode textMatchingMode,
             List<ParseResult> parseResults) {
+
         ParseResult parseResult;
 
-        switch (textMatchingMode) {
-            case REGULAR_EXPRESSION:
-                parseResult = parseExpression(string);
-                break;
-            default:
-                parseResult = parseLiteral(string);
+        if (textMatchingMode == TextMatchingMode.REGULAR_EXPRESSION) {
+            parseResult = parseExpression(string);
+        } else {
+            parseResult = parseLiteral(string);
         }
 
-        if (parseResult != null) {
-            parseResults.add(parseResult);
-        }
+        parseResults.add(parseResult);
     }
 
     /**
@@ -68,6 +74,7 @@ public class FilterRowUtils {
      *
      * @param string
      *            entered by the user in the filter row text box
+     * @return the result of the parse operation
      */
     public static ParseResult parseExpression(String string) {
         Scanner scanner = new Scanner(string.trim());
@@ -101,6 +108,11 @@ public class FilterRowUtils {
      *
      * @param <T>
      *            type of the row object
+     * @param thresholdMatcherEditor
+     *            The {@link ThresholdMatcherEditor} on which the match
+     *            operation should be applied.
+     * @param matchType
+     *            The match type to apply.
      */
     public static <T> void setMatchOperation(
             ThresholdMatcherEditor<T, Object> thresholdMatcherEditor,

@@ -56,7 +56,7 @@ public class ParseResult {
             }
             return NONE;
         }
-    };
+    }
 
     private MatchType matchType = MatchType.NONE;
     private String valueToMatch;

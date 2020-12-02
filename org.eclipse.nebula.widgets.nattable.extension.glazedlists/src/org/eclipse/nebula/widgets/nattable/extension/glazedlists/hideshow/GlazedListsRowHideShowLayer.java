@@ -72,7 +72,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
     /**
      * The collection of row id's that are hidden.
      */
-    private final HashSet<Serializable> rowIdsToHide = new HashSet<Serializable>();
+    private final HashSet<Serializable> rowIdsToHide = new HashSet<>();
 
     /**
      * The {@link IRowIdAccessor} that is used to extract the id out of the row
@@ -359,11 +359,11 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
 
     @Override
     public void saveState(String prefix, Properties properties) {
-        if (this.rowIdsToHide.size() > 0) {
+        if (!this.rowIdsToHide.isEmpty()) {
             // store the number of row id's that will be hidden
             properties.setProperty(prefix
                     + PERSISTENCE_KEY_HIDDEN_ROW_IDS_COUNT,
-                    Integer.valueOf(this.rowIdsToHide.size()).toString());
+                    Integer.toString(this.rowIdsToHide.size()));
 
             try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
                     ObjectOutputStream out = new ObjectOutputStream(bos)) {
@@ -412,13 +412,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform imple
          * The {@link Matcher} that is used to filter the rows with the
          * specified id's.
          */
-        private final Matcher<T> hideRowByIdMatcher = new Matcher<T>() {
-            @Override
-            public boolean matches(T rowObject) {
-                return !GlazedListsRowHideShowLayer.this.rowIdsToHide
-                        .contains(GlazedListsRowHideShowLayer.this.rowIdAccessor.getRowId(rowObject));
-            }
-        };
+        private final Matcher<T> hideRowByIdMatcher = rowObject -> !GlazedListsRowHideShowLayer.this.rowIdsToHide.contains(GlazedListsRowHideShowLayer.this.rowIdAccessor.getRowId(rowObject));
 
         /**
          * Fire a change so the listeners can be informed about a change for the

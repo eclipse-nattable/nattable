@@ -85,11 +85,11 @@ public class DefaultSortConfiguration implements IConfiguration {
     @Override
     public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
         uiBindingRegistry.registerSingleClickBinding(
-                new MouseEventMatcher(SWT.MOD3, GridRegion.COLUMN_HEADER.toString(), 1),
+                new MouseEventMatcher(SWT.MOD3, GridRegion.COLUMN_HEADER, 1),
                 new SortColumnAction(false));
 
         uiBindingRegistry.registerSingleClickBinding(
-                new MouseEventMatcher(SWT.MOD3 | SWT.MOD2, GridRegion.COLUMN_HEADER.toString(), 1),
+                new MouseEventMatcher(SWT.MOD3 | SWT.MOD2, GridRegion.COLUMN_HEADER, 1),
                 new SortColumnAction(true));
     }
 

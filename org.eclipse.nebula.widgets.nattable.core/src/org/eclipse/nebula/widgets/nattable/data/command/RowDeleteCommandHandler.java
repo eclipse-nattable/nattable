@@ -55,7 +55,7 @@ public class RowDeleteCommandHandler<T> implements ILayerCommandHandler<RowDelet
         if (command.convertToTargetLayer(targetLayer)) {
             int[] positions = command.getRowPositionsArray();
 
-            HashMap<Integer, T> deleted = new HashMap<Integer, T>();
+            HashMap<Integer, T> deleted = new HashMap<>();
             for (int i = positions.length - 1; i >= 0; i--) {
                 // remove the element
                 int pos = positions[i];

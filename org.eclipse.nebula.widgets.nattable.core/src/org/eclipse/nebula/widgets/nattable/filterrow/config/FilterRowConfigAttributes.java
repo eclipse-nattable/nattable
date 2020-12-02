@@ -23,20 +23,24 @@ import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
  *
  * @see DefaultFilterRowConfiguration
  */
-public interface FilterRowConfigAttributes {
+public final class FilterRowConfigAttributes {
 
-    public static final ConfigAttribute<String> TEXT_DELIMITER = new ConfigAttribute<String>();
-    public static final ConfigAttribute<TextMatchingMode> TEXT_MATCHING_MODE = new ConfigAttribute<TextMatchingMode>();
+    private FilterRowConfigAttributes() {
+        // private default constructor for constants class
+    }
+
+    public static final ConfigAttribute<String> TEXT_DELIMITER = new ConfigAttribute<>();
+    public static final ConfigAttribute<TextMatchingMode> TEXT_MATCHING_MODE = new ConfigAttribute<>();
 
     /** Comparator to be used for threshold matching */
-    public static final ConfigAttribute<Comparator<?>> FILTER_COMPARATOR = new ConfigAttribute<Comparator<?>>();
+    public static final ConfigAttribute<Comparator<?>> FILTER_COMPARATOR = new ConfigAttribute<>();
 
     /**
      * Display converter used to convert the string typed by the user to the
      * data type of the column or in case of combo boxes to convert the filter
      * object to string.
      */
-    public static final ConfigAttribute<IDisplayConverter> FILTER_DISPLAY_CONVERTER = new ConfigAttribute<IDisplayConverter>();
+    public static final ConfigAttribute<IDisplayConverter> FILTER_DISPLAY_CONVERTER = new ConfigAttribute<>();
 
     /**
      * Display converter that is used for text filter operations to convert the
@@ -45,5 +49,5 @@ public interface FilterRowConfigAttributes {
      *
      * @since 2.0
      */
-    public static final ConfigAttribute<IDisplayConverter> FILTER_CONTENT_DISPLAY_CONVERTER = new ConfigAttribute<IDisplayConverter>();
+    public static final ConfigAttribute<IDisplayConverter> FILTER_CONTENT_DISPLAY_CONVERTER = new ConfigAttribute<>();
 }

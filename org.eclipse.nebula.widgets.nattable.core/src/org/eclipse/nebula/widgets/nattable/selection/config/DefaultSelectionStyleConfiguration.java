@@ -31,6 +31,8 @@ import org.eclipse.swt.graphics.FontData;
 /**
  * Sets up rendering style used for selected areas and the selection anchor.
  */
+// fields are public by design to make it easy for adapters to customize styling
+@SuppressWarnings("java:S1104")
 public class DefaultSelectionStyleConfiguration extends AbstractRegistryConfiguration {
 
     // Selection style

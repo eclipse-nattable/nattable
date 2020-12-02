@@ -31,6 +31,10 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public class MaxCellBoundsHelper {
 
+    private MaxCellBoundsHelper() {
+        // private default constructor for helper class
+    }
+
     /**
      * Calculates the preferred column widths of the given columns based on the
      * given {@link IConfigRegistry}. The preferred column width is the width
@@ -64,7 +68,7 @@ public class MaxCellBoundsHelper {
 
             return columnWidths;
         } else {
-            return null;
+            return new int[0];
         }
     }
 
@@ -158,7 +162,7 @@ public class MaxCellBoundsHelper {
 
             return rowHeights;
         } else {
-            return null;
+            return new int[0];
         }
     }
 

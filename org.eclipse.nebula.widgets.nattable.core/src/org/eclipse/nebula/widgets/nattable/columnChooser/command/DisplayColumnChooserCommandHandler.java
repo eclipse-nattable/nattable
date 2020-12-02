@@ -37,7 +37,7 @@ public class DisplayColumnChooserCommandHandler extends AbstractLayerCommandHand
     private final boolean sortAvailableColumns;
     private final boolean preventHidingAllColumns;
     private IDialogSettings dialogSettings;
-    private List<Integer> nonModifiableColumns = new ArrayList<Integer>();
+    private List<Integer> nonModifiableColumns = new ArrayList<>();
 
     private final org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer cghLayer;
 

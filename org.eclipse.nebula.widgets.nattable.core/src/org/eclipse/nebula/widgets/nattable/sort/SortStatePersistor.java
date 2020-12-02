@@ -49,7 +49,7 @@ public class SortStatePersistor<T> implements IPersistable {
      */
     @Override
     public void saveState(String prefix, Properties properties) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         for (int columnIndex : this.sortModel.getSortedColumnIndexes()) {
             SortDirectionEnum sortDirection = this.sortModel
@@ -92,7 +92,7 @@ public class SortStatePersistor<T> implements IPersistable {
         try {
             String savedState = savedValue.toString();
             String[] sortedColumns = savedState.split("\\|"); //$NON-NLS-1$
-            final List<SortState> stateInfo = new ArrayList<SortState>();
+            final List<SortState> stateInfo = new ArrayList<>();
 
             // Parse string
             for (String token : sortedColumns) {

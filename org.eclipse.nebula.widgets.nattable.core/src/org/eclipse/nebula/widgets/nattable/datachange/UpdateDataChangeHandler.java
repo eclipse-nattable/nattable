@@ -38,12 +38,12 @@ public abstract class UpdateDataChangeHandler<T extends UpdateDataChange> extend
     /**
      * The column indexes of columns that contain dirty cells.
      */
-    protected final Set<Integer> changedColumns = new HashSet<Integer>();
+    protected final Set<Integer> changedColumns = new HashSet<>();
 
     /**
      * The row indexes of rows that contain dirty cells.
      */
-    protected final Set<Integer> changedRows = new HashSet<Integer>();
+    protected final Set<Integer> changedRows = new HashSet<>();
 
     /**
      * Flag to configure if the tracked changes in the {@link DataChangeLayer}
@@ -67,6 +67,8 @@ public abstract class UpdateDataChangeHandler<T extends UpdateDataChange> extend
      * @param keyHandler
      *            The {@link CellKeyHandler} that is used to store data changes
      *            for a specific key.
+     * @param dataChanges
+     *            The map to track the data changes locally.
      */
     public UpdateDataChangeHandler(DataChangeLayer layer, CellKeyHandler<?> keyHandler, Map<Object, T> dataChanges) {
         super(layer, keyHandler, dataChanges);
@@ -113,10 +115,10 @@ public abstract class UpdateDataChangeHandler<T extends UpdateDataChange> extend
     private void handleRowDelete(Collection<StructuralDiff> rowDiffs) {
         // for correct calculation the diffs need to be processed from lowest
         // position to highest
-        List<StructuralDiff> diffs = new ArrayList<StructuralDiff>(rowDiffs);
+        List<StructuralDiff> diffs = new ArrayList<>(rowDiffs);
         Collections.sort(diffs, (o1, o2) -> o1.getBeforePositionRange().start - o2.getBeforePositionRange().start);
 
-        List<Integer> toRemove = new ArrayList<Integer>();
+        List<Integer> toRemove = new ArrayList<>();
         for (StructuralDiff rowDiff : diffs) {
             if (rowDiff.getDiffType() != null
                     && rowDiff.getDiffType().equals(DiffTypeEnum.DELETE)) {
@@ -132,7 +134,7 @@ public abstract class UpdateDataChangeHandler<T extends UpdateDataChange> extend
 
         if (!toRemove.isEmpty()) {
             // modify row indexes regarding the deleted rows
-            Map<Object, T> modifiedRows = new HashMap<Object, T>();
+            Map<Object, T> modifiedRows = new HashMap<>();
             for (Map.Entry<Object, T> entry : this.dataChanges.entrySet()) {
                 int rowIndex = this.keyHandler.getRowIndex(entry.getKey());
                 if (!toRemove.contains(rowIndex)) {
@@ -198,7 +200,7 @@ public abstract class UpdateDataChangeHandler<T extends UpdateDataChange> extend
     private void handleRowInsert(Collection<StructuralDiff> rowDiffs) {
         // for correct calculation the diffs need to be processed from highest
         // position to lowest
-        List<StructuralDiff> diffs = new ArrayList<StructuralDiff>(rowDiffs);
+        List<StructuralDiff> diffs = new ArrayList<>(rowDiffs);
         Collections.sort(diffs, (o1, o2) -> o2.getBeforePositionRange().start - o1.getBeforePositionRange().start);
 
         for (StructuralDiff rowDiff : diffs) {
@@ -206,7 +208,7 @@ public abstract class UpdateDataChangeHandler<T extends UpdateDataChange> extend
                     && rowDiff.getDiffType().equals(DiffTypeEnum.ADD)) {
                 Range beforePositionRange = rowDiff.getBeforePositionRange();
                 // modify row indexes regarding the inserted rows
-                Map<Object, T> modifiedRows = new HashMap<Object, T>();
+                Map<Object, T> modifiedRows = new HashMap<>();
                 for (Map.Entry<Object, T> entry : this.dataChanges.entrySet()) {
                     int rowIndex = this.keyHandler.getRowIndex(entry.getKey());
 
@@ -259,10 +261,10 @@ public abstract class UpdateDataChangeHandler<T extends UpdateDataChange> extend
     public void handleColumnDelete(Collection<StructuralDiff> columnDiffs) {
         // for correct calculation the diffs need to be processed from lowest
         // position to highest
-        List<StructuralDiff> diffs = new ArrayList<StructuralDiff>(columnDiffs);
+        List<StructuralDiff> diffs = new ArrayList<>(columnDiffs);
         Collections.sort(diffs, (o1, o2) -> o1.getBeforePositionRange().start - o2.getBeforePositionRange().start);
 
-        List<Integer> toRemove = new ArrayList<Integer>();
+        List<Integer> toRemove = new ArrayList<>();
         for (StructuralDiff columnDiff : diffs) {
             if (columnDiff.getDiffType() != null
                     && columnDiff.getDiffType().equals(DiffTypeEnum.DELETE)) {
@@ -279,7 +281,7 @@ public abstract class UpdateDataChangeHandler<T extends UpdateDataChange> extend
         // only perform modifications if items where deleted
         if (!toRemove.isEmpty()) {
             // modify column indexes regarding the deleted column
-            Map<Object, T> modifiedColumns = new HashMap<Object, T>();
+            Map<Object, T> modifiedColumns = new HashMap<>();
             for (Map.Entry<Object, T> entry : this.dataChanges.entrySet()) {
                 int columnIndex = this.keyHandler.getColumnIndex(entry.getKey());
                 if (!toRemove.contains(columnIndex)) {
@@ -343,7 +345,7 @@ public abstract class UpdateDataChangeHandler<T extends UpdateDataChange> extend
     public void handleColumnInsert(Collection<StructuralDiff> columnDiffs) {
         // for correct calculation the diffs need to be processed from highest
         // position to lowest
-        List<StructuralDiff> diffs = new ArrayList<StructuralDiff>(columnDiffs);
+        List<StructuralDiff> diffs = new ArrayList<>(columnDiffs);
         Collections.sort(diffs, (o1, o2) -> o2.getBeforePositionRange().start - o1.getBeforePositionRange().start);
 
         for (StructuralDiff columnDiff : diffs) {
@@ -351,7 +353,7 @@ public abstract class UpdateDataChangeHandler<T extends UpdateDataChange> extend
                     && columnDiff.getDiffType().equals(DiffTypeEnum.ADD)) {
                 Range beforePositionRange = columnDiff.getBeforePositionRange();
                 // modify column indexes regarding the inserted columns
-                Map<Object, T> modifiedColumns = new HashMap<Object, T>();
+                Map<Object, T> modifiedColumns = new HashMap<>();
                 for (Map.Entry<Object, T> entry : this.dataChanges.entrySet()) {
                     int columnIndex = this.keyHandler.getColumnIndex(entry.getKey());
 

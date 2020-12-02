@@ -12,7 +12,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.mode;
 
-public interface Mode {
+public final class Mode {
+
+    private Mode() {
+        // private default constructor for constants class
+    }
 
     public static final String NORMAL_MODE = "NORMAL_MODE"; //$NON-NLS-1$
     public static final String COLUMN_RESIZE_MODE = "COLUMN_RESIZE_MODE"; //$NON-NLS-1$

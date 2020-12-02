@@ -117,8 +117,8 @@ public class DetailGlazedListsEventLayer<T>
                 // deleted
                 int deleteCount = 0;
 
-                final List<Range> deleteRanges = new ArrayList<Range>();
-                final List<Range> insertRanges = new ArrayList<Range>();
+                final List<Range> deleteRanges = new ArrayList<>();
+                final List<Range> insertRanges = new ArrayList<>();
                 while (event.next()) {
                     int eventType = event.getType();
 
@@ -171,21 +171,11 @@ public class DetailGlazedListsEventLayer<T>
      */
     private void internalFireEvents(final List<Range> deleteRanges, final List<Range> insertRanges) {
         if (!deleteRanges.isEmpty()) {
-            Display.getDefault().syncExec(new Runnable() {
-                @Override
-                public void run() {
-                    fireLayerEvent(new RowDeleteEvent(getUnderlyingLayer(), deleteRanges));
-                }
-            });
+            Display.getDefault().syncExec(() -> fireLayerEvent(new RowDeleteEvent(getUnderlyingLayer(), deleteRanges)));
         }
 
         if (!insertRanges.isEmpty()) {
-            Display.getDefault().syncExec(new Runnable() {
-                @Override
-                public void run() {
-                    fireLayerEvent(new RowInsertEvent(getUnderlyingLayer(), insertRanges));
-                }
-            });
+            Display.getDefault().syncExec(() -> fireLayerEvent(new RowInsertEvent(getUnderlyingLayer(), insertRanges)));
         }
     }
 
@@ -196,7 +186,7 @@ public class DetailGlazedListsEventLayer<T>
     public void propertyChange(PropertyChangeEvent event) {
         // We can cast since we know that the EventList is of type T
         final PropertyUpdateEvent<T> updateEvent =
-                new PropertyUpdateEvent<T>(
+                new PropertyUpdateEvent<>(
                         this,
                         (T) event.getSource(),
                         event.getPropertyName(),
@@ -209,12 +199,7 @@ public class DetailGlazedListsEventLayer<T>
         // from the SWT Display thread.
         // As a property change doesn't indicate a structural change, the
         // event can be fired asynchronously.
-        Display.getDefault().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                fireLayerEvent(updateEvent);
-            }
-        });
+        Display.getDefault().asyncExec(() -> fireLayerEvent(updateEvent));
     }
 
     /**

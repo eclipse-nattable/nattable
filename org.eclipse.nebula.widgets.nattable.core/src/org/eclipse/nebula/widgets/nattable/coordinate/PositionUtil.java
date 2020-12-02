@@ -27,6 +27,10 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
 
 public class PositionUtil {
 
+    private PositionUtil() {
+        // private constructor for helper class
+    }
+
     /**
      * Implementation to create Ranges from contiguous numbers.
      *
@@ -37,7 +41,7 @@ public class PositionUtil {
         @Override
         public void accept(ArrayList<Range> ranges, int i) {
             Range lastGroup;
-            if (ranges.size() > 0) {
+            if (!ranges.isEmpty()) {
                 lastGroup = ranges.get(ranges.size() - 1);
             } else {
                 lastGroup = new Range(i, i + 1);
@@ -63,17 +67,17 @@ public class PositionUtil {
      * @return Collection of groups with contiguous numbers.
      */
     public static List<List<Integer>> getGroupedByContiguous(Collection<Integer> numberCollection) {
-        List<Integer> numbers = new ArrayList<Integer>(numberCollection);
+        List<Integer> numbers = new ArrayList<>(numberCollection);
         Collections.sort(numbers);
 
-        ArrayList<Integer> contiguous = new ArrayList<Integer>();
-        ArrayList<List<Integer>> grouped = new ArrayList<List<Integer>>();
+        ArrayList<Integer> contiguous = new ArrayList<>();
+        ArrayList<List<Integer>> grouped = new ArrayList<>();
 
         for (int i = 0; i < numbers.size() - 1; i++) {
             if (numbers.get(i).intValue() + 1 != numbers.get(i + 1).intValue()) {
                 contiguous.add(numbers.get(i));
                 grouped.add(contiguous);
-                contiguous = new ArrayList<Integer>();
+                contiguous = new ArrayList<>();
             } else {
                 contiguous.add(numbers.get(i));
             }
@@ -101,9 +105,7 @@ public class PositionUtil {
                 .collect(
                         ArrayList<Range>::new,
                         new RangeAccumulator(),
-                        (g1, g2) -> {
-                            g1.addAll(g2);
-                        });
+                        (g1, g2) -> g1.addAll(g2));
 
         return ranges.stream()
                 .map(Range::getMembersArray)
@@ -131,10 +133,8 @@ public class PositionUtil {
                         .collect(
                                 ArrayList<Range>::new,
                                 new RangeAccumulator(),
-                                (g1, g2) -> {
-                                    g1.addAll(g2);
-                                })
-                : new ArrayList<Range>();
+                                (g1, g2) -> g1.addAll(g2))
+                : new ArrayList<>();
     }
 
     /**
@@ -159,10 +159,8 @@ public class PositionUtil {
                         .collect(
                                 ArrayList<Range>::new,
                                 new RangeAccumulator(),
-                                (g1, g2) -> {
-                                    g1.addAll(g2);
-                                })
-                : new ArrayList<Range>();
+                                (g1, g2) -> g1.addAll(g2))
+                : new ArrayList<>();
     }
 
     /**
@@ -183,7 +181,7 @@ public class PositionUtil {
      * @since 1.6
      */
     public static int[] getPositions(Collection<Range> ranges) {
-        if ((ranges == null) || (ranges.size() == 0)) {
+        if (ranges == null || ranges.isEmpty()) {
             return new int[0];
         }
 
@@ -232,7 +230,7 @@ public class PositionUtil {
         }
 
         // put to list
-        ArrayList<Range> sortedRanges = new ArrayList<Range>(ranges);
+        ArrayList<Range> sortedRanges = new ArrayList<>(ranges);
 
         // sort by 1) start, 2) end position
         Collections.sort(sortedRanges, (o1, o2) -> {
@@ -269,7 +267,7 @@ public class PositionUtil {
      * @since 1.6
      */
     public static List<Range> mergeRanges(Collection<Range> ranges) {
-        TreeSet<Integer> numbers = new TreeSet<Integer>();
+        TreeSet<Integer> numbers = new TreeSet<>();
         for (Range range : ranges) {
             for (int number = range.start; number < range.end; number++) {
                 numbers.add(number);

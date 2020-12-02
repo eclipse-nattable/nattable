@@ -188,8 +188,7 @@ public class RowDataListFixture {
         propertyToLabelMap.put(EPS_PROP_NAME, "EPS");
         propertyToLabelMap.put(VOLUME_PROP_NAME, "Volume");
         propertyToLabelMap.put(MARKET_CAP_PROP_NAME, "Market Cap.");
-        propertyToLabelMap
-                .put(INSTITUTION_OWNED_PROP_NAME, "Institution Owned");
+        propertyToLabelMap.put(INSTITUTION_OWNED_PROP_NAME, "Institution Owned");
 
         propertyToLabelMap.put(FIELD_20_PROP_NAME, "Field 20");
         propertyToLabelMap.put(FIELD_21_PROP_NAME, "Field 21");
@@ -221,12 +220,9 @@ public class RowDataListFixture {
         return Arrays.asList(RowDataListFixture.getPropertyNames());
     }
 
-    /**
-     * Get the index of the property name. This will be same as the order in
-     * which the columns/properties were initially supplied.
-     */
     public static int getColumnIndexOfProperty(String propertyName) {
-        return RowDataListFixture.getPropertyNamesAsList()
-                .indexOf(propertyName);
+        // Get the index of the property name. This will be same as the order in
+        // which the columns/properties were initially supplied.
+        return RowDataListFixture.getPropertyNamesAsList().indexOf(propertyName);
     }
 }

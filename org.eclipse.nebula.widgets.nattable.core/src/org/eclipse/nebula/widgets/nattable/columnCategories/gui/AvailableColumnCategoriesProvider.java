@@ -31,7 +31,7 @@ import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnEntry;
 public class AvailableColumnCategoriesProvider implements ITreeContentProvider {
 
     private final ColumnCategoriesModel model;
-    private List<String> hiddenIndexes = new ArrayList<String>();
+    private List<String> hiddenIndexes = new ArrayList<>();
 
     public AvailableColumnCategoriesProvider(ColumnCategoriesModel model) {
         this.model = model;
@@ -74,7 +74,7 @@ public class AvailableColumnCategoriesProvider implements ITreeContentProvider {
     }
 
     private List<Node> getFilteredChildren(List<Node> allChildren) {
-        List<Node> children = new ArrayList<Node>(allChildren);
+        List<Node> children = new ArrayList<>(allChildren);
         for (Node child : allChildren) {
             if (this.hiddenIndexes.contains(child.getData())) {
                 children.remove(child);

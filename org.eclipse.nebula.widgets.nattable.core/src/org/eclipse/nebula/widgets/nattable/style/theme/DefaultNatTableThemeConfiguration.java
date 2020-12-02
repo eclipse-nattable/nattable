@@ -87,6 +87,8 @@ import org.eclipse.swt.graphics.Image;
  * or the ModernGroupByThemeExtension for example.
  * </p>
  */
+// fields are public by design to make it easy for adapters to customize a theme
+@SuppressWarnings("java:S1104")
 public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 
     {

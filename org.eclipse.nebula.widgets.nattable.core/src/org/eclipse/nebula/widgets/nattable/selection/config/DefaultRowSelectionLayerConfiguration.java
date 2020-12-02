@@ -25,7 +25,6 @@ public class DefaultRowSelectionLayerConfiguration extends DefaultSelectionLayer
         addConfiguration(new RowOnlySelectionBindings());
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     protected void addMoveSelectionConfig() {
         addConfiguration(new RowOnlySelectionConfiguration());

@@ -28,12 +28,12 @@ public final class HideIndicatorConfigAttributes {
      * Configuration attribute for configuring the line width of the hide
      * indicator.
      */
-    public static final ConfigAttribute<Integer> HIDE_INDICATOR_LINE_WIDTH = new ConfigAttribute<Integer>();
+    public static final ConfigAttribute<Integer> HIDE_INDICATOR_LINE_WIDTH = new ConfigAttribute<>();
 
     /**
      * Configuration attribute for configuring the color of the hide indicator.
      */
-    public static final ConfigAttribute<Color> HIDE_INDICATOR_COLOR = new ConfigAttribute<Color>();
+    public static final ConfigAttribute<Color> HIDE_INDICATOR_COLOR = new ConfigAttribute<>();
 
     private HideIndicatorConfigAttributes() {
         // empty constructor for constants class

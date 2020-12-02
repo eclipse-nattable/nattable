@@ -74,7 +74,7 @@ public class RowInsertCommand<T> extends AbstractContextFreeCommand {
      */
     public RowInsertCommand(int rowIndex, T object) {
         this.rowIndex = rowIndex;
-        this.objects = new ArrayList<T>(1);
+        this.objects = new ArrayList<>(1);
         this.objects.add(object);
     }
 
@@ -99,7 +99,7 @@ public class RowInsertCommand<T> extends AbstractContextFreeCommand {
      */
     public RowInsertCommand(T object) {
         this.rowIndex = -1;
-        this.objects = new ArrayList<T>(1);
+        this.objects = new ArrayList<>(1);
         this.objects.add(object);
     }
 

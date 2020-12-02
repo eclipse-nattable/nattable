@@ -29,7 +29,11 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.search.strategy.GridSearchStrategy.GridRectangle;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 
-public class CellDisplayValueSearchUtil {
+public final class CellDisplayValueSearchUtil {
+
+    private CellDisplayValueSearchUtil() {
+        // private default constructor for helper class
+    }
 
     static List<PositionCoordinate> getCellCoordinates(
             ILayer contextLayer,
@@ -37,7 +41,7 @@ public class CellDisplayValueSearchUtil {
             int startingRowPosition,
             int width,
             int height) {
-        List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>(width * height);
+        List<PositionCoordinate> coordinates = new ArrayList<>(width * height);
         for (int columnPosition = 0; columnPosition < width; columnPosition++) {
             for (int rowPosition = 0; rowPosition < height; rowPosition++) {
                 PositionCoordinate coordinate = new PositionCoordinate(
@@ -57,7 +61,7 @@ public class CellDisplayValueSearchUtil {
             int startingRowPosition,
             int width,
             int height) {
-        List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>(width * height);
+        List<PositionCoordinate> coordinates = new ArrayList<>(width * height);
         for (int columnPosition = width; columnPosition >= 0 && startingColumnPosition >= 0; columnPosition--) {
             for (int rowPosition = height; rowPosition >= 0 && startingRowPosition >= 0; rowPosition--) {
                 PositionCoordinate coordinate = new PositionCoordinate(
@@ -77,7 +81,7 @@ public class CellDisplayValueSearchUtil {
             int startingRowPosition,
             int width,
             int height) {
-        List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>(width * height);
+        List<PositionCoordinate> coordinates = new ArrayList<>(width * height);
         for (int rowPosition = 0; rowPosition < height; rowPosition++) {
             for (int columnPosition = 0; columnPosition < width; columnPosition++) {
                 PositionCoordinate coordinate = new PositionCoordinate(
@@ -97,7 +101,7 @@ public class CellDisplayValueSearchUtil {
             int startingRowPosition,
             int width,
             int height) {
-        List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>(width * height);
+        List<PositionCoordinate> coordinates = new ArrayList<>(width * height);
         for (int rowPosition = height; rowPosition >= 0 && startingRowPosition >= 0; rowPosition--) {
             for (int columnPosition = width; columnPosition >= 0 && startingColumnPosition >= 0; columnPosition--) {
                 PositionCoordinate coordinate = new PositionCoordinate(
@@ -136,7 +140,7 @@ public class CellDisplayValueSearchUtil {
             final boolean caseSensitive,
             final boolean wholeWord,
             final boolean regex,
-            final boolean includeCollapsed) throws PatternSyntaxException {
+            final boolean includeCollapsed) {
         String stringValue = caseSensitive ? valueToMatch.toString() : valueToMatch.toString().toLowerCase();
         Pattern pattern = regex ? Pattern.compile(stringValue) : null;
         for (int cellIndex = 0; cellIndex < cellsToSearch.length; cellIndex++) {
@@ -184,7 +188,7 @@ public class CellDisplayValueSearchUtil {
             final boolean wholeWord,
             final boolean regex,
             final boolean columnFirst,
-            final boolean includeCollapsed) throws PatternSyntaxException {
+            final boolean includeCollapsed) {
         String stringValue = caseSensitive ? valueToMatch.toString() : valueToMatch.toString().toLowerCase();
         Pattern pattern = regex ? Pattern.compile(stringValue) : null;
         for (GridRectangle cellRectangle : cellRectangles) {
@@ -247,7 +251,7 @@ public class CellDisplayValueSearchUtil {
             boolean wholeWord,
             boolean regex,
             final boolean columnFirst,
-            boolean includeCollapsed) throws PatternSyntaxException {
+            boolean includeCollapsed) {
 
         int columnPosition;
         int rowPosition;

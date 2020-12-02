@@ -38,21 +38,46 @@ public class ImagePainter extends BackgroundPainter {
     protected boolean calculateByWidth;
     protected boolean calculateByHeight;
 
+    /**
+     * Creates an {@link ImagePainter} that retrieves the image to render from
+     * the {@link IConfigRegistry}.
+     */
     public ImagePainter() {
         this(null);
     }
 
+    /**
+     * Creates an {@link ImagePainter} that renders the provided image.
+     *
+     * @param image
+     *            The image to render.
+     */
     public ImagePainter(Image image) {
         this(image, true);
     }
 
     /**
+     * Creates an {@link ImagePainter} that retrieves the image to render from
+     * the {@link IConfigRegistry}.
+     *
+     * @param paintBg
+     *            <code>true</code> if the cell background should be painted by
+     *            this painter, <code>false</code> if it should be skipped.
      * @since 1.4
      */
     public ImagePainter(boolean paintBg) {
         this.paintBg = paintBg;
     }
 
+    /**
+     * Creates an {@link ImagePainter} that renders the provided image.
+     *
+     * @param image
+     *            The image to render.
+     * @param paintBg
+     *            <code>true</code> if the cell background should be painted by
+     *            this painter, <code>false</code> if it should be skipped.
+     */
     public ImagePainter(Image image, boolean paintBg) {
         this.image = image;
         this.paintBg = paintBg;
@@ -60,9 +85,9 @@ public class ImagePainter extends BackgroundPainter {
 
     @Override
     public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
-        Image image = getImage(cell, configRegistry);
-        if (image != null) {
-            return image.getBounds().width;
+        Image img = getImage(cell, configRegistry);
+        if (img != null) {
+            return img.getBounds().width;
         } else {
             return 0;
         }
@@ -70,9 +95,9 @@ public class ImagePainter extends BackgroundPainter {
 
     @Override
     public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
-        Image image = getImage(cell, configRegistry);
-        if (image != null) {
-            return image.getBounds().height;
+        Image img = getImage(cell, configRegistry);
+        if (img != null) {
+            return img.getBounds().height;
         } else {
             return 0;
         }
@@ -82,9 +107,9 @@ public class ImagePainter extends BackgroundPainter {
     public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc,
             Rectangle bounds, IConfigRegistry configRegistry) {
 
-        Image image = getImage(cell, configRegistry);
-        if (image != null) {
-            Rectangle imageBounds = image.getBounds();
+        Image img = getImage(cell, configRegistry);
+        if (img != null) {
+            Rectangle imageBounds = img.getBounds();
             IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
             int x0 = bounds.x
                     + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, bounds, imageBounds.width);
@@ -104,9 +129,9 @@ public class ImagePainter extends BackgroundPainter {
             super.paintCell(cell, gc, bounds, configRegistry);
         }
 
-        Image image = getImage(cell, configRegistry);
-        if (image != null) {
-            Rectangle imageBounds = image.getBounds();
+        Image img = getImage(cell, configRegistry);
+        if (img != null) {
+            Rectangle imageBounds = img.getBounds();
             IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
 
             int contentHeight = imageBounds.height;
@@ -132,7 +157,7 @@ public class ImagePainter extends BackgroundPainter {
             }
 
             gc.drawImage(
-                    image,
+                    img,
                     bounds.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, bounds, imageBounds.width),
                     bounds.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, bounds, imageBounds.height));
         }

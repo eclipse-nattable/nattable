@@ -35,9 +35,9 @@ public class ColumnGroupModel implements IPersistable {
 
     /** Column group header name to column indexes */
 
-    private final List<ColumnGroup> columnGroups = new LinkedList<ColumnGroup>();
+    private final List<ColumnGroup> columnGroups = new LinkedList<>();
 
-    private final Collection<IColumnGroupModelListener> listeners = new HashSet<IColumnGroupModelListener>();
+    private final Collection<IColumnGroupModelListener> listeners = new HashSet<>();
 
     private boolean defaultCollapseable = true;
 
@@ -65,7 +65,7 @@ public class ColumnGroupModel implements IPersistable {
             // if this columnGroup has members, continue without saving state.
             // A group can haven no members if groups are used to organize
             // columns on a higher abstraction level ...
-            if (columnGroup.members.size() == 0) {
+            if (columnGroup.members.isEmpty()) {
                 continue;
             }
 
@@ -173,6 +173,10 @@ public class ColumnGroupModel implements IPersistable {
      * Creates the column group if one does not exist with the given name and
      * adds the column indexes to it.
      *
+     * @param colGroupName
+     *            The name of the column group.
+     * @param bodyColumnIndexs
+     *            The column indexes that should be added to the group.
      * @see #insertColumnIndexes(String, int[])
      */
     public void addColumnsIndexesToGroup(String colGroupName, int... bodyColumnIndexs) {
@@ -197,7 +201,7 @@ public class ColumnGroupModel implements IPersistable {
      *         column group
      */
     public boolean insertColumnIndexes(String colGroupName, int... columnIndexesToInsert) {
-        LinkedList<Integer> members = new LinkedList<Integer>();
+        LinkedList<Integer> members = new LinkedList<>();
 
         ColumnGroup columnGroup = getColumnGroupByName(colGroupName);
         if (columnGroup.unbreakable) {
@@ -266,6 +270,7 @@ public class ColumnGroupModel implements IPersistable {
      * @param colGroupName
      *            to add the indexes to
      * @param staticColumnIndexes
+     *            the column indexes that should be treated as static columns
      */
     public void setStaticColumnIndexesByGroup(String colGroupName, int[] staticColumnIndexes) {
         if (getColumnGroupByName(colGroupName) == null) {
@@ -285,10 +290,11 @@ public class ColumnGroupModel implements IPersistable {
      * @param colGroupName
      *            to add the indexes to
      * @param columnIndexesToInsert
+     *            the column indexes that should be treated as static columns
      */
     public void insertStaticColumnIndexes(String colGroupName, int... columnIndexesToInsert) {
 
-        LinkedList<Integer> staticColumnIndexes = new LinkedList<Integer>();
+        LinkedList<Integer> staticColumnIndexes = new LinkedList<>();
         ColumnGroup columnGroup = getColumnGroupByName(colGroupName);
 
         // Check if any of the indexes belong to existing groups
@@ -344,7 +350,9 @@ public class ColumnGroupModel implements IPersistable {
     }
 
     /**
-     * @return TRUE if a group by this name exists
+     * @param cellValue
+     *            the name that should be checked
+     * @return <code>true</code> if a group by this name exists
      */
     public boolean isAGroup(String cellValue) {
         for (ColumnGroup columnGroup : this.columnGroups) {
@@ -370,14 +378,14 @@ public class ColumnGroupModel implements IPersistable {
      * @return TRUE if no column groups exist
      */
     public boolean isEmpty() {
-        return this.columnGroups.size() == 0;
+        return this.columnGroups.isEmpty();
     }
 
     /**
      * @return all the indexes which belong to groups
      */
     public List<Integer> getAllIndexesInGroups() {
-        List<Integer> indexes = new LinkedList<Integer>();
+        List<Integer> indexes = new LinkedList<>();
         for (ColumnGroup columnGroup : this.columnGroups) {
             indexes.addAll(columnGroup.members);
         }
@@ -385,8 +393,11 @@ public class ColumnGroupModel implements IPersistable {
     }
 
     /**
-     * @return TRUE if <code>bodyColumnIndex</code> is contained in the list of
-     *         static columns of the column group this index belongs to
+     * @param bodyColumnIndex
+     *            the column index to check
+     * @return <code>true</code> if <code>bodyColumnIndex</code> is contained in
+     *         the list of static columns of the column group this index belongs
+     *         to
      */
     public boolean isStaticColumn(int bodyColumnIndex) {
         if (isPartOfAGroup(bodyColumnIndex)) {
@@ -412,6 +423,7 @@ public class ColumnGroupModel implements IPersistable {
 
     /**
      * @param bodyColumnIndex
+     *            the column index to check
      * @return The position of the index within the column group
      */
     public int getColumnGroupPositionFromIndex(int bodyColumnIndex) {
@@ -522,10 +534,10 @@ public class ColumnGroupModel implements IPersistable {
     public class ColumnGroup {
 
         /** Body column indexes */
-        private final LinkedList<Integer> members = new LinkedList<Integer>();
+        private final LinkedList<Integer> members = new LinkedList<>();
 
         /** column indexes which remain visible when collapsing this group */
-        private LinkedList<Integer> staticColumnIndexes = new LinkedList<Integer>();
+        private LinkedList<Integer> staticColumnIndexes = new LinkedList<>();
 
         private String name;
 
@@ -591,7 +603,7 @@ public class ColumnGroupModel implements IPersistable {
 
         public List<Integer> getMembersSorted() {
 
-            List<Integer> sortedMembers = new LinkedList<Integer>(this.members);
+            List<Integer> sortedMembers = new LinkedList<>(this.members);
             Collections.sort(sortedMembers);
 
             return sortedMembers;
@@ -610,12 +622,16 @@ public class ColumnGroupModel implements IPersistable {
         }
 
         /**
-         * @return TRUE if index successfully removed from its group.
+         * @param bodyColumnIndex
+         *            the body column index that should be removed from its
+         *            group.
+         * @return <code>true</code> if index successfully removed from its
+         *         group.
          */
         public boolean removeColumn(int bodyColumnIndex) {
             if (this.members.contains(bodyColumnIndex) && !this.unbreakable) {
                 this.members.remove(Integer.valueOf(bodyColumnIndex));
-                if (this.members.size() == 0) {
+                if (this.members.isEmpty()) {
                     ColumnGroupModel.this.columnGroups.remove(this);
                 }
                 notifyListeners();
@@ -636,7 +652,7 @@ public class ColumnGroupModel implements IPersistable {
 
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append("Column Group Model:\n"); //$NON-NLS-1$
 
         for (ColumnGroup columnGroup : this.columnGroups) {

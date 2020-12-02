@@ -94,7 +94,7 @@ public abstract class AbstractMultiColumnCommand implements ILayerCommand {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toCollection(HashSet::new));
 
-        if (converted.size() > 0) {
+        if (!converted.isEmpty()) {
             this.columnPositionCoordinates = converted;
             return true;
         } else {

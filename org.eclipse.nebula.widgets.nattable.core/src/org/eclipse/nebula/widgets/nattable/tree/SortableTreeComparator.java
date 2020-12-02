@@ -39,23 +39,20 @@ public class SortableTreeComparator<T> implements Comparator<T> {
             return 0;
         } else {
             List<Integer> sortedColumnIndexes = this.sortModel.getSortedColumnIndexes();
-            if (sortedColumnIndexes != null && sortedColumnIndexes.size() > 0) {
-                List<Comparator<T>> comparators = new ArrayList<Comparator<T>>();
+            if (sortedColumnIndexes != null && !sortedColumnIndexes.isEmpty()) {
+                List<Comparator<T>> comparators = new ArrayList<>();
                 for (int sortedColumnIndex : sortedColumnIndexes) {
                     // get comparator for column index... somehow
                     List<Comparator> columnComparators =
                             this.sortModel.getComparatorsForColumnIndex(sortedColumnIndex);
 
-                    if (columnComparators != null) {
+                    if (!columnComparators.isEmpty()) {
                         SortDirectionEnum sortDirection = this.sortModel.getSortDirection(sortedColumnIndex);
                         for (Comparator columnComparator : columnComparators) {
-                            switch (sortDirection) {
-                                case ASC:
-                                    comparators.add(columnComparator);
-                                    break;
-                                case DESC:
-                                    comparators.add(Collections.reverseOrder(columnComparator));
-                                    break;
+                            if (sortDirection == SortDirectionEnum.ASC) {
+                                comparators.add(columnComparator);
+                            } else if (sortDirection == SortDirectionEnum.DESC) {
+                                comparators.add(Collections.reverseOrder(columnComparator));
                             }
                         }
                     }

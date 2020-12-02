@@ -21,7 +21,11 @@ import org.eclipse.swt.events.MouseEvent;
  *
  * @since 1.4
  */
-public class MouseEventHelper {
+public final class MouseEventHelper {
+
+    private MouseEventHelper() {
+        // private default constructor for helper class
+    }
 
     /**
      * Checks if the mouse down event and the mouse up event was triggered with

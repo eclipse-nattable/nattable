@@ -26,7 +26,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 public class MultiColumnResizeCommand extends AbstractMultiColumnCommand {
 
     private int commonColumnWidth = -1;
-    protected Map<ColumnPositionCoordinate, Integer> colPositionToWidth = new HashMap<ColumnPositionCoordinate, Integer>();
+    protected Map<ColumnPositionCoordinate, Integer> colPositionToWidth = new HashMap<>();
     private final boolean downScale;
 
     /**
@@ -124,7 +124,7 @@ public class MultiColumnResizeCommand extends AbstractMultiColumnCommand {
     protected MultiColumnResizeCommand(MultiColumnResizeCommand command) {
         super(command);
         this.commonColumnWidth = command.commonColumnWidth;
-        this.colPositionToWidth = new HashMap<ColumnPositionCoordinate, Integer>(command.colPositionToWidth);
+        this.colPositionToWidth = new HashMap<>(command.colPositionToWidth);
         this.downScale = command.downScale;
     }
 
@@ -172,7 +172,7 @@ public class MultiColumnResizeCommand extends AbstractMultiColumnCommand {
      */
     @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
-        Map<ColumnPositionCoordinate, Integer> newColPositionToWidth = new HashMap<ColumnPositionCoordinate, Integer>();
+        Map<ColumnPositionCoordinate, Integer> newColPositionToWidth = new HashMap<>();
 
         for (ColumnPositionCoordinate columnPositionCoordinate : this.colPositionToWidth.keySet()) {
             ColumnPositionCoordinate convertedColumnPositionCoordinate =

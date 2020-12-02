@@ -35,13 +35,13 @@ import org.eclipse.swt.events.MouseTrackListener;
  */
 public class ModeSupport implements KeyListener, MouseListener, MouseMoveListener, MouseTrackListener, FocusListener {
 
-    private static final boolean isMac;
+    private static final boolean IS_MAC;
 
     static {
-        isMac = System.getProperty("os.name").toLowerCase().indexOf("mac") >= 0; //$NON-NLS-1$ //$NON-NLS-2$
+        IS_MAC = System.getProperty("os.name").toLowerCase().indexOf("mac") >= 0; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    private Map<String, IModeEventHandler> modeEventHandlerMap = new HashMap<String, IModeEventHandler>();
+    private Map<String, IModeEventHandler> modeEventHandlerMap = new HashMap<>();
 
     private IModeEventHandler currentModeEventHandler;
 
@@ -156,7 +156,7 @@ public class ModeSupport implements KeyListener, MouseListener, MouseMoveListene
      *            The {@link MouseEvent} to modify
      */
     private void modifyMouseEventForMac(MouseEvent event) {
-        if (isMac) {
+        if (IS_MAC) {
             if (event.stateMask == SWT.MOD4 && event.button == 1) {
                 event.stateMask = event.stateMask & ~SWT.MOD4;
                 event.button = 3;

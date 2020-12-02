@@ -25,16 +25,25 @@ public abstract class AbstractEditorPanel<T> extends Composite {
 
     /**
      * Initialize UI widgets to match the initial state of T
+     *
+     * @param t
+     *            the object to edit
+     * @throws Exception
+     *             if an error occurs
      */
     public abstract void edit(T t) throws Exception;
 
     /**
      * Get the new value of T with the user modifications
+     *
+     * @return the edited value
      */
     public abstract T getNewValue();
 
     /**
-     * Use friendly name for this editor (used as tab labels).
+     * User friendly name for this editor (used as tab labels).
+     *
+     * @return the user friendly name of this editor
      */
     public abstract String getEditorName();
 

@@ -37,6 +37,10 @@ import org.slf4j.LoggerFactory;
  */
 public class EditController {
 
+    private EditController() {
+        // private default constructor for helper class
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(EditController.class);
 
     /**
@@ -122,7 +126,7 @@ public class EditController {
                     layer.fireLayerEvent(new CellEditorCreatedEvent(cellEditor));
                 }
             } else {
-                List<ILayerCell> cells = new ArrayList<ILayerCell>();
+                List<ILayerCell> cells = new ArrayList<>();
                 cells.add(cell);
                 editCells(cells, parent, initialCanonicalValue, configRegistry);
             }
@@ -191,7 +195,7 @@ public class EditController {
                     if (returnValue == Window.OK) {
                         for (ILayerCell selectedCell : cells) {
                             Object editorValue = dialog.getCommittedValue();
-                            if (!(dialog.getEditType() == EditTypeEnum.SET)) {
+                            if (dialog.getEditType() != EditTypeEnum.SET) {
                                 editorValue = dialog.calculateValue(
                                         selectedCell.getDataValue(),
                                         editorValue);

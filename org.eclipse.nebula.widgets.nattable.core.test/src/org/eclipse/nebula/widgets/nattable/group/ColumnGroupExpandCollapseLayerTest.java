@@ -85,11 +85,11 @@ public class ColumnGroupExpandCollapseLayerTest {
 
         // assertFalse(expandCollapseLayer.isFirstVisibleColumnInGroup(2));
         assertTrue(ColumnGroupUtils.isFirstVisibleColumnIndexInGroup(3,
-                this.expandCollapseLayer, this.underlyingLayer, this.model));
+                this.underlyingLayer, this.model));
         assertFalse(ColumnGroupUtils.isFirstVisibleColumnIndexInGroup(4,
-                this.expandCollapseLayer, this.underlyingLayer, this.model));
+                this.underlyingLayer, this.model));
         assertFalse(ColumnGroupUtils.isFirstVisibleColumnIndexInGroup(5,
-                this.expandCollapseLayer, this.underlyingLayer, this.model));
+                this.underlyingLayer, this.model));
     }
 
     /*
@@ -102,13 +102,13 @@ public class ColumnGroupExpandCollapseLayerTest {
         this.underlyingLayer.hideColumnPositions(Arrays.asList(2, 3));
 
         assertFalse(ColumnGroupUtils.isFirstVisibleColumnIndexInGroup(2,
-                this.expandCollapseLayer, this.underlyingLayer, this.model));
+                this.underlyingLayer, this.model));
         assertFalse(ColumnGroupUtils.isFirstVisibleColumnIndexInGroup(3,
-                this.expandCollapseLayer, this.underlyingLayer, this.model));
+                this.underlyingLayer, this.model));
         assertTrue(ColumnGroupUtils.isFirstVisibleColumnIndexInGroup(4,
-                this.expandCollapseLayer, this.underlyingLayer, this.model));
+                this.underlyingLayer, this.model));
         assertFalse(ColumnGroupUtils.isFirstVisibleColumnIndexInGroup(5,
-                this.expandCollapseLayer, this.underlyingLayer, this.model));
+                this.underlyingLayer, this.model));
     }
 
     /*
@@ -121,13 +121,13 @@ public class ColumnGroupExpandCollapseLayerTest {
         this.underlyingLayer.hideColumnPositions(Arrays.asList(2, 3, 4, 5));
 
         assertFalse(ColumnGroupUtils.isFirstVisibleColumnIndexInGroup(2,
-                this.expandCollapseLayer, this.underlyingLayer, this.model));
+                this.underlyingLayer, this.model));
         assertFalse(ColumnGroupUtils.isFirstVisibleColumnIndexInGroup(3,
-                this.expandCollapseLayer, this.underlyingLayer, this.model));
+                this.underlyingLayer, this.model));
         assertFalse(ColumnGroupUtils.isFirstVisibleColumnIndexInGroup(4,
-                this.expandCollapseLayer, this.underlyingLayer, this.model));
+                this.underlyingLayer, this.model));
         assertFalse(ColumnGroupUtils.isFirstVisibleColumnIndexInGroup(5,
-                this.expandCollapseLayer, this.underlyingLayer, this.model));
+                this.underlyingLayer, this.model));
     }
 
     @Test
@@ -146,11 +146,11 @@ public class ColumnGroupExpandCollapseLayerTest {
         this.underlyingLayer.hideColumnPositions(Arrays.asList(2));
 
         assertFalse(ColumnGroupUtils.isFirstVisibleColumnIndexInGroup(0,
-                this.expandCollapseLayer, this.underlyingLayer, this.model));
+                this.underlyingLayer, this.model));
         assertTrue(ColumnGroupUtils.isFirstVisibleColumnIndexInGroup(2,
-                this.expandCollapseLayer, this.underlyingLayer, this.model));
+                this.underlyingLayer, this.model));
         assertFalse(ColumnGroupUtils.isFirstVisibleColumnIndexInGroup(3,
-                this.expandCollapseLayer, this.underlyingLayer, this.model));
+                this.underlyingLayer, this.model));
     }
 
     /*
@@ -163,13 +163,13 @@ public class ColumnGroupExpandCollapseLayerTest {
         this.underlyingLayer.hideColumnPositions(Arrays.asList(2, 3));
 
         assertFalse(ColumnGroupUtils.isLastVisibleColumnIndexInGroup(2,
-                this.expandCollapseLayer, this.underlyingLayer, this.model));
+                this.underlyingLayer, this.model));
         assertFalse(ColumnGroupUtils.isLastVisibleColumnIndexInGroup(3,
-                this.expandCollapseLayer, this.underlyingLayer, this.model));
+                this.underlyingLayer, this.model));
         assertFalse(ColumnGroupUtils.isLastVisibleColumnIndexInGroup(4,
-                this.expandCollapseLayer, this.underlyingLayer, this.model));
+                this.underlyingLayer, this.model));
         assertTrue(ColumnGroupUtils.isLastVisibleColumnIndexInGroup(5,
-                this.expandCollapseLayer, this.underlyingLayer, this.model));
+                this.underlyingLayer, this.model));
     }
 
     @Test
@@ -177,7 +177,7 @@ public class ColumnGroupExpandCollapseLayerTest {
         collapse(2);
 
         List<Integer> indexes = ColumnGroupUtils.getVisibleIndexesToTheRight(2,
-                this.expandCollapseLayer, this.underlyingLayer, this.model);
+                this.underlyingLayer, this.model);
         assertEquals(0, indexes.size());
     }
 

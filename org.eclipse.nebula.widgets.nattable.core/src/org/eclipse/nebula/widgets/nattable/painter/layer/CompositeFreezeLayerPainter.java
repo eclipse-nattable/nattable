@@ -17,7 +17,7 @@ import java.util.Collection;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
-import org.eclipse.nebula.widgets.nattable.freeze.IFreezeConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.freeze.FreezeConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer.CompositeLayerPainter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -33,8 +33,8 @@ import org.eclipse.swt.graphics.Rectangle;
  * also on adjacent regions, e.g. in a GridLayer to render the freeze border
  * also inside the column header and row header.
  *
- * @see IFreezeConfigAttributes#SEPARATOR_COLOR
- * @see IFreezeConfigAttributes#SEPARATOR_WIDTH
+ * @see FreezeConfigAttributes#SEPARATOR_COLOR
+ * @see FreezeConfigAttributes#SEPARATOR_WIDTH
  *
  * @since 1.6
  */
@@ -49,12 +49,12 @@ public class CompositeFreezeLayerPainter extends CompositeLayerPainter {
      * ILayer that should be used to shift the freeze border down in case of
      * nested composite layers, e.g. with fixed summary rows.
      */
-    private final Collection<ILayer> nestedVerticalLayers = new ArrayList<ILayer>();
+    private final Collection<ILayer> nestedVerticalLayers = new ArrayList<>();
     /**
      * ILayer that should be used to shift the freeze border to the right in
      * case of nested composite layers.
      */
-    private final Collection<ILayer> nestedHorizontalLayers = new ArrayList<ILayer>();
+    private final Collection<ILayer> nestedHorizontalLayers = new ArrayList<>();
 
     /**
      * Creates a {@link CompositeFreezeLayerPainter} that can be set directly on
@@ -136,14 +136,14 @@ public class CompositeFreezeLayerPainter extends CompositeLayerPainter {
         super.paintLayer(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
 
         Color separatorColor = configRegistry.getConfigAttribute(
-                IFreezeConfigAttributes.SEPARATOR_COLOR,
+                FreezeConfigAttributes.SEPARATOR_COLOR,
                 DisplayMode.NORMAL);
         if (separatorColor == null) {
             separatorColor = GUIHelper.COLOR_BLUE;
         }
 
         Integer separatorWidth = configRegistry.getConfigAttribute(
-                IFreezeConfigAttributes.SEPARATOR_WIDTH,
+                FreezeConfigAttributes.SEPARATOR_WIDTH,
                 DisplayMode.NORMAL);
         if (separatorWidth == null) {
             separatorWidth = 1;

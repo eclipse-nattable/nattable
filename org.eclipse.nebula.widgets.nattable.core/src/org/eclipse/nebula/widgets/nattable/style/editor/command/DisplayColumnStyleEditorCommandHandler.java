@@ -53,7 +53,7 @@ public class DisplayColumnStyleEditorCommandHandler
     protected ColumnOverrideLabelAccumulator columnLabelAccumulator;
     private final IConfigRegistry configRegistry;
     protected ColumnStyleEditorDialog dialog;
-    protected final Map<String, Style> stylesToPersist = new HashMap<String, Style>();
+    protected final Map<String, Style> stylesToPersist = new HashMap<>();
 
     public DisplayColumnStyleEditorCommandHandler(
             SelectionLayer selectionLayer,

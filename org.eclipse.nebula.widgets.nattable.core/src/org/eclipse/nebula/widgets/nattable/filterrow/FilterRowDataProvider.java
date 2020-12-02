@@ -93,7 +93,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
      * data storage for the set filters in the filter row so they are visible to
      * the user who entered them.
      */
-    private Map<Integer, Object> filterIndexToObjectMap = new HashMap<Integer, Object>();
+    private Map<Integer, Object> filterIndexToObjectMap = new HashMap<>();
 
     /**
      *
@@ -194,7 +194,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 
     @Override
     public void saveState(String prefix, Properties properties) {
-        Map<Integer, String> filterTextByIndex = new HashMap<Integer, String>();
+        Map<Integer, String> filterTextByIndex = new HashMap<>();
         for (Integer columnIndex : this.filterIndexToObjectMap.keySet()) {
             final IDisplayConverter converter = this.configRegistry.getConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,

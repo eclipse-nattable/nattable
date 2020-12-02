@@ -349,7 +349,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
     private List<ColumnEntry> getSelectedColumnEntriesFromListViewer() {
         this.lastListSelection = this.listViewer.getSelection();
         Object[] objects = ((StructuredSelection) this.lastListSelection).toArray();
-        List<ColumnEntry> entries = new ArrayList<ColumnEntry>();
+        List<ColumnEntry> entries = new ArrayList<>();
 
         for (Object object : objects) {
             entries.add((ColumnEntry) object);
@@ -363,7 +363,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
     private List<Integer> getColumnIndexesFromTreeNodes() {
         Object[] nodes = ((TreeSelection) this.treeViewer.getSelection()).toArray();
 
-        List<Integer> indexes = new ArrayList<Integer>();
+        List<Integer> indexes = new ArrayList<>();
         for (Object object : nodes) {
             Node node = (Node) object;
             if (Type.COLUMN == node.getType()) {

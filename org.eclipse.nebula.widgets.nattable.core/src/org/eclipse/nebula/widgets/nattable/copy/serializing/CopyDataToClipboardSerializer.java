@@ -68,7 +68,7 @@ public class CopyDataToClipboardSerializer implements ISerializer {
         return String.valueOf(cell.getDataValue());
     }
 
-    final protected CopyDataToClipboardCommand getCommand() {
+    protected final CopyDataToClipboardCommand getCommand() {
         return this.command;
     }
 }

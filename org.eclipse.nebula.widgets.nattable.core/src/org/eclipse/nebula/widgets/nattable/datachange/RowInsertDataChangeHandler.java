@@ -54,7 +54,7 @@ public class RowInsertDataChangeHandler extends AbstractDataChangeHandler<RowIns
      *            for a specific key.
      */
     public RowInsertDataChangeHandler(DataChangeLayer layer, CellKeyHandler<?> keyHandler) {
-        super(layer, keyHandler, new ConcurrentHashMap<Object, RowInsertDataChange>());
+        super(layer, keyHandler, new ConcurrentHashMap<>());
     }
 
     @Override
@@ -85,10 +85,10 @@ public class RowInsertDataChangeHandler extends AbstractDataChangeHandler<RowIns
     private void handleRowDelete(Collection<StructuralDiff> rowDiffs) {
         // for correct calculation the diffs need to be processed from lowest
         // position to highest
-        List<StructuralDiff> diffs = new ArrayList<StructuralDiff>(rowDiffs);
+        List<StructuralDiff> diffs = new ArrayList<>(rowDiffs);
         Collections.sort(diffs, (o1, o2) -> o1.getBeforePositionRange().start - o2.getBeforePositionRange().start);
 
-        List<Integer> toRemove = new ArrayList<Integer>();
+        List<Integer> toRemove = new ArrayList<>();
         for (StructuralDiff rowDiff : diffs) {
             if (rowDiff.getDiffType() != null
                     && rowDiff.getDiffType().equals(DiffTypeEnum.DELETE)) {
@@ -104,7 +104,7 @@ public class RowInsertDataChangeHandler extends AbstractDataChangeHandler<RowIns
 
         if (!toRemove.isEmpty()) {
             // modify row indexes regarding the deleted rows
-            Map<Object, RowInsertDataChange> modifiedRows = new HashMap<Object, RowInsertDataChange>();
+            Map<Object, RowInsertDataChange> modifiedRows = new HashMap<>();
             for (Map.Entry<Object, RowInsertDataChange> entry : this.dataChanges.entrySet()) {
                 int rowIndex = this.keyHandler.getRowIndex(entry.getKey());
                 if (!toRemove.contains(rowIndex)) {
@@ -146,7 +146,7 @@ public class RowInsertDataChangeHandler extends AbstractDataChangeHandler<RowIns
     private void handleRowInsert(Collection<StructuralDiff> rowDiffs) {
         // for correct calculation the diffs need to be processed from highest
         // position to lowest
-        List<StructuralDiff> diffs = new ArrayList<StructuralDiff>(rowDiffs);
+        List<StructuralDiff> diffs = new ArrayList<>(rowDiffs);
         Collections.sort(diffs, (o1, o2) -> o2.getBeforePositionRange().start - o1.getBeforePositionRange().start);
 
         for (StructuralDiff rowDiff : diffs) {
@@ -154,7 +154,7 @@ public class RowInsertDataChangeHandler extends AbstractDataChangeHandler<RowIns
                     && rowDiff.getDiffType().equals(DiffTypeEnum.ADD)) {
                 Range beforePositionRange = rowDiff.getBeforePositionRange();
                 // modify row indexes regarding the inserted rows
-                Map<Object, RowInsertDataChange> modifiedRows = new HashMap<Object, RowInsertDataChange>();
+                Map<Object, RowInsertDataChange> modifiedRows = new HashMap<>();
                 for (Map.Entry<Object, RowInsertDataChange> entry : this.dataChanges.entrySet()) {
                     int rowIndex = this.keyHandler.getRowIndex(entry.getKey());
 
@@ -203,7 +203,7 @@ public class RowInsertDataChangeHandler extends AbstractDataChangeHandler<RowIns
             synchronized (this.dataChanges) {
                 if (event instanceof KeyRowInsertEvent) {
                     KeyRowInsertEvent e = (KeyRowInsertEvent) event;
-                    List<Object> keys = new ArrayList<Object>(e.getKeys());
+                    List<Object> keys = new ArrayList<>(e.getKeys());
                     Collections.reverse(keys);
                     for (Object key : keys) {
                         // store the change locally

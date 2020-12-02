@@ -247,6 +247,7 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
      *            the starting y coordinate of the area we can draw on. The fix
      *            will not be applied if the <code>cellBounds</code> are placed
      *            on this limit.
+     * @return Updated rectangle.
      *
      * @since 1.5
      */
@@ -278,6 +279,20 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
      * using xOffset/yOffset (which are not affected by single cell updates) and
      * detecting overlapping of cells, which should not be possible in the same
      * layer. It's not perfect, there might be false positives.
+     *
+     * @param ix
+     *            column position
+     * @param iy
+     *            row position
+     * @param xOffset
+     *            column offset
+     * @param yOffset
+     *            row offset
+     * @param cellBounds
+     *            cell bounds
+     * @param borderCells
+     *            available border cells
+     * @return <code>true</code> if the cell is part of the current layer.
      *
      * @since 1.5
      */

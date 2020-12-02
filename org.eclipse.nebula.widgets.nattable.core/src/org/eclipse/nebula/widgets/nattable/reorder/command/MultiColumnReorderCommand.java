@@ -274,7 +274,7 @@ public class MultiColumnReorderCommand implements ILayerCommand {
         ColumnPositionCoordinate targetToColumnPositionCoordinate =
                 LayerCommandUtil.convertColumnPositionToTargetContext(this.toColumnPositionCoordinate, targetLayer);
 
-        if (convertedFromColumnPositionCoordinates.size() > 0
+        if (!convertedFromColumnPositionCoordinates.isEmpty()
                 && targetToColumnPositionCoordinate != null) {
             this.fromColumnPositionCoordinates = convertedFromColumnPositionCoordinates;
             this.toColumnPositionCoordinate = targetToColumnPositionCoordinate;

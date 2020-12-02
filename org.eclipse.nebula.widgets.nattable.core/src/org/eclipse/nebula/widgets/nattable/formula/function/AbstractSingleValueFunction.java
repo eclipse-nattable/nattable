@@ -25,7 +25,7 @@ import java.util.List;
 public abstract class AbstractSingleValueFunction extends AbstractFunction {
 
     public AbstractSingleValueFunction() {
-        this(new ArrayList<FunctionValue>());
+        this(new ArrayList<>());
     }
 
     public AbstractSingleValueFunction(FunctionValue value) {

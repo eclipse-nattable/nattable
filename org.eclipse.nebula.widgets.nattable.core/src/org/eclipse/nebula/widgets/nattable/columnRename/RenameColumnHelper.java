@@ -44,7 +44,7 @@ public class RenameColumnHelper implements IPersistable {
     /**
      * Tracks the renamed labels provided by the user.
      */
-    protected Map<Integer, String> renamedColumnsLabelsByIndex = new TreeMap<Integer, String>();
+    protected Map<Integer, String> renamedColumnsLabelsByIndex = new TreeMap<>();
 
     /**
      *
@@ -97,6 +97,8 @@ public class RenameColumnHelper implements IPersistable {
     }
 
     /**
+     * @param columnIndex
+     *            the column index
      * @return the custom label for this column as specified by the user Null if
      *         the columns is not renamed
      */
@@ -105,6 +107,8 @@ public class RenameColumnHelper implements IPersistable {
     }
 
     /**
+     * @param columnIndex
+     *            the column index
      * @return <code>true</code> if the column at the specified index was
      *         renamed by a user.
      */
@@ -130,7 +134,7 @@ public class RenameColumnHelper implements IPersistable {
     public void handleStructuralChanges(Collection<StructuralDiff> columnDiffs) {
         // the number of all deleted columns that don't have a corresponding
         // index anymore (last column cases)
-        List<Integer> toRemove = new ArrayList<Integer>();
+        List<Integer> toRemove = new ArrayList<>();
         for (StructuralDiff columnDiff : columnDiffs) {
             if (columnDiff.getDiffType() != null
                     && columnDiff.getDiffType().equals(DiffTypeEnum.DELETE)) {
@@ -148,10 +152,10 @@ public class RenameColumnHelper implements IPersistable {
         }
 
         // modify column indexes regarding the deleted columns
-        List<Integer> indices = new ArrayList<Integer>(this.renamedColumnsLabelsByIndex.keySet());
+        List<Integer> indices = new ArrayList<>(this.renamedColumnsLabelsByIndex.keySet());
         Collections.sort(indices);
 
-        Map<Integer, String> modified = new TreeMap<Integer, String>();
+        Map<Integer, String> modified = new TreeMap<>();
         for (Integer column : indices) {
             // check number of removed indexes that are lower than the current
             // one
@@ -172,12 +176,12 @@ public class RenameColumnHelper implements IPersistable {
             if (columnDiff.getDiffType() != null
                     && columnDiff.getDiffType().equals(DiffTypeEnum.ADD)) {
 
-                indices = new ArrayList<Integer>(this.renamedColumnsLabelsByIndex.keySet());
+                indices = new ArrayList<>(this.renamedColumnsLabelsByIndex.keySet());
                 Collections.sort(indices);
 
                 Range beforePositionRange = columnDiff.getBeforePositionRange();
                 Range afterPositionRange = columnDiff.getAfterPositionRange();
-                Map<Integer, String> modifiedColumns = new TreeMap<Integer, String>();
+                Map<Integer, String> modifiedColumns = new TreeMap<>();
                 int beforeIndex = this.columnHeaderLayer.getColumnIndexByPosition(beforePositionRange.start);
                 for (Integer column : indices) {
                     if (column >= beforeIndex) {

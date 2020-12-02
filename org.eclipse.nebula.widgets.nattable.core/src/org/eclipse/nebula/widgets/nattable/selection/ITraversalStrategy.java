@@ -120,7 +120,7 @@ public interface ITraversalStrategy {
         @Override
         public boolean isValidTarget(ILayerCell from, ILayerCell to) {
             return true;
-        };
+        }
     };
 
     /**
@@ -155,7 +155,7 @@ public interface ITraversalStrategy {
         @Override
         public boolean isValidTarget(ILayerCell from, ILayerCell to) {
             return true;
-        };
+        }
     };
 
     /**
@@ -191,7 +191,7 @@ public interface ITraversalStrategy {
         @Override
         public boolean isValidTarget(ILayerCell from, ILayerCell to) {
             return true;
-        };
+        }
     };
 
     /**
@@ -227,6 +227,6 @@ public interface ITraversalStrategy {
         @Override
         public boolean isValidTarget(ILayerCell from, ILayerCell to) {
             return true;
-        };
+        }
     };
 }
