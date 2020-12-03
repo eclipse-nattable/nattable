@@ -188,11 +188,40 @@ public final class CellStyleUtil {
      *            configuration is requested.
      * @return The collection of all background colors that are configured
      *         transitively for the given cell.
+     * @deprecated Use
+     *             {@link #getAllBackgroundColors(ILayerCell, IConfigRegistry, DisplayMode)}
      */
+    @Deprecated
     public static List<Color> getAllBackgroundColors(
             ILayerCell cell,
             IConfigRegistry configRegistry,
             String displayMode) {
+
+        return getAllBackgroundColors(cell, configRegistry, DisplayMode.valueOf(displayMode));
+    }
+
+    /**
+     * Collects all background colors configured for the given
+     * {@link ILayerCell}.
+     *
+     * @param cell
+     *            The {@link ILayerCell} for which the background colors are
+     *            requested.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to retrieve the transitive
+     *            style information.
+     * @param displayMode
+     *            The {@link DisplayMode} for which the background color
+     *            configuration is requested.
+     * @return The collection of all background colors that are configured
+     *         transitively for the given cell.
+     * 
+     * @since 2.0
+     */
+    public static List<Color> getAllBackgroundColors(
+            ILayerCell cell,
+            IConfigRegistry configRegistry,
+            DisplayMode displayMode) {
 
         ArrayList<Color> colors = new ArrayList<>();
 

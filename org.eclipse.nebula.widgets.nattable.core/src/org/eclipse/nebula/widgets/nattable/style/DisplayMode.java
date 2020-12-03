@@ -25,11 +25,29 @@ package org.eclipse.nebula.widgets.nattable.style;
  * mode.
  *
  */
-public interface DisplayMode {
+public enum DisplayMode {
 
-    String NORMAL = "NORMAL"; //$NON-NLS-1$
-    String SELECT = "SELECT"; //$NON-NLS-1$
-    String EDIT = "EDIT"; //$NON-NLS-1$
-    String HOVER = "HOVER"; //$NON-NLS-1$
-    String SELECT_HOVER = "SELECT_HOVER"; //$NON-NLS-1$
+    /**
+     * The normal state a cell is in if no other state applies.
+     */
+    NORMAL,
+    /**
+     * The state that shows that a cell is currently selected.
+     */
+    SELECT,
+    /**
+     * The state that shows that a cell is currently edited. Never applied to a
+     * cell, only used for configuration purposes.
+     */
+    EDIT,
+    /**
+     * The state that shows that currently the mouse hovers over the cell.
+     */
+    HOVER,
+    /**
+     * The state that shows that currently the mouse hovers over the cell that
+     * is currently selected.
+     */
+    SELECT_HOVER
+
 }

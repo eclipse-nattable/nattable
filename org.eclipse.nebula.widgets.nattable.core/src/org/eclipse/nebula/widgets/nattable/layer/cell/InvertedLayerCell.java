@@ -15,6 +15,7 @@ package org.eclipse.nebula.widgets.nattable.layer.cell;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.InvertUtil;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.swt.graphics.Rectangle;
 
 public class InvertedLayerCell implements ILayerCell {
@@ -76,7 +77,7 @@ public class InvertedLayerCell implements ILayerCell {
     }
 
     @Override
-    public String getDisplayMode() {
+    public DisplayMode getDisplayMode() {
         return this.layerCell.getDisplayMode();
     }
 

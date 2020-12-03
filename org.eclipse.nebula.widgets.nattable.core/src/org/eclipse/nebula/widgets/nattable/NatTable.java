@@ -63,6 +63,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
 import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.selection.event.ISelectionEvent;
 import org.eclipse.nebula.widgets.nattable.selection.event.RowSelectionEvent;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.theme.ThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.theme.ThemeManager;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
@@ -1074,7 +1075,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
     }
 
     @Override
-    public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
+    public DisplayMode getDisplayModeByPosition(int columnPosition, int rowPosition) {
         return this.underlyingLayer.getDisplayModeByPosition(columnPosition,
                 rowPosition);
     }

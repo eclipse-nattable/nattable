@@ -79,7 +79,7 @@ public class HoverLayer extends AbstractIndexLayerTransform {
     }
 
     @Override
-    public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
+    public DisplayMode getDisplayModeByPosition(int columnPosition, int rowPosition) {
         if (isCellPositionHovered(columnPosition, rowPosition)) {
             return DisplayMode.HOVER;
         } else {

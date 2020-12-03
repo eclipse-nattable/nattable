@@ -35,11 +35,13 @@ public interface IConfigRegistry {
      * configRegistry.getConfigAttribute(attribute, DisplayMode.EDIT);
      * </p>
      * <ol>
-     * <li>It will look for an attribute registered using the EDIT display mode</li>
+     * <li>It will look for an attribute registered using the EDIT display
+     * mode</li>
      * <li>If it can't find that it will try and find an attribute under the
      * NORMAL mode</li>
      * <li>If it can't find one it will try and find one registered without a
-     * display mode {@link #registerConfigAttribute(ConfigAttribute, Object)}</li>
+     * display mode
+     * {@link #registerConfigAttribute(ConfigAttribute, Object)}</li>
      * </ol>
      * Example 2:
      * <p>
@@ -54,31 +56,234 @@ public interface IConfigRegistry {
      * </ol>
      *
      * @param <T>
-     *            Type of the attribute
+     *            The type of the configuration attribute.
      * @param configAttribute
-     *            to be registered
+     *            The configuration attribute to be registered.
      * @param targetDisplayMode
-     *            display mode the cell needs to be in, for this attribute to be
-     *            returned
+     *            The display mode the cell needs to be in for this attribute to
+     *            be returned.
      * @param configLabels
-     *            the cell needs to have, for this attribute to be returned
-     * @return the configAttribute, if the display mode and the configLabels
-     *         match
+     *            The config labels the cell needs to have for this attribute to
+     *            be returned.
+     * @return The configuration attribute if the display mode and the
+     *         configLabels match, <code>null</code> if no value for the
+     *         specified parameters was found.
+     *
+     * @deprecated Use
+     *             {@link #getConfigAttribute(ConfigAttribute, DisplayMode, String...)}
      */
-    public <T> T getConfigAttribute(ConfigAttribute<T> configAttribute,
-            String targetDisplayMode, String... configLabels);
+    @Deprecated
+    public <T> T getConfigAttribute(
+            ConfigAttribute<T> configAttribute,
+            String targetDisplayMode,
+            String... configLabels);
 
     /**
-     * @see #getConfigAttribute(ConfigAttribute, String, String...)
+     * If retrieving registered values
+     * <p>
+     * Example 1:
+     * <p>
+     * configRegistry.getConfigAttribute(attribute, DisplayMode.EDIT);
+     * </p>
+     * <ol>
+     * <li>It will look for an attribute registered using the EDIT display
+     * mode</li>
+     * <li>If it can't find that it will try and find an attribute under the
+     * NORMAL mode</li>
+     * <li>If it can't find one it will try and find one registered without a
+     * display mode
+     * {@link #registerConfigAttribute(ConfigAttribute, Object)}</li>
+     * </ol>
+     * Example 2:
+     * <p>
+     * configRegistry.getConfigAttribute(attribute, DisplayMode.NORMAL,
+     * "testLabel", "testLabel_1");
+     * </p>
+     * <ol>
+     * <li>It will look for an attribute registered by display mode NORMAL and
+     * "testLabel"</li>
+     * <li>It will look for an attribute registered by display mode NORMAL and
+     * "testLabel_1"</li>
+     * </ol>
+     *
+     * @param <T>
+     *            The type of the configuration attribute.
+     * @param configAttribute
+     *            The configuration attribute to be registered.
+     * @param targetDisplayMode
+     *            The display mode the cell needs to be in for this attribute to
+     *            be returned.
+     * @param configLabels
+     *            The config labels the cell needs to have for this attribute to
+     *            be returned.
+     * @return The configuration attribute if the display mode and the
+     *         configLabels match, <code>null</code> if no value for the
+     *         specified parameters was found.
+     *
+     * @since 2.0
      */
-    public <T> T getConfigAttribute(ConfigAttribute<T> configAttribute,
-            String targetDisplayMode, List<String> configLabels);
+    public <T> T getConfigAttribute(
+            ConfigAttribute<T> configAttribute,
+            DisplayMode targetDisplayMode,
+            String... configLabels);
 
     /**
-     * @see #getConfigAttribute(ConfigAttribute, String, String...)
+     * If retrieving registered values
+     * <p>
+     * Example 1:
+     * <p>
+     * configRegistry.getConfigAttribute(attribute, DisplayMode.EDIT);
+     * </p>
+     * <ol>
+     * <li>It will look for an attribute registered using the EDIT display
+     * mode</li>
+     * <li>If it can't find that it will try and find an attribute under the
+     * NORMAL mode</li>
+     * <li>If it can't find one it will try and find one registered without a
+     * display mode
+     * {@link #registerConfigAttribute(ConfigAttribute, Object)}</li>
+     * </ol>
+     * Example 2:
+     * <p>
+     * configRegistry.getConfigAttribute(attribute, DisplayMode.NORMAL,
+     * "testLabel", "testLabel_1");
+     * </p>
+     * <ol>
+     * <li>It will look for an attribute registered by display mode NORMAL and
+     * "testLabel"</li>
+     * <li>It will look for an attribute registered by display mode NORMAL and
+     * "testLabel_1"</li>
+     * </ol>
+     *
+     * @param <T>
+     *            The type of the configuration attribute.
+     * @param configAttribute
+     *            The configuration attribute to be registered.
+     * @param targetDisplayMode
+     *            The display mode the cell needs to be in for this attribute to
+     *            be returned.
+     * @param configLabels
+     *            The config labels the cell needs to have for this attribute to
+     *            be returned.
+     * @return The configuration attribute if the display mode and the
+     *         configLabels match, <code>null</code> if no value for the
+     *         specified parameters was found.
+     *
+     * @deprecated Use
+     *             {@link #getConfigAttribute(ConfigAttribute, DisplayMode, List)}
      */
-    public <T> T getSpecificConfigAttribute(ConfigAttribute<T> configAttribute,
-            String displayMode, String configLabel);
+    @Deprecated
+    public <T> T getConfigAttribute(
+            ConfigAttribute<T> configAttribute,
+            String targetDisplayMode,
+            List<String> configLabels);
+
+    /**
+     * If retrieving registered values
+     * <p>
+     * Example 1:
+     * <p>
+     * configRegistry.getConfigAttribute(attribute, DisplayMode.EDIT);
+     * </p>
+     * <ol>
+     * <li>It will look for an attribute registered using the EDIT display
+     * mode</li>
+     * <li>If it can't find that it will try and find an attribute under the
+     * NORMAL mode</li>
+     * <li>If it can't find one it will try and find one registered without a
+     * display mode
+     * {@link #registerConfigAttribute(ConfigAttribute, Object)}</li>
+     * </ol>
+     * Example 2:
+     * <p>
+     * configRegistry.getConfigAttribute(attribute, DisplayMode.NORMAL,
+     * "testLabel", "testLabel_1");
+     * </p>
+     * <ol>
+     * <li>It will look for an attribute registered by display mode NORMAL and
+     * "testLabel"</li>
+     * <li>It will look for an attribute registered by display mode NORMAL and
+     * "testLabel_1"</li>
+     * </ol>
+     *
+     * @param <T>
+     *            The type of the configuration attribute.
+     * @param configAttribute
+     *            The configuration attribute to be registered.
+     * @param targetDisplayMode
+     *            The display mode the cell needs to be in for this attribute to
+     *            be returned.
+     * @param configLabels
+     *            The config labels the cell needs to have for this attribute to
+     *            be returned.
+     * @return The configuration attribute if the display mode and the
+     *         configLabels match, <code>null</code> if no value for the
+     *         specified parameters was found.
+     *
+     * @since 2.0
+     */
+    public <T> T getConfigAttribute(
+            ConfigAttribute<T> configAttribute,
+            DisplayMode targetDisplayMode,
+            List<String> configLabels);
+
+    /**
+     * Retrieve a configuration value for the specified DisplayMode and config
+     * label. Only checks for the specified DisplayMode and config label. It
+     * does not search for more generic values by searching the display mode
+     * ordering, labels and default configurations.
+     *
+     * @param <T>
+     *            The type of the configuration attribute.
+     * @param configAttribute
+     *            The configuration attribute to be registered.
+     * @param displayMode
+     *            The display mode the cell needs to be in for this attribute to
+     *            be returned.
+     * @param configLabel
+     *            The config label the cell needs to have for this attribute to
+     *            be returned.
+     * @return The configuration attribute if the display mode and the
+     *         configLabel matches, <code>null</code> if no value for the
+     *         specified parameters was found.
+     *
+     * @see #getConfigAttribute(ConfigAttribute, String, String...)
+     * @deprecated Use
+     *             {@link #getSpecificConfigAttribute(ConfigAttribute, DisplayMode, String)}
+     */
+    @Deprecated
+    public <T> T getSpecificConfigAttribute(
+            ConfigAttribute<T> configAttribute,
+            String displayMode,
+            String configLabel);
+
+    /**
+     * Retrieve a configuration value for the specified DisplayMode and config
+     * label. Only checks for the specified DisplayMode and config label. It
+     * does not search for more generic values by searching the display mode
+     * ordering, labels and default configurations.
+     *
+     * @param <T>
+     *            The type of the configuration attribute.
+     * @param configAttribute
+     *            The configuration attribute to be registered.
+     * @param displayMode
+     *            The display mode the cell needs to be in for this attribute to
+     *            be returned.
+     * @param configLabel
+     *            The config label the cell needs to have for this attribute to
+     *            be returned.
+     * @return The configuration attribute if the display mode and the
+     *         configLabel matches, <code>null</code> if no value for the
+     *         specified parameters was found.
+     *
+     * @see #getConfigAttribute(ConfigAttribute, DisplayMode, String...)
+     * @since 2.0
+     */
+    public <T> T getSpecificConfigAttribute(
+            ConfigAttribute<T> configAttribute,
+            DisplayMode displayMode,
+            String configLabel);
 
     /**
      * Register a configuration attribute.
@@ -90,7 +295,8 @@ public interface IConfigRegistry {
      *            The value that should be set for the given The
      *            {@link ConfigAttribute}.
      */
-    public <T> void registerConfigAttribute(ConfigAttribute<T> configAttribute,
+    public <T> void registerConfigAttribute(
+            ConfigAttribute<T> configAttribute,
             T attributeValue);
 
     /**
@@ -105,9 +311,33 @@ public interface IConfigRegistry {
      * @param targetDisplayMode
      *            The {@link DisplayMode} for which the {@link ConfigAttribute}
      *            should be registered.
+     * @deprecated Use
+     *             {@link #registerConfigAttribute(ConfigAttribute, Object, DisplayMode)}
      */
-    public <T> void registerConfigAttribute(ConfigAttribute<T> configAttribute,
-            T attributeValue, String targetDisplayMode);
+    @Deprecated
+    public <T> void registerConfigAttribute(
+            ConfigAttribute<T> configAttribute,
+            T attributeValue,
+            String targetDisplayMode);
+
+    /**
+     * Register a configuration attribute against a {@link DisplayMode}.
+     *
+     * @param configAttribute
+     *            The {@link ConfigAttribute} for which a value should be
+     *            registered.
+     * @param attributeValue
+     *            The value that should be set for the given The
+     *            {@link ConfigAttribute}.
+     * @param targetDisplayMode
+     *            The {@link DisplayMode} for which the {@link ConfigAttribute}
+     *            should be registered.
+     * @since 2.0
+     */
+    public <T> void registerConfigAttribute(
+            ConfigAttribute<T> configAttribute,
+            T attributeValue,
+            DisplayMode targetDisplayMode);
 
     /**
      * Register an attribute against a {@link DisplayMode} and configuration
@@ -125,9 +355,40 @@ public interface IConfigRegistry {
      * @param configLabel
      *            The configuration label against which the
      *            {@link ConfigAttribute} should be registered.
+     * @deprecated Use
+     *             {@link #registerConfigAttribute(ConfigAttribute, Object, DisplayMode, String)}
      */
-    public <T> void registerConfigAttribute(ConfigAttribute<T> configAttribute,
-            T attributeValue, String targetDisplayMode, String configLabel);
+    @Deprecated
+    public <T> void registerConfigAttribute(
+            ConfigAttribute<T> configAttribute,
+            T attributeValue,
+            String targetDisplayMode,
+            String configLabel);
+
+    /**
+     * Register an attribute against a {@link DisplayMode} and configuration
+     * label (applied to cells)
+     *
+     * @param configAttribute
+     *            The {@link ConfigAttribute} for which a value should be
+     *            registered.
+     * @param attributeValue
+     *            The value that should be set for the given The
+     *            {@link ConfigAttribute}.
+     * @param targetDisplayMode
+     *            The {@link DisplayMode} for which the {@link ConfigAttribute}
+     *            should be registered.
+     * @param configLabel
+     *            The configuration label against which the
+     *            {@link ConfigAttribute} should be registered.
+     *
+     * @since 2.0
+     */
+    public <T> void registerConfigAttribute(
+            ConfigAttribute<T> configAttribute,
+            T attributeValue,
+            DisplayMode targetDisplayMode,
+            String configLabel);
 
     /**
      * Unregister the given configuration attribute.
@@ -147,9 +408,29 @@ public interface IConfigRegistry {
      * @param displayMode
      *            The {@link DisplayMode} for which the {@link ConfigAttribute}
      *            should be unregistered.
+     * @deprecated Use
+     *             {@link #unregisterConfigAttribute(ConfigAttribute, DisplayMode)}
+     */
+    @Deprecated
+    public <T> void unregisterConfigAttribute(
+            ConfigAttribute<T> configAttributeType,
+            String displayMode);
+
+    /**
+     * Unregister the given configuration attribute for the given
+     * {@link DisplayMode}.
+     *
+     * @param configAttributeType
+     *            The {@link ConfigAttribute} to unregister.
+     * @param displayMode
+     *            The {@link DisplayMode} for which the {@link ConfigAttribute}
+     *            should be unregistered.
+     *
+     * @since 2.0
      */
     public <T> void unregisterConfigAttribute(
-            ConfigAttribute<T> configAttributeType, String displayMode);
+            ConfigAttribute<T> configAttributeType,
+            DisplayMode displayMode);
 
     /**
      * Unregister the given configuration attribute for the given
@@ -164,9 +445,34 @@ public interface IConfigRegistry {
      * @param configLabel
      *            The configuration label against which the
      *            {@link ConfigAttribute} was registered.
+     * @deprecated Use
+     *             {@link #unregisterConfigAttribute(ConfigAttribute, DisplayMode, String)}
+     */
+    @Deprecated
+    public <T> void unregisterConfigAttribute(
+            ConfigAttribute<T> configAttributeType,
+            String displayMode,
+            String configLabel);
+
+    /**
+     * Unregister the given configuration attribute for the given
+     * {@link DisplayMode} that was registered against the given configuration
+     * label.
+     *
+     * @param configAttributeType
+     *            The {@link ConfigAttribute} to unregister.
+     * @param displayMode
+     *            The {@link DisplayMode} for which the {@link ConfigAttribute}
+     *            should be unregistered.
+     * @param configLabel
+     *            The configuration label against which the
+     *            {@link ConfigAttribute} was registered.
+     *
+     * @since 2.0
      */
     public <T> void unregisterConfigAttribute(
-            ConfigAttribute<T> configAttributeType, String displayMode,
+            ConfigAttribute<T> configAttributeType,
+            DisplayMode displayMode,
             String configLabel);
 
     /**

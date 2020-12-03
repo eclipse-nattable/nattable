@@ -20,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
 
 /**
@@ -58,7 +59,7 @@ public class FixedSummaryRowHeaderLayer extends RowHeaderLayer {
     }
 
     @Override
-    public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
+    public DisplayMode getDisplayModeByPosition(int columnPosition, int rowPosition) {
         if (rowPosition == 0) {
             // for the summary row we need the same implementation as the
             // DimensionallyDependentLayer and not the super implementation of

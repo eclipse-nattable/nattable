@@ -16,21 +16,15 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 
 public class DefaultDisplayModeOrderingTest {
 
-    private DefaultDisplayModeOrdering ordering;
-
-    @Before
-    public void setup() {
-        this.ordering = new DefaultDisplayModeOrdering();
-    }
+    private DefaultDisplayModeOrdering ordering = new DefaultDisplayModeOrdering();
 
     @Test
     public void orderingForSelectMode() {
-        List<String> selectModeOrdering = this.ordering.getDisplayModeOrdering(DisplayMode.SELECT);
+        List<DisplayMode> selectModeOrdering = this.ordering.getDisplayModeOrdering(DisplayMode.SELECT);
 
         assertEquals(2, selectModeOrdering.size());
         assertEquals(DisplayMode.SELECT, selectModeOrdering.get(0));
@@ -39,7 +33,7 @@ public class DefaultDisplayModeOrderingTest {
 
     @Test
     public void orderingForEditMode() {
-        List<String> editModeOrdering = this.ordering.getDisplayModeOrdering(DisplayMode.EDIT);
+        List<DisplayMode> editModeOrdering = this.ordering.getDisplayModeOrdering(DisplayMode.EDIT);
 
         assertEquals(2, editModeOrdering.size());
         assertEquals(DisplayMode.EDIT, editModeOrdering.get(0));
@@ -48,7 +42,7 @@ public class DefaultDisplayModeOrderingTest {
 
     @Test
     public void orderingForNormalMode() {
-        List<String> selectModeOrdering = this.ordering.getDisplayModeOrdering(DisplayMode.NORMAL);
+        List<DisplayMode> selectModeOrdering = this.ordering.getDisplayModeOrdering(DisplayMode.NORMAL);
 
         assertEquals(1, selectModeOrdering.size());
         assertEquals(DisplayMode.NORMAL, selectModeOrdering.get(0));

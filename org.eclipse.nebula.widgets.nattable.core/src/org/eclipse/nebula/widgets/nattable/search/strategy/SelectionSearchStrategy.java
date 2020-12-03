@@ -19,10 +19,11 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommand;
+import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.search.ISearchDirection;
+import org.eclipse.nebula.widgets.nattable.search.SearchDirection;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 
 public class SelectionSearchStrategy extends AbstractSearchStrategy {
@@ -34,10 +35,35 @@ public class SelectionSearchStrategy extends AbstractSearchStrategy {
     }
 
     public SelectionSearchStrategy(IConfigRegistry configRegistry, boolean columnFirst) {
-        this(configRegistry, ISearchDirection.SEARCH_FORWARD, columnFirst);
+        this(configRegistry, SearchDirection.SEARCH_FORWARD, columnFirst);
     }
 
+    /**
+     *
+     * @param configRegistry
+     *            The {@link ConfigRegistry}.
+     * @param searchDirection
+     *            The {@link SearchDirection}.
+     * @param columnFirst
+     *            Flag to configure if the search should be by column.
+     * @deprecated Use constructor with {@link SearchDirection} parameter
+     */
+    @Deprecated
     public SelectionSearchStrategy(IConfigRegistry configRegistry, String searchDirection, boolean columnFirst) {
+        this(configRegistry, SearchDirection.valueOf(searchDirection), columnFirst);
+    }
+
+    /**
+     *
+     * @param configRegistry
+     *            The {@link ConfigRegistry}.
+     * @param searchDirection
+     *            The {@link SearchDirection}.
+     * @param columnFirst
+     *            Flag to configure if the search should be by column.
+     * @since 2.0
+     */
+    public SelectionSearchStrategy(IConfigRegistry configRegistry, SearchDirection searchDirection, boolean columnFirst) {
         this.configRegistry = configRegistry;
         this.searchDirection = searchDirection;
         this.columnFirst = columnFirst;
@@ -76,11 +102,11 @@ public class SelectionSearchStrategy extends AbstractSearchStrategy {
         PositionCoordinate selectionAnchor = selectionLayer.getSelectionAnchor();
         if ((selectionAnchor.columnPosition == SelectionLayer.NO_SELECTION
                 && selectionAnchor.rowPosition == SelectionLayer.NO_SELECTION)
-                && !ISearchDirection.SEARCH_BACKWARDS.equals(this.searchDirection)) {
+                && !SearchDirection.SEARCH_BACKWARDS.equals(this.searchDirection)) {
             selectedCells = selectionLayer.getSelectedCellPositions();
         } else {
             List<PositionCoordinate> coordinates = Arrays.asList(selectionLayer.getSelectedCellPositions());
-            if (this.searchDirection.equals(ISearchDirection.SEARCH_BACKWARDS)) {
+            if (this.searchDirection.equals(SearchDirection.SEARCH_BACKWARDS)) {
                 Collections.reverse(coordinates);
             }
 

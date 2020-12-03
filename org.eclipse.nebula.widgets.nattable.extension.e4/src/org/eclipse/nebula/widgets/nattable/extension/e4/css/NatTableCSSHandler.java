@@ -54,6 +54,7 @@ import org.eclipse.nebula.widgets.nattable.style.BorderStyle.BorderModeEnum;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.TextDecorationEnum;
@@ -85,7 +86,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
 
         NatTable natTable = null;
         String label = null;
-        String displayMode = NatTableCSSHelper.getDisplayMode(pseudo);
+        DisplayMode displayMode = NatTableCSSHelper.getDisplayMode(pseudo);
 
         CSSElementContext context = null;
         CSSElementContext natTableContext = null;
@@ -930,7 +931,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
 
         NatTable natTable = null;
         String label = null;
-        String displayMode = NatTableCSSHelper.getDisplayMode(pseudo);
+        DisplayMode displayMode = NatTableCSSHelper.getDisplayMode(pseudo);
 
         if (control instanceof NatTable) {
             natTable = (NatTable) control;
@@ -1563,7 +1564,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
 
         if (natTable != null) {
             context = engine.getCSSElementContext(control);
-            String displayMode = NatTableCSSHelper.getDisplayMode(pseudo);
+            DisplayMode displayMode = NatTableCSSHelper.getDisplayMode(pseudo);
 
             CSS2FontProperties fontProperties =
                     (CSS2FontProperties) NatTableCSSHelper.getContextValue(

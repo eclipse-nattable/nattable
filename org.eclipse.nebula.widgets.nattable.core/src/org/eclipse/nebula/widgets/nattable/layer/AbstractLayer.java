@@ -394,7 +394,7 @@ public abstract class AbstractLayer implements ILayer {
     }
 
     @Override
-    public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
+    public DisplayMode getDisplayModeByPosition(int columnPosition, int rowPosition) {
         return DisplayMode.NORMAL;
     }
 

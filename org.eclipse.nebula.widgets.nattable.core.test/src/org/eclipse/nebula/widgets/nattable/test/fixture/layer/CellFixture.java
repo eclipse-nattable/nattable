@@ -23,7 +23,7 @@ public class CellFixture extends LayerCell {
     public static final String TEST_CONFIG_TYPE = "default";
     public static final String TEST_CELL_DATA = "Test cell data";
 
-    private String displayMode;
+    private DisplayMode displayMode;
     private LabelStack configLabels;
     private Object dataValue;
     private Rectangle bounds;
@@ -43,11 +43,11 @@ public class CellFixture extends LayerCell {
     }
 
     @Override
-    public String getDisplayMode() {
+    public DisplayMode getDisplayMode() {
         return this.displayMode;
     }
 
-    public void setDisplayMode(String displayMode) {
+    public void setDisplayMode(DisplayMode displayMode) {
         this.displayMode = displayMode;
     }
 

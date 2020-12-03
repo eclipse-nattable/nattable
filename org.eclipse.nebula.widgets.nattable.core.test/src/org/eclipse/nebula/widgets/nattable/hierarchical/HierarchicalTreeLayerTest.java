@@ -64,7 +64,7 @@ import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.search.CellValueAsStringComparator;
-import org.eclipse.nebula.widgets.nattable.search.ISearchDirection;
+import org.eclipse.nebula.widgets.nattable.search.SearchDirection;
 import org.eclipse.nebula.widgets.nattable.search.command.SearchCommand;
 import org.eclipse.nebula.widgets.nattable.search.strategy.GridSearchStrategy;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -1767,7 +1767,7 @@ public class HierarchicalTreeLayerTest {
                 "sing",
                 this.selectionLayer,
                 gridSearchStrategy,
-                ISearchDirection.SEARCH_FORWARD,
+                SearchDirection.SEARCH_FORWARD,
                 false,
                 false,
                 false,
@@ -1800,7 +1800,7 @@ public class HierarchicalTreeLayerTest {
                 "sing",
                 this.selectionLayer,
                 gridSearchStrategy,
-                ISearchDirection.SEARCH_FORWARD,
+                SearchDirection.SEARCH_FORWARD,
                 false,
                 false,
                 false,
@@ -1837,7 +1837,7 @@ public class HierarchicalTreeLayerTest {
                 "sing",
                 this.selectionLayer,
                 gridSearchStrategy,
-                ISearchDirection.SEARCH_FORWARD,
+                SearchDirection.SEARCH_FORWARD,
                 false,
                 false,
                 false,
@@ -1878,7 +1878,7 @@ public class HierarchicalTreeLayerTest {
                 "sing",
                 this.selectionLayer,
                 gridSearchStrategy,
-                ISearchDirection.SEARCH_FORWARD,
+                SearchDirection.SEARCH_FORWARD,
                 false,
                 false,
                 false,
@@ -1912,7 +1912,7 @@ public class HierarchicalTreeLayerTest {
                 "sing",
                 this.selectionLayer,
                 gridSearchStrategy,
-                ISearchDirection.SEARCH_FORWARD,
+                SearchDirection.SEARCH_FORWARD,
                 false,
                 false,
                 false,
@@ -1950,7 +1950,7 @@ public class HierarchicalTreeLayerTest {
                 "sing",
                 this.selectionLayer,
                 gridSearchStrategy,
-                ISearchDirection.SEARCH_FORWARD,
+                SearchDirection.SEARCH_FORWARD,
                 false,
                 false,
                 false,

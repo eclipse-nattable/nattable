@@ -767,7 +767,7 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
     }
 
     @Override
-    public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
+    public DisplayMode getDisplayModeByPosition(int columnPosition, int rowPosition) {
         if (isLevelHeaderColumn(columnPosition)) {
             // there is no support for hover styling of the tree level header
             // the HoverLayer does not see the level header cells and therefore

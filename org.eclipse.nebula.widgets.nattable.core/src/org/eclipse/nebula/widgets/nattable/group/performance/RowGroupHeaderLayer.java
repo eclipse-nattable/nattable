@@ -1212,7 +1212,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
     }
 
     @Override
-    public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
+    public DisplayMode getDisplayModeByPosition(int columnPosition, int rowPosition) {
         if (columnPosition < this.model.size() && isPartOfAGroup(getLevelForColumnPosition(columnPosition), rowPosition)) {
             return DisplayMode.NORMAL;
         } else {

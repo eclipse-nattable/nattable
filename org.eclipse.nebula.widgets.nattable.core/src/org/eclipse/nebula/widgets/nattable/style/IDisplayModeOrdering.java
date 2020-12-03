@@ -16,6 +16,14 @@ import java.util.List;
 
 public interface IDisplayModeOrdering {
 
-    public List<String> getDisplayModeOrdering(String targetDisplayMode);
+    /**
+     *
+     * @param targetDisplayMode
+     *            The {@link DisplayMode} for which the ordering is requested.
+     * @return An ordered list of {@link DisplayMode} descending from the target
+     *         display mode.
+     * @since 2.0
+     */
+    public List<DisplayMode> getDisplayModeOrdering(DisplayMode targetDisplayMode);
 
 }

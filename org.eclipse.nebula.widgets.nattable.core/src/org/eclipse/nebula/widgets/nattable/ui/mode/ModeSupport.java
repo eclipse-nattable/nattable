@@ -13,8 +13,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.mode;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.EnumMap;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.swt.SWT;
@@ -41,7 +40,7 @@ public class ModeSupport implements KeyListener, MouseListener, MouseMoveListene
         IS_MAC = System.getProperty("os.name").toLowerCase().indexOf("mac") >= 0; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    private Map<String, IModeEventHandler> modeEventHandlerMap = new HashMap<>();
+    private EnumMap<Mode, IModeEventHandler> modeEventHandlerMap = new EnumMap<>(Mode.class);
 
     private IModeEventHandler currentModeEventHandler;
 
@@ -63,8 +62,9 @@ public class ModeSupport implements KeyListener, MouseListener, MouseMoveListene
      *            given mode.
      *
      * @see IModeEventHandler
+     * @since 2.0
      */
-    public void registerModeEventHandler(String mode, IModeEventHandler modeEventHandler) {
+    public void registerModeEventHandler(Mode mode, IModeEventHandler modeEventHandler) {
         this.modeEventHandlerMap.put(mode, modeEventHandler);
     }
 
@@ -73,8 +73,9 @@ public class ModeSupport implements KeyListener, MouseListener, MouseMoveListene
      *
      * @param mode
      *            The target mode to switch to.
+     * @since 2.0
      */
-    public void switchMode(String mode) {
+    public void switchMode(Mode mode) {
         if (this.currentModeEventHandler != null) {
             this.currentModeEventHandler.cleanup();
         }
@@ -156,11 +157,9 @@ public class ModeSupport implements KeyListener, MouseListener, MouseMoveListene
      *            The {@link MouseEvent} to modify
      */
     private void modifyMouseEventForMac(MouseEvent event) {
-        if (IS_MAC) {
-            if (event.stateMask == SWT.MOD4 && event.button == 1) {
-                event.stateMask = event.stateMask & ~SWT.MOD4;
-                event.button = 3;
-            }
+        if (IS_MAC && event.stateMask == SWT.MOD4 && event.button == 1) {
+            event.stateMask = event.stateMask & ~SWT.MOD4;
+            event.button = 3;
         }
     }
 

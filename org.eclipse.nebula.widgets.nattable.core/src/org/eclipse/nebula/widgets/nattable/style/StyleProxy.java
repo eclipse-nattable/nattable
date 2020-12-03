@@ -23,13 +23,49 @@ public abstract class StyleProxy implements IStyle {
      * @since 2.0
      */
     protected final IConfigRegistry configRegistry;
-    private final String targetDisplayMode;
+    private final DisplayMode targetDisplayMode;
     private final List<String> configLabels;
 
+    /**
+     *
+     * @param styleConfigAttribute
+     *            The style config attribute.
+     * @param configRegistry
+     *            The {@link IConfigRegistry}.
+     * @param targetDisplayMode
+     *            The {@link DisplayMode}.
+     * @param configLabels
+     *            The config labels.
+     *
+     * @deprecated Use constructor with {@link DisplayMode} parameter.
+     */
+    @Deprecated
     public StyleProxy(
             ConfigAttribute<IStyle> styleConfigAttribute,
             IConfigRegistry configRegistry,
             String targetDisplayMode,
+            List<String> configLabels) {
+
+        this(styleConfigAttribute, configRegistry, DisplayMode.valueOf(targetDisplayMode), configLabels);
+    }
+
+    /**
+     *
+     * @param styleConfigAttribute
+     *            The style config attribute.
+     * @param configRegistry
+     *            The {@link IConfigRegistry}.
+     * @param targetDisplayMode
+     *            The {@link DisplayMode}.
+     * @param configLabels
+     *            The config labels.
+     *
+     * @since 2.0
+     */
+    public StyleProxy(
+            ConfigAttribute<IStyle> styleConfigAttribute,
+            IConfigRegistry configRegistry,
+            DisplayMode targetDisplayMode,
             List<String> configLabels) {
 
         this.styleConfigAttribute = styleConfigAttribute;
@@ -43,7 +79,7 @@ public abstract class StyleProxy implements IStyle {
         T styleAttributeValue = null;
         IDisplayModeOrdering displayModeOrdering = this.configRegistry.getDisplayModeOrdering();
 
-        for (String displayMode : displayModeOrdering.getDisplayModeOrdering(this.targetDisplayMode)) {
+        for (DisplayMode displayMode : displayModeOrdering.getDisplayModeOrdering(this.targetDisplayMode)) {
             for (String configLabel : this.configLabels) {
                 IStyle cellStyle = this.configRegistry.getSpecificConfigAttribute(
                         this.styleConfigAttribute,

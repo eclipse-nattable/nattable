@@ -30,6 +30,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.graphics.Rectangle;
@@ -55,7 +56,7 @@ public class TestLayer implements IUniqueIndexLayer {
 
     private final ILayerCell[][] cells;
     private final Rectangle[][] bounds;
-    private final String[][] displayModes;
+    private final DisplayMode[][] displayModes;
     private final String[][] configLabels;
     private final Object[][] dataValues;
 
@@ -86,7 +87,7 @@ public class TestLayer implements IUniqueIndexLayer {
 
         this.cells = new ILayerCell[columnCount][rowCount];
         this.bounds = new Rectangle[columnCount][rowCount];
-        this.displayModes = new String[columnCount][rowCount];
+        this.displayModes = new DisplayMode[columnCount][rowCount];
         this.configLabels = new String[columnCount][rowCount];
         this.dataValues = new Object[columnCount][rowCount];
 
@@ -358,7 +359,7 @@ public class TestLayer implements IUniqueIndexLayer {
                             break;
                         } else {
                             // Parse display mode
-                            this.displayModes[columnPosition][rowPosition] = nextToken;
+                            this.displayModes[columnPosition][rowPosition] = DisplayMode.valueOf(nextToken);
                         }
                     } else if (":".equals(token)) {
                         String nextToken = cellInfoFieldTokenizer.nextToken()
@@ -748,7 +749,7 @@ public class TestLayer implements IUniqueIndexLayer {
     }
 
     @Override
-    public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
+    public DisplayMode getDisplayModeByPosition(int columnPosition, int rowPosition) {
         return this.displayModes[columnPosition][rowPosition];
     }
 

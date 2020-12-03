@@ -565,8 +565,8 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     // ILayer methods
 
     @Override
-    public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
-        String displayMode = super.getDisplayModeByPosition(columnPosition, rowPosition);
+    public DisplayMode getDisplayModeByPosition(int columnPosition, int rowPosition) {
+        DisplayMode displayMode = super.getDisplayModeByPosition(columnPosition, rowPosition);
         if (isCellPositionSelected(columnPosition, rowPosition)) {
             if (DisplayMode.HOVER.equals(displayMode)) {
                 return DisplayMode.SELECT_HOVER;

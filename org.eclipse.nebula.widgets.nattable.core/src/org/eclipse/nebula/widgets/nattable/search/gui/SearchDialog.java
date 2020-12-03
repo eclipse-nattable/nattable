@@ -38,7 +38,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.cell.CellDisplayConversionUtils;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
-import org.eclipse.nebula.widgets.nattable.search.ISearchDirection;
+import org.eclipse.nebula.widgets.nattable.search.SearchDirection;
 import org.eclipse.nebula.widgets.nattable.search.action.SearchAction;
 import org.eclipse.nebula.widgets.nattable.search.command.SearchCommand;
 import org.eclipse.nebula.widgets.nattable.search.event.SearchEvent;
@@ -663,7 +663,7 @@ public class SearchDialog extends Dialog {
         // includeCollapsedValue = includeCollapsedButton.getSelection();
         this.columnFirstValue = this.columnFirstButton.getSelection();
 
-        String searchDirection = this.forwardValue ? ISearchDirection.SEARCH_FORWARD : ISearchDirection.SEARCH_BACKWARDS;
+        SearchDirection searchDirection = this.forwardValue ? SearchDirection.SEARCH_FORWARD : SearchDirection.SEARCH_BACKWARDS;
         ISearchStrategy searchStrategy;
         if (this.allValue) {
             searchStrategy = new GridSearchStrategy(this.natTable.getConfigRegistry(), true, this.columnFirstValue);

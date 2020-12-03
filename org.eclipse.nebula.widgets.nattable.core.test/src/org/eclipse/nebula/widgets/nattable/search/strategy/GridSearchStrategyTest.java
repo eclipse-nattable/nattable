@@ -31,7 +31,7 @@ import org.eclipse.nebula.widgets.nattable.layer.SpanningDataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.DataCell;
 import org.eclipse.nebula.widgets.nattable.search.CellValueAsStringComparator;
-import org.eclipse.nebula.widgets.nattable.search.ISearchDirection;
+import org.eclipse.nebula.widgets.nattable.search.SearchDirection;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.DataProviderFixture;
@@ -235,7 +235,7 @@ public class GridSearchStrategyTest {
         // Select search starting point in composite coordinates
         this.gridLayer.doCommand(new SelectCellCommand(this.gridLayer, 3, 4, false, false));
 
-        GridSearchStrategy gridStrategy = new GridSearchStrategy(this.configRegistry, false, ISearchDirection.SEARCH_BACKWARDS, true);
+        GridSearchStrategy gridStrategy = new GridSearchStrategy(this.configRegistry, false, SearchDirection.SEARCH_BACKWARDS, true);
         gridStrategy.setComparator(new CellValueAsStringComparator<>());
         gridStrategy.setContextLayer(this.selectionLayer);
 
@@ -247,7 +247,7 @@ public class GridSearchStrategyTest {
 
     @Test
     public void shouldFindAllCellsWithValue() {
-        GridSearchStrategy gridStrategy = new GridSearchStrategy(this.configRegistry, true, ISearchDirection.SEARCH_BACKWARDS, true);
+        GridSearchStrategy gridStrategy = new GridSearchStrategy(this.configRegistry, true, SearchDirection.SEARCH_BACKWARDS, true);
         gridStrategy.setComparator(new CellValueAsStringComparator<>());
         gridStrategy.setContextLayer(this.selectionLayer);
         gridStrategy.setCaseSensitive(true);
@@ -351,7 +351,7 @@ public class GridSearchStrategyTest {
 
     @Test
     public void searchShouldHandleSpannedCellsBackwards() {
-        GridSearchStrategy gridStrategy = new GridSearchStrategy(this.spanningConfigRegistry, true, ISearchDirection.SEARCH_BACKWARDS, true);
+        GridSearchStrategy gridStrategy = new GridSearchStrategy(this.spanningConfigRegistry, true, SearchDirection.SEARCH_BACKWARDS, true);
 
         // start after the last expected search result
         this.spanningSelectionLayer.setSelectedCell(5, 5);

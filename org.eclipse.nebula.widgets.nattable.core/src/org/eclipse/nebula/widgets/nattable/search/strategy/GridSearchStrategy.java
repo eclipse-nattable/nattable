@@ -18,11 +18,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.search.ISearchDirection;
+import org.eclipse.nebula.widgets.nattable.search.SearchDirection;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 
 public class GridSearchStrategy extends AbstractSearchStrategy {
@@ -30,10 +31,39 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
     private final IConfigRegistry configRegistry;
 
     public GridSearchStrategy(IConfigRegistry configRegistry, boolean wrapSearch, boolean columnFirst) {
-        this(configRegistry, wrapSearch, ISearchDirection.SEARCH_FORWARD, columnFirst);
+        this(configRegistry, wrapSearch, SearchDirection.SEARCH_FORWARD, columnFirst);
     }
 
+    /**
+     *
+     * @param configRegistry
+     *            The {@link ConfigRegistry}.
+     * @param wrapSearch
+     *            Flag to configure if the search should wrap.
+     * @param searchDirection
+     *            The {@link SearchDirection}.
+     * @param columnFirst
+     *            Flag to configure if the search should be by column.
+     * @deprecated Use constructor with {@link SearchDirection} parameter
+     */
+    @Deprecated
     public GridSearchStrategy(IConfigRegistry configRegistry, boolean wrapSearch, String searchDirection, boolean columnFirst) {
+        this(configRegistry, wrapSearch, SearchDirection.valueOf(searchDirection), columnFirst);
+    }
+
+    /**
+     *
+     * @param configRegistry
+     *            The {@link ConfigRegistry}.
+     * @param wrapSearch
+     *            Flag to configure if the search should wrap.
+     * @param searchDirection
+     *            The {@link SearchDirection}.
+     * @param columnFirst
+     *            Flag to configure if the search should be by column.
+     * @since 2.0
+     */
+    public GridSearchStrategy(IConfigRegistry configRegistry, boolean wrapSearch, SearchDirection searchDirection, boolean columnFirst) {
         this.configRegistry = configRegistry;
         this.wrapSearch = wrapSearch;
         this.searchDirection = searchDirection;
@@ -56,7 +86,7 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
         PositionCoordinate selectionAnchor = selectionLayer.getSelectionAnchor();
 
         // Pick start and end values depending on the direction of the search.
-        int direction = this.searchDirection.equals(ISearchDirection.SEARCH_FORWARD) ? 1 : -1;
+        int direction = this.searchDirection.equals(SearchDirection.SEARCH_FORWARD) ? 1 : -1;
 
         boolean hadSelectionAnchor = selectionAnchor.columnPosition >= 0 && selectionAnchor.rowPosition >= 0;
         if (!hadSelectionAnchor) {

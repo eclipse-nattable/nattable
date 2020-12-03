@@ -18,29 +18,29 @@ import java.util.List;
 
 public class DefaultDisplayModeOrdering implements IDisplayModeOrdering {
 
-    private static final List<String> NORMAL_ORDERING =
+    private static final List<DisplayMode> NORMAL_ORDERING =
             Arrays.asList(DisplayMode.NORMAL);
 
-    private static final List<String> SELECT_ORDERING =
+    private static final List<DisplayMode> SELECT_ORDERING =
             Arrays.asList(DisplayMode.SELECT, DisplayMode.NORMAL);
 
-    private static final List<String> EDIT_ORDERING =
+    private static final List<DisplayMode> EDIT_ORDERING =
             Arrays.asList(DisplayMode.EDIT, DisplayMode.NORMAL);
 
-    private static final List<String> EMPTY_ORDERING =
+    private static final List<DisplayMode> EMPTY_ORDERING =
             Collections.emptyList();
 
-    private static final List<String> HOVER_ORDERING =
+    private static final List<DisplayMode> HOVER_ORDERING =
             Arrays.asList(DisplayMode.HOVER, DisplayMode.NORMAL);
 
-    private static final List<String> SELECT_HOVER_ORDERING =
+    private static final List<DisplayMode> SELECT_HOVER_ORDERING =
             Arrays.asList(DisplayMode.SELECT_HOVER, DisplayMode.SELECT, DisplayMode.HOVER, DisplayMode.NORMAL);
 
     /**
      * See DefaultDisplayModeOrderingTest
      */
     @Override
-    public List<String> getDisplayModeOrdering(String targetDisplayMode) {
+    public List<DisplayMode> getDisplayModeOrdering(DisplayMode targetDisplayMode) {
         if (DisplayMode.NORMAL.equals(targetDisplayMode)) {
             return NORMAL_ORDERING;
         } else if (DisplayMode.SELECT.equals(targetDisplayMode)) {

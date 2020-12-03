@@ -24,7 +24,7 @@ import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.search.CellValueAsStringComparator;
-import org.eclipse.nebula.widgets.nattable.search.ISearchDirection;
+import org.eclipse.nebula.widgets.nattable.search.SearchDirection;
 import org.eclipse.nebula.widgets.nattable.search.event.SearchEvent;
 import org.eclipse.nebula.widgets.nattable.search.strategy.GridSearchStrategy;
 import org.eclipse.nebula.widgets.nattable.search.strategy.SelectionSearchStrategy;
@@ -115,7 +115,7 @@ public class SearchGridCommandHandlerTest {
                     this.searchText,
                     selectionLayer,
                     gridSearchStrategy,
-                    this.isForward ? ISearchDirection.SEARCH_FORWARD : ISearchDirection.SEARCH_BACKWARDS,
+                    this.isForward ? SearchDirection.SEARCH_FORWARD : SearchDirection.SEARCH_BACKWARDS,
                     this.isWrapSearch,
                     this.isCaseSensitive,
                     this.isWholeWord,
@@ -171,7 +171,7 @@ public class SearchGridCommandHandlerTest {
                     this.searchText,
                     selectionLayer,
                     gridSearchStrategy,
-                    this.isForward ? ISearchDirection.SEARCH_FORWARD : ISearchDirection.SEARCH_BACKWARDS,
+                    this.isForward ? SearchDirection.SEARCH_FORWARD : SearchDirection.SEARCH_BACKWARDS,
                     this.isWrapSearch,
                     this.isCaseSensitive,
                     this.isWholeWord,

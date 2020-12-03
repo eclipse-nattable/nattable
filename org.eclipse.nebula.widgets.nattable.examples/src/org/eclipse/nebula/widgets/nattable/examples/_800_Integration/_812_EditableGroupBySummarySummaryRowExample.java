@@ -318,6 +318,7 @@ public class _812_EditableGroupBySummarySummaryRowExample extends AbstractNatExa
                 configRegistry.registerConfigAttribute(
                         EditConfigAttributes.CELL_EDITOR,
                         new DateCellEditor(),
+                        DisplayMode.NORMAL,
                         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 6);
 
                 // register the correct converters

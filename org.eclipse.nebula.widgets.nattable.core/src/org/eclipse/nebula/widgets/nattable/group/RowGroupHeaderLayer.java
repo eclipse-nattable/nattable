@@ -308,7 +308,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
     }
 
     @Override
-    public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
+    public DisplayMode getDisplayModeByPosition(int columnPosition, int rowPosition) {
         int rowIndex = getRowIndexByPosition(rowPosition);
         if (columnPosition == 0
                 && RowGroupUtils.isPartOfAGroup(this.model, rowIndex)) {

@@ -15,10 +15,11 @@ package org.eclipse.nebula.widgets.nattable.search.strategy;
 import java.util.Comparator;
 
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.search.SearchDirection;
 
 public abstract class AbstractSearchStrategy implements ISearchStrategy {
     private ILayer contextLayer;
-    protected String searchDirection;
+    protected SearchDirection searchDirection;
     protected boolean caseSensitive;
     protected boolean wrapSearch;
     protected boolean wholeWord;
@@ -37,10 +38,24 @@ public abstract class AbstractSearchStrategy implements ISearchStrategy {
     }
 
     public void setSearchDirection(String searchDirection) {
+        setSearchDirection(SearchDirection.valueOf(searchDirection));
+    }
+
+    /**
+     * @param searchDirection
+     *            The {@link SearchDirection} to use.
+     * @since 2.0
+     */
+    public void setSearchDirection(SearchDirection searchDirection) {
         this.searchDirection = searchDirection;
     }
 
-    public String getSearchDirection() {
+    /**
+     *
+     * @return The used {@link SearchDirection}
+     * @since 2.0
+     */
+    public SearchDirection getSearchDirection() {
         return this.searchDirection;
     }
 

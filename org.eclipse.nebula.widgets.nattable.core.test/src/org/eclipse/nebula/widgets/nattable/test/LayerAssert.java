@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.swt.graphics.Rectangle;
 
 public class LayerAssert {
@@ -236,9 +237,9 @@ public class LayerAssert {
 
         for (int columnPosition = 0; columnPosition < expectedColumnCount; columnPosition++) {
             for (int rowPosition = 0; rowPosition < expectedRowCount; rowPosition++) {
-                String expectedDisplayModeByPosition = expectedLayer
+                DisplayMode expectedDisplayModeByPosition = expectedLayer
                         .getDisplayModeByPosition(columnPosition, rowPosition);
-                String actualDisplayModeByPosition = actualLayer
+                DisplayMode actualDisplayModeByPosition = actualLayer
                         .getDisplayModeByPosition(columnPosition, rowPosition);
                 assertEquals("Display mode by position ("
                         + columnPosition + ", " + rowPosition + ")",

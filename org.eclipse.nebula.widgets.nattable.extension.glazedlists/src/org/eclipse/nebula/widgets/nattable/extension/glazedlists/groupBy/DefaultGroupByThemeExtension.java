@@ -801,8 +801,7 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
         String hint = getGroupByHint();
         if (hint != null && hint.length() > 0) {
             configRegistry.unregisterConfigAttribute(
-                    GroupByConfigAttributes.GROUP_BY_HINT,
-                    hint);
+                    GroupByConfigAttributes.GROUP_BY_HINT);
         }
 
         if (!ThemeConfiguration.isStyleEmpty(getGroupByObjectStyle())) {

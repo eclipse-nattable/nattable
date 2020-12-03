@@ -105,8 +105,9 @@ public final class NatTableCSSHelper {
      * @param pseudo
      *            The pseudo class.
      * @return The {@link DisplayMode} value for the given pseudo class.
+     * @since 2.0
      */
-    public static String getDisplayMode(String pseudo) {
+    public static DisplayMode getDisplayMode(String pseudo) {
         if (pseudo != null) {
             if ("select".equals(pseudo)) {
                 return DisplayMode.SELECT;
@@ -311,8 +312,9 @@ public final class NatTableCSSHelper {
      *            The config labels for which the configuration is requested.
      * @return The style attribute for the given display mode and config labels
      *         out of the NatTable configuration.
+     * @since 2.0
      */
-    public static <T> T getNatTableStyle(NatTable natTable, ConfigAttribute<T> styleConfig, String displayMode, String... configLabels) {
+    public static <T> T getNatTableStyle(NatTable natTable, ConfigAttribute<T> styleConfig, DisplayMode displayMode, String... configLabels) {
         IConfigRegistry configRegistry = natTable.getConfigRegistry();
 
         CellStyleProxy style = new CellStyleProxy(configRegistry, displayMode, Arrays.asList(configLabels));
@@ -337,12 +339,13 @@ public final class NatTableCSSHelper {
      *            applied.
      * @param configLabel
      *            The label for which the configuration should be applied.
+     * @since 2.0
      */
     public static <T> void applyNatTableStyle(
             NatTable natTable,
             ConfigAttribute<T> styleConfig,
             T value,
-            String displayMode,
+            DisplayMode displayMode,
             String configLabel) {
 
         applyNatTableStyle(natTable, CellConfigAttributes.CELL_STYLE, styleConfig, value, displayMode, configLabel);
@@ -368,13 +371,14 @@ public final class NatTableCSSHelper {
      *            applied.
      * @param configLabel
      *            The label for which the configuration should be applied.
+     * @since 2.0
      */
     public static <T> void applyNatTableStyle(
             NatTable natTable,
             ConfigAttribute<IStyle> styleAttribute,
             ConfigAttribute<T> styleConfig,
             T value,
-            String displayMode,
+            DisplayMode displayMode,
             String configLabel) {
 
         IConfigRegistry configRegistry = natTable.getConfigRegistry();
@@ -424,10 +428,11 @@ public final class NatTableCSSHelper {
      * @param label
      *            The label for which the font properties are requested.
      * @return The {@link CSS2FontProperties} for the given attributes.
+     * @since 2.0
      */
     public static CSS2FontProperties getFontProperties(
             CSSElementContext context, String contextKey,
-            NatTable natTable, String displayMode, String label) {
+            NatTable natTable, DisplayMode displayMode, String label) {
         // check if there are font properties already registered
         CSS2FontProperties fontProperties = (CSS2FontProperties) getContextValue(context, displayMode, contextKey);
         if (fontProperties == null) {
@@ -486,8 +491,9 @@ public final class NatTableCSSHelper {
      * @param displayMode
      *            The {@link DisplayMode} for which the value should be stored.
      * @return The {@link BorderStyle}
+     * @since 2.0
      */
-    public static BorderStyle getBorderStyle(CSSElementContext context, String displayMode) {
+    public static BorderStyle getBorderStyle(CSSElementContext context, DisplayMode displayMode) {
         BorderStyle borderStyle = (BorderStyle) getContextValue(context, displayMode, NatTableCSSConstants.CV_BORDER_CONFIGURATION);
 
         if (borderStyle == null) {
@@ -584,12 +590,13 @@ public final class NatTableCSSHelper {
      *            value.
      * @param displayMode
      *            The target {@link DisplayMode} to check for the value.
+     * @since 2.0
      */
     public static void storePadding(
             String paddingKey,
             CSSValue value,
             CSSElementContext context,
-            String displayMode) {
+            DisplayMode displayMode) {
 
         if (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE) {
             CSSPrimitiveValue primitiveValue = (CSSPrimitiveValue) value;
@@ -623,9 +630,10 @@ public final class NatTableCSSHelper {
      *         resolved, <code>false</code> if the painter is configured
      *         elsewhere and therefore no automatic resolution should be
      *         performed. Default is <code>true</code>.
+     * @since 2.0
      */
     public static boolean resolvePainter(
-            CSSElementContext context, CSSElementContext natTableContext, String displayMode) {
+            CSSElementContext context, CSSElementContext natTableContext, DisplayMode displayMode) {
 
         Object cv = getContextValueInherited(
                 context,
@@ -646,8 +654,9 @@ public final class NatTableCSSHelper {
      *            The {@link DisplayMode} for which the value should be stored.
      * @return The string representation of decorator painter that should be
      *         used for rendering.
+     * @since 2.0
      */
-    public static List<String> getDecoratorPainter(CSSElementContext context, String displayMode) {
+    public static List<String> getDecoratorPainter(CSSElementContext context, DisplayMode displayMode) {
         @SuppressWarnings("unchecked")
         List<String> decorator = (List<String>) getContextValue(context, displayMode, NatTableCSSConstants.CV_DECORATOR_PAINTER);
 
@@ -668,8 +677,9 @@ public final class NatTableCSSHelper {
      * @param displayMode
      *            The {@link DisplayMode} for which the value should be stored.
      * @return The properties that should be used to create content painter.
+     * @since 2.0
      */
-    public static Map<String, Object> getPainterProperties(CSSElementContext context, String displayMode) {
+    public static Map<String, Object> getPainterProperties(CSSElementContext context, DisplayMode displayMode) {
         @SuppressWarnings("unchecked")
         Map<String, Object> painterProperties =
                 (Map<String, Object>) getContextValue(context, displayMode, NatTableCSSConstants.CV_PAINTER_CONFIGURATION);
@@ -696,14 +706,15 @@ public final class NatTableCSSHelper {
      * @param targetDisplayMode
      *            The target {@link DisplayMode} to check for the value.
      * @return The painter properties with values out of inheritance
+     * @since 2.0
      */
     public static Map<String, Object> getPainterPropertiesInherited(
-            CSSElementContext context, CSSElementContext natTableContext, String targetDisplayMode) {
+            CSSElementContext context, CSSElementContext natTableContext, DisplayMode targetDisplayMode) {
 
         Map<String, Object> painterProperties = new HashMap<>();
 
-        List<String> displayModes = displayModeOrdering.getDisplayModeOrdering(targetDisplayMode);
-        String displayMode = null;
+        List<DisplayMode> displayModes = displayModeOrdering.getDisplayModeOrdering(targetDisplayMode);
+        DisplayMode displayMode = null;
 
         if (natTableContext != null) {
             // first get the painter properties from tbe NatTable in reverse
@@ -761,8 +772,9 @@ public final class NatTableCSSHelper {
      *            The key for which the value should be stored.
      * @param value
      *            The value to store.
+     * @since 2.0
      */
-    public static void storeContextValue(CSSElementContext context, String displayMode, Object key, Object value) {
+    public static void storeContextValue(CSSElementContext context, DisplayMode displayMode, Object key, Object value) {
         Object subContext = context.getData(displayMode);
         if (subContext == null) {
             subContext = new HashMap<>();
@@ -790,8 +802,9 @@ public final class NatTableCSSHelper {
      *         given {@link DisplayMode}, the value out of the given
      *         {@link CSSElementContext} directly is returned. Can be
      *         <code>null</code>.
+     * @since 2.0
      */
-    public static Object getContextValue(CSSElementContext context, String displayMode, Object key) {
+    public static Object getContextValue(CSSElementContext context, DisplayMode displayMode, Object key) {
         Object subContext = context.getData(displayMode);
         if (subContext != null) {
             @SuppressWarnings("unchecked")
@@ -819,14 +832,15 @@ public final class NatTableCSSHelper {
      * @param key
      *            The key of the context value to search for.
      * @return The context value for the given key.
+     * @since 2.0
      */
     public static Object getContextValueInherited(
             CSSElementContext context, CSSElementContext natTableContext,
-            String targetDisplayMode, Object key) {
+            DisplayMode targetDisplayMode, Object key) {
 
         Object cv = null;
 
-        for (String displayMode : displayModeOrdering.getDisplayModeOrdering(targetDisplayMode)) {
+        for (DisplayMode displayMode : displayModeOrdering.getDisplayModeOrdering(targetDisplayMode)) {
             cv = getContextValue(context, displayMode, key);
             if (cv != null) {
                 break;

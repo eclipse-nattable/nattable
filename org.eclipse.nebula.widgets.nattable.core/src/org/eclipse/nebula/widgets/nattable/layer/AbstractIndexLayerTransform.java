@@ -26,6 +26,7 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.TranslatedLayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 
@@ -333,7 +334,7 @@ public class AbstractIndexLayerTransform extends AbstractLayer implements IUniqu
     }
 
     @Override
-    public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
+    public DisplayMode getDisplayModeByPosition(int columnPosition, int rowPosition) {
         return this.underlyingLayer.getDisplayModeByPosition(
                 localToUnderlyingColumnPosition(columnPosition),
                 localToUnderlyingRowPosition(rowPosition));

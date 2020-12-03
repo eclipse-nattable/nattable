@@ -23,7 +23,7 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.search.CellValueAsStringComparator;
-import org.eclipse.nebula.widgets.nattable.search.ISearchDirection;
+import org.eclipse.nebula.widgets.nattable.search.SearchDirection;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectAllCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
@@ -167,7 +167,7 @@ public class SelectionSearchStrategyTest {
         assertEquals(1, this.selectionLayer.getSelectionAnchor().getRowPosition());
 
         // Should find last cell
-        selectionStrategy = new SelectionSearchStrategy(this.configRegistry, ISearchDirection.SEARCH_BACKWARDS, true);
+        selectionStrategy = new SelectionSearchStrategy(this.configRegistry, SearchDirection.SEARCH_BACKWARDS, true);
         selectionStrategy.setWrapSearch(true);
         selectionStrategy.setComparator(new CellValueAsStringComparator<>());
         selectionStrategy.setContextLayer(this.selectionLayer);

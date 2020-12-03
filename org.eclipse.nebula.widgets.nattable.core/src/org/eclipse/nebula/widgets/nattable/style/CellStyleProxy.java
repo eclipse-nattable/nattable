@@ -21,7 +21,32 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 
 public class CellStyleProxy extends StyleProxy {
 
+    /**
+     *
+     * @param configRegistry
+     *            The {@link IConfigRegistry}.
+     * @param targetDisplayMode
+     *            The {@link DisplayMode}.
+     * @param configLabels
+     *            The config labels.
+     * @deprecated Use constructor with {@link DisplayMode} parameter.
+     */
+    @Deprecated
     public CellStyleProxy(IConfigRegistry configRegistry, String targetDisplayMode, List<String> configLabels) {
+        super(CellConfigAttributes.CELL_STYLE, configRegistry, DisplayMode.valueOf(targetDisplayMode), configLabels);
+    }
+
+    /**
+     *
+     * @param configRegistry
+     *            The {@link IConfigRegistry}.
+     * @param targetDisplayMode
+     *            The {@link DisplayMode}.
+     * @param configLabels
+     *            The config labels.
+     * @since 2.0
+     */
+    public CellStyleProxy(IConfigRegistry configRegistry, DisplayMode targetDisplayMode, List<String> configLabels) {
         super(CellConfigAttributes.CELL_STYLE, configRegistry, targetDisplayMode, configLabels);
     }
 

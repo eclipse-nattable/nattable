@@ -13,12 +13,13 @@
 package org.eclipse.nebula.widgets.nattable.layer.cell;
 
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.swt.graphics.Rectangle;
 
 public abstract class AbstractLayerCell implements ILayerCell {
 
     private boolean isDisplayModeCached = false;
-    private String displayMode = null;
+    private DisplayMode displayMode = null;
 
     private boolean isConfigLabelsCached = false;
     private LabelStack configLabels = null;
@@ -35,7 +36,7 @@ public abstract class AbstractLayerCell implements ILayerCell {
     }
 
     @Override
-    public String getDisplayMode() {
+    public DisplayMode getDisplayMode() {
         if (!this.isDisplayModeCached) {
             this.isDisplayModeCached = true;
 

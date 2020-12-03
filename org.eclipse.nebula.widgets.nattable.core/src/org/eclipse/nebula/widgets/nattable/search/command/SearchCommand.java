@@ -17,6 +17,7 @@ import java.util.Comparator;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
+import org.eclipse.nebula.widgets.nattable.search.SearchDirection;
 import org.eclipse.nebula.widgets.nattable.search.strategy.ISearchStrategy;
 
 public class SearchCommand implements ILayerCommand {
@@ -30,10 +31,37 @@ public class SearchCommand implements ILayerCommand {
     private final boolean isIncremental;
     private final boolean isRegex;
     private final boolean isIncludeCollapsed;
-    private final String searchDirection;
+    private final SearchDirection searchDirection;
     private final Comparator<?> comparator;
     private ILayerListener searchEventListener;
 
+    /**
+     *
+     * @param layer
+     *            The layer to search for the cell with the provided text.
+     *            Typically the SelectionLayer.
+     * @param searchStrategy
+     *            The search strategy to perform
+     * @param searchDirection
+     *            The search direction.
+     * @param isWrapSearch
+     *            is search wrap enabled
+     * @param isCaseSensitive
+     *            is search case sensitive
+     * @param isWholeWord
+     *            only search whole words
+     * @param isIncremental
+     *            is search incremental
+     * @param isRegex
+     *            is search based on regular expressions
+     * @param isIncludeCollapsed
+     *            is search including collapsed nodes
+     * @param comparator
+     *            the comparator to use
+     * @deprecated Use constructor with {@link SearchDirection} parameter and
+     *             text to search for
+     */
+    @Deprecated
     public SearchCommand(ILayer layer, ISearchStrategy searchStrategy,
             String searchDirection, boolean isWrapSearch,
             boolean isCaseSensitive, boolean isWholeWord,
@@ -44,21 +72,88 @@ public class SearchCommand implements ILayerCommand {
                 isIncludeCollapsed, comparator);
     }
 
+    /**
+     *
+     * @param searchText
+     *            The text to search.
+     * @param layer
+     *            The layer to search for the cell with the provided text.
+     *            Typically the SelectionLayer.
+     * @param searchStrategy
+     *            The search strategy to perform
+     * @param searchDirection
+     *            The search direction.
+     * @param isWrapSearch
+     *            is search wrap enabled
+     * @param isCaseSensitive
+     *            is search case sensitive
+     * @param isWholeWord
+     *            only search whole words
+     * @param isIncremental
+     *            is search incremental
+     * @param isRegex
+     *            is search based on regular expressions
+     * @param isIncludeCollapsed
+     *            is search including collapsed nodes
+     * @param comparator
+     *            the comparator to use
+     * @deprecated Use constructor with {@link SearchDirection} parameter
+     */
+    @Deprecated
     public SearchCommand(String searchText, ILayer layer,
             ISearchStrategy searchStrategy, String searchDirection,
             boolean isWrapSearch, boolean isCaseSensitive, boolean isWholeWord,
             boolean isIncremental, boolean isRegex, boolean isIncludeCollapsed,
             Comparator<?> comparator) {
+        this(searchText, layer,
+                searchStrategy, SearchDirection.valueOf(searchDirection),
+                isWrapSearch, isCaseSensitive, isWholeWord,
+                isIncremental, isRegex, isIncludeCollapsed,
+                comparator);
+    }
+
+    /**
+     *
+     * @param searchText
+     *            The text to search.
+     * @param layer
+     *            The layer to search for the cell with the provided text.
+     *            Typically the SelectionLayer.
+     * @param searchStrategy
+     *            The search strategy to perform
+     * @param searchDirection
+     *            The search direction.
+     * @param isWrapSearch
+     *            is search wrap enabled
+     * @param isCaseSensitive
+     *            is search case sensitive
+     * @param isWholeWord
+     *            only search whole words
+     * @param isIncremental
+     *            is search incremental
+     * @param isRegex
+     *            is search based on regular expressions
+     * @param isIncludeCollapsed
+     *            is search including collapsed nodes
+     * @param comparator
+     *            the comparator to use
+     * @since 2.0
+     */
+    public SearchCommand(String searchText, ILayer layer,
+            ISearchStrategy searchStrategy, SearchDirection searchDirection,
+            boolean isWrapSearch, boolean isCaseSensitive, boolean isWholeWord,
+            boolean isIncremental, boolean isRegex, boolean isIncludeCollapsed,
+            Comparator<?> comparator) {
+        this.searchText = searchText;
         this.context = layer;
         this.searchStrategy = searchStrategy;
-        this.searchText = searchText;
+        this.searchDirection = searchDirection;
         this.isWrapSearch = isWrapSearch;
         this.isCaseSensitive = isCaseSensitive;
         this.isWholeWord = isWholeWord;
         this.isIncremental = isIncremental;
         this.isRegex = isRegex;
         this.isIncludeCollapsed = isIncludeCollapsed;
-        this.searchDirection = searchDirection;
         this.comparator = comparator;
     }
 
@@ -83,7 +178,12 @@ public class SearchCommand implements ILayerCommand {
         return this.searchText;
     }
 
-    public String getSearchDirection() {
+    /**
+     *
+     * @return the search direction.
+     * @since 2.0
+     */
+    public SearchDirection getSearchDirection() {
         return this.searchDirection;
     }
 

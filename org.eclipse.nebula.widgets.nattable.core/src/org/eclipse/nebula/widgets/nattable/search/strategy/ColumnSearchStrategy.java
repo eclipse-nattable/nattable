@@ -16,10 +16,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.search.ISearchDirection;
+import org.eclipse.nebula.widgets.nattable.search.SearchDirection;
 
 public class ColumnSearchStrategy extends AbstractSearchStrategy {
 
@@ -28,10 +29,39 @@ public class ColumnSearchStrategy extends AbstractSearchStrategy {
     private final IConfigRegistry configRegistry;
 
     public ColumnSearchStrategy(int[] columnPositions, IConfigRegistry configRegistry) {
-        this(columnPositions, 0, configRegistry, ISearchDirection.SEARCH_FORWARD);
+        this(columnPositions, 0, configRegistry, SearchDirection.SEARCH_FORWARD);
     }
 
+    /**
+     *
+     * @param columnPositions
+     *            The column positions to search in.
+     * @param startingRowPosition
+     *            The row position to start.
+     * @param configRegistry
+     *            The {@link ConfigRegistry}.
+     * @param searchDirection
+     *            The {@link SearchDirection}.
+     * @deprecated Use constructor with {@link SearchDirection} parameter
+     */
+    @Deprecated
     public ColumnSearchStrategy(int[] columnPositions, int startingRowPosition, IConfigRegistry configRegistry, String searchDirection) {
+        this(columnPositions, startingRowPosition, configRegistry, SearchDirection.valueOf(searchDirection));
+    }
+
+    /**
+     *
+     * @param columnPositions
+     *            The column positions to search in.
+     * @param startingRowPosition
+     *            The row position to start.
+     * @param configRegistry
+     *            The {@link ConfigRegistry}.
+     * @param searchDirection
+     *            The {@link SearchDirection}.
+     * @since 2.0
+     */
+    public ColumnSearchStrategy(int[] columnPositions, int startingRowPosition, IConfigRegistry configRegistry, SearchDirection searchDirection) {
         this.columnPositions = columnPositions;
         this.startingRowPosition = startingRowPosition;
         this.configRegistry = configRegistry;
@@ -69,14 +99,14 @@ public class ColumnSearchStrategy extends AbstractSearchStrategy {
         // from
         final int rowCount = contextLayer.getRowCount();
         int height;
-        if (this.searchDirection.equals(ISearchDirection.SEARCH_FORWARD)) {
+        if (this.searchDirection.equals(SearchDirection.SEARCH_FORWARD)) {
             height = rowCount - this.startingRowPosition;
         } else {
             height = this.startingRowPosition;
         }
         for (int columnIndex = 0; columnIndex < this.columnPositions.length; columnIndex++) {
             final int startingColumnPosition = this.columnPositions[columnIndex];
-            if (this.searchDirection.equals(ISearchDirection.SEARCH_BACKWARDS)) {
+            if (this.searchDirection.equals(SearchDirection.SEARCH_BACKWARDS)) {
                 cellsToSearch.addAll(CellDisplayValueSearchUtil.getDescendingCellCoordinates(
                         getContextLayer(),
                         startingColumnPosition,

@@ -572,8 +572,9 @@ public interface ILayer extends ILayerListener, IPersistable {
      * @param rowPosition
      *            The row position of the cell.
      * @return {@link DisplayMode} for the cell at the given coordinates.
+     * @since 2.0
      */
-    public String getDisplayModeByPosition(int columnPosition, int rowPosition);
+    public DisplayMode getDisplayModeByPosition(int columnPosition, int rowPosition);
 
     /**
      * Returns the config labels for the cell at the given coordinates. Needed

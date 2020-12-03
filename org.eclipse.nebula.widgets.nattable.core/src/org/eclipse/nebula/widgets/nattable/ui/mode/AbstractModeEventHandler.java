@@ -32,7 +32,14 @@ public class AbstractModeEventHandler implements IModeEventHandler {
         return this.modeSupport;
     }
 
-    protected void switchMode(String mode) {
+    /**
+     * Switch the mode in the underlying {@link ModeSupport}.
+     *
+     * @param mode
+     *            The {@link Mode} to switch to.
+     * @since 2.0
+     */
+    protected void switchMode(Mode mode) {
         this.modeSupport.switchMode(mode);
     }
 

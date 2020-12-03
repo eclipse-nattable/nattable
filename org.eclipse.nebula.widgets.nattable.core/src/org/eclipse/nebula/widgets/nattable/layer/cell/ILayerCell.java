@@ -14,6 +14,7 @@ package org.eclipse.nebula.widgets.nattable.layer.cell;
 
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.swt.graphics.Rectangle;
 
 public interface ILayerCell {
@@ -38,7 +39,11 @@ public interface ILayerCell {
 
     public boolean isSpannedCell();
 
-    public String getDisplayMode();
+    /**
+     * @return The {@link DisplayMode} this cell is currently in.
+     * @since 2.0
+     */
+    public DisplayMode getDisplayMode();
 
     public LabelStack getConfigLabels();
 

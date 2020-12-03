@@ -27,6 +27,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 
@@ -366,7 +367,7 @@ public class DimensionallyDependentLayer extends AbstractLayer {
     // Cell features
 
     @Override
-    public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
+    public DisplayMode getDisplayModeByPosition(int columnPosition, int rowPosition) {
         int baseColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, this.baseLayer);
         int baseRowPosition = LayerUtil.convertRowPosition(this, rowPosition, this.baseLayer);
         return this.baseLayer.getDisplayModeByPosition(baseColumnPosition, baseRowPosition);
