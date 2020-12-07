@@ -14,9 +14,9 @@ package org.eclipse.nebula.widgets.nattable.painter.layer;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
+import org.eclipse.collections.api.factory.Sets;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -71,12 +71,12 @@ public class CellLayerPainter implements ILayerPainter {
 
         calculateDimensionInfo(positionRectangle);
 
-        Collection<ILayerCell> spannedCells = new HashSet<>();
+        Collection<ILayerCell> spannedCells = Sets.mutable.empty();
 
-        for (int columnPosition = positionRectangle.x; columnPosition < positionRectangle.x
-                + positionRectangle.width; columnPosition++) {
-            for (int rowPosition = positionRectangle.y; rowPosition < positionRectangle.y
-                    + positionRectangle.height; rowPosition++) {
+        for (int rowPosition = positionRectangle.y; rowPosition < positionRectangle.y
+                + positionRectangle.height; rowPosition++) {
+            for (int columnPosition = positionRectangle.x; columnPosition < positionRectangle.x
+                    + positionRectangle.width; columnPosition++) {
                 if (columnPosition == -1 || rowPosition == -1) {
                     continue;
                 }
