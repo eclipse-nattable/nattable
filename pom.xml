@@ -9,8 +9,29 @@
 
 	<packaging>pom</packaging>
 
-	<url>https://projects.eclipse.org/projects/technology.nebula.nattable</url>
 	<name>Nebula NatTable</name>
+	<description>A powerful and flexible SWT table/grid widget that is built to handle very large data sets, real-time updates, dynamic styling, and more.</description>
+	<url>https://projects.eclipse.org/projects/technology.nebula.nattable</url>
+    
+    <licenses>
+        <license>
+            <name>Eclipse Public License - v 2.0</name>
+            <url>https://www.eclipse.org/legal/epl-2.0/</url>
+        </license>
+    </licenses>
+
+	<developers>
+    	<developer>
+			<name>Dirk Fauth</name>
+			<email>dirk.fauth@googlemail.com</email>
+		</developer>
+	</developers>
+  
+    <scm>
+        <connection>scm:git:git://git.eclipse.org/gitroot/nattable/org.eclipse.nebula.widgets.nattable.git</connection>
+        <developerConnection>scm:git:https://git.eclipse.org/r/nattable/org.eclipse.nebula.widgets.nattable.git</developerConnection>
+        <url>https://git.eclipse.org/c/nattable/org.eclipse.nebula.widgets.nattable.git/</url>
+    </scm>
 
 	<modules>
 		<module>target-platform</module>
@@ -103,17 +124,6 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
-
-    <scm>
-        <connection>scm:git:https://git.eclipse.org/r/nattable/org.eclipse.nebula.widgets.nattable</connection>
-    </scm>
-    
-    <licenses>
-        <license>
-            <name>Eclipse Public License - v 2.0</name>
-            <url>https://www.eclipse.org/legal/epl-2.0/</url>
-        </license>
-    </licenses>
     
 	<build>
 		<plugins>
