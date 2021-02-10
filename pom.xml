@@ -276,6 +276,24 @@
                 </plugins>
             </build>
         </profile>
+
+        <!-- The profile for publishing to repo.eclipse.org -->
+        <profile>
+            <id>eclipse-nexus-publish</id>
+
+			<distributionManagement>
+			    <repository>
+			      <id>repo.eclipse.org</id>
+			      <name>NatTable Repository - Releases</name>
+			      <url>https://repo.eclipse.org/content/repositories/nattable-releases/</url>
+			    </repository>
+			    <snapshotRepository>
+			      <id>repo.eclipse.org</id>
+			      <name>NatTable Repository - Snapshots</name>
+			      <url>https://repo.eclipse.org/content/repositories/nattable-snapshots/</url>
+			    </snapshotRepository>
+			</distributionManagement>
+        </profile>
         
         <!-- The profile for publishing to Maven Central -->
         <profile>
@@ -291,7 +309,7 @@
                     <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
                 </repository>
             </distributionManagement>
-
+  
             <build>
                 <plugins>
                     <plugin>
