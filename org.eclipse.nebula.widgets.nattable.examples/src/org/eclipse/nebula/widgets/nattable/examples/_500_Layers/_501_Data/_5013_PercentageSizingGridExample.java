@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2021 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.nebula.widgets.nattable.grid.data.DummyModifiableBodyDataProv
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.CornerLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultColumnHeaderDataLayer;
+import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
@@ -143,13 +144,14 @@ public class _5013_PercentageSizingGridExample extends AbstractNatExample {
         // example for mixed fixed/percentage sizing in a grid configure not
         // every column with the exact percentage value, this way the columns
         // for which no exact values are set will use the remaining space
-        gridLayer = new SimpleGridLayer(dataProvider);
-        final DataLayer mixGridDataLayer = (DataLayer) gridLayer.getBodyDataLayer();
+        DefaultGridLayer defaultGridLayer = new DefaultGridLayer(dataProvider, new DummyColumnHeaderDataProvider(dataProvider));
+        final DataLayer mixGridDataLayer = (DataLayer) defaultGridLayer.getBodyDataLayer();
         mixGridDataLayer.setColumnPercentageSizing(true);
         mixGridDataLayer.setColumnPercentageSizing(0, false);
         mixGridDataLayer.setColumnPercentageSizing(1, false);
         mixGridDataLayer.setColumnWidthByPosition(0, 100);
         mixGridDataLayer.setColumnWidthByPosition(1, 100);
+        mixGridDataLayer.setMinColumnWidth(2, 10);
         // use different style bits to avoid rendering of inactive scrollbars
         // for small table when using percentage sizing, typically there should
         // be no scrollbars, as the table should take the available space
@@ -157,7 +159,7 @@ public class _5013_PercentageSizingGridExample extends AbstractNatExample {
         // by the ViewportLayer. Without the ViewportLayer the scrollbars will
         // always be visible with the default style bits of NatTable.
         final NatTable mixGrid = new NatTable(
-                gridPanel, SWT.NO_BACKGROUND | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, gridLayer, false);
+                gridPanel, defaultGridLayer, false);
         mixGrid.addConfiguration(new DefaultNatTableStyleConfiguration());
         mixGrid.addConfiguration(new HeaderMenuConfiguration(mixGrid));
         mixGrid.configure();
@@ -206,9 +208,6 @@ public class _5013_PercentageSizingGridExample extends AbstractNatExample {
      * Simple grid implementation that doesn't contain a ViewportLayer in the
      * body layer stack. This is because it is used for percentage sizing and we
      * do not want to show scrollbars.
-     *
-     * @author Dirk Fauth
-     *
      */
     class SimpleGridLayer extends GridLayer {
 

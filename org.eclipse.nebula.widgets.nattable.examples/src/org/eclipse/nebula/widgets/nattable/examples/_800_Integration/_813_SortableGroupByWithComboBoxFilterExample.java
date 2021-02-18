@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, 2020 Dirk Fauth and others.
+ * Copyright (c) 2016, 2021 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -631,7 +631,7 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
 
         private final GroupByModel groupByModel = new GroupByModel();
 
-        private final GlazedListsEventLayer<T> glazedListsEventLayer;
+        private final GlazedListsEventLayer<Object> glazedListsEventLayer;
 
         @SuppressWarnings("unchecked")
         public BodyLayerStack(List<T> values,
@@ -667,7 +667,7 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
 
             // layer for event handling of GlazedLists and PropertyChanges
             this.glazedListsEventLayer =
-                    new GlazedListsEventLayer<>(this.bodyDataLayer, this.filterList);
+                    new GlazedListsEventLayer<>(this.bodyDataLayer, this.bodyDataLayer.getTreeList());
 
             // NOTE:
             // we need to tell the GroupByDataLayer to clear its cache if

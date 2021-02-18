@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2020 CEA LIST.
+ * Copyright (c) 2015, 2021 CEA LIST.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -548,8 +548,8 @@ public class DarkExample extends AbstractE4NatExamplePart {
             this.bodyDataProvider = this.bodyDataLayer.getDataProvider();
 
             // layer for event handling of GlazedLists and PropertyChanges
-            GlazedListsEventLayer<T> glazedListsEventLayer =
-                    new GlazedListsEventLayer<>(this.bodyDataLayer, this.filterList);
+            GlazedListsEventLayer<Object> glazedListsEventLayer =
+                    new GlazedListsEventLayer<>(this.bodyDataLayer, this.bodyDataLayer.getTreeList());
 
             // NOTE:
             // we need to tell the GroupByDataLayer to clear its cache if

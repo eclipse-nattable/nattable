@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2021 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -385,7 +385,8 @@ public class _6053_GroupBySummaryExample extends AbstractNatExample {
             this.bodyDataProvider = this.bodyDataLayer.getDataProvider();
 
             // layer for event handling of GlazedLists and PropertyChanges
-            GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<>(this.bodyDataLayer, this.sortedList);
+            GlazedListsEventLayer<Object> glazedListsEventLayer =
+                    new GlazedListsEventLayer<>(this.bodyDataLayer, this.bodyDataLayer.getTreeList());
 
             ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
             ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);

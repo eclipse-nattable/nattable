@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2021 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -812,8 +812,8 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
                             new IdIndexKeyHandler<>(new ListDataProvider<>(this.eventList, columnPropertyAccessor), rowIdAccessor)));
 
             // layer for event handling of GlazedLists and PropertyChanges
-            GlazedListsEventLayer<T> glazedListsEventLayer =
-                    new GlazedListsEventLayer<>(this.bodyDataLayer, this.filterList);
+            GlazedListsEventLayer<Object> glazedListsEventLayer =
+                    new GlazedListsEventLayer<>(this.bodyDataLayer, this.bodyDataLayer.getTreeList());
 
             // the DataChangeLayer can be placed on top of the
             // GlazedListsEventLayer or directly on the DataLayer. Best results

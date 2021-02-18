@@ -571,7 +571,7 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
 
         private final GroupByDataLayer<T> bodyDataLayer;
 
-        private final GlazedListsEventLayer<T> glazedListsEventLayer;
+        private final GlazedListsEventLayer<Object> glazedListsEventLayer;
 
         private final SelectionLayer selectionLayer;
 
@@ -601,7 +601,7 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
 
             // layer for event handling of GlazedLists and PropertyChanges
             this.glazedListsEventLayer =
-                    new GlazedListsEventLayer<>(this.bodyDataLayer, this.sortedList);
+                    new GlazedListsEventLayer<>(this.bodyDataLayer, this.bodyDataLayer.getTreeList());
 
             // NOTE:
             // we need to tell the GroupByDataLayer to clear its cache if
@@ -659,7 +659,7 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
             return this.bodyDataLayer;
         }
 
-        public GlazedListsEventLayer<T> getGlazedListsEventLayer() {
+        public GlazedListsEventLayer<Object> getGlazedListsEventLayer() {
             return this.glazedListsEventLayer;
         }
 

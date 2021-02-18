@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2020 Dirk Fauth and others.
+ * Copyright (c) 2014, 2021 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -569,7 +569,7 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
 
         private final GroupByDataLayer<T> bodyDataLayer;
 
-        private final GlazedListsEventLayer<T> glazedListsEventLayer;
+        private final GlazedListsEventLayer<Object> glazedListsEventLayer;
 
         private final SelectionLayer selectionLayer;
 
@@ -599,7 +599,7 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
 
             // layer for event handling of GlazedLists and PropertyChanges
             this.glazedListsEventLayer =
-                    new GlazedListsEventLayer<>(this.bodyDataLayer, this.sortedList);
+                    new GlazedListsEventLayer<>(this.bodyDataLayer, this.bodyDataLayer.getTreeList());
 
             ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(this.glazedListsEventLayer);
             ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
@@ -637,7 +637,7 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
             return this.bodyDataLayer;
         }
 
-        public GlazedListsEventLayer<T> getGlazedListsEventLayer() {
+        public GlazedListsEventLayer<Object> getGlazedListsEventLayer() {
             return this.glazedListsEventLayer;
         }
 
