@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2021 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -657,28 +657,33 @@ public class NatCombo extends Composite {
                 // table index which may not match the index in the itemList
                 int itemTableIndex = NatCombo.this.dropdownTable.indexOf(chosenItem);
 
-                // This case handles check actions
                 if (!selected) {
+                    // handle checkbox interactions
+
+                    if (!NatCombo.this.multiselect) {
+                        // on single select first set all states to false
+                        NatCombo.this.itemList.forEach(item -> NatCombo.this.selectionStateMap.put(item, Boolean.FALSE));
+                    }
                     if (!chosenItem.getChecked()) {
                         NatCombo.this.selectionStateMap.put(chosenItem.getText(), Boolean.FALSE);
                     } else {
                         NatCombo.this.selectionStateMap.put(chosenItem.getText(), Boolean.TRUE);
                     }
-                } else if (!NatCombo.this.useCheckbox) {
-                    if (NatCombo.this.multiselect && isCtrlPressed) {
+                } else {
+                    // handle item interactions
+
+                    if (!NatCombo.this.multiselect || (!NatCombo.this.useCheckbox && !isCtrlPressed)) {
+                        // A single item was selected. Clear all previous state
+                        NatCombo.this.itemList.forEach(item -> NatCombo.this.selectionStateMap.put(item, Boolean.FALSE));
+
+                        // Set the state for the selected item
+                        NatCombo.this.selectionStateMap.put(chosenItem.getText(), Boolean.TRUE);
+                    } else if (NatCombo.this.multiselect && isCtrlPressed) {
                         boolean isSelected = NatCombo.this.dropdownTable.isSelected(itemTableIndex);
                         NatCombo.this.selectionStateMap.put(chosenItem.getText(), isSelected);
                         if (NatCombo.this.useCheckbox) {
                             chosenItem.setChecked(isSelected);
                         }
-                    } else {
-                        // A single item was selected. Clear all previous state
-                        for (String item : NatCombo.this.itemList) {
-                            NatCombo.this.selectionStateMap.put(item, Boolean.FALSE);
-                        }
-
-                        // Set the state for the selected item
-                        NatCombo.this.selectionStateMap.put(chosenItem.getText(), Boolean.TRUE);
                     }
                 }
 
@@ -1063,7 +1068,7 @@ public class NatCombo extends Composite {
         }
         this.text.setText(textValue);
 
-        if (this.multiselect) {
+        if (this.multiselect && this.freeEdit) {
             this.text.setSelection(textValue.length() - this.multiselectTextSuffix.length());
         }
     }
