@@ -493,12 +493,21 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
         combo.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseUp(MouseEvent e) {
-                commit(MoveDirectionEnum.NONE,
-                        (!ComboBoxCellEditor.this.multiselect && ComboBoxCellEditor.this.editMode == EditModeEnum.INLINE));
-                if (!ComboBoxCellEditor.this.multiselect && ComboBoxCellEditor.this.editMode == EditModeEnum.DIALOG) {
-                    // hide the dropdown after a value was selected in the combo
-                    // in a dialog
-                    combo.hideDropdownControl();
+                // Mouse up and Selection Events get fired in the wrong order
+                // on iOS when clicking the checkbox. In this scenario the
+                // NatCombo will fire a Mouse up event programmatically with set
+                // data, to ensure that the processing is done in the correct
+                // order.
+                boolean isSingleSelectWithCheckbox = !ComboBoxCellEditor.this.multiselect && ComboBoxCellEditor.this.useCheckbox;
+                if (!isSingleSelectWithCheckbox || e.data != null) {
+
+                    commit(MoveDirectionEnum.NONE,
+                            (!ComboBoxCellEditor.this.multiselect && ComboBoxCellEditor.this.editMode == EditModeEnum.INLINE));
+                    if (!ComboBoxCellEditor.this.multiselect && ComboBoxCellEditor.this.editMode == EditModeEnum.DIALOG) {
+                        // hide the dropdown after a value was selected in the
+                        // combo in a dialog
+                        combo.hideDropdownControl();
+                    }
                 }
             }
         });

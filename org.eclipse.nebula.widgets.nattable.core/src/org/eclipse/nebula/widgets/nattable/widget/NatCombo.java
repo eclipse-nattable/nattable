@@ -688,6 +688,20 @@ public class NatCombo extends Composite {
                 }
 
                 updateTextControl(false);
+
+                // Mouse up and Selection Events get fired in the wrong order
+                // on iOS when clicking the checkbox. In this scenario the
+                // NatCombo will fire a Mouse up event programmatically with set
+                // data, to ensure that the processing is done in the correct
+                // order.
+                if (!NatCombo.this.multiselect && NatCombo.this.useCheckbox) {
+                    Event event = new Event();
+                    event.widget = NatCombo.this;
+                    event.display = NatCombo.this.getDisplay();
+                    event.type = SWT.MouseUp;
+                    event.data = chosenItem;
+                    NatCombo.this.notifyListeners(SWT.MouseUp, event);
+                }
             }
         });
 
