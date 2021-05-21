@@ -33,6 +33,8 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommand;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.FixedScalingDpiConverter;
+import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowDeleteEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowInsertEvent;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
@@ -101,6 +103,9 @@ public class CompositeFreezeLayerHideShowTest {
             }
 
         });
+
+        this.compositeFreezeLayer.doCommand(
+                new ConfigureScalingCommand(new FixedScalingDpiConverter(96)));
     }
 
     @Test
@@ -1656,7 +1661,62 @@ public class CompositeFreezeLayerHideShowTest {
         reset();
     }
 
+    @Test
+    public void testFreezeColumnDynamicScale() {
+        this.compositeFreezeLayer.doCommand(
+                new FreezeColumnCommand(this.compositeFreezeLayer, 1));
+
+        assertEquals(2, this.freezeLayer.getColumnCount());
+        assertEquals(0, this.freezeLayer.getRowCount());
+        assertEquals(1, this.freezeLayer.getBottomRightPosition().columnPosition);
+        assertEquals(-1, this.freezeLayer.getBottomRightPosition().rowPosition);
+
+        assertEquals(3, this.viewportLayer.getColumnCount());
+        assertEquals(5, this.viewportLayer.getRowCount());
+        assertEquals(2, this.viewportLayer.getMinimumOriginColumnPosition());
+        assertEquals(0, this.viewportLayer.getMinimumOriginRowPosition());
+        assertEquals(200, this.viewportLayer.getMinimumOrigin().getX());
+        assertEquals(0, this.viewportLayer.getMinimumOrigin().getY());
+
+        this.compositeFreezeLayer.doCommand(
+                new ConfigureScalingCommand(new FixedScalingDpiConverter(144)));
+
+        assertEquals(300, this.viewportLayer.getMinimumOrigin().getX());
+        assertEquals(0, this.viewportLayer.getMinimumOrigin().getY());
+
+        reset();
+    }
+
+    @Test
+    public void testFreezeRowDynamicScale() {
+        this.compositeFreezeLayer.doCommand(
+                new FreezeRowCommand(this.compositeFreezeLayer, 1));
+
+        assertEquals(0, this.freezeLayer.getColumnCount());
+        assertEquals(2, this.freezeLayer.getRowCount());
+        assertEquals(-1, this.freezeLayer.getBottomRightPosition().columnPosition);
+        assertEquals(1, this.freezeLayer.getBottomRightPosition().rowPosition);
+
+        assertEquals(5, this.viewportLayer.getColumnCount());
+        assertEquals(3, this.viewportLayer.getRowCount());
+        assertEquals(0, this.viewportLayer.getMinimumOriginColumnPosition());
+        assertEquals(2, this.viewportLayer.getMinimumOriginRowPosition());
+        assertEquals(0, this.viewportLayer.getMinimumOrigin().getX());
+        assertEquals(40, this.viewportLayer.getMinimumOrigin().getY());
+
+        this.compositeFreezeLayer.doCommand(
+                new ConfigureScalingCommand(new FixedScalingDpiConverter(144)));
+
+        assertEquals(0, this.viewportLayer.getMinimumOrigin().getX());
+        assertEquals(60, this.viewportLayer.getMinimumOrigin().getY());
+
+        reset();
+    }
+
     private void reset() {
+        this.compositeFreezeLayer.doCommand(
+                new ConfigureScalingCommand(new FixedScalingDpiConverter(96)));
+
         this.compositeFreezeLayer.doCommand(new UnFreezeGridCommand());
 
         assertEquals(0, this.freezeLayer.getColumnCount());

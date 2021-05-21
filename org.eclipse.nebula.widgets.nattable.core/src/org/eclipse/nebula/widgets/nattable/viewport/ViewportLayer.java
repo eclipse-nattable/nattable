@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2021 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,6 +21,7 @@ import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.ViewportSelectColumnGroupCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.command.ViewportSelectRowGroupCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
+import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
@@ -123,6 +124,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     // Edge hover scrolling
 
     private MoveViewportRunnable edgeHoverRunnable;
+
+    private IDpiConverter horizontalDpiConverter;
+    private IDpiConverter verticalDpiConverter;
 
     public ViewportLayer(IUniqueIndexLayer underlyingLayer) {
         super(underlyingLayer);
@@ -1118,6 +1122,46 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
         } else if (command instanceof ConfigureScalingCommand) {
             invalidateHorizontalStructure();
             invalidateVerticalStructure();
+
+            int originDpiX = 0;
+            int originDpiY = 0;
+            int minimumDpiX = 0;
+            int minimumDpiY = 0;
+            int savedDpiX = 0;
+            int savedDpiY = 0;
+            if (this.horizontalDpiConverter != null) {
+                originDpiX = this.horizontalDpiConverter.convertDpiToPixel(this.origin.getX());
+                savedDpiX = this.horizontalDpiConverter.convertDpiToPixel(this.savedOrigin.getX());
+
+                if (this.minimumOrigin.getX() > 0) {
+                    minimumDpiX = this.horizontalDpiConverter.convertDpiToPixel(this.minimumOrigin.getX());
+                }
+            }
+
+            if (this.verticalDpiConverter != null) {
+                originDpiY = this.verticalDpiConverter.convertDpiToPixel(this.origin.getY());
+                savedDpiY = this.verticalDpiConverter.convertDpiToPixel(this.savedOrigin.getY());
+
+                if (this.minimumOrigin.getY() > 0) {
+                    minimumDpiY = this.verticalDpiConverter.convertDpiToPixel(this.minimumOrigin.getY());
+                }
+            }
+
+            this.horizontalDpiConverter = ((ConfigureScalingCommand) command).getHorizontalDpiConverter();
+            this.verticalDpiConverter = ((ConfigureScalingCommand) command).getVerticalDpiConverter();
+
+            this.origin = new PixelCoordinate(
+                    this.horizontalDpiConverter.convertPixelToDpi(originDpiX),
+                    this.verticalDpiConverter.convertPixelToDpi(originDpiY));
+            this.savedOrigin = new PixelCoordinate(
+                    this.horizontalDpiConverter.convertPixelToDpi(savedDpiX),
+                    this.verticalDpiConverter.convertPixelToDpi(savedDpiY));
+
+            if (minimumDpiX > 0 || minimumDpiY > 0) {
+                this.minimumOrigin = new PixelCoordinate(
+                        this.horizontalDpiConverter.convertPixelToDpi(minimumDpiX),
+                        this.verticalDpiConverter.convertPixelToDpi(minimumDpiY));
+            }
         }
         return super.doCommand(command);
     }
