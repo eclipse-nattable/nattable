@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, 2020 Dirk Fauth and others.
+ * Copyright (c) 2016, 2021 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -176,8 +176,33 @@ public class CDateTimeCellEditor extends AbstractCellEditor {
             }
 
             @Override
+            protected void postClose(Shell popup) {
+                if (CDateTimeCellEditor.this.focusListener instanceof InlineFocusListener) {
+                    ((InlineFocusListener) CDateTimeCellEditor.this.focusListener).handleFocusChanges = true;
+                }
+                super.postClose(popup);
+            }
+
+            @Override
+            public void setOpen(boolean open) {
+                if (CDateTimeCellEditor.this.focusListener instanceof InlineFocusListener) {
+                    ((InlineFocusListener) CDateTimeCellEditor.this.focusListener).handleFocusChanges = false;
+                }
+                super.setOpen(open);
+            }
+
+            @Override
+            public void setOpen(boolean open, Runnable callback) {
+                if (CDateTimeCellEditor.this.focusListener instanceof InlineFocusListener) {
+                    ((InlineFocusListener) CDateTimeCellEditor.this.focusListener).handleFocusChanges = false;
+                }
+                super.setOpen(open, callback);
+            }
+
+            @Override
             protected void addTextListener() {
                 super.addTextListener();
+
                 this.text.getControl().addTraverseListener(event -> {
                     boolean committed = false;
                     if (event.keyCode == SWT.TAB && event.stateMask == SWT.MOD2) {
