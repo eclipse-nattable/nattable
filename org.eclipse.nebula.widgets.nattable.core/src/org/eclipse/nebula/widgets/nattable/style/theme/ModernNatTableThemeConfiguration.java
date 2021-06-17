@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2020 Dirk Fauth and others.
+ * Copyright (c) 2014, 2021 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -34,12 +34,6 @@ import org.eclipse.swt.graphics.FontData;
  * Theme configuration that overrides the stylings set in the
  * {@link DefaultNatTableThemeConfiguration} to give the NatTable a more modern
  * look &amp; feel.
- *
- * <p>
- * This default theme configuration does not set a different value for the
- * filter row cell painter, as in this case it would override the specialized
- * painter that needs to be registered for combobox filterrows.
- * </p>
  */
 public class ModernNatTableThemeConfiguration extends DefaultNatTableThemeConfiguration {
 
