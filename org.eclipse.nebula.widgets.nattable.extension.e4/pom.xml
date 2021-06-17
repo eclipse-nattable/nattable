@@ -43,11 +43,16 @@
 		    <artifactId>org.eclipse.e4.core.di.annotations</artifactId>
 		    <version>1.6.400</version>
 		</dependency>
+
+		<!-- temporarily disabled because of incorrect dependency information in Maven Central -->
+		<!-- 
 		<dependency>
 		    <groupId>org.eclipse.platform</groupId>
 		    <artifactId>org.eclipse.e4.ui.workbench</artifactId>
 		    <version>1.10.100</version>
 		</dependency>
+		 -->
+		 
     	<dependency>
 		    <groupId>org.slf4j</groupId>
 		    <artifactId>slf4j-api</artifactId>
@@ -59,16 +64,4 @@
 		    <version>2.0.0</version>
 		</dependency>
     </dependencies>
-    
-    <build>
-        <plugins>
-          <!-- publish this artifact to Maven repositories -->
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>false</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

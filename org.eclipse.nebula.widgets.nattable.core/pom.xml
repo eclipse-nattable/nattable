@@ -53,16 +53,4 @@
 		    <version>1.7.30</version>
 		</dependency>
     </dependencies>
-    
-    <build>
-        <plugins>
-          <!-- publish this artifact to Maven repositories -->
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>false</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
