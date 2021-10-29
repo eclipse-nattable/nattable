@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2021 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -194,7 +194,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 
     @Override
     public void saveState(String prefix, Properties properties) {
-        Map<Integer, String> filterTextByIndex = new HashMap<>();
+        HashMap<Integer, String> filterTextByIndex = new HashMap<>();
         for (Integer columnIndex : this.filterIndexToObjectMap.keySet()) {
             final IDisplayConverter converter = this.configRegistry.getConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
@@ -210,6 +210,10 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 
         if (!ObjectUtils.isEmpty(string)) {
             properties.put(prefix + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS, string);
+        } else {
+            // remove a possible existing filter state from the properties if
+            // no filter state is set now
+            properties.remove(prefix + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
         }
     }
 

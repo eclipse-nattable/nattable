@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2021 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,9 +12,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Properties;
 
@@ -33,8 +33,8 @@ import org.eclipse.nebula.widgets.nattable.filterrow.config.DefaultFilterRowConf
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.filterrow.event.FilterAppliedEvent;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
@@ -46,7 +46,7 @@ public class FilterRowDataProviderTest {
     private FilterList<RowDataFixture> filterList;
     private ConfigRegistry configRegistry;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.columnHeaderLayer = new DataLayerFixture(10, 2, 100, 50);
 
@@ -216,7 +216,7 @@ public class FilterRowDataProviderTest {
 
         this.dataProvider.loadState("prefix", differentState);
 
-        assertNull("Filter on column 1 has not been removed", this.dataProvider.getDataValue(1, 1));
+        assertNull(this.dataProvider.getDataValue(1, 1), "Filter on column 1 has not been removed");
         assertEquals("newTestValue", this.dataProvider.getDataValue(2, 1));
         assertEquals("newTestValue", this.dataProvider.getDataValue(3, 1));
     }
@@ -270,5 +270,26 @@ public class FilterRowDataProviderTest {
         // after loading the state, the pipes in the regular expression need to
         // be restored correctly
         assertEquals("(D|E|F){1}.*", this.dataProvider.getDataValue(1, 1));
+    }
+
+    @Test
+    public void shouldRemoveStateAfterClear() {
+        // first check that a sort state is persisted in the properties
+        this.dataProvider.setDataValue(1, 1, "testValue");
+        this.dataProvider.setDataValue(3, 1, "testValue");
+
+        Properties properties = new Properties();
+
+        // save state
+        this.dataProvider.saveState("prefix", properties);
+        String persistedProperty = properties.getProperty("prefix" + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
+
+        assertEquals("1:testValue|3:testValue|", persistedProperty);
+
+        this.dataProvider.clearAllFilters();
+
+        // now check that the sort state is removed from the properties
+        this.dataProvider.saveState("prefix", properties);
+        assertNull(properties.getProperty("prefix" + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS));
     }
 }

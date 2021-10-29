@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2021 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -49,24 +49,27 @@ public class SortStatePersistor<T> implements IPersistable {
      */
     @Override
     public void saveState(String prefix, Properties properties) {
-        StringBuilder buffer = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
 
         for (int columnIndex : this.sortModel.getSortedColumnIndexes()) {
-            SortDirectionEnum sortDirection = this.sortModel
-                    .getSortDirection(columnIndex);
+            SortDirectionEnum sortDirection = this.sortModel.getSortDirection(columnIndex);
             int sortOrder = this.sortModel.getSortOrder(columnIndex);
 
-            buffer.append(columnIndex);
-            buffer.append(":"); //$NON-NLS-1$
-            buffer.append(sortDirection.toString());
-            buffer.append(":"); //$NON-NLS-1$
-            buffer.append(sortOrder);
-            buffer.append("|"); //$NON-NLS-1$
+            builder.append(columnIndex);
+            builder.append(":"); //$NON-NLS-1$
+            builder.append(sortDirection.toString());
+            builder.append(":"); //$NON-NLS-1$
+            builder.append(sortOrder);
+            builder.append("|"); //$NON-NLS-1$
         }
 
-        String result = buffer.toString();
+        String result = builder.toString();
         if (result != null && result.length() > 0) {
             properties.put(prefix + PERSISTENCE_KEY_SORTING_STATE, result);
+        } else {
+            // remove a possible existing sorting state from the properties if
+            // no sorting state is set now
+            properties.remove(prefix + PERSISTENCE_KEY_SORTING_STATE);
         }
     }
 
@@ -83,8 +86,7 @@ public class SortStatePersistor<T> implements IPersistable {
          */
         this.sortModel.clear();
 
-        Object savedValue = properties.get(prefix
-                + PERSISTENCE_KEY_SORTING_STATE);
+        Object savedValue = properties.get(prefix + PERSISTENCE_KEY_SORTING_STATE);
         if (savedValue == null) {
             return;
         }
@@ -100,7 +102,8 @@ public class SortStatePersistor<T> implements IPersistable {
             }
 
             // Restore to the model
-            Collections.sort(stateInfo, new SortStateComparator());
+            Collections.sort(stateInfo, Comparator.comparingInt((SortState state) -> state.sortOrder));
+
             for (SortState state : stateInfo) {
                 this.sortModel.sort(state.columnIndex, state.sortDirection, true);
             }
@@ -127,30 +130,15 @@ public class SortStatePersistor<T> implements IPersistable {
      * Encapsulation of the sort state of a column
      */
     protected class SortState {
+
         public int columnIndex;
         public SortDirectionEnum sortDirection;
         public int sortOrder;
 
-        public SortState(int columnIndex, SortDirectionEnum sortDirection,
-                int sortOrder) {
+        public SortState(int columnIndex, SortDirectionEnum sortDirection, int sortOrder) {
             this.columnIndex = columnIndex;
             this.sortDirection = sortDirection;
             this.sortOrder = sortOrder;
         }
-    }
-
-    /**
-     * Helper class to order sorting state by the 'sort order'. The sorting
-     * state has be restored in the same sequence in which the original sort was
-     * applied.
-     */
-    private class SortStateComparator implements Comparator<SortState> {
-
-        @Override
-        public int compare(SortState state1, SortState state2) {
-            return Integer.valueOf(state1.sortOrder).compareTo(
-                    Integer.valueOf(state2.sortOrder));
-        }
-
     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2021 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -20,17 +20,17 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.sort.ISortModel;
 import org.eclipse.nebula.widgets.nattable.sort.SortDirectionEnum;
 
 @SuppressWarnings("rawtypes")
 public class SortModelFixture implements ISortModel {
-    List<Integer> sortedColumnIndexes;
-    List<Integer> sortOrder;
-    List<SortDirectionEnum> sortDirection;
-    Map<Integer, List<Comparator>> columnComparators = new HashMap<Integer, List<Comparator>>();
+
+    ArrayList<Integer> sortedColumnIndexes;
+    ArrayList<Integer> sortOrder;
+    ArrayList<SortDirectionEnum> sortDirection;
+    HashMap<Integer, List<Comparator>> columnComparators = new HashMap<>();
 
     public SortModelFixture() {
         this(Arrays.asList(0, 5, 6, 3), Arrays.asList(6, 5, 3, 0), Arrays.asList(ASC, DESC, ASC, DESC));
@@ -38,14 +38,13 @@ public class SortModelFixture implements ISortModel {
 
     public SortModelFixture(
             List<Integer> sortedColumnIndexes, List<Integer> sortOrder, List<SortDirectionEnum> sortDirection) {
-        this.sortedColumnIndexes = sortedColumnIndexes;
-        this.sortOrder = sortOrder;
-        this.sortDirection = sortDirection;
+        this.sortedColumnIndexes = new ArrayList<>(sortedColumnIndexes);
+        this.sortOrder = new ArrayList<>(sortOrder);
+        this.sortDirection = new ArrayList<>(sortDirection);
     }
 
     public static SortModelFixture getEmptyModel() {
-        return new SortModelFixture(
-                new ArrayList<Integer>(), new ArrayList<Integer>(), new ArrayList<SortDirectionEnum>());
+        return new SortModelFixture(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
 
     @Override
@@ -93,7 +92,9 @@ public class SortModelFixture implements ISortModel {
 
     @Override
     public void clear() {
-        // No op
+        this.sortedColumnIndexes.clear();
+        this.sortOrder.clear();
+        this.sortDirection.clear();
     }
 
 }
