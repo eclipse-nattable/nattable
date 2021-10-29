@@ -292,4 +292,39 @@ public class FilterRowDataProviderTest {
         this.dataProvider.saveState("prefix", properties);
         assertNull(properties.getProperty("prefix" + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS));
     }
+
+    @Test
+    public void shouldRetainColonInFilterPersistence() {
+        this.dataProvider.setDataValue(1, 1, "test:Value");
+        this.dataProvider.setDataValue(2, 1, ":testValue");
+        this.dataProvider.setDataValue(3, 1, "testValue:");
+        this.dataProvider.setDataValue(4, 1, ":testValue:");
+        this.dataProvider.setDataValue(5, 1, ":test:Value:");
+
+        Properties properties = new Properties();
+
+        // save state
+        this.dataProvider.saveState("prefix", properties);
+        String persistedProperty = properties.getProperty("prefix" + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
+
+        assertEquals("1:test:Value|2::testValue|3:testValue:|4::testValue:|5::test:Value:|", persistedProperty);
+
+        // reset state
+        setup();
+
+        assertNull(this.dataProvider.getDataValue(1, 1));
+        assertNull(this.dataProvider.getDataValue(2, 1));
+        assertNull(this.dataProvider.getDataValue(3, 1));
+        assertNull(this.dataProvider.getDataValue(4, 1));
+        assertNull(this.dataProvider.getDataValue(5, 1));
+
+        // load state
+        this.dataProvider.loadState("prefix", properties);
+
+        assertEquals("test:Value", this.dataProvider.getDataValue(1, 1));
+        assertEquals(":testValue", this.dataProvider.getDataValue(2, 1));
+        assertEquals("testValue:", this.dataProvider.getDataValue(3, 1));
+        assertEquals(":testValue:", this.dataProvider.getDataValue(4, 1));
+        assertEquals(":test:Value:", this.dataProvider.getDataValue(5, 1));
+    }
 }

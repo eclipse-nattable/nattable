@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2021 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -44,24 +44,9 @@ public final class PersistenceUtils {
             String[] renamedColumns = value.split("\\|"); //$NON-NLS-1$
 
             for (String token : renamedColumns) {
-                String[] split = token.split(COLUMN_VALUE_SEPARATOR);
+                String[] split = token.split(COLUMN_VALUE_SEPARATOR, 2);
                 String index = split[0];
                 String label = split[1];
-
-                // if the value also contains colons, the split before will not
-                // return the
-                // correct results, this is for example true for date/time
-                // values
-                // we use this kind of workaround here for backwards
-                // compatibility, in
-                // case there are already stored states. Usually we should use
-                // different
-                // characters or regular expressions
-                if (split.length > 2) {
-                    for (int i = 2; i < split.length; i++) {
-                        label += COLUMN_VALUE_SEPARATOR + split[i];
-                    }
-                }
 
                 map.put(Integer.valueOf(index), label);
             }
@@ -75,12 +60,12 @@ public final class PersistenceUtils {
      * reconstruct this Map object from the String.
      */
     public static String mapAsString(Map<Integer, String> map) {
-        StringBuilder buffer = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         for (Entry<Integer, String> entry : map.entrySet()) {
-            buffer.append(entry.getKey() + COLUMN_VALUE_SEPARATOR
+            builder.append(entry.getKey() + COLUMN_VALUE_SEPARATOR
                     + entry.getValue() + "|"); //$NON-NLS-1$
         }
-        return buffer.toString();
+        return builder.toString();
     }
 
 }
