@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2021 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gogglemail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers._504_Viewport;
 
@@ -100,16 +100,11 @@ public class _5042_HorizontalSplitViewportExample extends AbstractNatExample {
         compositeLayer.registerCommandHandler(
                 new MultiTurnViewportOffCommandHandler(viewportLayerLeft, viewportLayerRight));
 
-        // set the width of the left viewport to only showing 2 columns at the
-        // same time
-        int leftWidth = bodyDataLayer.getStartXOfColumnPosition(2);
-
         // as the CompositeLayer is setting a IClientAreaProvider for the
         // composition we need to set a special ClientAreaAdapter after the
         // creation of the CompositeLayer to support split viewports
         ClientAreaAdapter leftClientAreaAdapter =
                 new ClientAreaAdapter(viewportLayerLeft.getClientAreaProvider());
-        leftClientAreaAdapter.setWidth(leftWidth);
         viewportLayerLeft.setClientAreaProvider(leftClientAreaAdapter);
 
         // Wrap NatTable in composite so we can slap on the external horizontal
@@ -130,6 +125,12 @@ public class _5042_HorizontalSplitViewportExample extends AbstractNatExample {
         gridData.grabExcessVerticalSpace = true;
         natTable.setLayoutData(gridData);
 
+        // set the width of the left viewport to only showing 2 columns at the
+        // same time - need to set the width AFTER creating the NatTable to take
+        // the scaling into account
+        int leftWidth = bodyDataLayer.getStartXOfColumnPosition(2);
+        leftClientAreaAdapter.setWidth(leftWidth);
+
         createSplitSliders(composite, viewportLayerLeft, viewportLayerRight);
 
         // add an IOverlayPainter to ensure the right border of the left
@@ -140,7 +141,7 @@ public class _5042_HorizontalSplitViewportExample extends AbstractNatExample {
             @Override
             public void paintOverlay(GC gc, ILayer layer) {
                 Color beforeColor = gc.getForeground();
-                gc.setForeground(GUIHelper.COLOR_GRAY);
+                gc.setForeground(GUIHelper.COLOR_RED);
                 int viewportBorderX = viewportLayerLeft.getWidth() - 1;
                 gc.drawLine(viewportBorderX, 0, viewportBorderX, layer.getHeight() - 1);
                 gc.setForeground(beforeColor);
@@ -150,14 +151,17 @@ public class _5042_HorizontalSplitViewportExample extends AbstractNatExample {
         return composite;
     }
 
-    private void createSplitSliders(
-            Composite natTableParent, final ViewportLayer left, final ViewportLayer right) {
+    private void createSplitSliders(Composite natTableParent, ViewportLayer left, ViewportLayer right) {
+
+        // calculate the slider height according to the display scaling
+        int sliderHeight = GUIHelper.convertHorizontalPixelToDpi(17, true);
+
         Composite sliderComposite = new Composite(natTableParent, SWT.NONE);
         GridData gridData = new GridData();
         gridData.horizontalAlignment = GridData.FILL;
         gridData.grabExcessHorizontalSpace = true;
         gridData.grabExcessVerticalSpace = false;
-        gridData.heightHint = 17;
+        gridData.heightHint = sliderHeight;
         sliderComposite.setLayoutData(gridData);
 
         GridLayout gridLayout = new GridLayout(2, false);
@@ -174,7 +178,7 @@ public class _5042_HorizontalSplitViewportExample extends AbstractNatExample {
             @Override
             public Point computeSize(int wHint, int hHint, boolean changed) {
                 int width = ((ClientAreaAdapter) left.getClientAreaProvider()).getWidth();
-                return new Point(width, 17);
+                return new Point(width, sliderHeight);
             }
         };
         sliderLeftComposite.setLayout(new FillLayout());

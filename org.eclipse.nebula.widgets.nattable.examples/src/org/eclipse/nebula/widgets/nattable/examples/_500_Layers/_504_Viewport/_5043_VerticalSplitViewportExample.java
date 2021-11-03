@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2021 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -99,16 +99,11 @@ public class _5043_VerticalSplitViewportExample extends AbstractNatExample {
         compositeLayer.registerCommandHandler(
                 new MultiTurnViewportOffCommandHandler(viewportLayerTop, viewportLayerBottom));
 
-        // set the height of the top viewport to only showing 2 rows at the same
-        // time
-        int topHeight = bodyDataLayer.getStartYOfRowPosition(2);
-
         // as the CompositeLayer is setting a IClientAreaProvider for the
         // composition we need to set a special ClientAreaAdapter after the
         // creation of the CompositeLayer to support split viewports
         ClientAreaAdapter topClientAreaAdapter =
                 new ClientAreaAdapter(viewportLayerTop.getClientAreaProvider());
-        topClientAreaAdapter.setHeight(topHeight);
         viewportLayerTop.setClientAreaProvider(topClientAreaAdapter);
 
         // Wrap NatTable in composite so we can slap on the external vertical
@@ -129,6 +124,12 @@ public class _5043_VerticalSplitViewportExample extends AbstractNatExample {
         gridData.grabExcessVerticalSpace = true;
         natTable.setLayoutData(gridData);
 
+        // set the height of the top viewport to only showing 2 rows at the same
+        // time - need to set the height AFTER creating the NatTable to take the
+        // scaling into account
+        int topHeight = bodyDataLayer.getStartYOfRowPosition(2);
+        topClientAreaAdapter.setHeight(topHeight);
+
         createSplitSliders(composite, viewportLayerTop, viewportLayerBottom);
 
         // add an IOverlayPainter to ensure the right border of the left
@@ -139,7 +140,7 @@ public class _5043_VerticalSplitViewportExample extends AbstractNatExample {
             @Override
             public void paintOverlay(GC gc, ILayer layer) {
                 Color beforeColor = gc.getForeground();
-                gc.setForeground(GUIHelper.COLOR_GRAY);
+                gc.setForeground(GUIHelper.COLOR_RED);
                 int viewportBorderY = viewportLayerTop.getHeight() - 1;
                 gc.drawLine(0, viewportBorderY, layer.getWidth() - 1, viewportBorderY);
                 gc.setForeground(beforeColor);
@@ -149,14 +150,17 @@ public class _5043_VerticalSplitViewportExample extends AbstractNatExample {
         return composite;
     }
 
-    private void createSplitSliders(
-            Composite natTableParent, final ViewportLayer top, final ViewportLayer bottom) {
+    private void createSplitSliders(Composite natTableParent, ViewportLayer top, ViewportLayer bottom) {
+
+        // calculate the slider width according to the display scaling
+        int sliderWidth = GUIHelper.convertVerticalPixelToDpi(17, true);
+
         Composite sliderComposite = new Composite(natTableParent, SWT.NONE);
         GridData gridData = new GridData();
         gridData.verticalAlignment = GridData.FILL;
         gridData.grabExcessHorizontalSpace = false;
         gridData.grabExcessVerticalSpace = true;
-        gridData.widthHint = 17;
+        gridData.widthHint = sliderWidth;
         sliderComposite.setLayoutData(gridData);
 
         GridLayout gridLayout = new GridLayout(1, false);
@@ -166,14 +170,14 @@ public class _5043_VerticalSplitViewportExample extends AbstractNatExample {
         gridLayout.verticalSpacing = 0;
         sliderComposite.setLayout(gridLayout);
 
-        // Slider Left
+        // Slider Top
         // Need a composite here to set preferred size because Slider can't be
         // subclassed.
         Composite sliderTopComposite = new Composite(sliderComposite, SWT.NONE) {
             @Override
             public Point computeSize(int wHint, int hHint, boolean changed) {
                 int height = ((ClientAreaAdapter) top.getClientAreaProvider()).getHeight();
-                return new Point(17, height);
+                return new Point(sliderWidth, height);
             }
         };
         sliderTopComposite.setLayout(new FillLayout());
@@ -190,7 +194,7 @@ public class _5043_VerticalSplitViewportExample extends AbstractNatExample {
 
         top.setVerticalScroller(new SliderScroller(sliderTop));
 
-        // Slider Right
+        // Slider Bottom
         Slider sliderBottom = new Slider(sliderComposite, SWT.VERTICAL);
         gridData = new GridData();
         gridData.horizontalAlignment = GridData.BEGINNING;

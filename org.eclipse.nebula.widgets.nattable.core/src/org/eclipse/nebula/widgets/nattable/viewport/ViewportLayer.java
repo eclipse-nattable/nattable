@@ -1125,8 +1125,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
             int originDpiX = 0;
             int originDpiY = 0;
-            int minimumDpiX = 0;
-            int minimumDpiY = 0;
+            int minimumDpiX = this.minimumOrigin.getX();
+            int minimumDpiY = this.minimumOrigin.getY();
             int savedDpiX = 0;
             int savedDpiY = 0;
             if (this.horizontalDpiConverter != null) {

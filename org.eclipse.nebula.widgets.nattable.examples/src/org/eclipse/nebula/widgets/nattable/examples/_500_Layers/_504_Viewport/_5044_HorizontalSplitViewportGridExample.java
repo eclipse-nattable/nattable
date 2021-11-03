@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2021 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -61,6 +61,7 @@ import org.eclipse.nebula.widgets.nattable.ui.action.CellDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.scaling.ScalingUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.util.ClientAreaAdapter;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.SliderScroller;
@@ -260,7 +261,22 @@ public class _5044_HorizontalSplitViewportGridExample extends AbstractNatExample
 
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new HeaderMenuConfiguration(natTable));
+
+        natTable.addConfiguration(new ScalingUiBindingConfiguration(natTable, cr -> {
+            // trigger update of client area adapter and layout of sliders
+            bodyLayer.scaleLeftWidth(cr);
+            composite.layout(true, true);
+        }));
+
         natTable.configure();
+
+        bodyLayer.scaleLeftWidth(natTable.getConfigRegistry());
+
+        // as the min column position is calculated dynamically we need to
+        // set the minimum origin manually AFTER the scaling was performed on
+        // the NatTable
+        int newMinOriginX = bodyLayer.selectionLayer.getStartXOfColumnPosition(bodyLayer.getNumberOfLeftColumns());
+        bodyLayer.viewportLayerRight.setMinimumOriginX(newMinOriginX);
 
         return composite;
     }
@@ -268,12 +284,16 @@ public class _5044_HorizontalSplitViewportGridExample extends AbstractNatExample
     private void createSplitSliders(
             Composite natTableParent, final ILayer rowHeaderLayer,
             final ViewportLayer left, final ViewportLayer right) {
+
+        // calculate the slider height according to the display scaling
+        int sliderHeight = GUIHelper.convertHorizontalPixelToDpi(17, true);
+
         Composite sliderComposite = new Composite(natTableParent, SWT.NONE);
         GridData gridData = new GridData();
         gridData.horizontalAlignment = GridData.FILL;
         gridData.grabExcessHorizontalSpace = true;
         gridData.grabExcessVerticalSpace = false;
-        gridData.heightHint = 17;
+        gridData.heightHint = sliderHeight;
         sliderComposite.setLayoutData(gridData);
 
         GridLayout gridLayout = new GridLayout(2, false);
@@ -291,7 +311,7 @@ public class _5044_HorizontalSplitViewportGridExample extends AbstractNatExample
             public Point computeSize(int wHint, int hHint, boolean changed) {
                 int width = ((ClientAreaAdapter) left.getClientAreaProvider()).getWidth();
                 width += rowHeaderLayer.getWidth();
-                return new Point(width, 17);
+                return new Point(width, sliderHeight);
             }
         };
         sliderLeftComposite.setLayout(new FillLayout());
@@ -331,6 +351,9 @@ public class _5044_HorizontalSplitViewportGridExample extends AbstractNatExample
         private final SelectionLayer selectionLayer;
         private final ViewportLayer viewportLayerLeft;
         private final ViewportLayer viewportLayerRight;
+
+        private final int leftWidth;
+        private final ClientAreaAdapter leftClientAreaAdapter;
 
         public BodyLayerStack(List<T> values, IColumnPropertyAccessor<T> columnPropertyAccessor) {
             this.bodyDataProvider = new ListDataProvider<>(values, columnPropertyAccessor);
@@ -377,10 +400,6 @@ public class _5044_HorizontalSplitViewportGridExample extends AbstractNatExample
                     return getNumberOfLeftColumns();
                 }
             };
-            // as the min column position is calculated dynamically we need to
-            // set the minimum origin manually
-            int newMinOriginX = this.selectionLayer.getStartXOfColumnPosition(getNumberOfLeftColumns());
-            this.viewportLayerRight.setMinimumOriginX(newMinOriginX);
 
             // create a CompositeLayer that contains both ViewportLayers
             CompositeLayer compositeLayer = new CompositeLayer(2, 1);
@@ -389,16 +408,16 @@ public class _5044_HorizontalSplitViewportGridExample extends AbstractNatExample
 
             // set the width of the left viewport to only showing 2 columns at
             // the same time
-            int leftWidth = bodyDataLayer.getStartXOfColumnPosition(2);
+            this.leftWidth = bodyDataLayer.getStartXOfColumnPosition(2);
 
             // as the CompositeLayer is setting a IClientAreaProvider for the
             // composition
             // we need to set a special ClientAreaAdapter after the creation of
             // the CompositeLayer to support split viewports
-            ClientAreaAdapter leftClientAreaAdapter =
+            this.leftClientAreaAdapter =
                     new ClientAreaAdapter(getViewportLayerLeft().getClientAreaProvider());
-            leftClientAreaAdapter.setWidth(leftWidth);
-            getViewportLayerLeft().setClientAreaProvider(leftClientAreaAdapter);
+            this.leftClientAreaAdapter.setWidth(this.leftWidth);
+            getViewportLayerLeft().setClientAreaProvider(this.leftClientAreaAdapter);
 
             // register configuration to avoid reordering of columns between the
             // split viewports
@@ -422,6 +441,10 @@ public class _5044_HorizontalSplitViewportGridExample extends AbstractNatExample
                 }
             }
             return fixedColumns;
+        }
+
+        public void scaleLeftWidth(IConfigRegistry cr) {
+            this.leftClientAreaAdapter.setWidth(GUIHelper.convertVerticalPixelToDpi(this.leftWidth, cr));
         }
 
         public IDataProvider getBodyDataProvider() {
