@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Edwin Park and others.
+ * Copyright (c) 2013, 2021 Edwin Park and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.viewport;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Slider;
 
@@ -111,7 +112,16 @@ public class SliderScroller implements IScroller<Slider> {
 
     @Override
     public void setVisible(boolean b) {
+        boolean visible = this.slider.isVisible();
         this.slider.setVisible(b);
+        // if the slider becomes invisible we fire a resize event to trigger
+        // re-calculation of percentage sized columns to take the slider
+        // space
+        if (!b && visible
+                && !isDisposed()
+                && !this.slider.getParent().isDisposed()) {
+            this.slider.getParent().notifyListeners(SWT.Resize, null);
+        }
     }
 
 }

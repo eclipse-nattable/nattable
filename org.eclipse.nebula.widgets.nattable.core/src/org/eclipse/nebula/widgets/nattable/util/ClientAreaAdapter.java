@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Edwin Park and others.
+ * Copyright (c) 2013, 2021 Edwin Park and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -66,8 +66,7 @@ public class ClientAreaAdapter implements IClientAreaProvider {
      *            Setting the value to a positive number will cause a horizontal
      *            split viewport within a NatTable.
      */
-    public ClientAreaAdapter(IClientAreaProvider baseProvider, int width,
-            int height) {
+    public ClientAreaAdapter(IClientAreaProvider baseProvider, int width, int height) {
         this.clientAreaProvider = baseProvider;
         this.width = width;
         this.height = height;
@@ -119,11 +118,13 @@ public class ClientAreaAdapter implements IClientAreaProvider {
     public Rectangle getClientArea() {
         Rectangle clientArea = this.clientAreaProvider.getClientArea();
 
-        if (this.width >= 0)
+        if (this.width >= 0) {
             clientArea.width = this.width;
+        }
 
-        if (this.height >= 0)
+        if (this.height >= 0) {
             clientArea.height = this.height;
+        }
 
         return clientArea;
     }
