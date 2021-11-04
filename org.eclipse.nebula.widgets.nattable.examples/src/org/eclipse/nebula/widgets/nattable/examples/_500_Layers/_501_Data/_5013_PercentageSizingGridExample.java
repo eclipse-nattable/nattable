@@ -152,6 +152,9 @@ public class _5013_PercentageSizingGridExample extends AbstractNatExample {
         mixGridDataLayer.setColumnWidthByPosition(0, 100);
         mixGridDataLayer.setColumnWidthByPosition(1, 100);
         mixGridDataLayer.setMinColumnWidth(2, 10);
+
+        mixGridDataLayer.setFixColumnPercentageValuesOnResize(false);
+
         // use different style bits to avoid rendering of inactive scrollbars
         // for small table when using percentage sizing, typically there should
         // be no scrollbars, as the table should take the available space

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 2020 Dirk Fauth and others.
+ * Copyright (c) 2018, 2021 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -51,6 +51,7 @@ import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalSpanningData
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalTreeLayer;
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalWrapper;
 import org.eclipse.nebula.widgets.nattable.hierarchical.action.HierarchicalTreeExpandCollapseAction;
+import org.eclipse.nebula.widgets.nattable.hierarchical.command.HierarchicalTreeCopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -288,6 +289,12 @@ public class _6045_HierarchicalTreeLayerExample extends AbstractNatExample {
         });
 
         natTable.configure();
+
+        bodyLayerStack.getSelectionLayer().registerCommandHandler(
+                new HierarchicalTreeCopyDataCommandHandler(
+                        bodyLayerStack.getSelectionLayer(),
+                        bodyLayerStack.getTreeLayer(),
+                        natTable.getInternalCellClipboard()));
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 

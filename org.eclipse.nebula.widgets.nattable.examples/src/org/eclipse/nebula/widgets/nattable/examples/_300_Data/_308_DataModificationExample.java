@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, 2020 Dirk Fauth and others.
+ * Copyright (c) 2016, 2021 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -119,13 +119,6 @@ public class _308_DataModificationExample extends AbstractNatExample {
         IDataProvider personColumnHeaderDataProvider = new DefaultColumnHeaderDataProvider(personPropertyNames, personPropertyToLabelMap);
 
         IDataProvider personRowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-
-        // mapping from property to label, needed for column header labels
-        Map<String, String> addressPropertyToLabelMap = new HashMap<>();
-        addressPropertyToLabelMap.put("street", "Street");
-        addressPropertyToLabelMap.put("housenumber", "Housenumber");
-        addressPropertyToLabelMap.put("postalCode", "Postal Code");
-        addressPropertyToLabelMap.put("city", "City");
 
         Composite panel = new Composite(parent, SWT.NONE);
         panel.setLayout(new GridLayout());
