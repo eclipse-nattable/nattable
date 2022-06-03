@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2021 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -362,7 +362,7 @@ public class NatCombo extends Composite {
      *            control is an open combo to the user.
      */
     public NatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style, Image iconImage) {
-        this(parent, cellStyle, maxVisibleItems, style, GUIHelper.getImage("down_2"), false); //$NON-NLS-1$
+        this(parent, cellStyle, maxVisibleItems, style, iconImage, false);
     }
 
     /**
