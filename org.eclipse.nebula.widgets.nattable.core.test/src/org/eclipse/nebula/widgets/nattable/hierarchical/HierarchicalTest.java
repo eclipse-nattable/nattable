@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2018, 2020 Dirk Fauth.
+ * Copyright (c) 2018, 2022 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -259,6 +259,26 @@ public class HierarchicalTest {
         // });
         // System.out.println();
 
+    }
+
+    @Test
+    public void testCreationWithEmptyChildCollection() {
+        List<Car> input = new ArrayList<>();
+
+        Car car1 = new Car("BMW", "3er");
+        car1.setMotors(new ArrayList<Motor>());
+
+        Car car = new Car("Mercedes", "C Klasse");
+        Motor motor1 = new Motor("C320", "160", "KW", 250);
+        Motor motor2 = new Motor("C200", "100", "KW", 215);
+        car.setMotors(Arrays.asList(motor1, motor2));
+
+        input.add(car1);
+        input.add(car);
+
+        List<HierarchicalWrapper> result = HierarchicalHelper.deNormalize(input, false, Arrays.asList(CarService.getPropertyNames()));
+
+        assertEquals(3, result.size());
     }
 
 }
