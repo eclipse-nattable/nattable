@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 2020 Dirk Fauth.
+ * Copyright (c) 2018, 2022 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -188,7 +188,9 @@ public class RowIdHideShowLayer<T> extends AbstractRowHideShowLayer implements I
     public boolean isRowIndexHidden(int rowIndex) {
         if (rowIndex >= 0) {
             T rowObject = getRowObjectByIndex(rowIndex);
-            return this.hiddenRows.containsKey(this.rowIdAccessor.getRowId(rowObject));
+            if (rowObject != null) {
+                return this.hiddenRows.containsKey(this.rowIdAccessor.getRowId(rowObject));
+            }
         }
         return false;
     }
