@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -90,7 +90,7 @@ public class NatTableContentTooltip extends DefaultToolTip {
      * @since 1.6
      */
     public NatTableContentTooltip(NatTable natTable, int style, boolean manualActivation, String... tooltipRegions) {
-        super(natTable, ToolTip.NO_RECREATE, false);
+        super(natTable, style, manualActivation);
         setPopupDelay(500);
         setShift(new Point(10, 10));
         activate();
