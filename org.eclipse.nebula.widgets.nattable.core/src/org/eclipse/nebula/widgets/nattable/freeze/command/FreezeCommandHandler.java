@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -44,7 +44,13 @@ public class FreezeCommandHandler extends AbstractLayerCommandHandler<IFreezeCom
         // using ViewportLayer#getScrollableLayer() because the positions in the
         // further processing are taking from the scrollable layer, which does
         // not need to be the SelectionLayer in every case
-        if (command.convertToTargetLayer(this.viewportLayer.getScrollableLayer())) {
+        //
+        // The client area check is used to handle the programmatic freeze
+        // BEFORE the client area was initialized. Without this check a
+        // programmatic freeze before the rendering completed is not working.
+        if ((this.viewportLayer.getClientAreaWidth() == 0
+                && this.viewportLayer.getClientAreaHeight() == 0)
+                || command.convertToTargetLayer(this.viewportLayer.getScrollableLayer())) {
             if (command instanceof FreezeColumnCommand) {
                 // freeze for a whole column
                 FreezeColumnCommand freezeColumnCommand = (FreezeColumnCommand) command;

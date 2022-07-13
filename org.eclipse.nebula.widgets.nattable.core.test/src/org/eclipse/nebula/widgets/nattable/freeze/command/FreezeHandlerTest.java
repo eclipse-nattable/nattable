@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -365,6 +365,30 @@ public class FreezeHandlerTest {
         assertEquals(10, this.freezeLayer.getRowCount());
         assertEquals(0, this.viewportLayer.getRowCount());
         assertEquals(300, this.viewportLayer.getOrigin().getY());
+    }
+
+    @Test
+    public void shouldFreezeBeforeInitialize() {
+        DataLayer bodyDataLayer = new DataLayer(new DummyBodyDataProvider(10, 10));
+        DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(bodyDataLayer);
+        SelectionLayer selectionLayer = bodyLayer.getSelectionLayer();
+
+        FreezeLayer freezeLayer = new FreezeLayer(selectionLayer);
+        CompositeFreezeLayer compositeFreezeLayer = new CompositeFreezeLayer(freezeLayer, bodyLayer.getViewportLayer(), bodyLayer.getSelectionLayer());
+        ViewportLayer viewportLayer = bodyLayer.getViewportLayer();
+        FreezeCommandHandler commandHandler = new FreezeCommandHandler(freezeLayer, viewportLayer, selectionLayer);
+        compositeFreezeLayer.registerCommandHandler(commandHandler);
+
+        // no client area set and no client area resize command triggered
+        compositeFreezeLayer.doCommand(new FreezeColumnCommand(compositeFreezeLayer, 1));
+        assertEquals(0, freezeLayer.getTopLeftPosition().columnPosition);
+        assertEquals(-1, freezeLayer.getTopLeftPosition().rowPosition);
+        assertEquals(1, freezeLayer.getBottomRightPosition().columnPosition);
+        assertEquals(-1, freezeLayer.getBottomRightPosition().rowPosition);
+
+        // Check viewport origin
+        assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
+        assertEquals(0, viewportLayer.getMinimumOriginRowPosition());
     }
 
     class ReorderListener implements ILayerListener {
