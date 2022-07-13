@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,6 +12,8 @@
  *     Dirk Fauth <dirk.fauth@googlemail.com> - added ITraversalStrategy handling
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
+
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 
 /**
  * Preserves the basic semantics of the cell selection. Additionally it selects
@@ -92,9 +94,23 @@ public class MoveRowSelectionCommandHandler extends MoveCellSelectionCommandHand
     @Override
     protected void moveLastSelectedUp(ITraversalStrategy traversalStrategy, boolean withShiftMask, boolean withControlMask) {
         if (this.selectionLayer.hasRowSelection()) {
+
+            PositionCoordinate anchor = new PositionCoordinate(this.selectionLayer.getSelectionAnchor());
+            PositionCoordinate from = this.selectionLayer.getCellPositionToMoveFrom(withShiftMask, withControlMask);
+            boolean deselect = this.selectionLayer.isRowPositionSelected(from.rowPosition) && this.selectionLayer.isRowPositionSelected(from.rowPosition - 1) && withShiftMask;
+            if (deselect) {
+                // deselect
+                this.selectionLayer.selectRow(this.lastSelectedCellPosition.columnPosition, from.rowPosition, false, true);
+            }
+
             super.moveLastSelectedUp(traversalStrategy, withShiftMask, withControlMask);
 
-            if (this.lastSelectedCellPosition != null) {
+            if (deselect) {
+                // keep the selection anchor at its original position
+                this.selectionLayer.setSelectionAnchor(anchor.columnPosition, anchor.rowPosition);
+            }
+
+            if (!deselect && this.lastSelectedCellPosition != null) {
                 this.selectionLayer.selectRow(
                         this.lastSelectedCellPosition.columnPosition, this.lastSelectedCellPosition.rowPosition,
                         withShiftMask, withControlMask);
@@ -105,9 +121,23 @@ public class MoveRowSelectionCommandHandler extends MoveCellSelectionCommandHand
     @Override
     protected void moveLastSelectedDown(ITraversalStrategy traversalStrategy, boolean withShiftMask, boolean withControlMask) {
         if (this.selectionLayer.hasRowSelection()) {
+
+            PositionCoordinate anchor = new PositionCoordinate(this.selectionLayer.getSelectionAnchor());
+            PositionCoordinate from = this.selectionLayer.getCellPositionToMoveFrom(withShiftMask, withControlMask);
+            boolean deselect = this.selectionLayer.isRowPositionSelected(from.rowPosition) && this.selectionLayer.isRowPositionSelected(from.rowPosition + 1) && withShiftMask;
+            if (deselect) {
+                // deselect
+                this.selectionLayer.selectRow(this.lastSelectedCellPosition.columnPosition, from.rowPosition, false, true);
+            }
+
             super.moveLastSelectedDown(traversalStrategy, withShiftMask, withControlMask);
 
-            if (this.lastSelectedCellPosition != null) {
+            if (deselect) {
+                // keep the selection anchor at its original position
+                this.selectionLayer.setSelectionAnchor(anchor.columnPosition, anchor.rowPosition);
+            }
+
+            if (!deselect && this.lastSelectedCellPosition != null) {
                 this.selectionLayer.selectRow(
                         this.lastSelectedCellPosition.columnPosition, this.lastSelectedCellPosition.rowPosition,
                         withShiftMask, withControlMask);
@@ -115,4 +145,15 @@ public class MoveRowSelectionCommandHandler extends MoveCellSelectionCommandHand
         }
     }
 
+    @Override
+    void selectCell(int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask) {
+        // ignore the given column position and stick with the selection anchor
+        // and don't fire a CellSelectionEvent to avoid column scrolling
+        // the required selection event is based on the row selection afterwards
+        this.selectionLayer.selectCell(
+                this.selectionLayer.getSelectionAnchor().columnPosition,
+                rowPosition,
+                withShiftMask,
+                withControlMask);
+    }
 }

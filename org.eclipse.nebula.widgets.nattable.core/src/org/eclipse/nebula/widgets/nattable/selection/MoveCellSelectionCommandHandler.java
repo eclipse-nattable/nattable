@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -153,15 +153,9 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                                         this.selectionLayer.clear(false);
                                     }
 
-                                    this.selectionLayer.selectCell(
+                                    selectCell(
                                             this.newSelectedColumnPosition,
                                             this.newSelectedRowPosition,
-                                            withShiftMask,
-                                            withControlMask);
-                                    this.selectionLayer.fireCellSelectionEvent(
-                                            this.newSelectedColumnPosition,
-                                            this.newSelectedRowPosition,
-                                            true,
                                             withShiftMask,
                                             withControlMask);
 
@@ -186,15 +180,9 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                             this.selectionLayer.clear(false);
                         }
 
-                        this.selectionLayer.selectCell(
+                        selectCell(
                                 this.newSelectedColumnPosition,
                                 this.newSelectedRowPosition,
-                                withShiftMask,
-                                withControlMask);
-                        this.selectionLayer.fireCellSelectionEvent(
-                                this.newSelectedColumnPosition,
-                                this.newSelectedRowPosition,
-                                true,
                                 withShiftMask,
                                 withControlMask);
                     }
@@ -285,15 +273,9 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                                         this.selectionLayer.clear(false);
                                     }
 
-                                    this.selectionLayer.selectCell(
+                                    selectCell(
                                             this.newSelectedColumnPosition,
                                             this.newSelectedRowPosition,
-                                            withShiftMask,
-                                            withControlMask);
-                                    this.selectionLayer.fireCellSelectionEvent(
-                                            this.newSelectedColumnPosition,
-                                            this.newSelectedRowPosition,
-                                            true,
                                             withShiftMask,
                                             withControlMask);
 
@@ -318,15 +300,9 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                             this.selectionLayer.clear(false);
                         }
 
-                        this.selectionLayer.selectCell(
+                        selectCell(
                                 this.newSelectedColumnPosition,
                                 this.newSelectedRowPosition,
-                                withShiftMask,
-                                withControlMask);
-                        this.selectionLayer.fireCellSelectionEvent(
-                                this.newSelectedColumnPosition,
-                                this.newSelectedRowPosition,
-                                true,
                                 withShiftMask,
                                 withControlMask);
                     }
@@ -412,15 +388,9 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                                         this.selectionLayer.clear(false);
                                     }
 
-                                    this.selectionLayer.selectCell(
+                                    selectCell(
                                             this.newSelectedColumnPosition,
                                             this.newSelectedRowPosition,
-                                            withShiftMask,
-                                            withControlMask);
-                                    this.selectionLayer.fireCellSelectionEvent(
-                                            this.newSelectedColumnPosition,
-                                            this.newSelectedRowPosition,
-                                            true,
                                             withShiftMask,
                                             withControlMask);
 
@@ -445,15 +415,9 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                             this.selectionLayer.clear(false);
                         }
 
-                        this.selectionLayer.selectCell(
+                        selectCell(
                                 this.newSelectedColumnPosition,
                                 this.newSelectedRowPosition,
-                                withShiftMask,
-                                withControlMask);
-                        this.selectionLayer.fireCellSelectionEvent(
-                                this.newSelectedColumnPosition,
-                                this.newSelectedRowPosition,
-                                true,
                                 withShiftMask,
                                 withControlMask);
                     }
@@ -546,15 +510,9 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                                         this.selectionLayer.clear(false);
                                     }
 
-                                    this.selectionLayer.selectCell(
+                                    selectCell(
                                             this.newSelectedColumnPosition,
                                             this.newSelectedRowPosition,
-                                            withShiftMask,
-                                            withControlMask);
-                                    this.selectionLayer.fireCellSelectionEvent(
-                                            this.newSelectedColumnPosition,
-                                            this.newSelectedRowPosition,
-                                            true,
                                             withShiftMask,
                                             withControlMask);
 
@@ -579,15 +537,9 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                             this.selectionLayer.clear(false);
                         }
 
-                        this.selectionLayer.selectCell(
+                        selectCell(
                                 this.newSelectedColumnPosition,
                                 this.newSelectedRowPosition,
-                                withShiftMask,
-                                withControlMask);
-                        this.selectionLayer.fireCellSelectionEvent(
-                                this.newSelectedColumnPosition,
-                                this.newSelectedRowPosition,
-                                true,
                                 withShiftMask,
                                 withControlMask);
                     }
@@ -641,6 +593,36 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
     protected boolean positionMoved() {
         return (this.newSelectedColumnPosition != this.lastSelectedCellPosition.columnPosition
                 || this.newSelectedRowPosition != this.lastSelectedCellPosition.rowPosition);
+    }
+
+    /**
+     * Select the cell at the given coordinates according to the modifier key
+     * mask settings.
+     *
+     * @param columnPosition
+     *            the column position of the cell that should be selected
+     * @param rowPosition
+     *            the row position of the cell that should be selected
+     * @param withShiftMask
+     *            boolean flag to indicate whether the shift key modifier is
+     *            enabled or not
+     * @param withControlMask
+     *            boolean flag to indicate whether the control key modifier is
+     *            enabled or not
+     */
+    void selectCell(int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask) {
+        this.selectionLayer.selectCell(
+                columnPosition,
+                rowPosition,
+                withShiftMask,
+                withControlMask);
+
+        this.selectionLayer.fireCellSelectionEvent(
+                columnPosition,
+                rowPosition,
+                true,
+                withShiftMask,
+                withControlMask);
     }
 
     @Override
