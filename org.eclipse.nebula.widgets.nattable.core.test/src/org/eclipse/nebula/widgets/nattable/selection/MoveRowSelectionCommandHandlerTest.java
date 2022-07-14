@@ -74,7 +74,7 @@ public class MoveRowSelectionCommandHandlerTest {
     }
 
     @Test
-    public void testMoveDown() {
+    public void shouldUpdateSelectionOnMoveDown() {
         // select a row
         this.viewportLayer.doCommand(new SelectRowsCommand(this.viewportLayer, 1, 4, false, false));
         assertEquals(1, this.selectionLayer.getSelectionAnchor().getColumnPosition());
@@ -98,7 +98,7 @@ public class MoveRowSelectionCommandHandlerTest {
     }
 
     @Test
-    public void testMoveUp() {
+    public void shouldUpdateSelectionOnMoveUp() {
         // select a row
         this.viewportLayer.doCommand(new SelectRowsCommand(this.viewportLayer, 1, 4, false, false));
         assertEquals(1, this.selectionLayer.getSelectionAnchor().getColumnPosition());
@@ -122,7 +122,7 @@ public class MoveRowSelectionCommandHandlerTest {
     }
 
     @Test
-    public void testMoveDownShift() {
+    public void shouldExtendSelectionOnMoveDownShift() {
         // select a row
         this.viewportLayer.doCommand(new SelectRowsCommand(this.viewportLayer, 1, 4, false, false));
         assertEquals(1, this.selectionLayer.getSelectionAnchor().getColumnPosition());
@@ -146,7 +146,7 @@ public class MoveRowSelectionCommandHandlerTest {
     }
 
     @Test
-    public void testMoveUpShift() {
+    public void shouldExtendSelectionOnMoveUpShift() {
         // select a row
         this.viewportLayer.doCommand(new SelectRowsCommand(this.viewportLayer, 1, 4, false, false));
         assertEquals(1, this.selectionLayer.getSelectionAnchor().getColumnPosition());
@@ -170,7 +170,7 @@ public class MoveRowSelectionCommandHandlerTest {
     }
 
     @Test
-    public void testMoveDownUpShift() {
+    public void shouldExtendAndUpdateSelectionOnMoveDownUpShift() {
         // select a row
         this.viewportLayer.doCommand(new SelectRowsCommand(this.viewportLayer, 1, 4, false, false));
         assertEquals(1, this.selectionLayer.getSelectionAnchor().getColumnPosition());
@@ -208,7 +208,7 @@ public class MoveRowSelectionCommandHandlerTest {
     }
 
     @Test
-    public void testMoveUpDownShift() {
+    public void shouldExtendAndUpdateSelectionOnMoveUpDownShift() {
         // select a row
         this.viewportLayer.doCommand(new SelectRowsCommand(this.viewportLayer, 1, 4, false, false));
         assertEquals(1, this.selectionLayer.getSelectionAnchor().getColumnPosition());
@@ -243,5 +243,90 @@ public class MoveRowSelectionCommandHandlerTest {
 
         // viewport has not scrolled
         assertEquals(0, this.viewportLayer.getColumnIndexByPosition(0));
+    }
+
+    @Test
+    public void shouldUpdateSelectionAnchorOnMoveLeft() {
+        // select a row
+        this.viewportLayer.doCommand(new SelectRowsCommand(this.viewportLayer, 1, 4, false, false));
+        assertEquals(1, this.selectionLayer.getSelectionAnchor().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getSelectionAnchor().getRowPosition());
+        assertTrue(this.selectionLayer.isRowPositionFullySelected(4));
+
+        // move left
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, false, false));
+
+        // selection anchor moves
+        assertEquals(0, this.selectionLayer.getSelectionAnchor().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getSelectionAnchor().getRowPosition());
+    }
+
+    @Test
+    public void shouldUpdateSelectionAnchorOnMoveRight() {
+        // select a row
+        this.viewportLayer.doCommand(new SelectRowsCommand(this.viewportLayer, 1, 4, false, false));
+        assertEquals(1, this.selectionLayer.getSelectionAnchor().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getSelectionAnchor().getRowPosition());
+        assertTrue(this.selectionLayer.isRowPositionFullySelected(4));
+
+        // move right
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, false, false));
+
+        // selection anchor moves
+        assertEquals(2, this.selectionLayer.getSelectionAnchor().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getSelectionAnchor().getRowPosition());
+    }
+
+    @Test
+    public void shouldUpdateAndScrollSelectionAnchorOnMoveLeft() {
+        // scroll to last column
+        this.viewportLayer.moveColumnPositionIntoViewport(9);
+
+        // select a row, use last visible column in viewport
+        this.viewportLayer.doCommand(new SelectRowsCommand(this.viewportLayer, 5, 4, false, false));
+        assertEquals(9, this.selectionLayer.getSelectionAnchor().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getSelectionAnchor().getRowPosition());
+        assertTrue(this.selectionLayer.isRowPositionFullySelected(4));
+
+        // viewport shows last column
+        assertEquals(4, this.viewportLayer.getColumnIndexByPosition(0));
+        assertEquals(9, this.viewportLayer.getColumnIndexByPosition(5));
+
+        // move left to first column
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 9, false, false));
+
+        // selection anchor moves
+        assertEquals(0, this.selectionLayer.getSelectionAnchor().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getSelectionAnchor().getRowPosition());
+        assertTrue(this.selectionLayer.isRowPositionFullySelected(4));
+
+        // viewport scrolled to first column
+        assertEquals(0, this.viewportLayer.getColumnIndexByPosition(0));
+        assertEquals(5, this.viewportLayer.getColumnIndexByPosition(5));
+    }
+
+    @Test
+    public void shouldUpdateAndScrollSelectionAnchorOnMoveRight() {
+        // select a row
+        this.viewportLayer.doCommand(new SelectRowsCommand(this.viewportLayer, 0, 4, false, false));
+        assertEquals(0, this.selectionLayer.getSelectionAnchor().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getSelectionAnchor().getRowPosition());
+        assertTrue(this.selectionLayer.isRowPositionFullySelected(4));
+
+        // viewport shows first column
+        assertEquals(0, this.viewportLayer.getColumnIndexByPosition(0));
+        assertEquals(5, this.viewportLayer.getColumnIndexByPosition(5));
+
+        // move right to last column
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 9, false, false));
+
+        // selection anchor moves
+        assertEquals(9, this.selectionLayer.getSelectionAnchor().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getSelectionAnchor().getRowPosition());
+        assertTrue(this.selectionLayer.isRowPositionFullySelected(4));
+
+        // viewport scrolled to last column
+        assertEquals(4, this.viewportLayer.getColumnIndexByPosition(0));
+        assertEquals(9, this.viewportLayer.getColumnIndexByPosition(5));
     }
 }

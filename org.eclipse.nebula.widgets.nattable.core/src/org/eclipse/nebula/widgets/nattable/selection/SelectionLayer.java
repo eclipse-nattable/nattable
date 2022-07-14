@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -148,7 +148,11 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 
     public void addSelection(Rectangle selection) {
         if (!selection.equals(getLastSelectedRegion())) {
-            setSelectionAnchor(getLastSelectedCell().columnPosition, getLastSelectedCell().rowPosition);
+            // only set the selection anchor if not yet set
+            PositionCoordinate anchor = getSelectionAnchor();
+            if (anchor.columnPosition == NO_SELECTION && anchor.rowPosition == NO_SELECTION) {
+                setSelectionAnchor(getLastSelectedCell().columnPosition, getLastSelectedCell().rowPosition);
+            }
             setLastSelectedRegion(selection);
         }
 
@@ -225,6 +229,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     public void selectAll() {
         Rectangle selection = new Rectangle(0, 0, getColumnCount(), getRowCount());
         PositionCoordinate lastSelected = getLastSelectedCell();
+        PositionCoordinate updateCoordinate = new PositionCoordinate(getSelectionAnchor());
         if (lastSelected.columnPosition == SelectionLayer.NO_SELECTION
                 || lastSelected.columnPosition >= getColumnCount()
                 || lastSelected.rowPosition == SelectionLayer.NO_SELECTION
@@ -245,11 +250,13 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
                 }
             }
             setLastSelectedCell(column, row);
+            updateCoordinate.setColumnPosition(column);
+            updateCoordinate.setRowPosition(row);
         }
         addSelection(selection);
         fireCellSelectionEvent(
-                getLastSelectedCell().columnPosition,
-                getLastSelectedCell().rowPosition,
+                updateCoordinate.columnPosition,
+                updateCoordinate.rowPosition,
                 false,
                 false,
                 false);

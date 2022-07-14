@@ -146,14 +146,25 @@ public class MoveRowSelectionCommandHandler extends MoveCellSelectionCommandHand
     }
 
     @Override
-    void selectCell(int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask) {
-        // ignore the given column position and stick with the selection anchor
-        // and don't fire a CellSelectionEvent to avoid column scrolling
-        // the required selection event is based on the row selection afterwards
-        this.selectionLayer.selectCell(
-                this.selectionLayer.getSelectionAnchor().columnPosition,
+    void selectCell(int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask, boolean fireEvent) {
+        PositionCoordinate selectionAnchor = this.selectionLayer.getSelectionAnchor();
+        int col = columnPosition;
+        boolean fire = fireEvent;
+        if (selectionAnchor.columnPosition == columnPosition || withShiftMask) {
+            // ignore the given column position and stick with the selection
+            // anchor
+            // also don't fire a CellSelectionEvent to avoid column scrolling on
+            // row selection as the required selection event is based on the row
+            // selection afterwards
+            col = selectionAnchor.columnPosition;
+            fire = false;
+        }
+
+        super.selectCell(
+                col,
                 rowPosition,
                 withShiftMask,
-                withControlMask);
+                withControlMask,
+                fire);
     }
 }

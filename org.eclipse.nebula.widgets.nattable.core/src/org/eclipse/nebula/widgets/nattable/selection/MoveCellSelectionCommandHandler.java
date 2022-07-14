@@ -17,6 +17,7 @@ import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.ITraversalStrategy.TraversalScope;
 import org.eclipse.nebula.widgets.nattable.selection.command.MoveSelectionCommand;
+import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
 
 /**
  * Specifies the semantics of moving the selection in the table, based on
@@ -157,7 +158,8 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                                             this.newSelectedColumnPosition,
                                             this.newSelectedRowPosition,
                                             withShiftMask,
-                                            withControlMask);
+                                            withControlMask,
+                                            true);
 
                                     break;
                                 }
@@ -184,7 +186,8 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                                 this.newSelectedColumnPosition,
                                 this.newSelectedRowPosition,
                                 withShiftMask,
-                                withControlMask);
+                                withControlMask,
+                                true);
                     }
                 }
             }
@@ -277,7 +280,8 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                                             this.newSelectedColumnPosition,
                                             this.newSelectedRowPosition,
                                             withShiftMask,
-                                            withControlMask);
+                                            withControlMask,
+                                            true);
 
                                     break;
                                 }
@@ -304,7 +308,8 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                                 this.newSelectedColumnPosition,
                                 this.newSelectedRowPosition,
                                 withShiftMask,
-                                withControlMask);
+                                withControlMask,
+                                true);
                     }
                 }
             }
@@ -392,7 +397,8 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                                             this.newSelectedColumnPosition,
                                             this.newSelectedRowPosition,
                                             withShiftMask,
-                                            withControlMask);
+                                            withControlMask,
+                                            true);
 
                                     break;
                                 }
@@ -419,7 +425,8 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                                 this.newSelectedColumnPosition,
                                 this.newSelectedRowPosition,
                                 withShiftMask,
-                                withControlMask);
+                                withControlMask,
+                                true);
                     }
                 }
             }
@@ -514,7 +521,8 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                                             this.newSelectedColumnPosition,
                                             this.newSelectedRowPosition,
                                             withShiftMask,
-                                            withControlMask);
+                                            withControlMask,
+                                            true);
 
                                     break;
                                 }
@@ -541,7 +549,8 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                                 this.newSelectedColumnPosition,
                                 this.newSelectedRowPosition,
                                 withShiftMask,
-                                withControlMask);
+                                withControlMask,
+                                true);
                     }
                 }
             }
@@ -609,20 +618,25 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
      * @param withControlMask
      *            boolean flag to indicate whether the control key modifier is
      *            enabled or not
+     * @param fireEvent
+     *            <code>true</code> if a {@link CellSelectionEvent} should be
+     *            fired, <code>false</code> if not
      */
-    void selectCell(int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask) {
+    void selectCell(int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask, boolean fireEvent) {
         this.selectionLayer.selectCell(
                 columnPosition,
                 rowPosition,
                 withShiftMask,
                 withControlMask);
 
-        this.selectionLayer.fireCellSelectionEvent(
-                columnPosition,
-                rowPosition,
-                true,
-                withShiftMask,
-                withControlMask);
+        if (fireEvent) {
+            this.selectionLayer.fireCellSelectionEvent(
+                    columnPosition,
+                    rowPosition,
+                    true,
+                    withShiftMask,
+                    withControlMask);
+        }
     }
 
     @Override
