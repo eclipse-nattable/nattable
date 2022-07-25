@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2022 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,7 +21,6 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.nebula.widgets.nattable.widget.NatCombo;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
@@ -86,7 +85,11 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
                 ? new FilterNatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.showDropdownFilter)
                 : new FilterNatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.iconImage, this.showDropdownFilter);
 
-        combo.setCursor(new Cursor(Display.getDefault(), SWT.CURSOR_IBEAM));
+        if (this.freeEdit) {
+            combo.setCursor(Display.getDefault().getSystemCursor(SWT.CURSOR_IBEAM));
+        } else {
+            combo.setCursor(Display.getDefault().getSystemCursor(SWT.CURSOR_ARROW));
+        }
 
         combo.setMultiselectValueSeparator(this.multiselectValueSeparator);
         combo.setMultiselectTextBracket(this.multiselectTextPrefix, this.multiselectTextSuffix);

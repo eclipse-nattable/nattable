@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -33,7 +33,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -352,7 +351,7 @@ public class TextCellEditor extends AbstractCellEditor {
         textControl.setForeground(this.cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
         textControl.setFont(this.cellStyle.getAttributeValue(CellStyleAttributes.FONT));
 
-        textControl.setCursor(new Cursor(Display.getDefault(), SWT.CURSOR_IBEAM));
+        textControl.setCursor(Display.getDefault().getSystemCursor(SWT.CURSOR_IBEAM));
 
         // add a key listener that will commit or close the editor for special
         // key strokes and executes conversion/validation on input to the editor

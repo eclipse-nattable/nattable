@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -36,7 +36,6 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -452,7 +451,11 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
                 ? new NatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.showDropdownFilter)
                 : new NatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.iconImage, this.showDropdownFilter);
 
-        combo.setCursor(new Cursor(Display.getDefault(), SWT.CURSOR_IBEAM));
+        if (this.freeEdit) {
+            combo.setCursor(Display.getDefault().getSystemCursor(SWT.CURSOR_IBEAM));
+        } else {
+            combo.setCursor(Display.getDefault().getSystemCursor(SWT.CURSOR_ARROW));
+        }
 
         if (this.multiselect) {
             combo.setMultiselectValueSeparator(this.multiselectValueSeparator);
