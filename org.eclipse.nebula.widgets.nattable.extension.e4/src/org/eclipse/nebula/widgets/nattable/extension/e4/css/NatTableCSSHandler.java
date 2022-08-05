@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2020 CEA LIST and others.
+ * Copyright (c) 2015, 2022 CEA LIST and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -73,6 +73,8 @@ import org.w3c.dom.css.CSSValueList;
 @SuppressWarnings("restriction")
 public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHandler2 {
 
+    private CSSPropertyBackgroundSWTHandler backgroundSWTHandler = new CSSPropertyBackgroundSWTHandler();
+
     @Override
     public boolean applyCSSProperty(Object element, String property, CSSValue value, String pseudo, CSSEngine engine)
             throws Exception {
@@ -117,9 +119,9 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                         NatTableCSSConstants.PAINTER,
                         NatTableCSSHelper.resolvePainterRepresentation(value));
             } else if (NatTableCSSConstants.BACKGROUND_COLOR.equalsIgnoreCase(property)) {
-                CSSPropertyBackgroundSWTHandler.INSTANCE.applyCSSPropertyBackgroundColor(element, value, pseudo, engine);
+                this.backgroundSWTHandler.applyCSSPropertyBackgroundColor(element, value, pseudo, engine);
             } else if (NatTableCSSConstants.BACKGROUND_IMAGE.equalsIgnoreCase(property)) {
-                CSSPropertyBackgroundSWTHandler.INSTANCE.applyCSSPropertyBackgroundImage(element, value, pseudo, engine);
+                this.backgroundSWTHandler.applyCSSPropertyBackgroundImage(element, value, pseudo, engine);
             } else if (NatTableCSSConstants.CELL_BACKGROUND_COLOR.equalsIgnoreCase(property)) {
                 if (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE) {
                     Color newColor = (Color) engine.convert(value, Color.class, natTable.getDisplay());
@@ -943,9 +945,9 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
         if (natTable != null) {
             // check property
             if (NatTableCSSConstants.BACKGROUND_COLOR.equalsIgnoreCase(property)) {
-                return CSSPropertyBackgroundSWTHandler.INSTANCE.retrieveCSSPropertyBackgroundColor(control, pseudo, engine);
+                return this.backgroundSWTHandler.retrieveCSSPropertyBackgroundColor(control, pseudo, engine);
             } else if (NatTableCSSConstants.BACKGROUND_IMAGE.equalsIgnoreCase(property)) {
-                return CSSPropertyBackgroundSWTHandler.INSTANCE.retrieveCSSPropertyBackgroundImage(control, pseudo, engine);
+                return this.backgroundSWTHandler.retrieveCSSPropertyBackgroundImage(control, pseudo, engine);
             } else if (NatTableCSSConstants.CELL_BACKGROUND_COLOR.equalsIgnoreCase(property)) {
                 ICSSValueConverter cssValueConverter = engine.getCSSValueConverter(String.class);
                 return cssValueConverter.convert(
