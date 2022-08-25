@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -32,7 +32,7 @@ public final class ArrayUtil {
     }
 
     public static <T> Collection<T> asCollection(T[] array) {
-        return Arrays.asList(array);
+        return Arrays.stream(array).collect(Collectors.toList());
     }
 
     public static int[] asIntArray(int... ints) {
