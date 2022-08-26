@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -56,6 +57,13 @@ public class ArrayUtilTest {
         assertEquals(10, intArray[1]);
         assertEquals(25, intArray[2]);
         assertEquals(15, intArray[3]);
+    }
 
+    @Test
+    public void shouldCreateMutableList() {
+        Collection<String> collection = ArrayUtil.asCollection(new String[] { "one", "two", "three" });
+        assertEquals(3, collection.size());
+        collection.add("four");
+        assertEquals(4, collection.size());
     }
 }
