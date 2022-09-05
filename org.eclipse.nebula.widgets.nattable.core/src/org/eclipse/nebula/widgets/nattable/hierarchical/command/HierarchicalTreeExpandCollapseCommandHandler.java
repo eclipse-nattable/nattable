@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2018, 2020 Dirk Fauth.
+ * Copyright (c) 2018, 2022 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,6 +14,7 @@ package org.eclipse.nebula.widgets.nattable.hierarchical.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalTreeLayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandCollapseCommand;
 
 /**
@@ -50,15 +51,30 @@ public class HierarchicalTreeExpandCollapseCommandHandler extends AbstractLayerC
 
     @Override
     protected boolean doCommand(TreeExpandCollapseCommand command) {
+
+        int rowIndex = command.getParentIndex();
+        int columnIndex = command.getColumnIndex();
+
+        if (rowIndex < 0) {
+            // if the parent index is a negative value, the tree cell is a
+            // spanned cell whose origin row was scrolled out of the visible
+            // area, therefore we need to find the correct parent index now
+            int rowPos = this.treeLayer.getRowPositionByIndex(rowIndex * -1);
+            int colPos = this.treeLayer.getColumnPositionByIndex(columnIndex);
+
+            ILayerCell cell = this.treeLayer.getCellByPosition(colPos, rowPos);
+            rowIndex = this.treeLayer.getRowIndexByPosition(cell.getOriginRowPosition());
+        }
+
         if (command instanceof HierarchicalTreeExpandCollapseCommand) {
             this.treeLayer.expandOrCollapse(
-                    command.getColumnIndex(),
-                    command.getParentIndex(),
+                    columnIndex,
+                    rowIndex,
                     ((HierarchicalTreeExpandCollapseCommand) command).getToLevel());
         } else {
             this.treeLayer.expandOrCollapse(
-                    command.getColumnIndex(),
-                    command.getParentIndex());
+                    columnIndex,
+                    rowIndex);
         }
         return true;
     }
