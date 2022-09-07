@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2018, 2020 Dirk Fauth.
+ * Copyright (c) 2018, 2022 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -1024,6 +1024,11 @@ public class HierarchicalTreeLayer extends AbstractRowHideShowLayer {
      */
     public void expandOrCollapse(int columnIndex, int rowIndex, int toLevel) {
         MutableIntList toProcess = IntLists.mutable.of(getChildIndexes(columnIndex, rowIndex)).sortThis();
+
+        if (toProcess.isEmpty()) {
+            // if there are no children there is nothing to do here
+            return;
+        }
 
         HierarchicalTreeNode coord = new HierarchicalTreeNode(columnIndex, rowIndex, null);
         if (this.collapsedNodes.contains(coord)) {
