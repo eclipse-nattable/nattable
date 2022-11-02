@@ -113,7 +113,7 @@ public class DefaultColumnGroupHeaderLayerConfiguration extends AbstractLayerCon
 
     @Override
     public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-        // Column Group Header is a part of the Group Header.
+        // Column Group Header is a part of the Column Header region.
         // Register the 'column group header matcher' first so that it gets
         // picked up before the more general 'column header matcher'.
         uiBindingRegistry.registerMouseDragMode(

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -19,6 +19,9 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.action.GroupByDragMode;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.group.performance.action.ColumnGroupHeaderReorderDragMode;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.AggregateDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.CellDragMode;
@@ -111,6 +114,33 @@ public class GroupByHeaderConfiguration extends AbstractRegistryConfiguration {
                             new CellDragMode(),
                             new GroupByColumnGroupReorderDragMode(this.columnGroupHeaderLayer),
                             new GroupByDragMode()));
+
+            // Need to register the ColumnGroupHeaderReorderDragMode again at
+            // the first position in the registry. Necessary because the column
+            // group header is part of the column header region. To ensure the
+            // column group reorder handling is picked up first, it needs to be
+            // first in the list of registered DragModes.
+
+            // TODO Create class GroupByColumnGroupHeaderReorderDragMode
+            // we use anonymous overriding here to get this fixed in a bugfix
+            // release, but for consistency this should be a concrete class
+            uiBindingRegistry.registerFirstMouseDragMode(
+                    MouseEventMatcher.columnGroupHeaderLeftClick(SWT.NONE),
+                    new AggregateDragMode(new CellDragMode(),
+                            new ColumnGroupHeaderReorderDragMode(this.columnGroupHeaderLayer) {
+
+                                @Override
+                                public boolean isValidTargetColumnPosition(ILayer natLayer, int dragFromGridColumnPosition, int dragToGridColumnPosition) {
+                                    // Suppress reorder if cursor is over the
+                                    // group by region
+                                    LabelStack regionLabels = natLayer.getRegionLabelsByXY(this.currentEvent.x, this.currentEvent.y);
+                                    if (regionLabels != null && !regionLabels.hasLabel(GroupByHeaderLayer.GROUP_BY_REGION)) {
+                                        return super.isValidTargetColumnPosition(natLayer, dragFromGridColumnPosition, dragToGridColumnPosition);
+                                    }
+                                    return false;
+                                }
+
+                            }));
         }
     }
 
