@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -52,24 +52,30 @@ public class GlazedListsGridLayer<T> extends GridLayer {
     private DefaultBodyLayerStack bodyLayerStack;
     private ListDataProvider<T> bodyDataProvider;
     private GlazedListsEventLayer<T> glazedListsEventLayer;
+    private SortHeaderLayer<T> columnHeaderSortableLayer;
 
-    public GlazedListsGridLayer(EventList<T> eventList, String[] propertyNames,
+    public GlazedListsGridLayer(EventList<T> eventList,
+            String[] propertyNames,
             Map<String, String> propertyToLabelMap,
             IConfigRegistry configRegistry) {
         this(eventList, propertyNames, propertyToLabelMap, configRegistry, true);
     }
 
-    public GlazedListsGridLayer(EventList<T> eventList, String[] propertyNames,
+    public GlazedListsGridLayer(EventList<T> eventList,
+            String[] propertyNames,
             Map<String, String> propertyToLabelMap,
-            IConfigRegistry configRegistry, boolean useDefaultConfiguration) {
+            IConfigRegistry configRegistry,
+            boolean useDefaultConfiguration) {
         super(useDefaultConfiguration);
 
         // Body - with list event listener
         // NOTE: Remember to use the SortedList constructor with 'null' for the
         // Comparator
         SortedList<T> sortedList = new SortedList<>(eventList, null);
-        IColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(propertyNames);
-        this.bodyDataProvider = new ListDataProvider<>(sortedList, columnPropertyAccessor);
+        IColumnPropertyAccessor<T> columnPropertyAccessor =
+                new ReflectiveColumnPropertyAccessor<>(propertyNames);
+        this.bodyDataProvider =
+                new ListDataProvider<>(sortedList, columnPropertyAccessor);
 
         this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
         this.glazedListsEventLayer = new GlazedListsEventLayer<>(this.bodyDataLayer, eventList);
@@ -77,35 +83,47 @@ public class GlazedListsGridLayer<T> extends GridLayer {
         this.bodyLayerStack = new DefaultBodyLayerStack(this.glazedListsEventLayer);
 
         // Sort Column header
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-        this.columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-        ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
-                this.columnHeaderDataLayer, this.bodyLayerStack,
-                this.bodyLayerStack.getSelectionLayer());
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        this.columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ColumnHeaderLayer columnHeaderLayer =
+                new ColumnHeaderLayer(
+                        this.columnHeaderDataLayer,
+                        this.bodyLayerStack,
+                        this.bodyLayerStack.getSelectionLayer());
 
         // Auto configure off. Configurations have to applied manually.
-        SortHeaderLayer<T> columnHeaderSortableLayer = new SortHeaderLayer<>(
-                columnHeaderLayer, new GlazedListsSortModel<>(sortedList,
-                        columnPropertyAccessor, configRegistry,
-                        this.columnHeaderDataLayer),
-                false);
+        this.columnHeaderSortableLayer =
+                new SortHeaderLayer<>(
+                        columnHeaderLayer,
+                        new GlazedListsSortModel<>(
+                                sortedList,
+                                columnPropertyAccessor,
+                                configRegistry,
+                                this.columnHeaderDataLayer),
+                        false);
 
         // Row header
-        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(this.bodyDataProvider);
-        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                this.bodyLayerStack, this.bodyLayerStack.getSelectionLayer());
+        DefaultRowHeaderDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(this.bodyDataProvider);
+        DefaultRowHeaderDataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        RowHeaderLayer rowHeaderLayer =
+                new RowHeaderLayer(
+                        rowHeaderDataLayer,
+                        this.bodyLayerStack,
+                        this.bodyLayerStack.getSelectionLayer());
 
         // Corner
-        DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderDataProvider, rowHeaderDataProvider);
+        DefaultCornerDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
         DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        CornerLayer cornerLayer = new CornerLayer(cornerDataLayer,
-                rowHeaderLayer, columnHeaderLayer);
+        CornerLayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
 
         // Grid
         setBodyLayer(this.bodyLayerStack);
-        setColumnHeaderLayer(columnHeaderSortableLayer);
+        setColumnHeaderLayer(this.columnHeaderSortableLayer);
         setRowHeaderLayer(rowHeaderLayer);
         setCornerLayer(cornerLayer);
     }
@@ -132,5 +150,9 @@ public class GlazedListsGridLayer<T> extends GridLayer {
 
     public GlazedListsEventLayer<T> getGlazedListsEventLayer() {
         return this.glazedListsEventLayer;
+    }
+
+    public SortHeaderLayer<T> getSortHeaderLayer() {
+        return this.columnHeaderSortableLayer;
     }
 }

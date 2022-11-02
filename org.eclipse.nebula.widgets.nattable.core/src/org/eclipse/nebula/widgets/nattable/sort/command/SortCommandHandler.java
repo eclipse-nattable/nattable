@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -44,7 +44,7 @@ public class SortCommandHandler<T> extends AbstractLayerCommandHandler<SortColum
         if (columnIndex >= 0) {
             final SortDirectionEnum newSortDirection = (command.getSortDirection() != null)
                     ? command.getSortDirection()
-                    : this.sortModel.getSortDirection(columnIndex).getNextSortDirection();
+                    : getSortDirectionFromSortModel(columnIndex, command.isAccumulate());
 
             // Fire command - with busy indicator
             Runnable sortRunner = () -> SortCommandHandler.this.sortModel.sort(columnIndex, newSortDirection, command.isAccumulate());
@@ -56,6 +56,21 @@ public class SortCommandHandler<T> extends AbstractLayerCommandHandler<SortColum
         }
 
         return true;
+    }
+
+    private SortDirectionEnum getSortDirectionFromSortModel(int columnIndex, boolean accumulate) {
+        SortDirectionEnum sortDirection = this.sortModel.getSortDirection(columnIndex);
+        // if there is a sorting applied for multiple columns and the sorting
+        // should be accumulated and not the last column should be sorted,
+        // only update the sort direction ASC vs. DESC and avoid to remove
+        // the sorting
+        if (accumulate
+                && sortDirection != SortDirectionEnum.NONE
+                && this.sortModel.getSortedColumnIndexes().size() > 1
+                && this.sortModel.getSortOrder(columnIndex) < this.sortModel.getSortedColumnIndexes().size() - 1) {
+            return (sortDirection == SortDirectionEnum.ASC) ? SortDirectionEnum.DESC : SortDirectionEnum.ASC;
+        }
+        return sortDirection.getNextSortDirection();
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,19 +25,18 @@ import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.gui.AbstractTableComparatorChooser;
 import ca.odell.glazedlists.gui.TableFormat;
 
-public class NatTableComparatorChooser<T> extends
-        AbstractTableComparatorChooser<T> {
+public class NatTableComparatorChooser<T> extends AbstractTableComparatorChooser<T> {
 
-    public NatTableComparatorChooser(SortedList<T> sortedList,
-            TableFormat<T> tableFormat) {
+    public NatTableComparatorChooser(SortedList<T> sortedList, TableFormat<T> tableFormat) {
         super(sortedList, tableFormat);
     }
 
-    void sort(int columnIndex, SortDirectionEnum sortDirection,
-            boolean accumulate) {
+    void sort(int columnIndex, SortDirectionEnum sortDirection, boolean accumulate) {
+
         if (getComparatorsForColumn(columnIndex).isEmpty()) {
             return;
         }
+
         if (!accumulate) {
             clearComparator();
         }
@@ -47,12 +46,18 @@ public class NatTableComparatorChooser<T> extends
                 removeSortingColumnIndex(columnIndex);
                 break;
             case ASC:
-                removeSortingColumnIndex(columnIndex);
-                appendComparator(columnIndex, 0, false);
+                if (isColumnIndexSorted(columnIndex)) {
+                    updateSortingColumnIndex(columnIndex, false);
+                } else {
+                    appendComparator(columnIndex, 0, false);
+                }
                 break;
             case DESC:
-                removeSortingColumnIndex(columnIndex);
-                appendComparator(columnIndex, 0, true);
+                if (isColumnIndexSorted(columnIndex)) {
+                    updateSortingColumnIndex(columnIndex, true);
+                } else {
+                    appendComparator(columnIndex, 0, true);
+                }
                 break;
             default:
                 break;
@@ -65,8 +70,7 @@ public class NatTableComparatorChooser<T> extends
         for (int sortingColumnIndex : getSortingColumns()) {
             if (sortingColumnIndex != columnIndex) {
                 boolean reverse = isColumnReverse(sortingColumnIndex);
-                comparatorInfos.add(new ComparatorInfo(sortingColumnIndex,
-                        reverse));
+                comparatorInfos.add(new ComparatorInfo(sortingColumnIndex, reverse));
             }
         }
 
@@ -74,8 +78,23 @@ public class NatTableComparatorChooser<T> extends
 
         // Rebuild comparators
         for (ComparatorInfo comparatorInfo : comparatorInfos) {
-            appendComparator(comparatorInfo.columnIndex, 0,
-                    comparatorInfo.isReverse);
+            appendComparator(comparatorInfo.columnIndex, 0, comparatorInfo.isReverse);
+        }
+    }
+
+    private void updateSortingColumnIndex(int columnIndex, boolean newReverse) {
+        // Save comparators
+        List<ComparatorInfo> comparatorInfos = new ArrayList<>();
+        for (int sortingColumnIndex : getSortingColumns()) {
+            boolean reverse = (sortingColumnIndex != columnIndex) ? isColumnReverse(sortingColumnIndex) : newReverse;
+            comparatorInfos.add(new ComparatorInfo(sortingColumnIndex, reverse));
+        }
+
+        clearComparator();
+
+        // Rebuild comparators
+        for (ComparatorInfo comparatorInfo : comparatorInfos) {
+            appendComparator(comparatorInfo.columnIndex, 0, comparatorInfo.isReverse);
         }
     }
 
@@ -84,8 +103,7 @@ public class NatTableComparatorChooser<T> extends
     }
 
     public SortDirectionEnum getSortDirectionForColumnIndex(int columnIndex) {
-        boolean sorted = getSortingColumns().contains(
-                Integer.valueOf(columnIndex));
+        boolean sorted = getSortingColumns().contains(Integer.valueOf(columnIndex));
         if (!sorted) {
             return NONE;
         }
@@ -115,5 +133,4 @@ public class NatTableComparatorChooser<T> extends
             this.isReverse = reverse;
         }
     }
-
 }
