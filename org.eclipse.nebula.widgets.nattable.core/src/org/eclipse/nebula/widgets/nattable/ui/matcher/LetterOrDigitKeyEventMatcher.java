@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,7 +25,7 @@ import org.eclipse.swt.events.KeyEvent;
  * be populated to an editor like e.g. the question mark. The following regular
  * expression will be used by this matcher:
  *
- * <b>[\\.:,;\\-_#\'+*~!?§$%&amp;/()\\[\\]\\{\\}=\\\\\"]</b>
+ * <b>[\\.:,;\\-_#\'+*~!?§$%&amp;/()\\[\\]\\{\\}=\\\\\"&lt;&gt;@^°´`|]</b>
  */
 public class LetterOrDigitKeyEventMatcher implements IKeyEventMatcher {
 
@@ -89,7 +89,7 @@ public class LetterOrDigitKeyEventMatcher implements IKeyEventMatcher {
         return Character.isLetterOrDigit(character)
                 || Character
                         .toString(character)
-                        .matches("[\\.:,;\\-_#\'+*~!?§$%&/()\\[\\]\\{\\}=\\\\\"]"); //$NON-NLS-1$
+                        .matches("[\\.:,;\\-_#\'+*~!?§$%&/()\\[\\]\\{\\}=\\\\\"<>@^°´`|]"); //$NON-NLS-1$
     }
 
 }
