@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2022 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -355,7 +355,14 @@ public class FilterNatCombo extends NatCombo {
                 });
 
         this.selectAllItemViewer.addCheckStateListener(event -> {
-            if (event.getChecked()) {
+            boolean performCheck = event.getChecked();
+            if (!performCheck && (getSelectionCount() < FilterNatCombo.this.itemList.size())) {
+                // checked but grayed, so not all items selected
+                // treat it as if the action is to select all
+                performCheck = true;
+            }
+
+            if (performCheck) {
                 // select all
                 FilterNatCombo.this.dropdownTable.selectAll();
             } else {
@@ -366,18 +373,20 @@ public class FilterNatCombo extends NatCombo {
             // after selection is performed we need to ensure that
             // selection and checkboxes are in sync
             for (TableItem tableItem : FilterNatCombo.this.dropdownTable.getItems()) {
-                tableItem.setChecked(
-                        FilterNatCombo.this.dropdownTable.isSelected(
-                                FilterNatCombo.this.itemList.indexOf(tableItem.getText())));
+                tableItem.setChecked(performCheck);
             }
 
             // sync the selectionStateMap based on the state of the select
             // all checkbox
-            for (String item : FilterNatCombo.this.itemList) {
-                FilterNatCombo.this.selectionStateMap.put(item, event.getChecked());
+            for (TableItem tableItem : FilterNatCombo.this.dropdownTable.getItems()) {
+                // for (String item : FilterNatCombo.this.itemList) {
+                FilterNatCombo.this.selectionStateMap.put(tableItem.getText(), performCheck);
             }
 
             updateTextControl(!FilterNatCombo.this.multiselect);
+            // also refresh the selectAllItemViewer to show a potential grayed
+            // checked state in case of an active filter
+            this.selectAllItemViewer.refresh();
         });
 
         for (ICheckStateListener l : this.checkStateListener) {
