@@ -356,18 +356,22 @@ public class FilterNatCombo extends NatCombo {
 
         this.selectAllItemViewer.addCheckStateListener(event -> {
             boolean performCheck = event.getChecked();
-            if (!performCheck && (getSelectionCount() < FilterNatCombo.this.itemList.size())) {
-                // checked but grayed, so not all items selected
-                // treat it as if the action is to select all
-                performCheck = true;
-            }
-
-            if (performCheck) {
-                // select all
-                FilterNatCombo.this.dropdownTable.selectAll();
-            } else {
-                // deselect all
-                FilterNatCombo.this.dropdownTable.deselectAll();
+            boolean grayed = getSelectionCount() < FilterNatCombo.this.itemList.size();
+            // if not all items are checked, but we want to uncheck all via the
+            // grayed select all checkbox, we need to double check the state of
+            // all visible items. This is necessary because one could filter
+            // dropdown where already an item is unselected and tries then to
+            // select all visibles only.
+            if (!performCheck && grayed) {
+                boolean allVisibleUnchecked = true;
+                for (TableItem tableItem : FilterNatCombo.this.dropdownTable.getItems()) {
+                    if (tableItem.getChecked()) {
+                        allVisibleUnchecked = false;
+                    }
+                }
+                if (allVisibleUnchecked) {
+                    performCheck = true;
+                }
             }
 
             // after selection is performed we need to ensure that
@@ -379,7 +383,6 @@ public class FilterNatCombo extends NatCombo {
             // sync the selectionStateMap based on the state of the select
             // all checkbox
             for (TableItem tableItem : FilterNatCombo.this.dropdownTable.getItems()) {
-                // for (String item : FilterNatCombo.this.itemList) {
                 FilterNatCombo.this.selectionStateMap.put(tableItem.getText(), performCheck);
             }
 
