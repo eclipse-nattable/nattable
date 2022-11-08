@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2021 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -179,7 +179,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 
     @Override
     public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-        if (ObjectUtils.isNotNull(newValue)) {
+        if (newValue != null && newValue.toString().length() > 0) {
             this.filterIndexToObjectMap.put(columnIndex, newValue);
         } else {
             this.filterIndexToObjectMap.remove(columnIndex);

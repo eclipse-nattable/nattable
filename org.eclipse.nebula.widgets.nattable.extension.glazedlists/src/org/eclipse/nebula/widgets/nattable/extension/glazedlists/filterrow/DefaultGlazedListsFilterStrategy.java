@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -500,7 +500,8 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
                 ThresholdMatcherEditor<?, ?> firstThreshold = (ThresholdMatcherEditor<?, ?>) first;
                 ThresholdMatcherEditor<?, ?> secondThreshold = (ThresholdMatcherEditor<?, ?>) second;
 
-                result = firstThreshold.getThreshold().equals(secondThreshold.getThreshold())
+                result = (firstThreshold.getThreshold() != null && secondThreshold.getThreshold() != null)
+                        && firstThreshold.getThreshold().equals(secondThreshold.getThreshold())
                         && firstThreshold.getComparator().equals(secondThreshold.getComparator())
                         // MatchOperation is not visible and must be a
                         // references instance, so the 'equals' is not needed
