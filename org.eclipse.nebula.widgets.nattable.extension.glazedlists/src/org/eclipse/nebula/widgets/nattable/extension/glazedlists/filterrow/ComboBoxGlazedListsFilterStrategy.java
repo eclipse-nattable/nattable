@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2022 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -28,8 +28,14 @@ import java.util.regex.Pattern;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
+import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
+import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
+import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
@@ -141,9 +147,19 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
         for (Iterator<Map.Entry<Integer, Object>> it = newIndexToObjectMap.entrySet().iterator(); it.hasNext();) {
             Entry<Integer, Object> entry = it.next();
             Object filterObject = entry.getValue();
+
+            // Check if the filter editor is the combobox and only handle the
+            // collection case with that type of editor. Note that ignoring the
+            // SELECT_ALL_ITEMS_VALUE is needed in any case.
+            ICellEditor cellEditor = this.configRegistry.getConfigAttribute(
+                    EditConfigAttributes.CELL_EDITOR,
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + entry.getKey(), GridRegion.FILTER_ROW);
+            boolean isCombo = (cellEditor instanceof FilterRowComboBoxCellEditor);
+
             if (EditConstants.SELECT_ALL_ITEMS_VALUE.equals(filterObject)) {
                 it.remove();
-            } else {
+            } else if (isCombo) {
                 List<?> dataProviderList = this.comboBoxDataProvider.getValues(entry.getKey(), 0);
 
                 // selecting all is transported as String to support lazy

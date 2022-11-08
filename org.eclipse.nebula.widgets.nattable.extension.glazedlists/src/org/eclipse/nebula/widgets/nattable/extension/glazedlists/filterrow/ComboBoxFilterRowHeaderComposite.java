@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2022 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -23,10 +23,13 @@ import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
+import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterRowConfiguration;
+import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.IFilterRowComboUpdateListener;
@@ -37,6 +40,7 @@ import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
@@ -71,6 +75,12 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
      * ComboBoxFilterRowHeaderComposite.
      */
     protected final ComboBoxGlazedListsFilterStrategy<T> filterStrategy;
+
+    /**
+     * The {@link IConfigRegistry} needed to retrieve various configurations,
+     * e.g. the filter cell editor per column.
+     */
+    private IConfigRegistry configRegistry;
 
     /**
      * Creates a new ComboBoxFilterRowHeaderComposite based on the given
@@ -602,6 +612,8 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
                         columnHeaderDataProvider,
                         configRegistry);
 
+        this.configRegistry = configRegistry;
+
         setAllValuesSelected();
 
         setChildLayer(GridRegion.FILTER_ROW, this.filterRowDataLayer, 0, 1);
@@ -696,6 +708,39 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
     }
 
     @Override
+    public Object getDataValueByPosition(int compositeColumnPosition, int compositeRowPosition) {
+        Object filterValue = super.getDataValueByPosition(compositeColumnPosition, compositeRowPosition);
+
+        // The SELECT_ALL_ITEMS_VALUE is set to the FilterRowDataProvider by
+        // setAllValueSelected(). It is actually ignored in the
+        // ComboBoxGlazedListsFilterStrategy as it technically means "no filter"
+        // and results in having all entries checked in the
+        // FilterRowComboBoxCellEditor. For other filter editors this
+        // replacement is not done and causes incorrect visualization as it
+        // shows the value and implies an active filter. As the
+        // SELECT_ALL_ITEMS_VALUE is propagated in the constructor at a time
+        // where the editors are not yet configured, we remove the value
+        // reactively on accessing it for a consistent view.
+
+        if (compositeRowPosition == 1
+                && !isFilterRowComboBoxCellEditor(compositeColumnPosition)
+                && EditConstants.SELECT_ALL_ITEMS_VALUE.equals(filterValue)) {
+            this.filterRowDataLayer.getFilterRowDataProvider().getFilterIndexToObjectMap().remove(compositeColumnPosition);
+            filterValue = null;
+        }
+
+        return filterValue;
+    }
+
+    private boolean isFilterRowComboBoxCellEditor(int column) {
+        ICellEditor cellEditor = this.configRegistry.getConfigAttribute(
+                EditConfigAttributes.CELL_EDITOR,
+                DisplayMode.NORMAL,
+                this.filterRowDataLayer.getConfigLabelsByPosition(column, 0));
+        return (cellEditor instanceof FilterRowComboBoxCellEditor);
+    }
+
+    @Override
     public int getHeight() {
         if (this.filterRowVisible) {
             return super.getHeight();
@@ -726,11 +771,13 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
         else if (command instanceof ClearFilterCommand
                 && command.convertToTargetLayer(this)) {
             int columnPosition = ((ClearFilterCommand) command).getColumnPosition();
-            this.filterRowDataLayer.setDataValueByPosition(
-                    columnPosition,
-                    0,
-                    getComboBoxDataProvider().getValues(columnPosition, 0));
-            handled = true;
+            if (isFilterRowComboBoxCellEditor(columnPosition)) {
+                this.filterRowDataLayer.setDataValueByPosition(
+                        columnPosition,
+                        0,
+                        getComboBoxDataProvider().getValues(columnPosition, 0));
+                handled = true;
+            }
         } else if (command instanceof ClearAllFiltersCommand) {
             setAllValuesSelected();
             handled = true;
