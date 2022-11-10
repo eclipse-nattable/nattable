@@ -42,6 +42,8 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -732,15 +734,15 @@ public class NatCombo extends Composite {
         dropDownLayoutData.bottom = new FormAttachment(100);
 
         if (this.showDropdownFilter) {
-            this.filterBox = new Text(this.dropdownShell, SWT.BORDER);
+            this.filterBox = new Text(this.dropdownShell, SWT.BORDER | SWT.SEARCH | SWT.ICON_CANCEL);
             this.filterBox.setFont(this.cellStyle.getAttributeValue(CellStyleAttributes.FONT));
             this.filterBox.setEnabled(true);
             this.filterBox.setEditable(true);
             this.filterBox.addFocusListener(new FocusListenerWrapper());
-            this.filterBox.addKeyListener(new KeyAdapter() {
+            this.filterBox.addModifyListener(new ModifyListener() {
 
                 @Override
-                public void keyReleased(KeyEvent e) {
+                public void modifyText(ModifyEvent e) {
                     if (null != NatCombo.this.dropdownTableViewer && !NatCombo.this.dropdownTable.isDisposed()) {
                         NatCombo.this.dropdownTableViewer.refresh();
                         calculateBounds();
