@@ -51,6 +51,7 @@ import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
+import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
@@ -252,7 +253,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         filterRowHeaderLayer.addConfiguration(
                 new ComboBoxFilterRowConfiguration(
                         filterEditor,
-                        new ComboBoxFilterIconPainter(comboBoxDataProvider, GUIHelper.getImage("filter"), null)));
+                        new ComboBoxFilterIconPainter(comboBoxDataProvider)));
 
         // add the specialized configuration to the
         // ComboBoxFilterRowHeaderComposite
@@ -753,7 +754,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
 
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR,
-                    new FilterRowTextCellEditor(),
+                    new TextCellEditor(),
                     DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
                             + DataModelConstants.HOUSENUMBER_COLUMN_POSITION);
@@ -796,6 +797,9 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                     },
                     DisplayMode.NORMAL,
                     GridRegion.FILTER_ROW);
+
+            configRegistry.registerConfigAttribute(
+                    FilterRowConfigAttributes.TEXT_DELIMITER, "[&\\|]"); //$NON-NLS-1$
         }
     }
 

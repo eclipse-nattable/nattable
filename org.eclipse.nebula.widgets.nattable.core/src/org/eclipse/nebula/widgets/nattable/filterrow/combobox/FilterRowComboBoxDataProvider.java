@@ -241,6 +241,10 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
                 .unordered()
                 .parallel()
                 .map(x -> this.columnAccessor.getDataValue(x, columnIndex))
+                // TODO 2.1 make the distinct of null and "" configurable, and
+                // enable it by default
+                // .map(x -> (x instanceof String && ((String) x).isEmpty()) ?
+                // null : x)
                 .distinct()
                 .collect(Collectors.toList());
 

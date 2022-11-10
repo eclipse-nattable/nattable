@@ -181,6 +181,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
                 List<ParseResult> parseResults = FilterRowUtils.parse(filterText, textDelimiter, textMatchingMode);
 
                 EventList<MatcherEditor<T>> stringMatcherEditors = new BasicEventList<>();
+                EventList<MatcherEditor<T>> thresholdMatcherEditors = new BasicEventList<>();
                 for (ParseResult parseResult : parseResults) {
                     try {
                         MatchType matchOperation = parseResult.getMatchOperation();
@@ -193,7 +194,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
                         } else {
                             Object threshold =
                                     displayConverter.displayToCanonicalValue(parseResult.getValueToMatch());
-                            matcherEditors.add(getThresholdMatcherEditor(
+                            thresholdMatcherEditors.add(getThresholdMatcherEditor(
                                     columnIndex,
                                     threshold,
                                     comparator,
@@ -205,10 +206,26 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
                     }
                 }
 
+                String[] separator = getSeparatorCharacters(textDelimiter);
+
                 if (!stringMatcherEditors.isEmpty()) {
                     CompositeMatcherEditor<T> stringCompositeMatcherEditor = new CompositeMatcherEditor<>(stringMatcherEditors);
-                    stringCompositeMatcherEditor.setMode(CompositeMatcherEditor.OR);
+                    if (separator == null || filterText.contains(separator[1])) {
+                        stringCompositeMatcherEditor.setMode(CompositeMatcherEditor.OR);
+                    } else {
+                        stringCompositeMatcherEditor.setMode(CompositeMatcherEditor.AND);
+                    }
                     matcherEditors.add(stringCompositeMatcherEditor);
+                }
+
+                if (!thresholdMatcherEditors.isEmpty()) {
+                    CompositeMatcherEditor<T> thresholdCompositeMatcherEditor = new CompositeMatcherEditor<>(thresholdMatcherEditors);
+                    if (separator == null || filterText.contains(separator[0])) {
+                        thresholdCompositeMatcherEditor.setMode(CompositeMatcherEditor.AND);
+                    } else {
+                        thresholdCompositeMatcherEditor.setMode(CompositeMatcherEditor.OR);
+                    }
+                    matcherEditors.add(thresholdCompositeMatcherEditor);
                 }
             }
 
@@ -255,6 +272,63 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
         } catch (Exception e) {
             LOG.error("Error on applying a filter", e); //$NON-NLS-1$
         }
+    }
+
+    // TODO 2.1 move constants and getSeparatorCharacters() to FilterRowUtils
+
+    private static final String TWO_CHARACTER_REGEX = "\\[(((.){2})|((.)\\\\(.))|(\\\\(.){2})|(\\\\(.)\\\\(.)))\\]"; //$NON-NLS-1$
+    private static final String MASKED_BACKSLASH = "\\\\"; //$NON-NLS-1$
+    private static final String BACKSLASH_REPLACEMENT = "backslash"; //$NON-NLS-1$
+
+    /**
+     * This method tries to extract the AND and the OR character that should be
+     * used as delimiter, so that a user is able to specify the operation for
+     * combined filter criteria. If it does not start with [ and ends with ] and
+     * does not match one of the following regular expressions, this method
+     * returns <code>null</code> which causes the default behavior, e.g. OR for
+     * String matchers, AND for threshold matchers.
+     * <ul>
+     * <li>(.){2}</li>
+     * <li>(.)\\\\(.)</li>
+     * <li>\\\\(.){2}</li>
+     * <li>\\\\(.)\\\\(.)</li>
+     * </ul>
+     *
+     * @param delimiter
+     *            The delimiter that is configured via
+     *            {@link FilterRowConfigAttributes#TEXT_DELIMITER}. Can be
+     *            <code>null</code>.
+     * @return String array with the configured AND and the configured OR
+     *         character, or <code>null</code> if the delimiter is not a two
+     *         character regular expression. The first element in the array is
+     *         the AND character, the second element is the OR character.
+     */
+    private String[] getSeparatorCharacters(String delimiter) {
+        // start with [ and end with ]
+        // (.){2} => e.g. ab
+        // (.)\\\\(.) => a\b
+        // \\\\(.){2} => \ab
+        // \\\\(.)\\\\(.) => \a\b
+
+        if (delimiter != null && delimiter.matches(TWO_CHARACTER_REGEX)) {
+            String inspect = delimiter.substring(1, delimiter.length() - 1);
+
+            // special handling if the backslash is used as delimiter for AND or
+            // OR
+            inspect = inspect.replace(MASKED_BACKSLASH, BACKSLASH_REPLACEMENT);
+
+            // now replace all backslashed
+            inspect = inspect.replaceAll(MASKED_BACKSLASH, ""); //$NON-NLS-1$
+
+            // convert back the "backslash" to "\"
+            inspect = inspect.replace(BACKSLASH_REPLACEMENT, "\\"); //$NON-NLS-1$
+            if (inspect.length() == 2) {
+                String[] result = new String[] { inspect.substring(0, 1), inspect.substring(1, 2) };
+                return result;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -447,7 +521,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
     }
 
     /**
-     * This allows to determinate if two matcher editors are equals.
+     * This allows to determinate if two matcher editors are equal.
      *
      * @param first
      *            The first matcher editor to compare.
@@ -471,20 +545,25 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
                 CompositeMatcherEditor<T> firstComp = (CompositeMatcherEditor<T>) first;
                 CompositeMatcherEditor<T> secondComp = (CompositeMatcherEditor<T>) second;
 
-                result = firstComp.getMatcherEditors().size() == secondComp.getMatcherEditors().size();
+                // check if both CompositeMatcherEditor have the same size and
+                // the same mode
+                result = (firstComp.getMatcherEditors().size() == secondComp.getMatcherEditors().size())
+                        && (firstComp.getMode() == secondComp.getMode());
 
-                // Check that all sub matcher editors of first composite matcher
-                // editors are available in the sub matchers of second composite
-                // matcher editor
-                final Iterator<MatcherEditor<T>> matcherEditors = firstComp.getMatcherEditors().iterator();
-                while (matcherEditors.hasNext() && result) {
-                    MatcherEditor<T> e = matcherEditors.next();
-                    final Iterator<MatcherEditor<T>> iterator = secondComp.getMatcherEditors().iterator();
-                    boolean found = false;
-                    while (iterator.hasNext() && !found) {
-                        found = matcherEditorEqual(iterator.next(), e);
+                if (result) {
+                    // Check that all sub matcher editors of first composite
+                    // matcher editors are available in the sub matchers of
+                    // second composite matcher editor
+                    final Iterator<MatcherEditor<T>> matcherEditors = firstComp.getMatcherEditors().iterator();
+                    while (matcherEditors.hasNext() && result) {
+                        MatcherEditor<T> e = matcherEditors.next();
+                        final Iterator<MatcherEditor<T>> iterator = secondComp.getMatcherEditors().iterator();
+                        boolean found = false;
+                        while (iterator.hasNext() && !found) {
+                            found = matcherEditorEqual(iterator.next(), e);
+                        }
+                        result = found;
                     }
-                    result = found;
                 }
 
             } else if (first instanceof TextMatcherEditor) {

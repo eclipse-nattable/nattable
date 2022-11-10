@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,7 +17,6 @@ import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import org.eclipse.nebula.widgets.nattable.filterrow.ParseResult;
@@ -39,10 +38,13 @@ public final class FilterRowUtils {
 
         List<ParseResult> parseResults = new ArrayList<>();
 
-        if (textDelimiter != null) {
-            StringTokenizer tok = new StringTokenizer(string, textDelimiter);
-            while (tok.hasMoreTokens()) {
-                parse(tok.nextToken(), textMatchingMode, parseResults);
+        // avoid splitting if string is in brackets
+        // needed to be able to use "|" as OR delimiter but still use it in
+        // regular expressions, e.g. combobox filters with checkboxes
+        if (textDelimiter != null && !(string.startsWith("(") && string.endsWith(")"))) { //$NON-NLS-1$ //$NON-NLS-2$
+            String[] splitted = string.split(textDelimiter);
+            for (String split : splitted) {
+                parse(split, textMatchingMode, parseResults);
             }
         } else {
             parse(string, textMatchingMode, parseResults);
@@ -88,7 +90,7 @@ public final class FilterRowUtils {
                 parseResult.setValueToMatch(scanner.next());
             }
         } else {
-            parseResult.setValueToMatch(string);
+            parseResult.setValueToMatch(string.trim());
         }
         scanner.close();
         return parseResult;
@@ -119,29 +121,22 @@ public final class FilterRowUtils {
             MatchType matchType) {
         switch (matchType) {
             case GREATER_THAN:
-                thresholdMatcherEditor
-                        .setMatchOperation(ThresholdMatcherEditor.GREATER_THAN);
+                thresholdMatcherEditor.setMatchOperation(ThresholdMatcherEditor.GREATER_THAN);
                 break;
             case GREATER_THAN_OR_EQUAL:
-                thresholdMatcherEditor
-                        .setMatchOperation(ThresholdMatcherEditor.GREATER_THAN_OR_EQUAL);
+                thresholdMatcherEditor.setMatchOperation(ThresholdMatcherEditor.GREATER_THAN_OR_EQUAL);
                 break;
             case LESS_THAN:
-                thresholdMatcherEditor
-                        .setMatchOperation(ThresholdMatcherEditor.LESS_THAN);
+                thresholdMatcherEditor.setMatchOperation(ThresholdMatcherEditor.LESS_THAN);
                 break;
             case LESS_THAN_OR_EQUAL:
-                thresholdMatcherEditor
-                        .setMatchOperation(ThresholdMatcherEditor.LESS_THAN_OR_EQUAL);
+                thresholdMatcherEditor.setMatchOperation(ThresholdMatcherEditor.LESS_THAN_OR_EQUAL);
                 break;
             case NOT_EQUAL:
-                thresholdMatcherEditor
-                        .setMatchOperation(ThresholdMatcherEditor.NOT_EQUAL);
+                thresholdMatcherEditor.setMatchOperation(ThresholdMatcherEditor.NOT_EQUAL);
                 break;
             default:
-                thresholdMatcherEditor
-                        .setMatchOperation(ThresholdMatcherEditor.EQUAL);
+                thresholdMatcherEditor.setMatchOperation(ThresholdMatcherEditor.EQUAL);
         }
     }
-
 }
