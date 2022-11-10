@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2022 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,8 +18,11 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
+import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowPainter;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
+import org.eclipse.nebula.widgets.nattable.filterrow.action.ClearFilterAction;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.filterrow.event.ClearFilterIconMouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
@@ -27,6 +30,7 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.ImagePainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CellPainterDecorator;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.swt.graphics.GC;
 
@@ -48,6 +52,14 @@ public class ComboBoxFilterRowConfiguration extends AbstractRegistryConfiguratio
      * cells in the filter row.
      */
     protected ImagePainter filterIconPainter;
+
+    // TODO 2.1 change visibility to protected
+    /**
+     * The {@link FilterRowPainter} used for painting cells in the filter row.
+     * Supports rendering of additional filter state based icons and is needed
+     * to support specific actions based on the filter states.
+     */
+    private FilterRowPainter filterRowPainter;
 
     /**
      * The empty default constructor needed for specialising.
@@ -123,11 +135,21 @@ public class ComboBoxFilterRowConfiguration extends AbstractRegistryConfiguratio
             }
         }, CellEdgeEnum.RIGHT, this.filterIconPainter);
 
+        // TODO 2.1 use new constructor after update
+        this.filterRowPainter = new FilterRowPainter(this.filterIconPainter);
+        this.filterRowPainter.setWrappedPainter(cellPainter);
+
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_PAINTER,
-                cellPainter,
+                this.filterRowPainter,
                 DisplayMode.NORMAL,
                 GridRegion.FILTER_ROW);
     }
 
+    @Override
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        uiBindingRegistry.registerFirstSingleClickBinding(
+                new ClearFilterIconMouseEventMatcher(this.filterRowPainter),
+                new ClearFilterAction());
+    }
 }

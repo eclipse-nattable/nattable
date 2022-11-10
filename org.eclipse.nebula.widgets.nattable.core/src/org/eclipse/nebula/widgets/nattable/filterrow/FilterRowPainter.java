@@ -54,6 +54,15 @@ public class FilterRowPainter extends CellPainterWrapper {
                 new CellPainterDecorator(new TextPainter(), CellEdgeEnum.RIGHT, filterIconPainter));
     }
 
+    // TODO 2.1 add constructor to also pass the base painter
+    // public FilterRowPainter(ICellPainter basePainter, ImagePainter
+    // filterIconPainter) {
+    // this.filterIconPainter = filterIconPainter;
+    // setWrappedPainter(
+    // new CellPainterDecorator(basePainter, CellEdgeEnum.RIGHT,
+    // filterIconPainter));
+    // }
+
     /**
      *
      * @return The {@link ImagePainter} that is used to paint the icon in the
