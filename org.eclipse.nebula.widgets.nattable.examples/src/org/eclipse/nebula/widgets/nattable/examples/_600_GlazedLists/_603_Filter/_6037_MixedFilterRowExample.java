@@ -64,6 +64,7 @@ import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowPainter;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowRegularExpressionConverter;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowTextCellEditor;
 import org.eclipse.nebula.widgets.nattable.filterrow.IFilterStrategy;
+import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterIconPainter;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterRowConfiguration;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxCellEditor;
@@ -87,6 +88,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -134,6 +136,8 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
     private static final String EXCLUDE_LABEL = "EXCLUDE";
 
     private ArrayList<Serializable> filterExcludes = new ArrayList<>();
+
+    private boolean regexFilterActive = false;
 
     public static void main(String[] args) throws Exception {
         StandaloneNatExampleRunner.run(new _6037_MixedFilterRowExample());
@@ -306,11 +310,75 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
 
         // header menu configuration
         natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
+
+            private static final String ACTIVATE_REGEX_MENU_ID = "ACTIVATE_REGEX";
+            private static final String DEACTIVATE_REGEX_MENU_ID = "DEACTIVATE_REGEX";
+
             @Override
             protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
                 return super.createCornerMenu(natTable)
                         .withStateManagerMenuItemProvider();
             }
+
+            @Override
+            protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
+                return super.createColumnHeaderMenu(natTable)
+                        .withMenuItemProvider(ACTIVATE_REGEX_MENU_ID, new IMenuItemProvider() {
+
+                            @Override
+                            public void addMenuItem(NatTable natTable, Menu popupMenu) {
+                                MenuItem excludeRow = new MenuItem(popupMenu, SWT.PUSH);
+                                excludeRow.setText("Activate RegEx filter");
+                                excludeRow.setEnabled(true);
+
+                                excludeRow.addSelectionListener(new SelectionAdapter() {
+                                    @Override
+                                    public void widgetSelected(SelectionEvent event) {
+                                        _6037_MixedFilterRowExample.this.regexFilterActive = true;
+                                        natTable.getConfigRegistry().registerConfigAttribute(
+                                                FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                                                TextMatchingMode.REGULAR_EXPRESSION,
+                                                DisplayMode.NORMAL,
+                                                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 0);
+                                    }
+                                });
+                            }
+                        })
+                        .withVisibleState(ACTIVATE_REGEX_MENU_ID, new IMenuItemState() {
+
+                            @Override
+                            public boolean isActive(NatEventData natEventData) {
+                                int columnPosition = natEventData.getColumnPosition();
+                                int columnIndex = natTable.getColumnIndexByPosition(columnPosition);
+                                return columnIndex == 0 && !_6037_MixedFilterRowExample.this.regexFilterActive;
+                            }
+                        })
+                        .withMenuItemProvider(DEACTIVATE_REGEX_MENU_ID, new IMenuItemProvider() {
+
+                            @Override
+                            public void addMenuItem(NatTable natTable, Menu popupMenu) {
+                                MenuItem excludeRow = new MenuItem(popupMenu, SWT.PUSH);
+                                excludeRow.setText("Deactivate RegEx filter");
+                                excludeRow.setEnabled(true);
+
+                                excludeRow.addSelectionListener(new SelectionAdapter() {
+                                    @Override
+                                    public void widgetSelected(SelectionEvent event) {
+                                        _6037_MixedFilterRowExample.this.regexFilterActive = false;
+                                    }
+                                });
+                            }
+                        })
+                        .withVisibleState(DEACTIVATE_REGEX_MENU_ID, new IMenuItemState() {
+
+                            @Override
+                            public boolean isActive(NatEventData natEventData) {
+                                int columnPosition = natEventData.getColumnPosition();
+                                int columnIndex = natTable.getColumnIndexByPosition(columnPosition);
+                                return columnIndex == 0 && _6037_MixedFilterRowExample.this.regexFilterActive;
+                            }
+                        });
+            };
         });
 
         // body menu configuration
@@ -701,7 +769,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
             // regular expressions
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new CustomFilterRowRegularExpressionConverter(),
+                    new CustomFilterRowRegularExpressionConverter(configRegistry),
                     DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
                             + DataModelConstants.FIRSTNAME_COLUMN_POSITION);
@@ -742,7 +810,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new CustomFilterRowRegularExpressionConverter(),
+                    new CustomFilterRowRegularExpressionConverter(configRegistry),
                     DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
                             + DataModelConstants.GENDER_COLUMN_POSITION);
@@ -815,15 +883,40 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         static final String NOT_EMPTY_LITERAL = "<not_empty>";
         static final String NOT_EMPTY_REGEX = "^(?!\\s*$).+";
 
+        private IConfigRegistry configRegistry;
+
+        public CustomFilterRowRegularExpressionConverter(IConfigRegistry configRegistry) {
+            this.configRegistry = configRegistry;
+        }
+
         @Override
-        public Object displayToCanonicalValue(Object displayValue) {
+        public Object displayToCanonicalValue(ILayerCell cell, IConfigRegistry configRegistry, Object displayValue) {
             if (displayValue != null) {
                 switch (displayValue.toString()) {
                     case EMPTY_LITERAL:
+                        this.configRegistry.registerConfigAttribute(
+                                FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                                TextMatchingMode.REGULAR_EXPRESSION,
+                                DisplayMode.NORMAL,
+                                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
                         return EMPTY_REGEX;
                     case NOT_EMPTY_LITERAL:
+                        this.configRegistry.registerConfigAttribute(
+                                FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                                TextMatchingMode.REGULAR_EXPRESSION,
+                                DisplayMode.NORMAL,
+                                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
                         return NOT_EMPTY_REGEX;
                     default:
+                        if (!_6037_MixedFilterRowExample.this.regexFilterActive) {
+                            // only switch to CONTAINS if RegEx filtering is not
+                            // activated
+                            this.configRegistry.registerConfigAttribute(
+                                    FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                                    TextMatchingMode.CONTAINS,
+                                    DisplayMode.NORMAL,
+                                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
+                        }
                         return super.displayToCanonicalValue(displayValue);
                 }
             }
@@ -831,7 +924,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         }
 
         @Override
-        public Object canonicalToDisplayValue(Object canonicalValue) {
+        public Object canonicalToDisplayValue(ILayerCell cell, IConfigRegistry configRegistry, Object canonicalValue) {
             if (canonicalValue != null) {
                 switch (canonicalValue.toString()) {
                     case EMPTY_REGEX:
