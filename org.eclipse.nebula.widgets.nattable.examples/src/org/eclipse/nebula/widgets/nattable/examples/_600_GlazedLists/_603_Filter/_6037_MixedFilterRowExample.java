@@ -48,8 +48,8 @@ import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
-import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
@@ -65,11 +65,13 @@ import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowRegularExpressionC
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowTextCellEditor;
 import org.eclipse.nebula.widgets.nattable.filterrow.IFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
+import org.eclipse.nebula.widgets.nattable.filterrow.action.ClearFilterAction;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterIconPainter;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterRowConfiguration;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.filterrow.event.ClearFilterIconMouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
@@ -89,6 +91,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -110,6 +113,7 @@ import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
@@ -257,7 +261,39 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         filterRowHeaderLayer.addConfiguration(
                 new ComboBoxFilterRowConfiguration(
                         filterEditor,
-                        new ComboBoxFilterIconPainter(comboBoxDataProvider)));
+                        new ComboBoxFilterIconPainter(comboBoxDataProvider)) {
+
+                    @Override
+                    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+                        // TODO 2.1 move this hack to the
+                        // ComboBoxFilterRowConfiguration
+                        // TODO 2.1 create dedicated matcher
+                        // ComboBoxClearFilterIconMouseEventMatcher
+                        ICellPainter filterRowPainter = configRegistry.getConfigAttribute(
+                                CellConfigAttributes.CELL_PAINTER,
+                                DisplayMode.NORMAL,
+                                GridRegion.FILTER_ROW);
+                        uiBindingRegistry.registerFirstSingleClickBinding(
+                                new ClearFilterIconMouseEventMatcher((FilterRowPainter) filterRowPainter) {
+                                    @SuppressWarnings("rawtypes")
+                                    @Override
+                                    public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
+                                        boolean matches = super.matches(natTable, event, regionLabels);
+                                        if (matches) {
+                                            ILayerCell cell = natTable.getCellByPosition(
+                                                    natTable.getColumnPositionByX(event.x),
+                                                    natTable.getRowPositionByY(event.y));
+                                            Object cellData = cell.getDataValue();
+                                            matches = (!EditConstants.SELECT_ALL_ITEMS_VALUE.equals(cellData)
+                                                    && !(cellData instanceof Collection
+                                                            && ((Collection) cellData).size() == comboBoxDataProvider.getValues(cell.getColumnIndex(), 0).size()));
+                                        }
+                                        return matches;
+                                    }
+                                },
+                                new ClearFilterAction());
+                    };
+                });
 
         // add the specialized configuration to the
         // ComboBoxFilterRowHeaderComposite
@@ -556,6 +592,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         }
     }
 
+    // TODO 2.1 move this class to the GlazedLists extension
     /**
      * Specialized {@link ComboBoxGlazedListsFilterStrategy} that can be used to
      * exclude items from filtering. This means you can register a
@@ -789,7 +826,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
             // filter row the label is set automatically to the value of
             // FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + column
             // position
-            ICellEditor comboBoxCellEditor = new ComboBoxCellEditor(Arrays.asList(
+            ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(Arrays.asList(
                     CustomFilterRowRegularExpressionConverter.EMPTY_REGEX,
                     CustomFilterRowRegularExpressionConverter.NOT_EMPTY_REGEX,
                     Gender.FEMALE.toString(),
@@ -892,33 +929,34 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         @Override
         public Object displayToCanonicalValue(ILayerCell cell, IConfigRegistry configRegistry, Object displayValue) {
             if (displayValue != null) {
-                switch (displayValue.toString()) {
-                    case EMPTY_LITERAL:
+                // first convert the wildcards
+                displayValue = super.displayToCanonicalValue(displayValue);
+
+                if (displayValue.toString().contains(EMPTY_LITERAL)
+                        || displayValue.toString().contains(NOT_EMPTY_LITERAL)) {
+
+                    this.configRegistry.registerConfigAttribute(
+                            FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                            TextMatchingMode.REGULAR_EXPRESSION,
+                            DisplayMode.NORMAL,
+                            FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
+                } else {
+
+                    if (!_6037_MixedFilterRowExample.this.regexFilterActive) {
+                        // only switch to CONTAINS if RegEx filtering is not
+                        // activated
                         this.configRegistry.registerConfigAttribute(
                                 FilterRowConfigAttributes.TEXT_MATCHING_MODE,
-                                TextMatchingMode.REGULAR_EXPRESSION,
+                                TextMatchingMode.CONTAINS,
                                 DisplayMode.NORMAL,
                                 FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
-                        return EMPTY_REGEX;
-                    case NOT_EMPTY_LITERAL:
-                        this.configRegistry.registerConfigAttribute(
-                                FilterRowConfigAttributes.TEXT_MATCHING_MODE,
-                                TextMatchingMode.REGULAR_EXPRESSION,
-                                DisplayMode.NORMAL,
-                                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
-                        return NOT_EMPTY_REGEX;
-                    default:
-                        if (!_6037_MixedFilterRowExample.this.regexFilterActive) {
-                            // only switch to CONTAINS if RegEx filtering is not
-                            // activated
-                            this.configRegistry.registerConfigAttribute(
-                                    FilterRowConfigAttributes.TEXT_MATCHING_MODE,
-                                    TextMatchingMode.CONTAINS,
-                                    DisplayMode.NORMAL,
-                                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
-                        }
-                        return super.displayToCanonicalValue(displayValue);
+                    }
                 }
+
+                displayValue = displayValue.toString().replace(EMPTY_LITERAL, EMPTY_REGEX);
+                displayValue = displayValue.toString().replace(NOT_EMPTY_LITERAL, NOT_EMPTY_REGEX);
+
+                return displayValue;
             }
             return displayValue;
         }
@@ -926,14 +964,12 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         @Override
         public Object canonicalToDisplayValue(ILayerCell cell, IConfigRegistry configRegistry, Object canonicalValue) {
             if (canonicalValue != null) {
-                switch (canonicalValue.toString()) {
-                    case EMPTY_REGEX:
-                        return EMPTY_LITERAL;
-                    case NOT_EMPTY_REGEX:
-                        return NOT_EMPTY_LITERAL;
-                    default:
-                        return super.canonicalToDisplayValue(canonicalValue);
-                }
+                canonicalValue = super.canonicalToDisplayValue(canonicalValue);
+
+                canonicalValue = canonicalValue.toString().replace(EMPTY_REGEX, EMPTY_LITERAL);
+                canonicalValue = canonicalValue.toString().replace(NOT_EMPTY_REGEX, NOT_EMPTY_LITERAL);
+
+                return canonicalValue;
             }
             return canonicalValue;
         }

@@ -148,8 +148,10 @@ public class ComboBoxFilterRowConfiguration extends AbstractRegistryConfiguratio
 
     @Override
     public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-        uiBindingRegistry.registerFirstSingleClickBinding(
-                new ClearFilterIconMouseEventMatcher(this.filterRowPainter),
-                new ClearFilterAction());
+        if (this.filterRowPainter != null) {
+            uiBindingRegistry.registerFirstSingleClickBinding(
+                    new ClearFilterIconMouseEventMatcher(this.filterRowPainter),
+                    new ClearFilterAction());
+        }
     }
 }
