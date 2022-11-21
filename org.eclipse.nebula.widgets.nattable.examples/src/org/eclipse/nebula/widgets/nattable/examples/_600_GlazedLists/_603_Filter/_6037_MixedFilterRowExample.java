@@ -299,6 +299,33 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         // ComboBoxFilterRowHeaderComposite
         filterRowHeaderLayer.addConfiguration(new FilterRowConfiguration());
 
+        // add configuration to visualize if the regex filter is activated
+        filterRowHeaderLayer.getFilterRowDataLayer().setConfigLabelAccumulator(new IConfigLabelAccumulator() {
+
+            @Override
+            public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+                if (_6037_MixedFilterRowExample.this.regexFilterActive && columnPosition == 0) {
+                    configLabels.add("REGEX_ACTIVE");
+                }
+            }
+        });
+
+        filterRowHeaderLayer.getFilterRowDataLayer().addConfiguration(new AbstractRegistryConfiguration() {
+
+            @Override
+            public void configureRegistry(IConfigRegistry configRegistry) {
+                Style style = new Style();
+                style.setAttributeValue(
+                        CellStyleAttributes.BACKGROUND_COLOR,
+                        GUIHelper.getColor(207, 238, 250));
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
+                        style,
+                        DisplayMode.NORMAL,
+                        "REGEX_ACTIVE");
+            }
+        });
+
         // build the row header layer
         IDataProvider rowHeaderDataProvider =
                 new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
@@ -376,6 +403,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                                                 TextMatchingMode.REGULAR_EXPRESSION,
                                                 DisplayMode.NORMAL,
                                                 FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 0);
+                                        natTable.refresh(false);
                                     }
                                 });
                             }
@@ -401,6 +429,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                                     @Override
                                     public void widgetSelected(SelectionEvent event) {
                                         _6037_MixedFilterRowExample.this.regexFilterActive = false;
+                                        natTable.refresh(false);
                                     }
                                 });
                             }
@@ -878,16 +907,6 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
                             + DataModelConstants.HOUSENUMBER_COLUMN_POSITION);
 
-            // need to register the DefaultDisplayConverter for the housenumber
-            // column as we register a custom display converter to show a label
-            // for the empty entry in the multi-select combobox filter
-            configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DefaultDisplayConverter(),
-                    DisplayMode.NORMAL,
-                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
-                            + DataModelConstants.HOUSENUMBER_COLUMN_POSITION);
-
             // register a display converter on the filter row in general that
             // shows a value for an empty entry in the dropdown
             configRegistry.registerConfigAttribute(
@@ -920,6 +939,10 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         static final String NOT_EMPTY_LITERAL = "<not_empty>";
         static final String NOT_EMPTY_REGEX = "^(?!\\s*$).+";
 
+        static final String NOT_EQUALS_LITERAL = "<>";
+        static final String NOT_EQUALS_REGEX_PREFIX = "(?i)^((?!";
+        static final String NOT_EQUALS_REGEX_SUFFIX = ").)*$";
+
         private IConfigRegistry configRegistry;
 
         public CustomFilterRowRegularExpressionConverter(IConfigRegistry configRegistry) {
@@ -931,9 +954,10 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
             if (displayValue != null) {
                 // first convert the wildcards
                 displayValue = super.displayToCanonicalValue(displayValue);
+                String dvString = displayValue.toString();
 
-                if (displayValue.toString().contains(EMPTY_LITERAL)
-                        || displayValue.toString().contains(NOT_EMPTY_LITERAL)) {
+                if (dvString.contains(EMPTY_LITERAL)
+                        || dvString.contains(NOT_EMPTY_LITERAL)) {
 
                     this.configRegistry.registerConfigAttribute(
                             FilterRowConfigAttributes.TEXT_MATCHING_MODE,
@@ -943,20 +967,40 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                 } else {
 
                     if (!_6037_MixedFilterRowExample.this.regexFilterActive) {
-                        // only switch to CONTAINS if RegEx filtering is not
-                        // activated
-                        this.configRegistry.registerConfigAttribute(
-                                FilterRowConfigAttributes.TEXT_MATCHING_MODE,
-                                TextMatchingMode.CONTAINS,
-                                DisplayMode.NORMAL,
-                                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
+
+                        if (dvString.startsWith("=")) {
+
+                            this.configRegistry.registerConfigAttribute(
+                                    FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                                    TextMatchingMode.EXACT,
+                                    DisplayMode.NORMAL,
+                                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
+
+                            dvString = dvString.substring(1).trim();
+                        } else if (dvString.startsWith(NOT_EQUALS_LITERAL)) {
+                            this.configRegistry.registerConfigAttribute(
+                                    FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                                    TextMatchingMode.REGULAR_EXPRESSION,
+                                    DisplayMode.NORMAL,
+                                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
+
+                            dvString = NOT_EQUALS_REGEX_PREFIX + dvString.substring(2).trim() + NOT_EQUALS_REGEX_SUFFIX;
+                        } else {
+                            // only switch to CONTAINS if RegEx filtering is not
+                            // activated
+                            this.configRegistry.registerConfigAttribute(
+                                    FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                                    TextMatchingMode.CONTAINS,
+                                    DisplayMode.NORMAL,
+                                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
+                        }
                     }
                 }
 
-                displayValue = displayValue.toString().replace(EMPTY_LITERAL, EMPTY_REGEX);
-                displayValue = displayValue.toString().replace(NOT_EMPTY_LITERAL, NOT_EMPTY_REGEX);
+                dvString = dvString.replace(EMPTY_LITERAL, EMPTY_REGEX);
+                dvString = dvString.replace(NOT_EMPTY_LITERAL, NOT_EMPTY_REGEX);
 
-                return displayValue;
+                return dvString;
             }
             return displayValue;
         }
@@ -966,10 +1010,23 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
             if (canonicalValue != null) {
                 canonicalValue = super.canonicalToDisplayValue(canonicalValue);
 
-                canonicalValue = canonicalValue.toString().replace(EMPTY_REGEX, EMPTY_LITERAL);
-                canonicalValue = canonicalValue.toString().replace(NOT_EMPTY_REGEX, NOT_EMPTY_LITERAL);
+                String cvString = canonicalValue.toString();
+                cvString = cvString.replace(EMPTY_REGEX, EMPTY_LITERAL);
+                cvString = cvString.replace(NOT_EMPTY_REGEX, NOT_EMPTY_LITERAL);
 
-                return canonicalValue;
+                if (cvString.startsWith(NOT_EQUALS_REGEX_PREFIX) && cvString.endsWith(NOT_EQUALS_REGEX_SUFFIX)) {
+                    cvString = NOT_EQUALS_LITERAL + cvString.substring(NOT_EQUALS_REGEX_PREFIX.length(), cvString.length() - NOT_EQUALS_REGEX_SUFFIX.length());
+                } else {
+                    TextMatchingMode mode = this.configRegistry.getConfigAttribute(
+                            FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                            DisplayMode.NORMAL,
+                            FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
+                    if (mode == TextMatchingMode.EXACT) {
+                        cvString = "=" + cvString;
+                    }
+                }
+
+                return cvString;
             }
             return canonicalValue;
         }
