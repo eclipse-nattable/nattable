@@ -624,6 +624,24 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
     }
 
     @Override
+    public void saveState(String prefix, Properties properties) {
+        // we need to cleanup SELECT_ALL values for the mixed filter row case,
+        // because the SELECT_ALL value would be an invalid value for non-string
+        // filters, e.g. a Date filter. The filter editor check can only be
+        // performed AFTER the configuration was applied, so an issue could
+        // occur for example if the state is saved after configure() was called.
+        FilterRowDataProvider<T> dataProvider = this.filterRowDataLayer.getFilterRowDataProvider();
+        for (int i = 0; i < dataProvider.getColumnCount(); i++) {
+            if (!isFilterRowComboBoxCellEditor(i)
+                    && EditConstants.SELECT_ALL_ITEMS_VALUE.equals(dataProvider.getFilterIndexToObjectMap().get(Integer.valueOf(i)))) {
+                this.filterRowDataLayer.getFilterRowDataProvider().getFilterIndexToObjectMap().remove(i);
+            }
+        }
+
+        super.saveState(prefix, properties);
+    }
+
+    @Override
     public void loadState(String prefix, Properties properties) {
         this.comboBoxDataProvider.disableUpdateEvents();
         super.loadState(prefix, properties);

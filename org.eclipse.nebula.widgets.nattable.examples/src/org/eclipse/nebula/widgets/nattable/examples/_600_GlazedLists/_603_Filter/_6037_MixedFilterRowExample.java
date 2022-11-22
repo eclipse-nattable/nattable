@@ -40,6 +40,8 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDateDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultIntegerDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
@@ -49,6 +51,7 @@ import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
+import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
@@ -57,6 +60,7 @@ import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleR
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxFilterRowHeaderComposite;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxGlazedListsFilterStrategy;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.FilterRowUtils;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.GlazedListsFilterRowComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataProvider;
@@ -64,6 +68,7 @@ import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowPainter;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowRegularExpressionConverter;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowTextCellEditor;
 import org.eclipse.nebula.widgets.nattable.filterrow.IFilterStrategy;
+import org.eclipse.nebula.widgets.nattable.filterrow.ParseResult;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 import org.eclipse.nebula.widgets.nattable.filterrow.action.ClearFilterAction;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterIconPainter;
@@ -88,9 +93,11 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
@@ -140,8 +147,6 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
     private static final String EXCLUDE_LABEL = "EXCLUDE";
 
     private ArrayList<Serializable> filterExcludes = new ArrayList<>();
-
-    private boolean regexFilterActive = false;
 
     public static void main(String[] args) throws Exception {
         StandaloneNatExampleRunner.run(new _6037_MixedFilterRowExample());
@@ -299,33 +304,6 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         // ComboBoxFilterRowHeaderComposite
         filterRowHeaderLayer.addConfiguration(new FilterRowConfiguration());
 
-        // add configuration to visualize if the regex filter is activated
-        filterRowHeaderLayer.getFilterRowDataLayer().setConfigLabelAccumulator(new IConfigLabelAccumulator() {
-
-            @Override
-            public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
-                if (_6037_MixedFilterRowExample.this.regexFilterActive && columnPosition == 0) {
-                    configLabels.add("REGEX_ACTIVE");
-                }
-            }
-        });
-
-        filterRowHeaderLayer.getFilterRowDataLayer().addConfiguration(new AbstractRegistryConfiguration() {
-
-            @Override
-            public void configureRegistry(IConfigRegistry configRegistry) {
-                Style style = new Style();
-                style.setAttributeValue(
-                        CellStyleAttributes.BACKGROUND_COLOR,
-                        GUIHelper.getColor(207, 238, 250));
-                configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.CELL_STYLE,
-                        style,
-                        DisplayMode.NORMAL,
-                        "REGEX_ACTIVE");
-            }
-        });
-
         // build the row header layer
         IDataProvider rowHeaderDataProvider =
                 new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
@@ -374,76 +352,11 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         // header menu configuration
         natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
 
-            private static final String ACTIVATE_REGEX_MENU_ID = "ACTIVATE_REGEX";
-            private static final String DEACTIVATE_REGEX_MENU_ID = "DEACTIVATE_REGEX";
-
             @Override
             protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
                 return super.createCornerMenu(natTable)
                         .withStateManagerMenuItemProvider();
             }
-
-            @Override
-            protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
-                return super.createColumnHeaderMenu(natTable)
-                        .withMenuItemProvider(ACTIVATE_REGEX_MENU_ID, new IMenuItemProvider() {
-
-                            @Override
-                            public void addMenuItem(NatTable natTable, Menu popupMenu) {
-                                MenuItem excludeRow = new MenuItem(popupMenu, SWT.PUSH);
-                                excludeRow.setText("Activate RegEx filter");
-                                excludeRow.setEnabled(true);
-
-                                excludeRow.addSelectionListener(new SelectionAdapter() {
-                                    @Override
-                                    public void widgetSelected(SelectionEvent event) {
-                                        _6037_MixedFilterRowExample.this.regexFilterActive = true;
-                                        natTable.getConfigRegistry().registerConfigAttribute(
-                                                FilterRowConfigAttributes.TEXT_MATCHING_MODE,
-                                                TextMatchingMode.REGULAR_EXPRESSION,
-                                                DisplayMode.NORMAL,
-                                                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 0);
-                                        natTable.refresh(false);
-                                    }
-                                });
-                            }
-                        })
-                        .withVisibleState(ACTIVATE_REGEX_MENU_ID, new IMenuItemState() {
-
-                            @Override
-                            public boolean isActive(NatEventData natEventData) {
-                                int columnPosition = natEventData.getColumnPosition();
-                                int columnIndex = natTable.getColumnIndexByPosition(columnPosition);
-                                return columnIndex == 0 && !_6037_MixedFilterRowExample.this.regexFilterActive;
-                            }
-                        })
-                        .withMenuItemProvider(DEACTIVATE_REGEX_MENU_ID, new IMenuItemProvider() {
-
-                            @Override
-                            public void addMenuItem(NatTable natTable, Menu popupMenu) {
-                                MenuItem excludeRow = new MenuItem(popupMenu, SWT.PUSH);
-                                excludeRow.setText("Deactivate RegEx filter");
-                                excludeRow.setEnabled(true);
-
-                                excludeRow.addSelectionListener(new SelectionAdapter() {
-                                    @Override
-                                    public void widgetSelected(SelectionEvent event) {
-                                        _6037_MixedFilterRowExample.this.regexFilterActive = false;
-                                        natTable.refresh(false);
-                                    }
-                                });
-                            }
-                        })
-                        .withVisibleState(DEACTIVATE_REGEX_MENU_ID, new IMenuItemState() {
-
-                            @Override
-                            public boolean isActive(NatEventData natEventData) {
-                                int columnPosition = natEventData.getColumnPosition();
-                                int columnIndex = natTable.getColumnIndexByPosition(columnPosition);
-                                return columnIndex == 0 && _6037_MixedFilterRowExample.this.regexFilterActive;
-                            }
-                        });
-            };
         });
 
         // body menu configuration
@@ -514,7 +427,9 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         filterStrategy.addExcludeFilter(idMatcher);
 
         // register the IConfigLabelAccumulator to the body DataLayer
-        bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(new IConfigLabelAccumulator() {
+        AggregateConfigLabelAccumulator aggregate = new AggregateConfigLabelAccumulator();
+        aggregate.add(bodyLayerStack.getBodyDataLayer().getConfigLabelAccumulator());
+        aggregate.add(new IConfigLabelAccumulator() {
 
             @Override
             public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
@@ -523,6 +438,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                 }
             }
         });
+        bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(aggregate);
 
         // extend the ThemeConfiguration to add styling for the EXCLUDE_LABEL
         themeConfiguration.addThemeExtension(new IThemeExtension() {
@@ -752,6 +668,8 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                     ColumnLabelAccumulator.COLUMN_LABEL_PREFIX
                             + DataModelConstants.HOUSENUMBER_COLUMN_POSITION);
 
+            // Gender
+
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
                     new DisplayConverter() {
@@ -774,6 +692,30 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                     DisplayMode.NORMAL,
                     ColumnLabelAccumulator.COLUMN_LABEL_PREFIX
                             + DataModelConstants.GENDER_COLUMN_POSITION);
+
+            // Married
+
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITOR,
+                    new CheckBoxCellEditor(),
+                    DisplayMode.EDIT,
+                    ColumnLabelAccumulator.COLUMN_LABEL_PREFIX
+                            + DataModelConstants.MARRIED_COLUMN_POSITION);
+
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_PAINTER,
+                    new CheckBoxPainter(),
+                    DisplayMode.NORMAL,
+                    ColumnLabelAccumulator.COLUMN_LABEL_PREFIX
+                            + DataModelConstants.MARRIED_COLUMN_POSITION);
+
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new DefaultBooleanDisplayConverter(),
+                    DisplayMode.NORMAL,
+                    ColumnLabelAccumulator.COLUMN_LABEL_PREFIX
+                            + DataModelConstants.MARRIED_COLUMN_POSITION);
+
         }
     }
 
@@ -882,6 +824,32 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                             + DataModelConstants.GENDER_COLUMN_POSITION);
 
             // #####
+            // Fixed value single-selection combobox filter for Married column
+            // #####
+
+            comboBoxCellEditor = new ComboBoxCellEditor(Arrays.asList(Boolean.TRUE, Boolean.FALSE));
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITOR,
+                    comboBoxCellEditor,
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                            + DataModelConstants.MARRIED_COLUMN_POSITION);
+
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_PAINTER,
+                    new PaddingDecorator(new FilterRowPainter(), 0, 0, 0, 5),
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                            + DataModelConstants.MARRIED_COLUMN_POSITION);
+
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new DefaultDisplayConverter(),
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                            + DataModelConstants.MARRIED_COLUMN_POSITION);
+
+            // #####
             // Free Edit Text Filter for Housenumber column that supports
             // expressions like greater, lesser, equals
             // #####
@@ -907,6 +875,15 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
                             + DataModelConstants.HOUSENUMBER_COLUMN_POSITION);
 
+            // register a default display converter to be able to use expression
+            // characters
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new DefaultDisplayConverter(),
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                            + DataModelConstants.HOUSENUMBER_COLUMN_POSITION);
+
             // register a display converter on the filter row in general that
             // shows a value for an empty entry in the dropdown
             configRegistry.registerConfigAttribute(
@@ -924,6 +901,143 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
 
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.TEXT_DELIMITER, "[&\\|]"); //$NON-NLS-1$
+
+            // #####
+            // Free Edit Text Filter for Birthday column that supports
+            // expressions like greater, lesser, equals
+            // #####
+
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITOR,
+                    new TextCellEditor(),
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                            + DataModelConstants.BIRTHDAY_COLUMN_POSITION);
+
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_PAINTER,
+                    new PaddingDecorator(new FilterRowPainter(), 0, 0, 0, 5),
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                            + DataModelConstants.BIRTHDAY_COLUMN_POSITION);
+
+            // register a default display converter to be able to use expression
+            // characters
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new DateThresholdConverter(),
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                            + DataModelConstants.BIRTHDAY_COLUMN_POSITION);
+
+            // register a date converter for the birthday column
+            DefaultDateDisplayConverter converter = new DefaultDateDisplayConverter("dd.MM.yyyy");
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    converter,
+                    DisplayMode.NORMAL,
+                    ColumnLabelAccumulator.COLUMN_LABEL_PREFIX
+                            + DataModelConstants.BIRTHDAY_COLUMN_POSITION);
+
+            // register the same converter in the filter row as content
+            // converter to support text based filtering on formatted Date
+            // objects (e.g. filter for "-08-" to get all birthdays in August)
+            configRegistry.registerConfigAttribute(
+                    FilterRowConfigAttributes.FILTER_CONTENT_DISPLAY_CONVERTER,
+                    converter,
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                            + DataModelConstants.BIRTHDAY_COLUMN_POSITION);
+
+        }
+    }
+
+    /**
+     * Special converter that is able to convert simple year based expressions
+     * like &gt; 2000 to a threshold expression that returns all entries that
+     * are after 31.12.2000.
+     */
+    class DateThresholdConverter extends DefaultDisplayConverter {
+        @Override
+        public Object displayToCanonicalValue(Object displayValue) {
+            if (displayValue != null) {
+                if (displayValue.toString().matches("(\\d){8}")) {
+                    String ds = displayValue.toString();
+                    displayValue = ds.substring(0, 2) + "." + ds.substring(2, 4) + "." + ds.substring(4);
+                }
+
+                ParseResult parse = FilterRowUtils.parseExpression(displayValue.toString());
+                if (parse.getValueToMatch() != null && parse.getValueToMatch().matches("(\\d){4}")) {
+                    switch (parse.getMatchOperation()) {
+                        case GREATER_THAN:
+                            displayValue = "> 31.12." + parse.getValueToMatch();
+                            break;
+                        case GREATER_THAN_OR_EQUAL:
+                            displayValue = ">= 31.12." + (Integer.valueOf(parse.getValueToMatch()) - 1);
+                            break;
+                        case LESS_THAN:
+                            displayValue = "< 01.01." + parse.getValueToMatch();
+                            break;
+                        case LESS_THAN_OR_EQUAL:
+                            displayValue = "<= 01.01." + (Integer.valueOf(parse.getValueToMatch()) + 1);
+                            break;
+                        case NOT_EQUAL:
+                            displayValue = "< 01.01." + parse.getValueToMatch() + " | > 31.12." + parse.getValueToMatch();
+                            break;
+                        default:
+                            // equal or none
+                            displayValue = ">= 01.01." + parse.getValueToMatch() + " & <= 31.12." + parse.getValueToMatch();
+                            break;
+                    }
+                }
+
+            }
+            return super.displayToCanonicalValue(displayValue);
+        }
+
+        @Override
+        public Object canonicalToDisplayValue(Object sourceValue) {
+            if (sourceValue != null) {
+                if (sourceValue.toString().matches("(\\d){2}\\.(\\d){2}\\.(\\d){4}")) {
+                    sourceValue = sourceValue.toString().replace(".", "");
+                } else {
+                    String[] splitted = sourceValue.toString().split("[&\\\\|]");
+                    if (splitted.length > 0) {
+                        ParseResult parse = FilterRowUtils.parseExpression(splitted[0]);
+                        if (parse.getValueToMatch() != null && parse.getValueToMatch().length() > 6) {
+                            String year = parse.getValueToMatch().substring(6);
+                            switch (parse.getMatchOperation()) {
+                                case GREATER_THAN:
+                                    sourceValue = "> " + year;
+                                    break;
+                                case GREATER_THAN_OR_EQUAL:
+                                    if (splitted.length == 1) {
+                                        sourceValue = ">= " + (Integer.valueOf(year) + 1);
+                                    } else if (splitted.length == 2) {
+                                        // equal
+                                        sourceValue = "= " + year;
+                                    }
+                                    break;
+                                case LESS_THAN:
+                                    if (splitted.length == 1) {
+                                        sourceValue = "< " + year;
+                                    } else if (splitted.length == 2) {
+                                        // not equal
+                                        sourceValue = "<> " + year;
+                                    }
+                                    break;
+                                case LESS_THAN_OR_EQUAL:
+                                    sourceValue = "<= " + (Integer.valueOf(year) - 1);
+                                    break;
+                                default:
+                                    sourceValue = year;
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+            return super.canonicalToDisplayValue(sourceValue);
         }
     }
 
@@ -939,8 +1053,10 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         static final String NOT_EMPTY_LITERAL = "<not_empty>";
         static final String NOT_EMPTY_REGEX = "^(?!\\s*$).+";
 
+        static final String IGNORE_CASE_MODE_FLAG = "(?i)";
+
         static final String NOT_EQUALS_LITERAL = "<>";
-        static final String NOT_EQUALS_REGEX_PREFIX = "(?i)^((?!";
+        static final String NOT_EQUALS_REGEX_PREFIX = "^((?!";
         static final String NOT_EQUALS_REGEX_SUFFIX = ").)*$";
 
         private IConfigRegistry configRegistry;
@@ -957,43 +1073,45 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                 String dvString = displayValue.toString();
 
                 if (dvString.contains(EMPTY_LITERAL)
-                        || dvString.contains(NOT_EMPTY_LITERAL)) {
+                        || dvString.contains(NOT_EMPTY_LITERAL)
+                        || dvString.contains("*")
+                        || dvString.contains("?")) {
 
                     this.configRegistry.registerConfigAttribute(
                             FilterRowConfigAttributes.TEXT_MATCHING_MODE,
                             TextMatchingMode.REGULAR_EXPRESSION,
                             DisplayMode.NORMAL,
                             FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
+
+                    // add the ignore case flag to the regex
+                    dvString = IGNORE_CASE_MODE_FLAG + dvString;
                 } else {
 
-                    if (!_6037_MixedFilterRowExample.this.regexFilterActive) {
+                    if (dvString.startsWith("=")) {
 
-                        if (dvString.startsWith("=")) {
+                        this.configRegistry.registerConfigAttribute(
+                                FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                                TextMatchingMode.EXACT,
+                                DisplayMode.NORMAL,
+                                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
 
-                            this.configRegistry.registerConfigAttribute(
-                                    FilterRowConfigAttributes.TEXT_MATCHING_MODE,
-                                    TextMatchingMode.EXACT,
-                                    DisplayMode.NORMAL,
-                                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
+                        dvString = dvString.substring(1).trim();
+                    } else if (dvString.startsWith(NOT_EQUALS_LITERAL)) {
+                        this.configRegistry.registerConfigAttribute(
+                                FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                                TextMatchingMode.REGULAR_EXPRESSION,
+                                DisplayMode.NORMAL,
+                                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
 
-                            dvString = dvString.substring(1).trim();
-                        } else if (dvString.startsWith(NOT_EQUALS_LITERAL)) {
-                            this.configRegistry.registerConfigAttribute(
-                                    FilterRowConfigAttributes.TEXT_MATCHING_MODE,
-                                    TextMatchingMode.REGULAR_EXPRESSION,
-                                    DisplayMode.NORMAL,
-                                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
-
-                            dvString = NOT_EQUALS_REGEX_PREFIX + dvString.substring(2).trim() + NOT_EQUALS_REGEX_SUFFIX;
-                        } else {
-                            // only switch to CONTAINS if RegEx filtering is not
-                            // activated
-                            this.configRegistry.registerConfigAttribute(
-                                    FilterRowConfigAttributes.TEXT_MATCHING_MODE,
-                                    TextMatchingMode.CONTAINS,
-                                    DisplayMode.NORMAL,
-                                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
-                        }
+                        dvString = IGNORE_CASE_MODE_FLAG + NOT_EQUALS_REGEX_PREFIX + dvString.substring(2).trim() + NOT_EQUALS_REGEX_SUFFIX;
+                    } else {
+                        // only switch to CONTAINS if RegEx filtering is not
+                        // activated
+                        this.configRegistry.registerConfigAttribute(
+                                FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                                TextMatchingMode.CONTAINS,
+                                DisplayMode.NORMAL,
+                                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
                     }
                 }
 
@@ -1008,6 +1126,9 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         @Override
         public Object canonicalToDisplayValue(ILayerCell cell, IConfigRegistry configRegistry, Object canonicalValue) {
             if (canonicalValue != null) {
+                // first remove a possible ignore case flag
+                canonicalValue = canonicalValue.toString().replace(IGNORE_CASE_MODE_FLAG, "");
+
                 canonicalValue = super.canonicalToDisplayValue(canonicalValue);
 
                 String cvString = canonicalValue.toString();
@@ -1117,6 +1238,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                             return _6037_MixedFilterRowExample.this.filterExcludes.contains(rowId);
                         }
                     })
+                    .withInspectLabelsMenuItem()
                     .build();
         }
 
