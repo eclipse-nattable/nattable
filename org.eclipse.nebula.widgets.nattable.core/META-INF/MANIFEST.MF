@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: NatTable Core
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.core
-Bundle-Version: 2.0.4.qualifier
+Bundle-Version: 2.0.4
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Eclipse-ExtensibleAPI: true
 Export-Package: org.eclipse.nebula.widgets.nattable;version="2.0.0",
