@@ -740,21 +740,22 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
         // where the editors are not yet configured, we remove the value
         // reactively on accessing it for a consistent view.
 
+        int columnIndex = getColumnIndexByPosition(compositeColumnPosition);
         if (compositeRowPosition == 1
                 && !isFilterRowComboBoxCellEditor(compositeColumnPosition)
                 && EditConstants.SELECT_ALL_ITEMS_VALUE.equals(filterValue)) {
-            this.filterRowDataLayer.getFilterRowDataProvider().getFilterIndexToObjectMap().remove(compositeColumnPosition);
+            this.filterRowDataLayer.getFilterRowDataProvider().getFilterIndexToObjectMap().remove(columnIndex);
             filterValue = null;
         }
 
         return filterValue;
     }
 
-    private boolean isFilterRowComboBoxCellEditor(int column) {
+    private boolean isFilterRowComboBoxCellEditor(int columnPosition) {
         ICellEditor cellEditor = this.configRegistry.getConfigAttribute(
                 EditConfigAttributes.CELL_EDITOR,
                 DisplayMode.NORMAL,
-                this.filterRowDataLayer.getConfigLabelsByPosition(column, 0));
+                this.filterRowDataLayer.getConfigLabelsByPosition(columnPosition, 0));
         return (cellEditor instanceof FilterRowComboBoxCellEditor);
     }
 
@@ -789,11 +790,12 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
         else if (command instanceof ClearFilterCommand
                 && command.convertToTargetLayer(this)) {
             int columnPosition = ((ClearFilterCommand) command).getColumnPosition();
+            int columnIndex = getColumnIndexByPosition(columnPosition);
             if (isFilterRowComboBoxCellEditor(columnPosition)) {
                 this.filterRowDataLayer.setDataValueByPosition(
                         columnPosition,
                         0,
-                        getComboBoxDataProvider().getValues(columnPosition, 0));
+                        getComboBoxDataProvider().getValues(columnIndex, 0));
                 handled = true;
             }
         } else if (command instanceof ClearAllFiltersCommand) {

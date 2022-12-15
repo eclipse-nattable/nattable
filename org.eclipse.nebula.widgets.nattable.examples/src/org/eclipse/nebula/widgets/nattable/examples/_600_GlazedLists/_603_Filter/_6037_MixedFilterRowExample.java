@@ -89,6 +89,7 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultColumnHeaderDataLay
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -101,6 +102,7 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
+import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -502,8 +504,11 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
             this.glazedListsEventLayer =
                     new GlazedListsEventLayer<>(this.bodyDataLayer, this.filterList);
 
-            this.selectionLayer = new SelectionLayer(getGlazedListsEventLayer());
-            ViewportLayer viewportLayer = new ViewportLayer(getSelectionLayer());
+            ColumnReorderLayer reorderLayer = new ColumnReorderLayer(this.glazedListsEventLayer);
+            ColumnHideShowLayer hideShowLayer = new ColumnHideShowLayer(reorderLayer);
+
+            this.selectionLayer = new SelectionLayer(hideShowLayer);
+            ViewportLayer viewportLayer = new ViewportLayer(this.selectionLayer);
 
             FreezeLayer freezeLayer = new FreezeLayer(this.selectionLayer);
             CompositeFreezeLayer compositeFreezeLayer =
