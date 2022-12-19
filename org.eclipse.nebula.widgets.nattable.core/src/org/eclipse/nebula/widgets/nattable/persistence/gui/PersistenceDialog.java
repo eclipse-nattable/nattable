@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Dirk Fauth and others.
+ * Copyright (c) 2012, 2022 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -225,7 +225,7 @@ public class PersistenceDialog extends Dialog {
         this.viewer
                 .addSelectionChangedListener(event -> {
                     ISelection selection = event.getSelection();
-                    if (selection instanceof IStructuredSelection) {
+                    if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
                         String configName = ((IStructuredSelection) selection)
                                 .getFirstElement().toString();
                         PersistenceDialog.this.configNameText.setText(configName);
@@ -303,7 +303,7 @@ public class PersistenceDialog extends Dialog {
                     StateChangeType.CREATE));
         } else if (buttonId == DELETE_ID) {
             ISelection selection = this.viewer.getSelection();
-            if (selection instanceof IStructuredSelection) {
+            if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
                 String configName = ((IStructuredSelection) selection)
                         .getFirstElement().toString();
                 PersistenceHelper.deleteState(configName, this.properties);
@@ -317,13 +317,13 @@ public class PersistenceDialog extends Dialog {
             }
         } else if (buttonId == LOAD_ID) {
             ISelection selection = this.viewer.getSelection();
-            if (selection instanceof IStructuredSelection) {
+            if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
                 String configName = ((IStructuredSelection) selection)
                         .getFirstElement().toString();
                 this.natTable.loadState(configName, this.properties);
                 setActiveViewConfigurationName(configName);
+                super.okPressed();
             }
-            super.okPressed();
         } else {
             super.buttonPressed(buttonId);
         }
