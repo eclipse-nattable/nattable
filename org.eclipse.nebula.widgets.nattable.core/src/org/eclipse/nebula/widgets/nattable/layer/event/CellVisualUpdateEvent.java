@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2022 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ package org.eclipse.nebula.widgets.nattable.layer.event;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 /**
  * Specialization of the CellVisualChangeEvent. The only difference is the
@@ -66,6 +67,17 @@ public class CellVisualUpdateEvent extends CellVisualChangeEvent {
         if (!(localLayer instanceof DimensionallyDependentLayer)) {
             columnPos = localLayer.underlyingToLocalColumnPosition(getLayer(), this.columnPosition);
             rowPos = localLayer.underlyingToLocalRowPosition(getLayer(), this.rowPosition);
+        } else {
+            DimensionallyDependentLayer ddl = (DimensionallyDependentLayer) localLayer;
+
+            if (ddl.getHorizontalLayerDependency() instanceof ViewportLayer) {
+                int columnIndex = this.layer.getColumnIndexByPosition(this.columnPosition);
+                columnPos = ((ViewportLayer) ddl.getHorizontalLayerDependency()).getColumnPositionByIndex(columnIndex);
+            }
+            if (ddl.getVerticalLayerDependency() instanceof ViewportLayer) {
+                int rowIndex = this.layer.getRowIndexByPosition(this.rowPosition);
+                rowPos = ((ViewportLayer) ddl.getVerticalLayerDependency()).getRowPositionByIndex(rowIndex);
+            }
         }
 
         if (columnPos < 0 || rowPos < 0) {
