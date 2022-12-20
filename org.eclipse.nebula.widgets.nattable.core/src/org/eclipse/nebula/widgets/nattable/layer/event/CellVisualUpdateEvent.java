@@ -14,8 +14,8 @@ package org.eclipse.nebula.widgets.nattable.layer.event;
 
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
-import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 /**
  * Specialization of the CellVisualChangeEvent. The only difference is the
@@ -70,13 +70,15 @@ public class CellVisualUpdateEvent extends CellVisualChangeEvent {
         } else {
             DimensionallyDependentLayer ddl = (DimensionallyDependentLayer) localLayer;
 
-            if (ddl.getHorizontalLayerDependency() instanceof ViewportLayer) {
-                int columnIndex = this.layer.getColumnIndexByPosition(this.columnPosition);
-                columnPos = ((ViewportLayer) ddl.getHorizontalLayerDependency()).getColumnPositionByIndex(columnIndex);
+            if (ddl.getHorizontalLayerDependency() instanceof IUniqueIndexLayer) {
+                int columnIndex =
+                        this.layer.getColumnIndexByPosition(this.columnPosition);
+                columnPos = ((IUniqueIndexLayer) ddl.getHorizontalLayerDependency()).getColumnPositionByIndex(columnIndex);
             }
-            if (ddl.getVerticalLayerDependency() instanceof ViewportLayer) {
-                int rowIndex = this.layer.getRowIndexByPosition(this.rowPosition);
-                rowPos = ((ViewportLayer) ddl.getVerticalLayerDependency()).getRowPositionByIndex(rowIndex);
+            if (ddl.getVerticalLayerDependency() instanceof IUniqueIndexLayer) {
+                int rowIndex =
+                        this.layer.getRowIndexByPosition(this.rowPosition);
+                rowPos = ((IUniqueIndexLayer) ddl.getVerticalLayerDependency()).getRowPositionByIndex(rowIndex);
             }
         }
 

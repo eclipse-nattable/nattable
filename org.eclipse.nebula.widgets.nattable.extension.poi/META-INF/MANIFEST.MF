@@ -2,21 +2,21 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: NatTable extension for Apache POI
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.extension.poi
-Bundle-Version: 2.0.4.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.eclipse.nebula.widgets.nattable.extension.poi;version="2.0.0"
+Export-Package: org.eclipse.nebula.widgets.nattable.extension.poi;version="2.1.0"
 Import-Package: org.apache.poi.hssf.usermodel;version="[4.1.1,5.0.0)",
  org.apache.poi.ss.usermodel;version="[4.1.1,5.0.0)",
  org.apache.poi.ss.util;version="[4.1.1,5.0.0)",
  org.apache.poi.util;version="[4.1.1,5.0.0)",
- org.eclipse.nebula.widgets.nattable.config;version="[2.0.0,3.0.0)",
- org.eclipse.nebula.widgets.nattable.export;version="[2.0.0,3.0.0)",
- org.eclipse.nebula.widgets.nattable.formula;version="[2.0.0,3.0.0)",
- org.eclipse.nebula.widgets.nattable.layer;version="[2.0.0,3.0.0)",
- org.eclipse.nebula.widgets.nattable.layer.cell;version="[2.0.0,3.0.0)",
- org.eclipse.nebula.widgets.nattable.painter.cell;version="[2.0.0,3.0.0)",
- org.eclipse.nebula.widgets.nattable.painter.cell.decorator;version="[2.0.0,3.0.0)",
- org.eclipse.nebula.widgets.nattable.style;version="[2.0.0,3.0.0)",
+ org.eclipse.nebula.widgets.nattable.config;version="[2.1.0,3.0.0)",
+ org.eclipse.nebula.widgets.nattable.export;version="[2.1.0,3.0.0)",
+ org.eclipse.nebula.widgets.nattable.formula;version="[2.1.0,3.0.0)",
+ org.eclipse.nebula.widgets.nattable.layer;version="[2.1.0,3.0.0)",
+ org.eclipse.nebula.widgets.nattable.layer.cell;version="[2.1.0,3.0.0)",
+ org.eclipse.nebula.widgets.nattable.painter.cell;version="[2.1.0,3.0.0)",
+ org.eclipse.nebula.widgets.nattable.painter.cell.decorator;version="[2.1.0,3.0.0)",
+ org.eclipse.nebula.widgets.nattable.style;version="[2.1.0,3.0.0)",
  org.eclipse.swt,
  org.eclipse.swt.graphics,
  org.eclipse.swt.widgets,

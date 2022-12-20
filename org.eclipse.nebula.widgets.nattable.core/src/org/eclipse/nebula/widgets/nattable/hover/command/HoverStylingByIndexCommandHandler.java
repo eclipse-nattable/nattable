@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2022 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,14 +16,16 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
 
 /**
- * Command handler that is responsible for handling the HoverStylingCommand.
+ * Command handler that is responsible for handling the HoverStylingByIndexCommand.
  * Will set the current hovered cell position to the connected HoverLayer to
  * apply hover styling accordingly.
  *
  * @see HoverLayer
- * @see HoverStylingCommand
+ * @see HoverStylingByIndexCommand
+ *
+ * @since 2.1
  */
-public class HoverStylingCommandHandler extends AbstractLayerCommandHandler<HoverStylingCommand> {
+public class HoverStylingByIndexCommandHandler extends AbstractLayerCommandHandler<HoverStylingByIndexCommand> {
 
     /**
      * The HoverLayer this command handler is connected to.
@@ -35,22 +37,22 @@ public class HoverStylingCommandHandler extends AbstractLayerCommandHandler<Hove
      * @param layer
      *            The HoverLayer this command handler is connected to.
      */
-    public HoverStylingCommandHandler(HoverLayer layer) {
+    public HoverStylingByIndexCommandHandler(HoverLayer layer) {
         this.layer = layer;
     }
 
     @Override
-    protected boolean doCommand(HoverStylingCommand command) {
+    protected boolean doCommand(HoverStylingByIndexCommand command) {
         if (this.layer.equals(command.getHoverLayer())) {
-            this.layer.setCurrentHoveredCellPosition(command.getColumnPosition(), command.getRowPosition());
+            this.layer.setCurrentHoveredCellByIndex(command.getColumnIndex(), command.getRowIndex());
             return true;
         }
         return false;
     }
 
     @Override
-    public Class<HoverStylingCommand> getCommandClass() {
-        return HoverStylingCommand.class;
+    public Class<HoverStylingByIndexCommand> getCommandClass() {
+        return HoverStylingByIndexCommand.class;
     }
 
 }

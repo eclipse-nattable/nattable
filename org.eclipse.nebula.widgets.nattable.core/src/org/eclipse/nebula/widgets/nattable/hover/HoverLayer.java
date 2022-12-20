@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2022 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,6 +13,7 @@
 package org.eclipse.nebula.widgets.nattable.hover;
 
 import org.eclipse.nebula.widgets.nattable.hover.command.ClearHoverStylingCommandHandler;
+import org.eclipse.nebula.widgets.nattable.hover.command.HoverStylingByIndexCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hover.command.HoverStylingCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hover.config.BodyHoverStylingBindings;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
@@ -75,6 +76,7 @@ public class HoverLayer extends AbstractIndexLayerTransform {
         }
 
         registerCommandHandler(new HoverStylingCommandHandler(this));
+        registerCommandHandler(new HoverStylingByIndexCommandHandler(this));
         registerCommandHandler(new ClearHoverStylingCommandHandler(this));
     }
 
@@ -141,6 +143,25 @@ public class HoverLayer extends AbstractIndexLayerTransform {
      *            The row position of the cell that is currently hovered.
      */
     public void setCurrentHoveredCellPosition(int columnPosition, int rowPosition) {
+        setCurrentHoveredCellPosition(new Point(columnPosition, rowPosition));
+    }
+
+    /**
+     * Set the information about the cell identified by index that is currently
+     * hovered and fire an event to update a possible previous hovered cell to
+     * remove the hover styling and an event to update the newly hovered cell to
+     * apply the hover styling.
+     *
+     * @param columnIndex
+     *            The column index of the cell that is currently hovered.
+     * @param rowIndex
+     *            The row index of the cell that is currently hovered.
+     *
+     * @since 2.1
+     */
+    public void setCurrentHoveredCellByIndex(int columnIndex, int rowIndex) {
+        int columnPosition = getColumnPositionByIndex(columnIndex);
+        int rowPosition = getRowPositionByIndex(rowIndex);
         setCurrentHoveredCellPosition(new Point(columnPosition, rowPosition));
     }
 

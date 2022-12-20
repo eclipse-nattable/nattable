@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2022 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,10 +12,8 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hover.command;
 
-import org.eclipse.nebula.widgets.nattable.command.AbstractPositionCommand;
-import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
+import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
-import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 /**
  * Command that is used to apply hover styling in a NatTable.
@@ -26,9 +24,20 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
  * wouldn't know about the layer to handle it.
  *
  * @see HoverLayer
- * @see HoverStylingCommandHandler
+ * @see HoverStylingByIndexCommandHandler
+ *
+ * @since 2.1
  */
-public class HoverStylingCommand extends AbstractPositionCommand {
+public class HoverStylingByIndexCommand extends AbstractContextFreeCommand {
+
+    /**
+     * The column index of the cell to apply the hover styling.
+     */
+    private final int columnIndex;
+    /**
+     * The row index of the cell to apply the hover styling.
+     */
+    private final int rowIndex;
 
     /**
      * The HoverLayer that should handle the command.
@@ -36,20 +45,18 @@ public class HoverStylingCommand extends AbstractPositionCommand {
     private final HoverLayer hoverLayer;
 
     /**
-     * @param layer
-     *            The layer to which the given cell position coordinates are
-     *            related to.
-     * @param columnPosition
-     *            The column position of the cell to apply the hover styling.
-     * @param rowPosition
-     *            The row position of the cell to apply the hover styling.
+     * @param columnIndex
+     *            The column index of the cell to apply the hover styling.
+     * @param rowIndex
+     *            The row index of the cell to apply the hover styling.
      * @param hoverLayer
      *            The HoverLayer that should handle the command. Necessary to
      *            avoid that other HoverLayer instances in a grid composition
      *            handle and consume the command.
      */
-    public HoverStylingCommand(ILayer layer, int columnPosition, int rowPosition, HoverLayer hoverLayer) {
-        super(layer, columnPosition, rowPosition);
+    public HoverStylingByIndexCommand(int columnIndex, int rowIndex, HoverLayer hoverLayer) {
+        this.columnIndex = columnIndex;
+        this.rowIndex = rowIndex;
         this.hoverLayer = hoverLayer;
     }
 
@@ -59,14 +66,29 @@ public class HoverStylingCommand extends AbstractPositionCommand {
      * @param command
      *            The command that should be used to create a new instance.
      */
-    protected HoverStylingCommand(HoverStylingCommand command) {
-        super(command);
+    protected HoverStylingByIndexCommand(HoverStylingByIndexCommand command) {
+        this.columnIndex = command.getColumnIndex();
+        this.rowIndex = command.getRowIndex();
         this.hoverLayer = command.getHoverLayer();
     }
 
     @Override
-    public ILayerCommand cloneCommand() {
-        return new HoverStylingCommand(this);
+    public HoverStylingByIndexCommand cloneCommand() {
+        return new HoverStylingByIndexCommand(this);
+    }
+
+    /**
+     * @return The column index of the cell to apply the hover styling.
+     */
+    public int getColumnIndex() {
+        return this.columnIndex;
+    }
+
+    /**
+     * @return The row index of the cell to apply the hover styling.
+     */
+    public int getRowIndex() {
+        return this.rowIndex;
     }
 
     /**

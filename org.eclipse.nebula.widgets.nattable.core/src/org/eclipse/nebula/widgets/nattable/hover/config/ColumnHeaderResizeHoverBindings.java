@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,7 +16,7 @@ import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
 import org.eclipse.nebula.widgets.nattable.hover.action.ClearHoverStylingAction;
-import org.eclipse.nebula.widgets.nattable.hover.action.HoverStylingAction;
+import org.eclipse.nebula.widgets.nattable.hover.action.HoverStylingByIndexAction;
 import org.eclipse.nebula.widgets.nattable.resize.action.AutoResizeColumnAction;
 import org.eclipse.nebula.widgets.nattable.resize.action.ColumnResizeCursorAction;
 import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEventMatcher;
@@ -45,13 +45,14 @@ public class ColumnHeaderResizeHoverBindings extends AbstractUiBindingConfigurat
     public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
         // Mouse move - Show resize cursor
         uiBindingRegistry.registerFirstMouseMoveBinding(
-                new ColumnResizeEventMatcher(SWT.NONE,
-                        GridRegion.COLUMN_HEADER, 0),
+                new ColumnResizeEventMatcher(SWT.NONE, GridRegion.COLUMN_HEADER, 0),
                 new ColumnResizeCursorAction());
+
         // apply a hover styling on moving the mouse over a NatTable and clear
         // the cursor
-        uiBindingRegistry.registerMouseMoveBinding(new MouseEventMatcher(
-                GridRegion.COLUMN_HEADER), new HoverStylingAction(this.layer));
+        uiBindingRegistry.registerMouseMoveBinding(
+                new MouseEventMatcher(GridRegion.COLUMN_HEADER),
+                new HoverStylingByIndexAction(this.layer));
 
         // clear any hover styling if the mouse is moved out of a NatTable
         // region
@@ -67,17 +68,14 @@ public class ColumnHeaderResizeHoverBindings extends AbstractUiBindingConfigurat
 
         // Column resize
         uiBindingRegistry.registerFirstMouseDragMode(
-                new ColumnResizeEventMatcher(SWT.NONE,
-                        GridRegion.COLUMN_HEADER, 1),
+                new ColumnResizeEventMatcher(SWT.NONE, GridRegion.COLUMN_HEADER, 1),
                 new ColumnResizeDragMode());
 
         uiBindingRegistry.registerDoubleClickBinding(
-                new ColumnResizeEventMatcher(SWT.NONE,
-                        GridRegion.COLUMN_HEADER, 1),
+                new ColumnResizeEventMatcher(SWT.NONE, GridRegion.COLUMN_HEADER, 1),
                 new AutoResizeColumnAction());
         uiBindingRegistry.registerSingleClickBinding(
-                new ColumnResizeEventMatcher(SWT.NONE,
-                        GridRegion.COLUMN_HEADER, 1),
+                new ColumnResizeEventMatcher(SWT.NONE, GridRegion.COLUMN_HEADER, 1),
                 new NoOpMouseAction());
     }
 
