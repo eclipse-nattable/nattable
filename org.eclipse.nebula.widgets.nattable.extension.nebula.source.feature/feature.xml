@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.nebula.widgets.nattable.extension.nebula.source.feature"
       label="%featureName"
-      version="2.0.5.qualifier"
+      version="2.0.5"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
