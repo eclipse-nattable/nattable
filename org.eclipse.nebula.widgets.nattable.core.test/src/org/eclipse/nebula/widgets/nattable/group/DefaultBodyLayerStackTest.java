@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
@@ -25,14 +25,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DefaultBodyLayerStackTest {
 
     private DefaultBodyLayerStack layerStack;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.layerStack = new DefaultBodyLayerStack(new DataLayerFixture(10, 5, 100,
                 20));

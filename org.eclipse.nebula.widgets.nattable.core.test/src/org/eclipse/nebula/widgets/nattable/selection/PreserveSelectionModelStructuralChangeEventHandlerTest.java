@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2020 Dirk Fauth and others.
+ * Copyright (c) 2014, 2022 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,9 +12,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -41,8 +41,8 @@ import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.preserve.PreserveSelectionModel;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.GridLayerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class PreserveSelectionModelStructuralChangeEventHandlerTest {
 
@@ -52,7 +52,7 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
     private DataLayer bodyDataLayer;
     private SelectionLayer selectionLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.listFixture = RowDataListFixture.getList(10);
         this.bodyDataProvider = new ListDataProvider<RowDataFixture>(this.listFixture,
@@ -181,8 +181,8 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
                 }
             }
         }
-        assertTrue("B Ford Motor not found", fordFound);
-        assertTrue("A Alphabet Co. not found", alphabetFound);
+        assertTrue(fordFound, "B Ford Motor not found");
+        assertTrue(alphabetFound, "A Alphabet Co. not found");
 
         this.listFixture.remove(0);
 
@@ -218,7 +218,7 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
         // row count of 1 for NatTable because of header
         assertEquals(1, this.nattable.getRowCount());
         assertEquals(0, this.selectionLayer.getSelectedRowCount());
-        assertTrue("selection model is not empty", this.selectionLayer.getSelectionModel().getSelections().isEmpty());
+        assertTrue(this.selectionLayer.getSelectionModel().getSelections().isEmpty(), "selection model is not empty");
     }
 
     @Test
@@ -243,12 +243,12 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
         // row count of 1 for NatTable because of header
         assertEquals(1, this.nattable.getRowCount());
         assertEquals(0, this.selectionLayer.getSelectedRowCount());
-        assertTrue("selection model is not empty", this.selectionLayer.getSelectionModel().getSelections().isEmpty());
+        assertTrue(this.selectionLayer.getSelectionModel().getSelections().isEmpty(), "selection model is not empty");
     }
 
     @Test
     public void shouldRemoveCellSelectionOnRowDelete() {
-        assertTrue("selection is not empty", this.selectionLayer.getSelectedCells().isEmpty());
+        assertTrue(this.selectionLayer.getSelectedCells().isEmpty(), "selection is not empty");
 
         this.nattable.doCommand(new SelectCellCommand(this.nattable, 1, 1, false, false));
         assertEquals(1, this.selectionLayer.getSelectedCells().size());
@@ -267,7 +267,7 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
 
     @Test
     public void shouldRemovePartialCellSelectionOnRowDelete() {
-        assertTrue("selection is not empty", this.selectionLayer.getSelectedCells().isEmpty());
+        assertTrue(this.selectionLayer.getSelectedCells().isEmpty(), "selection is not empty");
 
         this.nattable.doCommand(new SelectCellCommand(this.nattable, 1, 1, false, false));
         assertEquals(1, this.selectionLayer.getSelectedCells().size());
@@ -295,7 +295,7 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
 
     @Test
     public void shouldRemoveCellSelectionOnColumnDelete() {
-        assertTrue("selection is not empty", this.selectionLayer.getSelectedCells().isEmpty());
+        assertTrue(this.selectionLayer.getSelectedCells().isEmpty(), "selection is not empty");
 
         this.nattable.doCommand(new SelectCellCommand(this.nattable, 1, 1, false, false));
         assertEquals(1, this.selectionLayer.getSelectedCells().size());
@@ -311,7 +311,7 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
 
     @Test
     public void shouldRemovePartialCellSelectionOnColumnDelete() {
-        assertTrue("selection is not empty", this.selectionLayer.getSelectedCells().isEmpty());
+        assertTrue(this.selectionLayer.getSelectedCells().isEmpty(), "selection is not empty");
 
         this.nattable.doCommand(new SelectCellCommand(this.nattable, 1, 1, false, false));
         assertEquals(1, this.selectionLayer.getSelectedCells().size());
@@ -350,7 +350,7 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
 
     @Test
     public void shouldRemovePartialSplitCellSelectionOnColumnDelete() {
-        assertTrue("selection is not empty", this.selectionLayer.getSelectedCells().isEmpty());
+        assertTrue(this.selectionLayer.getSelectedCells().isEmpty(), "selection is not empty");
 
         this.nattable.doCommand(new SelectCellCommand(this.nattable, 1, 1, false, false));
         assertEquals(1, this.selectionLayer.getSelectedCells().size());
@@ -369,7 +369,7 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
         }
 
         for (int i = 0; i < found.length; i++) {
-            assertTrue("columnPosition " + i + " not selected", found[i]);
+            assertTrue(found[i], "columnPosition " + i + " not selected");
         }
 
         this.nattable.doCommand(new MultiColumnHideCommand(this.nattable, new int[] { 2, 4 }));
@@ -385,7 +385,7 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
         }
 
         for (int i = 0; i < found.length; i++) {
-            assertTrue("columnPosition " + i + " not selected", found[i]);
+            assertTrue(found[i], "columnPosition " + i + " not selected");
         }
 
         // insert again to verify the column position shift
@@ -405,7 +405,7 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
 
         for (int i = 0; i < found.length; i++) {
             if (i == 0 || i == 2 || i == 4) {
-                assertTrue("columnPosition " + i + " not selected", found[i]);
+                assertTrue(found[i], "columnPosition " + i + " not selected");
             }
         }
     }
@@ -415,7 +415,7 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
         // integration test case for drag/shift selection
         // not really a test case for structural changes but important for
         // selection interactions
-        assertTrue("selection is not empty", this.selectionLayer.getSelectedCells().isEmpty());
+        assertTrue(this.selectionLayer.getSelectedCells().isEmpty(), "selection is not empty");
 
         this.nattable.doCommand(new SelectCellCommand(this.nattable, 3, 3, false, false));
         assertEquals(1, this.selectionLayer.getSelectedCells().size());
@@ -435,7 +435,7 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
         }
 
         for (int i = 0; i < found.length; i++) {
-            assertTrue("columnPosition " + (i + 3) + " not selected", found[i]);
+            assertTrue(found[i], "columnPosition " + (i + 3) + " not selected");
         }
 
         this.nattable.doCommand(new SelectCellCommand(this.nattable, 1, 1, true, false));
@@ -452,7 +452,7 @@ public class PreserveSelectionModelStructuralChangeEventHandlerTest {
         }
 
         for (int i = 0; i < found.length; i++) {
-            assertTrue("columnPosition " + i + " not selected", found[i]);
+            assertTrue(found[i], "columnPosition " + i + " not selected");
         }
     }
 

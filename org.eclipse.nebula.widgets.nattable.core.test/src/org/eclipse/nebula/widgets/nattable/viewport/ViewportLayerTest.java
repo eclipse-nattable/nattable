@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.viewport;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
@@ -26,21 +26,21 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixtu
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ViewportLayerFixture;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ViewportLayerTest {
     protected ViewportLayer viewportLayer;
     protected LayerListenerFixture layerListener;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.viewportLayer = new ViewportLayerFixture();
         this.layerListener = new LayerListenerFixture();
     }
 
-    @After
+    @AfterEach
     public void resertStaticFieldsInViewportFixture() {
         this.viewportLayer.getClientAreaProvider().getClientArea().x = 0;
         this.viewportLayer.getClientAreaProvider().getClientArea().y = 0;

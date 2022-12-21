@@ -12,18 +12,18 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow.command;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.RowHideShowLayerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ShowAllRowsCommandTest {
 
     private RowHideShowLayer rowHideShowLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.rowHideShowLayer = new RowHideShowLayerFixture();
     }

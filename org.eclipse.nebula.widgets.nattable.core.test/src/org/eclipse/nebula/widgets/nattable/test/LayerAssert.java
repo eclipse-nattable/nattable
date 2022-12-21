@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
@@ -29,32 +29,22 @@ public class LayerAssert {
 
         int expectedColumnCount = expectedLayer.getColumnCount();
         int actualColumnCount = actualLayer.getColumnCount();
-        assertEquals("Column count", expectedColumnCount,
-                actualColumnCount);
+        assertEquals(expectedColumnCount, actualColumnCount);
 
         // Assert.assertEquals("Preferred column count",
         // expectedLayer.getPreferredColumnCount(),
         // actualLayer.getPreferredColumnCount());
 
         for (int columnPosition = 0; columnPosition < expectedColumnCount; columnPosition++) {
-            int expectedColumnIndexByPosition = expectedLayer
-                    .getColumnIndexByPosition(columnPosition);
-            int actualColumnIndexByPosition = actualLayer
-                    .getColumnIndexByPosition(columnPosition);
-            assertEquals("Column index by position (" + columnPosition
-                    + ")", expectedColumnIndexByPosition,
-                    actualColumnIndexByPosition);
+            int expectedColumnIndexByPosition = expectedLayer.getColumnIndexByPosition(columnPosition);
+            int actualColumnIndexByPosition = actualLayer.getColumnIndexByPosition(columnPosition);
+            assertEquals(expectedColumnIndexByPosition, actualColumnIndexByPosition);
         }
 
         for (int localColumnPosition = 0; localColumnPosition < expectedColumnCount; localColumnPosition++) {
-            int expectedLocalToUnderlyingColumnPosition = expectedLayer
-                    .localToUnderlyingColumnPosition(localColumnPosition);
-            int actualLocalToUnderlyingColumnPosition = actualLayer
-                    .localToUnderlyingColumnPosition(localColumnPosition);
-            assertEquals("Local to underlying column position ("
-                    + localColumnPosition + ")",
-                    expectedLocalToUnderlyingColumnPosition,
-                    actualLocalToUnderlyingColumnPosition);
+            int expectedLocalToUnderlyingColumnPosition = expectedLayer.localToUnderlyingColumnPosition(localColumnPosition);
+            int actualLocalToUnderlyingColumnPosition = actualLayer.localToUnderlyingColumnPosition(localColumnPosition);
+            assertEquals(expectedLocalToUnderlyingColumnPosition, actualLocalToUnderlyingColumnPosition);
         }
 
         // for (int underlyingColumnPosition = 0; underlyingColumnPosition <
@@ -71,51 +61,37 @@ public class LayerAssert {
 
         int expectedWidth = expectedLayer.getWidth();
         int actualWidth = actualLayer.getWidth();
-        assertEquals("Width", expectedWidth, actualWidth);
+        assertEquals(expectedWidth, actualWidth);
 
         // Assert.assertEquals("Preferred width",
         // expectedLayer.getPreferredWidth(), actualLayer.getPreferredWidth());
 
         for (int columnPosition = 0; columnPosition < expectedColumnCount; columnPosition++) {
-            int expectedColumnWidthByPosition = expectedLayer
-                    .getColumnWidthByPosition(columnPosition);
-            int actualColumnWidthByPosition = actualLayer
-                    .getColumnWidthByPosition(columnPosition);
-            assertEquals("Column width by position (" + columnPosition
-                    + ")", expectedColumnWidthByPosition,
-                    actualColumnWidthByPosition);
+            int expectedColumnWidthByPosition = expectedLayer.getColumnWidthByPosition(columnPosition);
+            int actualColumnWidthByPosition = actualLayer.getColumnWidthByPosition(columnPosition);
+            assertEquals(expectedColumnWidthByPosition, actualColumnWidthByPosition);
         }
 
         // Column resize
 
         for (int columnPosition = 0; columnPosition < expectedColumnCount; columnPosition++) {
-            boolean expectedColumnPositionResizable = expectedLayer
-                    .isColumnPositionResizable(columnPosition);
-            boolean actualColumnPositionResizable = actualLayer
-                    .isColumnPositionResizable(columnPosition);
-            assertEquals("Column position resizable (" + columnPosition
-                    + ")", expectedColumnPositionResizable,
-                    actualColumnPositionResizable);
+            boolean expectedColumnPositionResizable = expectedLayer.isColumnPositionResizable(columnPosition);
+            boolean actualColumnPositionResizable = actualLayer.isColumnPositionResizable(columnPosition);
+            assertEquals(expectedColumnPositionResizable, actualColumnPositionResizable);
         }
 
         // X
 
         for (int x = 0; x < expectedWidth; x++) {
-            int expectedColumnPositionByX = expectedLayer
-                    .getColumnPositionByX(x);
+            int expectedColumnPositionByX = expectedLayer.getColumnPositionByX(x);
             int actualColumnPositionByX = actualLayer.getColumnPositionByX(x);
-            assertEquals("Column position by X (" + x + ")",
-                    expectedColumnPositionByX, actualColumnPositionByX);
+            assertEquals(expectedColumnPositionByX, actualColumnPositionByX);
         }
 
         for (int columnPosition = 0; columnPosition < expectedColumnCount; columnPosition++) {
-            int expectedStartXOfColumnPosition = expectedLayer
-                    .getStartXOfColumnPosition(columnPosition);
-            int actualStartXOfColumnPosition = actualLayer
-                    .getStartXOfColumnPosition(columnPosition);
-            assertEquals("Start X of column position (" + columnPosition
-                    + ")", expectedStartXOfColumnPosition,
-                    actualStartXOfColumnPosition);
+            int expectedStartXOfColumnPosition = expectedLayer.getStartXOfColumnPosition(columnPosition);
+            int actualStartXOfColumnPosition = actualLayer.getStartXOfColumnPosition(columnPosition);
+            assertEquals(expectedStartXOfColumnPosition, actualStartXOfColumnPosition);
         }
 
         // Vertical features
@@ -124,30 +100,22 @@ public class LayerAssert {
 
         int expectedRowCount = expectedLayer.getRowCount();
         int actualRowCount = actualLayer.getRowCount();
-        assertEquals("Row count", expectedRowCount, actualRowCount);
+        assertEquals(expectedRowCount, actualRowCount);
 
         // Assert.assertEquals("Preferred row count",
         // expectedLayer.getPreferredRowCount(),
         // actualLayer.getPreferredRowCount());
 
         for (int rowPosition = 0; rowPosition < expectedRowCount; rowPosition++) {
-            int expectedRowIndexByPosition = expectedLayer
-                    .getRowIndexByPosition(rowPosition);
-            int actualRowIndexByPosition = actualLayer
-                    .getRowIndexByPosition(rowPosition);
-            assertEquals("Row index by position (" + rowPosition + ")",
-                    expectedRowIndexByPosition, actualRowIndexByPosition);
+            int expectedRowIndexByPosition = expectedLayer.getRowIndexByPosition(rowPosition);
+            int actualRowIndexByPosition = actualLayer.getRowIndexByPosition(rowPosition);
+            assertEquals(expectedRowIndexByPosition, actualRowIndexByPosition);
         }
 
         for (int localRowPosition = 0; localRowPosition < expectedRowCount; localRowPosition++) {
-            int expectedLocalToUnderlyingRowPosition = expectedLayer
-                    .localToUnderlyingRowPosition(localRowPosition);
-            int actualLocalToUnderlyingRowPosition = actualLayer
-                    .localToUnderlyingRowPosition(localRowPosition);
-            assertEquals("Local to underlying row position ("
-                    + localRowPosition + ")",
-                    expectedLocalToUnderlyingRowPosition,
-                    actualLocalToUnderlyingRowPosition);
+            int expectedLocalToUnderlyingRowPosition = expectedLayer.localToUnderlyingRowPosition(localRowPosition);
+            int actualLocalToUnderlyingRowPosition = actualLayer.localToUnderlyingRowPosition(localRowPosition);
+            assertEquals(expectedLocalToUnderlyingRowPosition, actualLocalToUnderlyingRowPosition);
         }
 
         // for (int underlyingRowPosition = 0; underlyingRowPosition <
@@ -164,30 +132,24 @@ public class LayerAssert {
 
         int expectedHeight = expectedLayer.getHeight();
         int actualHeight = actualLayer.getHeight();
-        assertEquals("Height", expectedHeight, actualHeight);
+        assertEquals(expectedHeight, actualHeight);
 
         // Assert.assertEquals("Preferred height",
         // expectedLayer.getPreferredHeight(),
         // actualLayer.getPreferredHeight());
 
         for (int rowPosition = 0; rowPosition < expectedRowCount; rowPosition++) {
-            int expectedRowHeightByPosition = expectedLayer
-                    .getRowHeightByPosition(rowPosition);
-            int actualRowHeightByPosition = actualLayer
-                    .getRowHeightByPosition(rowPosition);
-            assertEquals("Row height by position (" + rowPosition + ")",
-                    expectedRowHeightByPosition, actualRowHeightByPosition);
+            int expectedRowHeightByPosition = expectedLayer.getRowHeightByPosition(rowPosition);
+            int actualRowHeightByPosition = actualLayer.getRowHeightByPosition(rowPosition);
+            assertEquals(expectedRowHeightByPosition, actualRowHeightByPosition);
         }
 
         // Row resize
 
         for (int rowPosition = 0; rowPosition < expectedRowCount; rowPosition++) {
-            boolean expectedRowPositionResizable = expectedLayer
-                    .isRowPositionResizable(rowPosition);
-            boolean actualRowPositionResizable = actualLayer
-                    .isRowPositionResizable(rowPosition);
-            assertEquals("Row position resizable (" + rowPosition + ")",
-                    expectedRowPositionResizable, actualRowPositionResizable);
+            boolean expectedRowPositionResizable = expectedLayer.isRowPositionResizable(rowPosition);
+            boolean actualRowPositionResizable = actualLayer.isRowPositionResizable(rowPosition);
+            assertEquals(expectedRowPositionResizable, actualRowPositionResizable);
         }
 
         // Y
@@ -195,83 +157,55 @@ public class LayerAssert {
         for (int y = 0; y < expectedHeight; y++) {
             int expectedRowPositionByY = expectedLayer.getRowPositionByY(y);
             int actualRowPositionByY = actualLayer.getRowPositionByY(y);
-            assertEquals("Row position by Y (" + y + ")",
-                    expectedRowPositionByY, actualRowPositionByY);
+            assertEquals(expectedRowPositionByY, actualRowPositionByY);
         }
 
         for (int rowPosition = 0; rowPosition < expectedRowCount; rowPosition++) {
-            int expectedStartYOfRowPosition = expectedLayer
-                    .getStartYOfRowPosition(rowPosition);
-            int actualStartYOfRowPosition = actualLayer
-                    .getStartYOfRowPosition(rowPosition);
-            assertEquals(
-                    "Start Y of row position (" + rowPosition + ")",
-                    expectedStartYOfRowPosition, actualStartYOfRowPosition);
+            int expectedStartYOfRowPosition = expectedLayer.getStartYOfRowPosition(rowPosition);
+            int actualStartYOfRowPosition = actualLayer.getStartYOfRowPosition(rowPosition);
+            assertEquals(expectedStartYOfRowPosition, actualStartYOfRowPosition);
         }
 
         // Cell features
 
         for (int columnPosition = 0; columnPosition < expectedColumnCount; columnPosition++) {
             for (int rowPosition = 0; rowPosition < expectedRowCount; rowPosition++) {
-                ILayerCell expectedCellByPosition = expectedLayer
-                        .getCellByPosition(columnPosition, rowPosition);
-                ILayerCell actualCellByPosition = actualLayer
-                        .getCellByPosition(columnPosition, rowPosition);
-                assertEquals("Cell by position (" + columnPosition
-                        + ", " + rowPosition + ")", expectedCellByPosition,
-                        actualCellByPosition);
+                ILayerCell expectedCellByPosition = expectedLayer.getCellByPosition(columnPosition, rowPosition);
+                ILayerCell actualCellByPosition = actualLayer.getCellByPosition(columnPosition, rowPosition);
+                assertEquals(expectedCellByPosition, actualCellByPosition);
             }
         }
 
         for (int columnPosition = 0; columnPosition < expectedColumnCount; columnPosition++) {
             for (int rowPosition = 0; rowPosition < expectedRowCount; rowPosition++) {
-                Rectangle expectedBoundsByPosition = expectedLayer
-                        .getBoundsByPosition(columnPosition, rowPosition);
-                Rectangle actualBoundsByPosition = actualLayer
-                        .getBoundsByPosition(columnPosition, rowPosition);
-                assertEquals("Bounds by position (" + columnPosition
-                        + ", " + rowPosition + ")", expectedBoundsByPosition,
-                        actualBoundsByPosition);
+                Rectangle expectedBoundsByPosition = expectedLayer.getBoundsByPosition(columnPosition, rowPosition);
+                Rectangle actualBoundsByPosition = actualLayer.getBoundsByPosition(columnPosition, rowPosition);
+                assertEquals(expectedBoundsByPosition, actualBoundsByPosition);
             }
         }
 
         for (int columnPosition = 0; columnPosition < expectedColumnCount; columnPosition++) {
             for (int rowPosition = 0; rowPosition < expectedRowCount; rowPosition++) {
-                DisplayMode expectedDisplayModeByPosition = expectedLayer
-                        .getDisplayModeByPosition(columnPosition, rowPosition);
-                DisplayMode actualDisplayModeByPosition = actualLayer
-                        .getDisplayModeByPosition(columnPosition, rowPosition);
-                assertEquals("Display mode by position ("
-                        + columnPosition + ", " + rowPosition + ")",
-                        expectedDisplayModeByPosition,
-                        actualDisplayModeByPosition);
+                DisplayMode expectedDisplayModeByPosition = expectedLayer.getDisplayModeByPosition(columnPosition, rowPosition);
+                DisplayMode actualDisplayModeByPosition = actualLayer.getDisplayModeByPosition(columnPosition, rowPosition);
+                assertEquals(expectedDisplayModeByPosition, actualDisplayModeByPosition);
             }
         }
 
         for (int columnPosition = 0; columnPosition < expectedColumnCount; columnPosition++) {
             for (int rowPosition = 0; rowPosition < expectedRowCount; rowPosition++) {
-                LabelStack expectedConfigLabelsByPosition = expectedLayer
-                        .getConfigLabelsByPosition(columnPosition, rowPosition);
-                LabelStack actualConfigLabelsByPosition = actualLayer
-                        .getConfigLabelsByPosition(columnPosition, rowPosition);
-                assertEquals("Config labels by position ("
-                        + columnPosition + ", " + rowPosition + ")",
-                        expectedConfigLabelsByPosition,
-                        actualConfigLabelsByPosition);
+                LabelStack expectedConfigLabelsByPosition = expectedLayer.getConfigLabelsByPosition(columnPosition, rowPosition);
+                LabelStack actualConfigLabelsByPosition = actualLayer.getConfigLabelsByPosition(columnPosition, rowPosition);
+                assertEquals(expectedConfigLabelsByPosition, actualConfigLabelsByPosition);
             }
         }
 
         for (int columnPosition = 0; columnPosition < expectedColumnCount; columnPosition++) {
             for (int rowPosition = 0; rowPosition < expectedRowCount; rowPosition++) {
-                Object expectedDataValueByPosition = expectedLayer
-                        .getDataValueByPosition(columnPosition, rowPosition);
-                Object actualDataValueByPosition = actualLayer
-                        .getDataValueByPosition(columnPosition, rowPosition);
-                assertEquals("Data value by position (" + columnPosition
-                        + ", " + rowPosition + ")",
-                        expectedDataValueByPosition, actualDataValueByPosition);
+                Object expectedDataValueByPosition = expectedLayer.getDataValueByPosition(columnPosition, rowPosition);
+                Object actualDataValueByPosition = actualLayer.getDataValueByPosition(columnPosition, rowPosition);
+                assertEquals(expectedDataValueByPosition, actualDataValueByPosition);
             }
         }
     }
-
 }

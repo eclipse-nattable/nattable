@@ -13,7 +13,7 @@
 package org.eclipse.nebula.widgets.nattable.layer.cell;
 
 import static org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator.PERSISTENCE_KEY;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +21,8 @@ import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ColumnOverrideLabelAccumulatorTest {
 
@@ -37,7 +37,7 @@ public class ColumnOverrideLabelAccumulatorTest {
     private ColumnOverrideLabelAccumulator labelAccumulator;
     private Properties testProperties;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.labelAccumulator = new ColumnOverrideLabelAccumulator(new DataLayerFixture());
         this.testProperties = new Properties();

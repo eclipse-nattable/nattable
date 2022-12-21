@@ -13,8 +13,8 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.fillhandle;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -38,9 +38,9 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class FillHandleSeriesTest {
 
@@ -48,7 +48,7 @@ public class FillHandleSeriesTest {
     SelectionLayer selectionLayer = new SelectionLayer(new DataLayer(this.dataProvider));
     NatTable natTable = new NatTableFixture(this.selectionLayer, false);
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.natTable.addConfiguration(new FillHandleConfiguration(this.selectionLayer));
         this.natTable.addConfiguration(new AbstractRegistryConfiguration() {
@@ -63,7 +63,7 @@ public class FillHandleSeriesTest {
         this.natTable.configure();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         this.selectionLayer.clear();
         this.selectionLayer.setFillHandleRegion(null);

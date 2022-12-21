@@ -12,13 +12,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group.action;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.nebula.widgets.nattable.test.fixture.group.ColumnGroupModelFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ColumnHeaderReoderDragModeTest {
 
@@ -26,7 +26,7 @@ public class ColumnHeaderReoderDragModeTest {
     private ColumnHeaderReorderDragMode dragMode;
     private DataLayerFixture testLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.model = new ColumnGroupModelFixture();
         this.model.addColumnsIndexesToGroup("G4", 18, 19, 20);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.performance;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 import java.util.Map;
 
@@ -22,8 +24,7 @@ import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixtu
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import ca.odell.glazedlists.GlazedLists;
 
@@ -35,7 +36,7 @@ public class ListDataProviderPerformanceTest extends
     @Test
     public void performanceOfListDataProvider() throws Exception {
         List<RowDataFixture> largeList = RowDataListFixture.getList(26000);
-        Assert.assertTrue(largeList.size() > 25000);
+        assertTrue(largeList.size() > 25000);
 
         this.layer = new DefaultGridLayer(largeList,
                 RowDataListFixture.getPropertyNames(),
@@ -50,7 +51,7 @@ public class ListDataProviderPerformanceTest extends
                 .getPropertyToLabelMap();
         List<RowDataFixture> largeList = RowDataListFixture.getList(26000);
 
-        Assert.assertTrue(largeList.size() > 25000);
+        assertTrue(largeList.size() > 25000);
 
         IDataProvider glazedListsDataProvider = new GlazedListsDataProvider<RowDataFixture>(
                 GlazedLists.eventList(largeList),

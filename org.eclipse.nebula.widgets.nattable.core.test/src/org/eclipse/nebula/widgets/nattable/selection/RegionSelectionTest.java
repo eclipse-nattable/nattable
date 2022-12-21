@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 2020 Dirk Fauth.
+ * Copyright (c) 2018, 2022 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,28 +12,28 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRegionCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RegionSelectionTest {
 
     private SelectionLayer selectionLayer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.selectionLayer = new SelectionLayer(new DataLayerFixture(10, 10, 100, 20));
     }
 
-    @After
+    @AfterEach
     public void cleanUp() {
         this.selectionLayer.clear();
     }
@@ -47,10 +47,10 @@ public class RegionSelectionTest {
         assertEquals(9, cellPositions.length);
 
         Rectangle region = new Rectangle(2, 3, 3, 3);
-        assertTrue("not all cells in region selected", this.selectionLayer.allCellsSelectedInRegion(region));
+        assertTrue(this.selectionLayer.allCellsSelectedInRegion(region), "not all cells in region selected");
 
         region = new Rectangle(1, 1, 2, 2);
-        assertFalse("all cells selected", this.selectionLayer.allCellsSelectedInRegion(region));
+        assertFalse(this.selectionLayer.allCellsSelectedInRegion(region), "all cells selected");
 
         assertEquals(2, this.selectionLayer.getSelectionAnchor().getColumnPosition());
         assertEquals(3, this.selectionLayer.getSelectionAnchor().getRowPosition());
@@ -68,10 +68,10 @@ public class RegionSelectionTest {
         assertEquals(4, cellPositions.length);
 
         Rectangle region = new Rectangle(1, 2, 2, 2);
-        assertTrue("not all cells in region selected", this.selectionLayer.allCellsSelectedInRegion(region));
+        assertTrue(this.selectionLayer.allCellsSelectedInRegion(region), "not all cells in region selected");
 
         region = new Rectangle(2, 3, 3, 3);
-        assertFalse("all cells selected", this.selectionLayer.allCellsSelectedInRegion(region));
+        assertFalse(this.selectionLayer.allCellsSelectedInRegion(region), "all cells selected");
 
         assertEquals(1, this.selectionLayer.getSelectionAnchor().getColumnPosition());
         assertEquals(2, this.selectionLayer.getSelectionAnchor().getRowPosition());
@@ -89,7 +89,7 @@ public class RegionSelectionTest {
         assertEquals(18, cellPositions.length);
 
         Rectangle region = new Rectangle(2, 3, 3, 6);
-        assertTrue("not all cells in region selected", this.selectionLayer.allCellsSelectedInRegion(region));
+        assertTrue(this.selectionLayer.allCellsSelectedInRegion(region), "not all cells in region selected");
 
         assertEquals(2, this.selectionLayer.getSelectionAnchor().getColumnPosition());
         assertEquals(3, this.selectionLayer.getSelectionAnchor().getRowPosition());
@@ -107,7 +107,7 @@ public class RegionSelectionTest {
         assertEquals(12, cellPositions.length);
 
         Rectangle region = new Rectangle(2, 0, 3, 3);
-        assertTrue("not all cells in region selected", this.selectionLayer.allCellsSelectedInRegion(region));
+        assertTrue(this.selectionLayer.allCellsSelectedInRegion(region), "not all cells in region selected");
 
         assertEquals(2, this.selectionLayer.getSelectionAnchor().getColumnPosition());
         assertEquals(3, this.selectionLayer.getSelectionAnchor().getRowPosition());
@@ -125,7 +125,7 @@ public class RegionSelectionTest {
         assertEquals(18, cellPositions.length);
 
         Rectangle region = new Rectangle(2, 3, 6, 3);
-        assertTrue("not all cells in region selected", this.selectionLayer.allCellsSelectedInRegion(region));
+        assertTrue(this.selectionLayer.allCellsSelectedInRegion(region), "not all cells in region selected");
 
         assertEquals(2, this.selectionLayer.getSelectionAnchor().getColumnPosition());
         assertEquals(3, this.selectionLayer.getSelectionAnchor().getRowPosition());
@@ -143,7 +143,7 @@ public class RegionSelectionTest {
         assertEquals(9, cellPositions.length);
 
         Rectangle region = new Rectangle(0, 3, 3, 3);
-        assertTrue("not all cells in region selected", this.selectionLayer.allCellsSelectedInRegion(region));
+        assertTrue(this.selectionLayer.allCellsSelectedInRegion(region), "not all cells in region selected");
 
         assertEquals(2, this.selectionLayer.getSelectionAnchor().getColumnPosition());
         assertEquals(3, this.selectionLayer.getSelectionAnchor().getRowPosition());
@@ -161,13 +161,13 @@ public class RegionSelectionTest {
         assertEquals(12, cellPositions.length);
 
         Rectangle region = new Rectangle(2, 3, 3, 3);
-        assertTrue("not all cells in region selected", this.selectionLayer.allCellsSelectedInRegion(region));
+        assertTrue(this.selectionLayer.allCellsSelectedInRegion(region), "not all cells in region selected");
 
         region = new Rectangle(2, 7, 3, 1);
-        assertTrue("not all cells in region selected", this.selectionLayer.allCellsSelectedInRegion(region));
+        assertTrue(this.selectionLayer.allCellsSelectedInRegion(region), "not all cells in region selected");
 
         region = new Rectangle(2, 3, 3, 5);
-        assertFalse("all cells in region selected", this.selectionLayer.allCellsSelectedInRegion(region));
+        assertFalse(this.selectionLayer.allCellsSelectedInRegion(region), "all cells in region selected");
 
         assertEquals(2, this.selectionLayer.getSelectionAnchor().getColumnPosition());
         assertEquals(7, this.selectionLayer.getSelectionAnchor().getRowPosition());

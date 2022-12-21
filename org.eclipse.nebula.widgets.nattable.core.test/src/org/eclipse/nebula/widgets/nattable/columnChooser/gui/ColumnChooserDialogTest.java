@@ -13,6 +13,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.columnChooser.gui;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,11 +29,10 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.group.ColumnGroupModelFi
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TreeItem;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public class ColumnChooserDialogTest {
 
@@ -58,7 +60,7 @@ public class ColumnChooserDialogTest {
     private ColumnChooserDialog testDialog;
     private TestTreeListener testListener;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.shell = new Shell();
         this.testDialog = new ColumnChooserDialog(this.shell, "", "");
@@ -70,21 +72,21 @@ public class ColumnChooserDialogTest {
         this.testDialog.populateSelectedTree(this.visibleEntries, this.columnGroupModel);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         this.testDialog.close();
         this.shell.dispose();
     }
 
-    @Ignore
+    @Disabled
     public void singleColumnMovedDown() throws Exception {
         this.testDialog.setSelectionIncludingNested(Arrays.asList(2));
 
         this.testDialog.moveSelectedDown();
 
         List<List<Integer>> fromPositions = this.testListener.fromPositions;
-        Assert.assertEquals(1, fromPositions.size());
-        Assert.assertEquals(2, fromPositions.get(0));
+        assertEquals(1, fromPositions.size());
+        assertEquals(2, fromPositions.get(0));
     }
 
     @Test
@@ -94,10 +96,10 @@ public class ColumnChooserDialogTest {
         List<TreeItem> selectedLeaves = ArrayUtil.asList(this.testDialog
                 .getSelectedTree().getSelection());
 
-        Assert.assertEquals(3, selectedLeaves.size());
-        Assert.assertEquals("G1", selectedLeaves.get(0).getText());
-        Assert.assertEquals(this.entry2.getLabel(), selectedLeaves.get(1).getText());
-        Assert.assertEquals("G2", selectedLeaves.get(2).getText());
+        assertEquals(3, selectedLeaves.size());
+        assertEquals("G1", selectedLeaves.get(0).getText());
+        assertEquals(this.entry2.getLabel(), selectedLeaves.get(1).getText());
+        assertEquals("G2", selectedLeaves.get(2).getText());
     }
 
     @Test
@@ -108,25 +110,25 @@ public class ColumnChooserDialogTest {
         List<Integer> indexesOfSelectedLeaves = this.testDialog
                 .getIndexesOfSelectedLeaves(this.testDialog.getSelectedTree());
 
-        Assert.assertEquals(3, indexesOfSelectedLeaves.size());
-        Assert.assertEquals(0, indexesOfSelectedLeaves.get(0).intValue());
-        Assert.assertEquals(1, indexesOfSelectedLeaves.get(1).intValue());
-        Assert.assertEquals(2, indexesOfSelectedLeaves.get(2).intValue());
+        assertEquals(3, indexesOfSelectedLeaves.size());
+        assertEquals(0, indexesOfSelectedLeaves.get(0).intValue());
+        assertEquals(1, indexesOfSelectedLeaves.get(1).intValue());
+        assertEquals(2, indexesOfSelectedLeaves.get(2).intValue());
     }
 
     @Test
     public void populateTree() throws Exception {
         this.columnGroupModel.getColumnGroupByIndex(0).toggleCollapsed();
-        Assert.assertEquals(9, this.testDialog.getSelectedTree().getItemCount());
+        assertEquals(9, this.testDialog.getSelectedTree().getItemCount());
 
         TreeItem item = this.testDialog.getSelectedTree().getItem(0);
-        Assert.assertTrue(item.getData() instanceof ColumnGroupEntry);
+        assertTrue(item.getData() instanceof ColumnGroupEntry);
 
         item = this.testDialog.getSelectedTree().getItem(1);
-        Assert.assertTrue(item.getData() instanceof ColumnEntry);
+        assertTrue(item.getData() instanceof ColumnEntry);
 
         item = this.testDialog.getSelectedTree().getItem(2);
-        Assert.assertTrue(item.getData() instanceof ColumnGroupEntry);
+        assertTrue(item.getData() instanceof ColumnGroupEntry);
     }
 
     @Test
@@ -139,8 +141,8 @@ public class ColumnChooserDialogTest {
         helper.getDialog().moveSelectedToTop();
 
         // then
-        Assert.assertEquals((Integer) 2, helper.getListener().fromPositions.get(0).get(0));
-        Assert.assertEquals((Integer) 0, helper.getListener().toPositions.get(0));
+        assertEquals((Integer) 2, helper.getListener().fromPositions.get(0).get(0));
+        assertEquals((Integer) 0, helper.getListener().toPositions.get(0));
     }
 
     @Test
@@ -153,8 +155,8 @@ public class ColumnChooserDialogTest {
         helper.getDialog().moveSelectedToTop();
 
         // then
-        Assert.assertEquals((Integer) 1, helper.getListener().fromPositions.get(0).get(0));
-        Assert.assertEquals((Integer) 0, helper.getListener().toPositions.get(0));
+        assertEquals((Integer) 1, helper.getListener().fromPositions.get(0).get(0));
+        assertEquals((Integer) 0, helper.getListener().toPositions.get(0));
     }
 
     @Test
@@ -167,8 +169,8 @@ public class ColumnChooserDialogTest {
         helper.getDialog().moveSelectedToTop();
 
         // then
-        Assert.assertEquals((Integer) 2, helper.getListener().fromPositions.get(0).get(0));
-        Assert.assertEquals((Integer) 1, helper.getListener().toPositions.get(0));
+        assertEquals((Integer) 2, helper.getListener().fromPositions.get(0).get(0));
+        assertEquals((Integer) 1, helper.getListener().toPositions.get(0));
     }
 
     @Test
@@ -181,9 +183,9 @@ public class ColumnChooserDialogTest {
         helper.getDialog().moveSelectedToTop();
 
         // then
-        Assert.assertEquals((Integer) 2, helper.getListener().fromPositions.get(0).get(0));
-        Assert.assertEquals((Integer) 3, helper.getListener().fromPositions.get(0).get(1));
-        Assert.assertEquals((Integer) 0, helper.getListener().toPositions.get(0));
+        assertEquals((Integer) 2, helper.getListener().fromPositions.get(0).get(0));
+        assertEquals((Integer) 3, helper.getListener().fromPositions.get(0).get(1));
+        assertEquals((Integer) 0, helper.getListener().toPositions.get(0));
     }
 
     @Test
@@ -196,9 +198,9 @@ public class ColumnChooserDialogTest {
         helper.getDialog().moveSelectedToTop();
 
         // then
-        Assert.assertEquals((Integer) 2, helper.getListener().fromPositions.get(0).get(0));
-        Assert.assertEquals((Integer) 3, helper.getListener().fromPositions.get(0).get(1));
-        Assert.assertEquals((Integer) 0, helper.getListener().toPositions.get(0));
+        assertEquals((Integer) 2, helper.getListener().fromPositions.get(0).get(0));
+        assertEquals((Integer) 3, helper.getListener().fromPositions.get(0).get(1));
+        assertEquals((Integer) 0, helper.getListener().toPositions.get(0));
     }
 
     @Test
@@ -211,9 +213,9 @@ public class ColumnChooserDialogTest {
         helper.getDialog().moveSelectedToTop();
 
         // then
-        Assert.assertEquals((Integer) 4, helper.getListener().fromPositions.get(0).get(0));
-        Assert.assertEquals((Integer) 5, helper.getListener().fromPositions.get(0).get(1));
-        Assert.assertEquals((Integer) 2, helper.getListener().toPositions.get(0));
+        assertEquals((Integer) 4, helper.getListener().fromPositions.get(0).get(0));
+        assertEquals((Integer) 5, helper.getListener().fromPositions.get(0).get(1));
+        assertEquals((Integer) 2, helper.getListener().toPositions.get(0));
     }
 
     @Test
@@ -226,8 +228,8 @@ public class ColumnChooserDialogTest {
         helper.getDialog().moveSelectedToBottom();
 
         // then
-        Assert.assertEquals((Integer) 0, helper.getListener().fromPositions.get(0).get(0));
-        Assert.assertEquals((Integer) 2, helper.getListener().toPositions.get(0));
+        assertEquals((Integer) 0, helper.getListener().fromPositions.get(0).get(0));
+        assertEquals((Integer) 2, helper.getListener().toPositions.get(0));
     }
 
     @Test
@@ -240,8 +242,8 @@ public class ColumnChooserDialogTest {
         helper.getDialog().moveSelectedToBottom();
 
         // then
-        Assert.assertEquals((Integer) 0, helper.getListener().fromPositions.get(0).get(0));
-        Assert.assertEquals((Integer) 1, helper.getListener().toPositions.get(0));
+        assertEquals((Integer) 0, helper.getListener().fromPositions.get(0).get(0));
+        assertEquals((Integer) 1, helper.getListener().toPositions.get(0));
     }
 
     @Test
@@ -254,8 +256,8 @@ public class ColumnChooserDialogTest {
         helper.getDialog().moveSelectedToBottom();
 
         // then
-        Assert.assertEquals((Integer) 1, helper.getListener().fromPositions.get(0).get(0));
-        Assert.assertEquals((Integer) 2, helper.getListener().toPositions.get(0));
+        assertEquals((Integer) 1, helper.getListener().fromPositions.get(0).get(0));
+        assertEquals((Integer) 2, helper.getListener().toPositions.get(0));
     }
 
     @Test
@@ -268,9 +270,9 @@ public class ColumnChooserDialogTest {
         helper.getDialog().moveSelectedToBottom();
 
         // then
-        Assert.assertEquals((Integer) 0, helper.getListener().fromPositions.get(0).get(0));
-        Assert.assertEquals((Integer) 1, helper.getListener().fromPositions.get(0).get(1));
-        Assert.assertEquals((Integer) 5, helper.getListener().toPositions.get(0));
+        assertEquals((Integer) 0, helper.getListener().fromPositions.get(0).get(0));
+        assertEquals((Integer) 1, helper.getListener().fromPositions.get(0).get(1));
+        assertEquals((Integer) 5, helper.getListener().toPositions.get(0));
     }
 
     @Test
@@ -283,9 +285,9 @@ public class ColumnChooserDialogTest {
         helper.getDialog().moveSelectedToBottom();
 
         // then
-        Assert.assertEquals((Integer) 0, helper.getListener().fromPositions.get(0).get(0));
-        Assert.assertEquals((Integer) 1, helper.getListener().fromPositions.get(0).get(1));
-        Assert.assertEquals((Integer) 3, helper.getListener().toPositions.get(0));
+        assertEquals((Integer) 0, helper.getListener().fromPositions.get(0).get(0));
+        assertEquals((Integer) 1, helper.getListener().fromPositions.get(0).get(1));
+        assertEquals((Integer) 3, helper.getListener().toPositions.get(0));
     }
 
     @Test
@@ -298,9 +300,9 @@ public class ColumnChooserDialogTest {
         helper.getDialog().moveSelectedToBottom();
 
         // then
-        Assert.assertEquals((Integer) 2, helper.getListener().fromPositions.get(0).get(0));
-        Assert.assertEquals((Integer) 3, helper.getListener().fromPositions.get(0).get(1));
-        Assert.assertEquals((Integer) 5, helper.getListener().toPositions.get(0));
+        assertEquals((Integer) 2, helper.getListener().fromPositions.get(0).get(0));
+        assertEquals((Integer) 3, helper.getListener().fromPositions.get(0).get(1));
+        assertEquals((Integer) 5, helper.getListener().toPositions.get(0));
     }
 
     /**

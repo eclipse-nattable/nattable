@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2020 Dirk Fauth.
+ * Copyright (c) 2017, 2022 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,13 +12,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.tickupdate.command;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.tickupdate.ITickUpdateHandler;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DefaultTickUpdateHandlerTest {
 

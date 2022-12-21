@@ -12,9 +12,9 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,14 +24,14 @@ import org.eclipse.nebula.widgets.nattable.hideshow.indicator.HideIndicatorConst
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.RowHideShowLayerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RowHideShowLayerTest {
 
     private RowHideShowLayer rowHideShowLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.rowHideShowLayer = new RowHideShowLayerFixture();
     }

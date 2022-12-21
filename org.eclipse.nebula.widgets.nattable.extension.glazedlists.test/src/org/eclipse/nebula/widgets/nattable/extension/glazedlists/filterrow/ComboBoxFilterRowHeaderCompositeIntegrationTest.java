@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Dirk Fauth.
+ * Copyright (c) 2019, 2022 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,8 +12,8 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,12 +71,12 @@ import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.sort.config.DefaultSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -100,7 +100,7 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
 
     private static GlazedListsSortModel<ExtendedPersonWithAddress> sortModel;
 
-    @BeforeClass
+    @BeforeAll
     public static void setupClass() {
         // create a new ConfigRegistry which will be needed for GlazedLists
         // handling
@@ -218,18 +218,18 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         natTable.configure();
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         // test that nothing is filtered
         assertEquals(9000, bodyLayer.getFilterList().size());
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         natTable.doCommand(new ClearAllFiltersCommand());
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() {
         natTable.doCommand(new DisposeResourcesCommand());
     }
@@ -284,7 +284,7 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
     }
 
     // TODO should not remove filter on sort
-    @Ignore
+    @Disabled
     @Test
     public void shouldKeepFilterOnSort() throws InterruptedException {
         shouldFilterForMaleSimpsons();
@@ -326,7 +326,7 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
 
         boolean completed = countDown.await(2000, TimeUnit.MILLISECONDS);
 
-        assertTrue("Timeout - no event received", completed);
+        assertTrue(completed, "Timeout - no event received");
 
         assertEquals(1, listener.getEventsCount());
 
@@ -354,7 +354,7 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
 
         completed = countDown.await(2000, TimeUnit.MILLISECONDS);
 
-        assertTrue("Timeout - no event received", completed);
+        assertTrue(completed, "Timeout - no event received");
 
         assertEquals(1, listener.getEventsCount());
 
@@ -403,7 +403,7 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         // long end = System.currentTimeMillis();
         // System.out.println("duration " + (end - start));
 
-        assertTrue("Timeout - no event received", completed);
+        assertTrue(completed, "Timeout - no event received");
 
         assertEquals(2, listener.getEventsCount());
 
@@ -443,7 +443,7 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         // end = System.currentTimeMillis();
         // System.out.println("duration " + (end - start));
 
-        assertTrue("Timeout - no event received", completed);
+        assertTrue(completed, "Timeout - no event received");
 
         filterRowHeaderLayer.comboBoxDataProvider.removeCacheUpdateListener(listener);
     }

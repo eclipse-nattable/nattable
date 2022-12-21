@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,8 +12,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.search.command;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.regex.PatternSyntaxException;
 
@@ -32,14 +33,12 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectAllCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.GridLayerFixture;
-import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class SearchGridCommandHandlerTest {
 
@@ -59,17 +58,10 @@ public class SearchGridCommandHandlerTest {
     boolean isColumnFirst;
     PositionCoordinate expected;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.gridLayer = new GridLayerFixture();
-        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
-
-            @Override
-            public Rectangle getClientArea() {
-                return new Rectangle(0, 0, 1050, 250);
-            }
-
-        });
+        this.gridLayer.setClientAreaProvider(() -> new Rectangle(0, 0, 1050, 250));
         this.gridLayer.doCommand(
                 new ClientAreaResizeCommand(
                         new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
@@ -143,23 +135,20 @@ public class SearchGridCommandHandlerTest {
 
     private void doTestOnSelection() throws PatternSyntaxException {
         // Register call back
-        final ILayerListener listener = new ILayerListener() {
-            @Override
-            public void handleLayerEvent(ILayerEvent event) {
-                if (event instanceof SearchEvent) {
-                    // Check event, coordinate should be in composite layer
-                    // coordinates
-                    SearchEvent searchEvent = (SearchEvent) event;
-                    if (SearchGridCommandHandlerTest.this.expected != null) {
-                        assertEquals(
-                                SearchGridCommandHandlerTest.this.expected.columnPosition,
-                                searchEvent.getCellCoordinate().getColumnPosition());
-                        assertEquals(
-                                SearchGridCommandHandlerTest.this.expected.rowPosition,
-                                searchEvent.getCellCoordinate().getRowPosition());
-                    } else {
-                        assertNull(searchEvent.getCellCoordinate());
-                    }
+        final ILayerListener listener = event -> {
+            if (event instanceof SearchEvent) {
+                // Check event, coordinate should be in composite layer
+                // coordinates
+                SearchEvent searchEvent = (SearchEvent) event;
+                if (SearchGridCommandHandlerTest.this.expected != null) {
+                    assertEquals(
+                            SearchGridCommandHandlerTest.this.expected.columnPosition,
+                            searchEvent.getCellCoordinate().getColumnPosition());
+                    assertEquals(
+                            SearchGridCommandHandlerTest.this.expected.rowPosition,
+                            searchEvent.getCellCoordinate().getRowPosition());
+                } else {
+                    assertNull(searchEvent.getCellCoordinate());
                 }
             }
         };
@@ -422,7 +411,7 @@ public class SearchGridCommandHandlerTest {
             this.searchText = "[2";
             this.expected = null;
             doTest();
-            Assert.fail("Invalid regex didn't throw as expected");
+            fail("Invalid regex didn't throw as expected");
         } catch (PatternSyntaxException e) {
         }
     }

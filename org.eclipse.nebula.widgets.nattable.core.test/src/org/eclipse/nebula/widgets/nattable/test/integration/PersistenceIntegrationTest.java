@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.integration;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Properties;
 
@@ -28,8 +28,8 @@ import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class PersistenceIntegrationTest {
 
@@ -37,7 +37,7 @@ public class PersistenceIntegrationTest {
     private Properties properties;
     private NatTableFixture natTableFixture;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.natTableFixture = new NatTableFixture(new Shell(),
                 new DummyGridLayerStack() {
@@ -57,7 +57,7 @@ public class PersistenceIntegrationTest {
     }
 
     @Test
-    public void stateIsLoadedCorrectlyFromProperties() throws Exception {
+    public void stateIsLoadedCorrectlyFromProperties() {
         saveStateToPropeties();
         this.natTableFixture.loadState(TEST_PERSISTENCE_PREFIX, this.properties);
 
@@ -69,7 +69,7 @@ public class PersistenceIntegrationTest {
         assertEquals(0, this.natTableFixture.getColumnIndexByPosition(3));
     }
 
-    public void saveStateToPropeties() throws Exception {
+    public void saveStateToPropeties() {
         // Resize column 2 to 200px
         assertEquals(100, this.natTableFixture.getColumnWidthByPosition(2));
         this.natTableFixture.doCommand(new ColumnResizeCommand(this.natTableFixture, 2, 200));

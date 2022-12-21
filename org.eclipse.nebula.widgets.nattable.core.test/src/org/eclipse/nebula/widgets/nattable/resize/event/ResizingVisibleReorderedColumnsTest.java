@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.event;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collection;
 
@@ -20,9 +20,9 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.layer.BaseColumnReorderL
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /*
  * This test was for selective repainting during resize i.e paint the bare minimum needed.
@@ -30,7 +30,7 @@ import org.junit.Test;
  * This would be a useful thing to do but is on low priority now. Hence these tests will
  * be ignored till we pick this up again.
  */
-@Ignore
+@Disabled
 public class ResizingVisibleReorderedColumnsTest {
 
     private LayerListenerFixture layerListener;
@@ -39,7 +39,7 @@ public class ResizingVisibleReorderedColumnsTest {
 
     private BaseColumnReorderLayerFixture reorderLayer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.dataLayer = new DataLayerFixture(100, 40);
         this.reorderLayer = new BaseColumnReorderLayerFixture(this.dataLayer);

@@ -12,9 +12,9 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,16 +25,15 @@ import org.eclipse.nebula.widgets.nattable.reorder.command.RowReorderCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.command.LayerCommandFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.BaseDataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RowReorderLayerTest {
 
     private IUniqueIndexLayer underlyingLayer;
     private RowReorderLayer rowReorderLayer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.underlyingLayer = new BaseDataLayerFixture(4, 4);
         this.rowReorderLayer = new RowReorderLayer(this.underlyingLayer);
@@ -69,9 +68,7 @@ public class RowReorderLayerTest {
 
     @Test
     /**
-     * 	Index		1	2	3	0
-     *          --------------------
-     *  Position 	0 	1	2	3
+     * Index 1 2 3 0 -------------------- Position 0 1 2 3
      */
     public void reorderViewableRowsTopToBottomByPosition() throws Exception {
         // Moving to the end
@@ -86,9 +83,7 @@ public class RowReorderLayerTest {
 
     @Test
     /**
-     * 	Index		2 	0	1	3
-     *          --------------------
-     *  Position 	0 	1	2	3
+     * Index 2 0 1 3 -------------------- Position 0 1 2 3
      */
     public void reorderMultipleRowsTopToBottom() throws Exception {
         this.rowReorderLayer.reorderMultipleRowPositions(new int[] { 0, 1 }, 3);
@@ -101,9 +96,7 @@ public class RowReorderLayerTest {
 
     @Test
     /**
-     * 	Index		2 	3	0	1
-     *          --------------------
-     *  Position 	0 	1	2	3
+     * Index 2 3 0 1 -------------------- Position 0 1 2 3
      */
     public void reorderMultipleRowsTopToBottomToTheEnd() throws Exception {
         this.rowReorderLayer.reorderMultipleRowPositions(new int[] { 0, 1 }, 4);
@@ -116,9 +109,7 @@ public class RowReorderLayerTest {
 
     @Test
     /**
-     * 	Index		0	1	3	2
-     *          --------------------
-     *  Position 	0 	1	2	3
+     * Index 0 1 3 2 -------------------- Position 0 1 2 3
      */
     public void reorderViewableRowsBottomToTopByPosition() throws Exception {
         this.rowReorderLayer.reorderRowPosition(3, 2);
@@ -132,9 +123,7 @@ public class RowReorderLayerTest {
 
     @Test
     /**
-     * 	Index		2	3	0	1
-     *          --------------------
-     *  Position 	0 	1	2	3
+     * Index 2 3 0 1 -------------------- Position 0 1 2 3
      */
     public void reorderMultipleRowsBottomToTop() throws Exception {
         List<Integer> fromRowPositions = Arrays.asList(new Integer[] { 2, 3 });
@@ -149,9 +138,7 @@ public class RowReorderLayerTest {
 
     @Test
     /**
-     * 	Index		2	3	0	1 ... 20
-     *          --------------------
-     *  Position 	0 	1	2	3 ... 20
+     * Index 2 3 0 1 ... 20 -------------------- Position 0 1 2 3 ... 20
      */
     public void reorderMultipleRowsLargeArrayToEdges() throws Exception {
 
@@ -214,13 +201,13 @@ public class RowReorderLayerTest {
         this.rowReorderLayer.reorderRowPosition(0, 7);
 
         // 1 2 3 4 0
-        Assert.assertEquals(70, this.rowReorderLayer.getRowHeightByPosition(0));
-        Assert.assertEquals(25, this.rowReorderLayer.getRowHeightByPosition(1));
-        Assert.assertEquals(40, this.rowReorderLayer.getRowHeightByPosition(2));
-        Assert.assertEquals(50, this.rowReorderLayer.getRowHeightByPosition(3));
-        Assert.assertEquals(40, this.rowReorderLayer.getRowHeightByPosition(4));
-        Assert.assertEquals(100, this.rowReorderLayer.getRowHeightByPosition(5));
-        Assert.assertEquals(40, this.rowReorderLayer.getRowHeightByPosition(6));
+        assertEquals(70, this.rowReorderLayer.getRowHeightByPosition(0));
+        assertEquals(25, this.rowReorderLayer.getRowHeightByPosition(1));
+        assertEquals(40, this.rowReorderLayer.getRowHeightByPosition(2));
+        assertEquals(50, this.rowReorderLayer.getRowHeightByPosition(3));
+        assertEquals(40, this.rowReorderLayer.getRowHeightByPosition(4));
+        assertEquals(100, this.rowReorderLayer.getRowHeightByPosition(5));
+        assertEquals(40, this.rowReorderLayer.getRowHeightByPosition(6));
     }
 
     @Test

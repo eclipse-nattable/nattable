@@ -13,9 +13,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,16 +30,15 @@ import org.eclipse.nebula.widgets.nattable.reorder.command.ResetColumnReorderCom
 import org.eclipse.nebula.widgets.nattable.test.fixture.command.LayerCommandFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.BaseDataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ColumnReorderLayerTest {
 
     private IUniqueIndexLayer underlyingLayer;
     private ColumnReorderLayer columnReorderLayer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.underlyingLayer = new BaseDataLayerFixture(4, 4);
         this.columnReorderLayer = new ColumnReorderLayer(this.underlyingLayer);
@@ -74,9 +73,7 @@ public class ColumnReorderLayerTest {
 
     @Test
     /**
-     * 	Index		1	2	3	0
-     *          --------------------
-     *  Position 	0 	1	2	3
+     * Index 1 2 3 0 -------------------- Position 0 1 2 3
      */
     public void reorderViewableColumnsLeftToRightByPosition() throws Exception {
         // Moving to the end
@@ -91,9 +88,7 @@ public class ColumnReorderLayerTest {
 
     @Test
     /**
-     * 	Index		2 	0	1	3
-     *          --------------------
-     *  Position 	0 	1	2	3
+     * Index 2 0 1 3 -------------------- Position 0 1 2 3
      */
     public void reorderMultipleColumnsLeftToRight() throws Exception {
         this.columnReorderLayer.reorderMultipleColumnPositions(new int[] { 0, 1 }, 3);
@@ -106,9 +101,7 @@ public class ColumnReorderLayerTest {
 
     @Test
     /**
-     * 	Index		2 	3	0	1
-     *          --------------------
-     *  Position 	0 	1	2	3
+     * Index 2 3 0 1 -------------------- Position 0 1 2 3
      */
     public void reorderMultipleColumnsLeftToRightToTheEnd() throws Exception {
         this.columnReorderLayer.reorderMultipleColumnPositions(new int[] { 0, 1 }, 4);
@@ -121,9 +114,7 @@ public class ColumnReorderLayerTest {
 
     @Test
     /**
-     * 	Index		0	1	3	2
-     *          --------------------
-     *  Position 	0 	1	2	3
+     * Index 0 1 3 2 -------------------- Position 0 1 2 3
      */
     public void reorderViewableColumnsRightToLeftByPosition() throws Exception {
         this.columnReorderLayer.reorderColumnPosition(3, 2);
@@ -137,9 +128,7 @@ public class ColumnReorderLayerTest {
 
     @Test
     /**
-     * 	Index		2	3	0	1
-     *          --------------------
-     *  Position 	0 	1	2	3
+     * Index 2 3 0 1 -------------------- Position 0 1 2 3
      */
     public void reorderMultipleColumnsRightToLeft() throws Exception {
         List<Integer> fromColumnPositions = Arrays.asList(new Integer[] { 2, 3 });
@@ -154,9 +143,7 @@ public class ColumnReorderLayerTest {
 
     @Test
     /**
-     * 	Index		2	3	0	1 ... 20
-     *          --------------------
-     *  Position 	0 	1	2	3 ... 20
+     * Index 2 3 0 1 ... 20 -------------------- Position 0 1 2 3 ... 20
      */
     public void reorderMultipleColumnsLargeArrayToEdges() throws Exception {
 
@@ -220,11 +207,11 @@ public class ColumnReorderLayerTest {
         this.columnReorderLayer.reorderColumnPosition(0, 5);
 
         // 1 2 3 4 0
-        Assert.assertEquals(100, this.columnReorderLayer.getColumnWidthByPosition(0));
-        Assert.assertEquals(35, this.columnReorderLayer.getColumnWidthByPosition(1));
-        Assert.assertEquals(100, this.columnReorderLayer.getColumnWidthByPosition(2));
-        Assert.assertEquals(80, this.columnReorderLayer.getColumnWidthByPosition(3));
-        Assert.assertEquals(150, this.columnReorderLayer.getColumnWidthByPosition(4));
+        assertEquals(100, this.columnReorderLayer.getColumnWidthByPosition(0));
+        assertEquals(35, this.columnReorderLayer.getColumnWidthByPosition(1));
+        assertEquals(100, this.columnReorderLayer.getColumnWidthByPosition(2));
+        assertEquals(80, this.columnReorderLayer.getColumnWidthByPosition(3));
+        assertEquals(150, this.columnReorderLayer.getColumnWidthByPosition(4));
     }
 
     @Test

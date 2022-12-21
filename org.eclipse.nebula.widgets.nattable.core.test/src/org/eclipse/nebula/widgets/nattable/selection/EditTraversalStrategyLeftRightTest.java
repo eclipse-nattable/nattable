@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2020 Dirk Fauth.
+ * Copyright (c) 2014, 2022 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
@@ -29,9 +29,9 @@ import org.eclipse.nebula.widgets.nattable.test.integration.SWTUtils;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Text;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class EditTraversalStrategyLeftRightTest {
 
@@ -42,7 +42,7 @@ public class EditTraversalStrategyLeftRightTest {
     private ViewportLayer viewportLayer;
     private NatTableFixture natTable;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.dataLayer = new DataLayerFixture(10, 10, 100, 20);
         this.selectionLayer = new SelectionLayer(this.dataLayer);
@@ -70,7 +70,7 @@ public class EditTraversalStrategyLeftRightTest {
         this.natTable.registerLabelOnColumn(this.dataLayer, 9, NOT_EDITABLE);
     }
 
-    @After
+    @AfterEach
     public void cleanUp() {
         this.selectionLayer.clear();
         // since we are not interested in commit operations it is sufficient to

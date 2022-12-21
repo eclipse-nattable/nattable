@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2020 CEA LIST.
+ * Copyright (c) 2015, 2022 CEA LIST.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,9 +13,10 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.formula;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -23,29 +24,27 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
-import org.eclipse.nebula.widgets.nattable.coordinate.IndexCoordinate;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.formula.function.FunctionException;
 import org.eclipse.nebula.widgets.nattable.formula.function.FunctionValue;
 import org.eclipse.nebula.widgets.nattable.formula.function.ProductFunction;
 import org.eclipse.nebula.widgets.nattable.formula.function.SumFunction;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class FormulaParserTest {
 
     private static Locale defaultLocale;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         defaultLocale = Locale.getDefault();
         Locale.setDefault(Locale.ENGLISH);
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() {
         Locale.setDefault(defaultLocale);
     }
@@ -53,9 +52,9 @@ public class FormulaParserTest {
     IDataProvider dataProvider = new TwoDimensionalArrayDataProvider(new Object[10][10]);
     FormulaParser parser = new FormulaParser(this.dataProvider);
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionOnMissingOperator() {
-        this.parser.parseFunction("5 3");
+        assertThrows(IllegalArgumentException.class, () -> this.parser.parseFunction("5 3"));
     }
 
     @Test
@@ -176,58 +175,58 @@ public class FormulaParserTest {
         assertEquals(BigDecimal.valueOf(9.5), result.getValue());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionOnUnclosedParenthesis() {
         Map<Integer, FunctionValue> replacements = new HashMap<>();
-        this.parser.processParenthesis("(5+3", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        assertThrows(IllegalArgumentException.class, () -> this.parser.processParenthesis("(5+3", replacements, new HashMap<>(), null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionOnUnopenedParenthesis() {
         Map<Integer, FunctionValue> replacements = new HashMap<>();
-        this.parser.processParenthesis("5+3)", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        assertThrows(IllegalArgumentException.class, () -> this.parser.processParenthesis("5+3)", replacements, new HashMap<>(), null));
     }
 
     @Test
     public void shouldReplaceOneParenthesis() {
         Map<Integer, FunctionValue> replacements = new HashMap<>();
-        String processed = this.parser.processParenthesis("(5+3)", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        String processed = this.parser.processParenthesis("(5+3)", replacements, new HashMap<>(), null);
         assertEquals("{0}", processed);
         assertEquals(1, replacements.size());
         assertTrue(replacements.get(0) instanceof SumFunction);
         assertEquals(new BigDecimal(5 + 3), replacements.get(0).getValue());
 
         replacements = new HashMap<>();
-        processed = this.parser.processParenthesis("10 + (5+3)", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        processed = this.parser.processParenthesis("10 + (5+3)", replacements, new HashMap<>(), null);
         assertEquals("10 + {0}", processed);
         assertEquals(1, replacements.size());
         assertTrue(replacements.get(0) instanceof SumFunction);
         assertEquals(new BigDecimal(5 + 3), replacements.get(0).getValue());
 
         replacements = new HashMap<>();
-        processed = this.parser.processParenthesis("(5+3) + 42", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        processed = this.parser.processParenthesis("(5+3) + 42", replacements, new HashMap<>(), null);
         assertEquals("{0} + 42", processed);
         assertEquals(1, replacements.size());
         assertTrue(replacements.get(0) instanceof SumFunction);
         assertEquals(new BigDecimal(5 + 3), replacements.get(0).getValue());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionOnUnclosedTwoParenthesis() {
         Map<Integer, FunctionValue> replacements = new HashMap<>();
-        this.parser.processParenthesis("(5+3) + (7 - 2", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        assertThrows(IllegalArgumentException.class, () -> this.parser.processParenthesis("(5+3) + (7 - 2", replacements, new HashMap<>(), null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionOnUnopenedTwoParenthesis() {
         Map<Integer, FunctionValue> replacements = new HashMap<>();
-        this.parser.processParenthesis("(5+3) + 7 - 3)", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        assertThrows(IllegalArgumentException.class, () -> this.parser.processParenthesis("(5+3) + 7 - 3)", replacements, new HashMap<>(), null));
     }
 
     @Test
     public void shouldReplaceTwoParenthesis() {
         Map<Integer, FunctionValue> replacements = new HashMap<>();
-        String processed = this.parser.processParenthesis("(5+3) - (5+5)", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        String processed = this.parser.processParenthesis("(5+3) - (5+5)", replacements, new HashMap<>(), null);
         assertEquals("{0} - {1}", processed);
         assertEquals(2, replacements.size());
         assertTrue(replacements.get(0) instanceof SumFunction);
@@ -236,7 +235,7 @@ public class FormulaParserTest {
         assertEquals(new BigDecimal(5 + 5), replacements.get(1).getValue());
 
         replacements = new HashMap<>();
-        processed = this.parser.processParenthesis("(5+3) + 10 + (5+5)", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        processed = this.parser.processParenthesis("(5+3) + 10 + (5+5)", replacements, new HashMap<>(), null);
         assertEquals("{0} + 10 + {1}", processed);
         assertEquals(2, replacements.size());
         assertTrue(replacements.get(0) instanceof SumFunction);
@@ -245,7 +244,7 @@ public class FormulaParserTest {
         assertEquals(new BigDecimal(5 + 5), replacements.get(1).getValue());
 
         replacements = new HashMap<>();
-        processed = this.parser.processParenthesis("10 + (5+3) + (5+5) + 42", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        processed = this.parser.processParenthesis("10 + (5+3) + (5+5) + 42", replacements, new HashMap<>(), null);
         assertEquals("10 + {0} + {1} + 42", processed);
         assertEquals(2, replacements.size());
         assertTrue(replacements.get(0) instanceof SumFunction);
@@ -254,7 +253,7 @@ public class FormulaParserTest {
         assertEquals(new BigDecimal(5 + 5), replacements.get(1).getValue());
 
         replacements = new HashMap<>();
-        processed = this.parser.processParenthesis("10 + (5+3) + 42 + (5+5)", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        processed = this.parser.processParenthesis("10 + (5+3) + 42 + (5+5)", replacements, new HashMap<>(), null);
         assertEquals("10 + {0} + 42 + {1}", processed);
         assertEquals(2, replacements.size());
         assertTrue(replacements.get(0) instanceof SumFunction);
@@ -263,36 +262,36 @@ public class FormulaParserTest {
         assertEquals(new BigDecimal(5 + 5), replacements.get(1).getValue());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionOnUnclosedNestedParanthesis() {
         Map<Integer, FunctionValue> replacements = new HashMap<>();
-        this.parser.processParenthesis("((5+3 - 3)", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        assertThrows(IllegalArgumentException.class, () -> this.parser.processParenthesis("((5+3 - 3)", replacements, new HashMap<>(), null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionOnUnopenedNestedParenthesis() {
         Map<Integer, FunctionValue> replacements = new HashMap<>();
-        this.parser.processParenthesis("(5+3) + 7 - 3)", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        assertThrows(IllegalArgumentException.class, () -> this.parser.processParenthesis("(5+3) + 7 - 3)", replacements, new HashMap<>(), null));
     }
 
     @Test
     public void shouldReplaceNestedParenthesis() {
         Map<Integer, FunctionValue> replacements = new HashMap<>();
-        String processed = this.parser.processParenthesis("((5+3)*2)", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        String processed = this.parser.processParenthesis("((5+3)*2)", replacements, new HashMap<>(), null);
         assertEquals("{0}", processed);
         assertEquals(1, replacements.size());
         assertTrue(replacements.get(0) instanceof ProductFunction);
         assertEquals(new BigDecimal(((5 + 3) * 2)), replacements.get(0).getValue());
 
         replacements = new HashMap<>();
-        processed = this.parser.processParenthesis("(2*(5+3))", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        processed = this.parser.processParenthesis("(2*(5+3))", replacements, new HashMap<>(), null);
         assertEquals("{0}", processed);
         assertEquals(1, replacements.size());
         assertTrue(replacements.get(0) instanceof ProductFunction);
         assertEquals(new BigDecimal((2 * (5 + 3))), replacements.get(0).getValue());
 
         replacements = new HashMap<>();
-        processed = this.parser.processParenthesis("5+(2*(5+3))", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        processed = this.parser.processParenthesis("5+(2*(5+3))", replacements, new HashMap<>(), null);
         assertEquals("5+{0}", processed);
         assertEquals(1, replacements.size());
         assertTrue(replacements.get(0) instanceof ProductFunction);
@@ -425,21 +424,21 @@ public class FormulaParserTest {
     @Test
     public void shouldParseFunction() {
         Map<Integer, FunctionValue> replacements = new HashMap<>();
-        String processed = this.parser.processFunctions("SUM(5; 3; 2)", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        String processed = this.parser.processFunctions("SUM(5; 3; 2)", replacements, new HashMap<>(), null);
         assertEquals("{0}", processed);
         assertEquals(1, replacements.size());
         assertTrue(replacements.get(0) instanceof SumFunction);
         assertEquals(new BigDecimal((5 + 3 + 2)), replacements.get(0).getValue());
 
         replacements = new HashMap<>();
-        processed = this.parser.processFunctions("42 + SUM(5; 3; 2)", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        processed = this.parser.processFunctions("42 + SUM(5; 3; 2)", replacements, new HashMap<>(), null);
         assertEquals("42 + {0}", processed);
         assertEquals(1, replacements.size());
         assertTrue(replacements.get(0) instanceof SumFunction);
         assertEquals(new BigDecimal((5 + 3 + 2)), replacements.get(0).getValue());
 
         replacements = new HashMap<>();
-        processed = this.parser.processFunctions("SUM(5; 3; 2) - 42", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        processed = this.parser.processFunctions("SUM(5; 3; 2) - 42", replacements, new HashMap<>(), null);
         assertEquals("{0} - 42", processed);
         assertEquals(1, replacements.size());
         assertTrue(replacements.get(0) instanceof SumFunction);
@@ -449,7 +448,7 @@ public class FormulaParserTest {
     @Test
     public void shouldParseMultipleFunction() {
         Map<Integer, FunctionValue> replacements = new HashMap<>();
-        String processed = this.parser.processFunctions("SUM(5; 3; 2) - PRODUCT(2; 5)", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        String processed = this.parser.processFunctions("SUM(5; 3; 2) - PRODUCT(2; 5)", replacements, new HashMap<>(), null);
         assertEquals("{0} - {1}", processed);
         assertEquals(2, replacements.size());
         assertTrue(replacements.get(0) instanceof SumFunction);
@@ -461,24 +460,24 @@ public class FormulaParserTest {
     @Test
     public void shouldParseNestedFunctions() {
         Map<Integer, FunctionValue> replacements = new HashMap<>();
-        String processed = this.parser.processFunctions("SUM(PRODUCT(2; 5); QUOTIENT(10; 5))", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        String processed = this.parser.processFunctions("SUM(PRODUCT(2; 5); QUOTIENT(10; 5))", replacements, new HashMap<>(), null);
         assertEquals("{0}", processed);
         assertEquals(1, replacements.size());
         assertTrue(replacements.get(0) instanceof SumFunction);
         assertEquals(new BigDecimal((2 * 5) + (10 / 5)), replacements.get(0).getValue());
 
         replacements = new HashMap<>();
-        processed = this.parser.processFunctions("SUM(PRODUCT(2; SUM(2; 2)); 5)", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        processed = this.parser.processFunctions("SUM(PRODUCT(2; SUM(2; 2)); 5)", replacements, new HashMap<>(), null);
         assertEquals("{0}", processed);
         assertEquals(1, replacements.size());
         assertTrue(replacements.get(0) instanceof SumFunction);
         assertEquals(new BigDecimal((2 * (2 + 2)) + 5), replacements.get(0).getValue());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionOnNotClosingFunction() {
         Map<Integer, FunctionValue> replacements = new HashMap<>();
-        this.parser.processFunctions("SUM(5; 3; 2", replacements, new HashMap<IndexCoordinate, Set<IndexCoordinate>>(), null);
+        assertThrows(IllegalArgumentException.class, () -> this.parser.processFunctions("SUM(5; 3; 2", replacements, new HashMap<>(), null));
     }
 
     @Test
@@ -746,25 +745,25 @@ public class FormulaParserTest {
         assertFalse(this.parser.isIntegerValue(new BigDecimal("12.01")));
     }
 
-    @Test(expected = FunctionException.class)
+    @Test
     public void shouldThrowExceptionOnUnsupportedTypes() {
         this.dataProvider.setDataValue(0, 0, "3");
         this.dataProvider.setDataValue(1, 0, "a");
 
-        this.parser.parseFunction("=PRODUCT(A1;B1)");
+        assertThrows(FunctionException.class, () -> this.parser.parseFunction("=PRODUCT(A1;B1)"));
     }
 
-    @Test(expected = FunctionException.class)
+    @Test
     public void shouldThrowExceptionOnUnsupportedTypesInRange() {
         this.dataProvider.setDataValue(0, 0, "3");
         this.dataProvider.setDataValue(1, 0, "a");
 
-        this.parser.parseFunction("=PRODUCT(A1:B1)");
+        assertThrows(FunctionException.class, () -> this.parser.parseFunction("=PRODUCT(A1:B1)"));
     }
 
-    @Test(expected = FunctionException.class)
+    @Test
     public void shouldThrowExceptionOnNegativeSqrt() {
-        this.parser.parseFunction("=SQRT(-9)");
+        assertThrows(FunctionException.class, () -> this.parser.parseFunction("=SQRT(-9)"));
     }
 
     @Test
@@ -781,9 +780,9 @@ public class FormulaParserTest {
         assertEquals(new BigDecimal("2.5"), result.getValue());
     }
 
-    @Test(expected = FunctionException.class)
+    @Test
     public void shouldThrowExceptionOnWrongArgumentsMod() {
-        this.parser.parseFunction("=MOD(9)").getValue();
+        assertThrows(FunctionException.class, () -> this.parser.parseFunction("=MOD(9)").getValue());
     }
 
     @Test
@@ -823,27 +822,27 @@ public class FormulaParserTest {
         assertEquals(new BigDecimal("4"), this.parser.parseFunction("=A2*B2").getValue());
     }
 
-    @Test(expected = FunctionException.class)
+    @Test
     public void shouldThrowExceptionOnSelfReference() {
         this.dataProvider.setDataValue(0, 0, "=A1");
-        this.parser.parseFunction("=A1");
+        assertThrows(FunctionException.class, () -> this.parser.parseFunction("=A1"));
     }
 
-    @Test(expected = FunctionException.class)
+    @Test
     public void shouldNoticeSimpleCycleReference() {
         this.dataProvider.setDataValue(0, 0, "=B1");
         this.dataProvider.setDataValue(1, 0, "=A1");
 
-        this.parser.parseFunction("=A1");
+        assertThrows(FunctionException.class, () -> this.parser.parseFunction("=A1"));
     }
 
-    @Test(expected = FunctionException.class)
+    @Test
     public void shouldNoticeCycleReference() {
         this.dataProvider.setDataValue(0, 0, "=B1");
         this.dataProvider.setDataValue(1, 0, "=C1");
         this.dataProvider.setDataValue(2, 0, "=A1");
 
-        this.parser.parseFunction("=A1");
+        assertThrows(FunctionException.class, () -> this.parser.parseFunction("=A1"));
     }
 
     @Test
@@ -855,7 +854,7 @@ public class FormulaParserTest {
         assertEquals(new BigDecimal("0.625"), this.parser.parseFunction("=A1/D1").getValue());
     }
 
-    @Test(expected = FunctionException.class)
+    @Test
     public void shouldNoticeCycleReferenceWithRange() {
         this.dataProvider.setDataValue(0, 0, "5");
         this.dataProvider.setDataValue(0, 1, "5");
@@ -867,7 +866,7 @@ public class FormulaParserTest {
         // this should fail for circular dependencies
         this.dataProvider.setDataValue(2, 2, "=SUM(A3:C3)");
 
-        this.parser.parseFunction("=C3");
+        assertThrows(FunctionException.class, () -> this.parser.parseFunction("=C3"));
     }
 
 }

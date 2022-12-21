@@ -12,21 +12,21 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class FilterListDataProviderTest {
 
     private List<RowDataFixture> values;
     private IRowDataProvider<RowDataFixture> dataProvider;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.values = RowDataListFixture.getList();
 

@@ -19,9 +19,17 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
+import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
 import org.eclipse.nebula.widgets.nattable.filterrow.ParseResult;
 import org.eclipse.nebula.widgets.nattable.filterrow.ParseResult.MatchType;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
+import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxCellEditor;
+import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 
 import ca.odell.glazedlists.matchers.ThresholdMatcherEditor;
 
@@ -138,5 +146,82 @@ public final class FilterRowUtils {
             default:
                 thresholdMatcherEditor.setMatchOperation(ThresholdMatcherEditor.EQUAL);
         }
+    }
+
+    private static final String TWO_CHARACTER_REGEX = "\\[(((.){2})|((.)\\\\(.))|(\\\\(.){2})|(\\\\(.)\\\\(.)))\\]"; //$NON-NLS-1$
+    private static final String MASKED_BACKSLASH = "\\\\"; //$NON-NLS-1$
+    private static final String BACKSLASH_REPLACEMENT = "backslash"; //$NON-NLS-1$
+
+    /**
+     * This method tries to extract the AND and the OR character that should be
+     * used as delimiter, so that a user is able to specify the operation for
+     * combined filter criteria. If it does not start with [ and ends with ] and
+     * does not match one of the following regular expressions, this method
+     * returns <code>null</code> which causes the default behavior, e.g. OR for
+     * String matchers, AND for threshold matchers.
+     * <ul>
+     * <li>(.){2}</li>
+     * <li>(.)\\\\(.)</li>
+     * <li>\\\\(.){2}</li>
+     * <li>\\\\(.)\\\\(.)</li>
+     * </ul>
+     *
+     * @param delimiter
+     *            The delimiter that is configured via
+     *            {@link FilterRowConfigAttributes#TEXT_DELIMITER}. Can be
+     *            <code>null</code>.
+     * @return String array with the configured AND and the configured OR
+     *         character, or <code>null</code> if the delimiter is not a two
+     *         character regular expression. The first element in the array is
+     *         the AND character, the second element is the OR character.
+     * @since 2.1
+     */
+    public static String[] getSeparatorCharacters(String delimiter) {
+        // start with [ and end with ]
+        // (.){2} => e.g. ab
+        // (.)\\\\(.) => a\b
+        // \\\\(.){2} => \ab
+        // \\\\(.)\\\\(.) => \a\b
+
+        if (delimiter != null && delimiter.matches(TWO_CHARACTER_REGEX)) {
+            String inspect = delimiter.substring(1, delimiter.length() - 1);
+
+            // special handling if the backslash is used as delimiter for AND or
+            // OR
+            inspect = inspect.replace(MASKED_BACKSLASH, BACKSLASH_REPLACEMENT);
+
+            // now replace all backslashed
+            inspect = inspect.replaceAll(MASKED_BACKSLASH, ""); //$NON-NLS-1$
+
+            // convert back the "backslash" to "\"
+            inspect = inspect.replace(BACKSLASH_REPLACEMENT, "\\"); //$NON-NLS-1$
+            if (inspect.length() == 2) {
+                String[] result = new String[] { inspect.substring(0, 1), inspect.substring(1, 2) };
+                return result;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to retrieve the configured
+     *            cell editor.
+     * @param columnIndex
+     *            The column index for which the filter editor should be
+     *            inspected.
+     * @return <code>true</code> if the filter editor configured for the given
+     *         column index is of type {@link FilterRowComboBoxCellEditor}.
+     *
+     * @since 2.1
+     */
+    public static boolean isFilterRowComboBoxCellEditor(IConfigRegistry configRegistry, int columnIndex) {
+        ICellEditor cellEditor = configRegistry.getConfigAttribute(
+                EditConfigAttributes.CELL_EDITOR,
+                DisplayMode.NORMAL,
+                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex, GridRegion.FILTER_ROW);
+        return (cellEditor instanceof FilterRowComboBoxCellEditor);
     }
 }

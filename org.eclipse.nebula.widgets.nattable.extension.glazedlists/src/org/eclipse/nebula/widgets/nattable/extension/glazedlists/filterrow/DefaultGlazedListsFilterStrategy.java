@@ -206,7 +206,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
                     }
                 }
 
-                String[] separator = getSeparatorCharacters(textDelimiter);
+                String[] separator = FilterRowUtils.getSeparatorCharacters(textDelimiter);
 
                 if (!stringMatcherEditors.isEmpty()) {
                     CompositeMatcherEditor<T> stringCompositeMatcherEditor = new CompositeMatcherEditor<>(stringMatcherEditors);
@@ -272,63 +272,6 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
         } catch (Exception e) {
             LOG.error("Error on applying a filter", e); //$NON-NLS-1$
         }
-    }
-
-    // TODO 2.1 move constants and getSeparatorCharacters() to FilterRowUtils
-
-    private static final String TWO_CHARACTER_REGEX = "\\[(((.){2})|((.)\\\\(.))|(\\\\(.){2})|(\\\\(.)\\\\(.)))\\]"; //$NON-NLS-1$
-    private static final String MASKED_BACKSLASH = "\\\\"; //$NON-NLS-1$
-    private static final String BACKSLASH_REPLACEMENT = "backslash"; //$NON-NLS-1$
-
-    /**
-     * This method tries to extract the AND and the OR character that should be
-     * used as delimiter, so that a user is able to specify the operation for
-     * combined filter criteria. If it does not start with [ and ends with ] and
-     * does not match one of the following regular expressions, this method
-     * returns <code>null</code> which causes the default behavior, e.g. OR for
-     * String matchers, AND for threshold matchers.
-     * <ul>
-     * <li>(.){2}</li>
-     * <li>(.)\\\\(.)</li>
-     * <li>\\\\(.){2}</li>
-     * <li>\\\\(.)\\\\(.)</li>
-     * </ul>
-     *
-     * @param delimiter
-     *            The delimiter that is configured via
-     *            {@link FilterRowConfigAttributes#TEXT_DELIMITER}. Can be
-     *            <code>null</code>.
-     * @return String array with the configured AND and the configured OR
-     *         character, or <code>null</code> if the delimiter is not a two
-     *         character regular expression. The first element in the array is
-     *         the AND character, the second element is the OR character.
-     */
-    private String[] getSeparatorCharacters(String delimiter) {
-        // start with [ and end with ]
-        // (.){2} => e.g. ab
-        // (.)\\\\(.) => a\b
-        // \\\\(.){2} => \ab
-        // \\\\(.)\\\\(.) => \a\b
-
-        if (delimiter != null && delimiter.matches(TWO_CHARACTER_REGEX)) {
-            String inspect = delimiter.substring(1, delimiter.length() - 1);
-
-            // special handling if the backslash is used as delimiter for AND or
-            // OR
-            inspect = inspect.replace(MASKED_BACKSLASH, BACKSLASH_REPLACEMENT);
-
-            // now replace all backslashed
-            inspect = inspect.replaceAll(MASKED_BACKSLASH, ""); //$NON-NLS-1$
-
-            // convert back the "backslash" to "\"
-            inspect = inspect.replace(BACKSLASH_REPLACEMENT, "\\"); //$NON-NLS-1$
-            if (inspect.length() == 2) {
-                String[] result = new String[] { inspect.substring(0, 1), inspect.substring(1, 2) };
-                return result;
-            }
-        }
-
-        return null;
     }
 
     /**

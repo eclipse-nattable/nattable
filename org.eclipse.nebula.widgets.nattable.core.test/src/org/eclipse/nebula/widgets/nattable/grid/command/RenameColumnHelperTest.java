@@ -12,10 +12,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.grid.command;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Properties;
 
@@ -23,8 +23,8 @@ import org.eclipse.nebula.widgets.nattable.columnRename.RenameColumnHelper;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ColumnHeaderLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.integration.PersistenceIntegrationTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RenameColumnHelperTest {
 
@@ -34,7 +34,7 @@ public class RenameColumnHelperTest {
     private static String PREFIX = PersistenceIntegrationTest.TEST_PERSISTENCE_PREFIX;
     private static String KEY = RenameColumnHelper.PERSISTENCE_KEY_RENAMED_COLUMN_HEADERS;
 
-    @Before
+    @BeforeEach
     public void setup() {
         ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayerFixture();
         this.properties = new Properties();

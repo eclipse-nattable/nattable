@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2020 Dirk Fauth.
+ * Copyright (c) 2017, 2022 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,9 +31,9 @@ import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterRowC
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.DefaultFilterRowConfiguration;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -65,7 +65,7 @@ public class ComboBoxGlazedListsFilterStrategyTest {
         }
     };
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         // initialize the collection with a big amount of values
         EventList<Person> baseCollection = GlazedLists.eventList(PersonService.getFixedPersons());
@@ -99,7 +99,7 @@ public class ComboBoxGlazedListsFilterStrategyTest {
                 columnHeaderLayer.getDataProvider(), configRegistry);
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         for (int i = 0; i < dataProvider.getColumnCount(); i++) {
             dataProvider.getFilterIndexToObjectMap().put(i, EditConstants.SELECT_ALL_ITEMS_VALUE);

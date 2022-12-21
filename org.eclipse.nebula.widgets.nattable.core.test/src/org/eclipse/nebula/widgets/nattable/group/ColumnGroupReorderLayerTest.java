@@ -13,10 +13,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,8 +29,8 @@ import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.group.ColumnGroupModelFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.BaseDataLayerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ColumnGroupReorderLayerTest {
 
@@ -38,7 +38,7 @@ public class ColumnGroupReorderLayerTest {
     private ColumnGroupModelFixture modelFixture;
     public ColumnReorderLayer reorderLayer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.modelFixture = new ColumnGroupModelFixture();
         this.reorderLayer = new ColumnReorderLayer(new BaseDataLayerFixture(24, 20));

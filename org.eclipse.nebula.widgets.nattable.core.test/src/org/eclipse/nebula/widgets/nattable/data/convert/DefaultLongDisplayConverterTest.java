@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,12 +12,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DefaultLongDisplayConverterTest {
 
@@ -43,9 +44,9 @@ public class DefaultLongDisplayConverterTest {
         assertEquals(null, this.longConverter.displayToCanonicalValue(""));
     }
 
-    @Test(expected = ConversionFailedException.class)
+    @Test
     public void testConversionException() {
-        this.longConverter.displayToCanonicalValue("abc");
+        assertThrows(ConversionFailedException.class, () -> this.longConverter.displayToCanonicalValue("abc"));
     }
 
     @Test
@@ -55,10 +56,10 @@ public class DefaultLongDisplayConverterTest {
         assertEquals("1,234", this.longConverter.canonicalToDisplayValue(Long.valueOf("1234")));
     }
 
-    @Test(expected = ConversionFailedException.class)
+    @Test
     public void testFailConvertLocalized() {
         this.longConverter.setNumberFormat(null);
-        assertEquals(Long.valueOf("1234"), this.longConverter.displayToCanonicalValue("1,234"));
+        assertThrows(ConversionFailedException.class, () -> this.longConverter.displayToCanonicalValue("1,234"));
     }
 
     @Test

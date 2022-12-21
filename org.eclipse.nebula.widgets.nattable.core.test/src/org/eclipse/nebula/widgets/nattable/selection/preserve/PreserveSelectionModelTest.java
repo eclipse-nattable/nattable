@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2020 Jonas Hugo, Markus Wahl, Dirk Fauth.
+ * Copyright (c) 2014, 2022 Jonas Hugo, Markus Wahl, Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,11 +13,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.preserve;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -34,8 +34,8 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.preserve.Selections.CellPosition;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class PreserveSelectionModelTest {
 
@@ -57,7 +57,7 @@ public class PreserveSelectionModelTest {
 
     private TestCell[][] cells = new TestCell[7][3];
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         this.rowDataProvider = new TestRowDataProvider();

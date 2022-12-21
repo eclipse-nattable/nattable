@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,14 +12,16 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.performance;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 public abstract class AbstractLayerPerformanceTest {
 
@@ -43,7 +45,7 @@ public abstract class AbstractLayerPerformanceTest {
         this.expectedTimeInMillis = expectedTimeInMillis;
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.layer = null;
         this.expectedTimeInMillis = DEFAULT_THRESHOLD;
@@ -55,9 +57,9 @@ public abstract class AbstractLayerPerformanceTest {
 
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
-        Assert.assertNotNull("Layer was not set", this.layer);
+        assertNotNull(this.layer, "Layer was not set");
 
         new NatTable(getShell(), this.layer) {
             @Override
@@ -70,9 +72,10 @@ public abstract class AbstractLayerPerformanceTest {
                 long actualTimeInMillis = stopTimeInMillis - startTimeInMillis;
 
                 System.out.println("duration = " + actualTimeInMillis + " milliseconds");
-                Assert.assertTrue("Expected to take less than " + AbstractLayerPerformanceTest.this.expectedTimeInMillis
-                        + " milliseconds but took " + actualTimeInMillis
-                        + " milliseconds", actualTimeInMillis < AbstractLayerPerformanceTest.this.expectedTimeInMillis);
+                assertTrue(actualTimeInMillis < AbstractLayerPerformanceTest.this.expectedTimeInMillis,
+                        "Expected to take less than " + AbstractLayerPerformanceTest.this.expectedTimeInMillis
+                                + " milliseconds but took " + actualTimeInMillis
+                                + " milliseconds");
             }
         };
 

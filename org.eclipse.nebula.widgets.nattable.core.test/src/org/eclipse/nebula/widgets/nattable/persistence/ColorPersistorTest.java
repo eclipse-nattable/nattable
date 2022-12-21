@@ -12,23 +12,23 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.persistence;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Properties;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ColorPersistorTest {
 
     private static final Color TEST_COLOR = Display.getDefault().getSystemColor(SWT.COLOR_RED);
     Properties properties;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.properties = new Properties();
     }

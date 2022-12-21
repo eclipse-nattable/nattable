@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 Dirk Fauth.
+ * Copyright (c) 2020, 2022 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,13 +12,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Iterator;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LabelStackTest {
 
@@ -26,9 +26,9 @@ public class LabelStackTest {
     public void shouldCorrectlyInitializeLabelStack() {
         LabelStack labels = new LabelStack("One", "Two", "Three");
 
-        assertTrue("One is not contained", labels.hasLabel("One"));
-        assertTrue("Two is not contained", labels.hasLabel("Two"));
-        assertTrue("Three is not contained", labels.hasLabel("Three"));
+        assertTrue(labels.hasLabel("One"), "One is not contained");
+        assertTrue(labels.hasLabel("Two"), "Two is not contained");
+        assertTrue(labels.hasLabel("Three"), "Three is not contained");
 
         Iterator<String> iterator = labels.iterator();
         assertEquals("One", iterator.next());
@@ -43,9 +43,9 @@ public class LabelStackTest {
         labels.add("Two");
         labels.add("Three");
 
-        assertTrue("One is not contained", labels.hasLabel("One"));
-        assertTrue("Two is not contained", labels.hasLabel("Two"));
-        assertTrue("Three is not contained", labels.hasLabel("Three"));
+        assertTrue(labels.hasLabel("One"), "One is not contained");
+        assertTrue(labels.hasLabel("Two"), "Two is not contained");
+        assertTrue(labels.hasLabel("Three"), "Three is not contained");
 
         Iterator<String> iterator = labels.iterator();
         assertEquals("One", iterator.next());
@@ -57,7 +57,7 @@ public class LabelStackTest {
     public void shouldNotAddLabelsTwiceToLabelStack() {
         LabelStack labels = new LabelStack("One", "Two", "Three");
 
-        assertFalse("One was added twice", labels.addLabel("One"));
+        assertFalse(labels.addLabel("One"), "One was added twice");
         assertEquals(3, labels.size());
 
         Iterator<String> iterator = labels.iterator();

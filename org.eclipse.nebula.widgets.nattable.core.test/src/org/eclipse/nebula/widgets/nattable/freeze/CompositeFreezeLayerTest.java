@@ -25,8 +25,8 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.TestLayer;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class CompositeFreezeLayerTest {
 
@@ -37,7 +37,7 @@ public class CompositeFreezeLayerTest {
     private FreezeLayer freezeLayer;
     private CompositeFreezeLayer compositeFreezeLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         TestLayer dataLayer = new TestLayer(4, 4,
                 "0:0;100 | 1:1;100 | 2:2;100 | 3:3;100",

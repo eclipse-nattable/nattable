@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,17 +14,16 @@ package org.eclipse.nebula.widgets.nattable.viewport;
 
 import org.eclipse.nebula.widgets.nattable.test.LayerAssert;
 import org.eclipse.nebula.widgets.nattable.test.fixture.TestLayer;
-import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ViewportLayerTest2 {
 
     private TestLayer dataLayer;
     private ViewportLayer viewportLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         String columnInfo = "0:0;100 | 1:1;100 | 2:2;100 | 3:3;100";
         String rowInfo = "0:0;40  | 1:1;40  | 2:2;40  | 3:3;40";
@@ -35,14 +34,7 @@ public class ViewportLayerTest2 {
         this.dataLayer = new TestLayer(4, 4, columnInfo, rowInfo, cellInfo);
 
         this.viewportLayer = new ViewportLayer(this.dataLayer);
-        this.viewportLayer.setClientAreaProvider(new IClientAreaProvider() {
-
-            @Override
-            public Rectangle getClientArea() {
-                return new Rectangle(0, 0, 200, 400);
-            }
-
-        });
+        this.viewportLayer.setClientAreaProvider(() -> new Rectangle(0, 0, 200, 400));
     }
 
     @Test

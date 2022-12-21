@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,9 +12,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class RangeTest {
 
@@ -89,6 +89,6 @@ public class RangeTest {
 
         assertEquals(7, members.length);
         int[] expectedMembes = new int[] { 3, 4, 5, 6, 7, 8, 9 };
-        assertTrue("Expected member array is not the same as the returned member array", Arrays.equals(expectedMembes, members));
+        assertTrue(Arrays.equals(expectedMembes, members), "Expected member array is not the same as the returned member array");
     }
 }

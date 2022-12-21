@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
@@ -36,7 +36,6 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.util.GCFactory;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -44,9 +43,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class AutoResizeColumnsTest {
 
@@ -54,7 +53,7 @@ public class AutoResizeColumnsTest {
     private Image img;
     private GCFactory gcFactory;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.configRegistry = new ConfigRegistry();
         new DefaultNatTableStyleConfiguration()
@@ -73,18 +72,13 @@ public class AutoResizeColumnsTest {
                 cellStyle, DisplayMode.NORMAL);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         this.img.dispose();
     }
 
     private void setClientAreaProvider(ILayer layer) {
-        layer.setClientAreaProvider(new IClientAreaProvider() {
-            @Override
-            public Rectangle getClientArea() {
-                return new Rectangle(0, 0, 1050, 250);
-            }
-        });
+        layer.setClientAreaProvider(() -> new Rectangle(0, 0, 1050, 250));
         layer.doCommand(new ClientAreaResizeCommand(new Shell(Display
                 .getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
     }
@@ -93,7 +87,7 @@ public class AutoResizeColumnsTest {
      * These sequence of actions were causing a nasty bug in AutoResize
      */
     @Test
-    public void autoResizeOneColumn() throws Exception {
+    public void autoResizeOneColumn() {
         GridLayer gridLayer = new DummyGridLayerStack();
         setClientAreaProvider(gridLayer);
 
@@ -125,10 +119,10 @@ public class AutoResizeColumnsTest {
 
         for (int columnPosition = 1; columnPosition <= 20; columnPosition++) {
             assertTrue(
+                    gridLayer.getColumnWidthByPosition(columnPosition) != 100,
                     "column "
                             + columnPosition
-                            + " should have been resized, but it is still its original width",
-                    gridLayer.getColumnWidthByPosition(columnPosition) != 100);
+                            + " should have been resized, but it is still its original width");
         }
     }
 
@@ -137,8 +131,7 @@ public class AutoResizeColumnsTest {
      * resized.
      */
     @Test
-    public void shouldAutoResizeCorrectlyIfMultipleColumnsAreSelected()
-            throws Exception {
+    public void shouldAutoResizeCorrectlyIfMultipleColumnsAreSelected() {
         GridLayer gridLayer = new DefaultGridLayer(
                 RowDataListFixture.getList(),
                 RowDataListFixture.getPropertyNames(),

@@ -22,8 +22,8 @@ import static org.eclipse.nebula.widgets.nattable.persistence.StylePersistor.STY
 import static org.eclipse.nebula.widgets.nattable.persistence.StylePersistor.V_ALIGNMENT_PREFIX;
 import static org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes.BACKGROUND_COLOR;
 import static org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes.FOREGROUND_COLOR;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Properties;
 
@@ -38,14 +38,14 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.PropertiesFixture;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Display;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class StylePersistorTest {
     private static final String TEST_PREFIX = "TEST_PREFIX";
     private PropertiesFixture propertiesFixture;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.propertiesFixture = new PropertiesFixture()
                 .addStyleProperties(TEST_PREFIX);

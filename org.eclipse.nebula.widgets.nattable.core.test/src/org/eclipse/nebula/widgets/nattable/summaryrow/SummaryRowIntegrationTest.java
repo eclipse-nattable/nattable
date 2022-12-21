@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,9 +12,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.summaryrow;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.Date;
@@ -49,8 +49,8 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class SummaryRowIntegrationTest {
 
@@ -67,7 +67,7 @@ public class SummaryRowIntegrationTest {
     private DataLayer dataLayer;
     private ListDataProvider<RowDataFixture> dataProvider;
 
-    @Before
+    @BeforeEach
     public void initLayerStackWithSummaryRow() {
         this.dataList = RowDataListFixture.getList().subList(0, 4);
         // Rows 0, 1, 2, 3; Summary row would be position 4
@@ -341,7 +341,7 @@ public class SummaryRowIntegrationTest {
         configLabels = this.natTable.getConfigLabelsByPosition(0, 3);
 
         assertEquals(1, configLabels.size());
-        assertTrue("Label in default body does not start with myLabel", configLabels.get(0).startsWith("myLabel"));
+        assertTrue(configLabels.get(0).startsWith("myLabel"), "Label in default body does not start with myLabel");
     }
 
     @Test

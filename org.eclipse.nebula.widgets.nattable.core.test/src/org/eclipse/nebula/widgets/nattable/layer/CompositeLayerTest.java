@@ -12,10 +12,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,8 +31,8 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ViewportLayerFixtu
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @see org.eclipse.nebula.widgets.nattable.test.fixture.layer.CompositeLayerFixture
@@ -42,7 +42,7 @@ public class CompositeLayerTest {
 
     private CompositeLayerFixture layerFixture;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.layerFixture = new CompositeLayerFixture();
         this.layerFixture.bodyLayer.setClientAreaProvider(new IClientAreaProvider() {

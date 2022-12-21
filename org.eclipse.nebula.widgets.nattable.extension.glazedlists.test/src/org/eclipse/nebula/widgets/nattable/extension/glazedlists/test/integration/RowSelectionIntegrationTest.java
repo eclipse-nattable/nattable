@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.test.integration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -47,10 +47,9 @@ import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.sort.command.SortColumnCommand;
 import org.eclipse.nebula.widgets.nattable.sort.config.DefaultSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
@@ -63,7 +62,7 @@ public class RowSelectionIntegrationTest {
     private SelectionLayer selectionLayer;
     private RowSelectionProvider<RowDataFixture> selectionProvider;
 
-    @Before
+    @BeforeEach
     public void setup() {
         IConfigRegistry configRegistry = new ConfigRegistry();
 
@@ -105,7 +104,7 @@ public class RowSelectionIntegrationTest {
         this.nattable.configure();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         this.nattable.doCommand(new DisposeResourcesCommand());
     }
@@ -164,29 +163,29 @@ public class RowSelectionIntegrationTest {
         this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 1, 0, false, true));
 
         Collection<PositionCoordinate> cells = ArrayUtil.asCollection(this.selectionLayer.getSelectedCellPositions());
-        Assert.assertEquals(this.selectionLayer.getColumnCount(), cells.size());
-        Assert.assertEquals(1, this.selectionLayer.getSelectedRowCount());
+        assertEquals(this.selectionLayer.getColumnCount(), cells.size());
+        assertEquals(1, this.selectionLayer.getSelectedRowCount());
 
         // select another cell with control mask
         this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 2, 1, false, true));
 
         cells = ArrayUtil.asCollection(this.selectionLayer.getSelectedCellPositions());
-        Assert.assertEquals(this.selectionLayer.getColumnCount(), cells.size());
-        Assert.assertEquals(1, this.selectionLayer.getSelectedRowCount());
+        assertEquals(this.selectionLayer.getColumnCount(), cells.size());
+        assertEquals(1, this.selectionLayer.getSelectedRowCount());
 
         // select additional cells with shift mask
         this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 2, 10, true, false));
 
         cells = ArrayUtil.asCollection(this.selectionLayer.getSelectedCellPositions());
-        Assert.assertEquals(this.selectionLayer.getColumnCount(), cells.size());
-        Assert.assertEquals(1, this.selectionLayer.getSelectedRowCount());
+        assertEquals(this.selectionLayer.getColumnCount(), cells.size());
+        assertEquals(1, this.selectionLayer.getSelectedRowCount());
 
         // select additional cells with shift mask
         this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 10, 0, true, false));
 
         cells = ArrayUtil.asCollection(this.selectionLayer.getSelectedCellPositions());
-        Assert.assertEquals(this.selectionLayer.getColumnCount(), cells.size());
-        Assert.assertEquals(1, this.selectionLayer.getSelectedRowCount());
+        assertEquals(this.selectionLayer.getColumnCount(), cells.size());
+        assertEquals(1, this.selectionLayer.getSelectedRowCount());
     }
 
     @Test

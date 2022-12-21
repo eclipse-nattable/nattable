@@ -14,14 +14,14 @@ package org.eclipse.nebula.widgets.nattable.freeze;
 
 import org.eclipse.nebula.widgets.nattable.test.LayerAssert;
 import org.eclipse.nebula.widgets.nattable.test.fixture.TestLayer;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class FreezeLayerTest2 {
 
     private FreezeLayer freezeLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         TestLayer dataLayer = new TestLayer(4, 4,
                 "0:0;100 | 1:1;100 | 2:2;100 | 3:3;100",

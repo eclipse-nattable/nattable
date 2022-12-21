@@ -15,9 +15,9 @@ package org.eclipse.nebula.widgets.nattable.sort;
 import static org.eclipse.nebula.widgets.nattable.sort.SortDirectionEnum.ASC;
 import static org.eclipse.nebula.widgets.nattable.sort.SortDirectionEnum.DESC;
 import static org.eclipse.nebula.widgets.nattable.sort.SortDirectionEnum.NONE;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SortDirectionEnumTest {
 

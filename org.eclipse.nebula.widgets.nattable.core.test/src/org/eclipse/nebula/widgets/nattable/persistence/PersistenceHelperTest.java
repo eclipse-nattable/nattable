@@ -12,15 +12,15 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.persistence;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PersistenceHelperTest {
 
@@ -35,26 +35,28 @@ public class PersistenceHelperTest {
 
         Collection<String> stateNames = PersistenceHelper.getAvailableStates(properties);
         assertTrue(
-                "Resulting state name collection does not contain the empty default state",
-                stateNames.contains(""));
+                stateNames.contains(""),
+                "Resulting state name collection does not contain the empty default state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Blubb' state",
-                stateNames.contains("Blubb"));
+                stateNames.contains("Blubb"),
+                "Resulting state name collection does not contain the 'Blubb' state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Temp' state",
-                stateNames.contains("Temp"));
+                stateNames.contains("Temp"),
+                "Resulting state name collection does not contain the 'Temp' state");
     }
 
     @Test
     public void testGetAvailableStatesOnNull() {
-        assertTrue("Resulting state name collection is not empty",
-                PersistenceHelper.getAvailableStates(null).isEmpty());
+        assertTrue(
+                PersistenceHelper.getAvailableStates(null).isEmpty(),
+                "Resulting state name collection is not empty");
     }
 
     @Test
     public void testGetAvailableStatesOnEmpty() {
-        assertTrue("Resulting state name collection is not empty",
-                PersistenceHelper.getAvailableStates(new Properties()).isEmpty());
+        assertTrue(
+                PersistenceHelper.getAvailableStates(new Properties()).isEmpty(),
+                "Resulting state name collection is not empty");
     }
 
     @Test
@@ -68,27 +70,27 @@ public class PersistenceHelperTest {
 
         Collection<String> stateNames = PersistenceHelper.getAvailableStates(properties);
         assertTrue(
-                "Resulting state name collection does not contain the empty default state",
-                stateNames.contains(""));
+                stateNames.contains(""),
+                "Resulting state name collection does not contain the empty default state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Blubb' state",
-                stateNames.contains("Blubb"));
+                stateNames.contains("Blubb"),
+                "Resulting state name collection does not contain the 'Blubb' state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Temp' state",
-                stateNames.contains("Temp"));
+                stateNames.contains("Temp"),
+                "Resulting state name collection does not contain the 'Temp' state");
 
         PersistenceHelper.deleteState("Blubb", properties);
 
         stateNames = PersistenceHelper.getAvailableStates(properties);
         assertTrue(
-                "Resulting state name collection does not contain the empty default state",
-                stateNames.contains(""));
+                stateNames.contains(""),
+                "Resulting state name collection does not contain the empty default state");
         assertFalse(
-                "Resulting state name collection does not contain the 'Blubb' state",
-                stateNames.contains("Blubb"));
+                stateNames.contains("Blubb"),
+                "Resulting state name collection does not contain the 'Blubb' state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Temp' state",
-                stateNames.contains("Temp"));
+                stateNames.contains("Temp"),
+                "Resulting state name collection does not contain the 'Temp' state");
     }
 
     @Test
@@ -102,28 +104,28 @@ public class PersistenceHelperTest {
 
         Collection<String> stateNames = PersistenceHelper.getAvailableStates(properties);
         assertTrue(
-                "Resulting state name collection does not contain the empty default state",
-                stateNames.contains(""));
+                stateNames.contains(""),
+                "Resulting state name collection does not contain the empty default state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Blubb' state",
-                stateNames.contains("Blubb"));
+                stateNames.contains("Blubb"),
+                "Resulting state name collection does not contain the 'Blubb' state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Temp' state",
-                stateNames.contains("Temp"));
+                stateNames.contains("Temp"),
+                "Resulting state name collection does not contain the 'Temp' state");
 
         PersistenceHelper.deleteState("Blubb", null);
 
         // no impact
         stateNames = PersistenceHelper.getAvailableStates(properties);
         assertTrue(
-                "Resulting state name collection does not contain the empty default state",
-                stateNames.contains(""));
+                stateNames.contains(""),
+                "Resulting state name collection does not contain the empty default state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Blubb' state",
-                stateNames.contains("Blubb"));
+                stateNames.contains("Blubb"),
+                "Resulting state name collection does not contain the 'Blubb' state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Temp' state",
-                stateNames.contains("Temp"));
+                stateNames.contains("Temp"),
+                "Resulting state name collection does not contain the 'Temp' state");
     }
 
     @Test
@@ -137,28 +139,28 @@ public class PersistenceHelperTest {
 
         Collection<String> stateNames = PersistenceHelper.getAvailableStates(properties);
         assertTrue(
-                "Resulting state name collection does not contain the empty default state",
-                stateNames.contains(""));
+                stateNames.contains(""),
+                "Resulting state name collection does not contain the empty default state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Blubb' state",
-                stateNames.contains("Blubb"));
+                stateNames.contains("Blubb"),
+                "Resulting state name collection does not contain the 'Blubb' state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Temp' state",
-                stateNames.contains("Temp"));
+                stateNames.contains("Temp"),
+                "Resulting state name collection does not contain the 'Temp' state");
 
         PersistenceHelper.deleteState(null, properties);
 
         // no impact
         stateNames = PersistenceHelper.getAvailableStates(properties);
         assertTrue(
-                "Resulting state name collection does not contain the empty default state",
-                stateNames.contains(""));
+                stateNames.contains(""),
+                "Resulting state name collection does not contain the empty default state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Blubb' state",
-                stateNames.contains("Blubb"));
+                stateNames.contains("Blubb"),
+                "Resulting state name collection does not contain the 'Blubb' state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Temp' state",
-                stateNames.contains("Temp"));
+                stateNames.contains("Temp"),
+                "Resulting state name collection does not contain the 'Temp' state");
     }
 
     @Test
@@ -172,28 +174,28 @@ public class PersistenceHelperTest {
 
         Collection<String> stateNames = PersistenceHelper.getAvailableStates(properties);
         assertTrue(
-                "Resulting state name collection does not contain the empty default state",
-                stateNames.contains(""));
+                stateNames.contains(""),
+                "Resulting state name collection does not contain the empty default state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Blubb' state",
-                stateNames.contains("Blubb"));
+                stateNames.contains("Blubb"),
+                "Resulting state name collection does not contain the 'Blubb' state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Temp' state",
-                stateNames.contains("Temp"));
+                stateNames.contains("Temp"),
+                "Resulting state name collection does not contain the 'Temp' state");
 
         PersistenceHelper.deleteState("Blubb", new Properties());
 
         // no impact
         stateNames = PersistenceHelper.getAvailableStates(properties);
         assertTrue(
-                "Resulting state name collection does not contain the empty default state",
-                stateNames.contains(""));
+                stateNames.contains(""),
+                "Resulting state name collection does not contain the empty default state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Blubb' state",
-                stateNames.contains("Blubb"));
+                stateNames.contains("Blubb"),
+                "Resulting state name collection does not contain the 'Blubb' state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Temp' state",
-                stateNames.contains("Temp"));
+                stateNames.contains("Temp"),
+                "Resulting state name collection does not contain the 'Temp' state");
     }
 
     @Test
@@ -207,27 +209,27 @@ public class PersistenceHelperTest {
 
         Collection<String> stateNames = PersistenceHelper.getAvailableStates(properties);
         assertTrue(
-                "Resulting state name collection does not contain the empty default state",
-                stateNames.contains(""));
+                stateNames.contains(""),
+                "Resulting state name collection does not contain the empty default state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Blubb' state",
-                stateNames.contains("Blubb"));
+                stateNames.contains("Blubb"),
+                "Resulting state name collection does not contain the 'Blubb' state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Temp' state",
-                stateNames.contains("Temp"));
+                stateNames.contains("Temp"),
+                "Resulting state name collection does not contain the 'Temp' state");
 
         PersistenceHelper.deleteState("", properties);
 
         // no impact
         stateNames = PersistenceHelper.getAvailableStates(properties);
         assertFalse(
-                "Resulting state name collection does not contain the empty default state",
-                stateNames.contains(""));
+                stateNames.contains(""),
+                "Resulting state name collection does not contain the empty default state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Blubb' state",
-                stateNames.contains("Blubb"));
+                stateNames.contains("Blubb"),
+                "Resulting state name collection does not contain the 'Blubb' state");
         assertTrue(
-                "Resulting state name collection does not contain the 'Temp' state",
-                stateNames.contains("Temp"));
+                stateNames.contains("Temp"),
+                "Resulting state name collection does not contain the 'Temp' state");
     }
 }

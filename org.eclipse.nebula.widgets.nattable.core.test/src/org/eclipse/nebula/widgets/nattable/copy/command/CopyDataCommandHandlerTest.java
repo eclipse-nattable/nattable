@@ -12,9 +12,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.copy.command;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -34,8 +34,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class CopyDataCommandHandlerTest {
 
@@ -43,7 +43,7 @@ public class CopyDataCommandHandlerTest {
     private SelectionLayer selectionLayer;
     private CopyDataCommandHandler commandHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         final IDataProvider bodyDataProvider = new DataProviderFixture(10, 10);
         this.gridLayer = new DefaultGridLayer(

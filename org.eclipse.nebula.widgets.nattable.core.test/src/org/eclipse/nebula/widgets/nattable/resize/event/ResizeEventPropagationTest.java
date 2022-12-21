@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,22 +12,22 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.event;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collection;
 
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ResizeEventPropagationTest {
     private LayerListenerFixture layerListener;
 
     private DataLayerFixture dataLayer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         // Total width should be 500 and total height should be 280
         this.dataLayer = new DataLayerFixture(100, 40);

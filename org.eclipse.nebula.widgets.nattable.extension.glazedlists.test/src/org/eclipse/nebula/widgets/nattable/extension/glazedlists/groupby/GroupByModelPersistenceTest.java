@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2022 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,25 +12,21 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupby;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByModel;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-/**
- * @author Dirk Fauth
- *
- */
 public class GroupByModelPersistenceTest {
 
     private GroupByModel model;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.model = new GroupByModel();
     }
@@ -80,7 +76,7 @@ public class GroupByModelPersistenceTest {
         this.model.removeGroupByColumnIndex(5);
         this.model.removeGroupByColumnIndex(9);
 
-        assertTrue("indexes are not empty", this.model.getGroupByColumnIndexes().isEmpty());
+        assertTrue(this.model.getGroupByColumnIndexes().isEmpty(), "indexes are not empty");
 
         this.model.saveState("prefix", properties);
 

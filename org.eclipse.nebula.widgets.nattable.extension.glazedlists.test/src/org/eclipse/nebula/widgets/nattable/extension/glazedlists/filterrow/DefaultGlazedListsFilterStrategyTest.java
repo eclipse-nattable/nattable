@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -30,9 +30,9 @@ import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.DefaultFilterRowConfiguration;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -54,7 +54,7 @@ public class DefaultGlazedListsFilterStrategyTest {
             "birthday",
             "money" };
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         // initialize the collection with a big amount of values
         filterList = new FilterList<>(GlazedLists.eventList(PersonService.getFixedPersons()));
@@ -76,7 +76,7 @@ public class DefaultGlazedListsFilterStrategyTest {
                 columnHeaderLayer.getDataProvider(), configRegistry);
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         // ensure to start over with a clear filter
         dataProvider.clearAllFilters();

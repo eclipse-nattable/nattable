@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,8 +13,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.tickupdate.command;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
 
@@ -25,18 +25,16 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
-import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.test.fixture.TickUpdateHandlerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.tickupdate.TickUpdateConfigAttributes;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TickUpdateCommandHandlerTest {
 
@@ -45,7 +43,7 @@ public class TickUpdateCommandHandlerTest {
     private TickUpdateCommandHandler commandHandler;
     private ColumnOverrideLabelAccumulator columnLabelAccumulator;
 
-    @Before
+    @BeforeEach
     public void setup() {
         DataLayerFixture bodyDataLayer = new DataLayerFixture();
         this.selectionLayer = new SelectionLayer(bodyDataLayer);
@@ -71,21 +69,21 @@ public class TickUpdateCommandHandlerTest {
     }
 
     @Test
-    public void shouldIncrementCellValue() throws Exception {
+    public void shouldIncrementCellValue() {
         assertEquals("[1, 1]", this.selectionLayer.getDataValueByPosition(1, 1));
         this.commandHandler.doCommand(new TickUpdateCommand(this.testConfigRegistry, true));
         assertEquals("[1, 1]up", this.selectionLayer.getDataValueByPosition(1, 1));
     }
 
     @Test
-    public void shouldDecrementCellValue() throws Exception {
+    public void shouldDecrementCellValue() {
         assertEquals("[1, 1]", this.selectionLayer.getDataValueByPosition(1, 1));
         this.commandHandler.doCommand(new TickUpdateCommand(this.testConfigRegistry, false));
         assertEquals("[1, 1]down", this.selectionLayer.getDataValueByPosition(1, 1));
     }
 
     @Test
-    public void shouldNotUpdateAnUneditableCell() throws Exception {
+    public void shouldNotUpdateAnUneditableCell() {
         this.testConfigRegistry.registerConfigAttribute(
                 EditConfigAttributes.CELL_EDITABLE_RULE,
                 IEditableRule.NEVER_EDITABLE);
@@ -102,7 +100,7 @@ public class TickUpdateCommandHandlerTest {
     }
 
     @Test
-    public void shouldUpdateMultipleCellsInSelection() throws Exception {
+    public void shouldUpdateMultipleCellsInSelection() {
         this.selectionLayer.selectCell(1, 2, false, true);
         this.selectionLayer.selectCell(1, 5, false, true);
 
@@ -120,7 +118,7 @@ public class TickUpdateCommandHandlerTest {
     }
 
     @Test
-    public void shouldUpdateOnlyIfAllCellsHaveTheSameEditor() throws Exception {
+    public void shouldUpdateOnlyIfAllCellsHaveTheSameEditor() {
         this.columnLabelAccumulator.registerColumnOverrides(1, "COMBO_BOX_EDITOR_LABEL");
         this.columnLabelAccumulator.registerColumnOverrides(2, "TEXT_BOX_EDITOR_LABEL");
 
@@ -169,13 +167,9 @@ public class TickUpdateCommandHandlerTest {
         // we also check that no update has been triggered
         this.selectionLayer.clear();
 
-        this.selectionLayer.addLayerListener(new ILayerListener() {
-
-            @Override
-            public void handleLayerEvent(ILayerEvent event) {
-                if (event instanceof CellVisualChangeEvent) {
-                    fail("update triggered");
-                }
+        this.selectionLayer.addLayerListener(event -> {
+            if (event instanceof CellVisualChangeEvent) {
+                fail("update triggered");
             }
         });
         this.commandHandler.doCommand(new TickUpdateCommand(this.testConfigRegistry, true));

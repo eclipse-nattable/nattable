@@ -14,10 +14,10 @@ package org.eclipse.nebula.widgets.nattable.columnChooser;
 
 import static org.eclipse.nebula.widgets.nattable.columnChooser.ColumnChooserUtils.getColumnLabel;
 import static org.eclipse.nebula.widgets.nattable.test.fixture.layer.ColumnHeaderLayerFixture.getDataLayer;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,14 +29,14 @@ import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.ColumnEntriesFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ColumnHeaderLayerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ColumnChooserUtilsTest {
 
     private List<ColumnEntry> entriesFixture;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.entriesFixture = ColumnEntriesFixture.getEntriesWithOddIndexes();
     }

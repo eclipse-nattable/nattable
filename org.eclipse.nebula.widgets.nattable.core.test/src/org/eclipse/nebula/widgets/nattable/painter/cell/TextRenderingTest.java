@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,9 +34,9 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TextRenderingTest {
 
@@ -46,7 +46,7 @@ public class TextRenderingTest {
     private GC gc;
     private Font defaultFont;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         this.natTable = new NatTableFixture();
         this.configRegistry = (ConfigRegistry) this.natTable.getConfigRegistry();
@@ -55,7 +55,7 @@ public class TextRenderingTest {
         this.gc = new GC(Display.getDefault());
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         if (this.defaultFont != null) {
             this.defaultFont.dispose();

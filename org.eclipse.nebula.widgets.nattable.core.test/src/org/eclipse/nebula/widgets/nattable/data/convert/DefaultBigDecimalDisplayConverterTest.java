@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,18 +12,19 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class DefaultBigDecimalDisplayConverterTest {
 
@@ -31,13 +32,13 @@ public class DefaultBigDecimalDisplayConverterTest {
 
     private static Locale defaultLocale;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         defaultLocale = Locale.getDefault();
         Locale.setDefault(new Locale("en"));
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() {
         Locale.setDefault(defaultLocale);
     }
@@ -64,9 +65,9 @@ public class DefaultBigDecimalDisplayConverterTest {
         assertNull(this.bigDecConverter.displayToCanonicalValue(""));
     }
 
-    @Test(expected = ConversionFailedException.class)
+    @Test
     public void testConversionException() {
-        this.bigDecConverter.displayToCanonicalValue("abc");
+        assertThrows(ConversionFailedException.class, () -> this.bigDecConverter.displayToCanonicalValue("abc"));
     }
 
     @Test

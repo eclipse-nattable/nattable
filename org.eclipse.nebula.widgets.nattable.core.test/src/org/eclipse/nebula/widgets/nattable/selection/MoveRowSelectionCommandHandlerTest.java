@@ -12,9 +12,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -31,16 +31,16 @@ import org.eclipse.nebula.widgets.nattable.selection.command.MoveSelectionComman
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class MoveRowSelectionCommandHandlerTest {
 
     private SelectionLayer selectionLayer;
     private ViewportLayer viewportLayer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         // only use 10 columns to make the test cases easier
         String[] propertyNames = Arrays.copyOfRange(RowDataListFixture.getPropertyNames(), 0, 10);
@@ -68,7 +68,7 @@ public class MoveRowSelectionCommandHandlerTest {
         this.viewportLayer.setClientAreaProvider(() -> new Rectangle(0, 0, 600, 200));
     }
 
-    @After
+    @AfterEach
     public void cleanUp() {
         this.selectionLayer.clear();
     }

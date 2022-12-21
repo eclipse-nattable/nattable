@@ -13,9 +13,9 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.formula;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.math.BigDecimal;
 
@@ -32,8 +32,8 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class FormulaIntegrationTest {
 
@@ -45,7 +45,7 @@ public class FormulaIntegrationTest {
 
     LayerListenerFixture listenerFixture = new LayerListenerFixture();
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.natTable.addConfiguration(new DefaultFormulaConfiguration(
                 this.formulaDataProvider,

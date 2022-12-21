@@ -13,8 +13,8 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hierarchical.action;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -32,14 +32,14 @@ import org.eclipse.nebula.widgets.nattable.layer.SpanningDataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class HierarchicalTreeColumnReorderDragModeTest {
 
     private HierarchicalTreeLayer treeLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         // de-normalize the object graph without parent structure objects
         List<HierarchicalWrapper> data = HierarchicalHelper.deNormalize(CarService.getInput(), false, CarService.getPropertyNamesCompact());

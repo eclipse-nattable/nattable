@@ -12,17 +12,17 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.filterrow.ParseResult;
 import org.eclipse.nebula.widgets.nattable.filterrow.ParseResult.MatchType;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import ca.odell.glazedlists.matchers.ThresholdMatcherEditor;
 
@@ -45,7 +45,7 @@ public class FilterRowUtilsTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     // this one causes issues when trying to add regular expressions in the
     // filter itself
     // e.g. spaces in the custom regular expression will lead to a wrong parsed
@@ -365,64 +365,34 @@ public class FilterRowUtilsTest {
 
     @Test
     public void shouldMatch() {
-        assertNull("Single character matches", getSeparatorCharacters(";"));
-        assertNull("Missing end bracket matches", getSeparatorCharacters("[&;"));
-        assertNull("Missing start bracket matches", getSeparatorCharacters("&;]"));
-        assertNull("Missing brackets matches", getSeparatorCharacters("&;"));
-        assertNull("More than 2 characters matches", getSeparatorCharacters("&;\\|"));
-        assertNull("Null matches", getSeparatorCharacters(null));
-        assertNull("Empty matches", getSeparatorCharacters(""));
-        assertNull("Text matches", getSeparatorCharacters("NatTable"));
+        assertNull(FilterRowUtils.getSeparatorCharacters(";"), "Single character matches");
+        assertNull(FilterRowUtils.getSeparatorCharacters("[&;"), "Missing end bracket matches");
+        assertNull(FilterRowUtils.getSeparatorCharacters("&;]"), "Missing start bracket matches");
+        assertNull(FilterRowUtils.getSeparatorCharacters("&;"), "Missing brackets matches");
+        assertNull(FilterRowUtils.getSeparatorCharacters("&;\\|"), "More than 2 characters matches");
+        assertNull(FilterRowUtils.getSeparatorCharacters(null), "Null matches");
+        assertNull(FilterRowUtils.getSeparatorCharacters(""), "Empty matches");
+        assertNull(FilterRowUtils.getSeparatorCharacters("NatTable"), "Text matches");
 
-        String[] delimiterChars = getSeparatorCharacters("[&;]");
-        assertNotNull("Two characters doesn't match", delimiterChars);
+        String[] delimiterChars = FilterRowUtils.getSeparatorCharacters("[&;]");
+        assertNotNull(delimiterChars, "Two characters doesn't match");
         assertEquals("&", delimiterChars[0]);
         assertEquals(";", delimiterChars[1]);
 
-        delimiterChars = getSeparatorCharacters(AND_OR_DELIMITER);
-        assertNotNull("Second character masked doesn't match", delimiterChars);
+        delimiterChars = FilterRowUtils.getSeparatorCharacters(AND_OR_DELIMITER);
+        assertNotNull(delimiterChars, "Second character masked doesn't match");
         assertEquals("&", delimiterChars[0]);
         assertEquals("|", delimiterChars[1]);
 
-        delimiterChars = getSeparatorCharacters("[\\|&]");
-        assertNotNull("First character masked doesn't match", delimiterChars);
+        delimiterChars = FilterRowUtils.getSeparatorCharacters("[\\|&]");
+        assertNotNull(delimiterChars, "First character masked doesn't match");
         assertEquals("|", delimiterChars[0]);
         assertEquals("&", delimiterChars[1]);
 
-        delimiterChars = getSeparatorCharacters("[\\|\\\\]");
-        assertNotNull("Both characters masked don't match", delimiterChars);
+        delimiterChars = FilterRowUtils.getSeparatorCharacters("[\\|\\\\]");
+        assertNotNull(delimiterChars, "Both characters masked don't match");
         assertEquals("|", delimiterChars[0]);
         assertEquals("\\", delimiterChars[1]);
 
-    }
-
-    // TODO 2.1 move this method to FilterRowUtils
-    private String[] getSeparatorCharacters(String delimiter) {
-        // start with [ and end with ]
-        // (.){2} => e.g. ab
-        // (.)\\\\(.) => a\b
-        // \\\\(.){2} => \ab
-        // \\\\(.)\\\\(.) => \a\b
-        String twoCharacterRegex = "\\[(((.){2})|((.)\\\\(.))|(\\\\(.){2})|(\\\\(.)\\\\(.)))\\]";
-
-        if (delimiter != null && delimiter.matches(twoCharacterRegex)) {
-            String inspect = delimiter.substring(1, delimiter.length() - 1);
-
-            // special handling if the backslash is used as delimiter for AND or
-            // OR
-            inspect = inspect.replace("\\\\", "backslash");
-
-            // now replace all backslashed
-            inspect = inspect.replaceAll("\\\\", "");
-
-            // convert back the "backslash" to "\"
-            inspect = inspect.replace("backslash", "\\");
-            if (inspect.length() == 2) {
-                String[] result = new String[] { inspect.substring(0, 1), inspect.substring(1, 2) };
-                return result;
-            }
-        }
-
-        return null;
     }
 }

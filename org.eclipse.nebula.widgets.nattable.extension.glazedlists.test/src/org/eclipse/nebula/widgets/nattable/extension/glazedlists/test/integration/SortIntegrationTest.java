@@ -12,10 +12,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.test.integration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Comparator;
 import java.util.List;
@@ -38,9 +38,9 @@ import org.eclipse.nebula.widgets.nattable.sort.command.SortColumnCommand;
 import org.eclipse.nebula.widgets.nattable.sort.config.DefaultSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.swt.SWT;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
@@ -51,7 +51,7 @@ public class SortIntegrationTest {
     private NatTableFixture nattable;
     private GlazedListsGridLayer<RowDataFixture> gridLayerStack;
 
-    @Before
+    @BeforeEach
     public void setup() {
         EventList<RowDataFixture> eventList =
                 GlazedLists.eventList(RowDataListFixture.getList().subList(0, 4));
@@ -72,7 +72,7 @@ public class SortIntegrationTest {
         this.nattable.doCommand(new ConfigureScalingCommand(new NoScalingDpiConverter()));
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         this.nattable.doCommand(new DisposeResourcesCommand());
     }
@@ -206,11 +206,11 @@ public class SortIntegrationTest {
     @Test
     public void shouldSortColumnByCommand() {
         ISortModel sortModel = this.gridLayerStack.getSortHeaderLayer().getSortModel();
-        assertTrue("Sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertTrue(sortModel.getSortedColumnIndexes().isEmpty(), "Sorting applied");
 
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 3));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(1, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(SortDirectionEnum.ASC, sortModel.getSortDirection(2));
@@ -219,11 +219,11 @@ public class SortIntegrationTest {
     @Test
     public void shouldChangeSortColumnByCommand() {
         ISortModel sortModel = this.gridLayerStack.getSortHeaderLayer().getSortModel();
-        assertTrue("Sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertTrue(sortModel.getSortedColumnIndexes().isEmpty(), "Sorting applied");
 
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 3));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(1, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(SortDirectionEnum.ASC, sortModel.getSortDirection(2));
@@ -231,7 +231,7 @@ public class SortIntegrationTest {
         // sort another column
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 4));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(1, sortModel.getSortedColumnIndexes().size());
         assertEquals(3, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(SortDirectionEnum.ASC, sortModel.getSortDirection(3));
@@ -240,11 +240,11 @@ public class SortIntegrationTest {
     @Test
     public void shouldChangeSortDirectionByCommand() {
         ISortModel sortModel = this.gridLayerStack.getSortHeaderLayer().getSortModel();
-        assertTrue("Sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertTrue(sortModel.getSortedColumnIndexes().isEmpty(), "Sorting applied");
 
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 3));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(1, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(SortDirectionEnum.ASC, sortModel.getSortDirection(2));
@@ -252,7 +252,7 @@ public class SortIntegrationTest {
         // sort column again to change sort direction
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 3));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(1, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(SortDirectionEnum.DESC, sortModel.getSortDirection(2));
@@ -261,11 +261,11 @@ public class SortIntegrationTest {
     @Test
     public void shouldRemoveSortByCommand() {
         ISortModel sortModel = this.gridLayerStack.getSortHeaderLayer().getSortModel();
-        assertTrue("Sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertTrue(sortModel.getSortedColumnIndexes().isEmpty(), "Sorting applied");
 
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 3));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(1, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(SortDirectionEnum.ASC, sortModel.getSortDirection(2));
@@ -275,18 +275,18 @@ public class SortIntegrationTest {
         // sort column again to remove sorting
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 3));
 
-        assertTrue("Sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertTrue(sortModel.getSortedColumnIndexes().isEmpty(), "Sorting applied");
         assertEquals(0, sortModel.getSortedColumnIndexes().size());
     }
 
     @Test
     public void shouldAppendSortColumnsByCommand() {
         ISortModel sortModel = this.gridLayerStack.getSortHeaderLayer().getSortModel();
-        assertTrue("Sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertTrue(sortModel.getSortedColumnIndexes().isEmpty(), "Sorting applied");
 
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 3));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(1, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(SortDirectionEnum.ASC, sortModel.getSortDirection(2));
@@ -294,7 +294,7 @@ public class SortIntegrationTest {
         // sort additional column
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 4, true));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(2, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(3, sortModel.getSortedColumnIndexes().get(1).intValue());
@@ -304,7 +304,7 @@ public class SortIntegrationTest {
         // sort additional column
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 5, true));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(3, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(3, sortModel.getSortedColumnIndexes().get(1).intValue());
@@ -317,11 +317,11 @@ public class SortIntegrationTest {
     @Test
     public void shouldChangeLastAppendedSortColumnByCommand() {
         ISortModel sortModel = this.gridLayerStack.getSortHeaderLayer().getSortModel();
-        assertTrue("Sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertTrue(sortModel.getSortedColumnIndexes().isEmpty(), "Sorting applied");
 
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 3));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(1, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(SortDirectionEnum.ASC, sortModel.getSortDirection(2));
@@ -330,7 +330,7 @@ public class SortIntegrationTest {
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 4, true));
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 5, true));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(3, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(3, sortModel.getSortedColumnIndexes().get(1).intValue());
@@ -342,7 +342,7 @@ public class SortIntegrationTest {
         // sort last sorted column again to change sort direction
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 5, true));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(3, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(3, sortModel.getSortedColumnIndexes().get(1).intValue());
@@ -355,11 +355,11 @@ public class SortIntegrationTest {
     @Test
     public void shouldRemoveLastAppendedSortColumnByCommand() {
         ISortModel sortModel = this.gridLayerStack.getSortHeaderLayer().getSortModel();
-        assertTrue("Sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertTrue(sortModel.getSortedColumnIndexes().isEmpty(), "Sorting applied");
 
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 3));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(1, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(SortDirectionEnum.ASC, sortModel.getSortDirection(2));
@@ -368,7 +368,7 @@ public class SortIntegrationTest {
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 4, true));
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 5, true));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(3, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(3, sortModel.getSortedColumnIndexes().get(1).intValue());
@@ -381,7 +381,7 @@ public class SortIntegrationTest {
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 5, true));
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 5, true));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(2, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(3, sortModel.getSortedColumnIndexes().get(1).intValue());
@@ -392,11 +392,11 @@ public class SortIntegrationTest {
     @Test
     public void shouldChangeFirstAppendedSortColumnByCommand() {
         ISortModel sortModel = this.gridLayerStack.getSortHeaderLayer().getSortModel();
-        assertTrue("Sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertTrue(sortModel.getSortedColumnIndexes().isEmpty(), "Sorting applied");
 
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 3));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(1, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(SortDirectionEnum.ASC, sortModel.getSortDirection(2));
@@ -405,7 +405,7 @@ public class SortIntegrationTest {
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 4, true));
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 5, true));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(3, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(3, sortModel.getSortedColumnIndexes().get(1).intValue());
@@ -417,7 +417,7 @@ public class SortIntegrationTest {
         // sort first sorted column again to change sort direction
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 3, true));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(3, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(3, sortModel.getSortedColumnIndexes().get(1).intValue());
@@ -430,11 +430,11 @@ public class SortIntegrationTest {
     @Test
     public void shouldNotRemoveFirstAppendedSortColumnByCommand() {
         ISortModel sortModel = this.gridLayerStack.getSortHeaderLayer().getSortModel();
-        assertTrue("Sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertTrue(sortModel.getSortedColumnIndexes().isEmpty(), "Sorting applied");
 
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 3));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(1, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(SortDirectionEnum.ASC, sortModel.getSortDirection(2));
@@ -443,7 +443,7 @@ public class SortIntegrationTest {
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 4, true));
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 5, true));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(3, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(3, sortModel.getSortedColumnIndexes().get(1).intValue());
@@ -455,7 +455,7 @@ public class SortIntegrationTest {
         // sort first sorted column again to change sort direction
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 3, true));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(3, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(3, sortModel.getSortedColumnIndexes().get(1).intValue());
@@ -468,7 +468,7 @@ public class SortIntegrationTest {
         // not be removed
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 3, true));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(3, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(3, sortModel.getSortedColumnIndexes().get(1).intValue());
@@ -481,11 +481,11 @@ public class SortIntegrationTest {
     @Test
     public void shouldUpdateFirstAppendedSortColumnOnlyIfNotAccumulateByCommand() {
         ISortModel sortModel = this.gridLayerStack.getSortHeaderLayer().getSortModel();
-        assertTrue("Sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertTrue(sortModel.getSortedColumnIndexes().isEmpty(), "Sorting applied");
 
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 3));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(1, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(SortDirectionEnum.ASC, sortModel.getSortDirection(2));
@@ -494,7 +494,7 @@ public class SortIntegrationTest {
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 4, true));
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 5, true));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(3, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(3, sortModel.getSortedColumnIndexes().get(1).intValue());
@@ -507,7 +507,7 @@ public class SortIntegrationTest {
         // direction and remove other column sortings
         this.nattable.doCommand(new SortColumnCommand(this.nattable, 3));
 
-        assertFalse("No sorting applied", sortModel.getSortedColumnIndexes().isEmpty());
+        assertFalse(sortModel.getSortedColumnIndexes().isEmpty(), "No sorting applied");
         assertEquals(1, sortModel.getSortedColumnIndexes().size());
         assertEquals(2, sortModel.getSortedColumnIndexes().get(0).intValue());
         assertEquals(SortDirectionEnum.DESC, sortModel.getSortDirection(2));

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,37 +12,37 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class SizeConfigTest {
 
     private static final int DEFAULT_SIZE = 100;
     private SizeConfig sizeConfig;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.sizeConfig = new SizeConfig(DEFAULT_SIZE);
     }
 
     @Test
-    public void getAggregateSize() throws Exception {
+    public void getAggregateSize() {
         assertEquals(1000, this.sizeConfig.getAggregateSize(10));
     }
 
     @Test
-    public void sizeOverride() throws Exception {
+    public void sizeOverride() {
         this.sizeConfig.setSize(5, 120);
 
         assertEquals(120, this.sizeConfig.getSize(5));
     }
 
     @Test
-    public void getAggregateSizeWithSizeOverrides() throws Exception {
+    public void getAggregateSizeWithSizeOverrides() {
         this.sizeConfig.setSize(5, 120);
         this.sizeConfig.setSize(0, 10);
 
@@ -52,7 +52,7 @@ public class SizeConfigTest {
     }
 
     @Test
-    public void setIndexResizable() throws Exception {
+    public void setIndexResizable() {
         this.sizeConfig.setResizableByDefault(false);
         this.sizeConfig.setPositionResizable(2, true);
         this.sizeConfig.setSize(2, 120);
@@ -61,7 +61,7 @@ public class SizeConfigTest {
     }
 
     @Test
-    public void ingnoreResizeForNonResizableColumns() throws Exception {
+    public void ingnoreResizeForNonResizableColumns() {
         this.sizeConfig.setResizableByDefault(false);
         this.sizeConfig.setSize(2, 120);
 
@@ -69,7 +69,7 @@ public class SizeConfigTest {
     }
 
     @Test
-    public void allIndexesSameSize() throws Exception {
+    public void allIndexesSameSize() {
         assertTrue(this.sizeConfig.isAllPositionsSameSize());
 
         this.sizeConfig.setSize(2, 120);
@@ -164,6 +164,6 @@ public class SizeConfigTest {
 
         int aggregateSize = sc.getAggregateSize(nCols - 1);
 
-        assertTrue("aggregate size of last column is same as cached aggregate size", aggregateSize != cachedAggregateSize);
+        assertTrue(aggregateSize != cachedAggregateSize, "aggregate size of last column is same as cached aggregate size");
     }
 }

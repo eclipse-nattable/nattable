@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
@@ -33,10 +36,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class BoxingStyleTest {
 
@@ -47,7 +49,7 @@ public class BoxingStyleTest {
     private TextPainter cellPainter;
     private GC gc;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         this.natTable = new NatTableFixture();
         this.configRegistry = (ConfigRegistry) this.natTable.getConfigRegistry();
@@ -57,7 +59,7 @@ public class BoxingStyleTest {
         this.gc = new GC(Display.getDefault());
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         this.gc.dispose();
     }
@@ -79,12 +81,12 @@ public class BoxingStyleTest {
         IStyle cellStyle = this.configRegistry.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(), cell
                         .getConfigLabels());
-        Assert.assertEquals(backgroundColor, cellStyle
+        assertEquals(backgroundColor, cellStyle
                 .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
 
         // set up painter
         this.cellPainter.setupGCFromConfig(this.gc, cellStyle);
-        Assert.assertEquals(backgroundColor, this.gc.getBackground());
+        assertEquals(backgroundColor, this.gc.getBackground());
     }
 
     // Foreground color
@@ -104,12 +106,12 @@ public class BoxingStyleTest {
         IStyle cellStyle = this.configRegistry.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(), cell
                         .getConfigLabels());
-        Assert.assertEquals(foregroundColor, cellStyle
+        assertEquals(foregroundColor, cellStyle
                 .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
 
         // set up painter
         this.cellPainter.setupGCFromConfig(this.gc, cellStyle);
-        Assert.assertEquals(foregroundColor, this.gc.getForeground());
+        assertEquals(foregroundColor, this.gc.getForeground());
     }
 
     // Horizontal alignment
@@ -125,7 +127,7 @@ public class BoxingStyleTest {
 
         // Check cell horizontal alignment
         ILayerCell cell = this.natTable.getCellByPosition(2, 2);
-        Assert.assertEquals(
+        assertEquals(
                 hAlignment.name(),
                 this.configRegistry
                         .getConfigAttribute(CellConfigAttributes.CELL_STYLE,
@@ -149,7 +151,7 @@ public class BoxingStyleTest {
 
         // Check cell vertical alignment
         ILayerCell cell = this.natTable.getCellByPosition(2, 3);
-        Assert.assertEquals(
+        assertEquals(
                 vAlignment.name(),
                 this.configRegistry
                         .getConfigAttribute(CellConfigAttributes.CELL_STYLE,
@@ -201,11 +203,11 @@ public class BoxingStyleTest {
         ILayerCell cell = natTableFixture.getCellByPosition(columnIndex
                 + ROW_HEADER_COLUMN_COUNT, 2);
         TextPainter cellPainter = new TextPainter();
-        Assert.assertEquals("Automatic",
+        assertEquals("Automatic",
                 cellPainter.convertDataType(cell, configRegistry));
 
         // Assert that the display value is converted to an Object
-        Assert.assertTrue(dataValue instanceof PricingTypeBean);
+        assertTrue(dataValue instanceof PricingTypeBean);
     }
 
 }

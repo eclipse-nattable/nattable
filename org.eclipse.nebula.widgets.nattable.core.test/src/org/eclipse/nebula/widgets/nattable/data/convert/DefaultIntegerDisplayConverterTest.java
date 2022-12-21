@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,12 +12,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DefaultIntegerDisplayConverterTest {
 
@@ -43,15 +44,15 @@ public class DefaultIntegerDisplayConverterTest {
         assertEquals(null, this.intConverter.displayToCanonicalValue(""));
     }
 
-    @Test(expected = ConversionFailedException.class)
+    @Test
     public void testConversionException() {
-        this.intConverter.displayToCanonicalValue("abc");
+        assertThrows(ConversionFailedException.class, () -> this.intConverter.displayToCanonicalValue("abc"));
     }
 
-    @Test(expected = ConversionFailedException.class)
+    @Test
     public void testConversionExceptionTooBig() {
         this.intConverter.setNumberFormat(null);
-        this.intConverter.displayToCanonicalValue(Long.valueOf(Integer.MAX_VALUE) + 1);
+        assertThrows(ConversionFailedException.class, () -> this.intConverter.displayToCanonicalValue(Long.valueOf(Integer.MAX_VALUE) + 1));
     }
 
     @Test
@@ -61,10 +62,10 @@ public class DefaultIntegerDisplayConverterTest {
         assertEquals("1,234", this.intConverter.canonicalToDisplayValue(Integer.valueOf("1234")));
     }
 
-    @Test(expected = ConversionFailedException.class)
+    @Test
     public void testFailConvertLocalized() {
         this.intConverter.setNumberFormat(null);
-        assertEquals(Integer.valueOf("1234"), this.intConverter.displayToCanonicalValue("1,234"));
+        assertThrows(ConversionFailedException.class, () -> this.intConverter.displayToCanonicalValue("1,234"));
     }
 
     @Test

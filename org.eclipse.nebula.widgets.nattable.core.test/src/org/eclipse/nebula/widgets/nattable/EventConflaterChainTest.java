@@ -12,15 +12,15 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.nebula.widgets.nattable.conflation.EventConflaterChain;
 import org.eclipse.nebula.widgets.nattable.conflation.VisualChangeEventConflater;
 import org.eclipse.nebula.widgets.nattable.test.fixture.LayerEventFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class EventConflaterChainTest {
 
@@ -29,7 +29,7 @@ public class EventConflaterChainTest {
     private VisualChangeEventConflater conflater2;
     private NatTableFixture natTableFixture;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.conflaterChain = new EventConflaterChain(10, 10);
         this.natTableFixture = new NatTableFixture();
@@ -63,7 +63,7 @@ public class EventConflaterChainTest {
         assertEquals(0, this.conflater2.getCount());
     }
 
-    @After
+    @AfterEach
     public void teardown() {
         this.conflaterChain.stop();
     }

@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2020 CEA LIST.
+ * Copyright (c) 2015, 2022 CEA LIST.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,7 +13,8 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.formula.function;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -21,13 +22,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class FunctionTest {
 
     @Test
     public void shouldSumEmptyValues() {
-        FunctionValue function = new SumFunction(new ArrayList<FunctionValue>());
+        FunctionValue function = new SumFunction(new ArrayList<>());
         assertEquals(new BigDecimal(0), function.getValue());
     }
 
@@ -77,7 +78,7 @@ public class FunctionTest {
 
     @Test
     public void shouldAvgEmptyValues() {
-        FunctionValue function = new AverageFunction(new ArrayList<FunctionValue>());
+        FunctionValue function = new AverageFunction(new ArrayList<>());
         assertEquals(new BigDecimal(0), function.getValue());
     }
 
@@ -121,7 +122,7 @@ public class FunctionTest {
 
     @Test
     public void shouldMultiplyEmptyValues() {
-        FunctionValue function = new ProductFunction(new ArrayList<FunctionValue>());
+        FunctionValue function = new ProductFunction(new ArrayList<>());
         assertEquals(new BigDecimal(0), function.getValue());
     }
 
@@ -154,7 +155,7 @@ public class FunctionTest {
 
     @Test
     public void shouldDivideEmptyValues() {
-        FunctionValue function = new QuotientFunction(new ArrayList<FunctionValue>());
+        FunctionValue function = new QuotientFunction(new ArrayList<>());
         assertEquals(new BigDecimal(0), function.getValue());
     }
 
@@ -194,19 +195,19 @@ public class FunctionTest {
         assertEquals(new BigDecimal(5).divide(new BigDecimal(-3), 9, RoundingMode.HALF_UP), function.getValue());
     }
 
-    @Test(expected = FunctionException.class)
+    @Test
     public void shouldThrowExceptionOnDivisionByZero() {
         List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(5));
         values.add(new BigDecimalFunctionValue(0));
         FunctionValue function = new QuotientFunction(values);
-        assertEquals(new BigDecimal(5), function.getValue());
+        assertThrows(FunctionException.class, function::getValue);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldNegateEmptyValues() {
-        FunctionValue function = new NegateFunction(new ArrayList<FunctionValue>());
-        assertEquals(new BigDecimal(0), function.getValue());
+        FunctionValue function = new NegateFunction(new ArrayList<>());
+        assertThrows(IllegalArgumentException.class, function::getValue);
     }
 
     @Test
@@ -217,13 +218,12 @@ public class FunctionTest {
         assertEquals(new BigDecimal(-42), function.getValue());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldNegateTwoValues() {
         List<FunctionValue> values = new ArrayList<>();
         values.add(new BigDecimalFunctionValue(4));
         values.add(new BigDecimalFunctionValue(2));
-        FunctionValue function = new NegateFunction(values);
-        assertEquals(new BigDecimal(2), function.getValue());
+        assertThrows(IllegalArgumentException.class, () -> new NegateFunction(values));
     }
 
     @Test
@@ -250,7 +250,7 @@ public class FunctionTest {
 
     @Test
     public void shouldPowerEmptyValues() {
-        FunctionValue function = new PowerFunction(new ArrayList<FunctionValue>());
+        FunctionValue function = new PowerFunction(new ArrayList<>());
         assertEquals(new BigDecimal(0), function.getValue());
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2020 Frank Mosebach.
+ * Copyright (c) 2014, 2022 Frank Mosebach.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.viewport;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -19,21 +21,20 @@ import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public final class ViewportLayerDisposalTest {
 
     private Shell shell;
 
-    @Before
+    @BeforeEach
     public void init() {
         this.shell = new Shell(Display.getDefault());
     }
 
-    @After
+    @AfterEach
     public void dispose() {
         this.shell.dispose();
     }
@@ -80,7 +81,7 @@ public final class ViewportLayerDisposalTest {
 
         // Test that the background thread has successfully updated the table's
         // data layer.
-        Assert.assertEquals("The table's data layer should have been updated.", "VALUE", dataLayer.getDataValue(4, 49));
+        assertEquals("VALUE", dataLayer.getDataValue(4, 49), "The table's data layer should have been updated.");
     }
 
     private static final class TestDataLayer extends DataLayer {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,7 +13,9 @@
 package org.eclipse.nebula.widgets.nattable.selection;
 
 import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum.RIGHT;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 
@@ -23,10 +25,9 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class CellSelectionTest {
 
@@ -57,7 +58,7 @@ public class CellSelectionTest {
 
     };
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.selectionLayer = new SelectionLayer(new DataLayerFixture(10, 10, 100, 40));
         // Selection grid origin as starting point
@@ -65,14 +66,14 @@ public class CellSelectionTest {
         this.moveCommandHandler = new MoveCellSelectionCommandHandler(this.selectionLayer);
     }
 
-    @After
+    @AfterEach
     public void cleanUp() {
         this.selectionLayer.clear();
     }
 
     @Test
     public void shouldHaveOriginSelected() {
-        Assert.assertTrue(isLastCellInOrigin());
+        assertTrue(isLastCellInOrigin());
     }
 
     private boolean isLastCellInOrigin() {
@@ -108,17 +109,17 @@ public class CellSelectionTest {
         this.moveCommandHandler.moveSelection(
                 MoveDirectionEnum.LEFT, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY, false, false);
         // Should not have moved
-        Assert.assertTrue(isLastCellInOrigin());
+        assertTrue(isLastCellInOrigin());
 
         this.selectionLayer.setSelectedCell(1, 0);
 
         // Should move back to origin
         this.moveCommandHandler.moveSelection(
                 MoveDirectionEnum.LEFT, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY, false, false);
-        Assert.assertTrue(isLastCellInOrigin());
+        assertTrue(isLastCellInOrigin());
 
         // Previous selection was cleared
-        Assert.assertTrue(wasPreviousSelectionCleared());
+        assertTrue(wasPreviousSelectionCleared());
     }
 
     @Test
@@ -126,7 +127,7 @@ public class CellSelectionTest {
         this.moveCommandHandler.moveSelection(
                 MoveDirectionEnum.LEFT, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY, true, false);
         // Should not have moved
-        Assert.assertTrue(isLastCellInOrigin());
+        assertTrue(isLastCellInOrigin());
 
         this.selectionLayer.setSelectedCell(2, 0);
 
@@ -137,16 +138,16 @@ public class CellSelectionTest {
         // Last selected cell should now be the origin
         this.moveCommandHandler.moveSelection(
                 MoveDirectionEnum.LEFT, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY, true, false);
-        Assert.assertTrue(isLastCellInOrigin());
+        assertTrue(isLastCellInOrigin());
 
         // Selection anchor should not have changed
-        Assert.assertEquals(2, this.selectionLayer.getSelectionAnchor()
+        assertEquals(2, this.selectionLayer.getSelectionAnchor()
                 .getColumnPosition());
-        Assert.assertEquals(0, this.selectionLayer.getSelectionAnchor()
+        assertEquals(0, this.selectionLayer.getSelectionAnchor()
                 .getRowPosition());
 
         // Cells in between should have been appended
-        Assert.assertTrue(wasPreviousColumnSelectionAppended());
+        assertTrue(wasPreviousColumnSelectionAppended());
     }
 
     @Test
@@ -156,16 +157,16 @@ public class CellSelectionTest {
 
         // Previous selection was cleared and origin should no longer be
         // selected
-        Assert.assertFalse(isLastCellInOrigin());
+        assertFalse(isLastCellInOrigin());
 
         // The selection anchor moved right
-        Assert.assertEquals(1, this.selectionLayer.getSelectionAnchor()
+        assertEquals(1, this.selectionLayer.getSelectionAnchor()
                 .getColumnPosition());
-        Assert.assertEquals(0, this.selectionLayer.getSelectionAnchor()
+        assertEquals(0, this.selectionLayer.getSelectionAnchor()
                 .getRowPosition());
 
         // Previous selection was cleared
-        Assert.assertTrue(wasPreviousSelectionCleared());
+        assertTrue(wasPreviousSelectionCleared());
     }
 
     @Test
@@ -177,17 +178,17 @@ public class CellSelectionTest {
 
         // Since selection started at origin, then origin should be part of the
         // selected range
-        Assert.assertTrue(isSelectonAnchorInOrigin());
+        assertTrue(isSelectonAnchorInOrigin());
 
         // Selection should now end on the cell to the right of the selection
         // anchor
-        Assert.assertEquals(2, this.selectionLayer.getLastSelectedCellPosition()
+        assertEquals(2, this.selectionLayer.getLastSelectedCellPosition()
                 .getColumnPosition());
-        Assert.assertEquals(0, this.selectionLayer.getSelectionAnchor()
+        assertEquals(0, this.selectionLayer.getSelectionAnchor()
                 .getColumnPosition());
 
         // Cells in between should have been appended
-        Assert.assertTrue(wasPreviousColumnSelectionAppended());
+        assertTrue(wasPreviousColumnSelectionAppended());
     }
 
     @Test
@@ -196,7 +197,7 @@ public class CellSelectionTest {
                 MoveDirectionEnum.UP, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY, false, false);
 
         // Should not have moved
-        Assert.assertTrue(isLastCellInOrigin());
+        assertTrue(isLastCellInOrigin());
 
         this.selectionLayer.setSelectedCell(0, 2);
 
@@ -205,10 +206,10 @@ public class CellSelectionTest {
                 MoveDirectionEnum.UP, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY, false, false);
         this.moveCommandHandler.moveSelection(
                 MoveDirectionEnum.UP, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY, false, false);
-        Assert.assertTrue(isLastCellInOrigin());
+        assertTrue(isLastCellInOrigin());
 
         // Previous selection was cleared
-        Assert.assertTrue(wasPreviousSelectionCleared());
+        assertTrue(wasPreviousSelectionCleared());
     }
 
     @Test
@@ -218,16 +219,16 @@ public class CellSelectionTest {
                 MoveDirectionEnum.UP, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY, true, false);
 
         // Anchor should not have changed
-        Assert.assertEquals(1, this.selectionLayer.getSelectionAnchor()
+        assertEquals(1, this.selectionLayer.getSelectionAnchor()
                 .getRowPosition());
-        Assert.assertEquals(0, this.selectionLayer.getSelectionAnchor()
+        assertEquals(0, this.selectionLayer.getSelectionAnchor()
                 .getColumnPosition());
 
         // Last selected cell should be the origin
-        Assert.assertTrue(isLastCellInOrigin());
+        assertTrue(isLastCellInOrigin());
 
         // Cells in between should have been appended
-        Assert.assertTrue(wasPreviousRowSelectionAppended());
+        assertTrue(wasPreviousRowSelectionAppended());
     }
 
     @Test
@@ -237,16 +238,16 @@ public class CellSelectionTest {
 
         // Previous selection was cleared and origin should no longer be
         // selected
-        Assert.assertFalse(isLastCellInOrigin());
+        assertFalse(isLastCellInOrigin());
 
         // Las selected cell is one step below origin
-        Assert.assertEquals(0, this.selectionLayer.getLastSelectedCellPosition()
+        assertEquals(0, this.selectionLayer.getLastSelectedCellPosition()
                 .getColumnPosition());
-        Assert.assertEquals(1, this.selectionLayer.getLastSelectedCellPosition()
+        assertEquals(1, this.selectionLayer.getLastSelectedCellPosition()
                 .getRowPosition());
 
         // Previous selection was cleared
-        Assert.assertTrue(wasPreviousSelectionCleared());
+        assertTrue(wasPreviousSelectionCleared());
     }
 
     @Test
@@ -255,16 +256,16 @@ public class CellSelectionTest {
                 MoveDirectionEnum.DOWN, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY, true, false);
 
         // Selection anchor remains at origing
-        Assert.assertTrue(isSelectonAnchorInOrigin());
+        assertTrue(isSelectonAnchorInOrigin());
 
         // Las selected cell is one step below origin
-        Assert.assertEquals(0, this.selectionLayer.getLastSelectedCellPosition()
+        assertEquals(0, this.selectionLayer.getLastSelectedCellPosition()
                 .getColumnPosition());
-        Assert.assertEquals(1, this.selectionLayer.getLastSelectedCellPosition()
+        assertEquals(1, this.selectionLayer.getLastSelectedCellPosition()
                 .getRowPosition());
 
         // Cells in between should have been appended
-        Assert.assertTrue(wasPreviousRowSelectionAppended());
+        assertTrue(wasPreviousRowSelectionAppended());
     }
 
     @Test
@@ -273,7 +274,7 @@ public class CellSelectionTest {
                 MoveDirectionEnum.LEFT, this.AXIS_TRAVERSAL_ALL, false, false);
 
         // Should not have moved
-        Assert.assertTrue(isLastCellInOrigin());
+        assertTrue(isLastCellInOrigin());
 
         // Move to middle of grid
         this.selectionLayer.setSelectedCell(2, 0);
@@ -281,10 +282,10 @@ public class CellSelectionTest {
         // Should move back to origin
         this.moveCommandHandler.moveSelection(
                 MoveDirectionEnum.LEFT, this.AXIS_TRAVERSAL_ALL, false, false);
-        Assert.assertTrue(isLastCellInOrigin());
+        assertTrue(isLastCellInOrigin());
 
         // Previous selection was cleared
-        Assert.assertTrue(wasPreviousSelectionCleared());
+        assertTrue(wasPreviousSelectionCleared());
     }
 
     @Test
@@ -293,7 +294,7 @@ public class CellSelectionTest {
                 MoveDirectionEnum.LEFT, this.AXIS_TRAVERSAL_ALL, true, false);
 
         // Should not have moved
-        Assert.assertTrue(isLastCellInOrigin());
+        assertTrue(isLastCellInOrigin());
 
         // Move to middle of grid
         this.selectionLayer.setSelectedCell(2, 0);
@@ -301,16 +302,16 @@ public class CellSelectionTest {
         // Should move back to origin
         this.moveCommandHandler.moveSelection(
                 MoveDirectionEnum.LEFT, this.AXIS_TRAVERSAL_ALL, true, false);
-        Assert.assertTrue(isLastCellInOrigin());
+        assertTrue(isLastCellInOrigin());
 
         // Selection anchor should not have changed
-        Assert.assertEquals(2, this.selectionLayer.getSelectionAnchor()
+        assertEquals(2, this.selectionLayer.getSelectionAnchor()
                 .getColumnPosition());
-        Assert.assertEquals(0, this.selectionLayer.getSelectionAnchor()
+        assertEquals(0, this.selectionLayer.getSelectionAnchor()
                 .getRowPosition());
 
         // Cells in between should have been appended
-        Assert.assertTrue(wasPreviousColumnSelectionAppended());
+        assertTrue(wasPreviousColumnSelectionAppended());
     }
 
     @Test
@@ -319,17 +320,17 @@ public class CellSelectionTest {
                 MoveDirectionEnum.RIGHT, this.AXIS_TRAVERSAL_ALL, false, false);
 
         // Selection anchor moved to end of grid
-        Assert.assertEquals(9, this.selectionLayer.getSelectionAnchor()
+        assertEquals(9, this.selectionLayer.getSelectionAnchor()
                 .getColumnPosition());
-        Assert.assertEquals(0, this.selectionLayer.getSelectionAnchor()
+        assertEquals(0, this.selectionLayer.getSelectionAnchor()
                 .getRowPosition());
 
         // Previous selection was cleared and origin should no longer be
         // selected
-        Assert.assertFalse(isLastCellInOrigin());
+        assertFalse(isLastCellInOrigin());
 
         // Previous selection was cleared
-        Assert.assertTrue(wasPreviousSelectionCleared());
+        assertTrue(wasPreviousSelectionCleared());
     }
 
     @Test
@@ -338,16 +339,16 @@ public class CellSelectionTest {
                 MoveDirectionEnum.RIGHT, this.AXIS_TRAVERSAL_ALL, true, false);
 
         // Selection anchor should stay at the origin
-        Assert.assertTrue(isSelectonAnchorInOrigin());
+        assertTrue(isSelectonAnchorInOrigin());
 
         // Last selected cell is at end of grid
-        Assert.assertEquals(9, this.selectionLayer.getLastSelectedCellPosition()
+        assertEquals(9, this.selectionLayer.getLastSelectedCellPosition()
                 .getColumnPosition());
-        Assert.assertEquals(0, this.selectionLayer.getLastSelectedCellPosition()
+        assertEquals(0, this.selectionLayer.getLastSelectedCellPosition()
                 .getRowPosition());
 
         // Cells in between should have been appended
-        Assert.assertTrue(wasPreviousColumnSelectionAppended());
+        assertTrue(wasPreviousColumnSelectionAppended());
     }
 
     @Test
@@ -380,7 +381,7 @@ public class CellSelectionTest {
                 MoveDirectionEnum.UP, customTraversal, false, false);
 
         // Should not have moved
-        Assert.assertTrue(isLastCellInOrigin());
+        assertTrue(isLastCellInOrigin());
 
         // Move to middle of grid
         final int columnPosition = 2;
@@ -417,7 +418,7 @@ public class CellSelectionTest {
 
         // Previous selection was cleared and origin should no longer be
         // selected
-        Assert.assertFalse(isLastCellInOrigin());
+        assertFalse(isLastCellInOrigin());
 
         customTraversal = new ITraversalStrategy() {
 
@@ -447,13 +448,13 @@ public class CellSelectionTest {
         // available number of rows
         this.moveCommandHandler.moveSelection(
                 MoveDirectionEnum.UP, customTraversal, false, false);
-        Assert.assertEquals(2, this.selectionLayer.getLastSelectedCellPosition()
+        assertEquals(2, this.selectionLayer.getLastSelectedCellPosition()
                 .getColumnPosition());
-        Assert.assertEquals(0, this.selectionLayer.getLastSelectedCellPosition()
+        assertEquals(0, this.selectionLayer.getLastSelectedCellPosition()
                 .getRowPosition());
 
         // Previous selection was cleared
-        Assert.assertTrue(wasPreviousSelectionCleared());
+        assertTrue(wasPreviousSelectionCleared());
     }
 
     @Test
@@ -491,19 +492,19 @@ public class CellSelectionTest {
         // available number of rows
         this.moveCommandHandler.moveSelection(
                 MoveDirectionEnum.UP, customTraversal, true, false);
-        Assert.assertEquals(2, this.selectionLayer.getLastSelectedCellPosition()
+        assertEquals(2, this.selectionLayer.getLastSelectedCellPosition()
                 .getColumnPosition());
-        Assert.assertEquals(0, this.selectionLayer.getLastSelectedCellPosition()
+        assertEquals(0, this.selectionLayer.getLastSelectedCellPosition()
                 .getRowPosition());
 
         // Selection anchor should not have changed
-        Assert.assertEquals(2, this.selectionLayer.getSelectionAnchor()
+        assertEquals(2, this.selectionLayer.getSelectionAnchor()
                 .getColumnPosition());
-        Assert.assertEquals(4, this.selectionLayer.getSelectionAnchor()
+        assertEquals(4, this.selectionLayer.getSelectionAnchor()
                 .getRowPosition());
 
         // Cells in between should have been appended
-        Assert.assertTrue(wasPreviousRowSelectionAppended());
+        assertTrue(wasPreviousRowSelectionAppended());
     }
 
     @Test
@@ -563,13 +564,13 @@ public class CellSelectionTest {
         // number of rows
         this.moveCommandHandler.moveSelection(
                 MoveDirectionEnum.DOWN, customTraversal, false, false);
-        Assert.assertEquals(0, this.selectionLayer.getLastSelectedCellPosition()
+        assertEquals(0, this.selectionLayer.getLastSelectedCellPosition()
                 .getColumnPosition());
-        Assert.assertEquals(9, this.selectionLayer.getLastSelectedCellPosition()
+        assertEquals(9, this.selectionLayer.getLastSelectedCellPosition()
                 .getRowPosition());
 
         // Previous selection was cleared
-        Assert.assertTrue(wasPreviousSelectionCleared());
+        assertTrue(wasPreviousSelectionCleared());
     }
 
     @Test
@@ -602,16 +603,16 @@ public class CellSelectionTest {
                 MoveDirectionEnum.DOWN, customTraversal, true, false);
 
         // Selection anchor should not have changed
-        Assert.assertTrue(isSelectonAnchorInOrigin());
+        assertTrue(isSelectonAnchorInOrigin());
 
         // Last selected cell should be in the last row
-        Assert.assertEquals(0, this.selectionLayer.getLastSelectedCellPosition()
+        assertEquals(0, this.selectionLayer.getLastSelectedCellPosition()
                 .getColumnPosition());
-        Assert.assertEquals(6, this.selectionLayer.getLastSelectedCellPosition()
+        assertEquals(6, this.selectionLayer.getLastSelectedCellPosition()
                 .getRowPosition());
 
         // Previous selection was cleared
-        Assert.assertTrue(wasPreviousRowSelectionAppended());
+        assertTrue(wasPreviousRowSelectionAppended());
     }
 
     /**
@@ -646,19 +647,19 @@ public class CellSelectionTest {
                 false, true));
 
         PositionCoordinate[] cells = this.selectionLayer.getSelectedCellPositions();
-        Assert.assertEquals(4, cells.length);
+        assertEquals(4, cells.length);
         // (1, 0)
-        Assert.assertEquals(1, cells[0].columnPosition);
-        Assert.assertEquals(0, cells[0].rowPosition);
+        assertEquals(1, cells[0].columnPosition);
+        assertEquals(0, cells[0].rowPosition);
         // (2, 3)
-        Assert.assertEquals(2, cells[1].columnPosition);
-        Assert.assertEquals(3, cells[1].rowPosition);
+        assertEquals(2, cells[1].columnPosition);
+        assertEquals(3, cells[1].rowPosition);
         // (4, 1)
-        Assert.assertEquals(4, cells[2].columnPosition);
-        Assert.assertEquals(1, cells[2].rowPosition);
+        assertEquals(4, cells[2].columnPosition);
+        assertEquals(1, cells[2].rowPosition);
         // (9, 9)
-        Assert.assertEquals(9, cells[3].columnPosition);
-        Assert.assertEquals(9, cells[3].rowPosition);
+        assertEquals(9, cells[3].columnPosition);
+        assertEquals(9, cells[3].rowPosition);
     }
 
     @Test
@@ -680,24 +681,24 @@ public class CellSelectionTest {
         Collection<PositionCoordinate> cells = ArrayUtil
                 .asCollection(this.selectionLayer.getSelectedCellPositions());
 
-        Assert.assertEquals(6, cells.size());
+        assertEquals(6, cells.size());
         // (1, 0)
-        Assert.assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
+        assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
                 1, 0)));
         // (1, 1)
-        Assert.assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
+        assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
                 1, 1)));
         // (1, 2)
-        Assert.assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
+        assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
                 1, 2)));
         // (2, 0)
-        Assert.assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
+        assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
                 2, 0)));
         // (2, 1)
-        Assert.assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
+        assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
                 2, 1)));
         // (2, 2)
-        Assert.assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
+        assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
                 2, 2)));
     }
 
@@ -711,8 +712,8 @@ public class CellSelectionTest {
 
         Collection<PositionCoordinate> cells = ArrayUtil
                 .asCollection(this.selectionLayer.getSelectedCellPositions());
-        Assert.assertEquals(1, cells.size());
-        Assert.assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
+        assertEquals(1, cells.size());
+        assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
                 1, 0)));
 
         // select another cell with control mask
@@ -721,8 +722,8 @@ public class CellSelectionTest {
 
         cells = ArrayUtil.asCollection(this.selectionLayer
                 .getSelectedCellPositions());
-        Assert.assertEquals(1, cells.size());
-        Assert.assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
+        assertEquals(1, cells.size());
+        assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
                 2, 0)));
 
         // select additional cells with shift mask
@@ -732,8 +733,8 @@ public class CellSelectionTest {
 
         cells = ArrayUtil.asCollection(this.selectionLayer
                 .getSelectedCellPositions());
-        Assert.assertEquals(1, cells.size());
-        Assert.assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
+        assertEquals(1, cells.size());
+        assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
                 2, 0)));
 
         // select additional cells with shift mask
@@ -743,8 +744,8 @@ public class CellSelectionTest {
 
         cells = ArrayUtil.asCollection(this.selectionLayer
                 .getSelectedCellPositions());
-        Assert.assertEquals(1, cells.size());
-        Assert.assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
+        assertEquals(1, cells.size());
+        assertTrue(cells.contains(new PositionCoordinate(this.selectionLayer,
                 2, 0)));
     }
 }

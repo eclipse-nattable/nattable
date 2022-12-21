@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2020 Dirk Fauth.
+ * Copyright (c) 2017, 2022 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,14 +12,15 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.grid.data;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DefaultColumnHeaderDataProviderTest {
 
@@ -61,11 +62,11 @@ public class DefaultColumnHeaderDataProviderTest {
         assertEquals("Vorname", dataProvider.getDataValue(0, 1));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void shouldThrowExceptionOnSet() {
         IDataProvider dataProvider =
                 new DefaultColumnHeaderDataProvider(new String[] { "One", "Two", "Three" });
-        dataProvider.setDataValue(0, 0, "Foo");
+        assertThrows(UnsupportedOperationException.class, () -> dataProvider.setDataValue(0, 0, "Foo"));
     }
 
     @Test

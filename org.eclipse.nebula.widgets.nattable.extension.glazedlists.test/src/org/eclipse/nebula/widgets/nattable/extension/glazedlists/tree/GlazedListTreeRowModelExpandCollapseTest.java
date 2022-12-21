@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2022 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,10 +12,10 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.text.MessageFormat;
 import java.util.Comparator;
@@ -26,8 +26,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
@@ -40,7 +40,7 @@ public class GlazedListTreeRowModelExpandCollapseTest {
     private GlazedListTreeData treeData;
     private GlazedListTreeRowModel treeRowModel;
 
-    @Before
+    @BeforeEach
     public void setup() {
         EventList<Person> eventList = GlazedLists.eventList(PersonService.getFixedPersons());
 
@@ -53,7 +53,7 @@ public class GlazedListTreeRowModelExpandCollapseTest {
     @Test
     public void testInitialExpanded() {
         for (int i = 0; i < this.treeList.size(); i++) {
-            assertFalse("Node is not expanded", this.treeRowModel.isCollapsed(i));
+            assertFalse(this.treeRowModel.isCollapsed(i), "Node is not expanded");
         }
     }
 
@@ -65,8 +65,8 @@ public class GlazedListTreeRowModelExpandCollapseTest {
 
         for (int i = 0; i < this.treeList.size(); i++) {
             assertTrue(
-                    MessageFormat.format("Node at index {0} is expanded", i),
-                    this.treeRowModel.isCollapsed(i));
+                    this.treeRowModel.isCollapsed(i),
+                    MessageFormat.format("Node at index {0} is expanded", i));
         }
     }
 
@@ -76,8 +76,8 @@ public class GlazedListTreeRowModelExpandCollapseTest {
 
         for (int i = 0; i < this.treeList.size(); i++) {
             assertTrue(
-                    MessageFormat.format("Node at index {0} is expanded", i),
-                    this.treeRowModel.isCollapsed(i));
+                    this.treeRowModel.isCollapsed(i),
+                    MessageFormat.format("Node at index {0} is expanded", i));
         }
     }
 
@@ -88,8 +88,8 @@ public class GlazedListTreeRowModelExpandCollapseTest {
 
         for (int i = 0; i < this.treeList.size(); i++) {
             assertFalse(
-                    MessageFormat.format("Node at index {0} is collapsed", i),
-                    this.treeRowModel.isCollapsed(i));
+                    this.treeRowModel.isCollapsed(i),
+                    MessageFormat.format("Node at index {0} is collapsed", i));
         }
     }
 
@@ -101,8 +101,8 @@ public class GlazedListTreeRowModelExpandCollapseTest {
 
         for (int i = 0; i < this.treeList.size(); i++) {
             assertTrue(
-                    MessageFormat.format("Node at index {0} is expanded", i),
-                    this.treeRowModel.isCollapsed(i));
+                    this.treeRowModel.isCollapsed(i),
+                    MessageFormat.format("Node at index {0} is expanded", i));
         }
     }
 
@@ -115,8 +115,8 @@ public class GlazedListTreeRowModelExpandCollapseTest {
 
         for (int i = 0; i < this.treeList.size(); i++) {
             assertFalse(
-                    MessageFormat.format("Node at index {0} is collapsed", i),
-                    this.treeRowModel.isCollapsed(i));
+                    this.treeRowModel.isCollapsed(i),
+                    MessageFormat.format("Node at index {0} is collapsed", i));
         }
     }
 
@@ -129,33 +129,33 @@ public class GlazedListTreeRowModelExpandCollapseTest {
 
     @Test
     public void testExpandCollapseByIndex() {
-        assertFalse("Flanders is not expanded", this.treeRowModel.isCollapsed(0));
+        assertFalse(this.treeRowModel.isCollapsed(0), "Flanders is not expanded");
 
         // collapse Flanders
         this.treeRowModel.collapse(0);
 
-        assertTrue("Flanders is not expanded", this.treeRowModel.isCollapsed(0));
+        assertTrue(this.treeRowModel.isCollapsed(0), "Flanders is not expanded");
 
         // expand Flanders
         this.treeRowModel.expand(0);
 
-        assertFalse("Flanders is not expanded", this.treeRowModel.isCollapsed(0));
+        assertFalse(this.treeRowModel.isCollapsed(0), "Flanders is not expanded");
     }
 
     @Test
     public void testExpandCollapseByObject() {
         LastNameGroup flanders = new LastNameGroup(2, "Flanders");
-        assertFalse("Flanders is not expanded", this.treeRowModel.isCollapsed(flanders));
+        assertFalse(this.treeRowModel.isCollapsed(flanders), "Flanders is not expanded");
 
         // collapse Flanders
         this.treeRowModel.collapse(flanders);
 
-        assertTrue("Flanders is not expanded", this.treeRowModel.isCollapsed(flanders));
+        assertTrue(this.treeRowModel.isCollapsed(flanders), "Flanders is not expanded");
 
         // expand Flanders
         this.treeRowModel.expand(flanders);
 
-        assertFalse("Flanders is not expanded", this.treeRowModel.isCollapsed(flanders));
+        assertFalse(this.treeRowModel.isCollapsed(flanders), "Flanders is not expanded");
     }
 
     @Test
@@ -166,20 +166,20 @@ public class GlazedListTreeRowModelExpandCollapseTest {
 
         for (int i = 0; i < this.treeList.size(); i++) {
             assertTrue(
-                    MessageFormat.format("Node at index {0} is expanded", i),
-                    this.treeRowModel.isCollapsed(i));
+                    this.treeRowModel.isCollapsed(i),
+                    MessageFormat.format("Node at index {0} is expanded", i));
         }
 
         this.treeRowModel.expandToLevel(1);
         for (int i = 0; i < this.treeList.size(); i++) {
             if (this.treeList.get(i) instanceof LastNameGroup) {
                 assertFalse(
-                        MessageFormat.format("Node at index {0} is collapsed", i),
-                        this.treeRowModel.isCollapsed(i));
+                        this.treeRowModel.isCollapsed(i),
+                        MessageFormat.format("Node at index {0} is collapsed", i));
             } else if (this.treeList.get(i) instanceof FirstNameGroup) {
                 assertTrue(
-                        MessageFormat.format("Node at index {0} is expanded", i),
-                        this.treeRowModel.isCollapsed(i));
+                        this.treeRowModel.isCollapsed(i),
+                        MessageFormat.format("Node at index {0} is expanded", i));
             } else {
                 // there should be no other values visible right now
                 fail("Another object than LastNameGroup and FirstNameGroup is visible");

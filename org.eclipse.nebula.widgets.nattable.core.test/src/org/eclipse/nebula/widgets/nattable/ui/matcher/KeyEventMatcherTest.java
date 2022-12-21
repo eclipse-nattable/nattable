@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,13 +12,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.matcher;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class KeyEventMatcherTest {
 
@@ -41,7 +41,7 @@ public class KeyEventMatcherTest {
 
     @Test
     public void testMap() {
-        Map<IKeyEventMatcher, String> map = new HashMap<IKeyEventMatcher, String>();
+        Map<IKeyEventMatcher, String> map = new HashMap<>();
         map.put(new KeyEventMatcher(12, 101), "ABC");
         assertEquals(1, map.size());
         map.remove(new KeyEventMatcher(12, 101));

@@ -13,11 +13,11 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hierarchical;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -80,8 +80,8 @@ import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandCollapseComman
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandToLevelCommand;
 import org.eclipse.nebula.widgets.nattable.tree.config.DefaultTreeLayerConfiguration;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class HierarchicalTreeLayerTest {
 
@@ -96,7 +96,7 @@ public class HierarchicalTreeLayerTest {
 
     private LayerListenerFixture layerListener;
 
-    @Before
+    @BeforeEach
     public void setup() {
         // de-normalize the object graph without parent structure objects
         this.data = HierarchicalHelper.deNormalize(CarService.getInput(), false, CarService.getPropertyNamesCompact());

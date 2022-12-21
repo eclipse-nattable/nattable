@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2020 Dirk Fauth.
+ * Copyright (c) 2014, 2022 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -45,9 +45,9 @@ import org.eclipse.nebula.widgets.nattable.test.integration.SWTUtils;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Text;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class EditTraversalStrategyUpDownTest {
 
@@ -60,7 +60,7 @@ public class EditTraversalStrategyUpDownTest {
 
     private RowOverrideLabelAccumulator<RowDataFixture> overrider;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         // only use 10 columns to make the test cases easier
         String[] propertyNames = Arrays.copyOfRange(RowDataListFixture.getPropertyNames(), 0, 10);
@@ -127,7 +127,7 @@ public class EditTraversalStrategyUpDownTest {
         this.dataLayer.setConfigLabelAccumulator(accumulator);
     }
 
-    @After
+    @AfterEach
     public void cleanUp() {
         this.selectionLayer.clear();
         // since we are not interested in commit operations it is sufficient to

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,11 +12,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.event;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 
@@ -27,16 +27,16 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ResizeEventDiffTest {
 
     private ColumnResizeEvent event;
     private ViewportLayer viewportLayer;
 
-    @Before
+    @BeforeEach
     public void before() {
         DataLayerFixture dataLayer = new DataLayerFixture(20, 20, 100, 40);
         this.viewportLayer = new ViewportLayer(dataLayer);
@@ -53,7 +53,7 @@ public class ResizeEventDiffTest {
         this.event = new ColumnResizeEvent(dataLayer, 2);
     }
 
-    @After
+    @AfterEach
     public void after() {
         assertTrue(this.event.isHorizontalStructureChanged());
 

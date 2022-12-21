@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2022 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,17 +12,17 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.fixture.layer;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RowReorderLayerFixtureTest {
 
     private ILayer rowReorderLayerFixture;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.rowReorderLayerFixture = new RowReorderLayerFixture();
     }

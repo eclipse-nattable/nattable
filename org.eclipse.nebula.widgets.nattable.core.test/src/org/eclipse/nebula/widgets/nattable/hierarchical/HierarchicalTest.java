@@ -13,8 +13,8 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hierarchical;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +26,7 @@ import org.eclipse.nebula.widgets.nattable.dataset.car.CarService;
 import org.eclipse.nebula.widgets.nattable.dataset.car.Classification;
 import org.eclipse.nebula.widgets.nattable.dataset.car.Feedback;
 import org.eclipse.nebula.widgets.nattable.dataset.car.Motor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HierarchicalTest {
 

@@ -13,7 +13,7 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 
@@ -39,8 +39,8 @@ import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ResizeColumnHideShowLayerIntegrationTest {
 
@@ -58,7 +58,7 @@ public class ResizeColumnHideShowLayerIntegrationTest {
     private FreezeLayer freezeLayer;
     private CompositeFreezeLayer compositeFreezeLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
         this.bodyDataLayer.setColumnPercentageSizing(true);

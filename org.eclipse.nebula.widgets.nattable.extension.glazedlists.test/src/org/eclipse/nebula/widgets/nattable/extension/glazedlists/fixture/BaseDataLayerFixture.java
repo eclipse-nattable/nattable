@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,8 +17,6 @@ import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
-import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 
 /**
  * A DataLayer for use in unit tests with a pre-canned
@@ -34,10 +32,9 @@ public class BaseDataLayerFixture extends DataLayer {
         initCellLabelAccumulator();
     }
 
-    private IDataProvider initDataProvider(final int colCount,
-            final int rowCount) {
+    private IDataProvider initDataProvider(final int colCount, final int rowCount) {
         return new IDataProvider() {
-            Map<String, Object> dataStore = new HashMap<String, Object>();
+            Map<String, Object> dataStore = new HashMap<>();
 
             @Override
             public int getColumnCount() {
@@ -70,15 +67,7 @@ public class BaseDataLayerFixture extends DataLayer {
     }
 
     private void initCellLabelAccumulator() {
-        setConfigLabelAccumulator(new IConfigLabelAccumulator() {
-
-            @Override
-            public void accumulateConfigLabels(LabelStack configLabels,
-                    int columnPosition, int rowPosition) {
-                configLabels.addLabel("DEFAULT");
-            }
-
-        });
+        setConfigLabelAccumulator((configLabels, columnPosition, rowPosition) -> configLabels.addLabel("DEFAULT"));
     }
 
 }

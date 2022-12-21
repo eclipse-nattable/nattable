@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,82 +12,82 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.fixture.layer;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ColumnReorderLayerFixtureTest {
 
     private ILayer columnReorderLayerFixture;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.columnReorderLayerFixture = new ColumnReorderLayerFixture();
     }
 
     @Test
     public void testColumnIndexes() {
-        Assert.assertEquals(4,
+        assertEquals(4,
                 this.columnReorderLayerFixture.getColumnIndexByPosition(0));
-        Assert.assertEquals(1,
+        assertEquals(1,
                 this.columnReorderLayerFixture.getColumnIndexByPosition(1));
-        Assert.assertEquals(0,
+        assertEquals(0,
                 this.columnReorderLayerFixture.getColumnIndexByPosition(2));
-        Assert.assertEquals(2,
+        assertEquals(2,
                 this.columnReorderLayerFixture.getColumnIndexByPosition(3));
-        Assert.assertEquals(3,
+        assertEquals(3,
                 this.columnReorderLayerFixture.getColumnIndexByPosition(4));
     }
 
     @Test
     public void testColumnWidths() {
-        Assert.assertEquals(80,
+        assertEquals(80,
                 this.columnReorderLayerFixture.getColumnWidthByPosition(0));
-        Assert.assertEquals(100,
+        assertEquals(100,
                 this.columnReorderLayerFixture.getColumnWidthByPosition(1));
-        Assert.assertEquals(150,
+        assertEquals(150,
                 this.columnReorderLayerFixture.getColumnWidthByPosition(2));
-        Assert.assertEquals(35,
+        assertEquals(35,
                 this.columnReorderLayerFixture.getColumnWidthByPosition(3));
-        Assert.assertEquals(100,
+        assertEquals(100,
                 this.columnReorderLayerFixture.getColumnWidthByPosition(4));
     }
 
     @Test
     public void testRowIndexes() {
-        Assert.assertEquals(0,
+        assertEquals(0,
                 this.columnReorderLayerFixture.getRowIndexByPosition(0));
-        Assert.assertEquals(1,
+        assertEquals(1,
                 this.columnReorderLayerFixture.getRowIndexByPosition(1));
-        Assert.assertEquals(2,
+        assertEquals(2,
                 this.columnReorderLayerFixture.getRowIndexByPosition(2));
-        Assert.assertEquals(3,
+        assertEquals(3,
                 this.columnReorderLayerFixture.getRowIndexByPosition(3));
-        Assert.assertEquals(4,
+        assertEquals(4,
                 this.columnReorderLayerFixture.getRowIndexByPosition(4));
-        Assert.assertEquals(5,
+        assertEquals(5,
                 this.columnReorderLayerFixture.getRowIndexByPosition(5));
-        Assert.assertEquals(6,
+        assertEquals(6,
                 this.columnReorderLayerFixture.getRowIndexByPosition(6));
     }
 
     @Test
     public void testRowHeights() {
-        Assert.assertEquals(40,
+        assertEquals(40,
                 this.columnReorderLayerFixture.getRowHeightByPosition(0));
-        Assert.assertEquals(70,
+        assertEquals(70,
                 this.columnReorderLayerFixture.getRowHeightByPosition(1));
-        Assert.assertEquals(25,
+        assertEquals(25,
                 this.columnReorderLayerFixture.getRowHeightByPosition(2));
-        Assert.assertEquals(40,
+        assertEquals(40,
                 this.columnReorderLayerFixture.getRowHeightByPosition(3));
-        Assert.assertEquals(50,
+        assertEquals(50,
                 this.columnReorderLayerFixture.getRowHeightByPosition(4));
-        Assert.assertEquals(40,
+        assertEquals(40,
                 this.columnReorderLayerFixture.getRowHeightByPosition(5));
-        Assert.assertEquals(100,
+        assertEquals(100,
                 this.columnReorderLayerFixture.getRowHeightByPosition(6));
     }
-
 }

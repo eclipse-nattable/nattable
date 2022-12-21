@@ -12,15 +12,15 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.nebula.widgets.nattable.layer.stack.ColumnGroupBodyLayerStack;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.group.ColumnGroupModelFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ColumnGroupUtilsTest {
 
@@ -34,7 +34,7 @@ public class ColumnGroupUtilsTest {
      * ------------------------------------------------------------------ |<- G1
      * ->| |<-- G2 -->| |<- G4 ->|<--- G3 --->|
      */
-    @Before
+    @BeforeEach
     public void setup() {
         this.model = new ColumnGroupModelFixture();
         this.model.addColumnsIndexesToGroup("G4", 8, 9);

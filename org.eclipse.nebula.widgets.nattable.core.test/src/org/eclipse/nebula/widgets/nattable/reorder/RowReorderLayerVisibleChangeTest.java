@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 
@@ -21,7 +21,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.reorder.event.RowReorderEvent;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.BaseDataLayerFixture;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class RowReorderLayerVisibleChangeTest {
 

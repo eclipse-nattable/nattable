@@ -12,17 +12,21 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Properties;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ColumnGroupModelPersistenceTest {
 
     private ColumnGroupModel model;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.model = new ColumnGroupModel();
     }
@@ -37,8 +41,8 @@ public class ColumnGroupModelPersistenceTest {
         Properties properties = new Properties();
         this.model.saveState("prefix", properties);
 
-        Assert.assertEquals(1, properties.size());
-        Assert.assertEquals(
+        assertEquals(1, properties.size());
+        assertEquals(
                 "groupA=expanded:collapseable:breakable:1,2,3,|groupB=collapsed:collapseable:unbreakable:5,7,9,|",
                 properties.getProperty("prefix.columnGroups"));
     }
@@ -54,8 +58,8 @@ public class ColumnGroupModelPersistenceTest {
         Properties properties = new Properties();
         this.model.saveState("prefix", properties);
 
-        Assert.assertEquals(1, properties.size());
-        Assert.assertEquals(
+        assertEquals(1, properties.size());
+        assertEquals(
                 "groupA=expanded:collapseable:breakable:1,2,3,:1,2,|groupB=collapsed:collapseable:unbreakable:5,7,9,|",
                 properties.getProperty("prefix.columnGroups"));
     }
@@ -70,36 +74,36 @@ public class ColumnGroupModelPersistenceTest {
 
         this.model.loadState("prefix", properties);
 
-        Assert.assertTrue(this.model.isAGroup("groupA"));
-        Assert.assertTrue(this.model.isAGroup("groupB"));
+        assertTrue(this.model.isAGroup("groupA"));
+        assertTrue(this.model.isAGroup("groupB"));
 
-        Assert.assertNull(this.model.getColumnGroupByIndex(0));
-        Assert.assertEquals("groupA", this.model.getColumnGroupByIndex(1).getName());
-        Assert.assertEquals("groupA", this.model.getColumnGroupByIndex(2).getName());
-        Assert.assertEquals("groupA", this.model.getColumnGroupByIndex(3).getName());
-        Assert.assertNull(this.model.getColumnGroupByIndex(4));
-        Assert.assertEquals("groupB", this.model.getColumnGroupByIndex(5).getName());
-        Assert.assertNull(this.model.getColumnGroupByIndex(6));
-        Assert.assertEquals("groupB", this.model.getColumnGroupByIndex(7).getName());
-        Assert.assertNull(this.model.getColumnGroupByIndex(8));
-        Assert.assertEquals("groupB", this.model.getColumnGroupByIndex(9).getName());
-        Assert.assertNull(this.model.getColumnGroupByIndex(10));
+        assertNull(this.model.getColumnGroupByIndex(0));
+        assertEquals("groupA", this.model.getColumnGroupByIndex(1).getName());
+        assertEquals("groupA", this.model.getColumnGroupByIndex(2).getName());
+        assertEquals("groupA", this.model.getColumnGroupByIndex(3).getName());
+        assertNull(this.model.getColumnGroupByIndex(4));
+        assertEquals("groupB", this.model.getColumnGroupByIndex(5).getName());
+        assertNull(this.model.getColumnGroupByIndex(6));
+        assertEquals("groupB", this.model.getColumnGroupByIndex(7).getName());
+        assertNull(this.model.getColumnGroupByIndex(8));
+        assertEquals("groupB", this.model.getColumnGroupByIndex(9).getName());
+        assertNull(this.model.getColumnGroupByIndex(10));
 
-        Assert.assertFalse(this.model.getColumnGroupByName("groupA").isCollapsed());
-        Assert.assertTrue(this.model.getColumnGroupByName("groupB").isCollapsed());
+        assertFalse(this.model.getColumnGroupByName("groupA").isCollapsed());
+        assertTrue(this.model.getColumnGroupByName("groupB").isCollapsed());
 
-        Assert.assertTrue(this.model.getColumnGroupByName("groupA").isCollapseable());
-        Assert.assertTrue(this.model.getColumnGroupByName("groupB").isCollapseable());
+        assertTrue(this.model.getColumnGroupByName("groupA").isCollapseable());
+        assertTrue(this.model.getColumnGroupByName("groupB").isCollapseable());
 
-        Assert.assertFalse(this.model.isPartOfAnUnbreakableGroup(1));
-        Assert.assertFalse(this.model.isPartOfAnUnbreakableGroup(2));
-        Assert.assertFalse(this.model.isPartOfAnUnbreakableGroup(3));
+        assertFalse(this.model.isPartOfAnUnbreakableGroup(1));
+        assertFalse(this.model.isPartOfAnUnbreakableGroup(2));
+        assertFalse(this.model.isPartOfAnUnbreakableGroup(3));
 
-        Assert.assertFalse(this.model.isPartOfAnUnbreakableGroup(4));
+        assertFalse(this.model.isPartOfAnUnbreakableGroup(4));
 
-        Assert.assertTrue(this.model.isPartOfAnUnbreakableGroup(5));
-        Assert.assertTrue(this.model.isPartOfAnUnbreakableGroup(7));
-        Assert.assertTrue(this.model.isPartOfAnUnbreakableGroup(9));
+        assertTrue(this.model.isPartOfAnUnbreakableGroup(5));
+        assertTrue(this.model.isPartOfAnUnbreakableGroup(7));
+        assertTrue(this.model.isPartOfAnUnbreakableGroup(9));
     }
 
     @Test
@@ -112,42 +116,42 @@ public class ColumnGroupModelPersistenceTest {
 
         this.model.loadState("prefix", properties);
 
-        Assert.assertTrue(this.model.isAGroup("groupA"));
-        Assert.assertTrue(this.model.isAGroup("groupB"));
+        assertTrue(this.model.isAGroup("groupA"));
+        assertTrue(this.model.isAGroup("groupB"));
 
-        Assert.assertNull(this.model.getColumnGroupByIndex(0));
-        Assert.assertEquals("groupA", this.model.getColumnGroupByIndex(1).getName());
-        Assert.assertEquals("groupA", this.model.getColumnGroupByIndex(2).getName());
-        Assert.assertEquals("groupA", this.model.getColumnGroupByIndex(3).getName());
-        Assert.assertNull(this.model.getColumnGroupByIndex(4));
-        Assert.assertEquals("groupB", this.model.getColumnGroupByIndex(5).getName());
-        Assert.assertNull(this.model.getColumnGroupByIndex(6));
-        Assert.assertEquals("groupB", this.model.getColumnGroupByIndex(7).getName());
-        Assert.assertNull(this.model.getColumnGroupByIndex(8));
-        Assert.assertEquals("groupB", this.model.getColumnGroupByIndex(9).getName());
-        Assert.assertNull(this.model.getColumnGroupByIndex(10));
+        assertNull(this.model.getColumnGroupByIndex(0));
+        assertEquals("groupA", this.model.getColumnGroupByIndex(1).getName());
+        assertEquals("groupA", this.model.getColumnGroupByIndex(2).getName());
+        assertEquals("groupA", this.model.getColumnGroupByIndex(3).getName());
+        assertNull(this.model.getColumnGroupByIndex(4));
+        assertEquals("groupB", this.model.getColumnGroupByIndex(5).getName());
+        assertNull(this.model.getColumnGroupByIndex(6));
+        assertEquals("groupB", this.model.getColumnGroupByIndex(7).getName());
+        assertNull(this.model.getColumnGroupByIndex(8));
+        assertEquals("groupB", this.model.getColumnGroupByIndex(9).getName());
+        assertNull(this.model.getColumnGroupByIndex(10));
 
-        Assert.assertFalse(this.model.getColumnGroupByName("groupA").isCollapsed());
-        Assert.assertTrue(this.model.getColumnGroupByName("groupB").isCollapsed());
+        assertFalse(this.model.getColumnGroupByName("groupA").isCollapsed());
+        assertTrue(this.model.getColumnGroupByName("groupB").isCollapsed());
 
-        Assert.assertTrue(this.model.getColumnGroupByName("groupA").isCollapseable());
-        Assert.assertTrue(this.model.getColumnGroupByName("groupB").isCollapseable());
+        assertTrue(this.model.getColumnGroupByName("groupA").isCollapseable());
+        assertTrue(this.model.getColumnGroupByName("groupB").isCollapseable());
 
-        Assert.assertFalse(this.model.isPartOfAnUnbreakableGroup(1));
-        Assert.assertFalse(this.model.isPartOfAnUnbreakableGroup(2));
-        Assert.assertFalse(this.model.isPartOfAnUnbreakableGroup(3));
+        assertFalse(this.model.isPartOfAnUnbreakableGroup(1));
+        assertFalse(this.model.isPartOfAnUnbreakableGroup(2));
+        assertFalse(this.model.isPartOfAnUnbreakableGroup(3));
 
-        Assert.assertFalse(this.model.isPartOfAnUnbreakableGroup(4));
+        assertFalse(this.model.isPartOfAnUnbreakableGroup(4));
 
-        Assert.assertTrue(this.model.isPartOfAnUnbreakableGroup(5));
-        Assert.assertTrue(this.model.isPartOfAnUnbreakableGroup(7));
-        Assert.assertTrue(this.model.isPartOfAnUnbreakableGroup(9));
+        assertTrue(this.model.isPartOfAnUnbreakableGroup(5));
+        assertTrue(this.model.isPartOfAnUnbreakableGroup(7));
+        assertTrue(this.model.isPartOfAnUnbreakableGroup(9));
 
-        Assert.assertEquals(2, this.model.getColumnGroupByName("groupA")
+        assertEquals(2, this.model.getColumnGroupByName("groupA")
                 .getStaticColumnIndexes().size());
-        Assert.assertEquals(1, this.model.getColumnGroupByName("groupA")
+        assertEquals(1, this.model.getColumnGroupByName("groupA")
                 .getStaticColumnIndexes().get(0).intValue());
-        Assert.assertEquals(2, this.model.getColumnGroupByName("groupA")
+        assertEquals(2, this.model.getColumnGroupByName("groupA")
                 .getStaticColumnIndexes().get(1).intValue());
     }
 
@@ -162,58 +166,58 @@ public class ColumnGroupModelPersistenceTest {
         Properties properties = new Properties();
         this.model.saveState("prefix", properties);
 
-        Assert.assertEquals(1, properties.size());
-        Assert.assertEquals(
+        assertEquals(1, properties.size());
+        assertEquals(
                 "groupA=expanded:collapseable:breakable:1,2,3,|groupB=collapsed:collapseable:unbreakable:5,7,9,:7,|",
                 properties.getProperty("prefix.columnGroups"));
 
         ColumnGroupModel loadedModel = new ColumnGroupModel();
         loadedModel.loadState("prefix", properties);
 
-        Assert.assertTrue(loadedModel.isAGroup("groupA"));
-        Assert.assertTrue(loadedModel.isAGroup("groupB"));
+        assertTrue(loadedModel.isAGroup("groupA"));
+        assertTrue(loadedModel.isAGroup("groupB"));
 
-        Assert.assertNull(loadedModel.getColumnGroupByIndex(0));
-        Assert.assertEquals("groupA", loadedModel.getColumnGroupByIndex(1)
+        assertNull(loadedModel.getColumnGroupByIndex(0));
+        assertEquals("groupA", loadedModel.getColumnGroupByIndex(1)
                 .getName());
-        Assert.assertEquals("groupA", loadedModel.getColumnGroupByIndex(2)
+        assertEquals("groupA", loadedModel.getColumnGroupByIndex(2)
                 .getName());
-        Assert.assertEquals("groupA", loadedModel.getColumnGroupByIndex(3)
+        assertEquals("groupA", loadedModel.getColumnGroupByIndex(3)
                 .getName());
-        Assert.assertNull(loadedModel.getColumnGroupByIndex(4));
-        Assert.assertEquals("groupB", loadedModel.getColumnGroupByIndex(5)
+        assertNull(loadedModel.getColumnGroupByIndex(4));
+        assertEquals("groupB", loadedModel.getColumnGroupByIndex(5)
                 .getName());
-        Assert.assertNull(loadedModel.getColumnGroupByIndex(6));
-        Assert.assertEquals("groupB", loadedModel.getColumnGroupByIndex(7)
+        assertNull(loadedModel.getColumnGroupByIndex(6));
+        assertEquals("groupB", loadedModel.getColumnGroupByIndex(7)
                 .getName());
-        Assert.assertNull(loadedModel.getColumnGroupByIndex(8));
-        Assert.assertEquals("groupB", loadedModel.getColumnGroupByIndex(9)
+        assertNull(loadedModel.getColumnGroupByIndex(8));
+        assertEquals("groupB", loadedModel.getColumnGroupByIndex(9)
                 .getName());
-        Assert.assertNull(loadedModel.getColumnGroupByIndex(10));
+        assertNull(loadedModel.getColumnGroupByIndex(10));
 
-        Assert.assertFalse(loadedModel.getColumnGroupByName("groupA")
+        assertFalse(loadedModel.getColumnGroupByName("groupA")
                 .isCollapsed());
-        Assert.assertTrue(loadedModel.getColumnGroupByName("groupB")
+        assertTrue(loadedModel.getColumnGroupByName("groupB")
                 .isCollapsed());
 
-        Assert.assertTrue(loadedModel.getColumnGroupByName("groupA")
+        assertTrue(loadedModel.getColumnGroupByName("groupA")
                 .isCollapseable());
-        Assert.assertTrue(loadedModel.getColumnGroupByName("groupB")
+        assertTrue(loadedModel.getColumnGroupByName("groupB")
                 .isCollapseable());
 
-        Assert.assertFalse(loadedModel.isPartOfAnUnbreakableGroup(1));
-        Assert.assertFalse(loadedModel.isPartOfAnUnbreakableGroup(2));
-        Assert.assertFalse(loadedModel.isPartOfAnUnbreakableGroup(3));
+        assertFalse(loadedModel.isPartOfAnUnbreakableGroup(1));
+        assertFalse(loadedModel.isPartOfAnUnbreakableGroup(2));
+        assertFalse(loadedModel.isPartOfAnUnbreakableGroup(3));
 
-        Assert.assertFalse(loadedModel.isPartOfAnUnbreakableGroup(4));
+        assertFalse(loadedModel.isPartOfAnUnbreakableGroup(4));
 
-        Assert.assertTrue(loadedModel.isPartOfAnUnbreakableGroup(5));
-        Assert.assertTrue(loadedModel.isPartOfAnUnbreakableGroup(7));
-        Assert.assertTrue(loadedModel.isPartOfAnUnbreakableGroup(9));
+        assertTrue(loadedModel.isPartOfAnUnbreakableGroup(5));
+        assertTrue(loadedModel.isPartOfAnUnbreakableGroup(7));
+        assertTrue(loadedModel.isPartOfAnUnbreakableGroup(9));
 
-        Assert.assertEquals(1, loadedModel.getColumnGroupByName("groupB")
+        assertEquals(1, loadedModel.getColumnGroupByName("groupB")
                 .getStaticColumnIndexes().size());
-        Assert.assertEquals(7, loadedModel.getColumnGroupByName("groupB")
+        assertEquals(7, loadedModel.getColumnGroupByName("groupB")
                 .getStaticColumnIndexes().get(0).intValue());
     }
 }

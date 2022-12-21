@@ -12,22 +12,22 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.test.fixture.TestLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RowReorderLayerTest2 {
 
     private RowReorderLayer reorderLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         TestLayer dataLayer = new TestLayer(4, 4,
                 "0:0;100 | 1:1;100 | 2:2;100 | 3:3;100",

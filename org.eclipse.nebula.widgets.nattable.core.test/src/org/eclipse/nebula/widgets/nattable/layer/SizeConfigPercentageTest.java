@@ -12,10 +12,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class SizeConfigPercentageTest {
 
@@ -25,7 +25,7 @@ public class SizeConfigPercentageTest {
     private SizeConfig sizeConfigMixedPercentageMode;
     private SizeConfig sizeConfigMixedMode;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.sizeConfigCalculationMode = new SizeConfig(DEFAULT_SIZE);
         this.sizeConfigCalculationMode.setPercentageSizing(true);

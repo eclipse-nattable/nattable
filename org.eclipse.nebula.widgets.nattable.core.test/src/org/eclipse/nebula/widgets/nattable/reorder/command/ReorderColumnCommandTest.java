@@ -12,19 +12,19 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder.command;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ReorderColumnCommandTest {
 
     private ColumnReorderLayer columnReorderLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.columnReorderLayer = new ColumnReorderLayer(new DataLayerFixture());
     }

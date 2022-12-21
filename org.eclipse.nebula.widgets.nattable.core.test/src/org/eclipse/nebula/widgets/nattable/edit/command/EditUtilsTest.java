@@ -12,11 +12,11 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.command;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
@@ -31,8 +31,8 @@ import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class EditUtilsTest {
 
@@ -42,7 +42,7 @@ public class EditUtilsTest {
     private DummyGridLayerStack gridLayerStack;
     private SelectionLayer selectionLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.gridLayerStack = new DummyGridLayerStack(5, 5);
         this.selectionLayer = this.gridLayerStack.getBodyLayer().getSelectionLayer();

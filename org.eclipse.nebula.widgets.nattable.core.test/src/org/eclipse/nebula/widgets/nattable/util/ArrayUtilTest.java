@@ -12,15 +12,15 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ArrayUtilTest {
 
@@ -43,8 +43,8 @@ public class ArrayUtilTest {
     }
 
     @Test
-    public void conversionToIntArray() throws Exception {
-        List<Integer> list = new LinkedList<Integer>();
+    public void conversionToIntArray() {
+        List<Integer> list = new LinkedList<>();
         list.add(20);
         list.add(10);
         list.add(25);

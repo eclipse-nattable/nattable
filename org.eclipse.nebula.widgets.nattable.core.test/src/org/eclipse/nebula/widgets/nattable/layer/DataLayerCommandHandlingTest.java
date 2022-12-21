@@ -12,15 +12,15 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DataLayerCommandHandlingTest {
 
@@ -29,7 +29,7 @@ public class DataLayerCommandHandlingTest {
     private DataLayer dataLayer;
     private UpdateDataCommand command;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.dataLayer = new DataLayerFixture();
         this.command = new UpdateDataCommand(this.dataLayer, 2, 2, TEST_VALUE);

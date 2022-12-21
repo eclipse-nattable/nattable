@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,8 +25,8 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowDeleteEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowInsertEvent;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test class for testing handling of IStructuralChangeEvents in
@@ -41,7 +41,7 @@ public class RowHideShowLayerStructuralChangeEventTest {
     private IUniqueIndexLayer underlyingLayer;
     private RowHideShowLayer rowHideShowLayer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.contents = new ArrayList<String>(Arrays.asList("one", "two", "three",
                 "four", "five"));

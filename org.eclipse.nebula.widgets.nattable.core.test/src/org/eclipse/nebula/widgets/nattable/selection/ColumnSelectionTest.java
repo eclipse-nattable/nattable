@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,9 +12,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 
@@ -23,9 +23,9 @@ import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectColumnCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ColumnSelectionTest {
     // Tests for column selection NTBL-225
@@ -33,7 +33,7 @@ public class ColumnSelectionTest {
     private SelectionLayer selectionLayer;
     private SelectColumnCommandHandler commandHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.selectionLayer = new SelectionLayer(new DataLayerFixture(10, 50, 100, 40));
         // Selection grid origin as starting point
@@ -41,7 +41,7 @@ public class ColumnSelectionTest {
         this.commandHandler = new SelectColumnCommandHandler(this.selectionLayer);
     }
 
-    @After
+    @AfterEach
     public void cleanUp() {
         this.selectionLayer.clear();
     }
@@ -113,9 +113,9 @@ public class ColumnSelectionTest {
         assertEquals(4, this.selectionLayer.getSelectionAnchor().getColumnPosition());
         assertEquals(0, this.selectionLayer.getSelectionAnchor().getRowPosition());
 
-        assertFalse("column 3 fully selected", this.selectionLayer.isColumnPositionFullySelected(3));
-        assertTrue("column 4 not fully selected", this.selectionLayer.isColumnPositionFullySelected(4));
-        assertFalse("column 5 fully selected", this.selectionLayer.isColumnPositionFullySelected(5));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(3), "column 3 fully selected");
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(4), "column 4 not fully selected");
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(5), "column 5 fully selected");
     }
 
     @Test
@@ -127,25 +127,24 @@ public class ColumnSelectionTest {
         this.selectionLayer.doCommand(new SelectColumnCommand(this.selectionLayer, 2, 0, true, false));
 
         for (int col = 2; col <= 4; col++) {
-            assertTrue("column " + col + " not fully selected", this.selectionLayer.isColumnPositionFullySelected(col));
+            assertTrue(this.selectionLayer.isColumnPositionFullySelected(col), "column " + col + " not fully selected");
         }
-        assertFalse("column 5 fully selected", this.selectionLayer.isColumnPositionFullySelected(5));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(5), "column 5 fully selected");
 
         // select columns to the right
         this.selectionLayer.doCommand(new SelectColumnCommand(this.selectionLayer, 6, 0, true, false));
 
-        assertFalse("column 2 fully selected", this.selectionLayer.isColumnPositionFullySelected(2));
-        assertFalse("column 3 fully selected", this.selectionLayer.isColumnPositionFullySelected(3));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(2), "column 2 fully selected");
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(3), "column 3 fully selected");
         for (int col = 4; col <= 6; col++) {
-            assertTrue("column " + col + " not fully selected", this.selectionLayer.isColumnPositionFullySelected(col));
+            assertTrue(this.selectionLayer.isColumnPositionFullySelected(col), "column " + col + " not fully selected");
         }
     }
 
     private void assertCellsSelectedBetween(int startColPosition, int endColPosition) {
         for (int col = startColPosition; col <= endColPosition; col++) {
             for (int row = 0; row <= 6; row++) {
-                assertTrue("[" + col + ", " + row + "] not selected",
-                        this.selectionLayer.isCellPositionSelected(col, row));
+                assertTrue(this.selectionLayer.isCellPositionSelected(col, row), "[" + col + ", " + row + "] not selected");
             }
         }
     }
@@ -233,7 +232,7 @@ public class ColumnSelectionTest {
         assertEquals(0, this.selectionLayer.getSelectionAnchor().getRowPosition());
 
         for (int col = 2; col <= 4; col++) {
-            assertTrue("column " + col + " not fully selected", this.selectionLayer.isColumnPositionFullySelected(col));
+            assertTrue(this.selectionLayer.isColumnPositionFullySelected(col), "column " + col + " not fully selected");
         }
 
         // deselect column 2
@@ -242,9 +241,9 @@ public class ColumnSelectionTest {
         assertEquals(3, this.selectionLayer.getSelectionAnchor().getColumnPosition());
         assertEquals(0, this.selectionLayer.getSelectionAnchor().getRowPosition());
 
-        assertFalse("column 2 fully selected", this.selectionLayer.isColumnPositionFullySelected(2));
+        assertFalse(this.selectionLayer.isColumnPositionFullySelected(2), "column 2 fully selected");
         for (int col = 3; col <= 4; col++) {
-            assertTrue("column " + col + " not fully selected", this.selectionLayer.isColumnPositionFullySelected(col));
+            assertTrue(this.selectionLayer.isColumnPositionFullySelected(col), "column " + col + " not fully selected");
         }
     }
 
@@ -266,8 +265,8 @@ public class ColumnSelectionTest {
         assertEquals(4, this.selectionLayer.getSelectionAnchor().getColumnPosition());
         assertEquals(0, this.selectionLayer.getSelectionAnchor().getRowPosition());
 
-        assertFalse("[2, 0] is selected", this.selectionLayer.isCellPositionSelected(2, 0));
-        assertTrue("column 4 not fully selected", this.selectionLayer.isColumnPositionFullySelected(4));
+        assertFalse(this.selectionLayer.isCellPositionSelected(2, 0), "[2, 0] is selected");
+        assertTrue(this.selectionLayer.isColumnPositionFullySelected(4), "column 4 not fully selected");
     }
 
 }

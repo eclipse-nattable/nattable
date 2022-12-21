@@ -12,9 +12,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group.command;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -31,8 +31,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ColumnGroupsCommandHandlerTest {
 
@@ -41,7 +41,7 @@ public class ColumnGroupsCommandHandlerTest {
     private SelectionLayer selectionLayer;
     private DefaultGridLayer gridLayer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.gridLayer = new GridLayerFixture();
         this.selectionLayer = this.gridLayer.getBodyLayer().getSelectionLayer();

@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.freeze.command;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
@@ -36,8 +36,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class FreezeHandlerTest {
 
@@ -47,7 +47,7 @@ public class FreezeHandlerTest {
     private ViewportLayer viewportLayer;
     private SelectionLayer selectionLayer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         final DataLayer bodyDataLayer = new DataLayer(new DummyBodyDataProvider(10, 10));
         final DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(bodyDataLayer);

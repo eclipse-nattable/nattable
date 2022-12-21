@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,7 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.integration;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
@@ -21,9 +22,8 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.swt.SWT;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Integration test for all default selection behavior.
@@ -38,7 +38,7 @@ public class SelectionIntegrationTest {
     private DefaultGridLayer layerStack;
     private SelectionLayer selectionLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.layerStack = new DummyGridLayerStack(10, 5);
         this.selectionLayer = this.layerStack.getBodyLayer().getSelectionLayer();
@@ -46,9 +46,8 @@ public class SelectionIntegrationTest {
     }
 
     @Test
-    public void movingSelectionWithLeftArrow() throws Exception {
-        this.natTable.doCommand(new SelectCellCommand(this.natTable, 5, 2, NO_SHIFT,
-                NO_CTRL));
+    public void movingSelectionWithLeftArrow() {
+        this.natTable.doCommand(new SelectCellCommand(this.natTable, 5, 2, NO_SHIFT, NO_CTRL));
 
         // Note: the co-ordinates from this point on are in selection later
         // co-ordinates
@@ -70,9 +69,8 @@ public class SelectionIntegrationTest {
     }
 
     @Test
-    public void movingSelectionWithRightArrow() throws Exception {
-        this.natTable.doCommand(new SelectCellCommand(this.natTable, 5, 2, NO_SHIFT,
-                NO_CTRL));
+    public void movingSelectionWithRightArrow() {
+        this.natTable.doCommand(new SelectCellCommand(this.natTable, 5, 2, NO_SHIFT, NO_CTRL));
 
         // Note: the co-ordinates from this point on are in selection later
         // co-ordinates
@@ -95,9 +93,8 @@ public class SelectionIntegrationTest {
     }
 
     @Test
-    public void movingSelectionWithDownArrow() throws Exception {
-        this.natTable.doCommand(new SelectCellCommand(this.natTable, 5, 2, NO_SHIFT,
-                NO_CTRL));
+    public void movingSelectionWithDownArrow() {
+        this.natTable.doCommand(new SelectCellCommand(this.natTable, 5, 2, NO_SHIFT, NO_CTRL));
 
         // Note: the co-ordinates from this point on are in selection later
         // co-ordinates
@@ -125,9 +122,8 @@ public class SelectionIntegrationTest {
     }
 
     @Test
-    public void movingSelectionWithUpArrow() throws Exception {
-        this.natTable.doCommand(new SelectCellCommand(this.natTable, 5, 4, NO_SHIFT,
-                NO_CTRL));
+    public void movingSelectionWithUpArrow() {
+        this.natTable.doCommand(new SelectCellCommand(this.natTable, 5, 4, NO_SHIFT, NO_CTRL));
 
         // Note: the co-ordinates from this point on are in selection later
         // co-ordinates
@@ -144,8 +140,7 @@ public class SelectionIntegrationTest {
         assertCellSelected(4, 2);
         assertSelectionAnchorEquals(4, 2);
 
-        this.natTable.doCommand(new SelectCellCommand(this.natTable, 5, 4, NO_SHIFT,
-                NO_CTRL));
+        this.natTable.doCommand(new SelectCellCommand(this.natTable, 5, 4, NO_SHIFT, NO_CTRL));
         assertSelectCellsCount(1);
 
         SWTUtils.pressKey(SWT.ARROW_UP, SWT.MOD1, this.natTable);
@@ -159,9 +154,8 @@ public class SelectionIntegrationTest {
     }
 
     @Test
-    public void selectingRectangularAreasWithShiftKey() throws Exception {
-        this.natTable.doCommand(new SelectCellCommand(this.natTable, 2, 1, NO_SHIFT,
-                NO_CTRL));
+    public void selectingRectangularAreasWithShiftKey() {
+        this.natTable.doCommand(new SelectCellCommand(this.natTable, 2, 1, NO_SHIFT, NO_CTRL));
         this.natTable.doCommand(new SelectCellCommand(this.natTable, 2, 3, SHIFT, NO_CTRL));
 
         assertSelectCellsCount(3);
@@ -194,8 +188,7 @@ public class SelectionIntegrationTest {
     // Convenience asserts
 
     private void assertCellSelected(int column, int row) {
-        PositionCoordinate[] selectedCells = this.selectionLayer
-                .getSelectedCellPositions();
+        PositionCoordinate[] selectedCells = this.selectionLayer.getSelectedCellPositions();
         boolean selected = false;
 
         for (PositionCoordinate positionCoordinate : selectedCells) {
@@ -205,7 +198,7 @@ public class SelectionIntegrationTest {
                 break;
             }
         }
-        Assert.assertTrue(selected);
+        assertTrue(selected);
     }
 
     private PositionCoordinate[] getSelectedCells() {
@@ -220,10 +213,8 @@ public class SelectionIntegrationTest {
         assertPositionEquals(column, row, this.selectionLayer.getSelectionAnchor());
     }
 
-    private void assertPositionEquals(int column, int row,
-            PositionCoordinate position) {
+    private void assertPositionEquals(int column, int row, PositionCoordinate position) {
         assertEquals(column, position.getColumnPosition());
         assertEquals(row, position.getRowPosition());
     }
-
 }

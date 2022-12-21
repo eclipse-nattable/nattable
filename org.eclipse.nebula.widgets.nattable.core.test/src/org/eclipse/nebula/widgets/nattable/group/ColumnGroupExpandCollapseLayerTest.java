@@ -12,9 +12,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,8 +22,8 @@ import java.util.List;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ColumnHideShowLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ColumnReorderLayerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ColumnGroupExpandCollapseLayerTest {
 
@@ -32,7 +32,7 @@ public class ColumnGroupExpandCollapseLayerTest {
     private ColumnGroupExpandCollapseLayer expandCollapseLayer;
     private ColumnHideShowLayerFixture underlyingLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.model = new ColumnGroupModel();
 

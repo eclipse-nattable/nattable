@@ -13,12 +13,12 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.persistence;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.BorderModeEnum;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BorderStylePersistenceTest {
 

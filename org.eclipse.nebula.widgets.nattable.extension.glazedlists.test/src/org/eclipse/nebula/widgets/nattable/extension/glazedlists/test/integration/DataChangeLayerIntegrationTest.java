@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 2020 Dirk Fauth.
+ * Copyright (c) 2018, 2022 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,9 +12,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.test.integration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.Serializable;
 import java.util.List;
@@ -36,9 +36,9 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -56,7 +56,7 @@ public class DataChangeLayerIntegrationTest {
 
     private CountDownLatch lock = new CountDownLatch(1);
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.dataModel = PersonService.getFixedPersons();
         EventList<Person> eventList = GlazedLists.eventList(this.dataModel);
@@ -101,7 +101,7 @@ public class DataChangeLayerIntegrationTest {
 
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         this.dataChangeLayer.doCommand(new DisposeResourcesCommand());
     }
@@ -114,10 +114,10 @@ public class DataChangeLayerIntegrationTest {
 
         assertEquals("Lovejoy", this.dataLayer.getDataValue(1, 1));
         assertEquals("Lovejoy", this.dataChangeLayer.getDataValueByPosition(1, 1));
-        assertTrue("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(1, 1).hasLabel(DataChangeLayer.DIRTY));
-        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
-        assertTrue("Row 1 is not dirty", this.dataChangeLayer.isRowDirty(1));
-        assertTrue("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 1));
+        assertTrue(this.dataChangeLayer.getConfigLabelsByPosition(1, 1).hasLabel(DataChangeLayer.DIRTY), "Dirty label not set");
+        assertTrue(this.dataChangeLayer.isColumnDirty(1), "Column 1 is not dirty");
+        assertTrue(this.dataChangeLayer.isRowDirty(1), "Row 1 is not dirty");
+        assertTrue(this.dataChangeLayer.isCellDirty(1, 1), "Cell is not dirty");
     }
 
     @Test
@@ -136,11 +136,11 @@ public class DataChangeLayerIntegrationTest {
         // RowStructuralRefreshEvent
         boolean completed = this.lock.await(1000, TimeUnit.MILLISECONDS);
 
-        assertTrue("Timeout - no event received", completed);
+        assertTrue(completed, "Timeout - no event received");
 
         assertEquals(9, this.filterList.size());
         assertFalse(this.dataChangeLayer.getDataChanges().isEmpty());
-        assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertFalse(this.dataChangeLayer.isColumnDirty(1), "Column 1 is dirty");
 
         this.lock = new CountDownLatch(1);
         this.filterList.setMatcher(null);
@@ -149,11 +149,11 @@ public class DataChangeLayerIntegrationTest {
         // RowStructuralRefreshEvent
         completed = this.lock.await(1000, TimeUnit.MILLISECONDS);
 
-        assertTrue("Timeout - no event received", completed);
+        assertTrue(completed, "Timeout - no event received");
 
         assertEquals(18, this.filterList.size());
         assertFalse(this.dataChangeLayer.getDataChanges().isEmpty());
-        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertTrue(this.dataChangeLayer.isColumnDirty(1), "Column 1 is not dirty");
     }
 
     @Test
@@ -172,7 +172,7 @@ public class DataChangeLayerIntegrationTest {
 
         assertEquals(9, this.filterList.size());
         assertFalse(this.dataChangeLayer.getDataChanges().isEmpty());
-        assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertFalse(this.dataChangeLayer.isColumnDirty(1), "Column 1 is dirty");
 
         this.filterList.setMatcher(null);
 
@@ -180,10 +180,10 @@ public class DataChangeLayerIntegrationTest {
         // RowStructuralRefreshEvent
         boolean completed = this.lock.await(1000, TimeUnit.MILLISECONDS);
 
-        assertTrue("Timeout - no event received", completed);
+        assertTrue(completed, "Timeout - no event received");
 
         assertEquals(18, this.filterList.size());
         assertFalse(this.dataChangeLayer.getDataChanges().isEmpty());
-        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
+        assertTrue(this.dataChangeLayer.isColumnDirty(1), "Column 1 is not dirty");
     }
 }

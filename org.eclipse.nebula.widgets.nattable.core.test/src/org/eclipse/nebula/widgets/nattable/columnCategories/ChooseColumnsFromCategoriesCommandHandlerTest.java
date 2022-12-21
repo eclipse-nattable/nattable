@@ -13,8 +13,8 @@
 package org.eclipse.nebula.widgets.nattable.columnCategories;
 
 import static org.eclipse.nebula.widgets.nattable.util.ArrayUtil.asIntegerList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,15 +26,15 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.ColumnCategoriesModelFix
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ColumnHeaderLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ColumnHideShowLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ChooseColumnsFromCategoriesCommandHandlerTest {
 
     private ChooseColumnsFromCategoriesCommandHandler commandHandler;
     private ColumnHideShowLayerFixture hideShowLayerFixture;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.hideShowLayerFixture = new ColumnHideShowLayerFixture();
         this.commandHandler = new ChooseColumnsFromCategoriesCommandHandler(

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2020 Dirk Fauth.
+ * Copyright (c) 2017, 2022 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -22,9 +22,9 @@ import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.DefaultFilterRowConfiguration;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
@@ -54,7 +54,7 @@ public class DefaultGlazedListsStaticFilterStrategyTest {
         }
     };
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         // initialize the collection with a big amount of values
         filterList = new FilterList<>(GlazedLists.eventList(PersonService.getFixedPersons()));
@@ -77,7 +77,7 @@ public class DefaultGlazedListsStaticFilterStrategyTest {
                 columnHeaderLayer.getDataProvider(), configRegistry);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         // ensure to start over with a clear filter
         dataProvider.clearAllFilters();

@@ -12,17 +12,17 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.coordinate;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class IndexCoordinateTest {
 
     private IndexCoordinate i1;
     private IndexCoordinate i2;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.i1 = new IndexCoordinate(1, 2);
         this.i2 = new IndexCoordinate(1, 2);

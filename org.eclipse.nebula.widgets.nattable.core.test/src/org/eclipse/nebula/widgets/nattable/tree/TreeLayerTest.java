@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2020 Dirk Fauth.
+ * Copyright (c) 2020, 2022 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,9 +12,9 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.tree;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,15 +42,15 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixtu
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandCollapseCommand;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TreeLayerTest {
 
     private TreeLayer treeLayer;
     private LayerListenerFixture listener;
 
-    @Before
+    @BeforeEach
     public void setup() {
         String[] propertyNames = { "lastName", "firstName", "gender", "married", "birthday" };
         IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(propertyNames);

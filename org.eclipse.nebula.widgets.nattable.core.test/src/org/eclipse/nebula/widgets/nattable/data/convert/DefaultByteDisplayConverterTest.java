@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,10 +12,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DefaultByteDisplayConverterTest {
 
@@ -41,13 +42,13 @@ public class DefaultByteDisplayConverterTest {
         assertNull(this.byteConverter.displayToCanonicalValue(""));
     }
 
-    @Test(expected = ConversionFailedException.class)
+    @Test
     public void testConversionException() {
-        this.byteConverter.displayToCanonicalValue("abc");
+        assertThrows(ConversionFailedException.class, () -> this.byteConverter.displayToCanonicalValue("abc"));
     }
 
-    @Test(expected = ConversionFailedException.class)
+    @Test
     public void testConversionExceptionTooBig() {
-        this.byteConverter.displayToCanonicalValue("129");
+        assertThrows(ConversionFailedException.class, () -> this.byteConverter.displayToCanonicalValue("129"));
     }
 }

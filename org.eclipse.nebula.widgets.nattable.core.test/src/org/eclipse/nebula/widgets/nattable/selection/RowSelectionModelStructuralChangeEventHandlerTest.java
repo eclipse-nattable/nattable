@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2020 Dirk Fauth and others.
+ * Copyright (c) 2014, 2022 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.Serializable;
 import java.util.List;
@@ -35,8 +35,8 @@ import org.eclipse.nebula.widgets.nattable.selection.event.RowSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.GridLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RowSelectionModelStructuralChangeEventHandlerTest {
 
@@ -48,7 +48,7 @@ public class RowSelectionModelStructuralChangeEventHandlerTest {
 
     private LayerListenerFixture listener;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.listFixture = RowDataListFixture.getList(10);
         this.bodyDataProvider = new ListDataProvider<RowDataFixture>(this.listFixture,
@@ -180,8 +180,8 @@ public class RowSelectionModelStructuralChangeEventHandlerTest {
                 }
             }
         }
-        assertTrue("B Ford Motor not found", fordFound);
-        assertTrue("A Alphabet Co. not found", alphabetFound);
+        assertTrue(fordFound, "B Ford Motor not found");
+        assertTrue(alphabetFound, "A Alphabet Co. not found");
 
         this.listFixture.remove(0);
 
@@ -217,7 +217,7 @@ public class RowSelectionModelStructuralChangeEventHandlerTest {
         // row count of 1 for NatTable because of header
         assertEquals(1, this.nattable.getRowCount());
         assertEquals(0, this.selectionLayer.getSelectedRowCount());
-        assertTrue("selection model is not empty", this.selectionLayer.getSelectionModel().getSelections().isEmpty());
+        assertTrue(this.selectionLayer.getSelectionModel().getSelections().isEmpty(), "selection model is not empty");
     }
 
     @Test
@@ -242,7 +242,7 @@ public class RowSelectionModelStructuralChangeEventHandlerTest {
         // row count of 1 for NatTable because of header
         assertEquals(1, this.nattable.getRowCount());
         assertEquals(0, this.selectionLayer.getSelectedRowCount());
-        assertTrue("selection model is not empty", this.selectionLayer.getSelectionModel().getSelections().isEmpty());
+        assertTrue(this.selectionLayer.getSelectionModel().getSelections().isEmpty(), "selection model is not empty");
     }
 
     @Test

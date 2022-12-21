@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,8 +54,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RowGroupHeaderLayerTest {
 
@@ -64,7 +64,7 @@ public class RowGroupHeaderLayerTest {
     private RowGroupModel<Person> rowGroupModel;
     private GridLayer gridLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         String[] propertyNames = { "firstName", "lastName", "gender", "married", "birthday" };
 

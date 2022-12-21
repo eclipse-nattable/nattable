@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2020 Original authors and others.
+ * Copyright (c) 2014, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,9 +12,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -36,8 +36,8 @@ import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.GridLayerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class SelectionModelStructuralChangeEventHandlerTest {
 
@@ -45,7 +45,7 @@ public class SelectionModelStructuralChangeEventHandlerTest {
     private DataLayerFixture dataLayer;
     private SelectionLayer selectionLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.dataLayer = new DataLayerFixture(10, 10);
         DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(this.dataLayer);
@@ -206,8 +206,8 @@ public class SelectionModelStructuralChangeEventHandlerTest {
 
         // row count of 1 for NatTable because of header
         assertEquals(1, nattable.getRowCount());
-        assertTrue("selection is not empty", selectionLayer.getSelectedCells().isEmpty());
-        assertTrue("selection model is not empty", selectionLayer.getSelectionModel().getSelections().isEmpty());
+        assertTrue(selectionLayer.getSelectedCells().isEmpty(), "selection is not empty");
+        assertTrue(selectionLayer.getSelectionModel().getSelections().isEmpty(), "selection model is not empty");
     }
 
     @Test
@@ -243,8 +243,8 @@ public class SelectionModelStructuralChangeEventHandlerTest {
 
         // row count of 1 for NatTable because of header
         assertEquals(1, nattable.getRowCount());
-        assertTrue("selection is not empty", selectionLayer.getSelectedCells().isEmpty());
-        assertTrue("selection model is not empty", selectionLayer.getSelectionModel().getSelections().isEmpty());
+        assertTrue(selectionLayer.getSelectedCells().isEmpty(), "selection is not empty");
+        assertTrue(selectionLayer.getSelectionModel().getSelections().isEmpty(), "selection model is not empty");
     }
 
 }

@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.test.fixture.CellPainterFixture;
@@ -21,9 +24,8 @@ import org.eclipse.nebula.widgets.nattable.test.integration.SWTUtils;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.GC;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ButtonCellPainterTest {
 
@@ -35,7 +37,7 @@ public class ButtonCellPainterTest {
     private GC gcFixture;
     private MouseEvent mouseClickEvent;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.buttonRaisedPainter = new CellPainterFixture();
         this.buttonPressedPainter = new CellPainterFixture();
@@ -59,8 +61,8 @@ public class ButtonCellPainterTest {
         this.buttonCellPainter.paintCell(this.cellFixture, this.gcFixture,
                 this.cellFixture.getBounds(), this.natTable.getConfigRegistry());
 
-        Assert.assertTrue(this.buttonRaisedPainter.isPainted());
-        Assert.assertFalse(this.buttonPressedPainter.isPainted());
+        assertTrue(this.buttonRaisedPainter.isPainted());
+        assertFalse(this.buttonPressedPainter.isPainted());
 
         // Mouse clicked
         this.buttonCellPainter.run(this.natTable, this.mouseClickEvent);
@@ -68,7 +70,7 @@ public class ButtonCellPainterTest {
                 this.cellFixture.getBounds(), this.natTable.getConfigRegistry());
 
         // Should be painted in pressed state
-        Assert.assertTrue(this.buttonPressedPainter.isPainted());
+        assertTrue(this.buttonPressedPainter.isPainted());
     }
 
     @Test
@@ -77,12 +79,12 @@ public class ButtonCellPainterTest {
         this.buttonCellPainter.addClickListener(mouseAction);
 
         this.buttonCellPainter.run(this.natTable, this.mouseClickEvent);
-        Assert.assertTrue(mouseAction.isActionInvoked());
+        assertTrue(mouseAction.isActionInvoked());
 
         this.buttonCellPainter.removeClickListener(mouseAction);
         mouseAction.reset();
 
         this.buttonCellPainter.run(this.natTable, this.mouseClickEvent);
-        Assert.assertFalse(mouseAction.isActionInvoked());
+        assertFalse(mouseAction.isActionInvoked());
     }
 }

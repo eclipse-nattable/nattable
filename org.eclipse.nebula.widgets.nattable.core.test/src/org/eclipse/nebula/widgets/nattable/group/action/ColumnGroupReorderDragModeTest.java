@@ -12,13 +12,15 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group.action;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.group.ColumnGroupModelFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ColumnGroupReorderDragModeTest {
 
@@ -26,7 +28,7 @@ public class ColumnGroupReorderDragModeTest {
     private ColumnGroupModel columnGroupModel;
     private ColumnGroupHeaderReorderDragMode groupReorderDragMode;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.testLayer = new DataLayerFixture(10, 5, 100, 20);
         this.columnGroupModel = new ColumnGroupModelFixture();
@@ -44,50 +46,50 @@ public class ColumnGroupReorderDragModeTest {
 
     @Test
     public void isValidTargetColumnPositionMovingRight() throws Exception {
-        Assert.assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
+        assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
                 this.testLayer, 0, 0));
-        Assert.assertFalse(this.groupReorderDragMode.isValidTargetColumnPosition(
+        assertFalse(this.groupReorderDragMode.isValidTargetColumnPosition(
                 this.testLayer, 0, 1));
 
-        Assert.assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
+        assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
                 this.testLayer, 0, 2));
 
-        Assert.assertFalse(this.groupReorderDragMode.isValidTargetColumnPosition(
+        assertFalse(this.groupReorderDragMode.isValidTargetColumnPosition(
                 this.testLayer, 0, 3));
-        Assert.assertFalse(this.groupReorderDragMode.isValidTargetColumnPosition(
+        assertFalse(this.groupReorderDragMode.isValidTargetColumnPosition(
                 this.testLayer, 0, 4));
 
-        Assert.assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
+        assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
                 this.testLayer, 0, 5));
-        Assert.assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
+        assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
                 this.testLayer, 0, 6));
     }
 
     @Test
     public void isValidTargetColumnPositionMovingLeft() throws Exception {
-        Assert.assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
+        assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
                 this.testLayer, 11, 10));
 
-        Assert.assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
+        assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
                 this.testLayer, 11, 9));
-        Assert.assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
+        assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
                 this.testLayer, 11, 6));
-        Assert.assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
+        assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
                 this.testLayer, 11, 5));
 
-        Assert.assertFalse(this.groupReorderDragMode.isValidTargetColumnPosition(
+        assertFalse(this.groupReorderDragMode.isValidTargetColumnPosition(
                 this.testLayer, 11, 4));
-        Assert.assertFalse(this.groupReorderDragMode.isValidTargetColumnPosition(
+        assertFalse(this.groupReorderDragMode.isValidTargetColumnPosition(
                 this.testLayer, 11, 3));
 
-        Assert.assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
+        assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
                 this.testLayer, 11, 2));
 
-        Assert.assertFalse(this.groupReorderDragMode.isValidTargetColumnPosition(
+        assertFalse(this.groupReorderDragMode.isValidTargetColumnPosition(
                 this.testLayer, 11, 1));
         // it is allowed to reorder column 11 to 0, because that means to
         // reorder G3 to the beginning
-        Assert.assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
+        assertTrue(this.groupReorderDragMode.isValidTargetColumnPosition(
                 this.testLayer, 11, 0));
     }
 }

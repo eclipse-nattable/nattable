@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,11 +12,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.integration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 
@@ -70,9 +70,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class EditIntegrationTest {
 
@@ -85,7 +85,7 @@ public class EditIntegrationTest {
     private NatTableFixture natTable;
     private DummyGridLayerStack gridLayerStack;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.gridLayerStack = new DummyGridLayerStack(5, 5);
         this.natTable = new NatTableFixture(this.gridLayerStack);
@@ -95,7 +95,7 @@ public class EditIntegrationTest {
         assertNull(this.natTable.getActiveCellEditor());
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         // ensure the editor is closed
         this.natTable.commitAndCloseActiveCellEditor();
@@ -530,7 +530,7 @@ public class EditIntegrationTest {
                 .getCanonicalValue());
 
         // verify that inline editing is used and not dialog
-        assertTrue("No InlineCellEditEvent fired", inlineFired[0]);
+        assertTrue(inlineFired[0], "No InlineCellEditEvent fired");
     }
 
     @Test

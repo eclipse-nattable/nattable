@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.command;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 import java.util.List;
@@ -42,8 +42,8 @@ import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RowInsertCommandTest {
 
@@ -53,7 +53,7 @@ public class RowInsertCommandTest {
     private ViewportLayer viewportLayer;
     private LayerListenerFixture listener;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.dataModel = PersonService.getFixedPersons();
         this.dataProvider = new ListDataProvider<>(

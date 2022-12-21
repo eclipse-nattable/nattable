@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2018, 2020 Dirk Fauth.
+ * Copyright (c) 2018, 2022 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,9 +13,9 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.hierarchical;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -51,9 +51,9 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.sort.SortConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.sort.SortDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandCollapseCommand;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -79,7 +79,7 @@ public class HierarchicalTreeLayerGlazedListsTest {
 
     private HierarchicalWrapperSortModel sortModel;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.input = CarService.getInput();
         // de-normalize the object graph without parent structure objects
@@ -123,7 +123,7 @@ public class HierarchicalTreeLayerGlazedListsTest {
                 this.sortedList, this.columnPropertyAccessor, this.treeLayer.getLevelIndexMapping(), this.columnHeaderDataLayer, this.configRegistry);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         this.treeLayer.doCommand(new DisposeResourcesCommand());
     }

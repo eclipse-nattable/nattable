@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
@@ -23,8 +23,8 @@ import org.eclipse.nebula.widgets.nattable.group.model.RowGroup;
 import org.eclipse.nebula.widgets.nattable.group.model.RowGroupModel;
 import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RowGroupExpandCollapseLayerTest {
 
@@ -32,7 +32,7 @@ public class RowGroupExpandCollapseLayerTest {
     private RowHideShowLayer rowHideShowLayer;
     private RowGroupExpandCollapseLayer<Person> expandCollapseLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         String[] propertyNames = { "firstName", "lastName", "gender", "married", "birthday" };
         IRowDataProvider<Person> bodyDataProvider =

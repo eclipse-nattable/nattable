@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,7 +15,7 @@ package org.eclipse.nebula.widgets.nattable.style.editor.command;
 import static org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes.CELL_STYLE;
 import static org.eclipse.nebula.widgets.nattable.style.DisplayMode.NORMAL;
 import static org.eclipse.nebula.widgets.nattable.style.editor.command.DisplayColumnStyleEditorCommandHandler.USER_EDITED_COLUMN_STYLE_LABEL_PREFIX;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Properties;
@@ -37,8 +37,8 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.PropertiesFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DisplayColumnStyleEditorCommandHandlerTest {
 
@@ -48,7 +48,7 @@ public class DisplayColumnStyleEditorCommandHandlerTest {
     private DisplayColumnStyleEditorCommandHandler handlerUnderTest;
     private IConfigRegistry configRegistryFixture;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.labelAccumulatorFixture = new ColumnOverrideLabelAccumulator(
                 new DataLayerFixture());

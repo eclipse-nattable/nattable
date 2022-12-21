@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,16 +12,17 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class DefaultFloatDisplayConverterTest {
 
@@ -29,13 +30,13 @@ public class DefaultFloatDisplayConverterTest {
 
     private static Locale defaultLocale;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         defaultLocale = Locale.getDefault();
         Locale.setDefault(new Locale("en"));
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() {
         Locale.setDefault(defaultLocale);
     }
@@ -62,9 +63,9 @@ public class DefaultFloatDisplayConverterTest {
         assertNull(this.floatConverter.displayToCanonicalValue(""));
     }
 
-    @Test(expected = ConversionFailedException.class)
+    @Test
     public void testConversionException() {
-        this.floatConverter.displayToCanonicalValue("abc");
+        assertThrows(ConversionFailedException.class, () -> this.floatConverter.displayToCanonicalValue("abc"));
     }
 
     @Test
@@ -102,10 +103,10 @@ public class DefaultFloatDisplayConverterTest {
         assertEquals("1,234.5", this.floatConverter.canonicalToDisplayValue(Float.valueOf("1234.50")));
     }
 
-    @Test(expected = ConversionFailedException.class)
+    @Test
     public void testFailConvertLocalized() {
         this.floatConverter.setNumberFormat(null);
-        assertEquals(Float.valueOf("1234.50"), this.floatConverter.displayToCanonicalValue("1,234.50"));
+        assertThrows(ConversionFailedException.class, () -> this.floatConverter.displayToCanonicalValue("1,234.50"));
     }
 
     @Test

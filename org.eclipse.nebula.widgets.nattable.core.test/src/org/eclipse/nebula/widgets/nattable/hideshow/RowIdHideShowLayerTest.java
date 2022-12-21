@@ -12,9 +12,9 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -36,8 +36,8 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 import org.eclipse.nebula.widgets.nattable.sort.command.SortColumnCommand;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RowIdHideShowLayerTest {
 
@@ -50,7 +50,7 @@ public class RowIdHideShowLayerTest {
     private RowReorderLayer reorderLayer;
     private RowIdHideShowLayer<Person> rowHideShowLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
         this.reorderLayer = new RowReorderLayer(this.bodyDataLayer);

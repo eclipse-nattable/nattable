@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,9 +12,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
@@ -23,14 +23,14 @@ import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.InitializeClientAreaCommandFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.GridLayerFixture;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectRowCommand;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RowHeaderSelectionTest {
 
     private GridLayerFixture gridLayer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.gridLayer = new GridLayerFixture();
         this.gridLayer.doCommand(new InitializeClientAreaCommandFixture());
@@ -67,6 +67,6 @@ public class RowHeaderSelectionTest {
 
         rowPosition = this.gridLayer.localToUnderlyingRowPosition(4);
         labelStack = rowHeaderLayer.getConfigLabelsByPosition(0, rowPosition);
-        assertFalse("Should not have returned fully selected style.", labelStack.hasLabel(SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE));
+        assertFalse(labelStack.hasLabel(SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE), "Should not have returned fully selected style.");
     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2022 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,32 +12,29 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 public class CalculatedValueCacheTest {
 
     ICalculatedValueCache valueCache;
 
-    ICalculator calculator = new ICalculator() {
+    ICalculator calculator = () -> {
 
-        @Override
-        public Object executeCalculation() {
-
-            // simply add some delay
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-
-            return Integer.valueOf(42);
+        // simply add some delay
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
+
+        return Integer.valueOf(42);
     };
 
     @Test
@@ -186,14 +183,16 @@ public class CalculatedValueCacheTest {
         assertEquals(Integer.valueOf(42), Integer.valueOf(result.toString()));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testIllegalState() {
         this.valueCache = new CalculatedValueCache(new DataLayer(
                 new DummyBodyDataProvider(10, 10)), false, false);
-        this.valueCache.getCalculatedValue(0, 0, false, this.calculator);
+        assertThrows(IllegalStateException.class, () -> {
+            this.valueCache.getCalculatedValue(0, 0, false, this.calculator);
+        });
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         this.valueCache.dispose();
     }

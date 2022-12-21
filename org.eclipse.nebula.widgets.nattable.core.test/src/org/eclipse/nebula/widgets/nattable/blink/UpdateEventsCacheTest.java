@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.blink;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.Serializable;
 import java.util.concurrent.Executors;
@@ -23,8 +23,8 @@ import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.layer.event.PropertyUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class UpdateEventsCacheTest {
 
@@ -36,7 +36,7 @@ public class UpdateEventsCacheTest {
     private RowDataFixture bean2;
     private DataLayerFixture layerFixture = new DataLayerFixture();
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.cache = new UpdateEventsCache<RowDataFixture>(
                 new IRowIdAccessor<RowDataFixture>() {

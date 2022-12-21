@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.freeze;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
@@ -20,8 +20,8 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsComman
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.BaseDataLayerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class FreezeLayerTest {
 
@@ -29,7 +29,7 @@ public class FreezeLayerTest {
     private ColumnHideShowLayer hideShowLayer;
     private ColumnReorderLayer reorderLayer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.reorderLayer = new ColumnReorderLayer(new BaseDataLayerFixture(10, 10));
         this.hideShowLayer = new ColumnHideShowLayer(this.reorderLayer);

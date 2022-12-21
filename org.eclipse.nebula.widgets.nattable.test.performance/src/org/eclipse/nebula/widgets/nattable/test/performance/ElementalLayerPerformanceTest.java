@@ -19,7 +19,7 @@ import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ElementalLayerPerformanceTest extends AbstractLayerPerformanceTest {
 

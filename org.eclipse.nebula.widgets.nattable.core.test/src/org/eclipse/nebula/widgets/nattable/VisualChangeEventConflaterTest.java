@@ -12,13 +12,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.nebula.widgets.nattable.conflation.EventConflaterChain;
 import org.eclipse.nebula.widgets.nattable.conflation.VisualChangeEventConflater;
 import org.eclipse.nebula.widgets.nattable.test.fixture.LayerEventFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class VisualChangeEventConflaterTest {
 

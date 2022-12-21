@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,10 +12,12 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.fixture.group;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
-import org.junit.Assert;
 
 public class ColumnGroupModelFixture extends ColumnGroupModel {
 
@@ -39,30 +41,29 @@ public class ColumnGroupModelFixture extends ColumnGroupModel {
         List<Integer> columnIndexesInGroup;
 
         columnIndexesInGroup = getColumnGroupByIndex(0).getMembers();
-        Assert.assertEquals(2, columnIndexesInGroup.size());
-        Assert.assertTrue(columnIndexesInGroup.contains(Integer.valueOf(0)));
-        Assert.assertTrue(columnIndexesInGroup.contains(Integer.valueOf(1)));
+        assertEquals(2, columnIndexesInGroup.size());
+        assertTrue(columnIndexesInGroup.contains(Integer.valueOf(0)));
+        assertTrue(columnIndexesInGroup.contains(Integer.valueOf(1)));
 
         columnIndexesInGroup = getColumnGroupByIndex(3).getMembers();
-        Assert.assertEquals(2, columnIndexesInGroup.size());
-        Assert.assertTrue(columnIndexesInGroup.contains(Integer.valueOf(3)));
-        Assert.assertTrue(columnIndexesInGroup.contains(Integer.valueOf(4)));
+        assertEquals(2, columnIndexesInGroup.size());
+        assertTrue(columnIndexesInGroup.contains(Integer.valueOf(3)));
+        assertTrue(columnIndexesInGroup.contains(Integer.valueOf(4)));
 
         columnIndexesInGroup = getColumnGroupByIndex(10).getMembers();
-        Assert.assertEquals(3, columnIndexesInGroup.size());
-        Assert.assertTrue(columnIndexesInGroup.contains(Integer.valueOf(10)));
-        Assert.assertTrue(columnIndexesInGroup.contains(Integer.valueOf(11)));
-        Assert.assertTrue(columnIndexesInGroup.contains(Integer.valueOf(12)));
+        assertEquals(3, columnIndexesInGroup.size());
+        assertTrue(columnIndexesInGroup.contains(Integer.valueOf(10)));
+        assertTrue(columnIndexesInGroup.contains(Integer.valueOf(11)));
+        assertTrue(columnIndexesInGroup.contains(Integer.valueOf(12)));
     }
 
     public void assertTestGroup3IsUnchanged() {
-        List<Integer> columnIndexesInGroup = getColumnGroupByIndex(10)
-                .getMembers();
-        Assert.assertEquals(3, columnIndexesInGroup.size());
+        List<Integer> columnIndexesInGroup = getColumnGroupByIndex(10).getMembers();
+        assertEquals(3, columnIndexesInGroup.size());
 
-        Assert.assertTrue(columnIndexesInGroup.contains(Integer.valueOf(10)));
-        Assert.assertTrue(columnIndexesInGroup.contains(Integer.valueOf(11)));
-        Assert.assertTrue(columnIndexesInGroup.contains(Integer.valueOf(12)));
+        assertTrue(columnIndexesInGroup.contains(Integer.valueOf(10)));
+        assertTrue(columnIndexesInGroup.contains(Integer.valueOf(11)));
+        assertTrue(columnIndexesInGroup.contains(Integer.valueOf(12)));
     }
 
 }

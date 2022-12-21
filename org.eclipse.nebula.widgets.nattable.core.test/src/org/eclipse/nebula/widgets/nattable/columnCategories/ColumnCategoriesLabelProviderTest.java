@@ -13,7 +13,7 @@
 package org.eclipse.nebula.widgets.nattable.columnCategories;
 
 import static org.eclipse.nebula.widgets.nattable.test.fixture.ColumnCategoriesModelFixture.CATEGORY_B1_LABEL;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
@@ -22,15 +22,15 @@ import org.eclipse.nebula.widgets.nattable.columnCategories.Node.Type;
 import org.eclipse.nebula.widgets.nattable.columnCategories.gui.ColumnCategoriesLabelProvider;
 import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnEntry;
 import org.eclipse.nebula.widgets.nattable.test.fixture.ColumnEntriesFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ColumnCategoriesLabelProviderTest {
 
     private List<ColumnEntry> hiddenEntries;
     private ColumnCategoriesLabelProvider labelProvider;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.hiddenEntries = ColumnEntriesFixture.getEntriesWithEvenIndexes();
         this.labelProvider = new ColumnCategoriesLabelProvider(this.hiddenEntries);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,16 +12,17 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.dataset.pricing;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-@Ignore
+@Disabled
 public class PricingDataTester {
 
     @Test
@@ -35,7 +36,7 @@ public class PricingDataTester {
                 while (reader.read() >= 0) {
                     final StringTokenizer tabbedData = reader
                             .getTabbedLineRead();
-                    Assert.assertEquals(18, tabbedData.countTokens());
+                    assertEquals(18, tabbedData.countTokens());
                 }
             }
         } finally {
@@ -47,7 +48,7 @@ public class PricingDataTester {
     public void loadAPSBeans() throws Exception {
         final PricingDataFileLoader<PricingDataBean> gen = new PricingDataFileLoader<PricingDataBean>();
         final List<PricingDataBean> data = gen.loadDataFromFile();
-        Assert.assertEquals(46, data.size());
-        Assert.assertEquals("USA 4 15FEB15".trim(), data.get(28).getIsin());
+        assertEquals(46, data.size());
+        assertEquals("USA 4 15FEB15".trim(), data.get(28).getIsin());
     }
 }

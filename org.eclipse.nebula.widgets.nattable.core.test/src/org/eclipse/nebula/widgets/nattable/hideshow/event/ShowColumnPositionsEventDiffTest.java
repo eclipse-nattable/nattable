@@ -12,11 +12,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow.event;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -29,9 +29,9 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ShowColumnPositionsEventDiffTest {
 
@@ -40,7 +40,7 @@ public class ShowColumnPositionsEventDiffTest {
     private ColumnHideShowLayer hideShowLayer;
     private ViewportLayer viewportLayer;
 
-    @Before
+    @BeforeEach
     public void before() {
         this.dataLayer = new DataLayerFixture(20, 20, 100, 40);
         this.hideShowLayer = new ColumnHideShowLayer(this.dataLayer);
@@ -59,7 +59,7 @@ public class ShowColumnPositionsEventDiffTest {
         this.event = new ShowColumnPositionsEvent(this.dataLayer, 2, 4, 7, 8, 9);
     }
 
-    @After
+    @AfterEach
     public void after() {
         assertTrue(this.event.isHorizontalStructureChanged());
 

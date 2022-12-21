@@ -12,21 +12,21 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ColumnHideShowLayerPersistenceTest {
 
     private ColumnHideShowLayer layer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.layer = new ColumnHideShowLayer(new DataLayer(
                 new DummyBodyDataProvider(10, 10)) {

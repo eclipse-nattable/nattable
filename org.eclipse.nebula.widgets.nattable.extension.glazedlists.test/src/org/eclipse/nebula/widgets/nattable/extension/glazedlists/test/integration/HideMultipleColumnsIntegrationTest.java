@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.test.integration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
@@ -27,9 +27,9 @@ import org.eclipse.nebula.widgets.nattable.hideshow.event.HideColumnPositionsEve
 import org.eclipse.nebula.widgets.nattable.layer.NoScalingDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ca.odell.glazedlists.GlazedLists;
 
@@ -39,7 +39,7 @@ public class HideMultipleColumnsIntegrationTest {
     NatTableFixture natTableFixture;
     LayerListenerFixture listenerFixture;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.bodyLayerStackFixture = new BodyLayerStackFixture<>(
                 GlazedLists.eventList(RowDataListFixture.getList()),
@@ -73,7 +73,7 @@ public class HideMultipleColumnsIntegrationTest {
         this.natTableFixture.doCommand(new DisposeResourcesCommand());
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         this.natTableFixture.doCommand(new DisposeResourcesCommand());
     }

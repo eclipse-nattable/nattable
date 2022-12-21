@@ -13,12 +13,12 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.formula;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
 
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class FormulaDataProviderTest {
 

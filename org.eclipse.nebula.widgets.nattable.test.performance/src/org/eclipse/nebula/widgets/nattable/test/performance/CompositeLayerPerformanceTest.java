@@ -24,7 +24,7 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CompositeLayerPerformanceTest extends AbstractLayerPerformanceTest {
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2022 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,11 +12,11 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow.command;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class MultiRowShowCommandTest {
 
@@ -31,28 +31,17 @@ public class MultiRowShowCommandTest {
         int[] commandIndexesArray = command.getRowIndexesArray();
         int[] cloneIndexesArray = copiedCommand.getRowIndexesArray();
 
-        assertTrue("The commands reference the same instance",
-                command != copiedCommand);
-        assertTrue("The command collections reference the same instance",
-                commandIndexes != cloneIndexes);
-        assertTrue("The cloned command does not contain index 3",
-                cloneIndexes.contains(3));
-        assertTrue("The cloned command does not contain index 6",
-                cloneIndexes.contains(6));
-        assertTrue("The cloned command does not contain index 9",
-                cloneIndexes.contains(9));
-        assertTrue("The cloned command does not contain index 12",
-                cloneIndexes.contains(12));
+        assertTrue(command != copiedCommand, "The commands reference the same instance");
+        assertTrue(commandIndexes != cloneIndexes, "The command collections reference the same instance");
+        assertTrue(cloneIndexes.contains(3), "The cloned command does not contain index 3");
+        assertTrue(cloneIndexes.contains(6), "The cloned command does not contain index 6");
+        assertTrue(cloneIndexes.contains(9), "The cloned command does not contain index 9");
+        assertTrue(cloneIndexes.contains(12), "The cloned command does not contain index 12");
 
-        assertTrue("The command arrays reference the same instance",
-                commandIndexesArray != cloneIndexesArray);
-        assertTrue("The cloned command does not contain index 3",
-                cloneIndexesArray[0] == 3);
-        assertTrue("The cloned command does not contain index 6",
-                cloneIndexesArray[1] == 6);
-        assertTrue("The cloned command does not contain index 9",
-                cloneIndexesArray[2] == 9);
-        assertTrue("The cloned command does not contain index 12",
-                cloneIndexesArray[3] == 12);
+        assertTrue(commandIndexesArray != cloneIndexesArray, "The command arrays reference the same instance");
+        assertTrue(cloneIndexesArray[0] == 3, "The cloned command does not contain index 3");
+        assertTrue(cloneIndexesArray[1] == 6, "The cloned command does not contain index 6");
+        assertTrue(cloneIndexesArray[2] == 9, "The cloned command does not contain index 9");
+        assertTrue(cloneIndexesArray[3] == 12, "The cloned command does not contain index 12");
     }
 }

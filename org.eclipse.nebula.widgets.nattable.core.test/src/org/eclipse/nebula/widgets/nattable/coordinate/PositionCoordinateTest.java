@@ -12,19 +12,19 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.coordinate;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class PositionCoordinateTest {
 
     private PositionCoordinate p1;
     private PositionCoordinate p2;
 
-    @Before
+    @BeforeEach
     public void setup() {
         ILayer layer = new DataLayerFixture();
         this.p1 = new PositionCoordinate(layer, 1, 2);

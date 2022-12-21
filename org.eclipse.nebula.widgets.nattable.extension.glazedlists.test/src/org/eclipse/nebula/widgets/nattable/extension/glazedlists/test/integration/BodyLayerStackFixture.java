@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2022 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,7 +24,6 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 import ca.odell.glazedlists.EventList;
@@ -63,11 +62,6 @@ public class BodyLayerStackFixture<T> extends AbstractLayerTransform {
         this.viewportLayer = new ViewportLayer(this.selectionLayer);
 
         setUnderlyingLayer(this.viewportLayer);
-    }
-
-    @Override
-    public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
-        super.setClientAreaProvider(clientAreaProvider);
     }
 
     public ColumnReorderLayer getColumnReorderLayer() {

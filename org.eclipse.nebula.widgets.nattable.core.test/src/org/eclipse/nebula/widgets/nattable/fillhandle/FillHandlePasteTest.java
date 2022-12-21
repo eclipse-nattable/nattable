@@ -13,9 +13,9 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.fillhandle;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -34,9 +34,9 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class FillHandlePasteTest {
 
@@ -44,7 +44,7 @@ public class FillHandlePasteTest {
     SelectionLayer selectionLayer = new SelectionLayer(new DataLayer(this.dataProvider));
     NatTable natTable = new NatTableFixture(this.selectionLayer, false);
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.natTable.addConfiguration(new FillHandleConfiguration(this.selectionLayer));
         this.natTable.addConfiguration(new AbstractRegistryConfiguration() {
@@ -59,7 +59,7 @@ public class FillHandlePasteTest {
         this.natTable.configure();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         this.selectionLayer.clear();
         this.selectionLayer.setFillHandleRegion(null);
@@ -895,9 +895,9 @@ public class FillHandlePasteTest {
                     }
                 }
                 if (check) {
-                    assertNull("Position " + i + "/" + j + " is not null", this.selectionLayer.getDataValueByPosition(i, j));
+                    assertNull(this.selectionLayer.getDataValueByPosition(i, j), "Position " + i + "/" + j + " is not null");
                 } else {
-                    assertNotNull("Position " + i + "/" + j + " is null", this.selectionLayer.getDataValueByPosition(i, j));
+                    assertNotNull(this.selectionLayer.getDataValueByPosition(i, j), "Position " + i + "/" + j + " is null");
                 }
             }
         }

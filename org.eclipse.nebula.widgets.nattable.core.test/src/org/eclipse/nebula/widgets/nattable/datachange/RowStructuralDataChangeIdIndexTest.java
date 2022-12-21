@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 2020 Dirk Fauth.
+ * Copyright (c) 2018, 2022 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,10 +12,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.datachange;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -36,8 +36,8 @@ import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("unchecked")
 public class RowStructuralDataChangeIdIndexTest {
@@ -50,7 +50,7 @@ public class RowStructuralDataChangeIdIndexTest {
     private RowInsertDataChangeHandler insertHandler;
     private RowDeleteDataChangeHandler deleteHandler;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.dataModel = PersonService.getFixedPersons();
         this.dataProvider = new ListDataProvider<>(
@@ -92,9 +92,9 @@ public class RowStructuralDataChangeIdIndexTest {
                 this.updateHandler = (PersistenceUpdateDataChangeHandler) h;
             }
         }
-        assertNotNull("RowInsertDataChangeHandler not found", this.insertHandler);
-        assertNotNull("RowDeleteDataChangeHandler not found", this.deleteHandler);
-        assertNotNull("PersistenceUpdateDataChangeHandler not found", this.updateHandler);
+        assertNotNull(this.insertHandler, "RowInsertDataChangeHandler not found");
+        assertNotNull(this.deleteHandler, "RowDeleteDataChangeHandler not found");
+        assertNotNull(this.updateHandler, "PersistenceUpdateDataChangeHandler not found");
     }
 
     @Test
@@ -108,25 +108,25 @@ public class RowStructuralDataChangeIdIndexTest {
         assertEquals(19, this.dataModel.size());
 
         // row added so all columns are actually dirty
-        assertTrue("Column 0 is not dirty", this.dataChangeLayer.isColumnDirty(0));
-        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
-        assertTrue("Column 2 is not dirty", this.dataChangeLayer.isColumnDirty(2));
-        assertTrue("Column 3 is not dirty", this.dataChangeLayer.isColumnDirty(3));
-        assertTrue("Column 4 is not dirty", this.dataChangeLayer.isColumnDirty(4));
+        assertTrue(this.dataChangeLayer.isColumnDirty(0), "Column 0 is not dirty");
+        assertTrue(this.dataChangeLayer.isColumnDirty(1), "Column 1 is not dirty");
+        assertTrue(this.dataChangeLayer.isColumnDirty(2), "Column 2 is not dirty");
+        assertTrue(this.dataChangeLayer.isColumnDirty(3), "Column 3 is not dirty");
+        assertTrue(this.dataChangeLayer.isColumnDirty(4), "Column 4 is not dirty");
 
-        assertTrue("Row " + ralphIndex + " is not dirty", this.dataChangeLayer.isRowDirty(ralphIndex));
+        assertTrue(this.dataChangeLayer.isRowDirty(ralphIndex), "Row " + ralphIndex + " is not dirty");
 
-        assertTrue("Cell 0/" + ralphIndex + " is not dirty", this.dataChangeLayer.isCellDirty(0, ralphIndex));
-        assertTrue("Cell 1/" + ralphIndex + " is not dirty", this.dataChangeLayer.isCellDirty(1, ralphIndex));
-        assertTrue("Cell 2/" + ralphIndex + " is not dirty", this.dataChangeLayer.isCellDirty(2, ralphIndex));
-        assertTrue("Cell 3/" + ralphIndex + " is not dirty", this.dataChangeLayer.isCellDirty(3, ralphIndex));
-        assertTrue("Cell 4/" + ralphIndex + " is not dirty", this.dataChangeLayer.isCellDirty(4, ralphIndex));
+        assertTrue(this.dataChangeLayer.isCellDirty(0, ralphIndex), "Cell 0/" + ralphIndex + " is not dirty");
+        assertTrue(this.dataChangeLayer.isCellDirty(1, ralphIndex), "Cell 1/" + ralphIndex + " is not dirty");
+        assertTrue(this.dataChangeLayer.isCellDirty(2, ralphIndex), "Cell 2/" + ralphIndex + " is not dirty");
+        assertTrue(this.dataChangeLayer.isCellDirty(3, ralphIndex), "Cell 3/" + ralphIndex + " is not dirty");
+        assertTrue(this.dataChangeLayer.isCellDirty(4, ralphIndex), "Cell 4/" + ralphIndex + " is not dirty");
 
-        assertTrue("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(0, ralphIndex).hasLabel(DataChangeLayer.DIRTY));
-        assertTrue("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(1, ralphIndex).hasLabel(DataChangeLayer.DIRTY));
-        assertTrue("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(2, ralphIndex).hasLabel(DataChangeLayer.DIRTY));
-        assertTrue("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(3, ralphIndex).hasLabel(DataChangeLayer.DIRTY));
-        assertTrue("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(4, ralphIndex).hasLabel(DataChangeLayer.DIRTY));
+        assertTrue(this.dataChangeLayer.getConfigLabelsByPosition(0, ralphIndex).hasLabel(DataChangeLayer.DIRTY), "Dirty label not set");
+        assertTrue(this.dataChangeLayer.getConfigLabelsByPosition(1, ralphIndex).hasLabel(DataChangeLayer.DIRTY), "Dirty label not set");
+        assertTrue(this.dataChangeLayer.getConfigLabelsByPosition(2, ralphIndex).hasLabel(DataChangeLayer.DIRTY), "Dirty label not set");
+        assertTrue(this.dataChangeLayer.getConfigLabelsByPosition(3, ralphIndex).hasLabel(DataChangeLayer.DIRTY), "Dirty label not set");
+        assertTrue(this.dataChangeLayer.getConfigLabelsByPosition(4, ralphIndex).hasLabel(DataChangeLayer.DIRTY), "Dirty label not set");
 
         assertEquals(1, this.dataChangeLayer.dataChanges.size());
         assertEquals(1, this.insertHandler.dataChanges.size());
@@ -150,10 +150,10 @@ public class RowStructuralDataChangeIdIndexTest {
         assertEquals(1, this.dataChangeLayer.dataChanges.size());
         assertEquals(1, this.insertHandler.dataChanges.size());
 
-        assertTrue("Column 0 is not dirty", this.dataChangeLayer.isColumnDirty(0));
-        assertTrue("Row " + ralphIndex + " is not dirty", this.dataChangeLayer.isRowDirty(ralphIndex));
-        assertTrue("Cell 0/" + ralphIndex + " is not dirty", this.dataChangeLayer.isCellDirty(0, ralphIndex));
-        assertTrue("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(0, ralphIndex).hasLabel(DataChangeLayer.DIRTY));
+        assertTrue(this.dataChangeLayer.isColumnDirty(0), "Column 0 is not dirty");
+        assertTrue(this.dataChangeLayer.isRowDirty(ralphIndex), "Row " + ralphIndex + " is not dirty");
+        assertTrue(this.dataChangeLayer.isCellDirty(0, ralphIndex), "Cell 0/" + ralphIndex + " is not dirty");
+        assertTrue(this.dataChangeLayer.getConfigLabelsByPosition(0, ralphIndex).hasLabel(DataChangeLayer.DIRTY), "Dirty label not set");
 
         IdIndexIdentifier<Person> identifier = (IdIndexIdentifier<Person>) this.insertHandler.dataChanges.get(key).getKey();
         assertEquals(ralph, identifier.rowObject);
@@ -168,10 +168,10 @@ public class RowStructuralDataChangeIdIndexTest {
         assertTrue(this.dataChangeLayer.dataChanges.isEmpty());
         assertTrue(this.insertHandler.dataChanges.isEmpty());
 
-        assertFalse("Column 0 is dirty", this.dataChangeLayer.isColumnDirty(0));
-        assertFalse("Row " + ralphIndex + " is dirty", this.dataChangeLayer.isRowDirty(ralphIndex));
-        assertFalse("Cell 0/" + ralphIndex + " is dirty", this.dataChangeLayer.isCellDirty(0, ralphIndex));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(0, ralphIndex).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse(this.dataChangeLayer.isColumnDirty(0), "Column 0 is dirty");
+        assertFalse(this.dataChangeLayer.isRowDirty(ralphIndex), "Row " + ralphIndex + " is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(0, ralphIndex), "Cell 0/" + ralphIndex + " is dirty");
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(0, ralphIndex).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
     }
 
     @Test
@@ -195,10 +195,10 @@ public class RowStructuralDataChangeIdIndexTest {
         assertTrue(this.dataChangeLayer.dataChanges.isEmpty());
         assertTrue(this.insertHandler.dataChanges.isEmpty());
 
-        assertFalse("Column 0 is dirty", this.dataChangeLayer.isColumnDirty(0));
-        assertFalse("Row " + ralphIndex + " is dirty", this.dataChangeLayer.isRowDirty(ralphIndex));
-        assertFalse("Cell 0/" + ralphIndex + " is dirty", this.dataChangeLayer.isCellDirty(0, ralphIndex));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(0, ralphIndex).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse(this.dataChangeLayer.isColumnDirty(0), "Column 0 is dirty");
+        assertFalse(this.dataChangeLayer.isRowDirty(ralphIndex), "Row " + ralphIndex + " is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(0, ralphIndex), "Cell 0/" + ralphIndex + " is dirty");
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(0, ralphIndex).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
     }
 
     @Test
@@ -226,10 +226,10 @@ public class RowStructuralDataChangeIdIndexTest {
         assertTrue(this.dataChangeLayer.dataChanges.isEmpty());
         assertTrue(this.insertHandler.dataChanges.isEmpty());
 
-        assertFalse("Column 0 is dirty", this.dataChangeLayer.isColumnDirty(0));
-        assertFalse("Row " + ralphIndex + " is dirty", this.dataChangeLayer.isRowDirty(ralphIndex));
-        assertFalse("Cell 0/" + ralphIndex + " is dirty", this.dataChangeLayer.isCellDirty(0, ralphIndex));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(0, ralphIndex).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse(this.dataChangeLayer.isColumnDirty(0), "Column 0 is dirty");
+        assertFalse(this.dataChangeLayer.isRowDirty(ralphIndex), "Row " + ralphIndex + " is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(0, ralphIndex), "Cell 0/" + ralphIndex + " is dirty");
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(0, ralphIndex).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
     }
 
     @Test
@@ -249,10 +249,10 @@ public class RowStructuralDataChangeIdIndexTest {
         assertTrue(this.dataChangeLayer.dataChanges.isEmpty());
         assertTrue(this.insertHandler.dataChanges.isEmpty());
 
-        assertFalse("Column 0 is dirty", this.dataChangeLayer.isColumnDirty(0));
-        assertFalse("Row " + ralphIndex + " is dirty", this.dataChangeLayer.isRowDirty(ralphIndex));
-        assertFalse("Cell 0/" + ralphIndex + " is dirty", this.dataChangeLayer.isCellDirty(0, ralphIndex));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(0, ralphIndex).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse(this.dataChangeLayer.isColumnDirty(0), "Column 0 is dirty");
+        assertFalse(this.dataChangeLayer.isRowDirty(ralphIndex), "Row " + ralphIndex + " is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(0, ralphIndex), "Cell 0/" + ralphIndex + " is dirty");
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(0, ralphIndex).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
     }
 
     @Test
@@ -287,10 +287,10 @@ public class RowStructuralDataChangeIdIndexTest {
         assertTrue(this.dataChangeLayer.dataChanges.isEmpty());
         assertTrue(this.insertHandler.dataChanges.isEmpty());
 
-        assertFalse("Column 0 is dirty", this.dataChangeLayer.isColumnDirty(0));
-        assertFalse("Row " + ralphIndex + " is dirty", this.dataChangeLayer.isRowDirty(ralphIndex));
-        assertFalse("Cell 0/" + ralphIndex + " is dirty", this.dataChangeLayer.isCellDirty(0, ralphIndex));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(0, ralphIndex).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse(this.dataChangeLayer.isColumnDirty(0), "Column 0 is dirty");
+        assertFalse(this.dataChangeLayer.isRowDirty(ralphIndex), "Row " + ralphIndex + " is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(0, ralphIndex), "Cell 0/" + ralphIndex + " is dirty");
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(0, ralphIndex).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
     }
 
     @Test
@@ -319,21 +319,21 @@ public class RowStructuralDataChangeIdIndexTest {
         assertEquals(18, this.dataModel.size());
 
         for (Person p : this.dataModel) {
-            assertFalse("Wiggum found", "Wiggum".equals(p.getLastName()));
+            assertFalse("Wiggum".equals(p.getLastName()), "Wiggum found");
         }
 
         assertTrue(this.dataChangeLayer.dataChanges.isEmpty());
         assertTrue(this.insertHandler.dataChanges.isEmpty());
 
-        assertFalse("Column 0 is dirty", this.dataChangeLayer.isColumnDirty(0));
-        assertFalse("Row " + ralphIndex + " is dirty", this.dataChangeLayer.isRowDirty(ralphIndex));
-        assertFalse("Cell 0/" + ralphIndex + " is dirty", this.dataChangeLayer.isCellDirty(0, ralphIndex));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(0, ralphIndex).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse(this.dataChangeLayer.isColumnDirty(0), "Column 0 is dirty");
+        assertFalse(this.dataChangeLayer.isRowDirty(ralphIndex), "Row " + ralphIndex + " is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(0, ralphIndex), "Cell 0/" + ralphIndex + " is dirty");
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(0, ralphIndex).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
 
         int lastRowIndex = this.dataModel.size() - 1;
-        assertFalse("Row " + lastRowIndex + " is dirty", this.dataChangeLayer.isRowDirty(lastRowIndex));
-        assertFalse("Cell 0/" + lastRowIndex + " is dirty", this.dataChangeLayer.isCellDirty(0, lastRowIndex));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(0, lastRowIndex).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse(this.dataChangeLayer.isRowDirty(lastRowIndex), "Row " + lastRowIndex + " is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(0, lastRowIndex), "Cell 0/" + lastRowIndex + " is dirty");
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(0, lastRowIndex).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
     }
 
     @Test
@@ -346,23 +346,23 @@ public class RowStructuralDataChangeIdIndexTest {
         assertFalse(this.dataModel.contains(toDelete));
 
         // row deleted so all columns are actually dirty
-        assertTrue("Column 0 is not dirty", this.dataChangeLayer.isColumnDirty(0));
-        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
-        assertTrue("Column 2 is not dirty", this.dataChangeLayer.isColumnDirty(2));
-        assertTrue("Column 3 is not dirty", this.dataChangeLayer.isColumnDirty(3));
-        assertTrue("Column 4 is not dirty", this.dataChangeLayer.isColumnDirty(4));
+        assertTrue(this.dataChangeLayer.isColumnDirty(0), "Column 0 is not dirty");
+        assertTrue(this.dataChangeLayer.isColumnDirty(1), "Column 1 is not dirty");
+        assertTrue(this.dataChangeLayer.isColumnDirty(2), "Column 2 is not dirty");
+        assertTrue(this.dataChangeLayer.isColumnDirty(3), "Column 3 is not dirty");
+        assertTrue(this.dataChangeLayer.isColumnDirty(4), "Column 4 is not dirty");
 
-        assertFalse("Row 9 is dirty", this.dataChangeLayer.isRowDirty(9));
-        assertFalse("Row 10 is dirty", this.dataChangeLayer.isRowDirty(10));
-        assertFalse("Row 11 is dirty", this.dataChangeLayer.isRowDirty(11));
+        assertFalse(this.dataChangeLayer.isRowDirty(9), "Row 9 is dirty");
+        assertFalse(this.dataChangeLayer.isRowDirty(10), "Row 10 is dirty");
+        assertFalse(this.dataChangeLayer.isRowDirty(11), "Row 11 is dirty");
 
-        assertFalse("Cell 0/9 is dirty", this.dataChangeLayer.isCellDirty(0, 9));
-        assertFalse("Cell 0/10 is dirty", this.dataChangeLayer.isCellDirty(0, 10));
-        assertFalse("Cell 0/11 is dirty", this.dataChangeLayer.isCellDirty(0, 11));
+        assertFalse(this.dataChangeLayer.isCellDirty(0, 9), "Cell 0/9 is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(0, 10), "Cell 0/10 is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(0, 11), "Cell 0/11 is dirty");
 
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(0, 9).hasLabel(DataChangeLayer.DIRTY));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 10).hasLabel(DataChangeLayer.DIRTY));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(2, 11).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(0, 9).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(1, 10).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(2, 11).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
 
         assertEquals(1, this.dataChangeLayer.dataChanges.size());
         assertEquals(1, this.deleteHandler.dataChanges.size());
@@ -386,10 +386,10 @@ public class RowStructuralDataChangeIdIndexTest {
         assertEquals(1, this.dataChangeLayer.dataChanges.size());
         assertEquals(1, this.deleteHandler.dataChanges.size());
 
-        assertTrue("Column 0 is not dirty", this.dataChangeLayer.isColumnDirty(0));
-        assertFalse("Row 10 is dirty", this.dataChangeLayer.isRowDirty(10));
-        assertFalse("Cell 0/10 is dirty", this.dataChangeLayer.isCellDirty(0, 10));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 10).hasLabel(DataChangeLayer.DIRTY));
+        assertTrue(this.dataChangeLayer.isColumnDirty(0), "Column 0 is not dirty");
+        assertFalse(this.dataChangeLayer.isRowDirty(10), "Row 10 is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(0, 10), "Cell 0/10 is dirty");
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(1, 10).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
 
         RowDeleteDataChange change = this.deleteHandler.dataChanges.get(Integer.valueOf(10));
         assertNotNull(change);
@@ -405,10 +405,10 @@ public class RowStructuralDataChangeIdIndexTest {
         assertTrue(this.dataChangeLayer.dataChanges.isEmpty());
         assertTrue(this.deleteHandler.dataChanges.isEmpty());
 
-        assertFalse("Column 0 is dirty", this.dataChangeLayer.isColumnDirty(0));
-        assertFalse("Row 10 is dirty", this.dataChangeLayer.isRowDirty(10));
-        assertFalse("Cell 0/10 is dirty", this.dataChangeLayer.isCellDirty(0, 10));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 10).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse(this.dataChangeLayer.isColumnDirty(0), "Column 0 is dirty");
+        assertFalse(this.dataChangeLayer.isRowDirty(10), "Row 10 is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(0, 10), "Cell 0/10 is dirty");
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(1, 10).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
     }
 
     @Test
@@ -427,10 +427,10 @@ public class RowStructuralDataChangeIdIndexTest {
         assertTrue(this.dataChangeLayer.dataChanges.isEmpty());
         assertTrue(this.deleteHandler.dataChanges.isEmpty());
 
-        assertFalse("Column 0 is dirty", this.dataChangeLayer.isColumnDirty(0));
-        assertFalse("Row 10 is dirty", this.dataChangeLayer.isRowDirty(10));
-        assertFalse("Cell 0/10 is dirty", this.dataChangeLayer.isCellDirty(0, 10));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 10).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse(this.dataChangeLayer.isColumnDirty(0), "Column 0 is dirty");
+        assertFalse(this.dataChangeLayer.isRowDirty(10), "Row 10 is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(0, 10), "Cell 0/10 is dirty");
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(1, 10).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
     }
 
     @Test
@@ -456,10 +456,10 @@ public class RowStructuralDataChangeIdIndexTest {
         assertTrue(this.dataChangeLayer.dataChanges.isEmpty());
         assertTrue(this.deleteHandler.dataChanges.isEmpty());
 
-        assertFalse("Column 0 is dirty", this.dataChangeLayer.isColumnDirty(0));
-        assertFalse("Row 10 is dirty", this.dataChangeLayer.isRowDirty(10));
-        assertFalse("Cell 0/10 is dirty", this.dataChangeLayer.isCellDirty(0, 10));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 10).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse(this.dataChangeLayer.isColumnDirty(0), "Column 0 is dirty");
+        assertFalse(this.dataChangeLayer.isRowDirty(10), "Row 10 is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(0, 10), "Cell 0/10 is dirty");
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(1, 10).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
     }
 
     @Test
@@ -478,10 +478,10 @@ public class RowStructuralDataChangeIdIndexTest {
         assertTrue(this.dataChangeLayer.dataChanges.isEmpty());
         assertTrue(this.deleteHandler.dataChanges.isEmpty());
 
-        assertFalse("Column 0 is dirty", this.dataChangeLayer.isColumnDirty(0));
-        assertFalse("Row 10 is dirty", this.dataChangeLayer.isRowDirty(10));
-        assertFalse("Cell 0/10 is dirty", this.dataChangeLayer.isCellDirty(0, 10));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 10).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse(this.dataChangeLayer.isColumnDirty(0), "Column 0 is dirty");
+        assertFalse(this.dataChangeLayer.isRowDirty(10), "Row 10 is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(0, 10), "Cell 0/10 is dirty");
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(1, 10).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
     }
 
     @Test
@@ -515,10 +515,10 @@ public class RowStructuralDataChangeIdIndexTest {
         assertTrue(this.dataChangeLayer.dataChanges.isEmpty());
         assertTrue(this.deleteHandler.dataChanges.isEmpty());
 
-        assertFalse("Column 0 is dirty", this.dataChangeLayer.isColumnDirty(0));
-        assertFalse("Row 10 is dirty", this.dataChangeLayer.isRowDirty(10));
-        assertFalse("Cell 0/10 is dirty", this.dataChangeLayer.isCellDirty(0, 10));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 10).hasLabel(DataChangeLayer.DIRTY));
+        assertFalse(this.dataChangeLayer.isColumnDirty(0), "Column 0 is dirty");
+        assertFalse(this.dataChangeLayer.isRowDirty(10), "Row 10 is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(0, 10), "Cell 0/10 is dirty");
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(1, 10).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
     }
 
     @Test
@@ -594,8 +594,8 @@ public class RowStructuralDataChangeIdIndexTest {
 
         // ensure that there is no Clancy or Ralph in an item afterwards
         for (Person p : this.dataModel) {
-            assertFalse("Clancy found", "Clancy".equals(p.getFirstName()));
-            assertFalse("Ralph found", "Ralph".equals(p.getFirstName()));
+            assertFalse("Clancy".equals(p.getFirstName()), "Clancy found");
+            assertFalse("Ralph".equals(p.getFirstName()), "Ralph found");
         }
     }
 
@@ -607,7 +607,7 @@ public class RowStructuralDataChangeIdIndexTest {
         this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));
 
         assertEquals("Lovejoy", this.dataLayer.getDataValue(1, 1));
-        assertTrue("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 1));
+        assertTrue(this.dataChangeLayer.isCellDirty(1, 1), "Cell is not dirty");
 
         Person prev = this.dataModel.get(0);
 
@@ -619,8 +619,8 @@ public class RowStructuralDataChangeIdIndexTest {
 
         // change has moved one row
         assertEquals("Lovejoy", this.dataLayer.getDataValue(1, 2));
-        assertTrue("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 2));
-        assertFalse("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 1));
+        assertTrue(this.dataChangeLayer.isCellDirty(1, 2), "Cell is not dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(1, 1), "Cell is not dirty");
 
         // discard the changes
         this.dataChangeLayer.doCommand(new DiscardDataChangesCommand());
@@ -631,8 +631,8 @@ public class RowStructuralDataChangeIdIndexTest {
 
         // ensure that there is no Wiggum and no Lovejoy in an item afterwards
         for (Person p : this.dataModel) {
-            assertFalse("Lovejoy found", "Lovejoy".equals(p.getLastName()));
-            assertFalse("Wiggum found", "Wiggum".equals(p.getLastName()));
+            assertFalse("Lovejoy".equals(p.getLastName()), "Lovejoy found");
+            assertFalse("Wiggum".equals(p.getLastName()), "Wiggum found");
         }
     }
 
@@ -644,7 +644,7 @@ public class RowStructuralDataChangeIdIndexTest {
         this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));
 
         assertEquals("Lovejoy", this.dataLayer.getDataValue(1, 1));
-        assertTrue("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 1));
+        assertTrue(this.dataChangeLayer.isCellDirty(1, 1), "Cell is not dirty");
 
         Person prev = this.dataModel.get(0);
 
@@ -656,13 +656,13 @@ public class RowStructuralDataChangeIdIndexTest {
 
         // change has moved one row
         assertEquals("Lovejoy", this.dataLayer.getDataValue(1, 2));
-        assertTrue("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 2));
-        assertFalse("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 1));
+        assertTrue(this.dataChangeLayer.isCellDirty(1, 2), "Cell is not dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(1, 1), "Cell is not dirty");
 
         this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 2, "Simpson"));
 
         assertEquals("Simpson", this.dataLayer.getDataValue(1, 2));
-        assertFalse("Cell is dirty", this.dataChangeLayer.isCellDirty(1, 2));
+        assertFalse(this.dataChangeLayer.isCellDirty(1, 2), "Cell is dirty");
 
         // discard the changes
         this.dataChangeLayer.doCommand(new DiscardDataChangesCommand());
@@ -673,8 +673,8 @@ public class RowStructuralDataChangeIdIndexTest {
 
         // ensure that there is no Wiggum and no Lovejoy in an item afterwards
         for (Person p : this.dataModel) {
-            assertFalse("Lovejoy found", "Lovejoy".equals(p.getLastName()));
-            assertFalse("Wiggum found", "Wiggum".equals(p.getLastName()));
+            assertFalse("Lovejoy".equals(p.getLastName()), "Lovejoy found");
+            assertFalse("Wiggum".equals(p.getLastName()), "Wiggum found");
         }
     }
 
@@ -694,30 +694,30 @@ public class RowStructuralDataChangeIdIndexTest {
         assertEquals("Lovejoy", this.dataLayer.getDataValue(1, 8));
         assertEquals("Flanders", this.dataLayer.getDataValue(1, 9));
         assertEquals("Flanders", this.dataChangeLayer.getDataValueByPosition(1, 9));
-        assertTrue("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(1, 8).hasLabel(DataChangeLayer.DIRTY));
-        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
-        assertTrue("Row 8 is not dirty", this.dataChangeLayer.isRowDirty(8));
-        assertTrue("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 8));
+        assertTrue(this.dataChangeLayer.getConfigLabelsByPosition(1, 8).hasLabel(DataChangeLayer.DIRTY), "Dirty label not set");
+        assertTrue(this.dataChangeLayer.isColumnDirty(1), "Column 1 is not dirty");
+        assertTrue(this.dataChangeLayer.isRowDirty(8), "Row 8 is not dirty");
+        assertTrue(this.dataChangeLayer.isCellDirty(1, 8), "Cell is not dirty");
 
-        assertFalse("changed columns are empty", this.updateHandler.changedColumns.isEmpty());
-        assertFalse("changed rows are empty", this.updateHandler.changedRows.isEmpty());
-        assertFalse("changes are empty", this.updateHandler.dataChanges.isEmpty());
-        assertFalse("tracked changes are empty", this.dataChangeLayer.dataChanges.isEmpty());
+        assertFalse(this.updateHandler.changedColumns.isEmpty(), "changed columns are empty");
+        assertFalse(this.updateHandler.changedRows.isEmpty(), "changed rows are empty");
+        assertFalse(this.updateHandler.dataChanges.isEmpty(), "changes are empty");
+        assertFalse(this.dataChangeLayer.dataChanges.isEmpty(), "tracked changes are empty");
 
         // now discard and check that previous state is restored correctly
         this.dataChangeLayer.doCommand(new DiscardDataChangesCommand());
 
         assertEquals("Simpson", this.dataLayer.getDataValue(1, 9));
         assertEquals("Flanders", this.dataLayer.getDataValue(1, 10));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 9).hasLabel(DataChangeLayer.DIRTY));
-        assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
-        assertFalse("Row 9 is dirty", this.dataChangeLayer.isRowDirty(9));
-        assertFalse("Cell is dirty", this.dataChangeLayer.isCellDirty(1, 9));
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(1, 9).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
+        assertFalse(this.dataChangeLayer.isColumnDirty(1), "Column 1 is dirty");
+        assertFalse(this.dataChangeLayer.isRowDirty(9), "Row 9 is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(1, 9), "Cell is dirty");
 
-        assertTrue("changed columns are not empty", this.updateHandler.changedColumns.isEmpty());
-        assertTrue("changed rows are not empty", this.updateHandler.changedRows.isEmpty());
-        assertTrue("changes are not empty", this.updateHandler.dataChanges.isEmpty());
-        assertTrue("tracked changes are not empty", this.dataChangeLayer.dataChanges.isEmpty());
+        assertTrue(this.updateHandler.changedColumns.isEmpty(), "changed columns are not empty");
+        assertTrue(this.updateHandler.changedRows.isEmpty(), "changed rows are not empty");
+        assertTrue(this.updateHandler.dataChanges.isEmpty(), "changes are not empty");
+        assertTrue(this.dataChangeLayer.dataChanges.isEmpty(), "tracked changes are not empty");
     }
 
     @Test
@@ -742,32 +742,32 @@ public class RowStructuralDataChangeIdIndexTest {
         assertEquals("Wiggum", this.dataLayer.getDataValue(1, 9));
         assertEquals("Flanders", this.dataLayer.getDataValue(1, 10));
 
-        assertTrue("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(1, 9).hasLabel(DataChangeLayer.DIRTY));
-        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
-        assertTrue("Row 9 is not dirty", this.dataChangeLayer.isRowDirty(9));
-        assertTrue("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 9));
+        assertTrue(this.dataChangeLayer.getConfigLabelsByPosition(1, 9).hasLabel(DataChangeLayer.DIRTY), "Dirty label not set");
+        assertTrue(this.dataChangeLayer.isColumnDirty(1), "Column 1 is not dirty");
+        assertTrue(this.dataChangeLayer.isRowDirty(9), "Row 9 is not dirty");
+        assertTrue(this.dataChangeLayer.isCellDirty(1, 9), "Cell is not dirty");
 
-        assertTrue("changed columns are empty", this.updateHandler.changedColumns.isEmpty());
-        assertTrue("changed rows are empty", this.updateHandler.changedRows.isEmpty());
-        assertTrue("changes are empty", this.updateHandler.dataChanges.isEmpty());
-        assertFalse("changed columns are empty", this.insertHandler.dataChanges.isEmpty());
-        assertFalse("tracked changes are empty", this.dataChangeLayer.dataChanges.isEmpty());
+        assertTrue(this.updateHandler.changedColumns.isEmpty(), "changed columns are empty");
+        assertTrue(this.updateHandler.changedRows.isEmpty(), "changed rows are empty");
+        assertTrue(this.updateHandler.dataChanges.isEmpty(), "changes are empty");
+        assertFalse(this.insertHandler.dataChanges.isEmpty(), "changed columns are empty");
+        assertFalse(this.dataChangeLayer.dataChanges.isEmpty(), "tracked changes are empty");
 
         // now discard and check that previous state is restored correctly
         this.dataChangeLayer.doCommand(new DiscardDataChangesCommand());
 
         assertEquals("Simpson", this.dataLayer.getDataValue(1, 9));
         assertEquals("Flanders", this.dataLayer.getDataValue(1, 10));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 9).hasLabel(DataChangeLayer.DIRTY));
-        assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
-        assertFalse("Row 9 is dirty", this.dataChangeLayer.isRowDirty(9));
-        assertFalse("Cell is dirty", this.dataChangeLayer.isCellDirty(1, 9));
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(1, 9).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
+        assertFalse(this.dataChangeLayer.isColumnDirty(1), "Column 1 is dirty");
+        assertFalse(this.dataChangeLayer.isRowDirty(9), "Row 9 is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(1, 9), "Cell is dirty");
 
-        assertTrue("changed columns are not empty", this.updateHandler.changedColumns.isEmpty());
-        assertTrue("changed rows are not empty", this.updateHandler.changedRows.isEmpty());
-        assertTrue("changes are not empty", this.updateHandler.dataChanges.isEmpty());
-        assertTrue("changed columns are empty", this.insertHandler.dataChanges.isEmpty());
-        assertTrue("tracked changes are not empty", this.dataChangeLayer.dataChanges.isEmpty());
+        assertTrue(this.updateHandler.changedColumns.isEmpty(), "changed columns are not empty");
+        assertTrue(this.updateHandler.changedRows.isEmpty(), "changed rows are not empty");
+        assertTrue(this.updateHandler.dataChanges.isEmpty(), "changes are not empty");
+        assertTrue(this.insertHandler.dataChanges.isEmpty(), "changed columns are empty");
+        assertTrue(this.dataChangeLayer.dataChanges.isEmpty(), "tracked changes are not empty");
     }
 
     @Test
@@ -792,32 +792,32 @@ public class RowStructuralDataChangeIdIndexTest {
         assertEquals("Wiggum", this.dataLayer.getDataValue(1, 11));
         assertEquals("Flanders", this.dataLayer.getDataValue(1, 12));
 
-        assertTrue("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(1, 11).hasLabel(DataChangeLayer.DIRTY));
-        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
-        assertTrue("Row 9 is not dirty", this.dataChangeLayer.isRowDirty(11));
-        assertTrue("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 11));
+        assertTrue(this.dataChangeLayer.getConfigLabelsByPosition(1, 11).hasLabel(DataChangeLayer.DIRTY), "Dirty label not set");
+        assertTrue(this.dataChangeLayer.isColumnDirty(1), "Column 1 is not dirty");
+        assertTrue(this.dataChangeLayer.isRowDirty(11), "Row 9 is not dirty");
+        assertTrue(this.dataChangeLayer.isCellDirty(1, 11), "Cell is not dirty");
 
-        assertTrue("changed columns are empty", this.updateHandler.changedColumns.isEmpty());
-        assertTrue("changed rows are empty", this.updateHandler.changedRows.isEmpty());
-        assertTrue("changes are empty", this.updateHandler.dataChanges.isEmpty());
-        assertFalse("changed columns are empty", this.insertHandler.dataChanges.isEmpty());
-        assertFalse("tracked changes are empty", this.dataChangeLayer.dataChanges.isEmpty());
+        assertTrue(this.updateHandler.changedColumns.isEmpty(), "changed columns are empty");
+        assertTrue(this.updateHandler.changedRows.isEmpty(), "changed rows are empty");
+        assertTrue(this.updateHandler.dataChanges.isEmpty(), "changes are empty");
+        assertFalse(this.insertHandler.dataChanges.isEmpty(), "changed columns are empty");
+        assertFalse(this.dataChangeLayer.dataChanges.isEmpty(), "tracked changes are empty");
 
         // now discard and check that previous state is restored correctly
         this.dataChangeLayer.doCommand(new DiscardDataChangesCommand());
 
         assertEquals("Simpson", this.dataLayer.getDataValue(1, 9));
         assertEquals("Flanders", this.dataLayer.getDataValue(1, 10));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 9).hasLabel(DataChangeLayer.DIRTY));
-        assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
-        assertFalse("Row 9 is dirty", this.dataChangeLayer.isRowDirty(9));
-        assertFalse("Cell is dirty", this.dataChangeLayer.isCellDirty(1, 9));
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(1, 9).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
+        assertFalse(this.dataChangeLayer.isColumnDirty(1), "Column 1 is dirty");
+        assertFalse(this.dataChangeLayer.isRowDirty(9), "Row 9 is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(1, 9), "Cell is dirty");
 
-        assertTrue("changed columns are not empty", this.updateHandler.changedColumns.isEmpty());
-        assertTrue("changed rows are not empty", this.updateHandler.changedRows.isEmpty());
-        assertTrue("changes are not empty", this.updateHandler.dataChanges.isEmpty());
-        assertTrue("changed columns are empty", this.insertHandler.dataChanges.isEmpty());
-        assertTrue("tracked changes are not empty", this.dataChangeLayer.dataChanges.isEmpty());
+        assertTrue(this.updateHandler.changedColumns.isEmpty(), "changed columns are not empty");
+        assertTrue(this.updateHandler.changedRows.isEmpty(), "changed rows are not empty");
+        assertTrue(this.updateHandler.dataChanges.isEmpty(), "changes are not empty");
+        assertTrue(this.insertHandler.dataChanges.isEmpty(), "changed columns are empty");
+        assertTrue(this.dataChangeLayer.dataChanges.isEmpty(), "tracked changes are not empty");
     }
 
     @Test
@@ -837,30 +837,30 @@ public class RowStructuralDataChangeIdIndexTest {
         assertEquals("Lovejoy", this.dataChangeLayer.getDataValueByPosition(1, 10));
         assertEquals("Flanders", this.dataLayer.getDataValue(1, 11));
         assertEquals("Flanders", this.dataChangeLayer.getDataValueByPosition(1, 11));
-        assertTrue("Dirty label not set", this.dataChangeLayer.getConfigLabelsByPosition(1, 10).hasLabel(DataChangeLayer.DIRTY));
-        assertTrue("Column 1 is not dirty", this.dataChangeLayer.isColumnDirty(1));
-        assertTrue("Row 1 is not dirty", this.dataChangeLayer.isRowDirty(10));
-        assertTrue("Cell is not dirty", this.dataChangeLayer.isCellDirty(1, 10));
+        assertTrue(this.dataChangeLayer.getConfigLabelsByPosition(1, 10).hasLabel(DataChangeLayer.DIRTY), "Dirty label not set");
+        assertTrue(this.dataChangeLayer.isColumnDirty(1), "Column 1 is not dirty");
+        assertTrue(this.dataChangeLayer.isRowDirty(10), "Row 1 is not dirty");
+        assertTrue(this.dataChangeLayer.isCellDirty(1, 10), "Cell is not dirty");
 
-        assertFalse("changed columns are empty", this.updateHandler.changedColumns.isEmpty());
-        assertFalse("changed rows are empty", this.updateHandler.changedRows.isEmpty());
-        assertFalse("changes are empty", this.updateHandler.dataChanges.isEmpty());
-        assertFalse("tracked changes are not empty", this.dataChangeLayer.dataChanges.isEmpty());
+        assertFalse(this.updateHandler.changedColumns.isEmpty(), "changed columns are empty");
+        assertFalse(this.updateHandler.changedRows.isEmpty(), "changed rows are empty");
+        assertFalse(this.updateHandler.dataChanges.isEmpty(), "changes are empty");
+        assertFalse(this.dataChangeLayer.dataChanges.isEmpty(), "tracked changes are not empty");
 
         // now discard and check that previous state is restored correctly
         this.dataChangeLayer.doCommand(new DiscardDataChangesCommand());
 
         assertEquals("Simpson", this.dataLayer.getDataValue(1, 9));
         assertEquals("Flanders", this.dataLayer.getDataValue(1, 10));
-        assertFalse("Dirty label set", this.dataChangeLayer.getConfigLabelsByPosition(1, 9).hasLabel(DataChangeLayer.DIRTY));
-        assertFalse("Column 1 is dirty", this.dataChangeLayer.isColumnDirty(1));
-        assertFalse("Row 9 is dirty", this.dataChangeLayer.isRowDirty(9));
-        assertFalse("Cell is dirty", this.dataChangeLayer.isCellDirty(1, 9));
+        assertFalse(this.dataChangeLayer.getConfigLabelsByPosition(1, 9).hasLabel(DataChangeLayer.DIRTY), "Dirty label set");
+        assertFalse(this.dataChangeLayer.isColumnDirty(1), "Column 1 is dirty");
+        assertFalse(this.dataChangeLayer.isRowDirty(9), "Row 9 is dirty");
+        assertFalse(this.dataChangeLayer.isCellDirty(1, 9), "Cell is dirty");
 
-        assertTrue("changed columns are not empty", this.updateHandler.changedColumns.isEmpty());
-        assertTrue("changed rows are not empty", this.updateHandler.changedRows.isEmpty());
-        assertTrue("changes are not empty", this.updateHandler.dataChanges.isEmpty());
-        assertTrue("tracked changes are not empty", this.dataChangeLayer.dataChanges.isEmpty());
+        assertTrue(this.updateHandler.changedColumns.isEmpty(), "changed columns are not empty");
+        assertTrue(this.updateHandler.changedRows.isEmpty(), "changed rows are not empty");
+        assertTrue(this.updateHandler.dataChanges.isEmpty(), "changes are not empty");
+        assertTrue(this.dataChangeLayer.dataChanges.isEmpty(), "tracked changes are not empty");
     }
 
     @Test
@@ -888,15 +888,15 @@ public class RowStructuralDataChangeIdIndexTest {
 
         // no row dirty
         for (int row = 0; row < this.dataModel.size(); row++) {
-            assertFalse("Row " + row + " is dirty", this.dataChangeLayer.isRowDirty(row));
+            assertFalse(this.dataChangeLayer.isRowDirty(row), "Row " + row + " is dirty");
         }
 
-        assertTrue("changed columns are empty", this.updateHandler.changedColumns.isEmpty());
-        assertTrue("changed rows are empty", this.updateHandler.changedRows.isEmpty());
-        assertTrue("changes are empty", this.updateHandler.dataChanges.isEmpty());
-        assertFalse("insert handler changes are empty", this.insertHandler.dataChanges.isEmpty());
-        assertFalse("delete handler changes are empty", this.deleteHandler.dataChanges.isEmpty());
-        assertFalse("tracked changes are empty", this.dataChangeLayer.dataChanges.isEmpty());
+        assertTrue(this.updateHandler.changedColumns.isEmpty(), "changed columns are empty");
+        assertTrue(this.updateHandler.changedRows.isEmpty(), "changed rows are empty");
+        assertTrue(this.updateHandler.dataChanges.isEmpty(), "changes are empty");
+        assertFalse(this.insertHandler.dataChanges.isEmpty(), "insert handler changes are empty");
+        assertFalse(this.deleteHandler.dataChanges.isEmpty(), "delete handler changes are empty");
+        assertFalse(this.dataChangeLayer.dataChanges.isEmpty(), "tracked changes are empty");
 
         // now discard and check that previous state is restored correctly
         this.dataChangeLayer.doCommand(new DiscardDataChangesCommand());
@@ -906,15 +906,15 @@ public class RowStructuralDataChangeIdIndexTest {
 
         // no row dirty
         for (int row = 0; row < this.dataModel.size(); row++) {
-            assertFalse("Row " + row + " is dirty", this.dataChangeLayer.isRowDirty(row));
+            assertFalse(this.dataChangeLayer.isRowDirty(row), "Row " + row + " is dirty");
         }
 
-        assertTrue("changed columns are not empty", this.updateHandler.changedColumns.isEmpty());
-        assertTrue("changed rows are not empty", this.updateHandler.changedRows.isEmpty());
-        assertTrue("changes are not empty", this.updateHandler.dataChanges.isEmpty());
-        assertTrue("insert handler changes are not empty", this.insertHandler.dataChanges.isEmpty());
-        assertTrue("delete handler changes are not empty", this.deleteHandler.dataChanges.isEmpty());
-        assertTrue("tracked changes are not empty", this.dataChangeLayer.dataChanges.isEmpty());
+        assertTrue(this.updateHandler.changedColumns.isEmpty(), "changed columns are not empty");
+        assertTrue(this.updateHandler.changedRows.isEmpty(), "changed rows are not empty");
+        assertTrue(this.updateHandler.dataChanges.isEmpty(), "changes are not empty");
+        assertTrue(this.insertHandler.dataChanges.isEmpty(), "insert handler changes are not empty");
+        assertTrue(this.deleteHandler.dataChanges.isEmpty(), "delete handler changes are not empty");
+        assertTrue(this.dataChangeLayer.dataChanges.isEmpty(), "tracked changes are not empty");
     }
 
 }

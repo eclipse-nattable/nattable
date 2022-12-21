@@ -12,8 +12,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.paste;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 //TODO -- Uncomment and enable tests so when we figure out how to make cglib work.
 public class NatTableBulkUpdateSupportTest {
@@ -22,7 +23,7 @@ public class NatTableBulkUpdateSupportTest {
     // private DataUpdateHelper<PricingDataBean> helper;
     // private List<Serializable> rowIds;
     //
-    // @Before
+    // @BeforeEach
     // public void init() {
     // ContentConfigRegistry contentConfigRegistry = new
     // ContentConfigRegistry();
@@ -88,6 +89,6 @@ public class NatTableBulkUpdateSupportTest {
 
     @Test
     public void dummyTest() {
-        Assert.assertTrue(true);
+        assertTrue(true);
     }
 }

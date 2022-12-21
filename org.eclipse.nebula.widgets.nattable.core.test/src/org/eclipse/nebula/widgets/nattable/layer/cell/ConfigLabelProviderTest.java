@@ -13,8 +13,8 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer.cell;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -59,7 +59,7 @@ import org.eclipse.nebula.widgets.nattable.tree.ITreeData;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.TreeRowModel;
 import org.eclipse.nebula.widgets.nattable.tree.config.DefaultTreeLayerConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ConfigLabelProviderTest {
 
