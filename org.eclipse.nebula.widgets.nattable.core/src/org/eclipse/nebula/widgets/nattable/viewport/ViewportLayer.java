@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2021 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,6 +27,7 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
@@ -1513,11 +1514,19 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      *            The event to handle
      */
     private void processSelection(CellSelectionEvent selectionEvent) {
-        moveCellPositionIntoViewport(
-                selectionEvent.getColumnPosition(),
-                selectionEvent.getRowPosition());
-        adjustHorizontalScrollBar();
-        adjustVerticalScrollBar();
+        if (selectionEvent.isForcingEntireCellIntoViewport()) {
+            moveCellPositionIntoViewport(
+                    selectionEvent.getColumnPosition(),
+                    selectionEvent.getRowPosition());
+            adjustHorizontalScrollBar();
+            adjustVerticalScrollBar();
+        } else {
+            // if the selected cell is not moved into the viewport, a
+            // VisualRefreshEvent needs to be fired to ensure a consistent view,
+            // e.g. a currently selected cell is not selected after the
+            // selection command.
+            fireLayerEvent(new VisualRefreshEvent(this));
+        }
     }
 
     /**

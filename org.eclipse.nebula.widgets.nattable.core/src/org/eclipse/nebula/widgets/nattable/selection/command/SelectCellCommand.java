@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -30,10 +30,9 @@ public class SelectCellCommand extends AbstractPositionCommand {
 
     private boolean shiftMask;
     private boolean controlMask;
-    private boolean forcingEntireCellIntoViewport = false;
+    private boolean forcingEntireCellIntoViewport = true;
 
-    public SelectCellCommand(ILayer layer, int columnPosition, int rowPosition,
-            boolean shiftMask, boolean controlMask) {
+    public SelectCellCommand(ILayer layer, int columnPosition, int rowPosition, boolean shiftMask, boolean controlMask) {
         super(layer, columnPosition, rowPosition);
         this.shiftMask = shiftMask;
         this.controlMask = controlMask;
@@ -58,8 +57,7 @@ public class SelectCellCommand extends AbstractPositionCommand {
         return this.forcingEntireCellIntoViewport;
     }
 
-    public void setForcingEntireCellIntoViewport(
-            boolean forcingEntireCellIntoViewport) {
+    public void setForcingEntireCellIntoViewport(boolean forcingEntireCellIntoViewport) {
         this.forcingEntireCellIntoViewport = forcingEntireCellIntoViewport;
     }
 

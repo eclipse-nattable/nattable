@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2022 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -176,7 +176,9 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
             fireCellSelectionEvent(
                     getLastSelectedCell().columnPosition,
                     getLastSelectedCell().rowPosition,
-                    false, false, false);
+                    true,
+                    false,
+                    false);
         }
     }
 
@@ -257,7 +259,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
         fireCellSelectionEvent(
                 updateCoordinate.columnPosition,
                 updateCoordinate.rowPosition,
-                false,
+                true,
                 false,
                 false);
     }
@@ -666,8 +668,11 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
         return super.doCommand(command);
     }
 
-    public void fireCellSelectionEvent(int columnPosition, int rowPosition,
-            boolean forcingEntireCellIntoViewport, boolean withShiftMask,
+    public void fireCellSelectionEvent(
+            int columnPosition,
+            int rowPosition,
+            boolean forcingEntireCellIntoViewport,
+            boolean withShiftMask,
             boolean withControlMask) {
 
         int column = columnPosition;
@@ -684,7 +689,8 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
                         column,
                         row,
                         withShiftMask,
-                        withControlMask);
+                        withControlMask,
+                        forcingEntireCellIntoViewport);
         fireLayerEvent(selectionEvent);
     }
 

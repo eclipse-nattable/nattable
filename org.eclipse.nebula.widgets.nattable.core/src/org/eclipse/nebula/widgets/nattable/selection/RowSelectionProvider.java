@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -263,7 +263,9 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
                 this.selectionLayer.fireCellSelectionEvent(
                         this.selectionLayer.getLastSelectedCell().columnPosition,
                         this.selectionLayer.getLastSelectedCell().rowPosition,
-                        false, false, false);
+                        true,
+                        false,
+                        false);
             }
         }
     }
