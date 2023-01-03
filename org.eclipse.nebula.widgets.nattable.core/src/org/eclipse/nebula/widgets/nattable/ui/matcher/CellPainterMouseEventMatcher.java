@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -56,6 +56,35 @@ public class CellPainterMouseEventMatcher extends MouseEventMatcher {
     }
 
     /**
+     * Creates a {@link CellPainterMouseEventMatcher} for a given state mask,
+     * region name, mouse button and a specific target cellPainter instance. Can
+     * be used in case one single painter instance is registered that should be
+     * checked for.
+     *
+     * @param stateMask
+     *            the state of the keyboard modifier keys and mouse masks at the
+     *            time the event was generated.
+     * @param regionName
+     *            The name of the region where this matcher should react on.
+     *            Typically a {@link GridRegion} if a default grid is used. Can
+     *            also be another value in case a custom region label is defined
+     *            in a custom composition.
+     * @param button
+     *            The mouse button this matcher should react on, e.g.
+     *            {@link MouseEventMatcher#LEFT_BUTTON} and
+     *            {@link MouseEventMatcher#RIGHT_BUTTON}
+     * @param targetCellPainter
+     *            The {@link ICellPainter} instance that should be used for the
+     *            check.
+     *
+     * @since 2.1
+     */
+    public CellPainterMouseEventMatcher(int stateMask, String regionName, int button, ICellPainter targetCellPainter) {
+        super(stateMask, regionName, button);
+        this.targetCellPainter = targetCellPainter;
+    }
+
+    /**
      * Creates a {@link CellPainterMouseEventMatcher} for a given region name,
      * mouse button and a target cellPainter class. Can be used in case every
      * instance of a painter should be treated the same way, e.g. checkboxes.
@@ -75,6 +104,35 @@ public class CellPainterMouseEventMatcher extends MouseEventMatcher {
      */
     public CellPainterMouseEventMatcher(String regionName, int button, Class<? extends ICellPainter> targetCellPainterClass) {
         super(regionName, button);
+        this.targetCellPainterClass = targetCellPainterClass;
+    }
+
+    /**
+     * Creates a {@link CellPainterMouseEventMatcher} for a given state mask,
+     * region name, mouse button and a target cellPainter class. Can be used in
+     * case every instance of a painter should be treated the same way, e.g.
+     * checkboxes.
+     *
+     * @param stateMask
+     *            the state of the keyboard modifier keys and mouse masks at the
+     *            time the event was generated.
+     * @param regionName
+     *            The name of the region where this matcher should react on.
+     *            Typically a {@link GridRegion} if a default grid is used. Can
+     *            also be another value in case a custom region label is defined
+     *            in a custom composition.
+     * @param button
+     *            The mouse button this matcher should react on, e.g.
+     *            {@link MouseEventMatcher#LEFT_BUTTON} and
+     *            {@link MouseEventMatcher#RIGHT_BUTTON}
+     * @param targetCellPainterClass
+     *            The concrete type of the {@link ICellPainter} that should be
+     *            used for the check.
+     *
+     * @since 2.1
+     */
+    public CellPainterMouseEventMatcher(int stateMask, String regionName, int button, Class<? extends ICellPainter> targetCellPainterClass) {
+        super(stateMask, regionName, button);
         this.targetCellPainterClass = targetCellPainterClass;
     }
 
