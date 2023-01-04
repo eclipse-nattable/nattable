@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -42,8 +42,10 @@ public class GroupByHeaderMenuConfiguration extends AbstractUiBindingConfigurati
 
     /**
      * The {@link GroupByHeaderLayer} to which the menu should be attached.
+     *
+     * @since 2.1
      */
-    private final GroupByHeaderLayer groupByHeaderLayer;
+    protected final GroupByHeaderLayer groupByHeaderLayer;
 
     /**
      * The groupBy header menu.
