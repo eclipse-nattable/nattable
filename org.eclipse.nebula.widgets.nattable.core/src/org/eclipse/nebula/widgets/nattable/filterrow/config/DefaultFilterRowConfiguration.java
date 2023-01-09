@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -31,6 +31,7 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorat
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
+import org.eclipse.nebula.widgets.nattable.viewport.action.ShowColumnInViewportAction;
 import org.eclipse.swt.SWT;
 
 //fields are public by design to make it easy for adapters to customize configuration
@@ -82,6 +83,9 @@ public class DefaultFilterRowConfiguration extends AbstractRegistryConfiguration
 
     @Override
     public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        uiBindingRegistry.registerFirstMouseDownBinding(
+                new FilterRowMouseEventMatcher(),
+                new ShowColumnInViewportAction());
         uiBindingRegistry.registerFirstSingleClickBinding(
                 new FilterRowMouseEventMatcher(),
                 new MouseEditAction());
