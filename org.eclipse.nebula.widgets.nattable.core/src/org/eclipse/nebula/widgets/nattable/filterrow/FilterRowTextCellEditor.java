@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2020 Dirk Fauth and others.
+ * Copyright (c) 2014, 2023 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,9 +18,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
@@ -49,7 +53,43 @@ public class FilterRowTextCellEditor extends TextCellEditor {
             }
         });
 
-        text.addDisposeListener(e -> service.shutdownNow());
+        PaintListener paintListener = new PaintListener() {
+
+            @Override
+            public void paintControl(PaintEvent e) {
+                if (getEditorControl() != null && !getEditorControl().isDisposed()) {
+
+                    // we need to retrieve the cell again to get the updated
+                    // cell bounds in case the scrollbar becomes invisible
+                    // because of filtering
+                    ILayerCell cell = FilterRowTextCellEditor.this.layerCell.getLayer().getCellByPosition(
+                            FilterRowTextCellEditor.this.layerCell.getColumnPosition(),
+                            FilterRowTextCellEditor.this.layerCell.getRowPosition());
+
+                    Rectangle cellBounds = cell.getBounds();
+                    Rectangle editorBounds = cell.getLayer().getLayerPainter().adjustCellBounds(
+                            cell.getColumnPosition(),
+                            cell.getRowPosition(),
+                            new Rectangle(cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height));
+
+                    editorBounds = calculateControlBounds(editorBounds);
+
+                    if (editorBounds.x == 0) {
+                        editorBounds.x += 1;
+                        editorBounds.width -= 1;
+                    }
+
+                    getEditorControl().setBounds(editorBounds);
+                }
+
+            }
+        };
+        parent.addPaintListener(paintListener);
+
+        text.addDisposeListener(e -> {
+            service.shutdownNow();
+            parent.removePaintListener(paintListener);
+        });
 
         return text;
     }
