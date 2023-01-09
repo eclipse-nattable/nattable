@@ -28,14 +28,10 @@ import java.util.regex.Pattern;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
-import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
-import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
-import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
-import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxCellEditor;
+import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterUtils;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
-import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
-import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
@@ -151,16 +147,11 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
             // Check if the filter editor is the combobox and only handle the
             // collection case with that type of editor. Note that ignoring the
             // SELECT_ALL_ITEMS_VALUE is needed in any case.
-            ICellEditor cellEditor = this.configRegistry.getConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR,
-                    DisplayMode.NORMAL,
-                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + entry.getKey(), GridRegion.FILTER_ROW);
-            boolean isCombo = (cellEditor instanceof FilterRowComboBoxCellEditor);
 
             if (EditConstants.SELECT_ALL_ITEMS_VALUE.equals(filterObject)) {
                 it.remove();
-            } else if (isCombo) {
-                List<?> dataProviderList = this.comboBoxDataProvider.getValues(entry.getKey(), 0);
+            } else if (ComboBoxFilterUtils.isFilterRowComboBoxCellEditor(this.configRegistry, entry.getKey())) {
+                List<?> dataProviderList = this.comboBoxDataProvider.getAllValues(entry.getKey());
 
                 // selecting all is transported as String to support lazy
                 // loading of combo box values
@@ -179,7 +170,6 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
                     it.remove();
                 }
             }
-
         }
 
         super.applyFilter(newIndexToObjectMap);
@@ -229,31 +219,7 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
 
     @SuppressWarnings("rawtypes")
     protected boolean filterCollectionsEqual(Collection filter1, Collection filter2) {
-        if ((filter1 != null && filter2 != null)
-                && filter1.size() == filter2.size()) {
-
-            if (!filter1.equals(filter2)) {
-                // as equality for collections take into account the order and
-                // the elements we perform an additional check if the same items
-                // regardless the order are contained in both lists
-                for (Object f1 : filter1) {
-                    if (!filter2.contains(f1)) {
-                        return false;
-                    }
-                }
-                // as lists can contain the same element twice, we also perform
-                // a counter check
-                for (Object f2 : filter2) {
-                    if (!filter1.contains(f2)) {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        return false;
+        return ObjectUtils.collectionsEqual(filter1, filter2);
     }
 
     /**
@@ -267,11 +233,7 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
      */
     protected boolean hasComboBoxFilterEditorRegistered() {
         for (int i = 0; i < this.columnAccessor.getColumnCount(); i++) {
-            ICellEditor cellEditor = this.configRegistry.getConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR,
-                    DisplayMode.NORMAL,
-                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + i, GridRegion.FILTER_ROW);
-            if (cellEditor instanceof FilterRowComboBoxCellEditor) {
+            if (ComboBoxFilterUtils.isFilterRowComboBoxCellEditor(this.configRegistry, i)) {
                 return true;
             }
         }

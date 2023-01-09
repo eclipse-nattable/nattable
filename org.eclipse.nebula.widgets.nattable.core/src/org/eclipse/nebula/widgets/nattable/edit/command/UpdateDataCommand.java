@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -23,7 +23,7 @@ public class UpdateDataCommand extends AbstractPositionCommand {
     /**
      * The value to update the data model to.
      */
-    private final Object newValue;
+    private Object newValue;
 
     /**
      * Create a new {@link UpdateDataCommand} based on the specified
@@ -64,6 +64,17 @@ public class UpdateDataCommand extends AbstractPositionCommand {
      */
     public Object getNewValue() {
         return this.newValue;
+    }
+
+    /**
+     *
+     * @param newValue
+     *            The value to update the data model to.
+     *
+     * @since 2.1
+     */
+    public void setNewValue(Object newValue) {
+        this.newValue = newValue;
     }
 
     @Override

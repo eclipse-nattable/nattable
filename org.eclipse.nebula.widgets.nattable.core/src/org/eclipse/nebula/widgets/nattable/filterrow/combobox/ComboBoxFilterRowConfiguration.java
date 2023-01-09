@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2022 Dirk Fauth and others.
+ * Copyright (c) 2013, 2023 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -53,13 +53,21 @@ public class ComboBoxFilterRowConfiguration extends AbstractRegistryConfiguratio
      */
     protected ImagePainter filterIconPainter;
 
-    // TODO 2.1 change visibility to protected
     /**
      * The {@link FilterRowPainter} used for painting cells in the filter row.
      * Supports rendering of additional filter state based icons and is needed
      * to support specific actions based on the filter states.
+     *
+     * @since 2.1
      */
-    private FilterRowPainter filterRowPainter;
+    protected FilterRowPainter filterRowPainter;
+
+    /**
+     * The IComboBoxDataProvider that is used to fill the filter row comboboxes.
+     *
+     * @since 2.1
+     */
+    protected IComboBoxDataProvider comboBoxDataProvider;
 
     /**
      * The empty default constructor needed for specialising.
@@ -84,6 +92,7 @@ public class ComboBoxFilterRowConfiguration extends AbstractRegistryConfiguratio
     public ComboBoxFilterRowConfiguration(IComboBoxDataProvider comboBoxDataProvider) {
         this.cellEditor = new FilterRowComboBoxCellEditor(comboBoxDataProvider, 10);
         this.filterIconPainter = new ComboBoxFilterIconPainter(comboBoxDataProvider);
+        this.comboBoxDataProvider = comboBoxDataProvider;
     }
 
     /**
@@ -96,10 +105,33 @@ public class ComboBoxFilterRowConfiguration extends AbstractRegistryConfiguratio
      *            The {@link ImagePainter} that should be used to render a
      *            filter icon in the filter row.
      * @since 2.0
+     * @deprecated use
+     *             {@link ComboBoxFilterRowConfiguration#ComboBoxFilterRowConfiguration(ICellEditor, ImagePainter, IComboBoxDataProvider)}
      */
+    @Deprecated
     public ComboBoxFilterRowConfiguration(ICellEditor cellEditor, ImagePainter filterIconPainter) {
         this.cellEditor = cellEditor;
         this.filterIconPainter = filterIconPainter;
+    }
+
+    /**
+     * Create a ComboBoxFilterRowConfiguration with the given filter cell editor
+     * and filter icon painter.
+     *
+     * @param cellEditor
+     *            The {@link ICellEditor} that should be used in the filter row.
+     * @param filterIconPainter
+     *            The {@link ImagePainter} that should be used to render a
+     *            filter icon in the filter row.
+     * @param comboBoxDataProvider
+     *            The IComboBoxDataProvider that is used to fill the filter row
+     *            comboboxes.
+     * @since 2.1
+     */
+    public ComboBoxFilterRowConfiguration(ICellEditor cellEditor, ImagePainter filterIconPainter, IComboBoxDataProvider comboBoxDataProvider) {
+        this.cellEditor = cellEditor;
+        this.filterIconPainter = filterIconPainter;
+        this.comboBoxDataProvider = comboBoxDataProvider;
     }
 
     @Override
@@ -135,9 +167,7 @@ public class ComboBoxFilterRowConfiguration extends AbstractRegistryConfiguratio
             }
         }, CellEdgeEnum.RIGHT, this.filterIconPainter);
 
-        // TODO 2.1 use new constructor after update
-        this.filterRowPainter = new FilterRowPainter(this.filterIconPainter);
-        this.filterRowPainter.setWrappedPainter(cellPainter);
+        this.filterRowPainter = new FilterRowPainter(cellPainter, this.filterIconPainter);
 
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_PAINTER,
@@ -150,7 +180,9 @@ public class ComboBoxFilterRowConfiguration extends AbstractRegistryConfiguratio
     public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
         if (this.filterRowPainter != null) {
             uiBindingRegistry.registerFirstSingleClickBinding(
-                    new ClearFilterIconMouseEventMatcher(this.filterRowPainter),
+                    this.comboBoxDataProvider != null
+                            ? new ComboBoxClearFilterIconMouseEventMatcher(this.filterRowPainter, this.comboBoxDataProvider)
+                            : new ClearFilterIconMouseEventMatcher(this.filterRowPainter),
                     new ClearFilterAction());
         }
     }

@@ -137,7 +137,8 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends AbstractNatExamp
         filterRowHeaderLayer.addConfiguration(
                 new ComboBoxFilterRowConfiguration(
                         new FilterRowComboBoxCellEditor(comboBoxDataProvider, 5),
-                        new ComboBoxFilterIconPainter(comboBoxDataProvider, GUIHelper.getImage("filter"), null)));
+                        new ComboBoxFilterIconPainter(comboBoxDataProvider, GUIHelper.getImage("filter"), null),
+                        comboBoxDataProvider));
 
         // build the row header layer
         IDataProvider rowHeaderDataProvider =

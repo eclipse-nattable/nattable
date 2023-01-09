@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.eclipse.nebula.widgets.nattable.core" version="2">
+    <resource path="src/org/eclipse/nebula/widgets/nattable/filterrow/combobox/ComboBoxFilterRowConfiguration.java" type="org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterRowConfiguration">
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterRowConfiguration"/>
+                <message_argument value="comboBoxDataProvider"/>
+            </message_arguments>
+        </filter>
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterRowConfiguration"/>
+                <message_argument value="filterRowPainter"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/nebula/widgets/nattable/viewport/command/ShowColumnInViewportCommand.java" type="org.eclipse.nebula.widgets.nattable.viewport.command.ShowColumnInViewportCommand">
+        <filter comment="Changed the super class without effect on the usage details" id="338849923">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.viewport.command.ShowColumnInViewportCommand"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>

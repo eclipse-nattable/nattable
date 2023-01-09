@@ -23,7 +23,9 @@ Import-Package: org.eclipse.jface.viewers,
  org.eclipse.nebula.widgets.nattable.test.integration,
  org.eclipse.nebula.widgets.nattable.tree.command,
  org.eclipse.nebula.widgets.nattable.viewport,
- org.junit.jupiter.api;version="5.9.1"
+ org.junit.jupiter.api;version="5.9.1",
+ org.junit.jupiter.params;version="5.9.1",
+ org.junit.jupiter.params.provider;version="5.9.1"
 Bundle-Vendor: Eclipse Nebula NatTable
 Require-Bundle: ca.odell.glazedlists;bundle-version="1.9.0"
 Automatic-Module-Name: org.eclipse.nebula.widgets.nattable.extension.glazedlists.tests

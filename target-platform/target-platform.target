@@ -57,5 +57,15 @@
 			  </dependency>
 		  </dependencies>
 	  </location>
+	  <location includeDependencyDepth="none" includeSource="true" missingManifest="generate" type="Maven">
+		  <dependencies>
+			  <dependency>
+				  <groupId>org.junit.jupiter</groupId>
+				  <artifactId>junit-jupiter-params</artifactId>
+				  <version>5.9.1</version>
+				  <type>jar</type>
+			  </dependency>
+		  </dependencies>
+	  </location>
   </locations>
 </target>

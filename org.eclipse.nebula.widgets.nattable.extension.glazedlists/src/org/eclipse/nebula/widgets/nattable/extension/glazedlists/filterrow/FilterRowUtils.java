@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2022 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -19,17 +19,10 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
-import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
-import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
 import org.eclipse.nebula.widgets.nattable.filterrow.ParseResult;
 import org.eclipse.nebula.widgets.nattable.filterrow.ParseResult.MatchType;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
-import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
-import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
-import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 
 import ca.odell.glazedlists.matchers.ThresholdMatcherEditor;
 
@@ -202,26 +195,5 @@ public final class FilterRowUtils {
         }
 
         return null;
-    }
-
-    /**
-     *
-     * @param configRegistry
-     *            The {@link IConfigRegistry} needed to retrieve the configured
-     *            cell editor.
-     * @param columnIndex
-     *            The column index for which the filter editor should be
-     *            inspected.
-     * @return <code>true</code> if the filter editor configured for the given
-     *         column index is of type {@link FilterRowComboBoxCellEditor}.
-     *
-     * @since 2.1
-     */
-    public static boolean isFilterRowComboBoxCellEditor(IConfigRegistry configRegistry, int columnIndex) {
-        ICellEditor cellEditor = configRegistry.getConfigAttribute(
-                EditConfigAttributes.CELL_EDITOR,
-                DisplayMode.NORMAL,
-                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex, GridRegion.FILTER_ROW);
-        return (cellEditor instanceof FilterRowComboBoxCellEditor);
     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -210,5 +210,48 @@ public final class ObjectUtils {
 
     public static <T> T getFirstElement(List<T> list) {
         return list.get(0);
+    }
+
+    /**
+     * Checks if the passed collections are equal or not. Checks for content
+     * equality and does not take the order of values in the collection into
+     * account.
+     *
+     * @param c1
+     *            The first collection.
+     * @param c2
+     *            The second collection.
+     * @return <code>true</code> if the passed collections contain the same
+     *         values even in different order, <code>false</code> if the
+     *         collections do not contain the same values.
+     *
+     * @since 2.1
+     */
+    @SuppressWarnings("rawtypes")
+    public static boolean collectionsEqual(Collection c1, Collection c2) {
+        if ((c1 != null && c2 != null) && c1.size() == c2.size()) {
+
+            if (!c1.equals(c2)) {
+                // as equality for collections take into account the order and
+                // the elements we perform an additional check if the same items
+                // regardless the order are contained in both lists
+                for (Object f1 : c1) {
+                    if (!c2.contains(f1)) {
+                        return false;
+                    }
+                }
+                // as lists can contain the same element twice, we also perform
+                // a counter check
+                for (Object f2 : c2) {
+                    if (!c1.contains(f2)) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }

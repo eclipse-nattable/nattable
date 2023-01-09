@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2023 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,10 +12,7 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
-import java.util.Collection;
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -90,16 +87,10 @@ public class ComboBoxFilterIconPainter extends ImagePainter {
                 : GUIHelper.getImage("down_2"); //$NON-NLS-1$
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
-
-        Object cellData = cell.getDataValue();
-
         Image result = null;
-        if (EditConstants.SELECT_ALL_ITEMS_VALUE.equals(cellData)
-                || (cellData instanceof Collection
-                        && ((Collection) cellData).size() == this.comboBoxDataProvider.getValues(cell.getColumnIndex(), 0).size())) {
+        if (ComboBoxFilterUtils.isAllSelected(cell.getColumnIndex(), cell.getDataValue(), this.comboBoxDataProvider)) {
             result = this.comboImage;
         } else {
             result = this.removeFilterImage;

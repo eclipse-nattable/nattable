@@ -179,15 +179,23 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 
     @Override
     public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+        boolean cleared = false;
+        Object oldValue = this.filterIndexToObjectMap.get(columnIndex);
         if (newValue != null && newValue.toString().length() > 0) {
-            this.filterIndexToObjectMap.put(columnIndex, newValue);
+            if (!newValue.equals(oldValue)) {
+                this.filterIndexToObjectMap.put(columnIndex, newValue);
+            }
         } else {
-            this.filterIndexToObjectMap.remove(columnIndex);
+            cleared = true;
+            if (oldValue != null) {
+                this.filterIndexToObjectMap.remove(columnIndex);
+            }
         }
 
         this.filterStrategy.applyFilter(this.filterIndexToObjectMap);
 
-        this.columnHeaderLayer.fireLayerEvent(new FilterAppliedEvent(this.columnHeaderLayer));
+        this.columnHeaderLayer.fireLayerEvent(
+                new FilterAppliedEvent(this.columnHeaderLayer, columnIndex, oldValue, newValue, cleared));
     }
 
     // Load/save state
@@ -333,7 +341,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
         this.filterIndexToObjectMap.clear();
         this.filterStrategy.applyFilter(this.filterIndexToObjectMap);
 
-        this.columnHeaderLayer.fireLayerEvent(new FilterAppliedEvent(this.columnHeaderLayer));
+        this.columnHeaderLayer.fireLayerEvent(new FilterAppliedEvent(this.columnHeaderLayer, true));
     }
 
     /**
