@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -778,7 +778,13 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
      */
     @Override
     public void saveState(final String prefix, final Properties properties) {
-        BusyIndicator.showWhile(null, () -> NatTable.this.underlyingLayer.saveState(prefix, properties));
+        BusyIndicator.showWhile(null, () -> {
+            NatTable.this.underlyingLayer.saveState(prefix, properties);
+
+            for (IPersistable persistable : this.persistables) {
+                persistable.saveState(prefix, properties);
+            }
+        });
     }
 
     /**
@@ -791,12 +797,16 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
     public void loadState(final String prefix, final Properties properties) {
         BusyIndicator.showWhile(null, () -> {
             // if the initial painting is not finished yet, tell this the
-            // underlying
-            // mechanisms so there will be no refresh events fired
-            if (!NatTable.this.initialPaintComplete)
+            // underlying mechanisms so there will be no refresh events fired
+            if (!NatTable.this.initialPaintComplete) {
                 properties.setProperty(INITIAL_PAINT_COMPLETE_FLAG, "true"); //$NON-NLS-1$
+            }
 
             NatTable.this.underlyingLayer.loadState(prefix, properties);
+
+            for (IPersistable persistable : this.persistables) {
+                persistable.loadState(prefix, properties);
+            }
         });
     }
 
