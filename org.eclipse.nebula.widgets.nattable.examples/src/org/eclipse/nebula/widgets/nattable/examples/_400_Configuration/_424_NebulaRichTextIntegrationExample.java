@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2020 CEA LIST.
+ * Copyright (c) 2015, 2023 CEA LIST.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -29,7 +29,6 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
-import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
@@ -39,6 +38,7 @@ import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleR
 import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.MarkupDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.RichTextCellEditor;
 import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.RichTextCellPainter;
+import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.RichTextConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
@@ -116,18 +116,11 @@ public class _424_NebulaRichTextIntegrationExample extends AbstractNatExample {
                         "<span style=\"background-color:rgb(255, 0, 0)\"><strong><s><u>",
                         "</u></s></strong></span>");
 
-                // register markup display converter for normal displaymode
+                // register markup display converter
                 configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        RichTextConfigAttributes.MARKUP_DISPLAY_CONVERTER,
                         markupConverter,
                         DisplayMode.NORMAL,
-                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 1);
-                // register default display converter for editing, so there is
-                // no markup in the editor
-                configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.DISPLAY_CONVERTER,
-                        new DefaultDisplayConverter(),
-                        DisplayMode.EDIT,
                         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 1);
 
                 configRegistry.registerConfigAttribute(

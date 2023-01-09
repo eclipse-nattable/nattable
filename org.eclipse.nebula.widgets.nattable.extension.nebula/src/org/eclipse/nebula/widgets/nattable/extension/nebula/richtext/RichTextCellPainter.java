@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2020 CEA LIST.
+ * Copyright (c) 2015, 2023 CEA LIST.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,6 +14,7 @@
 package org.eclipse.nebula.widgets.nattable.extension.nebula.richtext;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.layer.cell.CellDisplayConversionUtils;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.AbstractCellPainter;
@@ -109,7 +110,7 @@ public class RichTextCellPainter extends AbstractCellPainter {
         IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
         setupGCFromConfig(gc, cellStyle);
 
-        String htmlText = CellDisplayConversionUtils.convertDataType(cell, configRegistry);
+        String htmlText = getHtmlText(cell, configRegistry);
 
         Rectangle painterBounds = new Rectangle(bounds.x, bounds.y - this.richTextPainter.getParagraphSpace(), bounds.width, bounds.height);
         this.richTextPainter.paintHTML(htmlText, gc, painterBounds);
@@ -135,7 +136,7 @@ public class RichTextCellPainter extends AbstractCellPainter {
     @Override
     public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
         setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
-        String htmlText = CellDisplayConversionUtils.convertDataType(cell, configRegistry);
+        String htmlText = getHtmlText(cell, configRegistry);
 
         // using a zero size rectangle for calculation results in a content
         // related preferred size
@@ -146,7 +147,7 @@ public class RichTextCellPainter extends AbstractCellPainter {
     @Override
     public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
         setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
-        String htmlText = CellDisplayConversionUtils.convertDataType(cell, configRegistry);
+        String htmlText = getHtmlText(cell, configRegistry);
 
         // using a zero size rectangle for calculation results in a content
         // related preferred size
@@ -255,4 +256,30 @@ public class RichTextCellPainter extends AbstractCellPainter {
         this.calculateByTextHeight = calculateByTextHeight;
     }
 
+    /**
+     * Returns the HTML text for the data that should be shown in the given
+     * {@link ILayerCell}.
+     *
+     * @param cell
+     *            The cell for which the data should be shown.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} to retrieve the configurations
+     *            like e.g. the {@link IDisplayConverter}.
+     * @return The data to be shown in the cell as HTML text.
+     * @since 2.1
+     */
+    protected String getHtmlText(ILayerCell cell, IConfigRegistry configRegistry) {
+        Object displayValue = CellDisplayConversionUtils.convertDataType(cell, configRegistry);
+
+        IDisplayConverter markupDisplayConverter = configRegistry.getConfigAttribute(
+                RichTextConfigAttributes.MARKUP_DISPLAY_CONVERTER,
+                cell.getDisplayMode(),
+                cell.getConfigLabels());
+
+        if (markupDisplayConverter != null) {
+            displayValue = markupDisplayConverter.canonicalToDisplayValue(cell, configRegistry, displayValue);
+        }
+
+        return String.valueOf(displayValue);
+    }
 }
