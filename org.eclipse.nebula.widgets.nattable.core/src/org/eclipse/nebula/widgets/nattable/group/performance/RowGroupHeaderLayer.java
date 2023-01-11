@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Dirk Fauth.
+ * Copyright (c) 2019, 2023 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -706,6 +706,12 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
         }
     }
 
+    @Override
+    public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
+        int columnCount = this.model.size();
+        return underlyingColumnPosition + columnCount;
+    }
+
     // Width
 
     private int getGroupingWidth() {
@@ -1216,7 +1222,8 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
         if (columnPosition < this.model.size() && isPartOfAGroup(getLevelForColumnPosition(columnPosition), rowPosition)) {
             return DisplayMode.NORMAL;
         } else {
-            return this.underlyingLayer.getDisplayModeByPosition(columnPosition, rowPosition);
+            int columnPos = columnPosition < this.model.size() ? columnPosition : columnPosition - this.model.size();
+            return this.underlyingLayer.getDisplayModeByPosition(columnPos, rowPosition);
         }
     }
 
@@ -1243,7 +1250,8 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
 
             return stack;
         } else {
-            return this.underlyingLayer.getConfigLabelsByPosition(columnPosition, rowPosition);
+            int columnPos = columnPosition < this.model.size() ? columnPosition : columnPosition - this.model.size();
+            return this.underlyingLayer.getConfigLabelsByPosition(columnPos, rowPosition);
         }
     }
 

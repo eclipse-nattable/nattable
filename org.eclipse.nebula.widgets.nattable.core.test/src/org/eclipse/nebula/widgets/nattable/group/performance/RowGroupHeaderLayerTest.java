@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Dirk Fauth.
+ * Copyright (c) 2019, 2023 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -56,6 +56,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommand;
+import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.FixedScalingDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -63,6 +64,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
+import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiRowReorderCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ResetRowReorderCommand;
@@ -73,6 +75,8 @@ import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiColumnResizeCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ShowRowInViewportCommand;
@@ -86,6 +90,8 @@ import org.junit.jupiter.api.Test;
 public class RowGroupHeaderLayerTest {
 
     GroupModel groupModel;
+    HoverLayer rowHeaderHoverLayer;
+    RowHeaderLayer rowHeaderLayer;
     RowGroupHeaderLayer rowGroupHeaderLayer;
     RowGroupExpandCollapseLayer rowGroupExpandCollapseLayer;
     SelectionLayer selectionLayer;
@@ -140,9 +146,10 @@ public class RowGroupHeaderLayerTest {
         // build the row header layer
         IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
         DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, this.selectionLayer);
+        this.rowHeaderHoverLayer = new HoverLayer(rowHeaderDataLayer);
+        this.rowHeaderLayer = new RowHeaderLayer(this.rowHeaderHoverLayer, viewportLayer, this.selectionLayer);
 
-        this.rowGroupHeaderLayer = new RowGroupHeaderLayer(rowHeaderLayer, this.selectionLayer);
+        this.rowGroupHeaderLayer = new RowGroupHeaderLayer(this.rowHeaderLayer, this.selectionLayer);
 
         this.groupModel = this.rowGroupHeaderLayer.getGroupModel();
 
@@ -11584,6 +11591,95 @@ public class RowGroupHeaderLayerTest {
         // check ungrouped
         stack = this.rowGroupHeaderLayer.getConfigLabelsByPosition(0, 3);
         assertEquals(0, stack.size());
+    }
+
+    @Test
+    public void shouldReturnConfigLabelsFromRowHeader() {
+        // set config label accumulator
+        this.rowHeaderLayer.setConfigLabelAccumulator((configLabels, columnPosition, rowPosition) -> {
+            if (columnPosition == 0) {
+                configLabels.addLabel("rowHeaderColumn");
+            }
+            if (rowPosition == 0 || rowPosition == 3) {
+                configLabels.addLabel("custom");
+            }
+        });
+
+        // check row group
+        LabelStack stack = this.rowGroupHeaderLayer.getConfigLabelsByPosition(0, 0);
+        assertEquals(2, stack.size());
+        assertTrue(stack.hasLabel(GridRegion.ROW_GROUP_HEADER));
+        assertTrue(stack.hasLabel(GroupHeaderConfigLabels.GROUP_EXPANDED_CONFIG_TYPE));
+
+        // check row header column
+        stack = this.rowGroupHeaderLayer.getConfigLabelsByPosition(1, 0);
+        assertEquals(2, stack.size());
+        assertTrue(stack.hasLabel("rowHeaderColumn"));
+        assertTrue(stack.hasLabel("custom"));
+
+        // remove last row from first group
+        this.rowGroupHeaderLayer.removePositionsFromGroup(0, 3);
+
+        // check ungrouped
+        stack = this.rowGroupHeaderLayer.getConfigLabelsByPosition(0, 3);
+        assertEquals(2, stack.size());
+        assertTrue(stack.hasLabel("rowHeaderColumn"));
+        assertTrue(stack.hasLabel("custom"));
+
+        stack = this.rowGroupHeaderLayer.getConfigLabelsByPosition(1, 3);
+        assertEquals(2, stack.size());
+        assertTrue(stack.hasLabel("rowHeaderColumn"));
+        assertTrue(stack.hasLabel("custom"));
+    }
+
+    @Test
+    public void shouldReturnDisplayModeFromColumnHeader() {
+        // remove last column from first group
+        this.rowGroupHeaderLayer.removePositionsFromGroup(0, 3);
+
+        // the column group header only supports DisplayMode#NORMAL
+        assertEquals(DisplayMode.NORMAL, this.rowGroupHeaderLayer.getDisplayModeByPosition(0, 0));
+
+        // select a cell in the body
+        this.selectionLayer.selectCell(0, 0, false, false);
+
+        assertEquals(DisplayMode.NORMAL, this.rowGroupHeaderLayer.getDisplayModeByPosition(0, 0));
+        assertEquals(DisplayMode.SELECT, this.rowGroupHeaderLayer.getDisplayModeByPosition(1, 0));
+
+        // select a cell in the column that was removed from the group
+        this.selectionLayer.selectCell(0, 3, false, false);
+
+        assertEquals(DisplayMode.SELECT, this.rowGroupHeaderLayer.getDisplayModeByPosition(0, 3));
+        assertEquals(DisplayMode.SELECT, this.rowGroupHeaderLayer.getDisplayModeByPosition(1, 3));
+
+        // set a column header cell hovered
+        this.rowHeaderHoverLayer.setCurrentHoveredCellByIndex(0, 0);
+        assertEquals(DisplayMode.NORMAL, this.rowGroupHeaderLayer.getDisplayModeByPosition(0, 0));
+        assertEquals(DisplayMode.HOVER, this.rowGroupHeaderLayer.getDisplayModeByPosition(1, 0));
+
+        // set a column header cell hovered in the column that was removed from
+        // the group
+        this.rowHeaderHoverLayer.setCurrentHoveredCellByIndex(0, 3);
+        assertEquals(DisplayMode.SELECT_HOVER, this.rowGroupHeaderLayer.getDisplayModeByPosition(0, 3));
+        assertEquals(DisplayMode.SELECT_HOVER, this.rowGroupHeaderLayer.getDisplayModeByPosition(1, 3));
+    }
+
+    @Test
+    public void shouldConvertPositionsInEvent() {
+        LayerListenerFixture listener = new LayerListenerFixture();
+        this.gridLayer.addLayerListener(listener);
+
+        // fire a CellVisualChangeEvent
+        this.rowHeaderLayer.fireLayerEvent(new CellVisualUpdateEvent(this.rowHeaderLayer, 0, 2));
+
+        assertTrue(listener.containsInstanceOf(CellVisualUpdateEvent.class));
+        CellVisualUpdateEvent event = (CellVisualUpdateEvent) listener.getReceivedEvent(CellVisualUpdateEvent.class);
+
+        // row position changed from 2 to 3 because of the column header layer
+        assertEquals(3, event.getRowPosition());
+        // column position changed from 0 to 1 because of the row group header
+        // layer
+        assertEquals(1, event.getColumnPosition());
     }
 
     @Test
