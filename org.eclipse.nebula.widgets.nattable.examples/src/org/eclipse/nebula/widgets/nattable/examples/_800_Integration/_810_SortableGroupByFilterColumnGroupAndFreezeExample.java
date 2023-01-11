@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2021 Dirk Fauth and others.
+ * Copyright (c) 2013, 2023 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -229,6 +229,9 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends Abstr
                         columnGroupHeaderLayer,
                         columnHeaderDataLayer.getDataProvider(),
                         configRegistry);
+
+        bodyLayerStack.getBodyDataLayer().enableFilterSupport(
+                filterRowHeaderLayer.getFilterRowDataLayer().getFilterRowDataProvider());
 
         // Row header
         // Adding the specialized DefaultSummaryRowHeaderDataProvider to

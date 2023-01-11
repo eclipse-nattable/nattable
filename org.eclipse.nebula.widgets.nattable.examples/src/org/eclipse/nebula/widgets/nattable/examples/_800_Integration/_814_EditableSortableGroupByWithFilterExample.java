@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2021 Dirk Fauth and others.
+ * Copyright (c) 2013, 2023 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -261,6 +261,9 @@ public class _814_EditableSortableGroupByWithFilterExample extends AbstractNatEx
                         sortHeaderLayer,
                         columnHeaderDataLayer.getDataProvider(),
                         configRegistry);
+
+        bodyLayerStack.getBodyDataLayer().enableFilterSupport(
+                filterRowHeaderLayer.getFilterRowDataLayer().getFilterRowDataProvider());
 
         // build the row header layer
         IDataProvider rowHeaderDataProvider =

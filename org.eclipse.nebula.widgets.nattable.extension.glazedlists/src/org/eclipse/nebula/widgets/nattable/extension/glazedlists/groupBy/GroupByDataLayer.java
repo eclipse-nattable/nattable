@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeData;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
+import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
@@ -153,6 +155,12 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      * {@link TreeList}.
      */
     private Matcher<Object> groupByMatcher = item -> item instanceof GroupByObject;
+
+    /**
+     * The {@link FilterRowDataProvider} that is used in the composition. Needed
+     * to be able to re-apply possible filter states on tree updates.
+     */
+    private FilterRowDataProvider<T> filterRowDataProvider;
 
     /**
      * Create a new {@link GroupByDataLayer} with the given configuration that:
@@ -539,6 +547,17 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
     }
 
     /**
+     * @param provider
+     *            The {@link FilterRowDataProvider} that is used in the
+     *            composition. Needed to be able to re-apply possible filter
+     *            states on tree updates.
+     * @since 2.1
+     */
+    public void enableFilterSupport(FilterRowDataProvider<T> provider) {
+        this.filterRowDataProvider = provider;
+    }
+
+    /**
      *
      * @param comparator
      *            The {@link IGroupByComparator} that is necessary to create the
@@ -613,7 +632,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         // if we know the sort model, we need to clear the sort model to avoid
         // strange side effects while updating the tree structure (e.g. not
         // applied sorting although showing the sort indicator)
-        // for better user experience we remember the sort state and reapply it
+        // for better user experience we remember the sort state and re-apply it
         // after the tree update
         List<Integer> sortedIndexes = Collections.emptyList();
         List<SortDirectionEnum> sortDirections = new ArrayList<>();
@@ -625,7 +644,28 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
             this.treeFormat.getSortModel().clear();
         }
 
+        // if we know the filter row data provider, we need to remove the filter
+        // to avoid strange side effects while updating the tree structure (e.g.
+        // previously filtered items are not back at the original position but
+        // will be moved to the end of list after the filter is removed)
+        // for better user experience we remember the filter state and re-apply
+        // it after the tree update
+        Map<Integer, Object> filterCopy = Collections.emptyMap();
+        if (this.filterRowDataProvider != null) {
+            Map<Integer, Object> original = this.filterRowDataProvider.getFilterIndexToObjectMap();
+            filterCopy = new HashMap<>(original);
+            original.clear();
+            this.filterRowDataProvider.getFilterStrategy().applyFilter(original);
+        }
+
         updateTree();
+
+        // re-apply the filter after the tree update
+        if (this.filterRowDataProvider != null) {
+            Map<Integer, Object> original = this.filterRowDataProvider.getFilterIndexToObjectMap();
+            original.putAll(filterCopy);
+            this.filterRowDataProvider.getFilterStrategy().applyFilter(original);
+        }
 
         // re-apply the sorting after the tree update
         if (this.treeFormat.getSortModel() != null) {

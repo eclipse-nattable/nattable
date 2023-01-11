@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2022 Dirk Fauth and others.
+ * Copyright (c) 2014, 2023 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,15 +26,20 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultComparator;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByComparator;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByDataLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByObject;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.SummationGroupBySummaryProvider;
+import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataProvider;
+import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
+import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultColumnHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -50,6 +55,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.event.ListEvent;
@@ -67,6 +73,9 @@ public class GroupByDataLayerTest {
     SortedList<Person> sortedList;
     ISortModel sortModel;
 
+    FilterList<Person> filterList;
+    FilterRowDataProvider<Person> filterRowDataProvider;
+
     static final String MY_LABEL = "myLabel";
 
     // property names of the Person class
@@ -77,10 +86,11 @@ public class GroupByDataLayerTest {
         this.groupByModel = new GroupByModel();
         EventList<Person> eventList = GlazedLists.eventList(PersonService.getFixedPersons());
         this.sortedList = new SortedList<>(eventList, null);
+        this.filterList = new FilterList<>(this.sortedList);
 
         this.columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(this.propertyNames);
 
-        this.dataLayer = new GroupByDataLayer<>(this.groupByModel, this.sortedList, this.columnPropertyAccessor, this.configRegistry);
+        this.dataLayer = new GroupByDataLayer<>(this.groupByModel, this.filterList, this.columnPropertyAccessor, this.configRegistry);
         this.dataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
     }
 
@@ -145,6 +155,31 @@ public class GroupByDataLayerTest {
         this.configRegistry.registerConfigAttribute(
                 SortConfigAttributes.SORT_COMPARATOR,
                 DefaultComparator.getInstance());
+    }
+
+    void addFilterCapability() {
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(this.propertyNames);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+
+        this.filterRowDataProvider = new FilterRowDataProvider<>(
+                new DefaultGlazedListsFilterStrategy<>(
+                        this.filterList,
+                        this.columnPropertyAccessor,
+                        this.configRegistry),
+                columnHeaderDataLayer,
+                columnHeaderDataProvider,
+                this.configRegistry);
+
+        this.configRegistry.registerConfigAttribute(
+                FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
+                new DefaultDisplayConverter());
+        this.configRegistry.registerConfigAttribute(
+                FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                TextMatchingMode.CONTAINS);
+
+        this.dataLayer.enableFilterSupport(this.filterRowDataProvider);
     }
 
     @Test
@@ -1071,4 +1106,36 @@ public class GroupByDataLayerTest {
         assertEquals(28, this.dataLayer.getRowCount());
     }
 
+    @Test
+    public void shouldKeepInitialOrderOnFilteredGrouping() {
+        addFilterCapability();
+
+        assertEquals(18, this.dataLayer.getRowCount());
+        assertEquals("Homer", this.dataLayer.getDataValue(0, 0));
+
+        // apply a filter
+        this.filterRowDataProvider.setDataValue(0, 0, "Homer");
+        assertEquals(3, this.dataLayer.getRowCount());
+
+        // group by last name
+        this.groupByModel.addGroupByColumnIndex(1);
+
+        assertEquals(4, this.dataLayer.getRowCount());
+        Object o = this.dataLayer.getTreeList().get(0);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals("Simpson", ((GroupByObject) o).getValue());
+
+        // ungroup lastname
+        this.groupByModel.removeGroupByColumnIndex(1);
+        assertEquals(3, this.dataLayer.getRowCount());
+
+        // remove the filter
+        this.filterRowDataProvider.setDataValue(0, 0, null);
+        assertEquals(18, this.dataLayer.getRowCount());
+
+        // Homer should be still at the first position
+        // without setting the FilterRowDataProvider to the GroupByDataLayer,
+        // this will fail
+        assertEquals("Homer", this.dataLayer.getDataValue(0, 0));
+    }
 }

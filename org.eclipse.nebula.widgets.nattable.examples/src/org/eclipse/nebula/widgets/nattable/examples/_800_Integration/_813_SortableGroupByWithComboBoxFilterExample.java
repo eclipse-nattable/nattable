@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, 2021 Dirk Fauth and others.
+ * Copyright (c) 2016, 2023 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -226,6 +226,9 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
                         sortHeaderLayer,
                         columnHeaderDataProvider,
                         configRegistry);
+
+        bodyLayerStack.getBodyDataLayer().enableFilterSupport(
+                filterRowHeaderLayer.getFilterRowDataLayer().getFilterRowDataProvider());
 
         // build the row header layer
         IDataProvider rowHeaderDataProvider =

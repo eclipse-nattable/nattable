@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2022 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -334,6 +334,17 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
         this.filterStrategy.applyFilter(this.filterIndexToObjectMap);
 
         this.columnHeaderLayer.fireLayerEvent(new FilterAppliedEvent(this.columnHeaderLayer));
+    }
+
+    /**
+     *
+     * @return The {@link IFilterStrategy} to which the set filter value should
+     *         be applied.
+     *
+     * @since 2.1
+     */
+    public IFilterStrategy<T> getFilterStrategy() {
+        return this.filterStrategy;
     }
 
 }
