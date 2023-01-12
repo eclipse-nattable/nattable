@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -78,6 +78,13 @@ public class GroupByHeaderPainter extends AbstractCellPainter {
 
     @Override
     public void paintCell(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
+
+        // if x is negative set it to 0 to avoid that the groupby header content
+        // moves out of the visible area
+        if (bounds.x < 0) {
+            bounds.x = 0;
+        }
+
         Color originalBackground = gc.getBackground();
         Color originalForeground = gc.getForeground();
         Font originalFont = gc.getFont();
