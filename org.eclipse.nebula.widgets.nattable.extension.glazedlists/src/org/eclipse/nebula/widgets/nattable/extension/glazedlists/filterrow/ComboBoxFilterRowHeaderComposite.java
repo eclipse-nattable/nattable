@@ -727,28 +727,33 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 
     @Override
     public Object getDataValueByPosition(int compositeColumnPosition, int compositeRowPosition) {
-        Object filterValue = super.getDataValueByPosition(compositeColumnPosition, compositeRowPosition);
+        // special handling only if the filter row is visible and the value of
+        // the filter row is requested
+        if (this.filterRowVisible && compositeRowPosition == getRowCount() - 1) {
+            Object filterValue = super.getDataValueByPosition(compositeColumnPosition, compositeRowPosition);
 
-        // The SELECT_ALL_ITEMS_VALUE is set to the FilterRowDataProvider by
-        // setAllValueSelected(). It is actually ignored in the
-        // ComboBoxGlazedListsFilterStrategy as it technically means "no filter"
-        // and results in having all entries checked in the
-        // FilterRowComboBoxCellEditor. For other filter editors this
-        // replacement is not done and causes incorrect visualization as it
-        // shows the value and implies an active filter. As the
-        // SELECT_ALL_ITEMS_VALUE is propagated in the constructor at a time
-        // where the editors are not yet configured, we remove the value
-        // reactively on accessing it for a consistent view.
+            // The SELECT_ALL_ITEMS_VALUE is set to the FilterRowDataProvider by
+            // setAllValueSelected(). It is actually ignored in the
+            // ComboBoxGlazedListsFilterStrategy as it technically means "no
+            // filter" and results in having all entries checked in the
+            // FilterRowComboBoxCellEditor. For other filter editors this
+            // replacement is not done and causes incorrect visualization as it
+            // shows the value and implies an active filter. As the
+            // SELECT_ALL_ITEMS_VALUE is propagated in the constructor at a time
+            // where the editors are not yet configured, we remove the value
+            // reactively on accessing it for a consistent view.
 
-        int columnIndex = getColumnIndexByPosition(compositeColumnPosition);
-        if (compositeRowPosition == 1
-                && !isFilterRowComboBoxCellEditor(compositeColumnPosition)
-                && EditConstants.SELECT_ALL_ITEMS_VALUE.equals(filterValue)) {
-            this.filterRowDataLayer.getFilterRowDataProvider().getFilterIndexToObjectMap().remove(columnIndex);
-            filterValue = null;
+            int columnIndex = getColumnIndexByPosition(compositeColumnPosition);
+            if (!isFilterRowComboBoxCellEditor(compositeColumnPosition)
+                    && EditConstants.SELECT_ALL_ITEMS_VALUE.equals(filterValue)) {
+                this.filterRowDataLayer.getFilterRowDataProvider().getFilterIndexToObjectMap().remove(columnIndex);
+                filterValue = null;
+            }
+
+            return filterValue;
         }
 
-        return filterValue;
+        return super.getDataValueByPosition(compositeColumnPosition, compositeRowPosition);
     }
 
     private boolean isFilterRowComboBoxCellEditor(int columnPosition) {

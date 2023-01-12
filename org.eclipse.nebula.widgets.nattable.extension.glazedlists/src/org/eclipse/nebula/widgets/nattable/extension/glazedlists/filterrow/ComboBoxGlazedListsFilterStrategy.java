@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2022 Dirk Fauth and others.
+ * Copyright (c) 2013, 2023 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -127,7 +127,7 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
     @SuppressWarnings("rawtypes")
     @Override
     public void applyFilter(Map<Integer, Object> filterIndexToObjectMap) {
-        if (filterIndexToObjectMap.isEmpty()) {
+        if (filterIndexToObjectMap.isEmpty() && hasComboBoxFilterEditorRegistered()) {
             this.filterLock.writeLock().lock();
             try {
                 this.getMatcherEditor().getMatcherEditors().add(this.matchNone);
@@ -253,6 +253,28 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
             return true;
         }
 
+        return false;
+    }
+
+    /**
+     * Checks if at least one combobox cell editor is registered. Needed to the
+     * <i>matchNone</i> processing if the filter collection is empty.
+     *
+     * @return <code>true</code> if at least one combobox cell editor is
+     *         registered, <code>false</code> if not.
+     * 
+     * @since 2.1
+     */
+    protected boolean hasComboBoxFilterEditorRegistered() {
+        for (int i = 0; i < this.columnAccessor.getColumnCount(); i++) {
+            ICellEditor cellEditor = this.configRegistry.getConfigAttribute(
+                    EditConfigAttributes.CELL_EDITOR,
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + i, GridRegion.FILTER_ROW);
+            if (cellEditor instanceof FilterRowComboBoxCellEditor) {
+                return true;
+            }
+        }
         return false;
     }
 }
