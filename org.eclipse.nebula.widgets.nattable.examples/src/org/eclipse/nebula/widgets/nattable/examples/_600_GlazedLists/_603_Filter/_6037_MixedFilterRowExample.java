@@ -15,7 +15,6 @@ package org.eclipse.nebula.widgets.nattable.examples._600_GlazedLists._603_Filte
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +34,6 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
-import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
@@ -60,7 +58,7 @@ import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxFilterRowHeaderComposite;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxGlazedListsFilterStrategy;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxGlazedListsWithExcludeFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.FilterRowUtils;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.GlazedListsFilterRowComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
@@ -140,9 +138,7 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TransformedList;
-import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 import ca.odell.glazedlists.matchers.Matcher;
-import ca.odell.glazedlists.matchers.MatcherEditor;
 
 /**
  * Example showing how to add the filter row to the layer composition of a grid
@@ -614,119 +610,6 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         }
     }
 
-    // TODO 2.1 move this class to the GlazedLists extension
-    /**
-     * Specialized {@link ComboBoxGlazedListsFilterStrategy} that can be used to
-     * exclude items from filtering. This means you can register a
-     * {@link Matcher} that avoids that matching items get filtered by the
-     * filterrow.
-     *
-     * @param <T>
-     */
-    class ComboBoxGlazedListsWithExcludeFilterStrategy<T> extends ComboBoxGlazedListsFilterStrategy<T> {
-
-        private final CompositeMatcherEditor<T> compositeMatcherEditor;
-
-        protected Map<Matcher<T>, MatcherEditor<T>> excludeMatcherEditor = new HashMap<>();
-
-        public ComboBoxGlazedListsWithExcludeFilterStrategy(
-                FilterRowComboBoxDataProvider<T> comboBoxDataProvider,
-                FilterList<T> filterList,
-                IColumnAccessor<T> columnAccessor,
-                IConfigRegistry configRegistry) {
-            super(comboBoxDataProvider, filterList, columnAccessor, configRegistry);
-
-            // The default MatcherEditor is created and stored as member in the
-            // DefaultGlazedListsFilterStrategy. That MatcherEditor is used for
-            // the default filter operations. To exclude entries from filtering,
-            // we create another CompositeMatcherEditor with an OR mode and set
-            // that one on the FilterList.
-            this.compositeMatcherEditor = new CompositeMatcherEditor<>();
-            this.compositeMatcherEditor.setMode(CompositeMatcherEditor.OR);
-
-            this.compositeMatcherEditor.getMatcherEditors().add(getMatcherEditor());
-
-            this.filterList.setMatcherEditor(this.compositeMatcherEditor);
-        }
-
-        /**
-         * Add a exclude filter to this filter strategy which will always be
-         * applied additionally to any other filter to exclude from filtering.
-         *
-         * @param matcher
-         *            the exclude filter to add
-         */
-        public void addExcludeFilter(final Matcher<T> matcher) {
-            // create a new MatcherEditor
-            MatcherEditor<T> matcherEditor = GlazedLists.fixedMatcherEditor(matcher);
-            addExcludeFilter(matcherEditor);
-        }
-
-        /**
-         * Add a exclude filter to this filter strategy which will always be
-         * applied additionally to any other filter to exclude items from
-         * filtering.
-         *
-         * @param matcherEditor
-         *            the exclude filter to add
-         */
-        public void addExcludeFilter(final MatcherEditor<T> matcherEditor) {
-            // add the new MatcherEditor to the CompositeMatcherEditor
-            this.filterLock.writeLock().lock();
-            try {
-                this.compositeMatcherEditor.getMatcherEditors().add(matcherEditor);
-            } finally {
-                this.filterLock.writeLock().unlock();
-            }
-
-            this.excludeMatcherEditor.put(matcherEditor.getMatcher(), matcherEditor);
-        }
-
-        /**
-         * Remove the exclude filter from this filter strategy.
-         *
-         * @param matcher
-         *            the filter to remove
-         */
-        public void removeExcludeFilter(final Matcher<T> matcher) {
-            MatcherEditor<T> removed = this.excludeMatcherEditor.remove(matcher);
-            if (removed != null) {
-                this.filterLock.writeLock().lock();
-                try {
-                    this.compositeMatcherEditor.getMatcherEditors().remove(removed);
-                } finally {
-                    this.filterLock.writeLock().unlock();
-                }
-            }
-        }
-
-        /**
-         * Remove the exclude filter from this filter strategy.
-         *
-         * @param matcherEditor
-         *            the filter to remove
-         */
-        public void removeExcludeFilter(final MatcherEditor<T> matcherEditor) {
-            removeExcludeFilter(matcherEditor.getMatcher());
-        }
-
-        /**
-         * Removes all applied exclude filters from this filter strategy.
-         */
-        public void clearExcludeFilter() {
-            Collection<MatcherEditor<T>> excludeMatcher = this.excludeMatcherEditor.values();
-            if (!excludeMatcher.isEmpty()) {
-                this.filterLock.writeLock().lock();
-                try {
-                    this.compositeMatcherEditor.getMatcherEditors().removeAll(excludeMatcher);
-                } finally {
-                    this.filterLock.writeLock().unlock();
-                }
-                this.excludeMatcherEditor.clear();
-            }
-        }
-    }
-
     /**
      * The configuration to enable editing of {@link PersonWithAddress} objects.
      */
@@ -849,9 +732,14 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
                             + DataModelConstants.FIRSTNAME_COLUMN_POSITION);
 
-            // register the FilterRowRegularExpressionConverter in the first
-            // column that converts simple expressions like wildcards to valid
-            // regular expressions
+            // register display converters for the first column to support an
+            // unidirectional conversion of user friendly strings to complex
+            // regular expressions.
+
+            // CellConfigAttributes.DISPLAY_CONVERTER is needed for editing.
+            // Using the DefaultDisplayConverter will simply take the entered
+            // value to the data model. That means, the filter row contains
+            // exactly the value that was entered by the user.
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
                     new DefaultDisplayConverter(),
@@ -859,6 +747,10 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
                             + DataModelConstants.FIRSTNAME_COLUMN_POSITION);
 
+            // FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER is used to
+            // convert the value in the filter row to a filter string. It is
+            // used for the unidirectional conversion of the user value to a
+            // complex regular expression.
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
                     new CustomFilterRowRegularExpressionConverter(),
@@ -866,6 +758,12 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
                             + DataModelConstants.FIRSTNAME_COLUMN_POSITION);
 
+            // FilterRowConfigAttributes.FILTER_CONTENT_DISPLAY_CONVERTER is
+            // needed to convert the body data. This is necessary as the filter
+            // row does not know about the display converter in the body. If it
+            // is not set it would use the FILTER_DISPLAY_CONVERTER, which would
+            // cause issues in the further processing for the regular expression
+            // conversion.
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.FILTER_CONTENT_DISPLAY_CONVERTER,
                     new DefaultDisplayConverter(),
