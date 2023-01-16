@@ -40,6 +40,7 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.convert.ContextualDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDateDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
@@ -65,7 +66,6 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.Glaze
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowPainter;
-import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowRegularExpressionConverter;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowTextCellEditor;
 import org.eclipse.nebula.widgets.nattable.filterrow.IFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.filterrow.ParseResult;
@@ -214,6 +214,8 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         bodyLayerStack.getBodyDataLayer().setDataValue(0, 5, null);
         bodyLayerStack.getBodyDataLayer().setDataValue(1, 2, "");
         bodyLayerStack.getBodyDataLayer().setDataValue(1, 6, null);
+        bodyLayerStack.getBodyDataLayer().setDataValue(2, 3, null);
+        bodyLayerStack.getBodyDataLayer().setDataValue(2, 5, null);
 
         // build the column header layer
         IDataProvider columnHeaderDataProvider =
@@ -852,13 +854,20 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
             // regular expressions
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new CustomFilterRowRegularExpressionConverter(configRegistry),
+                    new DefaultDisplayConverter(),
                     DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
                             + DataModelConstants.FIRSTNAME_COLUMN_POSITION);
 
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
+                    new CustomFilterRowRegularExpressionConverter(),
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                            + DataModelConstants.FIRSTNAME_COLUMN_POSITION);
+
+            configRegistry.registerConfigAttribute(
+                    FilterRowConfigAttributes.FILTER_CONTENT_DISPLAY_CONVERTER,
                     new DefaultDisplayConverter(),
                     DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
@@ -873,8 +882,8 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
             // FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + column
             // position
             ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(Arrays.asList(
-                    CustomFilterRowRegularExpressionConverter.EMPTY_REGEX,
-                    CustomFilterRowRegularExpressionConverter.NOT_EMPTY_REGEX,
+                    CustomFilterRowRegularExpressionConverter.EMPTY_LITERAL,
+                    CustomFilterRowRegularExpressionConverter.NOT_EMPTY_LITERAL,
                     Gender.FEMALE.toString(),
                     Gender.MALE.toString()));
             configRegistry.registerConfigAttribute(
@@ -893,7 +902,21 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new CustomFilterRowRegularExpressionConverter(configRegistry),
+                    new DefaultDisplayConverter(),
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                            + DataModelConstants.GENDER_COLUMN_POSITION);
+
+            configRegistry.registerConfigAttribute(
+                    FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
+                    new CustomFilterRowRegularExpressionConverter(),
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                            + DataModelConstants.GENDER_COLUMN_POSITION);
+
+            configRegistry.registerConfigAttribute(
+                    FilterRowConfigAttributes.FILTER_CONTENT_DISPLAY_CONVERTER,
+                    new DefaultDisplayConverter(),
                     DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
                             + DataModelConstants.GENDER_COLUMN_POSITION);
@@ -1117,11 +1140,11 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
     }
 
     /**
-     * Specialization of the {@link FilterRowRegularExpressionConverter} that
-     * additionally parses special literals to corresponding regular
-     * expressions.
+     * Special implementation of a {@link ContextualDisplayConverter} that is
+     * used to convert a filter string with special literals and wildcards
+     * characters to a corresponding complex regular expression.
      */
-    class CustomFilterRowRegularExpressionConverter extends FilterRowRegularExpressionConverter {
+    class CustomFilterRowRegularExpressionConverter extends ContextualDisplayConverter {
 
         static final String EMPTY_LITERAL = "<empty>";
         static final String EMPTY_REGEX = "^$";
@@ -1134,55 +1157,53 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         static final String NOT_EQUALS_REGEX_PREFIX = "^((?!";
         static final String NOT_EQUALS_REGEX_SUFFIX = ").)*$";
 
-        private IConfigRegistry configRegistry;
-
-        public CustomFilterRowRegularExpressionConverter(IConfigRegistry configRegistry) {
-            this.configRegistry = configRegistry;
-        }
-
         @Override
-        public Object displayToCanonicalValue(ILayerCell cell, IConfigRegistry configRegistry, Object displayValue) {
-            if (displayValue != null) {
+        public Object canonicalToDisplayValue(ILayerCell cell, IConfigRegistry configRegistry, Object canonicalValue) {
+            if (canonicalValue != null) {
                 // first convert the wildcards
-                displayValue = super.displayToCanonicalValue(displayValue);
-                String dvString = displayValue.toString();
+                if (canonicalValue != null) {
+                    canonicalValue = canonicalValue.toString().replaceAll("\\*", "(.\\*)"); //$NON-NLS-1$ //$NON-NLS-2$
+                    canonicalValue = canonicalValue.toString().replaceAll("\\?", "(.\\?)"); //$NON-NLS-1$ //$NON-NLS-2$
+                }
 
-                if (dvString.contains(EMPTY_LITERAL)
-                        || dvString.contains(NOT_EMPTY_LITERAL)
-                        || dvString.contains("*")
-                        || dvString.contains("?")) {
+                String cvString = canonicalValue.toString();
 
-                    this.configRegistry.registerConfigAttribute(
+                if (cvString.contains(EMPTY_LITERAL)
+                        || cvString.contains(NOT_EMPTY_LITERAL)
+                        || cvString.contains("*")
+                        || cvString.contains("?")) {
+
+                    configRegistry.registerConfigAttribute(
                             FilterRowConfigAttributes.TEXT_MATCHING_MODE,
                             TextMatchingMode.REGULAR_EXPRESSION,
                             DisplayMode.NORMAL,
                             FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
 
                     // add the ignore case flag to the regex
-                    dvString = IGNORE_CASE_MODE_FLAG + dvString;
+                    cvString = IGNORE_CASE_MODE_FLAG + cvString;
                 } else {
 
-                    if (dvString.startsWith("=")) {
+                    if (cvString.startsWith("=")) {
 
-                        this.configRegistry.registerConfigAttribute(
+                        configRegistry.registerConfigAttribute(
                                 FilterRowConfigAttributes.TEXT_MATCHING_MODE,
                                 TextMatchingMode.EXACT,
                                 DisplayMode.NORMAL,
                                 FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
 
-                        dvString = dvString.substring(1).trim();
-                    } else if (dvString.startsWith(NOT_EQUALS_LITERAL)) {
-                        this.configRegistry.registerConfigAttribute(
+                        cvString = cvString.substring(1).trim();
+                    } else if (cvString.startsWith(NOT_EQUALS_LITERAL)) {
+                        configRegistry.registerConfigAttribute(
                                 FilterRowConfigAttributes.TEXT_MATCHING_MODE,
                                 TextMatchingMode.REGULAR_EXPRESSION,
                                 DisplayMode.NORMAL,
                                 FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
 
-                        dvString = IGNORE_CASE_MODE_FLAG + NOT_EQUALS_REGEX_PREFIX + dvString.substring(2).trim() + NOT_EQUALS_REGEX_SUFFIX;
+                        cvString = IGNORE_CASE_MODE_FLAG + NOT_EQUALS_REGEX_PREFIX + cvString.substring(2).trim() + NOT_EQUALS_REGEX_SUFFIX;
                     } else {
                         // only switch to CONTAINS if RegEx filtering is not
                         // activated
-                        this.configRegistry.registerConfigAttribute(
+                        configRegistry.registerConfigAttribute(
                                 FilterRowConfigAttributes.TEXT_MATCHING_MODE,
                                 TextMatchingMode.CONTAINS,
                                 DisplayMode.NORMAL,
@@ -1190,41 +1211,18 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                     }
                 }
 
-                dvString = dvString.replace(EMPTY_LITERAL, EMPTY_REGEX);
-                dvString = dvString.replace(NOT_EMPTY_LITERAL, NOT_EMPTY_REGEX);
-
-                return dvString;
-            }
-            return displayValue;
-        }
-
-        @Override
-        public Object canonicalToDisplayValue(ILayerCell cell, IConfigRegistry configRegistry, Object canonicalValue) {
-            if (canonicalValue != null) {
-                // first remove a possible ignore case flag
-                canonicalValue = canonicalValue.toString().replace(IGNORE_CASE_MODE_FLAG, "");
-
-                canonicalValue = super.canonicalToDisplayValue(canonicalValue);
-
-                String cvString = canonicalValue.toString();
-                cvString = cvString.replace(EMPTY_REGEX, EMPTY_LITERAL);
-                cvString = cvString.replace(NOT_EMPTY_REGEX, NOT_EMPTY_LITERAL);
-
-                if (cvString.startsWith(NOT_EQUALS_REGEX_PREFIX) && cvString.endsWith(NOT_EQUALS_REGEX_SUFFIX)) {
-                    cvString = NOT_EQUALS_LITERAL + cvString.substring(NOT_EQUALS_REGEX_PREFIX.length(), cvString.length() - NOT_EQUALS_REGEX_SUFFIX.length());
-                } else {
-                    TextMatchingMode mode = this.configRegistry.getConfigAttribute(
-                            FilterRowConfigAttributes.TEXT_MATCHING_MODE,
-                            DisplayMode.NORMAL,
-                            FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + cell.getColumnIndex());
-                    if (mode == TextMatchingMode.EXACT) {
-                        cvString = "=" + cvString;
-                    }
-                }
+                cvString = cvString.replace(EMPTY_LITERAL, EMPTY_REGEX);
+                cvString = cvString.replace(NOT_EMPTY_LITERAL, NOT_EMPTY_REGEX);
 
                 return cvString;
             }
             return canonicalValue;
+        }
+
+        @Override
+        public Object displayToCanonicalValue(ILayerCell cell, IConfigRegistry configRegistry, Object displayValue) {
+            // empty as never called
+            return null;
         }
     }
 

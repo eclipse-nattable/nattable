@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2022 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -29,6 +29,7 @@ import org.eclipse.nebula.widgets.nattable.filterrow.ParseResult;
 import org.eclipse.nebula.widgets.nattable.filterrow.ParseResult.MatchType;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -325,7 +326,11 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
                 FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
                 DisplayMode.NORMAL,
                 FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
-        return displayConverter.canonicalToDisplayValue(object).toString();
+
+        return displayConverter.canonicalToDisplayValue(
+                new LayerCell(null, columnIndex, 0),
+                this.configRegistry,
+                object).toString();
     }
 
     /**

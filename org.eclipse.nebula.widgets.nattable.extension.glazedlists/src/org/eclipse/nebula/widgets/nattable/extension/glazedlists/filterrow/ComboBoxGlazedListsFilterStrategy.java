@@ -31,6 +31,7 @@ import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterUtils;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
+import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
 import ca.odell.glazedlists.FilterList;
@@ -196,7 +197,10 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
                 if (result.length() > 0) {
                     result += "|"; //$NON-NLS-1$
                 }
-                String convertedValue = displayConverter.canonicalToDisplayValue(value).toString();
+                String convertedValue = displayConverter.canonicalToDisplayValue(
+                        new LayerCell(null, columnIndex, 0),
+                        this.configRegistry,
+                        value).toString();
                 if (convertedValue.isEmpty()) {
                     // for an empty String add the regular expression for empty
                     // String
@@ -209,7 +213,10 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
         }
 
         if (displayConverter != null) {
-            Object result = displayConverter.canonicalToDisplayValue(object);
+            Object result = displayConverter.canonicalToDisplayValue(
+                    new LayerCell(null, columnIndex, 0),
+                    this.configRegistry,
+                    object);
             if (result != null) {
                 return result.toString();
             }
@@ -228,7 +235,7 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
      *
      * @return <code>true</code> if at least one combobox cell editor is
      *         registered, <code>false</code> if not.
-     * 
+     *
      * @since 2.1
      */
     protected boolean hasComboBoxFilterEditorRegistered() {
