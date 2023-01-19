@@ -816,25 +816,28 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
     public void handleEvent(FilterRowComboUpdateEvent event) {
         Map<Integer, Object> filterIndexToObjectMap =
                 this.filterRowDataLayer.getFilterRowDataProvider().getFilterIndexToObjectMap();
-        Object filterObject = filterIndexToObjectMap.get(event.getColumnIndex());
-        if (filterObject instanceof Collection) {
-            Collection filterCollection = (Collection) filterObject;
-            // if a new value was added than ensure it is also added to the
-            // filter
-            if (event.getAddedItems() != null
-                    && !event.getAddedItems().isEmpty()) {
-                // as the filter collection is a list, we need to ensure that no
-                // double values are added
-                List itemsToAdd = new ArrayList(event.getAddedItems());
-                itemsToAdd.removeAll(filterCollection);
 
-                filterCollection.addAll(itemsToAdd);
-            }
-            // if a value was removed than ensure it is also removed from the
-            // filter
-            if (event.getRemovedItems() != null
-                    && !event.getRemovedItems().isEmpty()) {
-                filterCollection.removeAll(event.getRemovedItems());
+        for (int i = 0; i < event.updateContentSize(); i++) {
+            Object filterObject = filterIndexToObjectMap.get(event.getColumnIndex(i));
+            if (filterObject instanceof Collection) {
+                Collection filterCollection = (Collection) filterObject;
+                // if a new value was added than ensure it is also added to the
+                // filter
+                if (event.getAddedItems(i) != null
+                        && !event.getAddedItems(i).isEmpty()) {
+                    // as the filter collection is a list, we need to ensure
+                    // that no double values are added
+                    List itemsToAdd = new ArrayList(event.getAddedItems(i));
+                    itemsToAdd.removeAll(filterCollection);
+
+                    filterCollection.addAll(itemsToAdd);
+                }
+                // if a value was removed than ensure it is also removed from
+                // the filter
+                if (event.getRemovedItems(i) != null
+                        && !event.getRemovedItems(i).isEmpty()) {
+                    filterCollection.removeAll(event.getRemovedItems(i));
+                }
             }
         }
 
@@ -842,6 +845,14 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
         // same
         getFilterStrategy().applyFilter(
                 this.filterRowDataLayer.getFilterRowDataProvider().getFilterIndexToObjectMap());
+
+        // If multiple columns were updated at once, the trigger was a general
+        // list change event, or structural change event. In this case we fire a
+        // generic FilterAppliedEvent to trigger an update of the filter
+        // comboboxes
+        if (event.updateContentSize() > 1) {
+            fireLayerEvent(new FilterAppliedEvent(this));
+        }
     }
 
     @Override

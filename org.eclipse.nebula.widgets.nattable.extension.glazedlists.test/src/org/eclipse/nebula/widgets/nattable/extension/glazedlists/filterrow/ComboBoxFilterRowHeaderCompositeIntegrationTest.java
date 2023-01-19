@@ -71,7 +71,6 @@ import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.sort.config.DefaultSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,14 +93,23 @@ import ca.odell.glazedlists.TransformedList;
  */
 public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
 
-    private static BodyLayerStack<ExtendedPersonWithAddress> bodyLayer;
-    private static ComboBoxFilterRowHeaderComposite<ExtendedPersonWithAddress> filterRowHeaderLayer;
-    private static NatTableFixture natTable;
+    private static ArrayList<ExtendedPersonWithAddress> values = new ArrayList<>();
 
-    private static GlazedListsSortModel<ExtendedPersonWithAddress> sortModel;
+    private BodyLayerStack<ExtendedPersonWithAddress> bodyLayer;
+    private ComboBoxFilterRowHeaderComposite<ExtendedPersonWithAddress> filterRowHeaderLayer;
+    private NatTableFixture natTable;
+
+    private GlazedListsSortModel<ExtendedPersonWithAddress> sortModel;
 
     @BeforeAll
     public static void setupClass() {
+        for (int i = 0; i < 300; i++) {
+            values.addAll(createValues(i * 30));
+        }
+    }
+
+    @BeforeEach
+    public void setup() {
         // create a new ConfigRegistry which will be needed for GlazedLists
         // handling
         ConfigRegistry configRegistry = new ConfigRegistry();
@@ -132,20 +140,15 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         final IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor =
                 new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
 
-        List<ExtendedPersonWithAddress> values = new ArrayList<>();
-        for (int i = 0; i < 300; i++) {
-            values.addAll(createValues(i * 30));
-        }
-
         // to enable the group by summary feature, the GroupByDataLayer needs to
         // know the ConfigRegistry
-        bodyLayer =
+        this.bodyLayer =
                 new BodyLayerStack<>(
                         values,
                         columnPropertyAccessor,
                         configRegistry);
 
-        bodyLayer.getBodyDataLayer().setConfigLabelAccumulator(new ColumnLabelAccumulator());
+        this.bodyLayer.getBodyDataLayer().setConfigLabelAccumulator(new ColumnLabelAccumulator());
 
         // build the column header layer
         IDataProvider columnHeaderDataProvider =
@@ -153,31 +156,31 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         DataLayer columnHeaderDataLayer =
                 new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
         ILayer columnHeaderLayer =
-                new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+                new ColumnHeaderLayer(columnHeaderDataLayer, this.bodyLayer, this.bodyLayer.getSelectionLayer());
 
         // add sorting
-        sortModel = new GlazedListsSortModel<>(
-                bodyLayer.getSortedList(),
+        this.sortModel = new GlazedListsSortModel<>(
+                this.bodyLayer.getSortedList(),
                 columnPropertyAccessor,
                 configRegistry,
                 columnHeaderDataLayer);
         SortHeaderLayer<ExtendedPersonWithAddress> sortHeaderLayer = new SortHeaderLayer<>(
                 columnHeaderLayer,
-                sortModel,
+                this.sortModel,
                 false);
 
         // connect sortModel to GroupByDataLayer to support sorting by group by
         // summary values
-        bodyLayer.getBodyDataLayer().initializeTreeComparator(
+        this.bodyLayer.getBodyDataLayer().initializeTreeComparator(
                 sortHeaderLayer.getSortModel(),
-                bodyLayer.getTreeLayer(),
+                this.bodyLayer.getTreeLayer(),
                 true);
 
-        filterRowHeaderLayer =
+        this.filterRowHeaderLayer =
                 new ComboBoxFilterRowHeaderComposite<>(
-                        bodyLayer.getFilterList(),
-                        bodyLayer.getGlazedListsEventLayer(),
-                        bodyLayer.getSortedList(),
+                        this.bodyLayer.getFilterList(),
+                        this.bodyLayer.getGlazedListsEventLayer(),
+                        this.bodyLayer.getSortedList(),
                         columnPropertyAccessor,
                         sortHeaderLayer,
                         columnHeaderDataProvider,
@@ -185,11 +188,11 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
 
         // build the row header layer
         IDataProvider rowHeaderDataProvider =
-                new DefaultRowHeaderDataProvider(bodyLayer.getBodyDataProvider());
+                new DefaultRowHeaderDataProvider(this.bodyLayer.getBodyDataProvider());
         DataLayer rowHeaderDataLayer =
                 new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
         ILayer rowHeaderLayer =
-                new RowHeaderLayer(rowHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+                new RowHeaderLayer(rowHeaderDataLayer, this.bodyLayer, this.bodyLayer.getSelectionLayer());
 
         // build the corner layer
         IDataProvider cornerDataProvider =
@@ -197,110 +200,104 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         DataLayer cornerDataLayer =
                 new DataLayer(cornerDataProvider);
         ILayer cornerLayer =
-                new CornerLayer(cornerDataLayer, rowHeaderLayer, filterRowHeaderLayer);
+                new CornerLayer(cornerDataLayer, rowHeaderLayer, this.filterRowHeaderLayer);
 
         // build the grid layer
-        GridLayer gridLayer = new GridLayer(bodyLayer, filterRowHeaderLayer, rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer = new GridLayer(this.bodyLayer, this.filterRowHeaderLayer, rowHeaderLayer, cornerLayer);
 
         // set the group by header on top of the grid
         CompositeLayer compositeGridLayer = new CompositeLayer(1, 2);
         final GroupByHeaderLayer groupByHeaderLayer =
-                new GroupByHeaderLayer(bodyLayer.getGroupByModel(), gridLayer, columnHeaderDataProvider);
+                new GroupByHeaderLayer(this.bodyLayer.getGroupByModel(), gridLayer, columnHeaderDataProvider);
         compositeGridLayer.setChildLayer(GroupByHeaderLayer.GROUP_BY_REGION, groupByHeaderLayer, 0, 0);
         compositeGridLayer.setChildLayer("Grid", gridLayer, 0, 1);
 
         // turn the auto configuration off as we want to add our header menu
         // configuration
-        natTable = new NatTableFixture(compositeGridLayer, false);
-        natTable.setConfigRegistry(configRegistry);
-        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-        natTable.addConfiguration(new DefaultSortConfiguration());
-        natTable.configure();
-    }
+        this.natTable = new NatTableFixture(compositeGridLayer, false);
+        this.natTable.setConfigRegistry(configRegistry);
+        this.natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        this.natTable.addConfiguration(new DefaultSortConfiguration());
+        this.natTable.configure();
 
-    @BeforeEach
-    public void setup() {
         // test that nothing is filtered
-        assertEquals(9000, bodyLayer.getFilterList().size());
+        assertEquals(9000, this.bodyLayer.getFilterList().size());
     }
 
     @AfterEach
     public void tearDown() {
-        natTable.doCommand(new ClearAllFiltersCommand());
-    }
-
-    @AfterAll
-    public static void tearDownClass() {
-        natTable.doCommand(new DisposeResourcesCommand());
+        this.natTable.doCommand(new ClearAllFiltersCommand());
+        this.natTable.doCommand(new DisposeResourcesCommand());
     }
 
     @Test
     public void shouldFilterForSimpsons() {
         // load the possible values first to simulate same behavior as in UI,
         // otherwise exceptions might occur
-        filterRowHeaderLayer.comboBoxDataProvider.getValues(1, 0);
+        this.filterRowHeaderLayer.comboBoxDataProvider.getValues(1, 0);
         // filter
-        natTable.doCommand(new UpdateDataCommand(natTable, 2, 2, new ArrayList<>(Arrays.asList("Simpson"))));
-        assertEquals(4500, bodyLayer.getFilterList().size());
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 2, new ArrayList<>(Arrays.asList("Simpson"))));
+        assertEquals(4500, this.bodyLayer.getFilterList().size());
     }
 
     @Test
     public void shouldFilterForMaleSimpsons() {
         // load the possible values first to simulate same behavior as in UI,
         // otherwise exceptions might occur
-        filterRowHeaderLayer.comboBoxDataProvider.getValues(0, 0);
-        filterRowHeaderLayer.comboBoxDataProvider.getValues(1, 0);
+        this.filterRowHeaderLayer.comboBoxDataProvider.getValues(0, 0);
+        this.filterRowHeaderLayer.comboBoxDataProvider.getValues(1, 0);
 
         // filter
         List<String> firstNames = new ArrayList<>(Arrays.asList("Homer", "Bart"));
         List<String> lastNames = new ArrayList<>(Arrays.asList("Simpson"));
-        natTable.doCommand(new UpdateDataCommand(natTable, 1, 2, firstNames));
-        natTable.doCommand(new UpdateDataCommand(natTable, 2, 2, lastNames));
-        assertEquals(2400, bodyLayer.getFilterList().size());
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 1, 2, firstNames));
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 2, lastNames));
+        assertEquals(2400, this.bodyLayer.getFilterList().size());
     }
 
     @Test
     public void shouldFilterOnLoadPersistedState() {
         // load the possible values first to simulate same behavior as in UI,
         // otherwise exceptions might occur
-        filterRowHeaderLayer.comboBoxDataProvider.getValues(0, 0);
+        this.filterRowHeaderLayer.comboBoxDataProvider.getValues(0, 0);
 
         // filter
         List<String> firstNames = new ArrayList<>(Arrays.asList("Homer", "Bart"));
-        natTable.doCommand(new UpdateDataCommand(natTable, 1, 2, firstNames));
-        assertEquals(2400, bodyLayer.getFilterList().size());
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 1, 2, firstNames));
+        assertEquals(2400, this.bodyLayer.getFilterList().size());
 
         // persist
         Properties properties = new Properties();
-        natTable.saveState("filtered", properties);
+        this.natTable.saveState("filtered", properties);
 
-        natTable.doCommand(new ClearAllFiltersCommand());
+        this.natTable.doCommand(new ClearAllFiltersCommand());
         // test that nothing is filtered
-        assertEquals(9000, bodyLayer.getFilterList().size());
+        assertEquals(9000, this.bodyLayer.getFilterList().size());
 
         // load saved state
-        natTable.loadState("filtered", properties);
-        assertEquals(2400, bodyLayer.getFilterList().size());
+        this.natTable.loadState("filtered", properties);
+        assertEquals(2400, this.bodyLayer.getFilterList().size());
     }
 
     // TODO should not remove filter on sort
+    // seems the sort operation is not finished in time so the test fails
     @Disabled
     @Test
     public void shouldKeepFilterOnSort() throws InterruptedException {
         shouldFilterForMaleSimpsons();
 
         // change a value to check that sorting was applied
-        ExtendedPersonWithAddress person = bodyLayer.filterList.get(bodyLayer.filterList.size() - 1);
+        ExtendedPersonWithAddress person = this.bodyLayer.filterList.get(this.bodyLayer.filterList.size() - 1);
         person.getAddress().setCity("Al Bundy Street");
 
         // sort by street (column 4)
         // natTable.doCommand(new SortColumnCommand(natTable, 5));
         // natTable.doCommand(new SortColumnCommand(natTable, 5));
-        sortModel.sort(4, SortDirectionEnum.ASC, false);
+        this.sortModel.sort(4, SortDirectionEnum.ASC, false);
 
         Thread.sleep(500);
 
-        Object street = natTable.getDataValueByPosition(5, 3);
+        Object street = this.natTable.getDataValueByPosition(5, 3);
         assertEquals("Al Bundy Street", street);
     }
 
@@ -309,7 +306,7 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
     public void shouldKeepFilterOnEdit() throws InterruptedException {
         shouldFilterForMaleSimpsons();
 
-        Object columnOneFilter = filterRowHeaderLayer.filterRowDataLayer.getDataValue(0, 0);
+        Object columnOneFilter = this.filterRowHeaderLayer.filterRowDataLayer.getDataValue(0, 0);
         assertTrue(columnOneFilter instanceof List);
         List filter = (List) columnOneFilter;
         assertEquals(2, filter.size());
@@ -319,10 +316,10 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         ComboUpdateListener listener = new ComboUpdateListener();
         CountDownLatch countDown = new CountDownLatch(1);
         listener.setCountDown(countDown);
-        filterRowHeaderLayer.comboBoxDataProvider.addCacheUpdateListener(listener);
+        this.filterRowHeaderLayer.comboBoxDataProvider.addCacheUpdateListener(listener);
 
         // edit one entry
-        natTable.doCommand(new UpdateDataCommand(natTable, 1, 3, "Bort"));
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 1, 3, "Bort"));
 
         boolean completed = countDown.await(2000, TimeUnit.MILLISECONDS);
 
@@ -335,9 +332,9 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         assertEquals(1, evt.getAddedItems().size());
         assertEquals("Bort", evt.getAddedItems().iterator().next());
 
-        assertEquals("Bort", natTable.getDataValueByPosition(1, 3));
+        assertEquals("Bort", this.natTable.getDataValueByPosition(1, 3));
 
-        columnOneFilter = filterRowHeaderLayer.filterRowDataLayer.getDataValue(0, 0);
+        columnOneFilter = this.filterRowHeaderLayer.filterRowDataLayer.getDataValue(0, 0);
         assertTrue(columnOneFilter instanceof List);
         assertEquals(3, filter.size());
         assertTrue(filter.contains("Homer"));
@@ -350,7 +347,7 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         countDown = new CountDownLatch(1);
         listener.setCountDown(countDown);
 
-        natTable.doCommand(new UpdateDataCommand(natTable, 1, 3, "Bart"));
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 1, 3, "Bart"));
 
         completed = countDown.await(2000, TimeUnit.MILLISECONDS);
 
@@ -364,9 +361,9 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         assertEquals(1, evt.getRemovedItems().size());
         assertEquals("Bort", evt.getRemovedItems().iterator().next());
 
-        assertEquals("Bart", natTable.getDataValueByPosition(1, 3));
+        assertEquals("Bart", this.natTable.getDataValueByPosition(1, 3));
 
-        columnOneFilter = filterRowHeaderLayer.filterRowDataLayer.getDataValue(0, 0);
+        columnOneFilter = this.filterRowHeaderLayer.filterRowDataLayer.getDataValue(0, 0);
         assertTrue(columnOneFilter instanceof List);
         assertEquals(2, filter.size());
         assertTrue(filter.contains("Homer"));
@@ -389,36 +386,37 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         // we need to wait here as the listChanged handling is triggered with a
         // delay of 100 ms to avoid too frequent calculations
         ComboUpdateListener listener = new ComboUpdateListener();
-        CountDownLatch countDown = new CountDownLatch(2);
+        CountDownLatch countDown = new CountDownLatch(1);
         listener.setCountDown(countDown);
-        filterRowHeaderLayer.comboBoxDataProvider.addCacheUpdateListener(listener);
+        this.filterRowHeaderLayer.comboBoxDataProvider.addCacheUpdateListener(listener);
 
         ExtendedPersonWithAddress entry = new ExtendedPersonWithAddress(person, address,
                 "0000", "The little Ralphy", 0,
                 new ArrayList<String>(), new ArrayList<String>());
-        bodyLayer.eventList.add(entry);
+        this.bodyLayer.eventList.add(entry);
 
         // long start = System.currentTimeMillis();
-        boolean completed = countDown.await(2000, TimeUnit.MILLISECONDS);
+        boolean completed = countDown.await(5000, TimeUnit.MILLISECONDS);
         // long end = System.currentTimeMillis();
         // System.out.println("duration " + (end - start));
 
         assertTrue(completed, "Timeout - no event received");
 
-        assertEquals(2, listener.getEventsCount());
+        assertEquals(1, listener.getEventsCount());
 
         FilterRowComboUpdateEvent evt = listener.getReceivedEvents().get(0);
-        assertEquals(0, evt.getColumnIndex());
-        assertEquals(1, evt.getAddedItems().size());
-        assertEquals("Ralph", evt.getAddedItems().iterator().next());
+        assertEquals(2, evt.updateContentSize());
 
-        evt = listener.getReceivedEvents().get(1);
-        assertEquals(1, evt.getColumnIndex());
-        assertEquals(1, evt.getAddedItems().size());
-        assertEquals("Wiggum", evt.getAddedItems().iterator().next());
+        assertEquals(0, evt.getColumnIndex(0));
+        assertEquals(1, evt.getAddedItems(0).size());
+        assertEquals("Ralph", evt.getAddedItems(0).iterator().next());
+
+        assertEquals(1, evt.getColumnIndex(1));
+        assertEquals(1, evt.getAddedItems(1).size());
+        assertEquals("Wiggum", evt.getAddedItems(1).iterator().next());
 
         // test that still all filters are set
-        Object columnOneFilter = filterRowHeaderLayer.filterRowDataLayer.getDataValue(0, 0);
+        Object columnOneFilter = this.filterRowHeaderLayer.filterRowDataLayer.getDataValue(0, 0);
         assertTrue(columnOneFilter instanceof List);
         List filter = (List) columnOneFilter;
         assertEquals(3, filter.size());
@@ -426,26 +424,26 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         assertTrue(filter.contains("Bart"));
         assertTrue(filter.contains("Ralph"));
 
-        Object columnTwoFilter = filterRowHeaderLayer.filterRowDataLayer.getDataValue(1, 0);
+        Object columnTwoFilter = this.filterRowHeaderLayer.filterRowDataLayer.getDataValue(1, 0);
         assertTrue(columnTwoFilter instanceof List);
         filter = (List) columnTwoFilter;
         assertEquals(2, filter.size());
         assertTrue(filter.contains("Simpson"));
         assertTrue(filter.contains("Wiggum"));
 
-        bodyLayer.eventList.remove(entry);
+        this.bodyLayer.eventList.remove(entry);
 
-        countDown = new CountDownLatch(2);
+        countDown = new CountDownLatch(1);
         listener.setCountDown(countDown);
 
         // start = System.currentTimeMillis();
-        completed = countDown.await(2000, TimeUnit.MILLISECONDS);
+        completed = countDown.await(5000, TimeUnit.MILLISECONDS);
         // end = System.currentTimeMillis();
         // System.out.println("duration " + (end - start));
 
         assertTrue(completed, "Timeout - no event received");
 
-        filterRowHeaderLayer.comboBoxDataProvider.removeCacheUpdateListener(listener);
+        this.filterRowHeaderLayer.comboBoxDataProvider.removeCacheUpdateListener(listener);
     }
 
     private static List<ExtendedPersonWithAddress> createValues(int startId) {

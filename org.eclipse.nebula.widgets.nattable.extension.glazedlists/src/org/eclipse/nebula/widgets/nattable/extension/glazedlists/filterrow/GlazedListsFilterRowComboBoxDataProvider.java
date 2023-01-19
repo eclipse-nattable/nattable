@@ -117,14 +117,7 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
             // a new row was added or a row was deleted
             SCHEDULER.schedule(() -> {
                 try {
-                    if (getFilterCollection() != null) {
-                        disableUpdateEvents();
-                    }
-                    clearCache();
-                    if (getFilterCollection() != null) {
-                        enableUpdateEvents();
-                        // setLastFilter(-1, null);
-                    }
+                    clearCache(true);
                 } finally {
                     GlazedListsFilterRowComboBoxDataProvider.this.changeHandlingProcessing.set(false);
                 }

@@ -302,7 +302,8 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
                     cacheLock.writeLock().unlock();
                 }
 
-                if (isUpdateEventsEnabled()) {
+                if (isUpdateEventsEnabled()
+                        && (this.valueCache == this.allValueCache || cache != this.allValueCache)) {
                     fireCacheUpdateEvent(buildUpdateEvent(columnIndex, null, result));
                 }
             }
@@ -442,23 +443,26 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
                 updateCache(((DataUpdateEvent) event).getColumnPosition());
             } else if (event instanceof IStructuralChangeEvent
                     && ((IStructuralChangeEvent) event).isVerticalStructureChanged()) {
-                clearCache();
+                clearCache(false);
             }
         }
 
-        if (event instanceof FilterAppliedEvent) {
+        // The FilterAppliedEvent should only be fired in the column header
+        // layer stack, so if setFilterCollection() was not called, those events
+        // should never reach here. But in case someone fires
+        // FilterAppliedEvents programmatically from the body layer stack, we
+        // need to guard the execution to avoid exceptions.
+        if (event instanceof FilterAppliedEvent && this.filterCollection != null) {
             // only update the last applied filter column if
             // - the editor is a FilterRowComboBoxCellEditor
             // - the filter was not cleared
             FilterAppliedEvent filterEvent = (FilterAppliedEvent) event;
             // only update the collection references if the value was changed
-            if (filterEvent.isFilterComboEditor()
-                    && (isFilterChanged(filterEvent.getColumnIndex(), filterEvent.getOldValue(), filterEvent.getNewValue())
-                            || filterEvent.getColumnIndex() == -1 && filterEvent.isCleared())) {
-                if (filterEvent.isCleared() || filterEvent.getColumnIndex() == -1) {
-                    setLastFilter(-1, null);
-                }
-            } else if (filterEvent.isCleared() && filterEvent.getColumnIndex() != this.lastAppliedFilterColumn) {
+            boolean filterChanged = isFilterChanged(filterEvent.getColumnIndex(), filterEvent.getOldValue(), filterEvent.getNewValue());
+
+            if ((filterEvent.isCleared() && filterEvent.getColumnIndex() != this.lastAppliedFilterColumn)
+                    || (filterEvent.isFilterComboEditor() && (filterEvent.isCleared() || filterEvent.getColumnIndex() == -1))
+                    || (filterEvent.getColumnIndex() == -1 && filterEvent.getOldValue() == null && filterEvent.getNewValue() == null)) {
                 setLastFilter(-1, null);
             }
 
@@ -466,7 +470,7 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
             // because the content in the comboboxes depends on the visible
             // content for the not last applied filter column
 
-            if (this.cachingEnabled) {
+            if (this.cachingEnabled && filterChanged) {
                 this.valueCacheLock.writeLock().lock();
                 try {
                     int column = filterEvent.getColumnIndex();
@@ -519,7 +523,9 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
             List<?> cacheBefore = cache.get(columnIndex);
 
             if (!this.lazyLoading || cacheBefore != null) {
-                cache.put(columnIndex, collectValues(columnIndex));
+                cache.put(columnIndex, (cache == this.allValueCache)
+                        ? collectValues(columnIndex)
+                        : collectValuesForColumn(columnIndex));
             }
 
             if (isUpdateEventsEnabled()) {
@@ -534,17 +540,28 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
     /**
      * Clear the cache.
      *
+     * @param updateEventsFromAll
+     *            <code>true</code> if the filter update events should be fired
+     *            for the all value cache, <code>false</code> if the events
+     *            should be fired for the value cache.
+     *
      * @since 2.1
      */
-    protected void clearCache() {
-        clearCache(this.valueCache, this.valueCacheLock);
+    protected void clearCache(boolean updateEventsFromAll) {
+        boolean fireUpdateEvents = isUpdateEventsEnabled();
+        if (fireUpdateEvents) {
+            // if update events are enabled in general, check if the update
+            // events should be fired for the value cache or the all value cache
+            fireUpdateEvents = (this.valueCache == this.allValueCache)
+                    || ((this.valueCache != this.allValueCache) && !updateEventsFromAll);
+        }
         if (this.valueCache != this.allValueCache) {
             // we also need to update the all value cache in case it is
             // different from the value cache
-            this.updateEventsEnabled = false;
-            clearCache(this.allValueCache, this.allValueCacheLock);
-            this.updateEventsEnabled = true;
+            clearCache(this.allValueCache, this.allValueCacheLock, !fireUpdateEvents);
         }
+
+        clearCache(this.valueCache, this.valueCacheLock, fireUpdateEvents);
     }
 
     /**
@@ -555,10 +572,12 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      *            values).
      * @param cacheLock
      *            The lock that matches the given cache.
+     * @param fireUpdateEvents
+     *            <code>true</code> if {@link FilterRowComboUpdateEvent}s should
+     *            be fired, <code>false</code> if not.
      * @since 2.1
      */
-    protected void clearCache(Map<Integer, List<?>> cache, ReadWriteLock cacheLock) {
-        List<FilterRowComboUpdateEvent> updateEvents = new ArrayList<>();
+    protected void clearCache(Map<Integer, List<?>> cache, ReadWriteLock cacheLock, boolean fireUpdateEvents) {
         cacheLock.writeLock().lock();
         try {
             // remember the cache before updating
@@ -575,23 +594,25 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
                 // will be triggered since there are no cached
                 // values
                 for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
-                    cache.put(entry.getKey(), collectValues(entry.getKey()));
+                    cache.put(entry.getKey(), (cache == this.allValueCache)
+                            ? collectValues(entry.getKey())
+                            : collectValuesForColumn(entry.getKey()));
                 }
             }
 
-            // fire events for every column that has cached data
-            for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
-                updateEvents.add(buildUpdateEvent(
-                        entry.getKey(),
-                        entry.getValue(),
-                        cache.get(entry.getKey())));
-            }
-
-            if (isUpdateEventsEnabled()) {
-                // fire events for every column
-                for (FilterRowComboUpdateEvent event : updateEvents) {
-                    fireCacheUpdateEvent(event);
+            if (fireUpdateEvents) {
+                FilterRowComboUpdateEvent updateEvent = null;
+                // fire event for every column that has cached data
+                for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
+                    updateEvent = buildUpdateEvent(
+                            updateEvent,
+                            entry.getKey(),
+                            entry.getValue(),
+                            cache.get(entry.getKey()));
                 }
+
+                // fire event for every column
+                fireCacheUpdateEvent(updateEvent);
             }
         } finally {
             cacheLock.writeLock().unlock();
@@ -631,23 +652,29 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      */
     @SuppressWarnings("rawtypes")
     protected boolean isFilterChanged(int columnIndex, Object oldValue, Object newValue) {
+        if (columnIndex == -1 && oldValue == null && newValue == null) {
+            // global change for non-specific column and no filter data change
+            // values
+            return true;
+        }
+
         if (EditConstants.SELECT_ALL_ITEMS_VALUE.equals(oldValue) && newValue instanceof Collection) {
-            return ObjectUtils.collectionsEqual((Collection) newValue, getValues(columnIndex, 0));
+            return !ObjectUtils.collectionsEqual((Collection) newValue, getValues(columnIndex, 0));
         } else if (EditConstants.SELECT_ALL_ITEMS_VALUE.equals(newValue) && oldValue instanceof Collection) {
-            return ObjectUtils.collectionsEqual((Collection) oldValue, getValues(columnIndex, 0));
+            return !ObjectUtils.collectionsEqual((Collection) oldValue, getValues(columnIndex, 0));
         } else if (oldValue instanceof Collection && newValue instanceof Collection) {
             Collection oldFilter = (Collection) oldValue;
             Collection newFilter = (Collection) newValue;
-            return ObjectUtils.collectionsEqual(oldFilter, newFilter);
+            return !ObjectUtils.collectionsEqual(oldFilter, newFilter);
         }
 
-        return !((oldValue != null && newValue != null) && oldValue.equals(newValue));
+        return !((oldValue == null && newValue == null) || ((oldValue != null && newValue != null) && oldValue.equals(newValue)));
     }
 
     /**
-     * Creates a FilterRowComboUpdateEvent for the given column index.
-     * Calculates the diffs of the value cache for that column based on the
-     * given lists.
+     * Creates a new {@link FilterRowComboUpdateEvent} for the given column
+     * index. Calculates the diffs of the value cache for that column based on
+     * the given lists.
      *
      * @param columnIndex
      *            The column index for which the value cache was updated.
@@ -661,6 +688,30 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      *         <code>null</code> if nothing has changed.
      */
     protected FilterRowComboUpdateEvent buildUpdateEvent(int columnIndex, List<?> cacheBefore, List<?> cacheAfter) {
+        return buildUpdateEvent(null, columnIndex, cacheBefore, cacheAfter);
+    }
+
+    /**
+     * Creates a new {@link FilterRowComboUpdateEvent} or updates the given
+     * {@link FilterRowComboUpdateEvent} for the given column index. Calculates
+     * the diffs of the value cache for that column based on the given lists.
+     *
+     * @param event
+     *            the {@link FilterRowComboUpdateEvent} to update, or
+     *            <code>null</code> if a new instance should be created.
+     * @param columnIndex
+     *            The column index for which the value cache was updated.
+     * @param cacheBefore
+     *            The value cache for the column before the change. Needed to
+     *            determine which values where removed by the update.
+     * @param cacheAfter
+     *            The value cache for the column after the change. Needed to
+     *            determine which values where added by the update.
+     * @return Event to tell about value cache updates for the given column or
+     *         <code>null</code> if nothing has changed.
+     * @since 2.1
+     */
+    protected FilterRowComboUpdateEvent buildUpdateEvent(FilterRowComboUpdateEvent event, int columnIndex, List<?> cacheBefore, List<?> cacheAfter) {
         Set<Object> addedValues = new HashSet<>();
         Set<Object> removedValues = new HashSet<>();
 
@@ -686,11 +737,15 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
 
         // only create a new update event if there has something changed
         if (!addedValues.isEmpty() || !removedValues.isEmpty()) {
-            return new FilterRowComboUpdateEvent(columnIndex, addedValues, removedValues);
+            if (event == null) {
+                return new FilterRowComboUpdateEvent(columnIndex, addedValues, removedValues);
+            } else {
+                event.addUpdate(columnIndex, addedValues, removedValues);
+            }
         }
 
         // nothing has changed so nothing to update
-        return null;
+        return event;
     }
 
     /**
@@ -894,18 +949,55 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      * @param columnHeaderLayer
      *            A layer in the column header region in which the filter row is
      *            included. Needed to handle the {@link FilterAppliedEvent}.
+     * @throws IllegalArgumentException
+     *             if one of the parameters is <code>null</code> while the other
+     *             isn't
      *
      * @since 2.1
      */
     public void setFilterCollection(Collection<T> filterCollection, ILayer columnHeaderLayer) {
-        this.filterCollection = filterCollection;
-        this.columnHeaderLayer = columnHeaderLayer;
+        if (filterCollection != null && columnHeaderLayer != null) {
+            // filter collection and column header layer passed, so we configure
+            // for dynamic combobox contents that are collected from the filter
+            // list
+            this.filterCollection = filterCollection;
+            this.columnHeaderLayer = columnHeaderLayer;
 
-        this.allValueCache = new HashMap<>();
-        this.allValueCacheLock = new ReentrantReadWriteLock();
+            this.allValueCache = new HashMap<>();
+            this.allValueCacheLock = new ReentrantReadWriteLock();
 
-        columnHeaderLayer.addLayerListener(this);
-        columnHeaderLayer.registerCommandHandler(this);
+            this.columnHeaderLayer.addLayerListener(this);
+            this.columnHeaderLayer.registerCommandHandler(this);
+
+            this.updateEventsEnabled = false;
+            clearCache(true);
+            this.updateEventsEnabled = true;
+        } else if (filterCollection == null && columnHeaderLayer == null) {
+            // filter collection and column header layer are null, so we
+            // configure for combobox contents that are collected from the base
+            // list
+
+            // if a column header layer was set before, we need to unregister
+            // ourself from there first
+            if (this.columnHeaderLayer != null) {
+                this.columnHeaderLayer.removeLayerListener(this);
+                this.columnHeaderLayer.unregisterCommandHandler(this.getCommandClass());
+            }
+
+            this.filterCollection = null;
+            this.columnHeaderLayer = null;
+
+            this.allValueCache = this.valueCache;
+            this.allValueCacheLock = this.valueCacheLock;
+
+            setLastFilter(-1, null);
+
+            this.updateEventsEnabled = false;
+            clearCache(true);
+            this.updateEventsEnabled = true;
+        } else {
+            throw new IllegalArgumentException("not supported to have only one null value"); //$NON-NLS-1$
+        }
     }
 
     /**
@@ -936,7 +1028,7 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      *
      * @since 2.1
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public boolean doCommand(ILayer targetLayer, UpdateDataCommand command) {
         if (this.columnHeaderLayer != null && command.convertToTargetLayer(targetLayer)) {
@@ -947,7 +1039,14 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
                 // if all currently visible values are selected, we ensure that
                 // in the back all possible values are set to avoid side effects
                 // once another filter is cleared
-                command.setNewValue(getAllValues(command.getColumnPosition()));
+                // check against the currently applied value and avoid an update
+                // if the new value is the same
+                Object dataValue = this.columnHeaderLayer.getDataValueByPosition(command.getColumnPosition(), this.columnHeaderLayer.getRowCount() - 1);
+                if (dataValue instanceof Collection
+                        && (ObjectUtils.collectionsEqual(filterValue, (Collection) dataValue)
+                                || ((Collection) dataValue).containsAll(filterValue))) {
+                    return true;
+                }
             } else {
                 // remember the filter list state to be able to show the
                 // previous available entries

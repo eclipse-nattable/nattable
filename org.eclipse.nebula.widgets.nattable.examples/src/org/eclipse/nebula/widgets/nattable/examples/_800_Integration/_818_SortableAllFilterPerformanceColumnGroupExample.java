@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022, 2023 Dirk Fauth and others.
+ * Copyright (c) 2023 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,10 @@
  * Contributors:
  *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.examples._600_GlazedLists._603_Filter;
+package org.eclipse.nebula.widgets.nattable.examples._800_Integration;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -46,6 +47,7 @@ import org.eclipse.nebula.widgets.nattable.data.convert.DefaultIntegerDisplayCon
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Address;
 import org.eclipse.nebula.widgets.nattable.dataset.person.DataModelConstants;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonWithAddress;
@@ -56,10 +58,15 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxFilterRowHeaderComposite;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxGlazedListsWithExcludeFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.FilterRowUtils;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.GlazedListsFilterRowComboBoxDataProvider;
+import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.MarkupDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.RegexMarkupValue;
+import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.RichTextCellPainter;
+import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.RichTextConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowPainter;
@@ -72,6 +79,7 @@ import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterRowC
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.filterrow.event.FilterAppliedEvent;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
@@ -84,19 +92,30 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultColumnHeaderDataLay
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
+import org.eclipse.nebula.widgets.nattable.hover.action.ClearHoverStylingAction;
+import org.eclipse.nebula.widgets.nattable.hover.config.ColumnHeaderResizeHoverBindings;
+import org.eclipse.nebula.widgets.nattable.hover.config.RowHeaderResizeHoverBindings;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
+import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.Style;
@@ -115,47 +134,59 @@ import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Text;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.TextFilterator;
 import ca.odell.glazedlists.TransformedList;
 import ca.odell.glazedlists.matchers.Matcher;
+import ca.odell.glazedlists.matchers.TextMatcherEditor;
 
-/**
- * Example showing how to add the filter row to the layer composition of a grid
- * that contains Excel like filters, text filters and combobox filters.
- */
-public class _6037_MixedFilterRowExample extends AbstractNatExample {
+public class _818_SortableAllFilterPerformanceColumnGroupExample extends AbstractNatExample {
 
     private static final String EXCLUDE_LABEL = "EXCLUDE";
 
     private ArrayList<Serializable> filterExcludes = new ArrayList<>();
 
     public static void main(String[] args) {
-        StandaloneNatExampleRunner.run(new _6037_MixedFilterRowExample());
+        StandaloneNatExampleRunner.run(new _818_SortableAllFilterPerformanceColumnGroupExample());
     }
 
     @Override
     public String getDescription() {
-        return "This example shows the usage of the filter row within a grid that has"
-                + " Excel-like multi-select combobox filters, free text filters and"
-                + " single-selection combobox filters in the filter row";
+        return "This example shows a complex setup that combines multiple filter features like"
+                + " the mixed filter row within a grid that has Excel-like multi-select combobox filters, free text filters and single-selection combobox filters,"
+                + " an additional single-line filter,"
+                + " a configuration that allows to exclude rows from filtering"
+                + " and a configuration so that the filter comboboxes only show items for currently visible rows in the table.";
     }
 
     @Override
     public Control createExampleControl(Composite parent) {
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new GridLayout());
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(container);
+
+        Text input = new Text(container, SWT.SINGLE | SWT.SEARCH | SWT.ICON_CANCEL);
+        input.setMessage("type filter text");
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(input);
 
         // create a new ConfigRegistry which will be needed for GlazedLists
         // handling
@@ -209,18 +240,51 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                 new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
         DataLayer columnHeaderDataLayer =
                 new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+
+        HoverLayer columnHoverLayer =
+                new HoverLayer(columnHeaderDataLayer, false);
+
         ColumnHeaderLayer columnHeaderLayer =
                 new ColumnHeaderLayer(
-                        columnHeaderDataLayer,
+                        columnHoverLayer,
                         bodyLayerStack,
-                        bodyLayerStack.getSelectionLayer());
+                        bodyLayerStack.getSelectionLayer(),
+                        false);
 
-        // Create a customized GlazedListsFilterRowComboBoxDataProvider that
+        columnHeaderLayer.addConfiguration(
+                new ColumnHeaderResizeHoverBindings(columnHoverLayer));
+
+        SortHeaderLayer<PersonWithAddress> sortHeaderLayer =
+                new SortHeaderLayer<>(
+                        columnHeaderLayer,
+                        new GlazedListsSortModel<>(
+                                bodyLayerStack.getSortedList(),
+                                columnPropertyAccessor,
+                                configRegistry,
+                                columnHeaderDataLayer));
+
+        ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
+                sortHeaderLayer,
+                bodyLayerStack.getSelectionLayer());
+        columnGroupHeaderLayer.setCalculateHeight(true);
+
+        columnGroupHeaderLayer.addGroup("Person", 0, 4);
+
+        // Create a customized FilterRowComboBoxDataProvider that
         // distincts the empty string and null from the collected values. This
         // way null and "" entries in the collection are treated the same way
         // and there is only a single "empty" entry in the dropdown.
+
+        // Note:
+        // The usage of the GlazedListsFilterRowComboBoxDataProvider is not
+        // useful in combination with combobox filters that collect the contents
+        // from the filter list. Sort operations for example are also list
+        // changes that would cause clearing the caches and inserting values in
+        // the background to the list would not be able to determine changes as
+        // the new rows are not part of the previous remembered collection
+        // state.
         FilterRowComboBoxDataProvider<PersonWithAddress> filterRowComboBoxDataProvider =
-                new GlazedListsFilterRowComboBoxDataProvider<>(
+                new FilterRowComboBoxDataProvider<>(
                         bodyLayerStack.getGlazedListsEventLayer(),
                         bodyLayerStack.getSortedList(),
                         columnPropertyAccessor);
@@ -240,7 +304,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                 new ComboBoxFilterRowHeaderComposite<>(
                         filterStrategy,
                         filterRowComboBoxDataProvider,
-                        columnHeaderLayer,
+                        columnGroupHeaderLayer,
                         columnHeaderDataProvider,
                         configRegistry,
                         false);
@@ -266,11 +330,20 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                 new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
         DataLayer rowHeaderDataLayer =
                 new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+
+        HoverLayer rowHoverLayer =
+                new HoverLayer(rowHeaderDataLayer, false);
         RowHeaderLayer rowHeaderLayer =
                 new RowHeaderLayer(
-                        rowHeaderDataLayer,
+                        rowHoverLayer,
                         bodyLayerStack,
-                        bodyLayerStack.getSelectionLayer());
+                        bodyLayerStack.getSelectionLayer(),
+                        false);
+
+        // add RowHeaderHoverLayerConfiguration to ensure that hover styling and
+        // resizing is working together
+        rowHeaderLayer.addConfiguration(
+                new RowHeaderResizeHoverBindings(rowHoverLayer));
 
         // build the corner layer
         IDataProvider cornerDataProvider =
@@ -306,13 +379,28 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         // edit configuration
         natTable.addConfiguration(new EditConfiguration());
 
+        natTable.addConfiguration(new SingleClickSortConfiguration());
+
+        // add a ui binding to clear the hover in the column header also if you
+        // move over a column group or filter row cell
+        natTable.addConfiguration(new AbstractUiBindingConfiguration() {
+
+            @Override
+            public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+                uiBindingRegistry.registerFirstMouseMoveBinding((natTable, event, regionLabels) -> ((natTable != null && regionLabels == null) || regionLabels != null
+                        && (regionLabels.hasLabel(GridRegion.BODY) || regionLabels.hasLabel(GridRegion.COLUMN_GROUP_HEADER) || regionLabels.hasLabel(GridRegion.FILTER_ROW))),
+                        new ClearHoverStylingAction());
+            }
+        });
+
         // header menu configuration
         natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
 
             @Override
             protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
                 return super.createCornerMenu(natTable)
-                        .withStateManagerMenuItemProvider();
+                        .withStateManagerMenuItemProvider()
+                        .withClearAllFilters();
             }
         });
 
@@ -332,6 +420,8 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         // filter row, we get the painter from the ConfigRegistry after
         // natTable#configure() and override createPainterInstances() of the
         // theme configuration.
+        // Additionally we override the default body painter and data to be able
+        // to highlight the single field filter expression
         ModernNatTableThemeConfiguration themeConfiguration = new ModernNatTableThemeConfiguration() {
             @Override
             public void createPainterInstances() {
@@ -340,11 +430,86 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                         CellConfigAttributes.CELL_PAINTER,
                         DisplayMode.NORMAL,
                         GridRegion.FILTER_ROW);
+
+                this.defaultCellPainter = new BackgroundPainter(
+                        new PaddingDecorator(new RichTextCellPainter(false, false), 0, 5, 0, 5, false));
+
             }
         };
 
+        // add the style configuration for hover
+        themeConfiguration.addThemeExtension(new IThemeExtension() {
+
+            @Override
+            public void unregisterStyles(IConfigRegistry configRegistry) {
+                configRegistry.unregisterConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
+                        DisplayMode.HOVER,
+                        GridRegion.COLUMN_HEADER);
+                configRegistry.unregisterConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
+                        DisplayMode.SELECT_HOVER,
+                        GridRegion.COLUMN_HEADER);
+
+                configRegistry.unregisterConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
+                        DisplayMode.HOVER,
+                        GridRegion.ROW_HEADER);
+                configRegistry.unregisterConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
+                        DisplayMode.SELECT_HOVER,
+                        GridRegion.ROW_HEADER);
+            }
+
+            @Override
+            public void registerStyles(IConfigRegistry configRegistry) {
+                Style style = new Style();
+                style.setAttributeValue(
+                        CellStyleAttributes.BACKGROUND_COLOR,
+                        GUIHelper.getColor(173, 216, 230));
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
+                        style,
+                        DisplayMode.HOVER,
+                        GridRegion.COLUMN_HEADER);
+
+                style = new Style();
+                style.setAttributeValue(
+                        CellStyleAttributes.BACKGROUND_COLOR,
+                        GUIHelper.getColor(0, 71, 171));
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
+                        style,
+                        DisplayMode.SELECT_HOVER,
+                        GridRegion.COLUMN_HEADER);
+
+                style = new Style();
+                style.setAttributeValue(
+                        CellStyleAttributes.BACKGROUND_COLOR,
+                        GUIHelper.COLOR_RED);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
+                        style,
+                        DisplayMode.HOVER,
+                        GridRegion.ROW_HEADER);
+
+                style = new Style();
+                style.setAttributeValue(
+                        CellStyleAttributes.BACKGROUND_COLOR,
+                        GUIHelper.COLOR_BLUE);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
+                        style,
+                        DisplayMode.SELECT_HOVER,
+                        GridRegion.ROW_HEADER);
+            }
+        });
+
         // configure the filter exclude support
         configureFilterExcludes(rowIdAccessor, filterStrategy, bodyLayerStack, themeConfiguration);
+
+        // configure the single field filter support
+        configureSingleFieldFilter(input, filterStrategy, bodyLayerStack, themeConfiguration, natTable, filterRowHeaderLayer);
 
         natTable.setTheme(themeConfiguration);
 
@@ -352,9 +517,27 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                 new DisplayPersistenceDialogCommandHandler(natTable));
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
-        Button button = new Button(container, SWT.PUSH);
-        button.setText("Add Row");
-        button.addSelectionListener(new SelectionAdapter() {
+
+        Label rowCount = new Label(container, SWT.NONE);
+        rowCount.setText(bodyLayerStack.getFilterList().size() + " / " + bodyLayerStack.getSortedList().size());
+
+        natTable.addLayerListener(new ILayerListener() {
+
+            @Override
+            public void handleLayerEvent(ILayerEvent event) {
+                if (event instanceof RowStructuralRefreshEvent) {
+                    rowCount.setText(bodyLayerStack.getFilterList().size() + " / " + bodyLayerStack.getSortedList().size());
+                }
+            }
+        });
+
+        Composite buttonPanel = new Composite(container, SWT.NONE);
+        buttonPanel.setLayout(new RowLayout());
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
+
+        Button addRowButton = new Button(buttonPanel, SWT.PUSH);
+        addRowButton.setText("Add Row");
+        addRowButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Address address = new Address();
@@ -365,7 +548,31 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                 PersonWithAddress person = new PersonWithAddress(42, "Ralph",
                         "Wiggum", Gender.MALE, false, new Date(), address);
 
-                bodyLayerStack.getSortedList().add(person);
+                bodyLayerStack.getFilterList().add(person);
+
+                // as the GlazedListsEventLayer listens on list changes of the
+                // FilterList, but the new entry will be filtered, there will be
+                // no ListChangeEvent. Therefore we need to fire a row
+                // structural refresh event manually to trigger a combobox cache
+                // update
+                bodyLayerStack.getGlazedListsEventLayer().fireLayerEvent(
+                        new RowStructuralRefreshEvent(bodyLayerStack.getBodyDataLayer()));
+            }
+        });
+
+        Button toggleComboContentButton = new Button(buttonPanel, SWT.PUSH);
+        toggleComboContentButton.setText("Disable Dynamic Filter ComboBox Content");
+        toggleComboContentButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                String buttonText = toggleComboContentButton.getText();
+                if (buttonText.startsWith("Disable")) {
+                    filterRowComboBoxDataProvider.setFilterCollection(null, null);
+                    toggleComboContentButton.setText("Enable Dynamic Filter ComboBox Content");
+                } else {
+                    filterRowComboBoxDataProvider.setFilterCollection(bodyLayerStack.getFilterList(), filterRowHeaderLayer);
+                    toggleComboContentButton.setText("Disable Dynamic Filter ComboBox Content");
+                }
             }
         });
 
@@ -391,7 +598,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
 
         // register the Matcher to the
         // ComboBoxGlazedListsWithExcludeFilterStrategy
-        Matcher<PersonWithAddress> idMatcher = item -> _6037_MixedFilterRowExample.this.filterExcludes.contains(rowIdAccessor.getRowId(item));
+        Matcher<PersonWithAddress> idMatcher = item -> _818_SortableAllFilterPerformanceColumnGroupExample.this.filterExcludes.contains(rowIdAccessor.getRowId(item));
         filterStrategy.addExcludeFilter(idMatcher);
 
         // register the IConfigLabelAccumulator to the body DataLayer
@@ -429,6 +636,92 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
     }
 
     /**
+     * This method is used to configure the single field filter support.
+     *
+     * @param input
+     * @param filterStrategy
+     * @param bodyLayerStack
+     * @param themeConfiguration
+     * @param natTable
+     */
+    private void configureSingleFieldFilter(
+            Text input,
+            ComboBoxGlazedListsWithExcludeFilterStrategy<PersonWithAddress> filterStrategy,
+            BodyLayerStack<PersonWithAddress> bodyLayerStack,
+            ThemeConfiguration themeConfiguration,
+            NatTable natTable,
+            ILayer columnHeaderLayer) {
+
+        // define a TextMatcherEditor and add it as static filter
+        TextMatcherEditor<PersonWithAddress> matcherEditor = new TextMatcherEditor<>(new TextFilterator<PersonWithAddress>() {
+
+            @Override
+            public void getFilterStrings(List<String> baseList, PersonWithAddress element) {
+                // add all values that should be included in filtering
+                // Note:
+                // if special converters are involved in rendering,
+                // consider using them for adding the String values
+                baseList.add(element.getFirstName());
+                baseList.add(element.getLastName());
+                baseList.add("" + element.getGender());
+                baseList.add("" + element.isMarried());
+                baseList.add("" + element.getBirthday());
+                baseList.add(element.getAddress().getStreet());
+                baseList.add("" + element.getAddress().getHousenumber());
+                baseList.add("" + element.getAddress().getPostalCode());
+                baseList.add(element.getAddress().getCity());
+            }
+        });
+        matcherEditor.setMode(TextMatcherEditor.CONTAINS);
+
+        filterStrategy.addStaticFilter(matcherEditor);
+
+        RegexMarkupValue regexMarkup = new RegexMarkupValue("",
+                "<span style=\"background-color:rgb(255, 255, 0)\">",
+                "</span>");
+
+        // markup for highlighting
+        MarkupDisplayConverter markupConverter = new MarkupDisplayConverter();
+        markupConverter.registerMarkup("highlight", regexMarkup);
+        // register markup display converter to be able to combine the markup
+        // with other body display content provider
+        natTable.getConfigRegistry().registerConfigAttribute(
+                RichTextConfigAttributes.MARKUP_DISPLAY_CONVERTER,
+                markupConverter,
+                DisplayMode.NORMAL,
+                GridRegion.BODY);
+
+        // connect the input field with the matcher
+        input.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
+                    String text = input.getText();
+                    matcherEditor.setFilterText(new String[] { text });
+                    regexMarkup.setRegexValue(text.isEmpty() ? "" : "(" + text + ")");
+                    natTable.refresh(false);
+                    columnHeaderLayer.fireLayerEvent(new FilterAppliedEvent(columnHeaderLayer));
+                }
+            }
+        });
+
+        input.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(ModifyEvent e) {
+                String text = input.getText();
+                if (text == null || text.isEmpty()) {
+                    matcherEditor.setFilterText(new String[] {});
+                    regexMarkup.setRegexValue("");
+                    natTable.refresh(false);
+                    columnHeaderLayer.fireLayerEvent(new FilterAppliedEvent(columnHeaderLayer, true));
+                }
+            }
+        });
+
+    }
+
+    /**
      * Always encapsulate the body layer stack in an AbstractLayerTransform to
      * ensure that the index transformations are performed in later commands.
      *
@@ -442,6 +735,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         private final ListDataProvider<T> bodyDataProvider;
         private final DataLayer bodyDataLayer;
         private final GlazedListsEventLayer<T> glazedListsEventLayer;
+        // private final DetailGlazedListsEventLayer<T> glazedListsEventLayer;
 
         private final SelectionLayer selectionLayer;
 
@@ -464,6 +758,8 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
 
             // layer for event handling of GlazedLists and PropertyChanges
             this.glazedListsEventLayer =
+                    // new DetailGlazedListsEventLayer<>(this.bodyDataLayer,
+                    // this.filterList);
                     new GlazedListsEventLayer<>(this.bodyDataLayer, this.filterList);
 
             ColumnReorderLayer reorderLayer = new ColumnReorderLayer(this.glazedListsEventLayer);
@@ -515,9 +811,14 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                     EditConfigAttributes.CELL_EDITABLE_RULE,
                     IEditableRule.ALWAYS_EDITABLE);
 
+            DefaultIntegerDisplayConverter housenumberConverter = new DefaultIntegerDisplayConverter();
+            DecimalFormat housenumberFormat = new DecimalFormat();
+            housenumberFormat.setGroupingUsed(false);
+            housenumberConverter.setNumberFormat(housenumberFormat);
+
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DefaultIntegerDisplayConverter(),
+                    housenumberConverter,
                     DisplayMode.NORMAL,
                     ColumnLabelAccumulator.COLUMN_LABEL_PREFIX
                             + DataModelConstants.HOUSENUMBER_COLUMN_POSITION);
@@ -1054,7 +1355,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                                     int rowIndex = natTable.getRowIndexByPosition(rowPosition);
                                     T rowObject = bodyLayerStack.getBodyDataProvider().getRowObject(rowIndex);
                                     Serializable rowId = rowIdAccessor.getRowId(rowObject);
-                                    _6037_MixedFilterRowExample.this.filterExcludes.add(rowId);
+                                    _818_SortableAllFilterPerformanceColumnGroupExample.this.filterExcludes.add(rowId);
                                     natTable.refresh(false);
                                 }
                             });
@@ -1068,7 +1369,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                             int rowIndex = natTable.getRowIndexByPosition(rowPosition);
                             T rowObject = bodyLayerStack.getBodyDataProvider().getRowObject(rowIndex);
                             Serializable rowId = rowIdAccessor.getRowId(rowObject);
-                            return !_6037_MixedFilterRowExample.this.filterExcludes.contains(rowId);
+                            return !_818_SortableAllFilterPerformanceColumnGroupExample.this.filterExcludes.contains(rowId);
                         }
                     })
                     .withMenuItemProvider(INCLUDE_MENU_ID, new IMenuItemProvider() {
@@ -1086,7 +1387,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                                     int rowIndex = natTable.getRowIndexByPosition(rowPosition);
                                     T rowObject = bodyLayerStack.getBodyDataProvider().getRowObject(rowIndex);
                                     Serializable rowId = rowIdAccessor.getRowId(rowObject);
-                                    _6037_MixedFilterRowExample.this.filterExcludes.remove(rowId);
+                                    _818_SortableAllFilterPerformanceColumnGroupExample.this.filterExcludes.remove(rowId);
                                     filterStrategy.applyFilter(filterRowDataProvider.getFilterIndexToObjectMap());
                                 }
                             });
@@ -1100,7 +1401,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                             int rowIndex = natTable.getRowIndexByPosition(rowPosition);
                             T rowObject = bodyLayerStack.getBodyDataProvider().getRowObject(rowIndex);
                             Serializable rowId = rowIdAccessor.getRowId(rowObject);
-                            return _6037_MixedFilterRowExample.this.filterExcludes.contains(rowId);
+                            return _818_SortableAllFilterPerformanceColumnGroupExample.this.filterExcludes.contains(rowId);
                         }
                     })
                     .withInspectLabelsMenuItem()
@@ -1117,4 +1418,125 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                     new PopupMenuAction(this.bodyMenu));
         }
     }
+
+    private static List<PersonWithAddress> createPersons(int startId) {
+        List<PersonWithAddress> result = new ArrayList<>();
+
+        Address evergreen = new Address();
+        evergreen.setStreet("Evergreen Terrace");
+        evergreen.setHousenumber(42);
+        evergreen.setPostalCode(11111);
+        evergreen.setCity("Springfield");
+
+        Address south = new Address();
+        south.setStreet("South Street");
+        south.setHousenumber(23);
+        south.setPostalCode(22222);
+        south.setCity("Shelbyville");
+
+        Address main = new Address();
+        main.setStreet("Main Street");
+        main.setHousenumber(4711);
+        main.setPostalCode(33333);
+        main.setCity("Ogdenville");
+
+        result.add(new PersonWithAddress(
+                new Person(startId + 1, "Homer", "Simpson", Gender.MALE, true, new Date()),
+                evergreen));
+        result.add(new PersonWithAddress(
+                new Person(startId + 2, "Homer", "Simpson", Gender.MALE, true, new Date()),
+                evergreen));
+        result.add(new PersonWithAddress(
+                new Person(startId + 3, "Marge", "Simpson", Gender.FEMALE, true, new Date()),
+                evergreen));
+        result.add(new PersonWithAddress(
+                new Person(startId + 4, "Marge", "Simpson", Gender.FEMALE, true, new Date()),
+                evergreen));
+        result.add(new PersonWithAddress(
+                new Person(startId + 5, "Marge", "Simpson", Gender.FEMALE, true, new Date(), null),
+                evergreen));
+        result.add(new PersonWithAddress(
+                new Person(startId + 6, "Ned", null, Gender.MALE, true, new Date()),
+                evergreen));
+        result.add(new PersonWithAddress(
+                new Person(startId + 7, "Maude", null, Gender.FEMALE, true, new Date()),
+                evergreen));
+
+        result.add(new PersonWithAddress(
+                new Person(startId + 8, "Homer", "Simpson", Gender.MALE, true, new Date()),
+                south));
+        result.add(new PersonWithAddress(
+                new Person(startId + 9, "Homer", "Simpson", Gender.MALE, true, new Date()),
+                south));
+        result.add(new PersonWithAddress(
+                new Person(startId + 10, "Homer", "Simpson", Gender.MALE, true, new Date()),
+                south));
+        result.add(new PersonWithAddress(
+                new Person(startId + 11, "Bart", "Simpson", Gender.MALE, false, new Date()),
+                south));
+        result.add(new PersonWithAddress(
+                new Person(startId + 12, "Bart", "Simpson", Gender.MALE, false, new Date()),
+                south));
+        result.add(new PersonWithAddress(
+                new Person(startId + 13, "Bart", "Simpson", Gender.MALE, false, new Date()),
+                south));
+        result.add(new PersonWithAddress(
+                new Person(startId + 14, "Marge", "Simpson", Gender.FEMALE, true, new Date()),
+                south));
+        result.add(new PersonWithAddress(
+                new Person(startId + 15, "Marge", "Simpson", Gender.FEMALE, true, new Date()),
+                south));
+        result.add(new PersonWithAddress(
+                new Person(startId + 16, "Lisa", "Simpson", Gender.FEMALE, false, new Date()),
+                south));
+        result.add(new PersonWithAddress(
+                new Person(startId + 17, "Lisa", "Simpson", Gender.FEMALE, false, new Date()),
+                south));
+
+        result.add(new PersonWithAddress(
+                new Person(startId + 18, "Ned", "Flanders", Gender.MALE, true, new Date()),
+                evergreen));
+        result.add(new PersonWithAddress(
+                new Person(startId + 19, "Ned", "Flanders", Gender.MALE, true, new Date()),
+                evergreen));
+        result.add(new PersonWithAddress(
+                new Person(startId + 20, "Maude", "Flanders", Gender.FEMALE, true, new Date()),
+                evergreen));
+        result.add(new PersonWithAddress(
+                new Person(startId + 21, "Maude", "Flanders", Gender.FEMALE, true, new Date()),
+                evergreen));
+        result.add(new PersonWithAddress(
+                new Person(startId + 22, "Rod", "Flanders", Gender.MALE, false, new Date()),
+                evergreen));
+        result.add(new PersonWithAddress(
+                new Person(startId + 23, "Rod", "Flanders", Gender.MALE, false, new Date()),
+                evergreen));
+        result.add(new PersonWithAddress(
+                new Person(startId + 24, "Tod", "Flanders", Gender.MALE, false, new Date()),
+                evergreen));
+        result.add(new PersonWithAddress(
+                new Person(startId + 25, "Tod", "Flanders", Gender.MALE, false, new Date()),
+                evergreen));
+
+        result.add(new PersonWithAddress(
+                new Person(startId + 26, "Lenny", "Leonard", Gender.MALE, false, new Date()),
+                main));
+        result.add(new PersonWithAddress(
+                new Person(startId + 27, "Lenny", "Leonard", Gender.MALE, false, new Date()),
+                main));
+
+        result.add(new PersonWithAddress(
+                new Person(startId + 28, "Carl", "Carlson", Gender.MALE, false, new Date()),
+                main));
+        result.add(new PersonWithAddress(
+                new Person(startId + 29, "Carl", "Carlson", Gender.MALE, false, new Date()),
+                main));
+
+        result.add(new PersonWithAddress(
+                new Person(startId + 30, "Timothy", "Lovejoy", Gender.MALE, false, new Date()),
+                main));
+        return result;
+
+    }
+
 }

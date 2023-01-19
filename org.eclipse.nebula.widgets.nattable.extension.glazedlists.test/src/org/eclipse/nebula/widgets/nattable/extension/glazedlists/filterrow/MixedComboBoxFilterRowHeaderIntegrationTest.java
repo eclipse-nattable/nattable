@@ -82,16 +82,16 @@ import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.sort.SortDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.sort.command.SortColumnCommand;
 import org.eclipse.nebula.widgets.nattable.sort.config.DefaultSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -101,11 +101,8 @@ import ca.odell.glazedlists.TransformedList;
 
 /**
  * This test class is intended to verify the integration of the
- * {@link ComboBoxFilterRowHeaderComposite}. Especially the updates of the
- * filter combobox contents in case of structural changes. As those updates are
- * done in background threads to not blocking the UI, the tests are complicated.
- * To be sure that everything works as intended, the cases can be replayed with
- * a UI via the _813_SortableGroupByWithComboBoxFilterExample.
+ * {@link ComboBoxFilterRowHeaderComposite} with mixed combobox filters and
+ * default text filters, and with the usage of dynamic combobox contents.
  */
 public class MixedComboBoxFilterRowHeaderIntegrationTest {
 
@@ -116,8 +113,7 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
 
     private GlazedListsSortModel<PersonWithAddress> sortModel;
 
-    @BeforeEach
-    public void setup() {
+    public void setupFixture(boolean handleListChanges, boolean caching) {
         // create a new ConfigRegistry which will be needed for GlazedLists
         // handling
         ConfigRegistry configRegistry = new ConfigRegistry();
@@ -175,19 +171,27 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
                 columnHeaderDataLayer);
         SortHeaderLayer<PersonWithAddress> sortHeaderLayer = new SortHeaderLayer<>(
                 columnHeaderLayer,
-                this.sortModel,
-                false);
+                this.sortModel);
 
         // Create a customized GlazedListsFilterRowComboBoxDataProvider that
         // distincts the empty string and null from the collected values. This
         // way null and "" entries in the collection are treated the same way
         // and there is only a single "empty" entry in the dropdown.
-        this.filterRowComboBoxDataProvider =
-                new GlazedListsFilterRowComboBoxDataProvider<>(
-                        this.bodyLayer.getGlazedListsEventLayer(),
-                        this.bodyLayer.getSortedList(),
-                        columnPropertyAccessor);
+        if (handleListChanges) {
+            this.filterRowComboBoxDataProvider =
+                    new GlazedListsFilterRowComboBoxDataProvider<>(
+                            this.bodyLayer.getGlazedListsEventLayer(),
+                            this.bodyLayer.getSortedList(),
+                            columnPropertyAccessor);
+        } else {
+            this.filterRowComboBoxDataProvider =
+                    new FilterRowComboBoxDataProvider<>(
+                            this.bodyLayer.getGlazedListsEventLayer(),
+                            this.bodyLayer.getSortedList(),
+                            columnPropertyAccessor);
+        }
         this.filterRowComboBoxDataProvider.setDistinctNullAndEmpty(true);
+        this.filterRowComboBoxDataProvider.setCachingEnabled(caching);
 
         // create the ComboBoxFilterRowHeaderComposite
         this.filterRowHeaderLayer =
@@ -322,10 +326,15 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
         this.natTable.doCommand(new DisposeResourcesCommand());
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = { false, true })
-    public void shouldReturnNoFilterDataInitially(boolean caching) {
-        this.filterRowComboBoxDataProvider.setCachingEnabled(caching);
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "true, false",
+            "false, true",
+            "false, false"
+    })
+    public void shouldReturnNoFilterDataInitially(boolean handleListChanges, boolean caching) {
+        setupFixture(handleListChanges, caching);
 
         // null for non-combobox filters
         // SELECT_ALL for combobox-filters
@@ -353,10 +362,15 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
                 this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.CITY_COLUMN_POSITION, 1));
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = { false, true })
-    public void shouldSeeAllComboEntriesSelectedInitially(boolean caching) {
-        this.filterRowComboBoxDataProvider.setCachingEnabled(caching);
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "true, false",
+            "false, true",
+            "false, false"
+    })
+    public void shouldSeeAllComboEntriesSelectedInitially(boolean handleListChanges, boolean caching) {
+        setupFixture(handleListChanges, caching);
 
         assertTrue(
                 ComboBoxFilterUtils.isAllSelected(
@@ -390,10 +404,15 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
                 "not all values selected");
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = { false, true })
-    public void shouldCheckForFilterComboBoxCellEditor(boolean caching) {
-        this.filterRowComboBoxDataProvider.setCachingEnabled(caching);
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "true, false",
+            "false, true",
+            "false, false"
+    })
+    public void shouldCheckForFilterComboBoxCellEditor(boolean handleListChanges, boolean caching) {
+        setupFixture(handleListChanges, caching);
 
         assertFalse(
                 ComboBoxFilterUtils.isFilterRowComboBoxCellEditor(
@@ -442,10 +461,15 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
                 "Did not identify a FilterRowComboBoxCellEditor");
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = { false, true })
-    public void shouldDistinctNullAndEmptyString(boolean caching) {
-        this.filterRowComboBoxDataProvider.setCachingEnabled(caching);
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "true, false",
+            "false, true",
+            "false, false"
+    })
+    public void shouldDistinctNullAndEmptyString(boolean handleListChanges, boolean caching) {
+        setupFixture(handleListChanges, caching);
 
         // set the value of a lastname to an empty String
         this.bodyLayer.filterList.get(0).setLastName("");
@@ -455,10 +479,15 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
         this.bodyLayer.filterList.get(0).setLastName("Simpson");
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = { false, true })
-    public void shouldNotDistinctNullAndEmptyString(boolean caching) {
-        this.filterRowComboBoxDataProvider.setCachingEnabled(caching);
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "true, false",
+            "false, true",
+            "false, false"
+    })
+    public void shouldNotDistinctNullAndEmptyString(boolean handleListChanges, boolean caching) {
+        setupFixture(handleListChanges, caching);
 
         // set the value of a lastname to an empty String
         this.bodyLayer.filterList.get(0).setLastName("");
@@ -477,10 +506,15 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
         this.filterRowComboBoxDataProvider.setDistinctNullAndEmpty(true);
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = { false, true })
-    public void shouldAlwaysReturnAllValuesForSingleComboFilter(boolean caching) {
-        this.filterRowComboBoxDataProvider.setCachingEnabled(caching);
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "true, false",
+            "false, true",
+            "false, false"
+    })
+    public void shouldAlwaysReturnAllValuesForSingleComboFilter(boolean handleListChanges, boolean caching) throws InterruptedException {
+        setupFixture(handleListChanges, caching);
 
         // load the possible values first to simulate same behavior as in UI
         List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
@@ -497,6 +531,8 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
         this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 1, new ArrayList<>(Arrays.asList("Simpson"))));
         assertEquals(15, this.bodyLayer.getFilterList().size());
 
+        Thread.sleep(200);
+
         // still all values should be in the collection, but not all is selected
         // anymore
         lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
@@ -509,10 +545,15 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
                 "all values selected");
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = { false, true })
-    public void shouldOnlyShowVisibleItemsInNotFilteredColumn(boolean caching) {
-        this.filterRowComboBoxDataProvider.setCachingEnabled(caching);
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "true, false",
+            "false, true",
+            "false, false"
+    })
+    public void shouldOnlyShowVisibleItemsInNotFilteredColumn(boolean handleListChanges, boolean caching) {
+        setupFixture(handleListChanges, caching);
 
         // first check if all street values are there
         List<?> streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
@@ -521,6 +562,7 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
         // now filter for lastname
         List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
         assertTrue(ObjectUtils.collectionsEqual(LASTNAMES, lastnames), "not all values in collection");
+
         this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 1, new ArrayList<>(Arrays.asList("Simpson"))));
 
         // now check that the values for the street column are reduced
@@ -529,10 +571,15 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
         assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "South Street"), streets), "not the reduced collection");
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = { false, true })
-    public void shouldOnlyShowVisibleItemsInNotFilteredColumnWithNonComboFilter(boolean caching) {
-        this.filterRowComboBoxDataProvider.setCachingEnabled(caching);
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "true, false",
+            "false, true",
+            "false, false"
+    })
+    public void shouldOnlyShowVisibleItemsInNotFilteredColumnWithNonComboFilter(boolean handleListChanges, boolean caching) {
+        setupFixture(handleListChanges, caching);
 
         // first check if all lastname values are there
         List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
@@ -547,10 +594,15 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
         assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), lastnames), "not the reduced collection");
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = { false, true })
-    public void shouldReduceFirstComboValuesIfSecondComboFilterIsApplied(boolean caching) {
-        this.filterRowComboBoxDataProvider.setCachingEnabled(caching);
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "true, false",
+            "false, true",
+            "false, false"
+    })
+    public void shouldReduceFirstComboValuesIfSecondComboFilterIsApplied(boolean handleListChanges, boolean caching) throws InterruptedException {
+        setupFixture(handleListChanges, caching);
 
         List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
         List<?> streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
@@ -579,10 +631,66 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
         assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "South Street"), streets), "not the previous reduced collection");
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = { false, true })
-    public void shouldReduceFirstComboValuesIfSecondNonComboFilterIsApplied(boolean caching) {
-        this.filterRowComboBoxDataProvider.setCachingEnabled(caching);
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "true, false",
+            "false, true",
+            "false, false"
+    })
+    public void shouldReduceFirstComboMultiFilterValuesIfSecondComboFilterIsApplied(boolean handleListChanges, boolean caching) throws InterruptedException {
+        setupFixture(handleListChanges, caching);
+
+        List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        List<?> streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+
+        // apply filter in lastname
+        List<String> filter = new ArrayList<>(LASTNAMES);
+        filter.remove("Simpson");
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 1, filter));
+
+        // lastnames still complete, streets reduced
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+
+        assertTrue(ObjectUtils.collectionsEqual(LASTNAMES, lastnames), "not all values in collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "Main Street"), streets), "not the reduced collection");
+
+        // apply filter in street
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 6, 1, new ArrayList<>(Arrays.asList("Evergreen Terrace"))));
+
+        assertEquals(10, this.bodyLayer.getFilterList().size());
+
+        // lastnames should now only contain the visible entries, streets are
+        // still same as before
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList(null, "Flanders"), lastnames), "not the reduced collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "Main Street"), streets), "not the previous reduced collection");
+
+        // apply the lastname filter with the currently available values
+        // this happens for example if the user opens and closes the combobox
+        // without changes
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 1, lastnames));
+
+        // values should not have been changed
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList(null, "Flanders"), lastnames), "not the reduced collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "Main Street"), streets), "not the previous reduced collection");
+    }
+
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "true, false",
+            "false, true",
+            "false, false"
+    })
+    public void shouldReduceFirstComboValuesIfSecondNonComboFilterIsApplied(boolean handleListChanges, boolean caching) {
+        setupFixture(handleListChanges, caching);
 
         List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
 
@@ -605,10 +713,15 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
         assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), lastnames), "not the reduced collection");
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = { false, true })
-    public void shouldReduceSecondComboContentOnClearFirstFilter(boolean caching) {
-        this.filterRowComboBoxDataProvider.setCachingEnabled(caching);
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "true, false",
+            "false, true",
+            "false, false"
+    })
+    public void shouldReduceSecondComboContentOnClearFirstFilter(boolean handleListChanges, boolean caching) {
+        setupFixture(handleListChanges, caching);
 
         // first load all values
         List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
@@ -650,10 +763,15 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
                 (Collection<?>) this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.STREET_COLUMN_POSITION, 1)));
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = { false, true })
-    public void shouldNotShowAllInFirstOnClearSecondFilter(boolean caching) {
-        this.filterRowComboBoxDataProvider.setCachingEnabled(caching);
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "true, false",
+            "false, true",
+            "false, false"
+    })
+    public void shouldNotShowAllInFirstOnClearSecondFilter(boolean handleListChanges, boolean caching) {
+        setupFixture(handleListChanges, caching);
 
         // first load all values
         List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
@@ -674,8 +792,8 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
         // clear filter in street
         this.natTable.doCommand(new ClearFilterCommand(this.natTable, 6));
 
-        // lastnames should now only contain the current visible values
-        // streets should also contain all current visible values
+        // lastnames should now only contain the visible entry, streets are
+        // still same as before
         lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
         streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
 
@@ -702,10 +820,14 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
                 (Collection<?>) this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1)));
     }
 
-    @Test
-    public void shouldKeepFilterOnEditWithCaching() throws InterruptedException {
-        // the update on edit does only work if caching is enabled
-        this.filterRowComboBoxDataProvider.setCachingEnabled(true);
+    // the update on edit does only work if caching is enabled
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "false, true",
+    })
+    public void shouldKeepFilterOnEditWithCaching(boolean handleListChanges, boolean caching) throws InterruptedException {
+        setupFixture(handleListChanges, caching);
 
         // first load values
         List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
@@ -817,10 +939,180 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
                 "not all values in collection");
     }
 
-    @Test
-    public void shouldKeepFilterOnStructuralChangesWithCaching() throws InterruptedException {
-        // the update on edit does only work if caching is enabled
-        this.filterRowComboBoxDataProvider.setCachingEnabled(true);
+    // the update on edit does only work if caching is enabled
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "false, true",
+    })
+    public void shouldKeepFilterOnEditWithSecondFilterWithCaching(boolean handleListChanges, boolean caching) throws InterruptedException {
+        setupFixture(handleListChanges, caching);
+
+        // first load values
+        List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        Object lastnameFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1);
+
+        assertEquals(EditConstants.SELECT_ALL_ITEMS_VALUE, lastnameFilter);
+        assertTrue(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        lastnameFilter,
+                        this.filterRowComboBoxDataProvider),
+                "not all values selected");
+
+        // apply filter in lastname
+        ArrayList<String> filter = new ArrayList<>(LASTNAMES);
+        filter.remove("Simpson");
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 1, filter));
+
+        // still all values should be in the collection, but not all is selected
+        // anymore
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        lastnameFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1);
+        assertTrue(ObjectUtils.collectionsEqual(LASTNAMES, lastnames), "not all values in collection");
+        assertTrue(ObjectUtils.collectionsEqual(filter, (Collection<?>) lastnameFilter), "filter collection not set");
+        assertFalse(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        lastnameFilter,
+                        this.filterRowComboBoxDataProvider),
+                "all values selected");
+
+        // apply filter in street
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 6, 1, Arrays.asList("Evergreen Terrace")));
+
+        List<?> streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+        Object streetFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.STREET_COLUMN_POSITION, 1);
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "Main Street"), streets), "not the reduced collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace"), (Collection<?>) streetFilter), "filter collection not set");
+        assertFalse(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.STREET_COLUMN_POSITION,
+                        streetFilter,
+                        this.filterRowComboBoxDataProvider),
+                "all values selected");
+
+        // lastname combo should be updated
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        lastnameFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1);
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList(null, "Flanders"), lastnames), "not the reduced collection");
+        assertTrue(ObjectUtils.collectionsEqual(filter, (Collection<?>) lastnameFilter), "filter collection not set");
+        assertFalse(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        lastnameFilter,
+                        this.filterRowComboBoxDataProvider),
+                "all values selected");
+
+        ComboUpdateListener listener = new ComboUpdateListener();
+        CountDownLatch countDown = new CountDownLatch(1);
+        listener.setCountDown(countDown);
+        this.filterRowComboBoxDataProvider.addCacheUpdateListener(listener);
+
+        // edit one entry
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 6, "Wiggum"));
+
+        boolean completed = countDown.await(2000, TimeUnit.MILLISECONDS);
+
+        assertTrue(completed, "Timeout - no event received");
+
+        assertEquals(1, listener.getEventsCount());
+
+        FilterRowComboUpdateEvent evt = listener.getReceivedEvents().get(0);
+        assertEquals(1, evt.getColumnIndex());
+        assertEquals(1, evt.getAddedItems().size());
+        assertEquals("Wiggum", evt.getAddedItems().iterator().next());
+
+        assertEquals("Wiggum", this.natTable.getDataValueByPosition(2, 6));
+
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        lastnameFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1);
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList(null, "Flanders", "Wiggum"), lastnames), "not the updated collection");
+
+        filter.add("Wiggum");
+        assertTrue(ObjectUtils.collectionsEqual(filter, (Collection<?>) lastnameFilter), "not all values in collection");
+        assertFalse(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        lastnameFilter,
+                        this.filterRowComboBoxDataProvider),
+                "all values selected");
+
+        // allValues should also be updated and contain the new value
+        List<String> modifiedLastnames = new ArrayList<>(LASTNAMES);
+        modifiedLastnames.add("Wiggum");
+        assertTrue(
+                ObjectUtils.collectionsEqual(
+                        modifiedLastnames,
+                        this.filterRowComboBoxDataProvider.getAllValues(DataModelConstants.LASTNAME_COLUMN_POSITION)),
+                "not all values in collection");
+
+        listener.clearReceivedEvents();
+
+        // edit back
+        countDown = new CountDownLatch(1);
+        listener.setCountDown(countDown);
+
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 6, "Flanders"));
+
+        completed = countDown.await(2000, TimeUnit.MILLISECONDS);
+
+        assertTrue(completed, "Timeout - no event received");
+
+        assertEquals(1, listener.getEventsCount());
+
+        evt = listener.getReceivedEvents().get(0);
+        assertEquals(1, evt.getColumnIndex());
+        assertEquals(0, evt.getAddedItems().size());
+        assertEquals(1, evt.getRemovedItems().size());
+        assertEquals("Wiggum", evt.getRemovedItems().iterator().next());
+
+        assertEquals("Flanders", this.natTable.getDataValueByPosition(2, 6));
+
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        lastnameFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1);
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList(null, "Flanders"), lastnames), "not all values in collection");
+
+        filter.remove("Wiggum");
+        assertTrue(ObjectUtils.collectionsEqual(filter, (Collection<?>) lastnameFilter), "not the updated collection");
+        assertFalse(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        lastnameFilter,
+                        this.filterRowComboBoxDataProvider),
+                "all values selected");
+
+        // allValues should also be updated and not contain the removed value
+        assertTrue(
+                ObjectUtils.collectionsEqual(
+                        LASTNAMES,
+                        this.filterRowComboBoxDataProvider.getAllValues(DataModelConstants.LASTNAME_COLUMN_POSITION)),
+                "not all values in collection");
+
+        // test that streets have not updated in the meanwhile
+        streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+        streetFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.STREET_COLUMN_POSITION, 1);
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "Main Street"), streets), "not the reduced collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace"), (Collection<?>) streetFilter), "filter collection not set");
+        assertFalse(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.STREET_COLUMN_POSITION,
+                        streetFilter,
+                        this.filterRowComboBoxDataProvider),
+                "all values selected");
+    }
+
+    // the combobox contents should stay unchanged in case caching is disabled
+    // Note:
+    // if caching is enabled but we do not handle list change events, even
+    // the all value cache can not contain the added values
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, false",
+            "false, false",
+    })
+    public void shouldKeepFilterAndComboBoxContentOnStructuralChanges(boolean handleListChanges, boolean caching) throws InterruptedException {
+        setupFixture(handleListChanges, caching);
 
         // first load values
         List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
@@ -890,27 +1182,23 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
         // contains all values
         lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
         lastnameFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1);
-        ArrayList<String> modifiedLastnames = new ArrayList<>(LASTNAMES);
-        modifiedLastnames.add("Wiggum");
         streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
         streetFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.STREET_COLUMN_POSITION, 1);
-        ArrayList<String> modifiedStreets = new ArrayList<>(STREETS);
-        modifiedStreets.add("Some Street");
 
-        assertTrue(ObjectUtils.collectionsEqual(modifiedLastnames, lastnames), "not all values in collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), lastnames), "not the reduced collection");
         // Note: Wiggum is not added as we can not determine added values if we
         // collect the combobox content from the filterlist
-        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), (Collection<?>) lastnameFilter), "not all values in collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), (Collection<?>) lastnameFilter), "not the reduced collection");
         assertFalse(
                 ComboBoxFilterUtils.isAllSelected(
                         DataModelConstants.LASTNAME_COLUMN_POSITION,
                         lastnameFilter,
                         this.filterRowComboBoxDataProvider),
                 "all values selected");
-        assertTrue(ObjectUtils.collectionsEqual(modifiedStreets, streets), "not all values in collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "South Street"), streets), "not the previous reduced collection");
         // Note: Some Street is not added as we can not determine added values
         // if we collect the combobox content from the filterlist
-        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace"), (Collection<?>) streetFilter), "not all values in collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace"), (Collection<?>) streetFilter), "not all values from previous collection");
         assertFalse(
                 ComboBoxFilterUtils.isAllSelected(
                         DataModelConstants.STREET_COLUMN_POSITION,
@@ -918,7 +1206,11 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
                         this.filterRowComboBoxDataProvider),
                 "all values selected");
 
-        // allValues should also be updated and contain the new value
+        // allValues should be updated and contain the new value
+        ArrayList<String> modifiedLastnames = new ArrayList<>(LASTNAMES);
+        modifiedLastnames.add("Wiggum");
+        ArrayList<String> modifiedStreets = new ArrayList<>(STREETS);
+        modifiedStreets.add("Some Street");
         assertTrue(
                 ObjectUtils.collectionsEqual(
                         modifiedLastnames,
@@ -940,7 +1232,7 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
         streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
         streetFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.STREET_COLUMN_POSITION, 1);
 
-        assertTrue(ObjectUtils.collectionsEqual(LASTNAMES, lastnames), "not the reduced collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), lastnames), "not the reduced collection");
         assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), (Collection<?>) lastnameFilter), "not the reduced collection");
         assertFalse(
                 ComboBoxFilterUtils.isAllSelected(
@@ -948,7 +1240,7 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
                         lastnameFilter,
                         this.filterRowComboBoxDataProvider),
                 "all values selected");
-        assertTrue(ObjectUtils.collectionsEqual(STREETS, streets), "not the previous reduced collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "South Street"), streets), "not the previous reduced collection");
         assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace"), (Collection<?>) streetFilter), "not all values from previous collection");
         assertFalse(
                 ComboBoxFilterUtils.isAllSelected(
@@ -956,6 +1248,208 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
                         lastnameFilter,
                         this.filterRowComboBoxDataProvider),
                 "all values selected");
+    }
+
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+    })
+    public void shouldKeepFilterAndComboBoxContentOnStructuralChangesWithCaching(boolean handleListChanges, boolean caching) throws InterruptedException {
+        setupFixture(handleListChanges, caching);
+
+        // first load values
+        List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        Object lastnameFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1);
+        List<?> streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+        Object streetFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.STREET_COLUMN_POSITION, 1);
+
+        assertEquals(EditConstants.SELECT_ALL_ITEMS_VALUE, lastnameFilter);
+        assertTrue(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        lastnameFilter,
+                        this.filterRowComboBoxDataProvider),
+                "not all values selected");
+        assertEquals(EditConstants.SELECT_ALL_ITEMS_VALUE, streetFilter);
+        assertTrue(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.STREET_COLUMN_POSITION,
+                        streetFilter,
+                        this.filterRowComboBoxDataProvider),
+                "not all values selected");
+
+        // apply filter in lastname and street
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 1, new ArrayList<>(Arrays.asList("Simpson"))));
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 6, 1, new ArrayList<>(Arrays.asList("Evergreen Terrace"))));
+
+        // lastnames should now only contain the visible entry, streets are
+        // still same as before
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        lastnameFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1);
+        streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+        streetFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.STREET_COLUMN_POSITION, 1);
+
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), lastnames), "not the reduced collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), (Collection<?>) lastnameFilter), "not the reduced collection");
+        assertFalse(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        lastnameFilter,
+                        this.filterRowComboBoxDataProvider),
+                "all values selected");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "South Street"), streets), "not the previous reduced collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace"), (Collection<?>) streetFilter), "not all values from previous collection");
+        assertFalse(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        lastnameFilter,
+                        this.filterRowComboBoxDataProvider),
+                "all values selected");
+
+        // add an entry
+        Person person = new Person(42, "Ralph", "Wiggum", Gender.MALE, false, new Date());
+        Address address = new Address();
+        address.setStreet("Some Street");
+        address.setHousenumber(42);
+        address.setPostalCode(12345);
+        address.setCity("In the clouds");
+
+        PersonWithAddress entry = new PersonWithAddress(person, address);
+        this.bodyLayer.eventList.add(entry);
+
+        // we need to wait here as the listChanged handling is triggered with a
+        // delay of 100 ms to avoid too frequent calculations
+        Thread.sleep(200);
+
+        // test that still all filters are set, but the combobox collection now
+        // contains all values
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        lastnameFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1);
+        streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+        streetFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.STREET_COLUMN_POSITION, 1);
+
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson", "Wiggum"), lastnames), "not the reduced collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson", "Wiggum"), (Collection<?>) lastnameFilter), "not the reduced collection");
+        assertFalse(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        lastnameFilter,
+                        this.filterRowComboBoxDataProvider),
+                "all values selected");
+        // south street also removed as the combobox content was cleared and
+        // rebuild and the last filter column was also reset
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "Some Street"), streets), "not the reduced collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "Some Street"), (Collection<?>) streetFilter), "not the reduced collection");
+        assertFalse(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.STREET_COLUMN_POSITION,
+                        streetFilter,
+                        this.filterRowComboBoxDataProvider),
+                "all values selected");
+
+        // allValues should be updated and contain the new value
+        ArrayList<String> modifiedLastnames = new ArrayList<>(LASTNAMES);
+        modifiedLastnames.add("Wiggum");
+        ArrayList<String> modifiedStreets = new ArrayList<>(STREETS);
+        modifiedStreets.add("Some Street");
+        assertTrue(
+                ObjectUtils.collectionsEqual(
+                        modifiedLastnames,
+                        this.filterRowComboBoxDataProvider.getAllValues(DataModelConstants.LASTNAME_COLUMN_POSITION)),
+                "not all values in collection");
+        assertTrue(
+                ObjectUtils.collectionsEqual(
+                        modifiedStreets,
+                        this.filterRowComboBoxDataProvider.getAllValues(DataModelConstants.STREET_COLUMN_POSITION)),
+                "not all values in collection");
+
+        // remove entry again
+        this.bodyLayer.eventList.remove(entry);
+
+        Thread.sleep(200);
+
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        lastnameFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1);
+        streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+        streetFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.STREET_COLUMN_POSITION, 1);
+
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), lastnames), "not the reduced collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), (Collection<?>) lastnameFilter), "not the reduced collection");
+        assertFalse(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        lastnameFilter,
+                        this.filterRowComboBoxDataProvider),
+                "all values selected");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace"), streets), "not the previous reduced collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace"), (Collection<?>) streetFilter), "not all values from previous collection");
+        assertFalse(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        lastnameFilter,
+                        this.filterRowComboBoxDataProvider),
+                "all values selected");
+    }
+
+    // the combination of listchanges = true and caching = true will fail
+    // this is because sorting is a list change which causes clearing the cache
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, false",
+            "false, true",
+            "false, false"
+    })
+    public void shouldNotShowAllAfterSort(boolean handleListChanges, boolean caching) throws InterruptedException {
+        setupFixture(handleListChanges, caching);
+
+        // first load all values
+        List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        List<?> streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+
+        // apply filter in lastname and street
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 1, new ArrayList<>(Arrays.asList("Simpson"))));
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 6, 1, new ArrayList<>(Arrays.asList("Evergreen Terrace"))));
+
+        // lastnames should now only contain the visible entry, streets are
+        // still same as before
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), lastnames), "not the reduced collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "South Street"), streets), "not the previous reduced collection");
+
+        // sort
+        this.natTable.doCommand(new SortColumnCommand(this.natTable, 2, false, SortDirectionEnum.ASC));
+
+        // wait so the list change events are processed everywhere
+        Thread.sleep(500);
+
+        // lastnames should now only contain the visible entry, streets are
+        // still same as before
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), lastnames), "not the reduced collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "South Street"), streets), "not the previous reduced collection");
+
+        // Note:
+        // the following might not be expected, as the user sees that a filter
+        // is applied, but only sees a single entry that is selected. Currently
+        // it is not possible to restore to a previous state of the dropdown
+        // content.
+
+        // only the applied filter values should be selected
+        // although only a single item is selected and visible in the combo,
+        // isAllSelected should be false
+        assertFalse(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1),
+                        this.filterRowComboBoxDataProvider),
+                "all values selected");
+        assertTrue(ObjectUtils.collectionsEqual(
+                Arrays.asList("Simpson"),
+                (Collection<?>) this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1)));
     }
 
     private static List<String> LASTNAMES = Arrays.asList("Simpson", "Flanders", "Leonard", "Carlson", "Lovejoy", null);
