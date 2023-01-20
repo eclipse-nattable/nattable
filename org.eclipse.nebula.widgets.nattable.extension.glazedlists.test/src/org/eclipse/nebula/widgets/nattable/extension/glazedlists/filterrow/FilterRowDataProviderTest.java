@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2021 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
@@ -32,6 +35,7 @@ import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.DefaultFilterRowConfiguration;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.filterrow.event.FilterAppliedEvent;
+import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -326,5 +330,41 @@ public class FilterRowDataProviderTest {
         assertEquals("testValue:", this.dataProvider.getDataValue(3, 1));
         assertEquals(":testValue:", this.dataProvider.getDataValue(4, 1));
         assertEquals(":test:Value:", this.dataProvider.getDataValue(5, 1));
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void shouldRetainCommaInFilterPersistence() {
+        // first check that a sort state is persisted in the properties
+        this.dataProvider.setDataValue(1, 1, "foo,bar");
+        this.dataProvider.setDataValue(3, 1, new ArrayList<>(Arrays.asList("foo", "bar", "foo,bar")));
+
+        Properties properties = new Properties();
+
+        // save state
+        this.dataProvider.saveState("prefix", properties);
+        String persistedProperty = properties.getProperty("prefix" + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
+
+        String expectedPersistedCollection = FilterRowDataProvider.FILTER_COLLECTION_PREFIX + ArrayList.class.getName() + ")["
+                + "foo" + IPersistable.VALUE_SEPARATOR
+                + "bar" + IPersistable.VALUE_SEPARATOR
+                + "foo" + FilterRowDataProvider.COMMA_REPLACEMENT + "bar"
+                + "]";
+
+        assertEquals("1:foo,bar|3:" + expectedPersistedCollection + "|", persistedProperty);
+
+        // reset state
+        setup();
+
+        assertNull(this.dataProvider.getDataValue(1, 1));
+        assertNull(this.dataProvider.getDataValue(3, 1));
+
+        // load state
+        this.dataProvider.loadState("prefix", properties);
+
+        assertEquals("foo,bar", this.dataProvider.getDataValue(1, 1));
+        Collection data = (Collection) this.dataProvider.getDataValue(3, 1);
+        assertEquals(3, data.size());
+        assertEquals(new ArrayList<>(Arrays.asList("foo", "bar", "foo,bar")), data);
     }
 }

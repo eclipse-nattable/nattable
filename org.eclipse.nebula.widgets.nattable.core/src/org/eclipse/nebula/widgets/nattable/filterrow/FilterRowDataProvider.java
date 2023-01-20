@@ -57,6 +57,14 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
     public static final String PIPE_REPLACEMENT = "°~°"; //$NON-NLS-1$
 
     /**
+     * Replacement for the comma character , that is used for persisting
+     * collection values in case of combobox filters.
+     *
+     * @since 2.1
+     */
+    public static final String COMMA_REPLACEMENT = "°#°"; //$NON-NLS-1$
+
+    /**
      * The prefix String that will be used to mark that the following filter
      * value in the persisted state is a collection.
      */
@@ -276,7 +284,9 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
             Collection<?> filterCollection = (Collection<?>) filterValue;
             for (Iterator<?> iterator = filterCollection.iterator(); iterator.hasNext();) {
                 Object filterObject = iterator.next();
-                builder.append(converter.canonicalToDisplayValue(filterObject));
+                String displayValue = (String) converter.canonicalToDisplayValue(filterObject);
+                displayValue = displayValue.replace(IPersistable.VALUE_SEPARATOR, COMMA_REPLACEMENT);
+                builder.append(displayValue);
                 if (iterator.hasNext()) {
                     builder.append(IPersistable.VALUE_SEPARATOR);
                 }
@@ -326,6 +336,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
             filterText = filterText.substring(indexEndCollSpec + 2, filterText.length() - 1);
             String[] filterSplit = filterText.split(IPersistable.VALUE_SEPARATOR);
             for (String filterString : filterSplit) {
+                filterString = filterString.replace(COMMA_REPLACEMENT, IPersistable.VALUE_SEPARATOR);
                 filterCollection.add(converter.displayToCanonicalValue(filterString));
             }
 
