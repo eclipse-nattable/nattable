@@ -1042,9 +1042,10 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
                 // check against the currently applied value and avoid an update
                 // if the new value is the same
                 Object dataValue = this.columnHeaderLayer.getDataValueByPosition(command.getColumnPosition(), this.columnHeaderLayer.getRowCount() - 1);
-                if (dataValue instanceof Collection
-                        && (ObjectUtils.collectionsEqual(filterValue, (Collection) dataValue)
-                                || ((Collection) dataValue).containsAll(filterValue))) {
+                if (EditConstants.SELECT_ALL_ITEMS_VALUE.equals(dataValue)
+                        || (dataValue instanceof Collection
+                                && (ObjectUtils.collectionsEqual(filterValue, (Collection) dataValue)
+                                        || ((Collection) dataValue).containsAll(filterValue)))) {
                     return true;
                 }
             } else {

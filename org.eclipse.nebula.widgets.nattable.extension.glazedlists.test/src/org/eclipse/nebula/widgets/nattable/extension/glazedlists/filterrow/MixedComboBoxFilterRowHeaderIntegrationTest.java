@@ -63,6 +63,7 @@ import org.eclipse.nebula.widgets.nattable.filterrow.combobox.IFilterRowComboUpd
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearAllFiltersCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearFilterCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.filterrow.event.FilterAppliedEvent;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
@@ -1450,6 +1451,48 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
         assertTrue(ObjectUtils.collectionsEqual(
                 Arrays.asList("Simpson"),
                 (Collection<?>) this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1)));
+    }
+
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "true, false",
+            "false, true",
+            "false, false"
+    })
+    public void shouldNotUpdateFilterOnCommitAllAvailableAfterFilter(boolean handleListChanges, boolean caching) throws InterruptedException {
+        setupFixture(handleListChanges, caching);
+
+        // first set a static filter
+        this.filterRowHeaderLayer.getFilterStrategy().addStaticFilter(item -> "Simpson".equals(item.getLastName()));
+        this.filterRowHeaderLayer.fireLayerEvent(new FilterAppliedEvent(this.filterRowHeaderLayer));
+
+        // first load all values
+        List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        Object lastnameFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1);
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), lastnames), "not the reduced collection");
+        assertEquals(EditConstants.SELECT_ALL_ITEMS_VALUE, lastnameFilter);
+        assertTrue(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        lastnameFilter,
+                        this.filterRowComboBoxDataProvider),
+                "not all values selected");
+
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 1, new ArrayList<>(Arrays.asList("Simpson"))));
+
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        lastnameFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1);
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), lastnames), "not the reduced collection");
+        assertEquals(EditConstants.SELECT_ALL_ITEMS_VALUE, lastnameFilter);
+        assertTrue(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        lastnameFilter,
+                        this.filterRowComboBoxDataProvider),
+                "not all values selected");
+
+        this.filterRowHeaderLayer.getFilterStrategy().clearStaticFilter();
     }
 
     private static List<String> LASTNAMES = Arrays.asList("Simpson", "Flanders", "Leonard", "Carlson", "Lovejoy", null);
