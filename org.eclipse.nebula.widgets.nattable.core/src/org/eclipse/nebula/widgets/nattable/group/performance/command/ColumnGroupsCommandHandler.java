@@ -250,7 +250,7 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
         }
     }
 
-    // TODO NatTable 2.0 - Dialog should not be opened by the command handler
+    // TODO Dialog should not be opened by the command handler
     protected boolean displayColumnGroupRenameDialog(DisplayColumnGroupRenameDialogCommand command) {
         int columnPosition = command.getColumnPosition();
 

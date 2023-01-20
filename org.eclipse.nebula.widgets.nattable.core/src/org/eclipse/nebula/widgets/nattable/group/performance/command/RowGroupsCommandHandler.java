@@ -248,7 +248,7 @@ public class RowGroupsCommandHandler extends AbstractLayerCommandHandler<IRowGro
         }
     }
 
-    // TODO NatTable 2.0 - Dialog should not be opened by the command handler
+    // TODO Dialog should not be opened by the command handler
     protected boolean displayRowGroupRenameDialog(DisplayRowGroupRenameDialogCommand command) {
         int rowPosition = command.getRowPosition();
 
