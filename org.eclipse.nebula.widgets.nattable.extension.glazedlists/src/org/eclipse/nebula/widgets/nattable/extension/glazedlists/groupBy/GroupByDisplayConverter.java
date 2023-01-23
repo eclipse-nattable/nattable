@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2020 Dirk Fauth and others.
+ * Copyright (c) 2014, 2023 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.nebula.widgets.nattable.data.convert.ContextualDisplayConvert
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.ISummaryProvider;
@@ -160,7 +161,8 @@ public class GroupByDisplayConverter<T> extends ContextualDisplayConverter {
                 if (this.converterCache.containsKey(lastGroupingIndex)) {
                     converter = this.converterCache.get(lastGroupingIndex);
                 } else {
-                    int rowPosition = cell.getRowPosition() + 1;
+                    int convertRowPosition = LayerUtil.convertRowPosition(cell.getLayer(), cell.getRowPosition(), this.groupByDataLayer);
+                    int rowPosition = convertRowPosition + 1;
                     LabelStack stackBelow = this.groupByDataLayer.getConfigLabelsByPosition(lastGroupingIndex, rowPosition);
                     while (stackBelow.hasLabel(GroupByDataLayer.GROUP_BY_OBJECT)) {
                         stackBelow = this.groupByDataLayer.getConfigLabelsByPosition(lastGroupingIndex, ++rowPosition);
