@@ -1138,4 +1138,21 @@ public class GroupByDataLayerTest {
         // this will fail
         assertEquals("Homer", this.dataLayer.getDataValue(0, 0));
     }
+
+    @Test
+    public void shouldGetCustomConfigLabelsByRowIndex() {
+        // add a config label accumulator that uses the row index
+        this.dataLayer.setConfigLabelAccumulator((configLabels, columnPosition, rowPosition) -> configLabels.add("ROW_" + rowPosition));
+
+        // groupBy lastname
+        this.groupByModel.addGroupByColumnIndex(1);
+
+        LabelStack stack = this.dataLayer.getConfigLabelsByPosition(0, 0);
+        assertTrue(stack.hasLabel("ROW_0"));
+        assertTrue(stack.hasLabel(GroupByDataLayer.GROUP_BY_OBJECT));
+
+        stack = this.dataLayer.getConfigLabelsByPosition(0, 1);
+        assertTrue(stack.hasLabel("ROW_1"));
+        assertFalse(stack.hasLabel(GroupByDataLayer.GROUP_BY_OBJECT));
+    }
 }
