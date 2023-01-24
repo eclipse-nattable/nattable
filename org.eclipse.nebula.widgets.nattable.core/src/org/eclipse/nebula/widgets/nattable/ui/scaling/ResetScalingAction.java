@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 Dirk Fauth and others.
+ * Copyright (c) 2020, 2023 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -69,7 +69,7 @@ public class ResetScalingAction implements IKeyAction {
             this.updater.accept(natTable.getConfigRegistry());
         }
 
-        natTable.refresh();
+        natTable.refresh(false);
     }
 
 }
