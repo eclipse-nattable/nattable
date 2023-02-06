@@ -1034,8 +1034,9 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
         if (this.columnHeaderLayer != null && command.convertToTargetLayer(targetLayer)) {
             Object newValue = command.getNewValue();
             Collection filterValue = (newValue instanceof Collection) ? (Collection) newValue : null;
+            int columnIndex = this.columnHeaderLayer.getColumnIndexByPosition(command.getColumnPosition());
 
-            if (filterValue != null && ObjectUtils.collectionsEqual(filterValue, getValues(command.getColumnPosition(), 0))) {
+            if (filterValue != null && ObjectUtils.collectionsEqual(filterValue, getValues(columnIndex, 0))) {
                 // if all currently visible values are selected, we ensure that
                 // in the back all possible values are set to avoid side effects
                 // once another filter is cleared
@@ -1051,10 +1052,9 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
             } else {
                 // remember the filter list state to be able to show the
                 // previous available entries
-                int columnIndex = this.columnHeaderLayer.getColumnIndexByPosition(command.getColumnPosition());
                 if (this.lastAppliedFilterColumn != columnIndex) {
                     setLastFilter(
-                            this.columnHeaderLayer.getColumnIndexByPosition(command.getColumnPosition()),
+                            columnIndex,
                             new ArrayList<>(this.previousAppliedFilterCollection == null ? this.baseCollection : this.filterCollection));
                 }
             }

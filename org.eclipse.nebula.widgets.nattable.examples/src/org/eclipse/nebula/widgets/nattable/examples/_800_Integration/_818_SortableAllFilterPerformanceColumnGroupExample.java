@@ -62,7 +62,6 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSort
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxFilterRowHeaderComposite;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxGlazedListsWithExcludeFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.FilterRowUtils;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.GlazedListsFilterRowComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.MarkupDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.RegexMarkupValue;
 import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.RichTextCellPainter;
@@ -131,6 +130,7 @@ import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemState;
 import org.eclipse.nebula.widgets.nattable.ui.menu.MenuItemProviders;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
+import org.eclipse.nebula.widgets.nattable.ui.scaling.ScalingUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
@@ -412,6 +412,7 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                 filterStrategy,
                 filterRowHeaderLayer.getFilterRowDataLayer().getFilterRowDataProvider()));
 
+        natTable.addConfiguration(new ScalingUiBindingConfiguration(natTable));
         natTable.configure();
 
         // The painter instances in a theme configuration are created on demand
