@@ -105,11 +105,13 @@ public class ComboBoxGlazedListsWithExcludeFilterStrategy<T> extends ComboBoxGla
      */
     public void addExcludeFilter(final MatcherEditor<T> matcherEditor) {
         // add the new MatcherEditor to the CompositeMatcherEditor
-        this.filterLock.writeLock().lock();
-        try {
-            this.compositeMatcherEditor.getMatcherEditors().add(matcherEditor);
-        } finally {
-            this.filterLock.writeLock().unlock();
+        if (isActive()) {
+            this.filterLock.writeLock().lock();
+            try {
+                this.compositeMatcherEditor.getMatcherEditors().add(matcherEditor);
+            } finally {
+                this.filterLock.writeLock().unlock();
+            }
         }
 
         this.excludeMatcherEditor.put(matcherEditor.getMatcher(), matcherEditor);
@@ -123,7 +125,7 @@ public class ComboBoxGlazedListsWithExcludeFilterStrategy<T> extends ComboBoxGla
      */
     public void removeExcludeFilter(final Matcher<T> matcher) {
         MatcherEditor<T> removed = this.excludeMatcherEditor.remove(matcher);
-        if (removed != null) {
+        if (removed != null && isActive()) {
             this.filterLock.writeLock().lock();
             try {
                 this.compositeMatcherEditor.getMatcherEditors().remove(removed);
@@ -148,14 +150,46 @@ public class ComboBoxGlazedListsWithExcludeFilterStrategy<T> extends ComboBoxGla
      */
     public void clearExcludeFilter() {
         Collection<MatcherEditor<T>> excludeMatcher = this.excludeMatcherEditor.values();
-        if (!excludeMatcher.isEmpty()) {
+        if (!excludeMatcher.isEmpty() && isActive()) {
             this.filterLock.writeLock().lock();
             try {
                 this.compositeMatcherEditor.getMatcherEditors().removeAll(excludeMatcher);
             } finally {
                 this.filterLock.writeLock().unlock();
             }
-            this.excludeMatcherEditor.clear();
         }
+        this.excludeMatcherEditor.clear();
+    }
+
+    @Override
+    public void activateFilterStrategy() {
+        if (!isActive()) {
+            Collection<MatcherEditor<T>> excludeMatcher = this.excludeMatcherEditor.values();
+            if (!excludeMatcher.isEmpty()) {
+                this.filterLock.writeLock().lock();
+                try {
+                    this.compositeMatcherEditor.getMatcherEditors().addAll(excludeMatcher);
+                } finally {
+                    this.filterLock.writeLock().unlock();
+                }
+            }
+        }
+        super.activateFilterStrategy();
+    }
+
+    @Override
+    public void deactivateFilterStrategy() {
+        if (isActive()) {
+            Collection<MatcherEditor<T>> excludeMatcher = this.excludeMatcherEditor.values();
+            if (!excludeMatcher.isEmpty()) {
+                this.filterLock.writeLock().lock();
+                try {
+                    this.compositeMatcherEditor.getMatcherEditors().removeAll(excludeMatcher);
+                } finally {
+                    this.filterLock.writeLock().unlock();
+                }
+            }
+        }
+        super.deactivateFilterStrategy();
     }
 }

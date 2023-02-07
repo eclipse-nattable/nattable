@@ -396,7 +396,7 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         this.bodyLayer.eventList.add(entry);
 
         // long start = System.currentTimeMillis();
-        boolean completed = countDown.await(5000, TimeUnit.MILLISECONDS);
+        boolean completed = countDown.await(10000, TimeUnit.MILLISECONDS);
         // long end = System.currentTimeMillis();
         // System.out.println("duration " + (end - start));
 

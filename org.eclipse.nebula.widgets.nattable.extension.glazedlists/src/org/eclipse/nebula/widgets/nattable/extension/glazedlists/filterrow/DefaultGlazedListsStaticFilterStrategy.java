@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
+import org.eclipse.nebula.widgets.nattable.filterrow.IActivatableFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.filterrow.IFilterStrategy;
 
 import ca.odell.glazedlists.FilterList;
@@ -34,9 +35,11 @@ import ca.odell.glazedlists.matchers.MatcherEditor;
  * @param <T>
  *            the type of the objects shown within the NatTable
  */
-public class DefaultGlazedListsStaticFilterStrategy<T> extends DefaultGlazedListsFilterStrategy<T> {
+public class DefaultGlazedListsStaticFilterStrategy<T> extends DefaultGlazedListsFilterStrategy<T> implements IActivatableFilterStrategy<T> {
 
     protected Map<Matcher<T>, MatcherEditor<T>> staticMatcherEditor = new HashMap<>();
+
+    private boolean active = true;
 
     /**
      * Create a new DefaultGlazedListsStaticFilterStrategy on top of the given
@@ -56,8 +59,10 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends DefaultGlazedList
      *            The IConfigRegistry necessary to retrieve filter specific
      *            configurations.
      */
-    public DefaultGlazedListsStaticFilterStrategy(FilterList<T> filterList,
-            IColumnAccessor<T> columnAccessor, IConfigRegistry configRegistry) {
+    public DefaultGlazedListsStaticFilterStrategy(
+            FilterList<T> filterList,
+            IColumnAccessor<T> columnAccessor,
+            IConfigRegistry configRegistry) {
         super(filterList, columnAccessor, configRegistry);
     }
 
@@ -83,9 +88,11 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends DefaultGlazedList
      *            The IConfigRegistry necessary to retrieve filter specific
      *            configurations.
      */
-    public DefaultGlazedListsStaticFilterStrategy(FilterList<T> filterList,
+    public DefaultGlazedListsStaticFilterStrategy(
+            FilterList<T> filterList,
             CompositeMatcherEditor<T> matcherEditor,
-            IColumnAccessor<T> columnAccessor, IConfigRegistry configRegistry) {
+            IColumnAccessor<T> columnAccessor,
+            IConfigRegistry configRegistry) {
         super(filterList, matcherEditor, columnAccessor, configRegistry);
     }
 
@@ -95,11 +102,13 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends DefaultGlazedList
     @Override
     public void applyFilter(Map<Integer, Object> filterIndexToObjectMap) {
         super.applyFilter(filterIndexToObjectMap);
-        this.filterLock.writeLock().lock();
-        try {
-            this.getMatcherEditor().getMatcherEditors().addAll(this.staticMatcherEditor.values());
-        } finally {
-            this.filterLock.writeLock().unlock();
+        if (this.active) {
+            this.filterLock.writeLock().lock();
+            try {
+                this.getMatcherEditor().getMatcherEditors().addAll(this.staticMatcherEditor.values());
+            } finally {
+                this.filterLock.writeLock().unlock();
+            }
         }
     }
 
@@ -125,11 +134,13 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends DefaultGlazedList
      */
     public void addStaticFilter(final MatcherEditor<T> matcherEditor) {
         // add the new MatcherEditor to the CompositeMatcherEditor
-        this.filterLock.writeLock().lock();
-        try {
-            this.getMatcherEditor().getMatcherEditors().add(matcherEditor);
-        } finally {
-            this.filterLock.writeLock().unlock();
+        if (isActive()) {
+            this.filterLock.writeLock().lock();
+            try {
+                this.getMatcherEditor().getMatcherEditors().add(matcherEditor);
+            } finally {
+                this.filterLock.writeLock().unlock();
+            }
         }
 
         // remember the MatcherEditor so it can be restored after new
@@ -145,7 +156,7 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends DefaultGlazedList
      */
     public void removeStaticFilter(final Matcher<T> matcher) {
         MatcherEditor<T> removed = this.staticMatcherEditor.remove(matcher);
-        if (removed != null) {
+        if (removed != null && isActive()) {
             this.filterLock.writeLock().lock();
             try {
                 this.getMatcherEditor().getMatcherEditors().remove(removed);
@@ -172,14 +183,53 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends DefaultGlazedList
      */
     public void clearStaticFilter() {
         Collection<MatcherEditor<T>> staticMatcher = this.staticMatcherEditor.values();
-        if (!staticMatcher.isEmpty()) {
+        if (!staticMatcher.isEmpty() && isActive()) {
             this.filterLock.writeLock().lock();
             try {
                 this.getMatcherEditor().getMatcherEditors().removeAll(staticMatcher);
             } finally {
                 this.filterLock.writeLock().unlock();
             }
-            this.staticMatcherEditor.clear();
         }
+        this.staticMatcherEditor.clear();
+    }
+
+    @Override
+    public void activateFilterStrategy() {
+        if (!this.active) {
+            this.active = true;
+
+            Collection<MatcherEditor<T>> staticMatcher = this.staticMatcherEditor.values();
+            if (!staticMatcher.isEmpty()) {
+                this.filterLock.writeLock().lock();
+                try {
+                    this.getMatcherEditor().getMatcherEditors().addAll(staticMatcher);
+                } finally {
+                    this.filterLock.writeLock().unlock();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void deactivateFilterStrategy() {
+        if (this.active) {
+            this.active = false;
+
+            Collection<MatcherEditor<T>> staticMatcher = this.staticMatcherEditor.values();
+            if (!staticMatcher.isEmpty()) {
+                this.filterLock.writeLock().lock();
+                try {
+                    this.getMatcherEditor().getMatcherEditors().removeAll(staticMatcher);
+                } finally {
+                    this.filterLock.writeLock().unlock();
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.active;
     }
 }

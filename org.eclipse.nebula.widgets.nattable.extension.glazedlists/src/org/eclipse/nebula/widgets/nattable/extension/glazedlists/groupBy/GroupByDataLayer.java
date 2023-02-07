@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -41,6 +41,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeData;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataProvider;
+import org.eclipse.nebula.widgets.nattable.filterrow.IActivatableFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
@@ -652,6 +653,10 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         // it after the tree update
         Map<Integer, Object> filterCopy = Collections.emptyMap();
         if (this.filterRowDataProvider != null) {
+            if (this.filterRowDataProvider.getFilterStrategy() instanceof IActivatableFilterStrategy) {
+                ((IActivatableFilterStrategy<T>) this.filterRowDataProvider.getFilterStrategy()).deactivateFilterStrategy();
+            }
+
             Map<Integer, Object> original = this.filterRowDataProvider.getFilterIndexToObjectMap();
             filterCopy = new HashMap<>(original);
             original.clear();
@@ -662,6 +667,10 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
         // re-apply the filter after the tree update
         if (this.filterRowDataProvider != null) {
+            if (this.filterRowDataProvider.getFilterStrategy() instanceof IActivatableFilterStrategy) {
+                ((IActivatableFilterStrategy<T>) this.filterRowDataProvider.getFilterStrategy()).activateFilterStrategy();
+            }
+
             Map<Integer, Object> original = this.filterRowDataProvider.getFilterIndexToObjectMap();
             original.putAll(filterCopy);
             this.filterRowDataProvider.getFilterStrategy().applyFilter(original);
