@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -316,7 +316,7 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
         if (ix == 1) {
             if (borderCells[iy][ix - 1].isInsideBorder) {
                 Rectangle prevCellBounds = borderCells[iy][ix - 1].bounds;
-                if (prevCellBounds.x + prevCellBounds.width > cellBounds.x) {
+                if ((prevCellBounds != null) && (prevCellBounds.x + prevCellBounds.width > cellBounds.x)) {
                     borderCells[iy][ix - 1].isInsideBorder = false;
                 }
             }
@@ -324,7 +324,7 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
         if (iy == 1) {
             if (borderCells[iy - 1][ix].isInsideBorder) {
                 Rectangle prevCellBounds = borderCells[iy - 1][ix].bounds;
-                if (prevCellBounds.y + prevCellBounds.height > cellBounds.y) {
+                if ((prevCellBounds != null) && (prevCellBounds.y + prevCellBounds.height > cellBounds.y)) {
                     borderCells[iy - 1][ix].isInsideBorder = false;
                 }
             }
@@ -334,13 +334,13 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
         // cell, we consider it part of another layer
         if (ix == borderCells[iy].length - 1) {
             Rectangle prevCellBounds = borderCells[iy][ix - 1].bounds;
-            if (prevCellBounds.x + prevCellBounds.width > cellBounds.x) {
+            if ((prevCellBounds != null) && (prevCellBounds.x + prevCellBounds.width > cellBounds.x)) {
                 return false;
             }
         }
         if (iy == borderCells.length - 1) {
             Rectangle prevCellBounds = borderCells[iy - 1][ix].bounds;
-            if (prevCellBounds.y + prevCellBounds.height > cellBounds.y) {
+            if ((prevCellBounds != null) && (prevCellBounds.y + prevCellBounds.height > cellBounds.y)) {
                 return false;
             }
         }
