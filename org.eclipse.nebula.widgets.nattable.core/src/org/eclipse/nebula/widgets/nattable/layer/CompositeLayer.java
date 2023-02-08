@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -100,8 +100,8 @@ public class CompositeLayer extends AbstractLayer {
 
     @Override
     public void loadState(String prefix, Properties properties) {
-        for (int layoutX = 0; layoutX < this.layoutXCount; layoutX++) {
-            for (int layoutY = 0; layoutY < this.layoutYCount; layoutY++) {
+        for (int layoutX = this.layoutXCount - 1; layoutX >= 0; layoutX--) {
+            for (int layoutY = this.layoutYCount - 1; layoutY >= 0; layoutY--) {
                 ILayer childLayer = this.childLayerLayout[layoutX][layoutY];
                 if (childLayer != null) {
                     String regionName = this.childLayerToRegionNameMap.get(childLayer);

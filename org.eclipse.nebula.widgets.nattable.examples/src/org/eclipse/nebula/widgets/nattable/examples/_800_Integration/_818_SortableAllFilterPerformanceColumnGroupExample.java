@@ -402,6 +402,37 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                         .withStateManagerMenuItemProvider()
                         .withClearAllFilters();
             }
+
+            @Override
+            protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
+                return new PopupMenuBuilder(natTable)
+                        .withHideColumnMenuItem()
+                        .withShowAllColumnsMenuItem()
+                        .withCreateColumnGroupMenuItem()
+                        .withUngroupColumnsMenuItem()
+                        .withAutoResizeSelectedColumnsMenuItem()
+                        .withColumnStyleEditor()
+                        .withColumnRenameDialog()
+                        .withClearAllFilters();
+            }
+        });
+
+        // Column group header menu
+        final Menu columnGroupHeaderMenu = new PopupMenuBuilder(natTable)
+                .withRenameColumnGroupMenuItem()
+                .withRemoveColumnGroupMenuItem()
+                .build();
+
+        natTable.addConfiguration(new AbstractUiBindingConfiguration() {
+            @Override
+            public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+                uiBindingRegistry.registerFirstMouseDownBinding(
+                        new MouseEventMatcher(
+                                SWT.NONE,
+                                GridRegion.COLUMN_GROUP_HEADER,
+                                MouseEventMatcher.RIGHT_BUTTON),
+                        new PopupMenuAction(columnGroupHeaderMenu));
+            }
         });
 
         // body menu configuration

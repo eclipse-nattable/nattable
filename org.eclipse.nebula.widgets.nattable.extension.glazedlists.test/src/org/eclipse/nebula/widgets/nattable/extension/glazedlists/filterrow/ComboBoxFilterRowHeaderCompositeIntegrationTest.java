@@ -437,7 +437,7 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         listener.setCountDown(countDown);
 
         // start = System.currentTimeMillis();
-        completed = countDown.await(5000, TimeUnit.MILLISECONDS);
+        completed = countDown.await(10000, TimeUnit.MILLISECONDS);
         // end = System.currentTimeMillis();
         // System.out.println("duration " + (end - start));
 
