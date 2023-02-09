@@ -25,6 +25,7 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.filterrow.event.FilterAppliedEvent;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
@@ -217,7 +218,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
                     DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
 
-            String filterText = getFilterStringRepresentation(this.filterIndexToObjectMap.get(columnIndex), converter);
+            String filterText = getFilterStringRepresentation(columnIndex, converter);
             filterText = filterText.replace("|", PIPE_REPLACEMENT); //$NON-NLS-1$
             filterTextByIndex.put(columnIndex, filterText);
         }
@@ -248,7 +249,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 
                 String filterText = filterTextByIndex.get(columnIndex);
                 filterText = filterText.replace(PIPE_REPLACEMENT, "|"); //$NON-NLS-1$
-                this.filterIndexToObjectMap.put(columnIndex, getFilterFromString(filterText, converter));
+                this.filterIndexToObjectMap.put(columnIndex, getFilterFromString(columnIndex, filterText, converter));
             }
         } catch (Exception e) {
             LOG.error("Error while restoring filter row text!", e); //$NON-NLS-1$
@@ -267,16 +268,18 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
      * encapsulated to be handled here, we need to take care of such states here
      * also.
      *
-     * @param filterValue
-     *            The filter value object that is used for filtering.
+     * @param columnIndex
+     *            The column index of the filter value object that is used for
+     *            filtering.
      * @param converter
      *            The converter that is used to convert the filter value, which
      *            is necessary to support filtering of custom types.
      * @return The String representation of the filter value.
      */
-    private String getFilterStringRepresentation(Object filterValue, IDisplayConverter converter) {
+    private String getFilterStringRepresentation(int columnIndex, IDisplayConverter converter) {
         // in case the filter value is a collection of values, we need to create
         // a special string representation
+        Object filterValue = this.filterIndexToObjectMap.get(columnIndex);
         if (filterValue instanceof Collection) {
             String collectionSpec = FILTER_COLLECTION_PREFIX + filterValue.getClass().getName() + ")"; //$NON-NLS-1$
             StringBuilder builder = new StringBuilder(collectionSpec);
@@ -284,7 +287,10 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
             Collection<?> filterCollection = (Collection<?>) filterValue;
             for (Iterator<?> iterator = filterCollection.iterator(); iterator.hasNext();) {
                 Object filterObject = iterator.next();
-                String displayValue = (String) converter.canonicalToDisplayValue(filterObject);
+                String displayValue = (String) converter.canonicalToDisplayValue(
+                        new LayerCell(null, columnIndex, 0),
+                        this.configRegistry,
+                        filterObject);
                 displayValue = displayValue.replace(IPersistable.VALUE_SEPARATOR, COMMA_REPLACEMENT);
                 builder.append(displayValue);
                 if (iterator.hasNext()) {
@@ -295,7 +301,10 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
             builder.append("]"); //$NON-NLS-1$
             return builder.toString();
         }
-        return (String) converter.canonicalToDisplayValue(filterValue);
+        return (String) converter.canonicalToDisplayValue(
+                new LayerCell(null, columnIndex, 0),
+                this.configRegistry,
+                filterValue);
     }
 
     /**
@@ -306,6 +315,8 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
      * persistence is encapsulated to be handled here, we need to take care of
      * such states here also.
      *
+     * @param columnIndex
+     *            The column index for which the the applied filter was saved.
      * @param filterText
      *            The String representation of the applied saved filter.
      * @param converter
@@ -323,7 +334,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
      * @throws IllegalArgumentException
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private Object getFilterFromString(String filterText, IDisplayConverter converter)
+    private Object getFilterFromString(int columnIndex, String filterText, IDisplayConverter converter)
             throws InstantiationException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
 
         if (filterText.startsWith(FILTER_COLLECTION_PREFIX)) {
@@ -337,12 +348,18 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
             String[] filterSplit = filterText.split(IPersistable.VALUE_SEPARATOR);
             for (String filterString : filterSplit) {
                 filterString = filterString.replace(COMMA_REPLACEMENT, IPersistable.VALUE_SEPARATOR);
-                filterCollection.add(converter.displayToCanonicalValue(filterString));
+                filterCollection.add(converter.displayToCanonicalValue(
+                        new LayerCell(null, columnIndex, 0),
+                        this.configRegistry,
+                        filterString));
             }
 
             return filterCollection;
         }
-        return converter.displayToCanonicalValue(filterText);
+        return converter.displayToCanonicalValue(
+                new LayerCell(null, columnIndex, 0),
+                this.configRegistry,
+                filterText);
     }
 
     /**

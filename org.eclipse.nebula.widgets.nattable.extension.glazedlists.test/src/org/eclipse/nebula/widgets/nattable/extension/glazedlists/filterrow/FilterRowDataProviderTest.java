@@ -21,9 +21,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
 
+import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.data.convert.ContextualDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
@@ -35,6 +38,7 @@ import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.DefaultFilterRowConfiguration;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.filterrow.event.FilterAppliedEvent;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,7 +75,7 @@ public class FilterRowDataProviderTest {
     }
 
     @Test
-    public void setDataValue() {
+    public void shouldSetDataValue() {
         assertNull(this.dataProvider.getDataValue(1, 1));
 
         this.dataProvider.setDataValue(1, 1, "testValue");
@@ -79,7 +83,7 @@ public class FilterRowDataProviderTest {
     }
 
     @Test
-    public void settingTextValueAppliesTextFilter() {
+    public void shouldApplyTextFilterOnSettingTextValue() {
         // original size
         assertEquals(13, this.filterList.size());
 
@@ -96,7 +100,7 @@ public class FilterRowDataProviderTest {
     }
 
     @Test
-    public void settingThresholdValuesUpdatedFilter() {
+    public void shouldUpdateFilterOnSettingThresholdValues() {
         // Since we are triggering object comparison, we must provide the right
         // type
         this.configRegistry.registerConfigAttribute(
@@ -120,7 +124,7 @@ public class FilterRowDataProviderTest {
     }
 
     @Test
-    public void settingAValueFiresUpdateEvent() {
+    public void shouldFireUpdateEventOnSettingAValue() {
         final LayerListenerFixture listener = new LayerListenerFixture();
         this.columnHeaderLayer.addLayerListener(listener);
         this.dataProvider.setDataValue(3, 1, "testValue");
@@ -130,7 +134,7 @@ public class FilterRowDataProviderTest {
     }
 
     @Test
-    public void clearingFilterFiresUpdateEvent() {
+    public void shouldFireUpdateEventOnClearingFilter() {
         final LayerListenerFixture listener = new LayerListenerFixture();
         this.columnHeaderLayer.addLayerListener(listener);
 
@@ -153,7 +157,7 @@ public class FilterRowDataProviderTest {
     }
 
     @Test
-    public void loadingStateFiresUpdateEvent() {
+    public void shouldFireUpdateEventOnLoadingState() {
         final LayerListenerFixture listener = new LayerListenerFixture();
         this.columnHeaderLayer.addLayerListener(listener);
 
@@ -167,7 +171,7 @@ public class FilterRowDataProviderTest {
     }
 
     @Test
-    public void persistence() {
+    public void shouldSaveState() {
         this.dataProvider.setDataValue(1, 1, "testValue");
         this.dataProvider.setDataValue(2, 1, "testValue");
         this.dataProvider.setDataValue(3, 1, "testValue");
@@ -226,7 +230,7 @@ public class FilterRowDataProviderTest {
     }
 
     @Test
-    public void testRegularExpressionWithPipes() {
+    public void shouldHandleRegularExpressionWithPipes() {
         this.configRegistry.registerConfigAttribute(
                 FilterRowConfigAttributes.TEXT_MATCHING_MODE,
                 TextMatchingMode.REGULAR_EXPRESSION,
@@ -241,7 +245,7 @@ public class FilterRowDataProviderTest {
     }
 
     @Test
-    public void testPersistenceRegularExpressionWithPipes() {
+    public void shouldPersistRegularExpressionWithPipes() {
         this.configRegistry.registerConfigAttribute(
                 FilterRowConfigAttributes.TEXT_MATCHING_MODE,
                 TextMatchingMode.REGULAR_EXPRESSION,
@@ -366,5 +370,46 @@ public class FilterRowDataProviderTest {
         Collection data = (Collection) this.dataProvider.getDataValue(3, 1);
         assertEquals(3, data.size());
         assertEquals(new ArrayList<>(Arrays.asList("foo", "bar", "foo,bar")), data);
+    }
+
+    @Test
+    public void shouldPersistWithContextualDisplayConverter() {
+        this.configRegistry.registerConfigAttribute(
+                CellConfigAttributes.DISPLAY_CONVERTER,
+                new ContextualDisplayConverter() {
+
+                    @Override
+                    public Object canonicalToDisplayValue(ILayerCell cell, IConfigRegistry configRegistry, Object canonicalValue) {
+                        return canonicalValue.toString() + "_" + cell.getColumnIndex();
+                    }
+
+                    @Override
+                    public Object displayToCanonicalValue(ILayerCell cell, IConfigRegistry configRegistry, Object displayValue) {
+                        return displayValue.toString().substring(0, displayValue.toString().length() - 2);
+                    }
+
+                });
+
+        this.dataProvider.setDataValue(1, 1, "foo");
+        this.dataProvider.setDataValue(2, 1, "testValue");
+
+        Properties properties = new Properties();
+
+        // save state
+        this.dataProvider.saveState("prefix", properties);
+        String persistedProperty = properties.getProperty("prefix" + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
+
+        assertEquals("1:foo_1|2:testValue_2|", persistedProperty);
+
+        // reset state
+        this.dataProvider.clearAllFilters();
+
+        assertNull(this.dataProvider.getDataValue(1, 1));
+
+        // load state
+        this.dataProvider.loadState("prefix", properties);
+
+        assertEquals("foo", this.dataProvider.getDataValue(1, 1));
+        assertEquals("testValue", this.dataProvider.getDataValue(2, 1));
     }
 }
