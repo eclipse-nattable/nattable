@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2022 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -191,6 +191,21 @@ public class NatCombo extends Composite {
      * @since 1.4
      */
     protected boolean showDropdownFilter;
+
+    /**
+     * {@link ModifyListener} that is added to the dropdown filter to trigger
+     * actions on filtering the dropdown content.
+     *
+     * @since 2.1
+     */
+    private ModifyListener dropdownFilterModifyListener = new DropDownFilterModifyListener();
+
+    /**
+     * {@link KeyListener} that is added to the dropdown filter.
+     *
+     * @since 2.1
+     */
+    private KeyListener dropdownFilterKeyListener;
 
     /**
      * Flag that indicates whether this ComboBoxCellEditor supports free editing
@@ -739,17 +754,11 @@ public class NatCombo extends Composite {
             this.filterBox.setEnabled(true);
             this.filterBox.setEditable(true);
             this.filterBox.addFocusListener(new FocusListenerWrapper());
-            this.filterBox.addModifyListener(new ModifyListener() {
+            this.filterBox.addModifyListener(this.dropdownFilterModifyListener);
 
-                @Override
-                public void modifyText(ModifyEvent e) {
-                    if (null != NatCombo.this.dropdownTableViewer && !NatCombo.this.dropdownTable.isDisposed()) {
-                        NatCombo.this.dropdownTableViewer.refresh();
-                        calculateBounds();
-                        setDropdownSelection(getTextAsArray());
-                    }
-                }
-            });
+            if (this.dropdownFilterKeyListener != null) {
+                this.filterBox.addKeyListener(this.dropdownFilterKeyListener);
+            }
 
             FormData data = new FormData();
             data.top = new FormAttachment(0);
@@ -1508,6 +1517,41 @@ public class NatCombo extends Composite {
     }
 
     /**
+     * Sets a {@link ModifyListener} that should be added to the dropdown filter
+     * control. Should extend {@link DropDownFilterModifyListener} so the
+     * necessary actions for updating the dropdown on filtering is executed.
+     *
+     * @param listener
+     *            {@link ModifyListener} that should be added to the dropdown
+     *            filter to trigger actions on filtering the dropdown content.
+     *
+     * @see #filterBox
+     * @see #showDropdownFilter
+     *
+     * @since 2.1
+     */
+    public void setDropdownFilterModifyListener(ModifyListener listener) {
+        this.dropdownFilterModifyListener = listener;
+    }
+
+    /**
+     * Sets a {@link KeyListener} that should be added to the dropdown filter
+     * control.
+     *
+     * @param listener
+     *            {@link KeyListener} that should be added to the dropdown
+     *            filter control.
+     *
+     * @see #filterBox
+     * @see #showDropdownFilter
+     *
+     * @since 2.1
+     */
+    public void setDropdownFilterKeyListener(KeyListener listener) {
+        this.dropdownFilterKeyListener = listener;
+    }
+
+    /**
      * FocusListener that is used to ensure that the Text control and the
      * dropdown table control are sharing the same focus. If either of both
      * controls looses focus, the local focus flag is set to false and a delayed
@@ -1541,4 +1585,29 @@ public class NatCombo extends Composite {
         }
     }
 
+    /**
+     * {@link ModifyListener} that is added to the dropdown filter to trigger
+     * actions on filtering the dropdown content. Should be subclassed to add
+     * additional functionality by overriding {@link #setSelection()}.
+     *
+     * @since 2.1
+     */
+    public class DropDownFilterModifyListener implements ModifyListener {
+
+        @Override
+        public void modifyText(ModifyEvent e) {
+            if (null != NatCombo.this.dropdownTableViewer && !NatCombo.this.dropdownTable.isDisposed()) {
+                NatCombo.this.dropdownTableViewer.refresh();
+                calculateBounds();
+                setSelection();
+            }
+        }
+
+        /**
+         * Set the dropdown selection after the viewer was refreshed.
+         */
+        protected void setSelection() {
+            setDropdownSelection(getTextAsArray());
+        }
+    }
 }

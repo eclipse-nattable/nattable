@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2022 Dirk Fauth and others.
+ * Copyright (c) 2013, 2023 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,6 +21,8 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.nebula.widgets.nattable.widget.NatCombo;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
@@ -47,6 +49,23 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
      * click of a checkbox, we avoid committing the value again on closing.
      */
     private Object currentCanonicalValue = null;
+
+    /**
+     * Flag to configure if on filtering the combobox content, a filter on the
+     * content list should be applied based on the current visible items.
+     * Default is <code>false</code>.
+     *
+     * @since 2.1
+     */
+    private boolean applyFilterOnDropdownFilter = false;
+    /**
+     * Flag to configure if the editor should be closed on pressing ENTER when
+     * having focus in the combobox filter control. Default is
+     * <code>false</code>.
+     *
+     * @since 2.1
+     */
+    private boolean closeOnEnterInDropdownFilter = false;
 
     /**
      * Create a new {@link FilterRowComboBoxCellEditor} based on the given
@@ -107,6 +126,27 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
                             && FilterRowComboBoxCellEditor.this.editMode == EditModeEnum.INLINE));
         });
 
+        if (this.applyFilterOnDropdownFilter) {
+            combo.setFilterModifyAction(() -> {
+                commit(MoveDirectionEnum.NONE,
+                        (!FilterRowComboBoxCellEditor.this.multiselect
+                                && FilterRowComboBoxCellEditor.this.editMode == EditModeEnum.INLINE));
+            });
+        }
+
+        if (this.closeOnEnterInDropdownFilter) {
+            combo.setDropdownFilterKeyListener(new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent event) {
+                    if (event.keyCode == SWT.CR
+                            || event.keyCode == SWT.KEYPAD_CR
+                            || event.keyCode == SWT.ESC) {
+                        close();
+                    }
+                }
+            });
+        }
+
         return combo;
     }
 
@@ -161,4 +201,31 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
         return false;
     }
 
+    /**
+     * This method will activate the usage of the dropdown filter via setting
+     * {@link #setShowDropdownFilter(boolean)} to <code>true</code>.
+     * Additionally it is possible to configure behavior like whether a filter
+     * should be applied to the content on filtering the dropdown or if the
+     * editor should be closed on pressing ENTER when having the focus in the
+     * dropdown filter control.
+     *
+     * @param applyFilter
+     *            <code>true</code> if on filtering the combobox content, a
+     *            filter on the list should be applied based on the current
+     *            visible items, <code>false</code> if only the dropdown content
+     *            should be filtered without applying a filter (default).
+     * @param closeOnEnter
+     *            <code>true</code> if the editor should be closed on pressing
+     *            ENTER when having focus in the combobox filter control,
+     *            <code>false</code> if nothing should happen (default).
+     *
+     * @see #setShowDropdownFilter(boolean)
+     *
+     * @since 2.1
+     */
+    public void configureDropdownFilter(boolean applyFilter, boolean closeOnEnter) {
+        setShowDropdownFilter(true);
+        this.applyFilterOnDropdownFilter = applyFilter;
+        this.closeOnEnterInDropdownFilter = closeOnEnter;
+    }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2022 Dirk Fauth and others.
+ * Copyright (c) 2013, 2023 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
@@ -73,6 +74,15 @@ public class FilterNatCombo extends NatCombo {
      * to the first access.
      */
     private List<ICheckStateListener> checkStateListener = new ArrayList<>();
+
+    /**
+     * The action that is executed after the dropdown content filter was
+     * applied, e.g. applying the filter on the content based on the current
+     * visible items in the dropdown.
+     *
+     * @since 2.1
+     */
+    private Runnable filterModifyAction;
 
     /**
      * Creates a new FilterNatCombo using the given IStyle for rendering,
@@ -550,5 +560,64 @@ public class FilterNatCombo extends NatCombo {
             return transform.split(this.multiselectValueSeparator);
         }
         return new String[] {};
+    }
+
+    /**
+     * Activate the {@link FilterDropDownFilterModifyListener} to perform an
+     * update on the selection on the dropdown based on the current visible
+     * items. Adds the given {@link Runnable} as action that should be executed
+     * after the dropdown content filter was applied, e.g. applying the filter
+     * on the content based on the current visible items in the dropdown.
+     * <p>
+     * <b>Note:</b> Only has an effect if <code>showDropdownFilter</code> is set
+     * to <code>true</code>.
+     *
+     * @param action
+     *            The action that should be executed after the dropdown content
+     *            filter was applied, e.g. applying the filter on the content
+     *            based on the current visible items in the dropdown.
+     *
+     * @since 2.1
+     */
+    public void setFilterModifyAction(Runnable action) {
+        this.filterModifyAction = action;
+        setDropdownFilterModifyListener(new FilterDropDownFilterModifyListener());
+    }
+
+    /**
+     * Specialization of the {@link DropDownFilterModifyListener} that updates
+     * the selection of the dropdown content to what is currently visible. All
+     * not visible items are deselected for the next filter operation.
+     * Additionally it executes the {@link FilterNatCombo#filterModifyAction} it
+     * one is set (e.g. for triggering a commit to apply the filter).
+     *
+     * @since 2.1
+     */
+    public class FilterDropDownFilterModifyListener extends DropDownFilterModifyListener {
+
+        @Override
+        protected void setSelection() {
+            TableItem[] items = FilterNatCombo.this.dropdownTableViewer.getTable().getItems();
+            String[] selection = new String[items.length];
+            for (int i = 0; i < items.length; i++) {
+                TableItem item = items[i];
+                selection[i] = item.getText();
+            }
+
+            // first clear the selection
+            getDropdownTable().deselectAll();
+            for (Map.Entry<String, Boolean> entry : FilterNatCombo.this.selectionStateMap.entrySet()) {
+                entry.setValue(Boolean.FALSE);
+            }
+
+            // then update the selection based on what is currently visible in
+            // the dropdown
+            setDropdownSelection(selection);
+            updateTextControl(false);
+
+            if (FilterNatCombo.this.filterModifyAction != null) {
+                FilterNatCombo.this.filterModifyAction.run();
+            }
+        }
     }
 }

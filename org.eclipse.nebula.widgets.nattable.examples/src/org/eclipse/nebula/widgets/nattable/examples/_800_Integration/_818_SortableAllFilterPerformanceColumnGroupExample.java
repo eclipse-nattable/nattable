@@ -314,7 +314,7 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
         // add a default ComboBoxFilterRowConfiguration with an updated editor
         // that shows a filter icon if a filter is applied
         FilterRowComboBoxCellEditor filterEditor = new FilterRowComboBoxCellEditor(filterRowComboBoxDataProvider, 10);
-        filterEditor.setShowDropdownFilter(true);
+        filterEditor.configureDropdownFilter(true, true);
         filterRowHeaderLayer.addConfiguration(
                 new ComboBoxFilterRowConfiguration(
                         filterEditor,
