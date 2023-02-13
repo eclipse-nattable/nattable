@@ -19,7 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultComparator;
@@ -30,7 +32,7 @@ import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsStaticFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByComparator;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByDataLayer;
@@ -164,7 +166,7 @@ public class GroupByDataLayerTest {
                 new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
 
         this.filterRowDataProvider = new FilterRowDataProvider<>(
-                new DefaultGlazedListsFilterStrategy<>(
+                new DefaultGlazedListsStaticFilterStrategy<>(
                         this.filterList,
                         this.columnPropertyAccessor,
                         this.configRegistry),
@@ -1154,5 +1156,108 @@ public class GroupByDataLayerTest {
         stack = this.dataLayer.getConfigLabelsByPosition(0, 1);
         assertTrue(stack.hasLabel("ROW_1"));
         assertFalse(stack.hasLabel(GroupByDataLayer.GROUP_BY_OBJECT));
+    }
+
+    @Test
+    public void shouldSwitchGroupingTypesOnLoad() {
+        // change the birthday to get reliable results
+        @SuppressWarnings("deprecation")
+        Date temp1 = new Date(1978, 9, 13);
+        this.filterList.get(0).setBirthday(temp1);
+        this.filterList.get(1).setBirthday(temp1);
+        this.filterList.get(2).setBirthday(temp1);
+        this.filterList.get(3).setBirthday(temp1);
+        this.filterList.get(4).setBirthday(temp1);
+        this.filterList.get(5).setBirthday(temp1);
+
+        @SuppressWarnings("deprecation")
+        Date temp2 = new Date(1976, 1, 24);
+        this.filterList.get(6).setBirthday(temp2);
+        this.filterList.get(7).setBirthday(temp2);
+        this.filterList.get(8).setBirthday(temp2);
+        this.filterList.get(9).setBirthday(temp2);
+
+        @SuppressWarnings("deprecation")
+        Date temp3 = new Date(2012, 0, 19);
+        this.filterList.get(10).setBirthday(temp3);
+        this.filterList.get(11).setBirthday(temp3);
+        this.filterList.get(12).setBirthday(temp3);
+        this.filterList.get(13).setBirthday(temp3);
+        this.filterList.get(14).setBirthday(temp3);
+        this.filterList.get(15).setBirthday(temp3);
+        this.filterList.get(16).setBirthday(temp3);
+        this.filterList.get(17).setBirthday(temp3);
+
+        // add a static filter so a list change is propagated on update()
+        addFilterCapability();
+        ((DefaultGlazedListsStaticFilterStrategy<Person>) this.filterRowDataProvider.getFilterStrategy()).addStaticFilter(item -> !item.getFirstName().equals("Ned"));
+
+        assertEquals(16, this.filterList.size());
+
+        // groupBy lastname
+        this.groupByModel.addGroupByColumnIndex(1);
+        // 16 data rows + 2 GroupBy rows
+        assertEquals(18, this.dataLayer.getRowCount());
+
+        Object o = this.dataLayer.getTreeList().get(0);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals("Flanders", ((GroupByObject) o).getValue());
+        o = this.dataLayer.getTreeList().get(7);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals("Simpson", ((GroupByObject) o).getValue());
+
+        // save state
+        Properties props = new Properties();
+        this.groupByModel.saveState("lastname", props);
+
+        // clear grouping
+        this.groupByModel.clearGroupByColumnIndexes();
+
+        // group by birthday
+        this.groupByModel.addGroupByColumnIndex(5);
+        // 16 data rows + 3 GroupBy rows
+        assertEquals(19, this.dataLayer.getRowCount());
+
+        o = this.dataLayer.getTreeList().get(0);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals(temp2, ((GroupByObject) o).getValue());
+        o = this.dataLayer.getTreeList().get(5);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals(temp1, ((GroupByObject) o).getValue());
+        o = this.dataLayer.getTreeList().get(12);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals(temp3, ((GroupByObject) o).getValue());
+
+        // save state
+        this.groupByModel.saveState("birthday", props);
+
+        // clear grouping
+        this.groupByModel.clearGroupByColumnIndexes();
+
+        // load first state
+        this.groupByModel.loadState("lastname", props);
+
+        assertEquals(18, this.dataLayer.getRowCount());
+        o = this.dataLayer.getTreeList().get(0);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals("Flanders", ((GroupByObject) o).getValue());
+        o = this.dataLayer.getTreeList().get(7);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals("Simpson", ((GroupByObject) o).getValue());
+
+        // load second state
+        this.groupByModel.loadState("birthday", props);
+
+        assertEquals(19, this.dataLayer.getRowCount());
+        o = this.dataLayer.getTreeList().get(0);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals(temp2, ((GroupByObject) o).getValue());
+        o = this.dataLayer.getTreeList().get(5);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals(temp1, ((GroupByObject) o).getValue());
+        o = this.dataLayer.getTreeList().get(12);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals(temp3, ((GroupByObject) o).getValue());
+
     }
 }

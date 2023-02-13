@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -28,6 +28,15 @@ import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 public class GroupByModel extends Observable implements IPersistable {
 
     public static final String PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES = ".groupByColumnIndexes"; //$NON-NLS-1$
+
+    /**
+     * Argument that is passed to {@link #notifyObservers(Object)} to inform
+     * about a complete change. Needed to handle the tree update slightly
+     * different.
+     *
+     * @since 2.1
+     */
+    public static final String LOAD_STATE_INDICATOR = "LOAD_STATE"; //$NON-NLS-1$
 
     private List<Integer> groupByColumnIndexes = new ArrayList<>();
 
@@ -112,7 +121,8 @@ public class GroupByModel extends Observable implements IPersistable {
             }
         }
 
-        update();
+        setChanged();
+        notifyObservers(LOAD_STATE_INDICATOR);
     }
 
     /**

@@ -111,6 +111,10 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      */
     public static final String GROUP_BY_SUMMARY_COLUMN_PREFIX = "GROUP_BY_SUMMARY_COLUMN_"; //$NON-NLS-1$
     /**
+     * The {@link GroupByModel} used for grouping.
+     */
+    private final GroupByModel groupByModel;
+    /**
      * The underlying base EventList.
      */
     private final EventList<T> eventList;
@@ -467,7 +471,8 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         this.eventList = eventList;
         this.columnAccessor = columnAccessor;
 
-        groupByModel.addObserver(this);
+        this.groupByModel = groupByModel;
+        this.groupByModel.addObserver(this);
 
         this.groupByColumnAccessor = new GroupByColumnAccessor(columnAccessor);
 
@@ -630,6 +635,20 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
+        List<Integer> indexes = new ArrayList<>();
+        if (GroupByModel.LOAD_STATE_INDICATOR.equals(arg)) {
+            // if the GroupByModel was loaded and not simply updated, there can
+            // be situations where the groupby indexes and the corresponding
+            // types per column are totally different. In this case we first
+            // need to perform a clear operation without the new groupby
+            // configuration, and then re-apply everything. Otherwise the filter
+            // operation might trigger a list update which then leads to
+            // ClassCastExceptions as the old GroupByObjects are still in the
+            // TreeList.
+            indexes.addAll(this.groupByModel.getGroupByColumnIndexes());
+            this.groupByModel.getGroupByColumnIndexes().clear();
+        }
+
         // if we know the sort model, we need to clear the sort model to avoid
         // strange side effects while updating the tree structure (e.g. not
         // applied sorting although showing the sort indicator)
@@ -661,6 +680,10 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
             filterCopy = new HashMap<>(original);
             original.clear();
             this.filterRowDataProvider.getFilterStrategy().applyFilter(original);
+        }
+
+        if (GroupByModel.LOAD_STATE_INDICATOR.equals(arg)) {
+            this.groupByModel.getGroupByColumnIndexes().addAll(indexes);
         }
 
         updateTree();
