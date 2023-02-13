@@ -15,11 +15,17 @@ package org.eclipse.nebula.widgets.nattable.hideshow.command;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Iterator;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
+import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -74,5 +80,59 @@ public class HideRowCommandTest {
         ILayerCommand hideRowCommand = new MultiRowHideCommand(layer, 10);
 
         assertFalse(hideRowCommand.convertToTargetLayer(this.rowHideShowLayer));
+    }
+
+    @Test
+    public void shouldNotFireEventIfRowIndexIsAlreadyHidden() {
+        LayerListenerFixture listener = new LayerListenerFixture();
+        this.rowHideShowLayer.addLayerListener(listener);
+
+        shouldHideRowByIndex();
+
+        assertAll("first event fired",
+                () -> assertEquals(1, listener.getEventsCount()),
+                () -> assertTrue(listener.containsInstanceOf(HideRowPositionsEvent.class)),
+                () -> {
+                    HideRowPositionsEvent event = (HideRowPositionsEvent) listener.getReceivedEvents().get(0);
+                    assertEquals(1, event.getRowIndexes().length);
+                    assertEquals(2, event.getRowIndexes()[0]);
+                    assertEquals(1, event.getRowPositionRanges().size());
+                    assertEquals(new Range(2, 3), event.getRowPositionRanges().iterator().next());
+                });
+
+        listener.clearReceivedEvents();
+
+        // try to hide the already hidden row again
+        this.rowHideShowLayer.doCommand(new HideRowByIndexCommand(2));
+
+        assertEquals(0, listener.getEventsCount());
+    }
+
+    @Test
+    public void shouldNotContainAlreadyHiddenRowIndexInEvent() {
+        LayerListenerFixture listener = new LayerListenerFixture();
+        this.rowHideShowLayer.addLayerListener(listener);
+
+        shouldHideRowByIndex();
+
+        listener.clearReceivedEvents();
+
+        // try to hide multiple rows with the already hidden row 2
+        this.rowHideShowLayer.doCommand(new HideRowByIndexCommand(1, 2, 3));
+
+        assertAll("event fired with correct data",
+                () -> assertEquals(1, listener.getEventsCount()),
+                () -> assertTrue(listener.containsInstanceOf(HideRowPositionsEvent.class)),
+                () -> {
+                    HideRowPositionsEvent event = (HideRowPositionsEvent) listener.getReceivedEvents().get(0);
+                    assertEquals(2, event.getRowIndexes().length);
+                    assertEquals(1, event.getRowIndexes()[0]);
+                    assertEquals(3, event.getRowIndexes()[1]);
+                    // there is only one range [1,3] because column 2 is already
+                    // hidden
+                    assertEquals(1, event.getRowPositionRanges().size());
+                    Iterator<Range> it = event.getRowPositionRanges().iterator();
+                    assertEquals(new Range(1, 3), it.next());
+                });
     }
 }

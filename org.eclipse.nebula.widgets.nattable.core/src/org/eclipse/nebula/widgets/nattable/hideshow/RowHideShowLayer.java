@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -171,13 +171,20 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
 
     @Override
     public void hideRowIndexes(int... rowIndexes) {
-        int[] rowPositions = Arrays.stream(rowIndexes)
-                .map(this::getRowPositionByIndex)
-                .sorted()
+        int[] filteredIndexes = Arrays.stream(rowIndexes)
+                .filter(index -> !this.hiddenRowIndexes.contains(index))
                 .toArray();
-        this.hiddenRowIndexes.addAll(rowIndexes);
-        invalidateCache();
-        fireLayerEvent(new HideRowPositionsEvent(this, rowPositions, rowIndexes));
+
+        // only fire an update if something will change
+        if (filteredIndexes.length > 0) {
+            int[] rowPositions = Arrays.stream(filteredIndexes)
+                    .map(this::getRowPositionByIndex)
+                    .sorted()
+                    .toArray();
+            this.hiddenRowIndexes.addAll(filteredIndexes);
+            invalidateCache();
+            fireLayerEvent(new HideRowPositionsEvent(this, rowPositions, filteredIndexes));
+        }
     }
 
     @Override
