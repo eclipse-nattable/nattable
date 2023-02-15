@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Dirk Fauth.
+ * Copyright (c) 2019, 2023 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -41,6 +41,11 @@ public class GroupModel implements IPersistable {
      * Persistence key for persisting the group model states.
      */
     private static final String PERSISTENCE_KEY_GROUP_MODEL = ".groupModel"; //$NON-NLS-1$
+
+    /**
+     * Prefix for GroupModel member values.
+     */
+    private static final String MEMBER_PERSISTENCE_PREFIX = "members["; //$NON-NLS-1$
 
     /**
      * Converter to support layer based position-index conversion.
@@ -185,6 +190,11 @@ public class GroupModel implements IPersistable {
                 strBuilder.append(':').append(group.staticIndexes.toSortedList().makeString(IPersistable.VALUE_SEPARATOR));
             }
 
+            // we need to store the members also, as in case of reordering or
+            // hidden columns in the underlying layer, it is not possible to
+            // calculate the correct member indexes again
+            strBuilder.append(':').append(MEMBER_PERSISTENCE_PREFIX).append(group.members.toSortedList().makeString(IPersistable.VALUE_SEPARATOR)).append("]"); //$NON-NLS-1$
+
             strBuilder.append('|');
         }
 
@@ -260,12 +270,31 @@ public class GroupModel implements IPersistable {
                     throw new IllegalArgumentException(state + " not one of 'breakable' or 'unbreakable'"); //$NON-NLS-1$
                 }
 
-                if (groupProperties.length == 9) {
-                    String statics = groupProperties[8];
-                    StringTokenizer staticTokenizer = new StringTokenizer(statics, ","); //$NON-NLS-1$
-                    while (staticTokenizer.hasMoreTokens()) {
-                        int index = Integer.parseInt(staticTokenizer.nextToken());
-                        group.staticIndexes.add(index);
+                if (groupProperties.length >= 9) {
+                    String members = null;
+                    if (!groupProperties[8].startsWith(MEMBER_PERSISTENCE_PREFIX)) {
+                        String statics = groupProperties[8];
+                        StringTokenizer staticTokenizer = new StringTokenizer(statics, ","); //$NON-NLS-1$
+                        while (staticTokenizer.hasMoreTokens()) {
+                            int index = Integer.parseInt(staticTokenizer.nextToken());
+                            group.staticIndexes.add(index);
+                        }
+
+                        if (groupProperties.length == 10) {
+                            members = groupProperties[9];
+                        }
+                    } else {
+                        members = groupProperties[8];
+                    }
+
+                    if (members != null) {
+                        members = members.substring(MEMBER_PERSISTENCE_PREFIX.length(), members.length() - 1);
+                        StringTokenizer memberTokenizer = new StringTokenizer(members, ","); //$NON-NLS-1$
+                        group.members.clear();
+                        while (memberTokenizer.hasMoreTokens()) {
+                            int index = Integer.parseInt(memberTokenizer.nextToken());
+                            group.members.add(index);
+                        }
                     }
                 }
             }

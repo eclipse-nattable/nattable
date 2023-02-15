@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Dirk Fauth.
+ * Copyright (c) 2019, 2023 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -101,7 +101,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
                     for (int member : group.getMembers()) {
                         int pos = groupModel.getPositionByIndex(member);
                         if (pos > -1) {
-                            columnIndexes.add(pos);
+                            columnIndexes.add(member);
                         }
                     }
                 }

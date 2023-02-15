@@ -91,6 +91,7 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultColumnHeaderDataLay
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupExpandCollapseLayer;
 import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
@@ -767,7 +768,6 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
         private final ListDataProvider<T> bodyDataProvider;
         private final DataLayer bodyDataLayer;
         private final GlazedListsEventLayer<T> glazedListsEventLayer;
-        // private final DetailGlazedListsEventLayer<T> glazedListsEventLayer;
 
         private final SelectionLayer selectionLayer;
 
@@ -790,14 +790,15 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
 
             // layer for event handling of GlazedLists and PropertyChanges
             this.glazedListsEventLayer =
-                    // new DetailGlazedListsEventLayer<>(this.bodyDataLayer,
-                    // this.filterList);
                     new GlazedListsEventLayer<>(this.bodyDataLayer, this.filterList);
 
             ColumnReorderLayer reorderLayer = new ColumnReorderLayer(this.glazedListsEventLayer);
             ColumnHideShowLayer hideShowLayer = new ColumnHideShowLayer(reorderLayer);
 
-            this.selectionLayer = new SelectionLayer(hideShowLayer);
+            ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer =
+                    new ColumnGroupExpandCollapseLayer(hideShowLayer);
+
+            this.selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
             ViewportLayer viewportLayer = new ViewportLayer(this.selectionLayer);
 
             FreezeLayer freezeLayer = new FreezeLayer(this.selectionLayer);

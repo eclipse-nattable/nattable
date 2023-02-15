@@ -14151,7 +14151,7 @@ public class ColumnGroupHeaderLayerTest {
 
         verifyCleanState();
 
-        // load single collapsed
+        // load reordered
         this.gridLayer.loadState("one", properties);
 
         group = this.columnGroupHeaderLayer.getGroupByPosition(2);
@@ -14163,6 +14163,150 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(2, group.getVisibleStartPosition());
         assertEquals(2, group.getOriginalSpan());
         assertEquals(2, group.getVisibleSpan());
+
+        // restore the clean state again
+        this.gridLayer.loadState("clean", properties);
+
+        verifyCleanState();
+    }
+
+    @Test
+    public void shouldLoadStateWithHiddenFirstColumn() {
+        verifyCleanState();
+
+        Properties properties = new Properties();
+        this.gridLayer.saveState("clean", properties);
+
+        // remove all groups
+        this.gridLayer.doCommand(new RemoveColumnGroupCommand(0));
+        this.gridLayer.doCommand(new RemoveColumnGroupCommand(4));
+        this.gridLayer.doCommand(new RemoveColumnGroupCommand(8));
+        this.gridLayer.doCommand(new RemoveColumnGroupCommand(11));
+
+        assertEquals(0, this.columnGroupHeaderLayer.getGroupModel().getGroups().size());
+
+        // create column group
+        this.selectionLayer.selectColumn(2, 0, true, true);
+        this.selectionLayer.selectColumn(3, 0, true, true);
+        this.selectionLayer.selectColumn(4, 0, true, true);
+        this.gridLayer.doCommand(new CreateColumnGroupCommand("Test"));
+
+        // hide first column in group
+        this.gridLayer.doCommand(new ColumnHideCommand(this.selectionLayer, 2));
+
+        Group group = this.columnGroupHeaderLayer.getGroupByPosition(2);
+        assertNotNull(group);
+        assertEquals("Test", group.getName());
+        assertFalse(group.isCollapsed());
+        assertEquals(2, group.getStartIndex());
+        assertEquals(3, group.getVisibleStartIndex());
+        assertEquals(2, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        this.gridLayer.saveState("one", properties);
+
+        // restore the clean state again
+        this.gridLayer.loadState("clean", properties);
+
+        verifyCleanState();
+
+        // load hidden
+        this.gridLayer.loadState("one", properties);
+
+        group = this.columnGroupHeaderLayer.getGroupByPosition(2);
+        assertNotNull(group);
+        assertEquals("Test", group.getName());
+        assertFalse(group.isCollapsed());
+        assertEquals(2, group.getStartIndex());
+        assertEquals(3, group.getVisibleStartIndex());
+        assertEquals(2, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        // collapse
+        this.gridLayer.doCommand(new ColumnGroupExpandCollapseCommand(this.selectionLayer, 2));
+
+        group = this.columnGroupHeaderLayer.getGroupByPosition(2);
+        assertNotNull(group);
+        assertEquals("Test", group.getName());
+        assertTrue(group.isCollapsed());
+        assertEquals(2, group.getStartIndex());
+        assertEquals(3, group.getVisibleStartIndex());
+        assertEquals(2, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(1, group.getVisibleSpan());
+
+        // restore the clean state again
+        this.gridLayer.loadState("clean", properties);
+
+        verifyCleanState();
+    }
+
+    @Test
+    public void shouldLoadStateWithCollapsedNonConsecutive() {
+        verifyCleanState();
+
+        Properties properties = new Properties();
+        this.gridLayer.saveState("clean", properties);
+
+        // remove all groups
+        this.gridLayer.doCommand(new RemoveColumnGroupCommand(0));
+        this.gridLayer.doCommand(new RemoveColumnGroupCommand(4));
+        this.gridLayer.doCommand(new RemoveColumnGroupCommand(8));
+        this.gridLayer.doCommand(new RemoveColumnGroupCommand(11));
+
+        assertEquals(0, this.columnGroupHeaderLayer.getGroupModel().getGroups().size());
+
+        // create column group
+        this.selectionLayer.selectColumn(2, 0, false, true);
+        this.selectionLayer.selectColumn(3, 0, false, true);
+        this.selectionLayer.selectColumn(5, 0, false, true);
+        this.selectionLayer.selectColumn(6, 0, false, true);
+        this.gridLayer.doCommand(new CreateColumnGroupCommand("Test"));
+
+        Group group = this.columnGroupHeaderLayer.getGroupByPosition(2);
+        assertNotNull(group);
+        assertEquals("Test", group.getName());
+        assertFalse(group.isCollapsed());
+        assertEquals(2, group.getStartIndex());
+        assertEquals(2, group.getVisibleStartIndex());
+        assertEquals(2, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(4, group.getVisibleSpan());
+
+        // collapse
+        this.gridLayer.doCommand(new ColumnGroupExpandCollapseCommand(this.selectionLayer, 2));
+
+        group = this.columnGroupHeaderLayer.getGroupByPosition(2);
+        assertNotNull(group);
+        assertEquals("Test", group.getName());
+        assertTrue(group.isCollapsed());
+        assertEquals(2, group.getStartIndex());
+        assertEquals(2, group.getVisibleStartIndex());
+        assertEquals(2, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(1, group.getVisibleSpan());
+
+        this.gridLayer.saveState("one", properties);
+
+        // restore the clean state again
+        this.gridLayer.loadState("clean", properties);
+
+        verifyCleanState();
+
+        // load collapsed
+        this.gridLayer.loadState("one", properties);
+
+        group = this.columnGroupHeaderLayer.getGroupByPosition(2);
+        assertNotNull(group);
+        assertEquals("Test", group.getName());
+        assertTrue(group.isCollapsed());
+        assertEquals(2, group.getStartIndex());
+        assertEquals(2, group.getVisibleStartIndex());
+        assertEquals(2, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(1, group.getVisibleSpan());
 
         // restore the clean state again
         this.gridLayer.loadState("clean", properties);
