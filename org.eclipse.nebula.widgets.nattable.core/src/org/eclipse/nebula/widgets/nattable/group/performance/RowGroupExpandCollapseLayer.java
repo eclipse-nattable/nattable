@@ -28,9 +28,10 @@ import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.RowGroupCollapseCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.RowGroupExpandCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.UpdateRowGroupCollapseCommand;
+import org.eclipse.nebula.widgets.nattable.group.performance.event.RowGroupCollapseEvent;
+import org.eclipse.nebula.widgets.nattable.group.performance.event.RowGroupExpandEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.AbstractRowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
-import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
@@ -73,7 +74,7 @@ public class RowGroupExpandCollapseLayer extends AbstractRowHideShowLayer {
 
             if (!shownIndexes.isEmpty()) {
                 invalidateCache();
-                fireLayerEvent(new ShowRowPositionsEvent(this, getRowPositionsByIndexes(shownIndexes.toArray())));
+                fireLayerEvent(new RowGroupExpandEvent(this, getRowPositionsByIndexes(shownIndexes.toArray())));
             } else {
                 fireLayerEvent(new VisualRefreshEvent(this));
             }
@@ -108,15 +109,16 @@ public class RowGroupExpandCollapseLayer extends AbstractRowHideShowLayer {
                 }
 
                 modifyForVisible(group, rowIndexes);
-                this.hidden.put(group, rowIndexes);
 
                 hiddenPositions.addAll(getRowPositionsByIndexes(rowIndexes.toArray()));
                 hiddenIndexes.addAll(rowIndexes);
+
+                this.hidden.put(group, rowIndexes);
             }
 
             if (!hiddenPositions.isEmpty()) {
                 invalidateCache();
-                fireLayerEvent(new HideRowPositionsEvent(this, hiddenPositions.toArray(), hiddenIndexes.toArray()));
+                fireLayerEvent(new RowGroupCollapseEvent(this, hiddenPositions.toArray(), hiddenIndexes.toArray()));
             } else {
                 fireLayerEvent(new VisualRefreshEvent(this));
             }

@@ -27,9 +27,10 @@ import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroupCollapseCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroupExpandCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.UpdateColumnGroupCollapseCommand;
+import org.eclipse.nebula.widgets.nattable.group.performance.event.ColumnGroupCollapseEvent;
+import org.eclipse.nebula.widgets.nattable.group.performance.event.ColumnGroupExpandEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.AbstractColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideColumnPositionsEvent;
-import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowColumnPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
@@ -72,7 +73,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
 
             if (!shownIndexes.isEmpty()) {
                 invalidateCache();
-                fireLayerEvent(new ShowColumnPositionsEvent(this, getColumnPositionsByIndexes(shownIndexes.toArray())));
+                fireLayerEvent(new ColumnGroupExpandEvent(this, getColumnPositionsByIndexes(shownIndexes.toArray())));
             } else {
                 fireLayerEvent(new VisualRefreshEvent(this));
             }
@@ -107,15 +108,16 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
                 }
 
                 modifyForVisible(group, columnIndexes);
-                this.hidden.put(group, columnIndexes);
 
                 hiddenPositions.addAll(getColumnPositionsByIndexes(columnIndexes.toArray()));
                 hiddenIndexes.addAll(columnIndexes);
+
+                this.hidden.put(group, columnIndexes);
             }
 
             if (!hiddenPositions.isEmpty()) {
                 invalidateCache();
-                fireLayerEvent(new HideColumnPositionsEvent(this, hiddenPositions.toArray(), hiddenIndexes.toArray()));
+                fireLayerEvent(new ColumnGroupCollapseEvent(this, hiddenPositions.toArray(), hiddenIndexes.toArray()));
             } else {
                 fireLayerEvent(new VisualRefreshEvent(this));
             }

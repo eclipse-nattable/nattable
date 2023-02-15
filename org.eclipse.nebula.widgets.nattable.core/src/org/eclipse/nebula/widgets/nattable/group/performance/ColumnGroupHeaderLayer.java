@@ -47,6 +47,7 @@ import org.eclipse.nebula.widgets.nattable.group.performance.command.GroupMultiC
 import org.eclipse.nebula.widgets.nattable.group.performance.command.UpdateColumnGroupCollapseCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.config.DefaultColumnGroupHeaderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.group.performance.config.GroupHeaderConfigLabels;
+import org.eclipse.nebula.widgets.nattable.group.performance.event.ColumnGroupCollapseEvent;
 import org.eclipse.nebula.widgets.nattable.group.performance.painter.ColumnGroupHeaderGridLineCellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -875,7 +876,9 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
             int level = getLevelForRowPosition(rowPosition);
             Group group = getGroupByPosition(level, columnPosition);
             if (group != null) {
-                int start = convertColumnPositionUpwards(getPositionLayer().getColumnPositionByIndex(group.getVisibleStartIndex()));
+                int start = this.compositeFreezeLayer == null
+                        ? convertColumnPositionUpwards(getPositionLayer().getColumnPositionByIndex(group.getVisibleStartIndex()))
+                        : this.compositeFreezeLayer.getColumnPositionByIndex(group.getVisibleStartIndex());
 
                 // check if there is a level above that does not have a group
                 int row = rowPosition;
@@ -930,7 +933,9 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                 }
 
                 if (subGroup != null) {
-                    int start = convertColumnPositionUpwards(getPositionLayer().getColumnPositionByIndex(subGroup.getVisibleStartIndex()));
+                    int start = this.compositeFreezeLayer == null
+                            ? convertColumnPositionUpwards(getPositionLayer().getColumnPositionByIndex(subGroup.getVisibleStartIndex()))
+                            : this.compositeFreezeLayer.getColumnPositionByIndex(subGroup.getVisibleStartIndex());
                     int columnSpan = getColumnSpan(subGroup);
 
                     // if the header should be shown always, e.g. because of
@@ -2334,8 +2339,9 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                         // check. reason is that the ranges are modified to be
                         // always in a valid range, and that could cause a loss
                         // of hidden positions on conversion
-                        if (event instanceof ColumnStructuralChangeEvent
-                                && ((ColumnStructuralChangeEvent) event).getColumnIndexes().length > deletedPositions.length) {
+                        if ((event instanceof ColumnGroupCollapseEvent)
+                                || (event instanceof ColumnStructuralChangeEvent
+                                        && ((ColumnStructuralChangeEvent) event).getColumnIndexes().length > deletedPositions.length)) {
                             // this triggers a consistency check
                             handleDeleteDiffs(new int[0]);
                         } else {
