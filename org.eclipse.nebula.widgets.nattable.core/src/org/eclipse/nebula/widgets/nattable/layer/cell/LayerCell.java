@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,20 +27,23 @@ public class LayerCell extends AbstractLayerCell {
     private int columnSpan;
     private int rowSpan;
 
-    public LayerCell(ILayer layer, int columnPosition, int rowPosition,
-            DataCell cell) {
-        this(layer, cell.columnPosition, cell.rowPosition, columnPosition,
-                rowPosition, cell.columnSpan, cell.rowSpan);
+    public LayerCell(ILayer layer, int columnPosition, int rowPosition, DataCell cell) {
+        this(layer, cell.columnPosition, cell.rowPosition, columnPosition, rowPosition, cell.columnSpan, cell.rowSpan);
     }
 
     public LayerCell(ILayer layer, int columnPosition, int rowPosition) {
-        this(layer, columnPosition, rowPosition, columnPosition, rowPosition,
-                1, 1);
+        this(layer, columnPosition, rowPosition, columnPosition, rowPosition, 1, 1);
     }
 
-    public LayerCell(ILayer layer, int originColumnPosition,
-            int originRowPosition, int columnPosition, int rowPosition,
-            int columnSpan, int rowSpan) {
+    public LayerCell(
+            ILayer layer,
+            int originColumnPosition,
+            int originRowPosition,
+            int columnPosition,
+            int rowPosition,
+            int columnSpan,
+            int rowSpan) {
+
         this.layer = layer;
 
         this.originColumnPosition = originColumnPosition;
@@ -126,6 +129,15 @@ public class LayerCell extends AbstractLayerCell {
             return false;
         if (this.rowSpan != other.rowSpan)
             return false;
+
+        Object thisData = this.getDataValue();
+        Object otherData = other.getDataValue();
+        if ((thisData != null && otherData == null)
+                || (thisData == null && otherData != null)
+                || (thisData != null && !thisData.equals(otherData))) {
+            return false;
+        }
+
         return true;
     }
 
@@ -138,6 +150,7 @@ public class LayerCell extends AbstractLayerCell {
         result = prime * result + this.originColumnPosition;
         result = prime * result + this.originRowPosition;
         result = prime * result + this.rowSpan;
+        result = prime * result + ((this.getDataValue() == null) ? 0 : this.getDataValue().hashCode());
         return result;
     }
 

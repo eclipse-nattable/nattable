@@ -902,7 +902,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                     }
                 }
 
-                return new LayerCell(
+                ILayerCell cell = new LayerCell(
                         this,
                         column,
                         start,
@@ -910,6 +910,12 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                         rowPosition,
                         columnSpan,
                         rowSpan);
+
+                if (this.compositeFreezeLayer != null) {
+                    cell = this.compositeFreezeLayer.modifyRowSpanLayerCell(cell);
+                }
+
+                return cell;
             } else {
                 // for the level there is no group, check if the level below has
                 // a group to calculate the row spanning

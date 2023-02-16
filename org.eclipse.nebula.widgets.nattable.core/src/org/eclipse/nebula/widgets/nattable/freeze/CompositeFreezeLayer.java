@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,6 +27,8 @@ import org.eclipse.nebula.widgets.nattable.group.command.ViewportSelectRowGroupC
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralChangeEvent;
@@ -193,6 +195,40 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
     }
 
     /**
+     * Modifies a column spanned cell in case the spanned cell is in the frozen
+     * area but the origin column is not visible as the frozen state was created
+     * in scrolled state.
+     *
+     * @param cell
+     *            The cell to check and modify.
+     * @return The given {@link ILayerCell} or a modified one in case it needs
+     *         to be updated.
+     *
+     * @since 2.1
+     */
+    public ILayerCell modifyColumnSpanLayerCell(ILayerCell cell) {
+        int startColumn = cell.getOriginColumnPosition();
+        int endColumn = cell.getOriginColumnPosition() + cell.getColumnSpan();
+        int startColumnLayout = getLayoutXByColumnPosition(startColumn);
+        int endColumnLayout = getLayoutXByColumnPosition(endColumn);
+
+        if (startColumnLayout > endColumnLayout || (startColumn < 0 && endColumn < 0)) {
+            int columnSpan = cell.getColumnSpan();
+            columnSpan -= this.freezeLayer.getTopLeftPosition().columnPosition;
+            return new LayerCell(
+                    cell.getLayer(),
+                    0,
+                    cell.getOriginRowPosition(),
+                    cell.getColumnPosition(),
+                    cell.getRowPosition(),
+                    columnSpan,
+                    cell.getRowSpan());
+        }
+
+        return cell;
+    }
+
+    /**
      * This method is used to determine the bounds of a cell with column span in
      * case of an active freeze. This is needed because column positions can be
      * ambiguous if the start column of a spanned cell is moved below the frozen
@@ -215,8 +251,21 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
         int startColumnLayout = getLayoutXByColumnPosition(startColumn);
         int endColumnLayout = getLayoutXByColumnPosition(endColumn);
 
+        if (startColumnLayout > endColumnLayout && startColumn < 0) {
+            startColumnLayout = endColumnLayout;
+            startColumn = 0;
+        }
+
         int start = startColumn;
-        int end = isFrozen() && endColumnLayout == 1 ? endColumn - this.viewportLayer.getScrollableLayer().getColumnPositionByX(this.viewportLayer.getOrigin().getX()) : endColumn;
+        int end = endColumn;
+        if (isFrozen() && endColumnLayout == 1) {
+            int scrollAdjust = 0;
+            if (this.freezeLayer.getTopLeftPosition().columnPosition >= 0) {
+                scrollAdjust = this.freezeLayer.getUnderlyingLayerByPosition(0, 0).getStartXOfColumnPosition(this.freezeLayer.getTopLeftPosition().columnPosition);
+            }
+            end = endColumn - this.viewportLayer.getScrollableLayer().getColumnPositionByX(this.viewportLayer.getOrigin().getX() - scrollAdjust);
+        }
+
         ILayer startLayer = null;
 
         int startX = 0;
@@ -226,15 +275,15 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
             // position is, we use the same layout for calculating start/end
 
             if (endColumnLayout == 0 || startColumn == columnPosition) {
-                startX = getStartXOfColumnPosition(startColumn);
+                startX = getStartXOfColumnPosition(startColumnLayout, startColumn);
                 int column = startColumn;
                 for (; column <= endColumn; column++) {
                     width += getColumnWidthByPosition(column);
                 }
             } else {
                 startLayer = getChildLayerByLayoutCoordinate(endColumnLayout, 1);
-                start = start - this.viewportLayer.getMinimumOriginColumnPosition();
-                end = endColumn - this.viewportLayer.getMinimumOriginColumnPosition();
+                start = start - this.viewportLayer.getMinimumOriginColumnPosition() + this.freezeLayer.getTopLeftPosition().columnPosition;
+                end = endColumn - this.viewportLayer.getMinimumOriginColumnPosition() + this.freezeLayer.getTopLeftPosition().columnPosition;
                 startX = this.freezeLayer.getWidth() + startLayer.getStartXOfColumnPosition(start);
                 int column = start;
                 for (; column <= end; column++) {
@@ -255,6 +304,58 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
         }
 
         return new int[] { startX, width };
+    }
+
+    /**
+     * Specialization of {@link #getStartXOfColumnPosition(int)} that avoids
+     * resolving the child layer in the composition structure.
+     *
+     * @param layoutX
+     *            The x position of the layer in the composition structure
+     *            (either frozen area or non-frozen area).
+     * @param columnPosition
+     *            The column position in the layer.
+     * @return The x offset of the column in the specified layer in the
+     *         composition structure, or -1.
+     */
+    private int getStartXOfColumnPosition(int layoutX, int columnPosition) {
+        ILayer childLayer = this.getChildLayerLayout()[layoutX][0];
+        int childColumnPosition = columnPosition - getColumnPositionOffset(layoutX);
+        return getWidthOffset(layoutX) + childLayer.getStartXOfColumnPosition(childColumnPosition);
+    }
+
+    /**
+     * Modifies a row spanned cell in case the spanned cell is in the frozen
+     * area but the origin row is not visible as the frozen state was created in
+     * scrolled state.
+     *
+     * @param cell
+     *            The cell to check and modify.
+     * @return The given {@link ILayerCell} or a modified one in case it needs
+     *         to be updated.
+     *
+     * @since 2.1
+     */
+    public ILayerCell modifyRowSpanLayerCell(ILayerCell cell) {
+        int startRow = cell.getOriginRowPosition();
+        int endRow = cell.getOriginRowPosition() + cell.getRowSpan();
+        int startRowLayout = getLayoutYByRowPosition(startRow);
+        int endRowLayout = getLayoutYByRowPosition(endRow);
+
+        if (startRowLayout > endRowLayout || (startRow < 0 && endRow < 0)) {
+            int rowSpan = cell.getRowSpan();
+            rowSpan -= this.freezeLayer.getTopLeftPosition().rowPosition;
+            return new LayerCell(
+                    cell.getLayer(),
+                    cell.getOriginColumnPosition(),
+                    0,
+                    cell.getColumnPosition(),
+                    cell.getRowPosition(),
+                    cell.getColumnSpan(),
+                    rowSpan);
+        }
+
+        return cell;
     }
 
     /**
@@ -280,8 +381,21 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
         int startRowLayout = getLayoutYByRowPosition(startRow);
         int endRowLayout = getLayoutYByRowPosition(endRow);
 
+        if (startRowLayout > endRowLayout && startRow < 0) {
+            startRowLayout = endRowLayout;
+            startRow = 0;
+        }
+
         int start = startRow;
-        int end = isFrozen() && endRowLayout == 1 ? endRow - this.viewportLayer.getScrollableLayer().getRowPositionByY(this.viewportLayer.getOrigin().getY()) : endRow;
+        int end = endRow;
+        if (isFrozen() && endRowLayout == 1) {
+            int scrollAdjust = 0;
+            if (this.freezeLayer.getTopLeftPosition().rowPosition >= 0) {
+                scrollAdjust = this.freezeLayer.getUnderlyingLayerByPosition(0, 0).getStartYOfRowPosition(this.freezeLayer.getTopLeftPosition().rowPosition);
+            }
+            end = endRow - this.viewportLayer.getScrollableLayer().getRowPositionByY(this.viewportLayer.getOrigin().getY() - scrollAdjust);
+        }
+
         ILayer startLayer = null;
 
         int startY = 0;
@@ -291,15 +405,15 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
             // position is, we use the same layout for calculating start/end
 
             if (endRowLayout == 0 || startRow == rowPosition) {
-                startY = getStartYOfRowPosition(startRow);
+                startY = getStartYOfRowPosition(startRowLayout, startRow);
                 int row = startRow;
                 for (; row <= endRow; row++) {
                     height += getRowHeightByPosition(row);
                 }
             } else {
                 startLayer = getChildLayerByLayoutCoordinate(1, endRowLayout);
-                start = start - this.viewportLayer.getMinimumOriginRowPosition();
-                end = endRow - this.viewportLayer.getMinimumOriginRowPosition();
+                start = start - this.viewportLayer.getMinimumOriginRowPosition() + this.freezeLayer.getTopLeftPosition().rowPosition;
+                end = endRow - this.viewportLayer.getMinimumOriginRowPosition() + this.freezeLayer.getTopLeftPosition().rowPosition;
                 startY = this.freezeLayer.getHeight() + startLayer.getStartYOfRowPosition(start);
                 int row = start;
                 for (; row <= end; row++) {
@@ -320,6 +434,24 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
         }
 
         return new int[] { startY, height };
+    }
+
+    /**
+     * Specialization of {@link #getStartYOfRowPosition(int)} that avoids
+     * resolving the child layer in the composition structure.
+     *
+     * @param layoutY
+     *            The y position of the layer in the composition structure
+     *            (either frozen area or non-frozen area).
+     * @param rowPosition
+     *            The row position in the layer.
+     * @return The y offset of the row in the specified layer in the composition
+     *         structure, or -1.
+     */
+    private int getStartYOfRowPosition(int layoutY, int rowPosition) {
+        ILayer childLayer = this.getChildLayerLayout()[0][layoutY];
+        int childRowPosition = rowPosition - getRowPositionOffset(layoutY);
+        return getHeightOffset(layoutY) + childLayer.getStartYOfRowPosition(childRowPosition);
     }
 
     // Persistence

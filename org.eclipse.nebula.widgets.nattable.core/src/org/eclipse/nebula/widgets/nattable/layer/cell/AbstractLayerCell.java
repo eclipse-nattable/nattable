@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Edwin Park and others.
+ * Copyright (c) 2012, 2023 Edwin Park and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -39,11 +39,8 @@ public abstract class AbstractLayerCell implements ILayerCell {
     public DisplayMode getDisplayMode() {
         if (!this.isDisplayModeCached) {
             this.isDisplayModeCached = true;
-
-            this.displayMode = getLayer().getDisplayModeByPosition(
-                    getColumnPosition(), getRowPosition());
+            this.displayMode = getLayer().getDisplayModeByPosition(getColumnPosition(), getRowPosition());
         }
-
         return this.displayMode;
     }
 
@@ -51,11 +48,8 @@ public abstract class AbstractLayerCell implements ILayerCell {
     public LabelStack getConfigLabels() {
         if (!this.isConfigLabelsCached) {
             this.isConfigLabelsCached = true;
-
-            this.configLabels = getLayer().getConfigLabelsByPosition(
-                    getColumnPosition(), getRowPosition());
+            this.configLabels = getLayer().getConfigLabelsByPosition(getColumnPosition(), getRowPosition());
         }
-
         return this.configLabels;
     }
 
@@ -63,11 +57,8 @@ public abstract class AbstractLayerCell implements ILayerCell {
     public Object getDataValue() {
         if (!this.isDataValueCached) {
             this.isDataValueCached = true;
-
-            this.dataValue = getLayer().getDataValueByPosition(getColumnPosition(),
-                    getRowPosition());
+            this.dataValue = getLayer().getDataValueByPosition(getColumnPosition(), getRowPosition());
         }
-
         return this.dataValue;
     }
 
@@ -76,11 +67,8 @@ public abstract class AbstractLayerCell implements ILayerCell {
         if (!this.isBoundsCached) {
             this.isBoundsCached = true;
 
-            this.bounds = getLayer().getBoundsByPosition(getColumnPosition(),
-                    getRowPosition());
+            this.bounds = getLayer().getBoundsByPosition(getColumnPosition(), getRowPosition());
         }
-
         return this.bounds;
     }
-
 }

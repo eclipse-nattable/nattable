@@ -323,8 +323,14 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
         Set<ILayerCell> selectedCells = new LinkedHashSet<>();
 
         PositionCoordinate[] selectedCoords = getSelectedCellPositions();
+        Set<MutableIntList> unique = new LinkedHashSet<>();
         for (PositionCoordinate coord : selectedCoords) {
-            selectedCells.add(getCellByPosition(coord.columnPosition, coord.rowPosition));
+            ILayerCell cell = getCellByPosition(coord.columnPosition, coord.rowPosition);
+            MutableIntList cellConfig = IntLists.mutable.of(cell.getOriginColumnPosition(), cell.getOriginRowPosition(), cell.getColumnSpan(), cell.getRowSpan());
+            if (!unique.contains(cellConfig)) {
+                unique.add(cellConfig);
+                selectedCells.add(cell);
+            }
         }
 
         return selectedCells;
