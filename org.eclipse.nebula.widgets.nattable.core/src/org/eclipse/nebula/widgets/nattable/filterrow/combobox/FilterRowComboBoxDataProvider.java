@@ -452,6 +452,11 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
         // should never reach here. But in case someone fires
         // FilterAppliedEvents programmatically from the body layer stack, we
         // need to guard the execution to avoid exceptions.
+        // Note:
+        // The FilterAppliedEvent is handled in a LayerListener instead of a
+        // dedicated ILayerEventHandler as there can only be one
+        // ILayerEventHandler registered per layer, which could interfere with
+        // user code.
         if (event instanceof FilterAppliedEvent && this.filterCollection != null) {
             // only update the last applied filter column if
             // - the editor is a FilterRowComboBoxCellEditor

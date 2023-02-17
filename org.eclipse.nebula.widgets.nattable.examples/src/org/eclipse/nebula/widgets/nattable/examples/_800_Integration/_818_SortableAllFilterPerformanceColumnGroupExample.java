@@ -27,6 +27,7 @@ import org.eclipse.jface.fieldassist.SimpleContentProposalProvider;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.columnChooser.command.DisplayColumnChooserCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -62,6 +63,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSort
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxFilterRowHeaderComposite;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxGlazedListsWithExcludeFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.FilterRowUtils;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.GlazedListsFilterRowComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.MarkupDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.RegexMarkupValue;
 import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.RichTextCellPainter;
@@ -275,17 +277,8 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
         // distincts the empty string and null from the collected values. This
         // way null and "" entries in the collection are treated the same way
         // and there is only a single "empty" entry in the dropdown.
-
-        // Note:
-        // The usage of the GlazedListsFilterRowComboBoxDataProvider is not
-        // useful in combination with combobox filters that collect the contents
-        // from the filter list. Sort operations for example are also list
-        // changes that would cause clearing the caches and inserting values in
-        // the background to the list would not be able to determine changes as
-        // the new rows are not part of the previous remembered collection
-        // state.
         FilterRowComboBoxDataProvider<PersonWithAddress> filterRowComboBoxDataProvider =
-                new FilterRowComboBoxDataProvider<>(
+                new GlazedListsFilterRowComboBoxDataProvider<>(
                         bodyLayerStack.getGlazedListsEventLayer(),
                         bodyLayerStack.getSortedList(),
                         columnPropertyAccessor);
@@ -409,6 +402,7 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                 return new PopupMenuBuilder(natTable)
                         .withHideColumnMenuItem()
                         .withShowAllColumnsMenuItem()
+                        .withColumnChooserMenuItem()
                         .withCreateColumnGroupMenuItem()
                         .withUngroupColumnsMenuItem()
                         .withAutoResizeSelectedColumnsMenuItem()
@@ -445,6 +439,18 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                 filterRowHeaderLayer.getFilterRowDataLayer().getFilterRowDataProvider()));
 
         natTable.addConfiguration(new ScalingUiBindingConfiguration(natTable));
+
+        // Register column chooser
+        DisplayColumnChooserCommandHandler columnChooserCommandHandler =
+                new DisplayColumnChooserCommandHandler(
+                        bodyLayerStack.getColumnHideShowLayer(),
+                        columnHeaderLayer,
+                        columnHeaderDataLayer,
+                        columnGroupHeaderLayer,
+                        false);
+
+        bodyLayerStack.registerCommandHandler(columnChooserCommandHandler);
+
         natTable.configure();
 
         // The painter instances in a theme configuration are created on demand
@@ -609,6 +615,33 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
             }
         });
 
+        Button replaceContentButton = new Button(buttonPanel, SWT.PUSH);
+        replaceContentButton.setText("Replace");
+        replaceContentButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Address address1 = new Address();
+                address1.setStreet("Some Street");
+                address1.setHousenumber(42);
+                address1.setPostalCode(12345);
+                address1.setCity("In the clouds");
+                PersonWithAddress ralph = new PersonWithAddress(42, "Ralph",
+                        "Wiggum", Gender.MALE, false, new Date(), address1);
+
+                Address address2 = new Address();
+                address2.setStreet("Evergreen Terrace");
+                address2.setHousenumber(742);
+                address2.setPostalCode(54321);
+                address2.setCity("Springfield");
+                PersonWithAddress lisa = new PersonWithAddress(23, "Lisa",
+                        "Simpson", Gender.FEMALE, false, new Date(), address2);
+
+                bodyLayerStack.getSortedList().clear();
+                bodyLayerStack.getSortedList().add(ralph);
+                bodyLayerStack.getSortedList().add(lisa);
+            }
+        });
+
         return container;
     }
 
@@ -769,6 +802,8 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
         private final DataLayer bodyDataLayer;
         private final GlazedListsEventLayer<T> glazedListsEventLayer;
 
+        private final ColumnHideShowLayer columnHideShowLayer;
+
         private final SelectionLayer selectionLayer;
 
         public BodyLayerStack(List<T> values, IColumnPropertyAccessor<T> columnPropertyAccessor) {
@@ -793,10 +828,10 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                     new GlazedListsEventLayer<>(this.bodyDataLayer, this.filterList);
 
             ColumnReorderLayer reorderLayer = new ColumnReorderLayer(this.glazedListsEventLayer);
-            ColumnHideShowLayer hideShowLayer = new ColumnHideShowLayer(reorderLayer);
+            this.columnHideShowLayer = new ColumnHideShowLayer(reorderLayer);
 
             ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer =
-                    new ColumnGroupExpandCollapseLayer(hideShowLayer);
+                    new ColumnGroupExpandCollapseLayer(this.columnHideShowLayer);
 
             this.selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
             ViewportLayer viewportLayer = new ViewportLayer(this.selectionLayer);
@@ -830,6 +865,10 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
 
         public GlazedListsEventLayer<T> getGlazedListsEventLayer() {
             return this.glazedListsEventLayer;
+        }
+
+        public ColumnHideShowLayer getColumnHideShowLayer() {
+            return this.columnHideShowLayer;
         }
     }
 

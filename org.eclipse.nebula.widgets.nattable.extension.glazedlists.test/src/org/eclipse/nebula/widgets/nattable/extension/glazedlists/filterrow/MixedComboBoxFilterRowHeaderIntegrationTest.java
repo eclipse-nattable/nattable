@@ -1392,10 +1392,9 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
                 "all values selected");
     }
 
-    // the combination of listchanges = true and caching = true will fail
-    // this is because sorting is a list change which causes clearing the cache
     @ParameterizedTest(name = "listchanges={0}, caching={1}")
     @CsvSource({
+            "true, true",
             "true, false",
             "false, true",
             "false, false"
