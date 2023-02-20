@@ -114,6 +114,9 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
 
     private GlazedListsSortModel<PersonWithAddress> sortModel;
 
+    List<PersonWithAddress> values = createPersons(0);
+    List<PersonWithAddress> alternativeValues = createAlternativePersons();
+
     public void setupFixture(boolean handleListChanges, boolean caching) {
         // create a new ConfigRegistry which will be needed for GlazedLists
         // handling
@@ -146,13 +149,11 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
         final IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
                 new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
 
-        List<PersonWithAddress> values = createPersons(0);
-
         // to enable the group by summary feature, the GroupByDataLayer needs to
         // know the ConfigRegistry
         this.bodyLayer =
                 new BodyLayerStack<>(
-                        values,
+                        this.values,
                         columnPropertyAccessor,
                         configRegistry);
 
@@ -1494,6 +1495,98 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
         this.filterRowHeaderLayer.getFilterStrategy().clearStaticFilter();
     }
 
+    // the following test only covers the handleListChanges==true cases, as
+    // without it there is no listener for the structural changes
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, false",
+            "true, true",
+    })
+    public void shouldUpdateComboBoxContentOnStructuralChanges(boolean handleListChanges, boolean caching) throws InterruptedException {
+        setupFixture(handleListChanges, caching);
+
+        // first load values
+        List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        List<?> streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+
+        assertTrue(ObjectUtils.collectionsEqual(LASTNAMES, lastnames));
+        assertTrue(ObjectUtils.collectionsEqual(STREETS, streets));
+
+        // change the collection
+        this.bodyLayer.getSortedList().clear();
+        this.bodyLayer.getSortedList().addAll(this.alternativeValues);
+
+        Thread.sleep(200);
+
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Muntz", "Wiggum"), lastnames));
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "Fish Smell Drive"), streets));
+
+        // change the collection back
+        this.bodyLayer.getSortedList().clear();
+        this.bodyLayer.getSortedList().addAll(this.values);
+    }
+
+    // the following test only covers the handleListChanges==true and
+    // caching==true, as without it there is no listener for the structural
+    // changes and there is no cache update that triggers an update to the
+    // filter
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+    })
+    public void shouldUpdateFilterAndComboBoxContentOnStructuralChangesWithAppliedFilter(boolean handleListChanges, boolean caching) throws InterruptedException {
+        setupFixture(handleListChanges, caching);
+
+        // first load values
+        List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        Object lastnameFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1);
+        List<?> streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+
+        // apply a filter
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 1, new ArrayList<>(Arrays.asList("Simpson"))));
+
+        Thread.sleep(200);
+
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        lastnameFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1);
+        assertTrue(ObjectUtils.collectionsEqual(LASTNAMES, lastnames));
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), (Collection<?>) lastnameFilter), "the reduced collection");
+        assertFalse(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        lastnameFilter,
+                        this.filterRowComboBoxDataProvider),
+                "all values selected");
+
+        // change the collection
+        this.bodyLayer.getSortedList().clear();
+        this.bodyLayer.getSortedList().addAll(this.alternativeValues);
+
+        Thread.sleep(200);
+
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        lastnameFilter = this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1);
+        streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Muntz", "Wiggum"), lastnames));
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "Fish Smell Drive"), streets));
+
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Muntz", "Wiggum"), (Collection<?>) lastnameFilter), "the reduced collection");
+        assertTrue(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        lastnameFilter,
+                        this.filterRowComboBoxDataProvider),
+                "not all values selected");
+
+        // change the collection back
+        this.bodyLayer.getSortedList().clear();
+        this.bodyLayer.getSortedList().addAll(this.values);
+    }
+
     private static List<String> LASTNAMES = Arrays.asList("Simpson", "Flanders", "Leonard", "Carlson", "Lovejoy", null);
     private static List<String> STREETS = Arrays.asList("Evergreen Terrace", "South Street", "Main Street");
     private static List<String> CITIES = Arrays.asList("Springfield", "Shelbyville", "Ogdenville");
@@ -1616,6 +1709,40 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
                 main));
         return result;
 
+    }
+
+    private static List<PersonWithAddress> createAlternativePersons() {
+        List<PersonWithAddress> result = new ArrayList<>();
+
+        for (int i = 0; i < 10; i++) {
+            Address address = new Address();
+            address.setStreet("Evergreen Terrace");
+            address.setHousenumber(732);
+            address.setPostalCode(54321);
+            address.setCity("Springfield");
+            result.add(new PersonWithAddress(i,
+                    "Ralph", "Wiggum", Gender.MALE, false, new Date(),
+                    address));
+            result.add(new PersonWithAddress(i,
+                    "Clancy", "Wiggum", Gender.MALE, true, new Date(),
+                    address));
+            result.add(new PersonWithAddress(i,
+                    "Sarah", "Wiggum", Gender.FEMALE, true, new Date(),
+                    address));
+        }
+
+        for (int i = 40; i < 50; i++) {
+            Address address = new Address();
+            address.setStreet("Fish Smell Drive");
+            address.setHousenumber(19);
+            address.setPostalCode(54321);
+            address.setCity("Springfield");
+            result.add(new PersonWithAddress(i,
+                    "Nelson", "Muntz", Gender.MALE, false, new Date(),
+                    address));
+        }
+
+        return result;
     }
 
     static class BodyLayerStack<T> extends AbstractLayerTransform {

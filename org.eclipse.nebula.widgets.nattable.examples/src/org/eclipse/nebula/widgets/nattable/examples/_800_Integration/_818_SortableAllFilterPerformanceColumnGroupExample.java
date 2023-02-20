@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.bindings.keys.ParseException;
@@ -168,6 +169,12 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
 
     private ArrayList<Serializable> filterExcludes = new ArrayList<>();
 
+    private List<PersonWithAddress> mixedPersons = PersonService.getPersonsWithAddress(100);
+    // private List<PersonWithAddress> mixedPersons = createPersons(0);
+    private List<PersonWithAddress> alternativePersons = createAlternativePersons();
+
+    private AtomicBoolean alternativePersonsActive = new AtomicBoolean(false);
+
     public static void main(String[] args) {
         StandaloneNatExampleRunner.run(new _818_SortableAllFilterPerformanceColumnGroupExample());
     }
@@ -226,8 +233,7 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
 
         final BodyLayerStack<PersonWithAddress> bodyLayerStack =
                 new BodyLayerStack<>(
-                        PersonService.getPersonsWithAddress(50),
-                        // createPersons(0),
+                        this.mixedPersons,
                         columnPropertyAccessor);
 
         // add some null and empty values to verify the correct handling
@@ -620,25 +626,14 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
         replaceContentButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                Address address1 = new Address();
-                address1.setStreet("Some Street");
-                address1.setHousenumber(42);
-                address1.setPostalCode(12345);
-                address1.setCity("In the clouds");
-                PersonWithAddress ralph = new PersonWithAddress(42, "Ralph",
-                        "Wiggum", Gender.MALE, false, new Date(), address1);
-
-                Address address2 = new Address();
-                address2.setStreet("Evergreen Terrace");
-                address2.setHousenumber(742);
-                address2.setPostalCode(54321);
-                address2.setCity("Springfield");
-                PersonWithAddress lisa = new PersonWithAddress(23, "Lisa",
-                        "Simpson", Gender.FEMALE, false, new Date(), address2);
-
                 bodyLayerStack.getSortedList().clear();
-                bodyLayerStack.getSortedList().add(ralph);
-                bodyLayerStack.getSortedList().add(lisa);
+                if (_818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersonsActive.compareAndSet(true, false)) {
+                    bodyLayerStack.getSortedList().addAll(_818_SortableAllFilterPerformanceColumnGroupExample.this.mixedPersons);
+                } else {
+                    _818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersonsActive.set(true);
+                    bodyLayerStack.getSortedList().addAll(_818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersons);
+                }
+
             }
         });
 
@@ -1489,6 +1484,40 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                             MouseEventMatcher.RIGHT_BUTTON),
                     new PopupMenuAction(this.bodyMenu));
         }
+    }
+
+    private List<PersonWithAddress> createAlternativePersons() {
+        List<PersonWithAddress> result = new ArrayList<>();
+
+        for (int i = 0; i < 100; i++) {
+            Address address = new Address();
+            address.setStreet("Evergreen Terrace");
+            address.setHousenumber(732);
+            address.setPostalCode(54321);
+            address.setCity("Springfield");
+            result.add(new PersonWithAddress(i,
+                    "Ralph", "Wiggum", Gender.MALE, false, new Date(),
+                    address));
+            result.add(new PersonWithAddress(i,
+                    "Clancy", "Wiggum", Gender.MALE, true, new Date(),
+                    address));
+            result.add(new PersonWithAddress(i,
+                    "Sarah", "Wiggum", Gender.FEMALE, true, new Date(),
+                    address));
+        }
+
+        for (int i = 400; i < 500; i++) {
+            Address address = new Address();
+            address.setStreet("Fish Smell Drive");
+            address.setHousenumber(19);
+            address.setPostalCode(54321);
+            address.setCity("Springfield");
+            result.add(new PersonWithAddress(i,
+                    "Nelson", "Muntz", Gender.MALE, false, new Date(),
+                    address));
+        }
+
+        return result;
     }
 
     private static List<PersonWithAddress> createPersons(int startId) {

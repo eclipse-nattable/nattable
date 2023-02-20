@@ -13,7 +13,10 @@
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;
 
 import java.util.Collection;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.edit.event.DataUpdateEvent;
@@ -50,10 +53,12 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
     private static final Logger LOG = LoggerFactory.getLogger(GlazedListsFilterRowComboBoxDataProvider.class);
 
     private static final Scheduler SCHEDULER = new Scheduler("GlazedListsFilterRowComboBoxDataProvider"); //$NON-NLS-1$
+    private final ScheduledFuture<?> future;
 
-    private AtomicBoolean changeHandlingProcessing = new AtomicBoolean(false);
+    private AtomicBoolean eventsToProcess = new AtomicBoolean(false);
 
     private EventList<T> baseEventList;
+    private final ReadWriteLock cacheLock = new ReentrantReadWriteLock();
 
     /**
      * @param bodyLayer
@@ -109,20 +114,30 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
         } else {
             LOG.error("baseCollection is not of type EventList. List changes can not be tracked."); //$NON-NLS-1$
         }
+
+        // Start the event conflation thread
+        this.future = SCHEDULER.scheduleAtFixedRate(() -> {
+            if (this.cachingEnabled
+                    && GlazedListsFilterRowComboBoxDataProvider.this.eventsToProcess.compareAndSet(true, false)) {
+                clearCache(true);
+            }
+        }, 0L, 100L);
     }
 
     @Override
     public void listChanged(ListEvent<T> listChanges) {
-        if (!this.changeHandlingProcessing.getAndSet(true)) {
-            // a new row was added or a row was deleted
-            SCHEDULER.schedule(() -> {
-                try {
-                    clearCache(true);
-                } finally {
-                    GlazedListsFilterRowComboBoxDataProvider.this.changeHandlingProcessing.set(false);
-                }
-            }, 100);
+        this.cacheLock.readLock().lock();
+        try {
+            // if the list is cleared, we drop the previous collection cache
+            // state
+            if (this.cachingEnabled && this.baseEventList.size() == 0) {
+                setLastFilter(-1, null);
+            }
+        } finally {
+            this.cacheLock.readLock().unlock();
         }
+
+        this.eventsToProcess.set(true);
     }
 
     @Override
@@ -146,6 +161,7 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
     @Override
     public void dispose() {
         super.dispose();
+        SCHEDULER.unschedule(this.future);
         SCHEDULER.shutdownNow();
     }
 
