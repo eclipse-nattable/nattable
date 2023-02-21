@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -212,11 +212,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         Color bg = cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
         org.eclipse.swt.graphics.Font font = cellStyle.getAttributeValue(CellStyleAttributes.FONT);
         FontData fontData = font.getFontData()[0];
-        String dataFormat = null;
-        if (exportDisplayValue instanceof Calendar
-                || exportDisplayValue instanceof Date) {
-            dataFormat = getDataFormatString(cell, configRegistry);
-        }
+        String dataFormat = getDataFormatString(exportDisplayValue, cell, configRegistry);
 
         int hAlign = HorizontalAlignmentEnum.getSWTStyle(cellStyle);
         int vAlign = VerticalAlignmentEnum.getSWTStyle(cellStyle);
@@ -399,6 +395,40 @@ public abstract class PoiExcelExporter implements ILayerExporter {
                     new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical, wrap, border), xlCellStyle);
         }
         return xlCellStyle;
+    }
+
+    /**
+     * @param exportDisplayValue
+     *            The value that should be exported.
+     * @param cell
+     *            The cell for which the data format needs to be determined.
+     * @param configRegistry
+     *            The ConfigRegistry needed to retrieve the configuration.
+     * @return The data format that should be used to format values in the
+     *         export.
+     * @since 2.1
+     */
+    protected String getDataFormatString(Object exportDisplayValue, ILayerCell cell, IConfigRegistry configRegistry) {
+        String dataFormat = null;
+        if (exportDisplayValue instanceof Calendar
+                || exportDisplayValue instanceof Date) {
+            dataFormat = getDataFormatString(cell, configRegistry);
+        } else {
+            dataFormat = configRegistry.getConfigAttribute(
+                    ExportConfigAttributes.DATE_FORMAT,
+                    DisplayMode.NORMAL,
+                    cell.getConfigLabels());
+
+            if (dataFormat == null) {
+                if (exportDisplayValue instanceof Integer) {
+                    return "0"; //$NON-NLS-1$
+                } else if (exportDisplayValue instanceof Double) {
+                    return "0.00"; //$NON-NLS-1$
+                }
+            }
+        }
+
+        return dataFormat;
     }
 
     /**

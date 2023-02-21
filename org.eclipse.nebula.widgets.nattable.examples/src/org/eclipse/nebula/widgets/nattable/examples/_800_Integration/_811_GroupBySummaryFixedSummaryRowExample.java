@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2021 Dirk Fauth and others.
+ * Copyright (c) 2014, 2023 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -36,6 +36,7 @@ import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.export.IExportFormatter;
 import org.eclipse.nebula.widgets.nattable.export.action.ExportAction;
 import org.eclipse.nebula.widgets.nattable.export.command.ExportCommandHandler;
 import org.eclipse.nebula.widgets.nattable.export.excel.DefaultExportFormatter;
@@ -49,11 +50,13 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupBy
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByModel;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByObject;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.ModernGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.SummationGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.extension.poi.HSSFExcelExporter;
 import org.eclipse.nebula.widgets.nattable.extension.poi.PoiExcelExporter;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultSummaryRowHeaderDataProvider;
@@ -71,6 +74,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AbstractOverrider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.GridLineCellLayerPainter;
@@ -277,8 +281,58 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
                 configRegistry.registerConfigAttribute(
                         ExportConfigAttributes.EXPORT_FORMATTER,
                         new DefaultExportFormatter());
+
+                IExportFormatter formatter = new IExportFormatter() {
+                    @Override
+                    public Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry) {
+                        // simply return the data value doing this avoids
+                        // the default conversion to string for export
+                        return cell.getDataValue();
+                    }
+                };
                 configRegistry.registerConfigAttribute(
-                        ExportConfigAttributes.DATE_FORMAT, "m/d/yy h:mm"); //$NON-NLS-1$
+                        ExportConfigAttributes.EXPORT_FORMATTER,
+                        formatter,
+                        DisplayMode.NORMAL,
+                        GridRegion.ROW_HEADER);
+
+                configRegistry.registerConfigAttribute(
+                        ExportConfigAttributes.EXPORT_FORMATTER,
+                        formatter,
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2);
+
+                configRegistry.registerConfigAttribute(
+                        ExportConfigAttributes.EXPORT_FORMATTER,
+                        formatter,
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
+
+                configRegistry.registerConfigAttribute(
+                        ExportConfigAttributes.EXPORT_FORMATTER,
+                        new IExportFormatter() {
+                            @Override
+                            public Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry) {
+                                if (cell.getDataValue() instanceof GroupByObject) {
+                                    return null;
+                                }
+                                return cell.getDataValue();
+                            }
+                        },
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 6);
+                configRegistry.registerConfigAttribute(
+                        ExportConfigAttributes.DATE_FORMAT,
+                        "m/d/yy", //$NON-NLS-1$
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 6);
+
+                configRegistry.registerConfigAttribute(
+                        ExportConfigAttributes.EXPORT_FORMATTER,
+                        formatter,
+                        DisplayMode.NORMAL,
+                        SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 3);
+
             }
 
             @Override
@@ -322,9 +376,11 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
                         DisplayMode.NORMAL,
                         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
 
+                DefaultDoubleDisplayConverter doubleDisplayConverter = new DefaultDoubleDisplayConverter();
+                doubleDisplayConverter.setMinimumFractionDigits(2);
                 configRegistry.registerConfigAttribute(
                         CellConfigAttributes.DISPLAY_CONVERTER,
-                        new DefaultDoubleDisplayConverter(),
+                        doubleDisplayConverter,
                         DisplayMode.NORMAL,
                         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
 
