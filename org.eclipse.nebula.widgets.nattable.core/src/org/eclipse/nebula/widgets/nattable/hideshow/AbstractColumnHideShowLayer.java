@@ -76,6 +76,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
             int[] fromPositions = reorderEvent.getBeforeFromColumnIndexes().stream()
                     .mapToInt(Integer::intValue)
                     .map(this::getColumnPositionByIndex)
+                    .filter(pos -> pos >= 0)
                     .toArray();
             Collection<Range> fromRanges = PositionUtil.getRanges(fromPositions);
 

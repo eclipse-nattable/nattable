@@ -76,6 +76,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
             int[] fromPositions = reorderEvent.getBeforeFromRowIndexes().stream()
                     .mapToInt(Integer::intValue)
                     .map(this::getRowPositionByIndex)
+                    .filter(pos -> pos >= 0)
                     .toArray();
             Collection<Range> fromRanges = PositionUtil.getRanges(fromPositions);
 
