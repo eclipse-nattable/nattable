@@ -79,7 +79,6 @@ import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterIconPainter;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterRowConfiguration;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxCellEditor;
-import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.filterrow.event.FilterAppliedEvent;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
@@ -102,6 +101,7 @@ import org.eclipse.nebula.widgets.nattable.hover.action.ClearHoverStylingAction;
 import org.eclipse.nebula.widgets.nattable.hover.config.ColumnHeaderResizeHoverBindings;
 import org.eclipse.nebula.widgets.nattable.hover.config.RowHeaderResizeHoverBindings;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
@@ -144,6 +144,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -169,7 +170,7 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
 
     private ArrayList<Serializable> filterExcludes = new ArrayList<>();
 
-    private List<PersonWithAddress> mixedPersons = PersonService.getPersonsWithAddress(100);
+    private List<PersonWithAddress> mixedPersons = PersonService.getPersonsWithAddress(1000);
     // private List<PersonWithAddress> mixedPersons = createPersons(0);
     private List<PersonWithAddress> alternativePersons = createAlternativePersons();
 
@@ -245,85 +246,13 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
         bodyLayerStack.getBodyDataLayer().setDataValue(2, 5, null);
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider =
-                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer =
-                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-
-        HoverLayer columnHoverLayer =
-                new HoverLayer(columnHeaderDataLayer, false);
-
-        ColumnHeaderLayer columnHeaderLayer =
-                new ColumnHeaderLayer(
-                        columnHoverLayer,
-                        bodyLayerStack,
-                        bodyLayerStack.getSelectionLayer(),
-                        false);
-
-        columnHeaderLayer.addConfiguration(
-                new ColumnHeaderResizeHoverBindings(columnHoverLayer));
-
-        SortHeaderLayer<PersonWithAddress> sortHeaderLayer =
-                new SortHeaderLayer<>(
-                        columnHeaderLayer,
-                        new GlazedListsSortModel<>(
-                                bodyLayerStack.getSortedList(),
-                                columnPropertyAccessor,
-                                configRegistry,
-                                columnHeaderDataLayer));
-
-        ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
-                sortHeaderLayer,
-                bodyLayerStack.getSelectionLayer());
-        columnGroupHeaderLayer.setCalculateHeight(true);
-
-        columnGroupHeaderLayer.addGroup("Person", 0, 4);
-
-        // Create a customized FilterRowComboBoxDataProvider that
-        // distincts the empty string and null from the collected values. This
-        // way null and "" entries in the collection are treated the same way
-        // and there is only a single "empty" entry in the dropdown.
-        FilterRowComboBoxDataProvider<PersonWithAddress> filterRowComboBoxDataProvider =
-                new GlazedListsFilterRowComboBoxDataProvider<>(
-                        bodyLayerStack.getGlazedListsEventLayer(),
-                        bodyLayerStack.getSortedList(),
-                        columnPropertyAccessor);
-        filterRowComboBoxDataProvider.setDistinctNullAndEmpty(true);
-        filterRowComboBoxDataProvider.setCachingEnabled(true);
-
-        ComboBoxGlazedListsWithExcludeFilterStrategy<PersonWithAddress> filterStrategy =
-                new ComboBoxGlazedListsWithExcludeFilterStrategy<>(
-                        filterRowComboBoxDataProvider,
-                        bodyLayerStack.getFilterList(),
+        ColumnHeaderLayerStack<PersonWithAddress> columnHeaderLayerStack =
+                new ColumnHeaderLayerStack<PersonWithAddress>(
+                        propertyNames,
+                        propertyToLabelMap,
                         columnPropertyAccessor,
+                        bodyLayerStack,
                         configRegistry);
-
-        // create the ComboBoxFilterRowHeaderComposite without the default
-        // configuration
-        ComboBoxFilterRowHeaderComposite<PersonWithAddress> filterRowHeaderLayer =
-                new ComboBoxFilterRowHeaderComposite<>(
-                        filterStrategy,
-                        filterRowComboBoxDataProvider,
-                        columnGroupHeaderLayer,
-                        columnHeaderDataProvider,
-                        configRegistry,
-                        false);
-
-        filterRowComboBoxDataProvider.setFilterCollection(bodyLayerStack.getFilterList(), filterRowHeaderLayer);
-
-        // add a default ComboBoxFilterRowConfiguration with an updated editor
-        // that shows a filter icon if a filter is applied
-        FilterRowComboBoxCellEditor filterEditor = new FilterRowComboBoxCellEditor(filterRowComboBoxDataProvider, 10);
-        filterEditor.configureDropdownFilter(true, true);
-        filterRowHeaderLayer.addConfiguration(
-                new ComboBoxFilterRowConfiguration(
-                        filterEditor,
-                        new ComboBoxFilterIconPainter(filterRowComboBoxDataProvider),
-                        filterRowComboBoxDataProvider));
-
-        // add the specialized configuration to the
-        // ComboBoxFilterRowHeaderComposite
-        filterRowHeaderLayer.addConfiguration(new FilterRowConfiguration());
 
         // build the row header layer
         IDataProvider rowHeaderDataProvider =
@@ -348,7 +277,7 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
         // build the corner layer
         IDataProvider cornerDataProvider =
                 new DefaultCornerDataProvider(
-                        columnHeaderDataProvider,
+                        columnHeaderLayerStack.getColumnHeaderDataProvider(),
                         rowHeaderDataProvider);
         DataLayer cornerDataLayer =
                 new DataLayer(cornerDataProvider);
@@ -356,13 +285,13 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                 new CornerLayer(
                         cornerDataLayer,
                         rowHeaderLayer,
-                        filterRowHeaderLayer);
+                        columnHeaderLayerStack);
 
         // build the grid layer
         GridLayer gridLayer =
                 new GridLayer(
                         bodyLayerStack,
-                        filterRowHeaderLayer,
+                        columnHeaderLayerStack,
                         rowHeaderLayer,
                         cornerLayer);
 
@@ -441,8 +370,8 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                 natTable,
                 bodyLayerStack,
                 rowIdAccessor,
-                filterStrategy,
-                filterRowHeaderLayer.getFilterRowDataLayer().getFilterRowDataProvider()));
+                columnHeaderLayerStack.getFilterStrategy(),
+                columnHeaderLayerStack.getFilterRowHeaderLayer().getFilterRowDataLayer().getFilterRowDataProvider()));
 
         natTable.addConfiguration(new ScalingUiBindingConfiguration(natTable));
 
@@ -450,9 +379,9 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
         DisplayColumnChooserCommandHandler columnChooserCommandHandler =
                 new DisplayColumnChooserCommandHandler(
                         bodyLayerStack.getColumnHideShowLayer(),
-                        columnHeaderLayer,
-                        columnHeaderDataLayer,
-                        columnGroupHeaderLayer,
+                        columnHeaderLayerStack.getColumnHeaderLayer(),
+                        columnHeaderLayerStack.getColumnHeaderDataLayer(),
+                        columnHeaderLayerStack.getColumnGroupHeaderLayer(),
                         false);
 
         bodyLayerStack.registerCommandHandler(columnChooserCommandHandler);
@@ -551,10 +480,10 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
         });
 
         // configure the filter exclude support
-        configureFilterExcludes(rowIdAccessor, filterStrategy, bodyLayerStack, themeConfiguration);
+        configureFilterExcludes(rowIdAccessor, columnHeaderLayerStack.getFilterStrategy(), bodyLayerStack, themeConfiguration);
 
         // configure the single field filter support
-        configureSingleFieldFilter(input, filterStrategy, bodyLayerStack, themeConfiguration, natTable, filterRowHeaderLayer);
+        configureSingleFieldFilter(input, columnHeaderLayerStack.getFilterStrategy(), bodyLayerStack, themeConfiguration, natTable, columnHeaderLayerStack.getFilterRowHeaderLayer());
 
         natTable.setTheme(themeConfiguration);
 
@@ -612,28 +541,72 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
             public void widgetSelected(SelectionEvent e) {
                 String buttonText = toggleComboContentButton.getText();
                 if (buttonText.startsWith("Disable")) {
-                    filterRowComboBoxDataProvider.setFilterCollection(null, null);
+                    columnHeaderLayerStack.getFilterRowComboBoxDataProvider().setFilterCollection(null, null);
                     toggleComboContentButton.setText("Enable Dynamic Filter ComboBox Content");
                 } else {
-                    filterRowComboBoxDataProvider.setFilterCollection(bodyLayerStack.getFilterList(), filterRowHeaderLayer);
+                    columnHeaderLayerStack.getFilterRowComboBoxDataProvider().setFilterCollection(bodyLayerStack.getFilterList(), columnHeaderLayerStack.getFilterRowHeaderLayer());
                     toggleComboContentButton.setText("Disable Dynamic Filter ComboBox Content");
                 }
             }
         });
 
         Button replaceContentButton = new Button(buttonPanel, SWT.PUSH);
-        replaceContentButton.setText("Replace");
+        replaceContentButton.setText("Replace Table Content");
         replaceContentButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                bodyLayerStack.getSortedList().clear();
-                if (_818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersonsActive.compareAndSet(true, false)) {
-                    bodyLayerStack.getSortedList().addAll(_818_SortableAllFilterPerformanceColumnGroupExample.this.mixedPersons);
-                } else {
-                    _818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersonsActive.set(true);
-                    bodyLayerStack.getSortedList().addAll(_818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersons);
-                }
+                bodyLayerStack.getSortedList().getReadWriteLock().writeLock().lock();
+                try {
+                    // deactivate
+                    bodyLayerStack.getGlazedListsEventLayer().deactivate();
+                    columnHeaderLayerStack.getFilterRowComboBoxDataProvider().deactivate();
 
+                    // clear
+                    bodyLayerStack.getSortedList().clear();
+
+                    // addall
+                    if (_818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersonsActive.compareAndSet(true, false)) {
+                        bodyLayerStack.getSortedList().addAll(_818_SortableAllFilterPerformanceColumnGroupExample.this.mixedPersons);
+                    } else {
+                        _818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersonsActive.set(true);
+                        bodyLayerStack.getSortedList().addAll(_818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersons);
+                        // bodyLayerStack.getSortedList().addAll(PersonService.getPersonsWithAddress(200));
+                    }
+                } finally {
+                    bodyLayerStack.getSortedList().getReadWriteLock().writeLock().unlock();
+                    // activate
+                    bodyLayerStack.getGlazedListsEventLayer().activate();
+                    columnHeaderLayerStack.getFilterRowComboBoxDataProvider().activate();
+                }
+            }
+        });
+
+        Button reapplyContentButton = new Button(buttonPanel, SWT.PUSH);
+        reapplyContentButton.setText("Re-Apply Table Content");
+        reapplyContentButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                bodyLayerStack.getSortedList().getReadWriteLock().writeLock().lock();
+                try {
+                    // deactivate
+                    bodyLayerStack.getGlazedListsEventLayer().deactivate();
+                    columnHeaderLayerStack.getFilterRowComboBoxDataProvider().deactivate();
+
+                    // clear
+                    bodyLayerStack.getSortedList().clear();
+
+                    // addall
+                    if (_818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersonsActive.get()) {
+                        bodyLayerStack.getSortedList().addAll(_818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersons);
+                    } else {
+                        bodyLayerStack.getSortedList().addAll(_818_SortableAllFilterPerformanceColumnGroupExample.this.mixedPersons);
+                    }
+                } finally {
+                    bodyLayerStack.getSortedList().getReadWriteLock().writeLock().unlock();
+                    // activate
+                    bodyLayerStack.getGlazedListsEventLayer().activate();
+                    columnHeaderLayerStack.getFilterRowComboBoxDataProvider().activate();
+                }
             }
         });
 
@@ -864,6 +837,154 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
 
         public ColumnHideShowLayer getColumnHideShowLayer() {
             return this.columnHideShowLayer;
+        }
+    }
+
+    /**
+     * The column header layer stack wrapped in a class for better
+     * encapsulation.
+     *
+     * @param <T>
+     */
+    class ColumnHeaderLayerStack<T> extends AbstractLayerTransform {
+        private final IDataProvider columnHeaderDataProvider;
+        private final DataLayer columnHeaderDataLayer;
+        private final ColumnHeaderLayer columnHeaderLayer;
+        private final ColumnGroupHeaderLayer columnGroupHeaderLayer;
+
+        private final GlazedListsFilterRowComboBoxDataProvider<T> filterRowComboBoxDataProvider;
+        private final ComboBoxGlazedListsWithExcludeFilterStrategy<T> filterStrategy;
+        private final ComboBoxFilterRowHeaderComposite<T> filterRowHeaderLayer;
+
+        public ColumnHeaderLayerStack(
+                String[] propertyNames, Map<String, String> propertyToLabelMap,
+                IColumnPropertyAccessor<T> columnPropertyAccessor,
+                BodyLayerStack<T> bodyLayerStack, IConfigRegistry configRegistry) {
+
+            // build the column header layer
+            this.columnHeaderDataProvider =
+                    new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+            this.columnHeaderDataLayer =
+                    new DefaultColumnHeaderDataLayer(this.columnHeaderDataProvider);
+
+            HoverLayer columnHoverLayer =
+                    new HoverLayer(this.columnHeaderDataLayer, false);
+
+            this.columnHeaderLayer =
+                    new ColumnHeaderLayer(
+                            columnHoverLayer,
+                            bodyLayerStack,
+                            bodyLayerStack.getSelectionLayer(),
+                            false);
+
+            this.columnHeaderLayer.addConfiguration(
+                    new ColumnHeaderResizeHoverBindings(columnHoverLayer));
+
+            SortHeaderLayer<T> sortHeaderLayer =
+                    new SortHeaderLayer<>(
+                            this.columnHeaderLayer,
+                            new GlazedListsSortModel<>(
+                                    bodyLayerStack.getSortedList(),
+                                    columnPropertyAccessor,
+                                    configRegistry,
+                                    this.columnHeaderDataLayer));
+
+            this.columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
+                    sortHeaderLayer,
+                    bodyLayerStack.getSelectionLayer());
+            this.columnGroupHeaderLayer.setCalculateHeight(true);
+
+            this.columnGroupHeaderLayer.addGroup("Person", 0, 4);
+
+            // Create a customized FilterRowComboBoxDataProvider that
+            // distincts the empty string and null from the collected values.
+            // This
+            // way null and "" entries in the collection are treated the same
+            // way
+            // and there is only a single "empty" entry in the dropdown.
+            this.filterRowComboBoxDataProvider =
+                    new GlazedListsFilterRowComboBoxDataProvider<>(
+                            bodyLayerStack.getGlazedListsEventLayer(),
+                            bodyLayerStack.getSortedList(),
+                            columnPropertyAccessor);
+            this.filterRowComboBoxDataProvider.setDistinctNullAndEmpty(true);
+            this.filterRowComboBoxDataProvider.setCachingEnabled(true);
+
+            this.filterStrategy =
+                    new ComboBoxGlazedListsWithExcludeFilterStrategy<>(
+                            this.filterRowComboBoxDataProvider,
+                            bodyLayerStack.getFilterList(),
+                            columnPropertyAccessor,
+                            configRegistry);
+
+            // create the ComboBoxFilterRowHeaderComposite without the default
+            // configuration
+            this.filterRowHeaderLayer =
+                    new ComboBoxFilterRowHeaderComposite<>(
+                            this.filterStrategy,
+                            this.filterRowComboBoxDataProvider,
+                            this.columnGroupHeaderLayer,
+                            this.columnHeaderDataProvider,
+                            configRegistry,
+                            false);
+
+            this.filterRowComboBoxDataProvider.setFilterCollection(bodyLayerStack.getFilterList(), this.filterRowHeaderLayer);
+
+            // add a default ComboBoxFilterRowConfiguration with an updated
+            // editor
+            // that shows a filter icon if a filter is applied
+            FilterRowComboBoxCellEditor filterEditor = new FilterRowComboBoxCellEditor(this.filterRowComboBoxDataProvider, 10);
+            filterEditor.configureDropdownFilter(true, true);
+            this.filterRowHeaderLayer.addConfiguration(
+                    new ComboBoxFilterRowConfiguration(
+                            filterEditor,
+                            new ComboBoxFilterIconPainter(this.filterRowComboBoxDataProvider),
+                            this.filterRowComboBoxDataProvider));
+
+            // add the specialized configuration to the
+            // ComboBoxFilterRowHeaderComposite
+            this.filterRowHeaderLayer.addConfiguration(new FilterRowConfiguration());
+
+            setUnderlyingLayer(this.filterRowHeaderLayer);
+        }
+
+        /**
+         * We override this method to redirect to the underlying layer instead
+         * of the default implementation in AbstractLayer. Otherwise the
+         * rendering of spanned cells with a CompositeFreezeLayer is incorrect
+         * as the cell bound calculation is performed at the wrong layer.
+         */
+        @Override
+        public Rectangle getBoundsByPosition(int columnPosition, int rowPosition) {
+            return this.underlyingLayer.getBoundsByPosition(columnPosition, rowPosition);
+        }
+
+        public IDataProvider getColumnHeaderDataProvider() {
+            return this.columnHeaderDataProvider;
+        }
+
+        public DataLayer getColumnHeaderDataLayer() {
+            return this.columnHeaderDataLayer;
+        }
+
+        public ColumnHeaderLayer getColumnHeaderLayer() {
+            return this.columnHeaderLayer;
+        }
+
+        public ColumnGroupHeaderLayer getColumnGroupHeaderLayer() {
+            return this.columnGroupHeaderLayer;
+        }
+
+        public GlazedListsFilterRowComboBoxDataProvider<T> getFilterRowComboBoxDataProvider() {
+            return this.filterRowComboBoxDataProvider;
+        }
+
+        public ComboBoxGlazedListsWithExcludeFilterStrategy<T> getFilterStrategy() {
+            return this.filterStrategy;
+        }
+
+        public ComboBoxFilterRowHeaderComposite<T> getFilterRowHeaderLayer() {
+            return this.filterRowHeaderLayer;
         }
     }
 

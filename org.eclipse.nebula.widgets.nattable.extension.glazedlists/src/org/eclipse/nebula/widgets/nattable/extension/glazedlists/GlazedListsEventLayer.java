@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ package org.eclipse.nebula.widgets.nattable.extension.glazedlists;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
@@ -58,7 +59,7 @@ public class GlazedListsEventLayer<T>
     private boolean testMode = false;
     private boolean structuralChangeEventsToProcess = false;
     private boolean eventsToProcess = false;
-    private boolean terminated;
+    private AtomicBoolean terminated = new AtomicBoolean(false);
 
     private boolean active = true;
 
@@ -143,8 +144,7 @@ public class GlazedListsEventLayer<T>
 
     @Override
     public boolean doCommand(ILayerCommand command) {
-        if (!this.terminated && command instanceof DisposeResourcesCommand) {
-            this.terminated = true;
+        if (command instanceof DisposeResourcesCommand && this.terminated.compareAndSet(false, true)) {
             scheduler.unschedule(this.future);
         }
         return super.doCommand(command);
@@ -156,7 +156,7 @@ public class GlazedListsEventLayer<T>
      *         <code>false</code> if it is still active.
      */
     public boolean isDisposed() {
-        return this.terminated;
+        return this.terminated.get();
     }
 
     /**

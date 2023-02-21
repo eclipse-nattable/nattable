@@ -60,6 +60,9 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
     private EventList<T> baseEventList;
     private final ReadWriteLock cacheLock = new ReentrantReadWriteLock();
 
+    private AtomicBoolean terminated = new AtomicBoolean(false);
+    private boolean active = true;
+
     /**
      * @param bodyLayer
      *            A layer in the body region. Usually the DataLayer or a layer
@@ -118,6 +121,7 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
         // Start the event conflation thread
         this.future = SCHEDULER.scheduleAtFixedRate(() -> {
             if (this.cachingEnabled
+                    && this.active
                     && GlazedListsFilterRowComboBoxDataProvider.this.eventsToProcess.compareAndSet(true, false)) {
                 clearCache(true);
             }
@@ -161,8 +165,79 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
     @Override
     public void dispose() {
         super.dispose();
-        SCHEDULER.unschedule(this.future);
-        SCHEDULER.shutdownNow();
+        if (this.terminated.compareAndSet(false, true)) {
+            SCHEDULER.unschedule(this.future);
+            SCHEDULER.shutdownNow();
+        }
     }
 
+    /**
+     *
+     * @return <code>true</code> if this layer was terminated,
+     *         <code>false</code> if it is still active.
+     * @since 2.1
+     */
+    public boolean isDisposed() {
+        return this.terminated.get();
+    }
+
+    /**
+     * Activates the handling of GlazedLists events. By activating on receiving
+     * GlazedLists change events, there will be NatTable events fired to
+     * indicate that re-rendering is necessary.
+     * <p>
+     * This is usually necessary to perform huge updates of the data model to
+     * avoid concurrency issues. By default the
+     * {@link GlazedListsFilterRowComboBoxDataProvider} is activated. You can
+     * deactivate it prior performing bulk updates and activate it again after
+     * the update is finished for a better event handling.
+     *
+     * @since 2.1
+     */
+    public void activate() {
+        this.active = true;
+    }
+
+    /**
+     * Deactivates the handling of GlazedLists events. By deactivating there
+     * will be no NatTable events fired on GlazedLists change events.
+     * <p>
+     * This is usually necessary to perform huge updates of the data model to
+     * avoid concurrency issues. By default the
+     * {@link GlazedListsFilterRowComboBoxDataProvider} is activated. You can
+     * deactivate it prior performing bulk updates and activate it again after
+     * the update is finished for a better event handling.
+     *
+     * @since 2.1
+     */
+    public void deactivate() {
+        this.active = false;
+    }
+
+    /**
+     * @return Whether this {@link GlazedListsFilterRowComboBoxDataProvider}
+     *         will propagate {@link ListEvent}s into NatTable or not.
+     *
+     * @since 2.1
+     */
+    public boolean isActive() {
+        return this.active;
+    }
+
+    /**
+     * This method can be used to discard event processing.
+     * <p>
+     * It is useful in cases scenarios where list changes are tracked while the
+     * handling is deactivated. By default list changes are also tracked while
+     * the handling is deactivated, so automatically a refresh is triggered on
+     * activation. For cases where a custom event is fired for updates, it could
+     * make sense to discard the events to process to avoid that a full refresh
+     * event is triggered.
+     * </p>
+     *
+     * @since 2.1
+     */
+    public void discardEventsToProcess() {
+        this.eventsToProcess.set(false);
+    }
 }
