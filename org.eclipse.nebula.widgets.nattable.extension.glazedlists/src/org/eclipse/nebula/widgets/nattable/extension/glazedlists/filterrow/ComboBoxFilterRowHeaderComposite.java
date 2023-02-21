@@ -642,9 +642,12 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 
     @Override
     public void loadState(String prefix, Properties properties) {
+        boolean wasEnabled = this.comboBoxDataProvider.isUpdateEventsEnabled();
         this.comboBoxDataProvider.disableUpdateEvents();
         super.loadState(prefix, properties);
-        this.comboBoxDataProvider.enableUpdateEvents();
+        if (wasEnabled) {
+            this.comboBoxDataProvider.enableUpdateEvents();
+        }
     }
 
     /**

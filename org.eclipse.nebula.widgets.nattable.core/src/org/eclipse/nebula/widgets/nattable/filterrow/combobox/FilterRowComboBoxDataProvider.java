@@ -504,9 +504,10 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
         if (this.valueCache != this.allValueCache) {
             // we also need to update the all value cache in case it is
             // different from the value cache
+            boolean wasEnabled = this.updateEventsEnabled;
             this.updateEventsEnabled = false;
             updateCache(columnIndex, this.allValueCache, this.allValueCacheLock);
-            this.updateEventsEnabled = true;
+            this.updateEventsEnabled = wasEnabled;
         }
     }
 
@@ -974,9 +975,10 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
             this.columnHeaderLayer.addLayerListener(this);
             this.columnHeaderLayer.registerCommandHandler(this);
 
+            boolean wasEnabled = this.updateEventsEnabled;
             this.updateEventsEnabled = false;
             clearCache(true);
-            this.updateEventsEnabled = true;
+            this.updateEventsEnabled = wasEnabled;
         } else if (filterCollection == null && columnHeaderLayer == null) {
             // filter collection and column header layer are null, so we
             // configure for combobox contents that are collected from the base
@@ -997,9 +999,10 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
 
             setLastFilter(-1, null);
 
+            boolean wasEnabled = this.updateEventsEnabled;
             this.updateEventsEnabled = false;
             clearCache(true);
-            this.updateEventsEnabled = true;
+            this.updateEventsEnabled = wasEnabled;
         } else {
             throw new IllegalArgumentException("not supported to have only one null value"); //$NON-NLS-1$
         }

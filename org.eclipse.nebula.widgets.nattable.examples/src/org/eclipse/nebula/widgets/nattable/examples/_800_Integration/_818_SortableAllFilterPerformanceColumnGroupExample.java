@@ -898,10 +898,9 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
 
             // Create a customized FilterRowComboBoxDataProvider that
             // distincts the empty string and null from the collected values.
-            // This
-            // way null and "" entries in the collection are treated the same
-            // way
-            // and there is only a single "empty" entry in the dropdown.
+            // This way null and "" entries in the collection are treated the
+            // same way and there is only a single "empty" entry in the
+            // dropdown.
             this.filterRowComboBoxDataProvider =
                     new GlazedListsFilterRowComboBoxDataProvider<>(
                             bodyLayerStack.getGlazedListsEventLayer(),
@@ -909,6 +908,7 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                             columnPropertyAccessor);
             this.filterRowComboBoxDataProvider.setDistinctNullAndEmpty(true);
             this.filterRowComboBoxDataProvider.setCachingEnabled(true);
+//            this.filterRowComboBoxDataProvider.disableUpdateEvents();
 
             this.filterStrategy =
                     new ComboBoxGlazedListsWithExcludeFilterStrategy<>(
@@ -931,8 +931,7 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
             this.filterRowComboBoxDataProvider.setFilterCollection(bodyLayerStack.getFilterList(), this.filterRowHeaderLayer);
 
             // add a default ComboBoxFilterRowConfiguration with an updated
-            // editor
-            // that shows a filter icon if a filter is applied
+            // editor that shows a filter icon if a filter is applied
             FilterRowComboBoxCellEditor filterEditor = new FilterRowComboBoxCellEditor(this.filterRowComboBoxDataProvider, 10);
             filterEditor.configureDropdownFilter(true, true);
             this.filterRowHeaderLayer.addConfiguration(
