@@ -413,18 +413,14 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         if (exportDisplayValue instanceof Calendar
                 || exportDisplayValue instanceof Date) {
             dataFormat = getDataFormatString(cell, configRegistry);
-        } else {
+        } else if (exportDisplayValue instanceof Number) {
             dataFormat = configRegistry.getConfigAttribute(
-                    ExportConfigAttributes.DATE_FORMAT,
+                    ExportConfigAttributes.NUMBER_FORMAT,
                     DisplayMode.NORMAL,
                     cell.getConfigLabels());
 
             if (dataFormat == null) {
-                if (exportDisplayValue instanceof Integer) {
-                    return "0"; //$NON-NLS-1$
-                } else if (exportDisplayValue instanceof Double) {
-                    return "0.00"; //$NON-NLS-1$
-                }
+                return (exportDisplayValue instanceof Double || exportDisplayValue instanceof Float) ? "0.00" : "0"; //$NON-NLS-1$//$NON-NLS-2$
             }
         }
 

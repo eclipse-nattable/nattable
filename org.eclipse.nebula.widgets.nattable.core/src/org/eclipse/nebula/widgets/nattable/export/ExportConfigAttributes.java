@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2023 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -39,6 +39,13 @@ public final class ExportConfigAttributes {
      * for exporting Calendar or Date objects appropriately.
      */
     public static final ConfigAttribute<String> DATE_FORMAT = new ConfigAttribute<>();
+    /**
+     * The configuration attribute for specifying the format that should be used
+     * for exporting Number objects appropriately.
+     *
+     * @since 2.1
+     */
+    public static final ConfigAttribute<String> NUMBER_FORMAT = new ConfigAttribute<>();
     /**
      * The configuration attribute for specifying the concrete implementation
      * instance of ITableExporter that should be used for exporting the
