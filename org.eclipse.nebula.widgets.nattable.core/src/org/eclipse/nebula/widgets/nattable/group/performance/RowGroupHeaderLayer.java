@@ -2260,6 +2260,21 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
         if (groupModel != null) {
             Group group = groupModel.getGroupByPosition(fromRowPosition);
             if (group != null) {
+
+                if (group.isCollapsed()) {
+                    int groupStart = group.getVisibleStartPosition();
+                    int groupEnd = group.getVisibleStartPosition() + group.getVisibleSpan();
+                    if ((fromRowPosition >= groupStart && fromRowPosition <= groupEnd)
+                            && toRowPosition == groupStart || toRowPosition == groupEnd) {
+                        // nothing to reorder as the reorder operation tries to
+                        // reorder a collapsed group to basically the same
+                        // position as before, either to the left or right. Need
+                        // to avoid the reorder operation as otherwise further
+                        // event handlers would modify the group
+                        return true;
+                    }
+                }
+
                 int toPosition = toRowPosition;
 
                 // we need to convert and fire the command on the underlying

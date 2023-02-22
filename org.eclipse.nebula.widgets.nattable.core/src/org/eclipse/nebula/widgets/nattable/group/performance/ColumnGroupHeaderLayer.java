@@ -1021,6 +1021,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
             ILayerCell cell = this.underlyingLayer.getCellByPosition(columnPosition, 0);
             if (cell != null) {
                 cell = new TransformedLayerCell(cell) {
+
                     @Override
                     public ILayer getLayer() {
                         return ColumnGroupHeaderLayer.this;
@@ -1040,6 +1041,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                     public int getOriginRowPosition() {
                         return rowPosition - (span - 1);
                     }
+
                 };
             }
             return cell;
@@ -2269,6 +2271,21 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         if (groupModel != null) {
             Group group = groupModel.getGroupByPosition(fromColumnPosition);
             if (group != null) {
+
+                if (group.isCollapsed()) {
+                    int groupStart = group.getVisibleStartPosition();
+                    int groupEnd = group.getVisibleStartPosition() + group.getVisibleSpan();
+                    if ((fromColumnPosition >= groupStart && fromColumnPosition <= groupEnd)
+                            && toColumnPosition == groupStart || toColumnPosition == groupEnd) {
+                        // nothing to reorder as the reorder operation tries to
+                        // reorder a collapsed group to basically the same
+                        // position as before, either to the left or right. Need
+                        // to avoid the reorder operation as otherwise further
+                        // event handlers would modify the group
+                        return true;
+                    }
+                }
+
                 int toPosition = toColumnPosition;
 
                 // we need to convert and fire the command on the underlying
