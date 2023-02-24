@@ -307,6 +307,11 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
                         formatter,
                         DisplayMode.NORMAL,
                         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
+                configRegistry.registerConfigAttribute(
+                        ExportConfigAttributes.NUMBER_FORMAT,
+                        "0.00", //$NON-NLS-1$
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
 
                 configRegistry.registerConfigAttribute(
                         ExportConfigAttributes.EXPORT_FORMATTER,

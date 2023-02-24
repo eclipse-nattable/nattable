@@ -418,10 +418,6 @@ public abstract class PoiExcelExporter implements ILayerExporter {
                     ExportConfigAttributes.NUMBER_FORMAT,
                     DisplayMode.NORMAL,
                     cell.getConfigLabels());
-
-            if (dataFormat == null) {
-                return (exportDisplayValue instanceof Double || exportDisplayValue instanceof Float) ? "0.00" : "0"; //$NON-NLS-1$//$NON-NLS-2$
-            }
         }
 
         return dataFormat;
