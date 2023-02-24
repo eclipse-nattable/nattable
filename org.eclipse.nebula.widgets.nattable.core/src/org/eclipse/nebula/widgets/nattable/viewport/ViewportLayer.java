@@ -363,8 +363,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
     /**
      * @return The origin column position
+     *
+     * @since 2.1
      */
-    private int getOriginColumnPosition() {
+    public int getOriginColumnPosition() {
         // special handling for column resizing to 0
         // used e.g. with the ResizeColumnHideShowLayer in combination
         // with percentage sizing
@@ -380,8 +382,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
     /**
      * @return The origin row position
+     *
+     * @since 2.1
      */
-    private int getOriginRowPosition() {
+    public int getOriginRowPosition() {
         return this.scrollableLayer.getRowPositionByY(getOrigin().getY());
     }
 

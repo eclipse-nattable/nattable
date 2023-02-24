@@ -256,14 +256,23 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
             startColumn = 0;
         }
 
+        // special condition, group frozen while in scrolled state and group is
+        // only partially visible
+        if (columnPosition == 0 && startColumn < 0) {
+            startColumnLayout = 0;
+            endColumn += this.viewportLayer.getOriginColumnPosition() - this.viewportLayer.getMinimumOriginColumnPosition();
+        }
+
         int start = startColumn;
         int end = endColumn;
         if (isFrozen() && endColumnLayout == 1) {
-            int scrollAdjust = 0;
+            int numberOfNotVisibleColumns = 0;
             if (this.freezeLayer.getTopLeftPosition().columnPosition >= 0) {
-                scrollAdjust = this.freezeLayer.getUnderlyingLayerByPosition(0, 0).getStartXOfColumnPosition(this.freezeLayer.getTopLeftPosition().columnPosition);
+                numberOfNotVisibleColumns = this.freezeLayer.getTopLeftPosition().columnPosition;
             }
-            end = endColumn - this.viewportLayer.getScrollableLayer().getColumnPositionByX(this.viewportLayer.getOrigin().getX() - scrollAdjust);
+
+            int toLocal = this.viewportLayer.underlyingToLocalColumnPosition(this.viewportLayer.getScrollableLayer(), endColumn);
+            end = toLocal + numberOfNotVisibleColumns;
         }
 
         ILayer startLayer = null;
@@ -291,10 +300,10 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
                 }
             }
         } else {
-            startLayer = getChildLayerByLayoutCoordinate(startColumnLayout, 1);
-            startX = this.freezeLayer.getStartXOfColumnPosition(start);
+            int startColumnToUse = start < 0 ? 0 : start;
+            startX = this.freezeLayer.getStartXOfColumnPosition(startColumnToUse);
             int freezeWidth = 0;
-            int column = start;
+            int column = startColumnToUse;
             for (; column < this.freezeLayer.getColumnCount(); column++) {
                 freezeWidth += this.freezeLayer.getColumnWidthByPosition(column);
             }
@@ -386,14 +395,23 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
             startRow = 0;
         }
 
+        // special condition, group frozen while in scrolled state and group is
+        // only partially visible
+        if (rowPosition == 0 && startRow < 0) {
+            startRowLayout = 0;
+            endRow += this.viewportLayer.getOriginRowPosition() - this.viewportLayer.getMinimumOriginRowPosition();
+        }
+
         int start = startRow;
         int end = endRow;
         if (isFrozen() && endRowLayout == 1) {
-            int scrollAdjust = 0;
+            int numberOfNotVisibleRows = 0;
             if (this.freezeLayer.getTopLeftPosition().rowPosition >= 0) {
-                scrollAdjust = this.freezeLayer.getUnderlyingLayerByPosition(0, 0).getStartYOfRowPosition(this.freezeLayer.getTopLeftPosition().rowPosition);
+                numberOfNotVisibleRows = this.freezeLayer.getTopLeftPosition().rowPosition;
             }
-            end = endRow - this.viewportLayer.getScrollableLayer().getRowPositionByY(this.viewportLayer.getOrigin().getY() - scrollAdjust);
+
+            int toLocal = this.viewportLayer.underlyingToLocalRowPosition(this.viewportLayer.getScrollableLayer(), endRow);
+            end = toLocal + numberOfNotVisibleRows;
         }
 
         ILayer startLayer = null;
@@ -421,10 +439,10 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
                 }
             }
         } else {
-            startLayer = getChildLayerByLayoutCoordinate(1, startRowLayout);
-            startY = this.freezeLayer.getStartYOfRowPosition(start);
+            int startRowToUse = start < 0 ? 0 : start;
+            startY = this.freezeLayer.getStartYOfRowPosition(startRowToUse);
             int freezeHeight = 0;
-            int row = start;
+            int row = startRowToUse;
             for (; row < this.freezeLayer.getRowCount(); row++) {
                 freezeHeight += this.freezeLayer.getRowHeightByPosition(row);
             }
