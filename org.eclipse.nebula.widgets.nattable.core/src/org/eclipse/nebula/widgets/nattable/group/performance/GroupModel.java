@@ -38,6 +38,19 @@ import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 public class GroupModel implements IPersistable {
 
     /**
+     * Replacement for the pipe character | that is used for persistence. Needed
+     * if a user added the pipe character in a group name. As the persistence
+     * mechanism in NatTable uses the pipe character for separation of values,
+     * the persistence breaks for such cases. By replacing the pipe in the
+     * regular expression with some silly uncommon value specified here, we
+     * ensure to be able to also persist pipes for such special group names, as
+     * well as being backwards compatible with already saved filter row states.
+     *
+     * @since 2.1
+     */
+    static final String PIPE_REPLACEMENT = "°~°"; //$NON-NLS-1$
+
+    /**
      * Persistence key for persisting the group model states.
      */
     private static final String PERSISTENCE_KEY_GROUP_MODEL = ".groupModel"; //$NON-NLS-1$
@@ -169,6 +182,7 @@ public class GroupModel implements IPersistable {
                 continue;
             }
 
+            groupName = groupName.replace("|", PIPE_REPLACEMENT); //$NON-NLS-1$
             strBuilder.append(groupName);
             strBuilder.append('=');
 
@@ -211,10 +225,11 @@ public class GroupModel implements IPersistable {
             while (groupTokenizer.hasMoreTokens()) {
                 String groupToken = groupTokenizer.nextToken();
 
-                int separatorIndex = groupToken.indexOf('=');
+                int separatorIndex = groupToken.lastIndexOf('=');
 
                 // group name
                 String groupName = groupToken.substring(0, separatorIndex);
+                groupName = groupName.replace(PIPE_REPLACEMENT, "|"); //$NON-NLS-1$
 
                 String[] groupProperties = groupToken.substring(separatorIndex + 1).split(":"); //$NON-NLS-1$
 

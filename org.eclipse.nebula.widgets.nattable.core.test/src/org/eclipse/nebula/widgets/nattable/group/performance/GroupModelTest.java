@@ -1265,4 +1265,98 @@ public class GroupModelTest {
         assertTrue(group3.hasMember(13));
         assertTrue(group3.hasMember(14));
     }
+
+    @Test
+    public void shouldSaveStateWithSpecialCharactersInGroupName() {
+        Group group1 = this.model.getGroupByPosition(0);
+        Group group2 = this.model.getGroupByPosition(5);
+        Group group3 = this.model.getGroupByPosition(12);
+
+        group1.setCollapseable(false);
+        group2.setUnbreakable(true);
+        group3.setCollapsed(true);
+
+        group1.setName("test|GroupName");
+        group2.setName("test=GroupName2");
+        group3.setName("test:GroupName3");
+
+        this.model.addStaticIndexesToGroup(group1, 1, 2);
+        group2.setVisibleStartIndex(6);
+        group2.setVisibleSpan(2);
+
+        Properties properties = new Properties();
+        this.model.saveState("prefix", properties);
+
+        assertEquals(1, properties.size());
+        assertEquals(
+                "test" + GroupModel.PIPE_REPLACEMENT + "GroupName=0:0:0:4:4:expanded:uncollapseable:breakable:1,2:members[0,1,2,3]|"
+                        + "test=GroupName2=5:6:5:3:2:expanded:collapseable:unbreakable:members[5,6,7]|"
+                        + "test:GroupName3=12:12:12:2:2:collapsed:collapseable:breakable:members[12,13]|",
+                properties.getProperty("prefix.groupModel"));
+    }
+
+    @Test
+    public void shouldLoadStateWithSpecialCharactersInGroupName() {
+        Properties properties = new Properties();
+        properties.setProperty(
+                "prefix.groupModel",
+                "test" + GroupModel.PIPE_REPLACEMENT + "GroupName=0:0:0:4:4:expanded:uncollapseable:breakable:1,2:members[0,1,3,4]|"
+                        + "test=GroupName2=5:6:5:3:2:expanded:collapseable:unbreakable:members[5,2,7]|"
+                        + "test:GroupName3=12:12:12:2:2:collapsed:collapseable:breakable:members[14,13]|");
+
+        GroupModel tempModel = new GroupModel();
+        tempModel.loadState("prefix", properties);
+
+        assertTrue(tempModel.isPartOfAGroup(0));
+        assertTrue(tempModel.isPartOfAGroup(5));
+        assertTrue(tempModel.isPartOfAGroup(12));
+
+        Group group1 = tempModel.getGroupByPosition(0);
+        Group group2 = tempModel.getGroupByPosition(5);
+        Group group3 = tempModel.getGroupByPosition(12);
+
+        assertEquals("test|GroupName", group1.getName());
+        assertEquals(0, group1.getStartIndex());
+        assertEquals(0, group1.getVisibleStartIndex());
+        assertEquals(0, group1.getVisibleStartPosition());
+        assertEquals(4, group1.getOriginalSpan());
+        assertEquals(4, group1.getVisibleSpan());
+        assertFalse(group1.isCollapsed());
+        assertFalse(group1.isCollapseable());
+        assertFalse(group1.isUnbreakable());
+        assertEquals(2, group1.getStaticIndexes().length);
+        assertTrue(group1.containsStaticIndex(1));
+        assertTrue(group1.containsStaticIndex(2));
+        assertTrue(group1.hasMember(0));
+        assertTrue(group1.hasMember(1));
+        assertTrue(group1.hasMember(3));
+        assertTrue(group1.hasMember(4));
+
+        assertEquals("test=GroupName2", group2.getName());
+        assertEquals(5, group2.getStartIndex());
+        assertEquals(6, group2.getVisibleStartIndex());
+        assertEquals(5, group2.getVisibleStartPosition());
+        assertEquals(3, group2.getOriginalSpan());
+        assertEquals(2, group2.getVisibleSpan());
+        assertFalse(group2.isCollapsed());
+        assertTrue(group2.isCollapseable());
+        assertTrue(group2.isUnbreakable());
+        assertEquals(0, group2.getStaticIndexes().length);
+        assertTrue(group2.hasMember(5));
+        assertTrue(group2.hasMember(2));
+        assertTrue(group2.hasMember(7));
+
+        assertEquals("test:GroupName3", group3.getName());
+        assertEquals(12, group3.getStartIndex());
+        assertEquals(12, group3.getVisibleStartIndex());
+        assertEquals(12, group3.getVisibleStartPosition());
+        assertEquals(2, group3.getOriginalSpan());
+        assertEquals(2, group3.getVisibleSpan());
+        assertTrue(group3.isCollapsed());
+        assertTrue(group3.isCollapseable());
+        assertFalse(group3.isUnbreakable());
+        assertEquals(0, group3.getStaticIndexes().length);
+        assertTrue(group3.hasMember(13));
+        assertTrue(group3.hasMember(14));
+    }
 }
