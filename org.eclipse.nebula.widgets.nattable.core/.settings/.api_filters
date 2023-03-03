@@ -15,6 +15,18 @@
                 <message_argument value="COMMA_REPLACEMENT"/>
             </message_arguments>
         </filter>
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataProvider"/>
+                <message_argument value="EMPTY_REPLACEMENT"/>
+            </message_arguments>
+        </filter>
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataProvider"/>
+                <message_argument value="NULL_REPLACEMENT"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="src/org/eclipse/nebula/widgets/nattable/filterrow/combobox/ComboBoxFilterRowConfiguration.java" type="org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterRowConfiguration">
         <filter id="336658481">

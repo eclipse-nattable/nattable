@@ -25,25 +25,30 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.ContextualDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
+import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.LayerListenerFixture;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
+import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.DefaultFilterRowConfiguration;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.filterrow.event.FilterAppliedEvent;
+import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
 
@@ -51,8 +56,12 @@ public class FilterRowDataProviderTest {
 
     private FilterRowDataProvider<RowDataFixture> dataProvider;
     private DataLayerFixture columnHeaderLayer;
+    private EventList<RowDataFixture> baseList;
     private FilterList<RowDataFixture> filterList;
     private ConfigRegistry configRegistry;
+
+    private ReflectiveColumnPropertyAccessor<RowDataFixture> columnAccessor =
+            new ReflectiveColumnPropertyAccessor<>(RowDataListFixture.getPropertyNames());
 
     @BeforeEach
     public void setup() {
@@ -62,12 +71,13 @@ public class FilterRowDataProviderTest {
         new DefaultNatTableStyleConfiguration().configureRegistry(this.configRegistry);
         new DefaultFilterRowConfiguration().configureRegistry(this.configRegistry);
 
-        this.filterList = new FilterList<>(GlazedLists.eventList(RowDataListFixture.getList()));
+        this.baseList = GlazedLists.eventList(RowDataListFixture.getList());
+        this.filterList = new FilterList<>(this.baseList);
 
         this.dataProvider = new FilterRowDataProvider<>(
                 new DefaultGlazedListsFilterStrategy<>(
                         this.filterList,
-                        new ReflectiveColumnPropertyAccessor<RowDataFixture>(RowDataListFixture.getPropertyNames()),
+                        this.columnAccessor,
                         this.configRegistry),
                 this.columnHeaderLayer,
                 this.columnHeaderLayer.getDataProvider(),
@@ -411,5 +421,152 @@ public class FilterRowDataProviderTest {
 
         assertEquals("foo", this.dataProvider.getDataValue(1, 1));
         assertEquals("testValue", this.dataProvider.getDataValue(2, 1));
+    }
+
+    @Test
+    public void shouldInvertFilterCollectionPersistence() {
+        // enable inverted combobox filter persistence
+        FilterRowComboBoxDataProvider<RowDataFixture> cbdp =
+                new FilterRowComboBoxDataProvider<>(
+                        new DataLayer(new ListDataProvider<>(this.filterList, this.columnAccessor)),
+                        this.baseList,
+                        this.columnAccessor);
+        this.dataProvider.setInvertCollectionPersistence(true, cbdp);
+
+        // set filter to filter out AAA and aaa
+        this.dataProvider.setDataValue(2, 1, new ArrayList<>(Arrays.asList("A-", "AA", "B", "B-", "BB", "C", "a", "aa")));
+
+        // save state
+        Properties properties = new Properties();
+        this.dataProvider.saveState("prefix", properties);
+        String persistedProperty = properties.getProperty("prefix" + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
+
+        String expectedPersistedCollection = "2:" + FilterRowDataProvider.FILTER_COLLECTION_PREFIX + ArrayList.class.getName() + ")["
+                + "AAA" + IPersistable.VALUE_SEPARATOR
+                + "aaa"
+                + "]";
+
+        assertEquals(expectedPersistedCollection + "|", persistedProperty);
+
+        // reset state
+        this.dataProvider.clearAllFilters();
+
+        assertNull(this.dataProvider.getDataValue(2, 1));
+
+        // load state
+        this.dataProvider.loadState("prefix", properties);
+
+        assertEquals(new ArrayList<>(Arrays.asList("A-", "AA", "B", "B-", "BB", "C", "a", "aa")), this.dataProvider.getDataValue(2, 1));
+    }
+
+    @Test
+    public void shouldInvertAllSelectedFilterCollectionPersistence() {
+        // enable inverted combobox filter persistence
+        FilterRowComboBoxDataProvider<RowDataFixture> cbdp =
+                new FilterRowComboBoxDataProvider<>(
+                        new DataLayer(new ListDataProvider<>(this.filterList, this.columnAccessor)),
+                        this.baseList,
+                        this.columnAccessor);
+        this.dataProvider.setInvertCollectionPersistence(true, cbdp);
+
+        // set filter to select all, which means nothing is filtered
+        this.dataProvider.setDataValue(2, 1, new ArrayList<>(Arrays.asList("A-", "AA", "AAA", "B", "B-", "BB", "C", "a", "aa", "aaa")));
+
+        // save state
+        Properties properties = new Properties();
+        this.dataProvider.saveState("prefix", properties);
+        String persistedProperty = properties.getProperty("prefix" + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
+
+        String expectedPersistedCollection = "2:" + FilterRowDataProvider.FILTER_COLLECTION_PREFIX + ArrayList.class.getName() + ")[]";
+
+        assertEquals(expectedPersistedCollection + "|", persistedProperty);
+
+        // reset state
+        this.dataProvider.clearAllFilters();
+
+        assertNull(this.dataProvider.getDataValue(2, 1));
+
+        // load state
+        this.dataProvider.loadState("prefix", properties);
+
+        assertEquals(EditConstants.SELECT_ALL_ITEMS_VALUE, this.dataProvider.getDataValue(2, 1));
+    }
+
+    @Test
+    public void shouldInvertFilterCollectionNullValuePersistence() {
+        // enable inverted combobox filter persistence
+        FilterRowComboBoxDataProvider<RowDataFixture> cbdp =
+                new FilterRowComboBoxDataProvider<>(
+                        new DataLayer(new ListDataProvider<>(this.filterList, this.columnAccessor)),
+                        this.baseList,
+                        this.columnAccessor);
+        this.dataProvider.setInvertCollectionPersistence(true, cbdp);
+
+        this.filterList.get(0).setRating(null);
+
+        assertEquals(Arrays.asList(null, "A-", "AA", "AAA", "B", "B-", "BB", "C", "aa", "aaa"), cbdp.getAllValues(2));
+
+        // set filter to filter out null values
+        this.dataProvider.setDataValue(2, 1, new ArrayList<>(Arrays.asList("A-", "AA", "AAA", "B", "B-", "BB", "C", "aa", "aaa")));
+
+        // save state
+        Properties properties = new Properties();
+        this.dataProvider.saveState("prefix", properties);
+        String persistedProperty = properties.getProperty("prefix" + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
+
+        String expectedPersistedCollection = "2:" + FilterRowDataProvider.FILTER_COLLECTION_PREFIX + ArrayList.class.getName() + ")["
+                + FilterRowDataProvider.NULL_REPLACEMENT
+                + "]";
+
+        assertEquals(expectedPersistedCollection + "|", persistedProperty);
+
+        // reset state
+        this.dataProvider.clearAllFilters();
+
+        assertNull(this.dataProvider.getDataValue(2, 1));
+
+        // load state
+        this.dataProvider.loadState("prefix", properties);
+
+        assertEquals(new ArrayList<>(Arrays.asList("A-", "AA", "AAA", "B", "B-", "BB", "C", "aa", "aaa")), this.dataProvider.getDataValue(2, 1));
+    }
+
+    @Test
+    public void shouldInvertFilterCollectionEmptyValuePersistence() {
+        // enable inverted combobox filter persistence
+        FilterRowComboBoxDataProvider<RowDataFixture> cbdp =
+                new FilterRowComboBoxDataProvider<>(
+                        new DataLayer(new ListDataProvider<>(this.filterList, this.columnAccessor)),
+                        this.baseList,
+                        this.columnAccessor);
+        this.dataProvider.setInvertCollectionPersistence(true, cbdp);
+
+        this.filterList.get(0).setRating("");
+
+        assertEquals(Arrays.asList("", "A-", "AA", "AAA", "B", "B-", "BB", "C", "aa", "aaa"), cbdp.getAllValues(2));
+
+        // set filter to filter out null values
+        this.dataProvider.setDataValue(2, 1, new ArrayList<>(Arrays.asList("A-", "AA", "AAA", "B", "B-", "BB", "C", "aa", "aaa")));
+
+        // save state
+        Properties properties = new Properties();
+        this.dataProvider.saveState("prefix", properties);
+        String persistedProperty = properties.getProperty("prefix" + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
+
+        String expectedPersistedCollection = "2:" + FilterRowDataProvider.FILTER_COLLECTION_PREFIX + ArrayList.class.getName() + ")["
+                + FilterRowDataProvider.EMPTY_REPLACEMENT
+                + "]";
+
+        assertEquals(expectedPersistedCollection + "|", persistedProperty);
+
+        // reset state
+        this.dataProvider.clearAllFilters();
+
+        assertNull(this.dataProvider.getDataValue(2, 1));
+
+        // load state
+        this.dataProvider.loadState("prefix", properties);
+
+        assertEquals(new ArrayList<>(Arrays.asList("A-", "AA", "AAA", "B", "B-", "BB", "C", "aa", "aaa")), this.dataProvider.getDataValue(2, 1));
     }
 }

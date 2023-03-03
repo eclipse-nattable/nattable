@@ -13,9 +13,11 @@
 package org.eclipse.nebula.widgets.nattable.filterrow;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -23,6 +25,8 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
+import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.event.FilterAppliedEvent;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
@@ -66,6 +70,26 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
     public static final String COMMA_REPLACEMENT = "°#°"; //$NON-NLS-1$
 
     /**
+     * Replacement for the null value that is used for persisting collection
+     * values in case of combobox filters. Needed for the inverted persistence
+     * in case there are null values in the collection that need to be
+     * persisted.
+     *
+     * @since 2.1
+     */
+    public static final String NULL_REPLACEMENT = "°null°"; //$NON-NLS-1$
+
+    /**
+     * Replacement for an empty String value that is used for persisting
+     * collection values in case of combobox filters. Needed for the inverted
+     * persistence in case there are empty String values in the collection that
+     * need to be persisted.
+     *
+     * @since 2.1
+     */
+    public static final String EMPTY_REPLACEMENT = "°empty°"; //$NON-NLS-1$
+
+    /**
      * The prefix String that will be used to mark that the following filter
      * value in the persisted state is a collection.
      */
@@ -103,6 +127,29 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
      * the user who entered them.
      */
     private Map<Integer, Object> filterIndexToObjectMap = new HashMap<>();
+
+    /**
+     * Flag to configure how filter collections are persisted. By default the
+     * values in the collection are persisted as is. In case of Excel like
+     * filters, it can be more feasible to store which values are NOT selected,
+     * to be able to load the filter even for different values in the filter
+     * list.
+     *
+     * @see #filterRowComboBoxDataProvider
+     *
+     * @since 2.1
+     */
+    private boolean invertCollectionPersistence = false;
+
+    /**
+     * The FilterRowComboBoxDataProvider that is needed to be able to support
+     * inverted persistence of filter collections.
+     *
+     * @see FilterRowDataProvider#invertCollectionPersistence
+     *
+     * @since 2.1
+     */
+    private FilterRowComboBoxDataProvider<T> filterRowComboBoxDataProvider;
 
     /**
      *
@@ -285,16 +332,43 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
             StringBuilder builder = new StringBuilder(collectionSpec);
             builder.append("["); //$NON-NLS-1$
             Collection<?> filterCollection = (Collection<?>) filterValue;
-            for (Iterator<?> iterator = filterCollection.iterator(); iterator.hasNext();) {
-                Object filterObject = iterator.next();
-                String displayValue = (String) converter.canonicalToDisplayValue(
-                        new LayerCell(null, columnIndex, 0),
-                        this.configRegistry,
-                        filterObject);
-                displayValue = displayValue.replace(IPersistable.VALUE_SEPARATOR, COMMA_REPLACEMENT);
-                builder.append(displayValue);
-                if (iterator.hasNext()) {
-                    builder.append(IPersistable.VALUE_SEPARATOR);
+
+            if (!this.invertCollectionPersistence) {
+                for (Iterator<?> iterator = filterCollection.iterator(); iterator.hasNext();) {
+                    Object filterObject = iterator.next();
+                    String displayValue = (String) converter.canonicalToDisplayValue(
+                            new LayerCell(null, columnIndex, 0),
+                            this.configRegistry,
+                            filterObject);
+                    displayValue = displayValue.replace(IPersistable.VALUE_SEPARATOR, COMMA_REPLACEMENT);
+                    builder.append(displayValue);
+                    if (iterator.hasNext()) {
+                        builder.append(IPersistable.VALUE_SEPARATOR);
+                    }
+                }
+            } else {
+                List<?> allValues = new ArrayList<>(this.filterRowComboBoxDataProvider.getAllValues(columnIndex));
+                allValues.removeAll(filterCollection);
+
+                for (Iterator<?> iterator = allValues.iterator(); iterator.hasNext();) {
+                    Object filterObject = iterator.next();
+                    if (filterObject == null) {
+                        builder.append(NULL_REPLACEMENT);
+                    } else {
+                        String displayValue = (String) converter.canonicalToDisplayValue(
+                                new LayerCell(null, columnIndex, 0),
+                                this.configRegistry,
+                                filterObject);
+                        displayValue = displayValue.replace(IPersistable.VALUE_SEPARATOR, COMMA_REPLACEMENT);
+                        if (displayValue.isEmpty()) {
+                            builder.append(EMPTY_REPLACEMENT);
+                        } else {
+                            builder.append(displayValue);
+                        }
+                    }
+                    if (iterator.hasNext()) {
+                        builder.append(IPersistable.VALUE_SEPARATOR);
+                    }
                 }
             }
 
@@ -345,13 +419,31 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 
             // also get rid of the collection marks
             filterText = filterText.substring(indexEndCollSpec + 2, filterText.length() - 1);
-            String[] filterSplit = filterText.split(IPersistable.VALUE_SEPARATOR);
-            for (String filterString : filterSplit) {
-                filterString = filterString.replace(COMMA_REPLACEMENT, IPersistable.VALUE_SEPARATOR);
-                filterCollection.add(converter.displayToCanonicalValue(
-                        new LayerCell(null, columnIndex, 0),
-                        this.configRegistry,
-                        filterString));
+            if (!filterText.isEmpty()) {
+                String[] filterSplit = filterText.split(IPersistable.VALUE_SEPARATOR);
+                for (String filterString : filterSplit) {
+                    filterString = filterString.replace(COMMA_REPLACEMENT, IPersistable.VALUE_SEPARATOR);
+                    if (NULL_REPLACEMENT.equals(filterString)) {
+                        filterCollection.add(null);
+                    } else if (EMPTY_REPLACEMENT.equals(filterString)) {
+                        filterCollection.add(""); //$NON-NLS-1$
+                    } else {
+                        filterCollection.add(converter.displayToCanonicalValue(
+                                new LayerCell(null, columnIndex, 0),
+                                this.configRegistry,
+                                filterString));
+                    }
+                }
+            }
+
+            if (this.invertCollectionPersistence) {
+                if (filterCollection.isEmpty()) {
+                    return EditConstants.SELECT_ALL_ITEMS_VALUE;
+                }
+
+                List<?> allValues = new ArrayList<>(this.filterRowComboBoxDataProvider.getAllValues(columnIndex));
+                allValues.removeAll(filterCollection);
+                return allValues;
             }
 
             return filterCollection;
@@ -381,6 +473,37 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
      */
     public IFilterStrategy<T> getFilterStrategy() {
         return this.filterStrategy;
+    }
+
+    /**
+     *
+     * @return <code>true</code> if filter collections are persisted in an
+     *         inverted way, which means the values that are <b>NOT</b> selected
+     *         in the combo are persisted. By default this configuration is set
+     *         to <code>false</code> which means values in the collection are
+     *         persisted as is.
+     *
+     * @since 2.1
+     */
+    public boolean isInvertCollectionPersistence() {
+        return this.invertCollectionPersistence;
+    }
+
+    /**
+     *
+     * @param invertCollectionPersistence
+     *            <code>true</code> if filter collections should be persisted in
+     *            an inverted way, which means the values that are <b>NOT</b>
+     *            selected in the combo are persisted.
+     *
+     * @since 2.1
+     */
+    public void setInvertCollectionPersistence(boolean invertCollectionPersistence, FilterRowComboBoxDataProvider<T> comboBoxDataProvider) {
+        if (invertCollectionPersistence && comboBoxDataProvider == null) {
+            throw new IllegalArgumentException("Can only invert the collection persistence if the FilterRowComboBoxDataProvider is provided"); //$NON-NLS-1$
+        }
+        this.invertCollectionPersistence = invertCollectionPersistence;
+        this.filterRowComboBoxDataProvider = comboBoxDataProvider;
     }
 
 }
