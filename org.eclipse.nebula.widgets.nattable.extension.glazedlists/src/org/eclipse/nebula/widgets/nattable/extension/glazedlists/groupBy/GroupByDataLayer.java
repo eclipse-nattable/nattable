@@ -640,18 +640,15 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         // structure costs time
         BusyIndicator.showWhile(Display.getDefault(), () -> {
             List<Integer> indexes = new ArrayList<>();
-            if (GroupByModel.LOAD_STATE_INDICATOR.equals(arg)) {
-                // if the GroupByModel was loaded and not simply updated, there
-                // can be situations where the groupby indexes and the
-                // corresponding types per column are totally different. In this
-                // case we first need to perform a clear operation without the
-                // new groupby configuration, and then re-apply everything.
-                // Otherwise the filter operation might trigger a list update
-                // which then leads to ClassCastExceptions as the old
-                // GroupByObjects are still in the TreeList.
-                indexes.addAll(this.groupByModel.getGroupByColumnIndexes());
-                this.groupByModel.getGroupByColumnIndexes().clear();
-            }
+            // there can be situations where the groupby indexes and the
+            // corresponding types per column are totally different. In this
+            // case we first need to perform a clear operation without the
+            // new groupby configuration, and then re-apply everything.
+            // Otherwise the filter operation might trigger a list update
+            // which then leads to ClassCastExceptions as the old
+            // GroupByObjects are still in the TreeList.
+            indexes.addAll(this.groupByModel.getGroupByColumnIndexes());
+            this.groupByModel.getGroupByColumnIndexes().clear();
 
             // if we know the sort model, we need to clear the sort model to
             // avoid strange side effects while updating the tree structure
@@ -686,9 +683,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
                 this.filterRowDataProvider.getFilterStrategy().applyFilter(original);
             }
 
-            if (GroupByModel.LOAD_STATE_INDICATOR.equals(arg)) {
-                this.groupByModel.getGroupByColumnIndexes().addAll(indexes);
-            }
+            this.groupByModel.getGroupByColumnIndexes().addAll(indexes);
 
             updateTree();
 

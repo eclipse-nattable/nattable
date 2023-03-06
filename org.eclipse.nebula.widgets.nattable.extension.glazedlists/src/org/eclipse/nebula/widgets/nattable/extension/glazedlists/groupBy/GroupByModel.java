@@ -29,15 +29,6 @@ public class GroupByModel extends Observable implements IPersistable {
 
     public static final String PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES = ".groupByColumnIndexes"; //$NON-NLS-1$
 
-    /**
-     * Argument that is passed to {@link #notifyObservers(Object)} to inform
-     * about a complete change. Needed to handle the tree update slightly
-     * different.
-     *
-     * @since 2.1
-     */
-    public static final String LOAD_STATE_INDICATOR = "LOAD_STATE"; //$NON-NLS-1$
-
     private List<Integer> groupByColumnIndexes = new ArrayList<>();
 
     /**
@@ -122,7 +113,7 @@ public class GroupByModel extends Observable implements IPersistable {
         }
 
         setChanged();
-        notifyObservers(LOAD_STATE_INDICATOR);
+        notifyObservers();
     }
 
     /**
