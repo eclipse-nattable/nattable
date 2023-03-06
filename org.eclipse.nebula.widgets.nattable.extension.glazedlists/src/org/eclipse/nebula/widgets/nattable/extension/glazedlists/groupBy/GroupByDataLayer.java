@@ -635,77 +635,82 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        List<Integer> indexes = new ArrayList<>();
-        if (GroupByModel.LOAD_STATE_INDICATOR.equals(arg)) {
-            // if the GroupByModel was loaded and not simply updated, there can
-            // be situations where the groupby indexes and the corresponding
-            // types per column are totally different. In this case we first
-            // need to perform a clear operation without the new groupby
-            // configuration, and then re-apply everything. Otherwise the filter
-            // operation might trigger a list update which then leads to
-            // ClassCastExceptions as the old GroupByObjects are still in the
-            // TreeList.
-            indexes.addAll(this.groupByModel.getGroupByColumnIndexes());
-            this.groupByModel.getGroupByColumnIndexes().clear();
-        }
-
-        // if we know the sort model, we need to clear the sort model to avoid
-        // strange side effects while updating the tree structure (e.g. not
-        // applied sorting although showing the sort indicator)
-        // for better user experience we remember the sort state and re-apply it
-        // after the tree update
-        List<Integer> sortedIndexes = Collections.emptyList();
-        List<SortDirectionEnum> sortDirections = new ArrayList<>();
-        if (this.treeFormat.getSortModel() != null) {
-            sortedIndexes = this.treeFormat.getSortModel().getSortedColumnIndexes();
-            for (Integer index : sortedIndexes) {
-                sortDirections.add(this.treeFormat.getSortModel().getSortDirection(index));
-            }
-            this.treeFormat.getSortModel().clear();
-        }
-
-        // if we know the filter row data provider, we need to remove the filter
-        // to avoid strange side effects while updating the tree structure (e.g.
-        // previously filtered items are not back at the original position but
-        // will be moved to the end of list after the filter is removed)
-        // for better user experience we remember the filter state and re-apply
-        // it after the tree update
-        Map<Integer, Object> filterCopy = Collections.emptyMap();
-        if (this.filterRowDataProvider != null) {
-            if (this.filterRowDataProvider.getFilterStrategy() instanceof IActivatableFilterStrategy) {
-                ((IActivatableFilterStrategy<T>) this.filterRowDataProvider.getFilterStrategy()).deactivateFilterStrategy();
+        // Perform the update showing the busy indicator, as removing and
+        // re-applying the sorting and filtering around building the tree
+        // structure costs time
+        BusyIndicator.showWhile(Display.getDefault(), () -> {
+            List<Integer> indexes = new ArrayList<>();
+            if (GroupByModel.LOAD_STATE_INDICATOR.equals(arg)) {
+                // if the GroupByModel was loaded and not simply updated, there
+                // can be situations where the groupby indexes and the
+                // corresponding types per column are totally different. In this
+                // case we first need to perform a clear operation without the
+                // new groupby configuration, and then re-apply everything.
+                // Otherwise the filter operation might trigger a list update
+                // which then leads to ClassCastExceptions as the old
+                // GroupByObjects are still in the TreeList.
+                indexes.addAll(this.groupByModel.getGroupByColumnIndexes());
+                this.groupByModel.getGroupByColumnIndexes().clear();
             }
 
-            Map<Integer, Object> original = this.filterRowDataProvider.getFilterIndexToObjectMap();
-            filterCopy = new HashMap<>(original);
-            original.clear();
-            this.filterRowDataProvider.getFilterStrategy().applyFilter(original);
-        }
-
-        if (GroupByModel.LOAD_STATE_INDICATOR.equals(arg)) {
-            this.groupByModel.getGroupByColumnIndexes().addAll(indexes);
-        }
-
-        updateTree();
-
-        // re-apply the filter after the tree update
-        if (this.filterRowDataProvider != null) {
-            if (this.filterRowDataProvider.getFilterStrategy() instanceof IActivatableFilterStrategy) {
-                ((IActivatableFilterStrategy<T>) this.filterRowDataProvider.getFilterStrategy()).activateFilterStrategy();
+            // if we know the sort model, we need to clear the sort model to
+            // avoid strange side effects while updating the tree structure
+            // (e.g. not applied sorting although showing the sort indicator)
+            // for better user experience we remember the sort state and
+            // re-apply it after the tree update
+            List<Integer> sortedIndexes = Collections.emptyList();
+            List<SortDirectionEnum> sortDirections = new ArrayList<>();
+            if (this.treeFormat.getSortModel() != null) {
+                sortedIndexes = this.treeFormat.getSortModel().getSortedColumnIndexes();
+                for (Integer index : sortedIndexes) {
+                    sortDirections.add(this.treeFormat.getSortModel().getSortDirection(index));
+                }
+                this.treeFormat.getSortModel().clear();
             }
 
-            Map<Integer, Object> original = this.filterRowDataProvider.getFilterIndexToObjectMap();
-            original.putAll(filterCopy);
-            this.filterRowDataProvider.getFilterStrategy().applyFilter(original);
-        }
+            // if we know the filter row data provider, we need to remove the
+            // filter to avoid strange side effects while updating the tree
+            // structure (e.g. previously filtered items are not back at the
+            // original position but will be moved to the end of list after the
+            // filter is removed) for better user experience we remember the
+            // filter state and re-apply it after the tree update
+            Map<Integer, Object> filterCopy = Collections.emptyMap();
+            if (this.filterRowDataProvider != null) {
+                if (this.filterRowDataProvider.getFilterStrategy() instanceof IActivatableFilterStrategy) {
+                    ((IActivatableFilterStrategy<T>) this.filterRowDataProvider.getFilterStrategy()).deactivateFilterStrategy();
+                }
 
-        // re-apply the sorting after the tree update
-        if (this.treeFormat.getSortModel() != null) {
-            for (int i = 0; i < sortedIndexes.size(); i++) {
-                Integer index = sortedIndexes.get(i);
-                this.treeFormat.getSortModel().sort(index, sortDirections.get(i), true);
+                Map<Integer, Object> original = this.filterRowDataProvider.getFilterIndexToObjectMap();
+                filterCopy = new HashMap<>(original);
+                original.clear();
+                this.filterRowDataProvider.getFilterStrategy().applyFilter(original);
             }
-        }
+
+            if (GroupByModel.LOAD_STATE_INDICATOR.equals(arg)) {
+                this.groupByModel.getGroupByColumnIndexes().addAll(indexes);
+            }
+
+            updateTree();
+
+            // re-apply the filter after the tree update
+            if (this.filterRowDataProvider != null) {
+                if (this.filterRowDataProvider.getFilterStrategy() instanceof IActivatableFilterStrategy) {
+                    ((IActivatableFilterStrategy<T>) this.filterRowDataProvider.getFilterStrategy()).activateFilterStrategy();
+                }
+
+                Map<Integer, Object> original = this.filterRowDataProvider.getFilterIndexToObjectMap();
+                original.putAll(filterCopy);
+                this.filterRowDataProvider.getFilterStrategy().applyFilter(original);
+            }
+
+            // re-apply the sorting after the tree update
+            if (this.treeFormat.getSortModel() != null) {
+                for (int i = 0; i < sortedIndexes.size(); i++) {
+                    Integer index = sortedIndexes.get(i);
+                    this.treeFormat.getSortModel().sort(index, sortDirections.get(i), true);
+                }
+            }
+        });
 
         fireLayerEvent(new RowStructuralRefreshEvent(this));
     }
