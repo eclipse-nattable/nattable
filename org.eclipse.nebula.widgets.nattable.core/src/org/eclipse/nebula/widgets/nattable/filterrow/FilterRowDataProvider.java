@@ -129,21 +129,11 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
     private Map<Integer, Object> filterIndexToObjectMap = new HashMap<>();
 
     /**
-     * Flag to configure how filter collections are persisted. By default the
-     * values in the collection are persisted as is. In case of Excel like
-     * filters, it can be more feasible to store which values are NOT selected,
-     * to be able to load the filter even for different values in the filter
-     * list.
-     *
-     * @see #filterRowComboBoxDataProvider
-     *
-     * @since 2.1
-     */
-    private boolean invertCollectionPersistence = false;
-
-    /**
-     * The FilterRowComboBoxDataProvider that is needed to be able to support
-     * inverted persistence of filter collections.
+     * The {@link FilterRowComboBoxDataProvider} that is needed to support
+     * inverted persistence of filter collections. By default the values in the
+     * collection are persisted as is. In case of Excel like filters, it can be
+     * more feasible to store which values are NOT selected, to be able to load
+     * the filter even for different values in the filter list.
      *
      * @see FilterRowDataProvider#invertCollectionPersistence
      *
@@ -333,7 +323,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
             builder.append("["); //$NON-NLS-1$
             Collection<?> filterCollection = (Collection<?>) filterValue;
 
-            if (!this.invertCollectionPersistence) {
+            if (this.filterRowComboBoxDataProvider == null) {
                 for (Iterator<?> iterator = filterCollection.iterator(); iterator.hasNext();) {
                     Object filterObject = iterator.next();
                     String displayValue = (String) converter.canonicalToDisplayValue(
@@ -436,7 +426,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
                 }
             }
 
-            if (this.invertCollectionPersistence) {
+            if (this.filterRowComboBoxDataProvider != null) {
                 if (filterCollection.isEmpty()) {
                     return EditConstants.SELECT_ALL_ITEMS_VALUE;
                 }
@@ -477,32 +467,18 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 
     /**
      *
-     * @return <code>true</code> if filter collections are persisted in an
-     *         inverted way, which means the values that are <b>NOT</b> selected
-     *         in the combo are persisted. By default this configuration is set
-     *         to <code>false</code> which means values in the collection are
-     *         persisted as is.
+     * @param comboBoxDataProvider
+     *            The {@link FilterRowComboBoxDataProvider} that should be used
+     *            to support inverted persistence of filter collections. By
+     *            default the values in the collection are persisted as is. In
+     *            case of Excel like filters, it can be more feasible to store
+     *            which values are NOT selected, to be able to load the filter
+     *            even for different values in the filter list. Passing
+     *            <code>null</code> will result in the default persistence.
      *
      * @since 2.1
      */
-    public boolean isInvertCollectionPersistence() {
-        return this.invertCollectionPersistence;
-    }
-
-    /**
-     *
-     * @param invertCollectionPersistence
-     *            <code>true</code> if filter collections should be persisted in
-     *            an inverted way, which means the values that are <b>NOT</b>
-     *            selected in the combo are persisted.
-     *
-     * @since 2.1
-     */
-    public void setInvertCollectionPersistence(boolean invertCollectionPersistence, FilterRowComboBoxDataProvider<T> comboBoxDataProvider) {
-        if (invertCollectionPersistence && comboBoxDataProvider == null) {
-            throw new IllegalArgumentException("Can only invert the collection persistence if the FilterRowComboBoxDataProvider is provided"); //$NON-NLS-1$
-        }
-        this.invertCollectionPersistence = invertCollectionPersistence;
+    public void setFilterRowComboBoxDataProvider(FilterRowComboBoxDataProvider<T> comboBoxDataProvider) {
         this.filterRowComboBoxDataProvider = comboBoxDataProvider;
     }
 

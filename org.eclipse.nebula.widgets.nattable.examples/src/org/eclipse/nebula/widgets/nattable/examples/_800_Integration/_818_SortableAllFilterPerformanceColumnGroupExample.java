@@ -49,10 +49,10 @@ import org.eclipse.nebula.widgets.nattable.data.convert.DefaultIntegerDisplayCon
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Address;
 import org.eclipse.nebula.widgets.nattable.dataset.person.DataModelConstants;
+import org.eclipse.nebula.widgets.nattable.dataset.person.ExtendedPersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
-import org.eclipse.nebula.widgets.nattable.dataset.person.PersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
@@ -170,9 +170,9 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
 
     private ArrayList<Serializable> filterExcludes = new ArrayList<>();
 
-    private List<PersonWithAddress> mixedPersons = PersonService.getPersonsWithAddress(1000);
-    // private List<PersonWithAddress> mixedPersons = createPersons(0);
-    private List<PersonWithAddress> alternativePersons = createAlternativePersons();
+    private List<ExtendedPersonWithAddress> mixedPersons = PersonService.getExtendedPersonsWithAddress(1000);
+    // private List<ExtendedPersonWithAddress> mixedPersons = createPersons(0);
+    private List<ExtendedPersonWithAddress> alternativePersons = createAlternativePersons();
 
     private AtomicBoolean alternativePersonsActive = new AtomicBoolean(false);
 
@@ -213,7 +213,8 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                 "address.street",
                 "address.housenumber",
                 "address.postalCode",
-                "address.city" };
+                "address.city",
+                "age", "money", "description", "favouriteFood", "favouriteDrinks" };
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<>();
@@ -226,13 +227,18 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
         propertyToLabelMap.put("address.housenumber", "Housenumber");
         propertyToLabelMap.put("address.postalCode", "Postal Code");
         propertyToLabelMap.put("address.city", "City");
+        propertyToLabelMap.put("age", "Age");
+        propertyToLabelMap.put("money", "Money");
+        propertyToLabelMap.put("description", "Description");
+        propertyToLabelMap.put("favouriteFood", "Food");
+        propertyToLabelMap.put("favouriteDrinks", "Drinks");
 
-        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
+        IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor =
                 new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
 
-        IRowIdAccessor<PersonWithAddress> rowIdAccessor = PersonWithAddress::getId;
+        IRowIdAccessor<ExtendedPersonWithAddress> rowIdAccessor = ExtendedPersonWithAddress::getId;
 
-        final BodyLayerStack<PersonWithAddress> bodyLayerStack =
+        final BodyLayerStack<ExtendedPersonWithAddress> bodyLayerStack =
                 new BodyLayerStack<>(
                         this.mixedPersons,
                         columnPropertyAccessor);
@@ -246,8 +252,8 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
         bodyLayerStack.getBodyDataLayer().setDataValue(2, 5, null);
 
         // build the column header layer
-        ColumnHeaderLayerStack<PersonWithAddress> columnHeaderLayerStack =
-                new ColumnHeaderLayerStack<PersonWithAddress>(
+        ColumnHeaderLayerStack<ExtendedPersonWithAddress> columnHeaderLayerStack =
+                new ColumnHeaderLayerStack<ExtendedPersonWithAddress>(
                         propertyNames,
                         propertyToLabelMap,
                         columnPropertyAccessor,
@@ -343,7 +349,8 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                         .withAutoResizeSelectedColumnsMenuItem()
                         .withColumnStyleEditor()
                         .withColumnRenameDialog()
-                        .withClearAllFilters();
+                        .withClearAllFilters()
+                        .withFreezeColumnMenuItem();
             }
         });
 
@@ -366,7 +373,7 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
         });
 
         // body menu configuration
-        natTable.addConfiguration(new BodyMenuConfiguration<PersonWithAddress>(
+        natTable.addConfiguration(new BodyMenuConfiguration<ExtendedPersonWithAddress>(
                 natTable,
                 bodyLayerStack,
                 rowIdAccessor,
@@ -519,8 +526,9 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                 address.setHousenumber(42);
                 address.setPostalCode(12345);
                 address.setCity("In the clouds");
-                PersonWithAddress person = new PersonWithAddress(42, "Ralph",
-                        "Wiggum", Gender.MALE, false, new Date(), address);
+                ExtendedPersonWithAddress person = new ExtendedPersonWithAddress(42, "Ralph",
+                        "Wiggum", Gender.MALE, false, new Date(), address,
+                        "password", "I am Ralph", 0.00, Arrays.asList("Chocolate", "Booger"), Arrays.asList("Saft"));
 
                 bodyLayerStack.getFilterList().add(person);
 
@@ -625,14 +633,14 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
      * @param themeConfiguration
      */
     private void configureFilterExcludes(
-            IRowIdAccessor<PersonWithAddress> rowIdAccessor,
-            ComboBoxGlazedListsWithExcludeFilterStrategy<PersonWithAddress> filterStrategy,
-            BodyLayerStack<PersonWithAddress> bodyLayerStack,
+            IRowIdAccessor<ExtendedPersonWithAddress> rowIdAccessor,
+            ComboBoxGlazedListsWithExcludeFilterStrategy<ExtendedPersonWithAddress> filterStrategy,
+            BodyLayerStack<ExtendedPersonWithAddress> bodyLayerStack,
             ThemeConfiguration themeConfiguration) {
 
         // register the Matcher to the
         // ComboBoxGlazedListsWithExcludeFilterStrategy
-        Matcher<PersonWithAddress> idMatcher = item -> _818_SortableAllFilterPerformanceColumnGroupExample.this.filterExcludes.contains(rowIdAccessor.getRowId(item));
+        Matcher<ExtendedPersonWithAddress> idMatcher = item -> _818_SortableAllFilterPerformanceColumnGroupExample.this.filterExcludes.contains(rowIdAccessor.getRowId(item));
         filterStrategy.addExcludeFilter(idMatcher);
 
         // register the IConfigLabelAccumulator to the body DataLayer
@@ -680,17 +688,17 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
      */
     private void configureSingleFieldFilter(
             Text input,
-            ComboBoxGlazedListsWithExcludeFilterStrategy<PersonWithAddress> filterStrategy,
-            BodyLayerStack<PersonWithAddress> bodyLayerStack,
+            ComboBoxGlazedListsWithExcludeFilterStrategy<ExtendedPersonWithAddress> filterStrategy,
+            BodyLayerStack<ExtendedPersonWithAddress> bodyLayerStack,
             ThemeConfiguration themeConfiguration,
             NatTable natTable,
             ILayer columnHeaderLayer) {
 
         // define a TextMatcherEditor and add it as static filter
-        TextMatcherEditor<PersonWithAddress> matcherEditor = new TextMatcherEditor<>(new TextFilterator<PersonWithAddress>() {
+        TextMatcherEditor<ExtendedPersonWithAddress> matcherEditor = new TextMatcherEditor<>(new TextFilterator<ExtendedPersonWithAddress>() {
 
             @Override
-            public void getFilterStrings(List<String> baseList, PersonWithAddress element) {
+            public void getFilterStrings(List<String> baseList, ExtendedPersonWithAddress element) {
                 // add all values that should be included in filtering
                 // Note:
                 // if special converters are involved in rendering,
@@ -908,7 +916,7 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                             columnPropertyAccessor);
             this.filterRowComboBoxDataProvider.setDistinctNullAndEmpty(true);
             this.filterRowComboBoxDataProvider.setCachingEnabled(true);
-//            this.filterRowComboBoxDataProvider.disableUpdateEvents();
+            // this.filterRowComboBoxDataProvider.disableUpdateEvents();
 
             this.filterStrategy =
                     new ComboBoxGlazedListsWithExcludeFilterStrategy<>(
@@ -943,6 +951,11 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
             // add the specialized configuration to the
             // ComboBoxFilterRowHeaderComposite
             this.filterRowHeaderLayer.addConfiguration(new FilterRowConfiguration());
+
+            this.filterRowHeaderLayer
+                    .getFilterRowDataLayer()
+                    .getFilterRowDataProvider()
+                    .setFilterRowComboBoxDataProvider(this.filterRowComboBoxDataProvider);
 
             setUnderlyingLayer(this.filterRowHeaderLayer);
         }
@@ -988,7 +1001,8 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
     }
 
     /**
-     * The configuration to enable editing of {@link PersonWithAddress} objects.
+     * The configuration to enable editing of {@link ExtendedPersonWithAddress}
+     * objects.
      */
     class EditConfiguration extends AbstractRegistryConfiguration {
 
@@ -1606,8 +1620,8 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
         }
     }
 
-    private List<PersonWithAddress> createAlternativePersons() {
-        List<PersonWithAddress> result = new ArrayList<>();
+    private List<ExtendedPersonWithAddress> createAlternativePersons() {
+        List<ExtendedPersonWithAddress> result = new ArrayList<>();
 
         for (int i = 0; i < 100; i++) {
             Address address = new Address();
@@ -1615,15 +1629,18 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
             address.setHousenumber(732);
             address.setPostalCode(54321);
             address.setCity("Springfield");
-            result.add(new PersonWithAddress(i,
+            result.add(new ExtendedPersonWithAddress(i,
                     "Ralph", "Wiggum", Gender.MALE, false, new Date(),
-                    address));
-            result.add(new PersonWithAddress(i,
+                    address,
+                    "password", "I am Ralph", 0.00, Arrays.asList("Chocolate", "Booger"), Arrays.asList("Saft")));
+            result.add(new ExtendedPersonWithAddress(i,
                     "Clancy", "Wiggum", Gender.MALE, true, new Date(),
-                    address));
-            result.add(new PersonWithAddress(i,
+                    address,
+                    "password", "Stop Police", 0.00, Arrays.asList("Donuts", "Burger", "Hot Dogs"), Arrays.asList("Milk", "Juice", "Lemonade")));
+            result.add(new ExtendedPersonWithAddress(i,
                     "Sarah", "Wiggum", Gender.FEMALE, true, new Date(),
-                    address));
+                    address,
+                    "password", "Where is Ralphie", 0.00, Arrays.asList("Salad", "Veggie"), Arrays.asList("Water")));
         }
 
         for (int i = 400; i < 500; i++) {
@@ -1632,16 +1649,17 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
             address.setHousenumber(19);
             address.setPostalCode(54321);
             address.setCity("Springfield");
-            result.add(new PersonWithAddress(i,
+            result.add(new ExtendedPersonWithAddress(i,
                     "Nelson", "Muntz", Gender.MALE, false, new Date(),
-                    address));
+                    address,
+                    "GotCha", "Ha Ha", 0.00, Arrays.asList("Fish", "Cheese"), Arrays.asList("Water, Whiskey")));
         }
 
         return result;
     }
 
-    private static List<PersonWithAddress> createPersons(int startId) {
-        List<PersonWithAddress> result = new ArrayList<>();
+    private static List<ExtendedPersonWithAddress> createPersons(int startId) {
+        List<ExtendedPersonWithAddress> result = new ArrayList<>();
 
         Address evergreen = new Address();
         evergreen.setStreet("Evergreen Terrace");
@@ -1661,101 +1679,131 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
         main.setPostalCode(33333);
         main.setCity("Ogdenville");
 
-        result.add(new PersonWithAddress(
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 1, "Homer", "Simpson", Gender.MALE, true, new Date()),
-                evergreen));
-        result.add(new PersonWithAddress(
+                evergreen,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 2, "Homer", "Simpson", Gender.MALE, true, new Date()),
-                evergreen));
-        result.add(new PersonWithAddress(
+                evergreen,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 3, "Marge", "Simpson", Gender.FEMALE, true, new Date()),
-                evergreen));
-        result.add(new PersonWithAddress(
+                evergreen,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 4, "Marge", "Simpson", Gender.FEMALE, true, new Date()),
-                evergreen));
-        result.add(new PersonWithAddress(
+                evergreen,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 5, "Marge", "Simpson", Gender.FEMALE, true, new Date(), null),
-                evergreen));
-        result.add(new PersonWithAddress(
+                evergreen,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 6, "Ned", null, Gender.MALE, true, new Date()),
-                evergreen));
-        result.add(new PersonWithAddress(
+                evergreen,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 7, "Maude", null, Gender.FEMALE, true, new Date()),
-                evergreen));
+                evergreen,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
 
-        result.add(new PersonWithAddress(
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 8, "Homer", "Simpson", Gender.MALE, true, new Date()),
-                south));
-        result.add(new PersonWithAddress(
+                south,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 9, "Homer", "Simpson", Gender.MALE, true, new Date()),
-                south));
-        result.add(new PersonWithAddress(
+                south,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 10, "Homer", "Simpson", Gender.MALE, true, new Date()),
-                south));
-        result.add(new PersonWithAddress(
+                south,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 11, "Bart", "Simpson", Gender.MALE, false, new Date()),
-                south));
-        result.add(new PersonWithAddress(
+                south,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 12, "Bart", "Simpson", Gender.MALE, false, new Date()),
-                south));
-        result.add(new PersonWithAddress(
+                south,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 13, "Bart", "Simpson", Gender.MALE, false, new Date()),
-                south));
-        result.add(new PersonWithAddress(
+                south,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 14, "Marge", "Simpson", Gender.FEMALE, true, new Date()),
-                south));
-        result.add(new PersonWithAddress(
+                south,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 15, "Marge", "Simpson", Gender.FEMALE, true, new Date()),
-                south));
-        result.add(new PersonWithAddress(
+                south,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 16, "Lisa", "Simpson", Gender.FEMALE, false, new Date()),
-                south));
-        result.add(new PersonWithAddress(
+                south,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 17, "Lisa", "Simpson", Gender.FEMALE, false, new Date()),
-                south));
+                south,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
 
-        result.add(new PersonWithAddress(
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 18, "Ned", "Flanders", Gender.MALE, true, new Date()),
-                evergreen));
-        result.add(new PersonWithAddress(
+                evergreen,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 19, "Ned", "Flanders", Gender.MALE, true, new Date()),
-                evergreen));
-        result.add(new PersonWithAddress(
+                evergreen,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 20, "Maude", "Flanders", Gender.FEMALE, true, new Date()),
-                evergreen));
-        result.add(new PersonWithAddress(
+                evergreen,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 21, "Maude", "Flanders", Gender.FEMALE, true, new Date()),
-                evergreen));
-        result.add(new PersonWithAddress(
+                evergreen,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 22, "Rod", "Flanders", Gender.MALE, false, new Date()),
-                evergreen));
-        result.add(new PersonWithAddress(
+                evergreen,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 23, "Rod", "Flanders", Gender.MALE, false, new Date()),
-                evergreen));
-        result.add(new PersonWithAddress(
+                evergreen,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 24, "Tod", "Flanders", Gender.MALE, false, new Date()),
-                evergreen));
-        result.add(new PersonWithAddress(
+                evergreen,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 25, "Tod", "Flanders", Gender.MALE, false, new Date()),
-                evergreen));
+                evergreen,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
 
-        result.add(new PersonWithAddress(
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 26, "Lenny", "Leonard", Gender.MALE, false, new Date()),
-                main));
-        result.add(new PersonWithAddress(
+                main,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 27, "Lenny", "Leonard", Gender.MALE, false, new Date()),
-                main));
+                main,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
 
-        result.add(new PersonWithAddress(
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 28, "Carl", "Carlson", Gender.MALE, false, new Date()),
-                main));
-        result.add(new PersonWithAddress(
+                main,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 29, "Carl", "Carlson", Gender.MALE, false, new Date()),
-                main));
+                main,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
 
-        result.add(new PersonWithAddress(
+        result.add(new ExtendedPersonWithAddress(
                 new Person(startId + 30, "Timothy", "Lovejoy", Gender.MALE, false, new Date()),
-                main));
+                main,
+                "password", "Dough", 0.00, Arrays.asList("Burger", "Fries", "Donuts"), Arrays.asList("Beer")));
         return result;
 
     }

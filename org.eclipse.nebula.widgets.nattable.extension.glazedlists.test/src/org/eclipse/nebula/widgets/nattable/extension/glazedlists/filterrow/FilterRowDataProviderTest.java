@@ -431,7 +431,7 @@ public class FilterRowDataProviderTest {
                         new DataLayer(new ListDataProvider<>(this.filterList, this.columnAccessor)),
                         this.baseList,
                         this.columnAccessor);
-        this.dataProvider.setInvertCollectionPersistence(true, cbdp);
+        this.dataProvider.setFilterRowComboBoxDataProvider(cbdp);
 
         // set filter to filter out AAA and aaa
         this.dataProvider.setDataValue(2, 1, new ArrayList<>(Arrays.asList("A-", "AA", "B", "B-", "BB", "C", "a", "aa")));
@@ -467,7 +467,7 @@ public class FilterRowDataProviderTest {
                         new DataLayer(new ListDataProvider<>(this.filterList, this.columnAccessor)),
                         this.baseList,
                         this.columnAccessor);
-        this.dataProvider.setInvertCollectionPersistence(true, cbdp);
+        this.dataProvider.setFilterRowComboBoxDataProvider(cbdp);
 
         // set filter to select all, which means nothing is filtered
         this.dataProvider.setDataValue(2, 1, new ArrayList<>(Arrays.asList("A-", "AA", "AAA", "B", "B-", "BB", "C", "a", "aa", "aaa")));
@@ -500,7 +500,7 @@ public class FilterRowDataProviderTest {
                         new DataLayer(new ListDataProvider<>(this.filterList, this.columnAccessor)),
                         this.baseList,
                         this.columnAccessor);
-        this.dataProvider.setInvertCollectionPersistence(true, cbdp);
+        this.dataProvider.setFilterRowComboBoxDataProvider(cbdp);
 
         this.filterList.get(0).setRating(null);
 
@@ -539,7 +539,7 @@ public class FilterRowDataProviderTest {
                         new DataLayer(new ListDataProvider<>(this.filterList, this.columnAccessor)),
                         this.baseList,
                         this.columnAccessor);
-        this.dataProvider.setInvertCollectionPersistence(true, cbdp);
+        this.dataProvider.setFilterRowComboBoxDataProvider(cbdp);
 
         this.filterList.get(0).setRating("");
 
