@@ -24,6 +24,7 @@ import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
+import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.richtext.RichTextPainter;
 import org.eclipse.swt.graphics.Color;
@@ -47,6 +48,10 @@ public class RichTextCellPainter extends AbstractCellPainter {
      * @since 1.1
      */
     protected boolean calculateByTextHeight;
+    /**
+     * @since 2.1
+     */
+    private boolean wrapText;
 
     /**
      * Creates a new {@link RichTextCellPainter} with text wrapping enabled and
@@ -103,6 +108,7 @@ public class RichTextCellPainter extends AbstractCellPainter {
         this.richTextPainter = new RichTextPainter(wrapText);
         this.calculateByTextLength = calculateByTextLength;
         this.calculateByTextHeight = calculateByTextHeight;
+        this.wrapText = wrapText;
     }
 
     @Override
@@ -113,6 +119,28 @@ public class RichTextCellPainter extends AbstractCellPainter {
         String htmlText = getHtmlText(cell, configRegistry);
 
         Rectangle painterBounds = new Rectangle(bounds.x, bounds.y - this.richTextPainter.getParagraphSpace(), bounds.width, bounds.height);
+
+        // if a vertical alignment is set != TOP we need to update the bounds
+        // Note:
+        // to make the vertical alignment handling work correctly, you need to
+        // use at least Nebula 3.0, as it contains the necessary fix for the
+        // content height calculation. In case you can not consume Nebula >= 3.0
+        // as it requires Java 8, it is recommended to configure
+        // VerticalAlignmentEnum.TOP to get the same result as in previous
+        // versions of the RichTextPainter
+        VerticalAlignmentEnum verticalAlignment =
+                cellStyle.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT);
+        if (verticalAlignment != VerticalAlignmentEnum.TOP) {
+            this.richTextPainter.preCalculate(htmlText, gc, painterBounds, this.wrapText);
+            int contentHeight = this.richTextPainter.getPreferredSize().y - 2 * this.richTextPainter.getParagraphSpace();
+            int verticalAlignmentPadding = CellStyleUtil.getVerticalAlignmentPadding(
+                    cellStyle,
+                    painterBounds,
+                    contentHeight);
+            painterBounds.y = painterBounds.y + verticalAlignmentPadding;
+            painterBounds.height = contentHeight;
+        }
+
         this.richTextPainter.paintHTML(htmlText, gc, painterBounds);
 
         int height = this.richTextPainter.getPreferredSize().y - 2 * this.richTextPainter.getParagraphSpace();

@@ -69,7 +69,7 @@
 	</modules>
 
 	<properties>
-		<tycho-version>3.0.1</tycho-version>
+		<tycho-version>3.0.3</tycho-version>
         <cbi-version>1.3.4</cbi-version>
         <nattable-version>${project.version}</nattable-version>
 		
@@ -148,7 +148,7 @@
 						</artifact>
 					</target>
 					<targetDefinitionIncludeSource>honor</targetDefinitionIncludeSource>
-					<executionEnvironment>JavaSE-1.8</executionEnvironment>
+					<executionEnvironment>JavaSE-11</executionEnvironment>
 					<environments>
 						<environment>
 							<os>win32</os>
@@ -187,7 +187,7 @@
 				<version>${tycho-version}</version>
 				<configuration>
 					<useJDK>BREE</useJDK>
-					<requireJREPackageImports>true</requireJREPackageImports>
+					<requireJavaPackageImports>true</requireJavaPackageImports>
 				</configuration>
 			</plugin>
 		</plugins>
