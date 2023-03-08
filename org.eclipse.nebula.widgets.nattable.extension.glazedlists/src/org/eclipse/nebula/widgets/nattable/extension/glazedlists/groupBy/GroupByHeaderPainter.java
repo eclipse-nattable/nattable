@@ -214,7 +214,7 @@ public class GroupByHeaderPainter extends AbstractCellPainter {
     public int getGroupByColumnIndexAtXY(int x, int y) {
         for (int i = 0; i < this.groupByCellBounds.size(); i++) {
             Rectangle bounds = this.groupByCellBounds.get(i);
-            if (bounds.contains(x, y)) {
+            if (bounds.contains(x, y) && i < this.groupByModel.getGroupByColumnIndexes().size()) {
                 return this.groupByModel.getGroupByColumnIndexes().get(i);
             }
         }
