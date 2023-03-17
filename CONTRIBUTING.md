@@ -38,11 +38,12 @@ Contact the project developers via the [project's "dev" list](https://dev.eclips
 
 The development tools with minimum versions that are used by the NatTable team are:
 
-* JDK 1.8
-* Eclipse 4.17
-* Maven 3.6.3 with Tycho 2.0.0
+* JDK 17
+* Eclipse 4.26 (2022-12)
+* Maven 3.8.6 with Tycho 3.0.3
 * Git
 * Gerrit
+* JUnit5
 
 ## Gerrit server configuration
 
