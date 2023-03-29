@@ -1130,26 +1130,16 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
             int originDpiX = 0;
             int originDpiY = 0;
-            int minimumDpiX = this.minimumOrigin.getX();
-            int minimumDpiY = this.minimumOrigin.getY();
             int savedDpiX = 0;
             int savedDpiY = 0;
             if (this.horizontalDpiConverter != null) {
                 originDpiX = this.horizontalDpiConverter.convertDpiToPixel(this.origin.getX());
                 savedDpiX = this.horizontalDpiConverter.convertDpiToPixel(this.savedOrigin.getX());
-
-                if (this.minimumOrigin.getX() > 0) {
-                    minimumDpiX = this.horizontalDpiConverter.convertDpiToPixel(this.minimumOrigin.getX());
-                }
             }
 
             if (this.verticalDpiConverter != null) {
                 originDpiY = this.verticalDpiConverter.convertDpiToPixel(this.origin.getY());
                 savedDpiY = this.verticalDpiConverter.convertDpiToPixel(this.savedOrigin.getY());
-
-                if (this.minimumOrigin.getY() > 0) {
-                    minimumDpiY = this.verticalDpiConverter.convertDpiToPixel(this.minimumOrigin.getY());
-                }
             }
 
             this.horizontalDpiConverter = ((ConfigureScalingCommand) command).getHorizontalDpiConverter();
@@ -1162,10 +1152,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
                     this.horizontalDpiConverter.convertPixelToDpi(savedDpiX),
                     this.verticalDpiConverter.convertPixelToDpi(savedDpiY));
 
-            if (minimumDpiX > 0 || minimumDpiY > 0) {
+            if (this.minimumOriginColumnPosition > 0 || this.minimumOriginRowPosition > 0) {
                 this.minimumOrigin = new PixelCoordinate(
-                        this.horizontalDpiConverter.convertPixelToDpi(minimumDpiX),
-                        this.verticalDpiConverter.convertPixelToDpi(minimumDpiY));
+                        getUnderlyingLayer().getStartXOfColumnPosition(this.minimumOriginColumnPosition),
+                        getUnderlyingLayer().getStartYOfRowPosition(this.minimumOriginRowPosition));
             }
         }
         return super.doCommand(command);
