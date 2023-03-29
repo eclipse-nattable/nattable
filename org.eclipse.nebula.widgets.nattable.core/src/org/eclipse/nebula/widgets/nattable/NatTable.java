@@ -152,7 +152,9 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
         if (!commitAndCloseActiveCellEditor()) {
             // if committing didn't work out we need to perform a hard close
             // otherwise the state of the table would be unstale
-            getActiveCellEditor().close();
+            if (this.activeCellEditor != null) {
+                this.activeCellEditor.close();
+            }
         }
     };
 
