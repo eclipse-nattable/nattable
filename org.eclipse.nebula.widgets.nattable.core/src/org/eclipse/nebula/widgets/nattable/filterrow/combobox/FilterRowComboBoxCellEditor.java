@@ -166,6 +166,15 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
         // the value gets committed again, which again results in filtering,
         // which will lead to exceptions because the states are not synchronous
         // anymore.
+
+        // avoid commit if combo filter is active
+        NatCombo editorControl = getEditorControl();
+        if (editorControl != null
+                && editorControl instanceof FilterNatCombo
+                && ((FilterNatCombo) editorControl).filterActive) {
+            return false;
+        }
+
         if (!isClosed()) {
             try {
                 // always do the conversion

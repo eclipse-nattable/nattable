@@ -1598,8 +1598,8 @@ public class NatCombo extends Composite {
         public void modifyText(ModifyEvent e) {
             if (null != NatCombo.this.dropdownTableViewer && !NatCombo.this.dropdownTable.isDisposed()) {
                 NatCombo.this.dropdownTableViewer.refresh();
-                calculateBounds();
                 setSelection();
+                calculateBounds();
             }
         }
 

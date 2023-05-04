@@ -14,17 +14,14 @@
 package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ICheckStateProvider;
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
@@ -58,7 +55,7 @@ import org.eclipse.swt.widgets.Text;
 public class FilterNatCombo extends NatCombo {
 
     /**
-     * The viewer that contains the select all item in the dropdown control.
+     * The viewer that contains the 'select all' item in the dropdown control.
      *
      * @since 1.4
      */
@@ -83,6 +80,38 @@ public class FilterNatCombo extends NatCombo {
      * @since 2.1
      */
     private Runnable filterModifyAction;
+
+    /**
+     * Flag to determine whether the content of the dropdown is filtered or not.
+     *
+     * @since 2.1
+     */
+    boolean filterActive = false;
+
+    /**
+     * The base style that is used to create the dropdown. Needed to use the
+     * same style for creating the additional viewer ('select all' and 'add to
+     * filter').
+     *
+     * @since 2.1
+     */
+    private int baseStyle;
+
+    /**
+     * The viewer that contains the 'add to filter' item in the dropdown
+     * control.
+     *
+     * @since 2.1
+     */
+    private CheckboxTableViewer addToFilterItemViewer;
+
+    /**
+     * The initial selection that was set when the FilterNatCombo was opened.
+     * Needed to restore the state on deactivating the 'add to filter' checkbox.
+     *
+     * @since 2.1
+     */
+    private String[] initialSelection;
 
     /**
      * Creates a new FilterNatCombo using the given IStyle for rendering,
@@ -232,10 +261,21 @@ public class FilterNatCombo extends NatCombo {
                     this.dropdownTable.computeSize(SWT.DEFAULT, listHeight, true).x,
                     size.x);
 
-            int viewerHeight = this.selectAllItemViewer.getTable().getItemHeight();
+            int selectAllViewerHeight = this.selectAllItemViewer.getTable().getItemHeight();
             listWidth = Math.max(
-                    this.selectAllItemViewer.getTable().computeSize(SWT.DEFAULT, viewerHeight, true).x,
+                    this.selectAllItemViewer.getTable().computeSize(SWT.DEFAULT, selectAllViewerHeight, true).x,
                     listWidth);
+
+            // calculate width with the 'add to filter' viewer
+            int addViewerHeight = 0;
+            if (this.addToFilterItemViewer != null && this.addToFilterItemViewer.getTable().isVisible()) {
+                this.addToFilterItemViewer.getTable().getColumn(0).pack();
+
+                addViewerHeight = this.addToFilterItemViewer.getTable().getItemHeight();
+                listWidth = Math.max(
+                        this.addToFilterItemViewer.getTable().computeSize(SWT.DEFAULT, addViewerHeight, true).x,
+                        listWidth);
+            }
 
             Point textPosition = this.text.toDisplay(this.text.getLocation());
 
@@ -244,7 +284,7 @@ public class FilterNatCombo extends NatCombo {
                     textPosition.x,
                     textPosition.y + this.text.getBounds().height,
                     listWidth + (this.dropdownTable.getGridLineWidth() * 2),
-                    listHeight + viewerHeight + filterTextBoxHeight);
+                    listHeight + selectAllViewerHeight + addViewerHeight + filterTextBoxHeight);
 
             // as we performed auto resize for the columns, we now need to
             // ensure again that the columns
@@ -259,11 +299,18 @@ public class FilterNatCombo extends NatCombo {
 
         this.selectAllItemViewer.getTable().getColumn(0).setWidth(
                 this.dropdownTable.getColumn(0).getWidth());
+
+        if (this.addToFilterItemViewer != null) {
+            this.addToFilterItemViewer.getTable().getColumn(0).setWidth(
+                    this.dropdownTable.getColumn(0).getWidth());
+        }
     }
 
     @Override
     protected void createDropdownControl(int style) {
         super.createDropdownControl(style);
+
+        this.baseStyle = style;
 
         int dropdownListStyle = style | SWT.NO_SCROLL
                 | HorizontalAlignmentEnum.getSWTStyle(this.cellStyle)
@@ -292,61 +339,20 @@ public class FilterNatCombo extends NatCombo {
         data.bottom = new FormAttachment(100);
         this.dropdownTable.setLayoutData(data);
 
-        this.selectAllItemViewer.setContentProvider(new IStructuredContentProvider() {
+        this.selectAllItemViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-            @Override
-            public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-                // no action on inputChanged
-            }
-
-            @Override
-            public void dispose() {
-                // no action on dispose
-            }
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public Object[] getElements(Object inputElement) {
-                return ((Collection<String>) inputElement).toArray();
-            }
-        });
-
-        this.selectAllItemViewer.setLabelProvider(new ILabelProvider() {
-
-            @Override
-            public void removeListener(ILabelProviderListener listener) {
-                // no additional listener support
-            }
+        this.selectAllItemViewer.setLabelProvider(new LabelProvider() {
 
             @Override
             public boolean isLabelProperty(Object element, String property) {
                 return false;
-            }
-
-            @Override
-            public void dispose() {
-                // no action on dispose
-            }
-
-            @Override
-            public void addListener(ILabelProviderListener listener) {
-                // no additional listener support
-            }
-
-            @Override
-            public String getText(Object element) {
-                return element.toString();
-            }
-
-            @Override
-            public Image getImage(Object element) {
-                return null;
             }
         });
 
         final String selectAllLabel = Messages.getString("FilterNatCombo.selectAll"); //$NON-NLS-1$
         List<String> input = new ArrayList<>();
         input.add(selectAllLabel);
+
         this.selectAllItemViewer.setInput(input);
 
         this.selectAllItemViewer.getTable().setBackground(
@@ -434,8 +440,9 @@ public class FilterNatCombo extends NatCombo {
     @Override
     protected void setDropdownSelection(String[] selection) {
         super.setDropdownSelection(selection);
-        if (this.selectAllItemViewer != null)
+        if (this.selectAllItemViewer != null) {
             this.selectAllItemViewer.refresh();
+        }
     }
 
     /**
@@ -499,6 +506,103 @@ public class FilterNatCombo extends NatCombo {
             }
         }
         this.filterText = textValue;
+
+        // if not all items are selected, it means there is already a filter
+        // active on opening the dropdown
+        if (this.selectAllItemViewer != null
+                && this.selectionStateMap.entrySet().stream().anyMatch(entry -> !entry.getValue())) {
+
+            // remember the initial selection to be able to restore it when
+            // the dropdown filter is cleared
+            this.initialSelection = getSelection();
+
+            // create the "add to filter" entry
+            createAddToFilterItemViewer();
+        }
+    }
+
+    /**
+     * Creates and adds the "add to filter" entry to the dropdown. Initially
+     * hidden and becomes visible once a dropdown filter is entered.
+     */
+    private void createAddToFilterItemViewer() {
+        int dropdownListStyle = this.baseStyle | SWT.NO_SCROLL
+                | HorizontalAlignmentEnum.getSWTStyle(this.cellStyle)
+                | SWT.FULL_SELECTION;
+        this.addToFilterItemViewer =
+                CheckboxTableViewer.newCheckList(this.dropdownShell, dropdownListStyle);
+
+        // add a column to be able to resize the item width in the dropdown
+        new TableColumn(this.addToFilterItemViewer.getTable(), SWT.NONE);
+        this.addToFilterItemViewer.getTable().addListener(SWT.Resize, event -> calculateColumnWidth());
+
+        FormData data = new FormData();
+        data.top = new FormAttachment(this.selectAllItemViewer.getControl(), 0, SWT.BOTTOM);
+        data.left = new FormAttachment(0);
+        data.right = new FormAttachment(100);
+        this.addToFilterItemViewer.getTable().setLayoutData(data);
+
+        this.addToFilterItemViewer.setContentProvider(ArrayContentProvider.getInstance());
+
+        this.addToFilterItemViewer.setLabelProvider(new LabelProvider() {
+
+            @Override
+            public boolean isLabelProperty(Object element, String property) {
+                return false;
+            }
+        });
+
+        final String addAllLabel = Messages.getString("FilterNatCombo.addToFilter"); //$NON-NLS-1$
+        List<String> input = new ArrayList<>();
+        input.add(addAllLabel);
+
+        this.addToFilterItemViewer.setInput(input);
+
+        this.addToFilterItemViewer.getTable().setBackground(
+                this.cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
+        this.addToFilterItemViewer.getTable().setForeground(
+                this.cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
+        this.addToFilterItemViewer.getTable().setFont(
+                this.cellStyle.getAttributeValue(CellStyleAttributes.FONT));
+
+        this.addToFilterItemViewer.getTable().addFocusListener(
+                new FocusAdapter() {
+                    @Override
+                    public void focusGained(FocusEvent e) {
+                        showDropdownControl();
+                    }
+                });
+
+        this.addToFilterItemViewer.addCheckStateListener(event -> {
+            boolean performCheck = event.getChecked();
+
+            if (performCheck) {
+                // add the current selection to the existing filter
+                TableItem[] items = FilterNatCombo.this.dropdownTableViewer.getTable().getItems();
+                for (int i = 0; i < items.length; i++) {
+                    TableItem item = items[i];
+                    this.selectionStateMap.put(item.getText(), item.getChecked());
+                }
+            } else {
+                // set back to previous state
+                for (Map.Entry<String, Boolean> entry : FilterNatCombo.this.selectionStateMap.entrySet()) {
+                    entry.setValue(Boolean.FALSE);
+                }
+                for (String sel : this.initialSelection) {
+                    this.selectionStateMap.put(sel, Boolean.TRUE);
+                }
+            }
+
+            if (this.filterModifyAction != null) {
+                this.filterActive = false;
+                this.filterModifyAction.run();
+                this.filterActive = true;
+            }
+
+            // also refresh the selectAllItemViewer to show a potential grayed
+            // checked state in case of an active filter
+            this.selectAllItemViewer.refresh();
+        });
     }
 
     @Override
@@ -597,26 +701,67 @@ public class FilterNatCombo extends NatCombo {
 
         @Override
         protected void setSelection() {
-            TableItem[] items = FilterNatCombo.this.dropdownTableViewer.getTable().getItems();
-            String[] selection = new String[items.length];
-            for (int i = 0; i < items.length; i++) {
-                TableItem item = items[i];
-                selection[i] = item.getText();
+
+            String[] selection = null;
+            if (FilterNatCombo.this.filterActive) {
+                TableItem[] items = FilterNatCombo.this.dropdownTableViewer.getTable().getItems();
+                selection = new String[items.length];
+                for (int i = 0; i < items.length; i++) {
+                    TableItem item = items[i];
+                    selection[i] = item.getText();
+                }
+            } else {
+                // if no dropdown filter is active, e.g. on clearing the
+                // dropdown filter, we restore the initial selection
+                // selection = FilterNatCombo.this.initialSelection;
+                selection = getSelection();
             }
 
-            // first clear the selection
-            getDropdownTable().deselectAll();
-            for (Map.Entry<String, Boolean> entry : FilterNatCombo.this.selectionStateMap.entrySet()) {
-                entry.setValue(Boolean.FALSE);
-            }
+            if (FilterNatCombo.this.initialSelection != null) {
+                // update layout to make the "add to filter" item visible
+                // or invisible if filter is cleared
+                FilterNatCombo.this.filterActive = !FilterNatCombo.this.filterBox.getText().isEmpty();
+                FilterNatCombo.this.addToFilterItemViewer.getTable().setVisible(FilterNatCombo.this.filterActive);
 
-            // then update the selection based on what is currently visible in
-            // the dropdown
-            setDropdownSelection(selection);
-            updateTextControl(false);
+                ((FormData) FilterNatCombo.this.dropdownTable.getLayoutData()).top =
+                        new FormAttachment(
+                                FilterNatCombo.this.filterActive
+                                        ? FilterNatCombo.this.addToFilterItemViewer.getControl()
+                                        : FilterNatCombo.this.selectAllItemViewer.getControl(),
+                                0,
+                                SWT.BOTTOM);
 
-            if (FilterNatCombo.this.filterModifyAction != null) {
-                FilterNatCombo.this.filterModifyAction.run();
+                // only mark the visible items checked
+                if (FilterNatCombo.this.filterActive) {
+                    for (TableItem item : getDropdownTable().getItems()) {
+                        item.setChecked(true);
+                    }
+                } else {
+                    setDropdownSelection(getSelection());
+                }
+
+                if (FilterNatCombo.this.selectAllItemViewer != null) {
+                    FilterNatCombo.this.selectAllItemViewer.refresh();
+                }
+            } else {
+                // first clear the selection
+                getDropdownTable().deselectAll();
+                for (Map.Entry<String, Boolean> entry : FilterNatCombo.this.selectionStateMap.entrySet()) {
+                    entry.setValue(Boolean.FALSE);
+                }
+
+                // then update the selection based on what is currently visible
+                // in the dropdown
+                setDropdownSelection(selection);
+
+                // update the value in the underlying text control
+                updateTextControl(false);
+
+                // if the natcombo was opened with an initial filter (not all
+                // items selected) we do not directly apply
+                if (FilterNatCombo.this.filterModifyAction != null) {
+                    FilterNatCombo.this.filterModifyAction.run();
+                }
             }
         }
     }
