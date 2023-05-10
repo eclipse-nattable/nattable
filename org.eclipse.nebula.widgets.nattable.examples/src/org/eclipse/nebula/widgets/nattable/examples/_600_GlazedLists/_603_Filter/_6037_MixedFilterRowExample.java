@@ -52,6 +52,7 @@ import org.eclipse.nebula.widgets.nattable.dataset.person.PersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
@@ -69,9 +70,11 @@ import org.eclipse.nebula.widgets.nattable.filterrow.ParseResult;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterIconPainter;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterRowConfiguration;
+import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterUtils;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.filterrow.event.FilterAppliedEvent;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
@@ -118,9 +121,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
@@ -352,7 +357,12 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                 new DisplayPersistenceDialogCommandHandler(natTable));
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
-        Button button = new Button(container, SWT.PUSH);
+
+        Composite buttonPanel = new Composite(container, SWT.NONE);
+        buttonPanel.setLayout(new RowLayout());
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
+
+        Button button = new Button(buttonPanel, SWT.PUSH);
         button.setText("Add Row");
         button.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -366,6 +376,17 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                         "Wiggum", Gender.MALE, false, new Date(), address);
 
                 bodyLayerStack.getSortedList().add(person);
+            }
+        });
+
+        Label isFilterActiveLabel = new Label(buttonPanel, SWT.NONE);
+        isFilterActiveLabel.setText("Filter is "
+                + (isFilterActive(filterRowHeaderLayer.getFilterRowDataLayer(), filterRowComboBoxDataProvider, configRegistry) ? "active" : "not active"));
+
+        natTable.addLayerListener(event -> {
+            if (event instanceof FilterAppliedEvent) {
+                isFilterActiveLabel.setText("Filter is "
+                        + (isFilterActive(filterRowHeaderLayer.getFilterRowDataLayer(), filterRowComboBoxDataProvider, configRegistry) ? "active" : "not active"));
             }
         });
 
@@ -426,6 +447,28 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                         EXCLUDE_LABEL);
             }
         });
+    }
+
+    // TODO 2.2 move this to ComboBoxFilterUtils
+    private <T> boolean isFilterActive(
+            FilterRowDataLayer<T> filterRowDataLayer,
+            IComboBoxDataProvider comboBoxDataProvider,
+            IConfigRegistry configRegistry) {
+
+        for (int column = 0; column < filterRowDataLayer.getFilterRowDataProvider().getColumnCount(); column++) {
+            Object filterValue = filterRowDataLayer.getDataValue(column, 0);
+            if (ComboBoxFilterUtils.isFilterRowComboBoxCellEditor(configRegistry, column)) {
+                // if combobox filter, check if all is selected
+                if (!ComboBoxFilterUtils.isAllSelected(column, filterValue, comboBoxDataProvider)) {
+                    return true;
+                }
+            } else {
+                if (filterValue != null && !filterValue.toString().isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

@@ -1587,6 +1587,56 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
         this.bodyLayer.getSortedList().addAll(this.values);
     }
 
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "true, false",
+            "false, true",
+            "false, false"
+    })
+    public void shouldNotSetAllSelectedForTextFilters(boolean handleListChanges, boolean caching) throws InterruptedException {
+        setupFixture(handleListChanges, caching);
+
+        FilterRowDataLayer<PersonWithAddress> filterRowDataLayer = this.filterRowHeaderLayer.getFilterRowDataLayer();
+
+        // after the initialization every filter should have the value
+        // SELECT_ALL, as on init the configuration is not applied so the check
+        // for the filter editor does not return the final results
+        for (int column = 0; column < filterRowDataLayer.getFilterRowDataProvider().getColumnCount(); column++) {
+            // for the non combobox filter editors the filter value should be
+            // empty
+            if (column == DataModelConstants.FIRSTNAME_COLUMN_POSITION
+                    || column == DataModelConstants.MARRIED_COLUMN_POSITION
+                    || column == DataModelConstants.HOUSENUMBER_COLUMN_POSITION) {
+                assertNull(filterRowDataLayer.getDataValue(column, 0));
+            } else {
+                assertEquals(EditConstants.SELECT_ALL_ITEMS_VALUE, filterRowDataLayer.getDataValue(column, 0));
+            }
+        }
+
+        // apply a filter
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, DataModelConstants.HOUSENUMBER_COLUMN_POSITION + 1, 1, ">100"));
+
+        Thread.sleep(200);
+
+        assertEquals(">100", filterRowDataLayer.getDataValue(DataModelConstants.HOUSENUMBER_COLUMN_POSITION, 0));
+
+        // clear to remove any set values
+        this.natTable.doCommand(new ClearAllFiltersCommand());
+
+        for (int column = 0; column < filterRowDataLayer.getFilterRowDataProvider().getColumnCount(); column++) {
+            // for the non combobox filter editors the filter value should be
+            // empty
+            if (column == DataModelConstants.FIRSTNAME_COLUMN_POSITION
+                    || column == DataModelConstants.MARRIED_COLUMN_POSITION
+                    || column == DataModelConstants.HOUSENUMBER_COLUMN_POSITION) {
+                assertNull(filterRowDataLayer.getDataValue(column, 0));
+            } else {
+                assertEquals(EditConstants.SELECT_ALL_ITEMS_VALUE, filterRowDataLayer.getDataValue(column, 0));
+            }
+        }
+    }
+
     private static List<String> LASTNAMES = Arrays.asList("Simpson", "Flanders", "Leonard", "Carlson", "Lovejoy", null);
     private static List<String> STREETS = Arrays.asList("Evergreen Terrace", "South Street", "Main Street");
     private static List<String> CITIES = Arrays.asList("Springfield", "Shelbyville", "Ogdenville");

@@ -36,6 +36,7 @@ import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearFilterCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ToggleFilterRowCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.event.FilterAppliedEvent;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
+import org.eclipse.nebula.widgets.nattable.grid.command.InitializeGridCommand;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
@@ -713,6 +714,9 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
      * Sets all values for all comboboxes as selected. This is needed because
      * selecting all items in the comboboxes mean to have no filter applied.
      * <p>
+     * Simply applies the SELECT_ALL value to all columns, irrespective of the
+     * configured filter editor.
+     * <p>
      * Note: The filter row IDataProvider is filled by modifying the Map of
      * filter objects directly instead of calling setDataValue(). This is
      * because calling setDataValue() will transform indexes which is not
@@ -720,9 +724,38 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
      * compositions.
      */
     public void setAllValuesSelected() {
+        setAllValuesSelected(false);
+    }
+
+    /**
+     * Sets all values for all comboboxes as selected. This is needed because
+     * selecting all items in the comboboxes mean to have no filter applied.
+     * <p>
+     * Note: The filter row IDataProvider is filled by modifying the Map of
+     * filter objects directly instead of calling setDataValue(). This is
+     * because calling setDataValue() will transform indexes which is not
+     * necessary on initialization and causes strange behaviour in some
+     * compositions.
+     *
+     * @param performEditorCheck
+     *            Whether it should be checked if the filter editor is a
+     *            combobox editor or not. If set to <code>false</code> the
+     *            SELECT_ALL value will be applied for all columns, otherwise
+     *            the value will be only applied for columns that have a
+     *            combobox filter editor configured.
+     */
+    private void setAllValuesSelected(boolean performEditorCheck) {
+        // TODO 2.2 make this method public
         FilterRowDataProvider<T> dataProvider = this.filterRowDataLayer.getFilterRowDataProvider();
+        dataProvider.getFilterIndexToObjectMap().clear();
         for (int i = 0; i < dataProvider.getColumnCount(); i++) {
-            dataProvider.getFilterIndexToObjectMap().put(i, EditConstants.SELECT_ALL_ITEMS_VALUE);
+            boolean setAllSelected = performEditorCheck
+                    ? ComboBoxFilterUtils.isFilterRowComboBoxCellEditor(this.configRegistry, i)
+                    : true;
+
+            if (setAllSelected) {
+                dataProvider.getFilterIndexToObjectMap().put(i, EditConstants.SELECT_ALL_ITEMS_VALUE);
+            }
         }
         getFilterStrategy().applyFilter(dataProvider.getFilterIndexToObjectMap());
     }
@@ -798,10 +831,12 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
                 handled = true;
             }
         } else if (command instanceof ClearAllFiltersCommand) {
-            setAllValuesSelected();
+            setAllValuesSelected(true);
             ILayer childLayer = getChildLayerByLayoutCoordinate(0, 0);
             childLayer.fireLayerEvent(new FilterAppliedEvent(childLayer, true));
             handled = true;
+        } else if (command instanceof InitializeGridCommand) {
+            setAllValuesSelected(true);
         } else if (command instanceof DisposeResourcesCommand) {
             this.comboBoxDataProvider.dispose();
         }
