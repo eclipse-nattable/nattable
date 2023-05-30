@@ -14,6 +14,7 @@
 package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -111,7 +112,7 @@ public class FilterNatCombo extends NatCombo {
      *
      * @since 2.1
      */
-    private String[] initialSelection;
+    String[] initialSelection;
 
     /**
      * Creates a new FilterNatCombo using the given IStyle for rendering,
@@ -396,6 +397,12 @@ public class FilterNatCombo extends NatCombo {
                 tableItem.setChecked(performCheck);
             }
 
+            if (this.addToFilterItemViewer != null) {
+                // we reset the "add to filter" without resetting the
+                // selectionStateMap
+                updateAddToFilterVisibility(null);
+            }
+
             // sync the selectionStateMap based on the state of the select
             // all checkbox
             for (TableItem tableItem : FilterNatCombo.this.dropdownTable.getItems()) {
@@ -418,12 +425,22 @@ public class FilterNatCombo extends NatCombo {
 
             @Override
             public boolean isGrayed(Object element) {
-                return getSelectionCount() < FilterNatCombo.this.itemList.size();
+                for (TableItem tableItem : FilterNatCombo.this.dropdownTable.getItems()) {
+                    if (!tableItem.getChecked()) {
+                        return true;
+                    }
+                }
+                return false;
             }
 
             @Override
             public boolean isChecked(Object element) {
-                return getSelectionCount() > 0;
+                for (TableItem tableItem : FilterNatCombo.this.dropdownTable.getItems()) {
+                    if (tableItem.getChecked()) {
+                        return true;
+                    }
+                }
+                return false;
             }
         });
 
@@ -507,10 +524,14 @@ public class FilterNatCombo extends NatCombo {
         }
         this.filterText = textValue;
 
-        // if not all items are selected, it means there is already a filter
-        // active on opening the dropdown
-        if (this.selectAllItemViewer != null
-                && this.selectionStateMap.entrySet().stream().anyMatch(entry -> !entry.getValue())) {
+        // if a filterModifyAction is registered, not all items are selected
+        // (which means there is already a filter active on opening the
+        // dropdown) and the "add to filter" viewer is not created yet, remember
+        // the initial selection and create the "add to filter" viewer
+        if (this.filterModifyAction != null
+                && this.selectAllItemViewer != null
+                && this.selectionStateMap.entrySet().stream().anyMatch(entry -> !entry.getValue())
+                && this.addToFilterItemViewer == null) {
 
             // remember the initial selection to be able to restore it when
             // the dropdown filter is cleared
@@ -565,6 +586,8 @@ public class FilterNatCombo extends NatCombo {
         this.addToFilterItemViewer.getTable().setFont(
                 this.cellStyle.getAttributeValue(CellStyleAttributes.FONT));
 
+        this.addToFilterItemViewer.getTable().setVisible(this.filterActive);
+
         this.addToFilterItemViewer.getTable().addFocusListener(
                 new FocusAdapter() {
                     @Override
@@ -595,7 +618,9 @@ public class FilterNatCombo extends NatCombo {
 
             if (this.filterModifyAction != null) {
                 this.filterActive = false;
+                String[] tmp = this.initialSelection;
                 this.filterModifyAction.run();
+                this.initialSelection = tmp;
                 this.filterActive = true;
             }
 
@@ -603,6 +628,77 @@ public class FilterNatCombo extends NatCombo {
             // checked state in case of an active filter
             this.selectAllItemViewer.refresh();
         });
+
+        // add an additional selection listener to show/hide the "add to filter"
+        // item based on whether the state of all now visible items is the same
+        // as in the initial selection
+        this.dropdownTable.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                boolean selected = e.detail != SWT.CHECK;
+
+                if (!selected) {
+                    // handle only checkbox interactions
+                    TableItem clickedItem = (TableItem) e.item;
+                    updateAddToFilterVisibility(clickedItem);
+                }
+            }
+        });
+    }
+
+    private void updateAddToFilterVisibility(TableItem clickedItem) {
+        if (this.initialSelection != null && this.filterActive) {
+            boolean selectionChanged = false;
+
+            for (TableItem item : getDropdownTable().getItems()) {
+                if ((item.getChecked() && !Arrays.stream(this.initialSelection).anyMatch(s -> s.equals(item.getText())))
+                        || (!item.getChecked() && Arrays.stream(this.initialSelection).anyMatch(s -> s.equals(item.getText())))) {
+                    // check if the shown check state differs from
+                    // the initial selection
+                    selectionChanged = true;
+                }
+            }
+
+            // only update the visibility of the "add to filter" viewer if the
+            // change does not lead to the initial state
+            if (!(this.addToFilterItemViewer.getCheckedElements().length > 0 && !selectionChanged)) {
+                this.addToFilterItemViewer.getTable().setVisible(selectionChanged);
+
+                ((FormData) this.dropdownTable.getLayoutData()).top =
+                        new FormAttachment(
+                                selectionChanged
+                                        ? this.addToFilterItemViewer.getControl()
+                                        : this.selectAllItemViewer.getControl(),
+                                0,
+                                SWT.BOTTOM);
+            }
+
+            resetAddToFilter(clickedItem);
+
+            calculateBounds();
+            this.selectAllItemViewer.refresh();
+        }
+    }
+
+    private void resetAddToFilter(TableItem clickedItem) {
+        // uncheck the "add to filter" item if it was checked in a
+        // previous attempt and set the initial selection to the current one
+        if (this.addToFilterItemViewer.getCheckedElements().length > 0) {
+            this.addToFilterItemViewer.setAllChecked(false);
+
+            // if a single item was checked/unchecked in the "add to filter"
+            // active state, we need to reset the selectionStateMap to create a
+            // new correct initial state
+            if (clickedItem != null) {
+                if (!clickedItem.getChecked()) {
+                    this.selectionStateMap.put(clickedItem.getText(), Boolean.TRUE);
+                } else {
+                    this.selectionStateMap.put(clickedItem.getText(), Boolean.FALSE);
+                }
+            }
+
+            this.initialSelection = getSelection();
+        }
     }
 
     @Override
@@ -713,32 +809,43 @@ public class FilterNatCombo extends NatCombo {
             } else {
                 // if no dropdown filter is active, e.g. on clearing the
                 // dropdown filter, we restore the initial selection
-                // selection = FilterNatCombo.this.initialSelection;
                 selection = getSelection();
             }
 
             if (FilterNatCombo.this.initialSelection != null) {
+                FilterNatCombo.this.initialSelection = getSelection();
+
                 // update layout to make the "add to filter" item visible
                 // or invisible if filter is cleared
                 FilterNatCombo.this.filterActive = !FilterNatCombo.this.filterBox.getText().isEmpty();
-                FilterNatCombo.this.addToFilterItemViewer.getTable().setVisible(FilterNatCombo.this.filterActive);
+                boolean showAddToFilter = FilterNatCombo.this.filterActive;
+
+                // only mark the visible items checked
+                if (FilterNatCombo.this.filterActive) {
+                    boolean allAlreadySelected = true;
+                    for (TableItem item : getDropdownTable().getItems()) {
+                        item.setChecked(true);
+                        allAlreadySelected = Arrays.stream(FilterNatCombo.this.initialSelection).anyMatch(s -> s.equals(item.getText()));
+                    }
+
+                    showAddToFilter = !allAlreadySelected;
+                } else {
+                    setDropdownSelection(getSelection());
+                }
+
+                FilterNatCombo.this.addToFilterItemViewer.getTable().setVisible(showAddToFilter);
 
                 ((FormData) FilterNatCombo.this.dropdownTable.getLayoutData()).top =
                         new FormAttachment(
-                                FilterNatCombo.this.filterActive
+                                showAddToFilter
                                         ? FilterNatCombo.this.addToFilterItemViewer.getControl()
                                         : FilterNatCombo.this.selectAllItemViewer.getControl(),
                                 0,
                                 SWT.BOTTOM);
 
-                // only mark the visible items checked
-                if (FilterNatCombo.this.filterActive) {
-                    for (TableItem item : getDropdownTable().getItems()) {
-                        item.setChecked(true);
-                    }
-                } else {
-                    setDropdownSelection(getSelection());
-                }
+                // we reset the "add to filter" without resetting the
+                // selectionStateMap
+                resetAddToFilter(null);
 
                 if (FilterNatCombo.this.selectAllItemViewer != null) {
                     FilterNatCombo.this.selectAllItemViewer.refresh();

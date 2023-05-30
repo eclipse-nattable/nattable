@@ -168,11 +168,19 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
         // anymore.
 
         // avoid commit if combo filter is active
+        boolean dropdownFilterActive = false;
         NatCombo editorControl = getEditorControl();
         if (editorControl != null
                 && editorControl instanceof FilterNatCombo
                 && ((FilterNatCombo) editorControl).filterActive) {
-            return false;
+            dropdownFilterActive = true;
+        }
+
+        if (dropdownFilterActive) {
+            if (closeAfterCommit) {
+                close();
+            }
+            return true;
         }
 
         if (!isClosed()) {
@@ -186,6 +194,14 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
                                 && !canonicalValue.equals(this.currentCanonicalValue))) {
                     if (super.commit(direction, closeAfterCommit)) {
                         this.currentCanonicalValue = canonicalValue;
+
+                        // we also have to update the initial selection in case
+                        // it is set
+                        if (!dropdownFilterActive
+                                && ((FilterNatCombo) editorControl).initialSelection != null) {
+                            ((FilterNatCombo) editorControl).initialSelection = editorControl.getSelection();
+                        }
+
                         return true;
                     }
                 } else {
