@@ -172,7 +172,7 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
         NatCombo editorControl = getEditorControl();
         if (editorControl != null
                 && editorControl instanceof FilterNatCombo
-                && ((FilterNatCombo) editorControl).filterActive) {
+                && ((FilterNatCombo) editorControl).isFilterActive()) {
             dropdownFilterActive = true;
         }
 
@@ -252,5 +252,32 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
         setShowDropdownFilter(true);
         this.applyFilterOnDropdownFilter = applyFilter;
         this.closeOnEnterInDropdownFilter = closeOnEnter;
+    }
+
+    /**
+     *
+     * @return <code>true</code> if on filtering the combobox content, a filter
+     *         on the list is applied based on the current visible items,
+     *         <code>false</code> if only the dropdown content is filtered
+     *         without applying a filter (default).
+     * 
+     * @see #configureDropdownFilter(boolean, boolean)
+     * @since 2.2
+     */
+    protected boolean isApplyFilterOnDropdownFilter() {
+        return this.applyFilterOnDropdownFilter;
+    }
+
+    /**
+     *
+     * @return <code>true</code> if the editor is closed on pressing ENTER when
+     *         having focus in the combobox filter control, <code>false</code>
+     *         if nothing happens (default).
+     * 
+     * @see #configureDropdownFilter(boolean, boolean)
+     * @since 2.2
+     */
+    protected boolean isCloseOnEnterInDropdownFilter() {
+        return this.closeOnEnterInDropdownFilter;
     }
 }

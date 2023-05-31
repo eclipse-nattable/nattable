@@ -85,16 +85,16 @@ public class FilterNatCombo extends NatCombo {
     /**
      * Flag to determine whether the content of the dropdown is filtered or not.
      *
-     * @since 2.1
+     * @since 2.2
      */
-    boolean filterActive = false;
+    private boolean filterActive = false;
 
     /**
      * The base style that is used to create the dropdown. Needed to use the
      * same style for creating the additional viewer ('select all' and 'add to
      * filter').
      *
-     * @since 2.1
+     * @since 2.2
      */
     private int baseStyle;
 
@@ -102,17 +102,17 @@ public class FilterNatCombo extends NatCombo {
      * The viewer that contains the 'add to filter' item in the dropdown
      * control.
      *
-     * @since 2.1
+     * @since 2.2
      */
-    private CheckboxTableViewer addToFilterItemViewer;
+    protected CheckboxTableViewer addToFilterItemViewer;
 
     /**
      * The initial selection that was set when the FilterNatCombo was opened.
      * Needed to restore the state on deactivating the 'add to filter' checkbox.
      *
-     * @since 2.1
+     * @since 2.2
      */
-    String[] initialSelection;
+    protected String[] initialSelection;
 
     /**
      * Creates a new FilterNatCombo using the given IStyle for rendering,
@@ -350,9 +350,8 @@ public class FilterNatCombo extends NatCombo {
             }
         });
 
-        final String selectAllLabel = Messages.getString("FilterNatCombo.selectAll"); //$NON-NLS-1$
         List<String> input = new ArrayList<>();
-        input.add(selectAllLabel);
+        input.add(getSelectAllLabel());
 
         this.selectAllItemViewer.setInput(input);
 
@@ -544,9 +543,12 @@ public class FilterNatCombo extends NatCombo {
 
     /**
      * Creates and adds the "add to filter" entry to the dropdown. Initially
-     * hidden and becomes visible once a dropdown filter is entered.
+     * hidden and becomes visible once a dropdown filter is entered if an
+     * initial selection is set.
+     *
+     * @since 2.2
      */
-    private void createAddToFilterItemViewer() {
+    protected void createAddToFilterItemViewer() {
         int dropdownListStyle = this.baseStyle | SWT.NO_SCROLL
                 | HorizontalAlignmentEnum.getSWTStyle(this.cellStyle)
                 | SWT.FULL_SELECTION;
@@ -573,9 +575,8 @@ public class FilterNatCombo extends NatCombo {
             }
         });
 
-        final String addAllLabel = Messages.getString("FilterNatCombo.addToFilter"); //$NON-NLS-1$
         List<String> input = new ArrayList<>();
-        input.add(addAllLabel);
+        input.add(getAddToFilterLabel());
 
         this.addToFilterItemViewer.setInput(input);
 
@@ -646,7 +647,19 @@ public class FilterNatCombo extends NatCombo {
         });
     }
 
-    private void updateAddToFilterVisibility(TableItem clickedItem) {
+    /**
+     * Updates the visibility of the "add to filter" item. Hides it if all now
+     * visible items are already selected, shows it if the shown selection state
+     * differs from the current applied selection.
+     *
+     * @param clickedItem
+     *            The item that was clicked in the dropdown or <code>null</code>
+     *            if the "add to filter" item should be reset by another cause
+     *            (e.g. changing the dropdown filter.
+     *
+     * @since 2.2
+     */
+    protected void updateAddToFilterVisibility(TableItem clickedItem) {
         if (this.initialSelection != null && this.filterActive) {
             boolean selectionChanged = false;
 
@@ -680,7 +693,19 @@ public class FilterNatCombo extends NatCombo {
         }
     }
 
-    private void resetAddToFilter(TableItem clickedItem) {
+    /**
+     * Unchecks the "add to filter" item and applies the current state as
+     * initial selection, so further operations in the open dropdown are
+     * consistent.
+     *
+     * @param clickedItem
+     *            The item that was clicked in the dropdown or <code>null</code>
+     *            if the "add to filter" item should be reset by another cause
+     *            (e.g. changing the dropdown filter.
+     *
+     * @since 2.2
+     */
+    protected void resetAddToFilter(TableItem clickedItem) {
         // uncheck the "add to filter" item if it was checked in a
         // previous attempt and set the initial selection to the current one
         if (this.addToFilterItemViewer.getCheckedElements().length > 0) {
@@ -785,6 +810,37 @@ public class FilterNatCombo extends NatCombo {
     }
 
     /**
+     *
+     * @return <code>true</code> if the content of the dropdown is currently
+     *         filtered and an initial selection is set.
+     *
+     * @since 2.2
+     */
+    public boolean isFilterActive() {
+        return this.filterActive;
+    }
+
+    /**
+     *
+     * @return The label that is used for the "select all" item.
+     *
+     * @since 2.2
+     */
+    protected String getSelectAllLabel() {
+        return Messages.getString("FilterNatCombo.selectAll"); //$NON-NLS-1$
+    }
+
+    /**
+     *
+     * @return The label that is used for the "add to filter" item.
+     *
+     * @since 2.2
+     */
+    protected String getAddToFilterLabel() {
+        return Messages.getString("FilterNatCombo.addToFilter"); //$NON-NLS-1$
+    }
+
+    /**
      * Specialization of the {@link DropDownFilterModifyListener} that updates
      * the selection of the dropdown content to what is currently visible. All
      * not visible items are deselected for the next filter operation.
@@ -799,17 +855,11 @@ public class FilterNatCombo extends NatCombo {
         protected void setSelection() {
 
             String[] selection = null;
-            if (FilterNatCombo.this.filterActive) {
-                TableItem[] items = FilterNatCombo.this.dropdownTableViewer.getTable().getItems();
-                selection = new String[items.length];
-                for (int i = 0; i < items.length; i++) {
-                    TableItem item = items[i];
-                    selection[i] = item.getText();
-                }
-            } else {
-                // if no dropdown filter is active, e.g. on clearing the
-                // dropdown filter, we restore the initial selection
-                selection = getSelection();
+            TableItem[] items = FilterNatCombo.this.dropdownTableViewer.getTable().getItems();
+            selection = new String[items.length];
+            for (int i = 0; i < items.length; i++) {
+                TableItem item = items[i];
+                selection[i] = item.getText();
             }
 
             if (FilterNatCombo.this.initialSelection != null) {
@@ -825,7 +875,9 @@ public class FilterNatCombo extends NatCombo {
                     boolean allAlreadySelected = true;
                     for (TableItem item : getDropdownTable().getItems()) {
                         item.setChecked(true);
-                        allAlreadySelected = Arrays.stream(FilterNatCombo.this.initialSelection).anyMatch(s -> s.equals(item.getText()));
+                        if (allAlreadySelected) {
+                            allAlreadySelected = Arrays.stream(FilterNatCombo.this.initialSelection).anyMatch(s -> s.equals(item.getText()));
+                        }
                     }
 
                     showAddToFilter = !allAlreadySelected;
