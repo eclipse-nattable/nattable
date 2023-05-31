@@ -52,7 +52,6 @@ import org.eclipse.nebula.widgets.nattable.dataset.person.PersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
-import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
@@ -381,12 +380,12 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
 
         Label isFilterActiveLabel = new Label(buttonPanel, SWT.NONE);
         isFilterActiveLabel.setText("Filter is "
-                + (isFilterActive(filterRowHeaderLayer.getFilterRowDataLayer(), filterRowComboBoxDataProvider, configRegistry) ? "active" : "not active"));
+                + (ComboBoxFilterUtils.isFilterActive(filterRowHeaderLayer.getFilterRowDataLayer(), filterRowComboBoxDataProvider, configRegistry) ? "active" : "not active"));
 
         natTable.addLayerListener(event -> {
             if (event instanceof FilterAppliedEvent) {
                 isFilterActiveLabel.setText("Filter is "
-                        + (isFilterActive(filterRowHeaderLayer.getFilterRowDataLayer(), filterRowComboBoxDataProvider, configRegistry) ? "active" : "not active"));
+                        + (ComboBoxFilterUtils.isFilterActive(filterRowHeaderLayer.getFilterRowDataLayer(), filterRowComboBoxDataProvider, configRegistry) ? "active" : "not active"));
             }
         });
 
@@ -447,28 +446,6 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                         EXCLUDE_LABEL);
             }
         });
-    }
-
-    // TODO 2.2 move this to ComboBoxFilterUtils
-    private <T> boolean isFilterActive(
-            FilterRowDataLayer<T> filterRowDataLayer,
-            IComboBoxDataProvider comboBoxDataProvider,
-            IConfigRegistry configRegistry) {
-
-        for (int column = 0; column < filterRowDataLayer.getFilterRowDataProvider().getColumnCount(); column++) {
-            Object filterValue = filterRowDataLayer.getDataValue(column, 0);
-            if (ComboBoxFilterUtils.isFilterRowComboBoxCellEditor(configRegistry, column)) {
-                // if combobox filter, check if all is selected
-                if (!ComboBoxFilterUtils.isAllSelected(column, filterValue, comboBoxDataProvider)) {
-                    return true;
-                }
-            } else {
-                if (filterValue != null && !filterValue.toString().isEmpty()) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     /**

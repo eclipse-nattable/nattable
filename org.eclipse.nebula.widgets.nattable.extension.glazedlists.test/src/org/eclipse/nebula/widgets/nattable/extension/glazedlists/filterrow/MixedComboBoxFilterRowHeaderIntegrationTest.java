@@ -91,6 +91,7 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -1635,6 +1636,56 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
                 assertEquals(EditConstants.SELECT_ALL_ITEMS_VALUE, filterRowDataLayer.getDataValue(column, 0));
             }
         }
+    }
+
+    @Test
+    public void shouldSeeNoFilter() {
+        setupFixture(false, false);
+
+        // without any filter applied, the following check needs to be false
+        FilterRowDataLayer<PersonWithAddress> filterRowDataLayer = this.filterRowHeaderLayer.getFilterRowDataLayer();
+        assertFalse(ComboBoxFilterUtils.isFilterActive(filterRowDataLayer, this.filterRowComboBoxDataProvider, this.natTable.getConfigRegistry()));
+    }
+
+    @Test
+    public void shouldSeeTextFilter() {
+        setupFixture(false, false);
+
+        // applying a text filter should cause to return true
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 1, 1, "Homer"));
+        FilterRowDataLayer<PersonWithAddress> filterRowDataLayer = this.filterRowHeaderLayer.getFilterRowDataLayer();
+        assertTrue(ComboBoxFilterUtils.isFilterActive(filterRowDataLayer, this.filterRowComboBoxDataProvider, this.natTable.getConfigRegistry()));
+    }
+
+    @Test
+    public void shouldSeeComboBoxFilter() {
+        setupFixture(false, false);
+
+        // applying a combo filter should cause to return true
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 1, new ArrayList<>(Arrays.asList("Simpson"))));
+        FilterRowDataLayer<PersonWithAddress> filterRowDataLayer = this.filterRowHeaderLayer.getFilterRowDataLayer();
+        assertTrue(ComboBoxFilterUtils.isFilterActive(filterRowDataLayer, this.filterRowComboBoxDataProvider, this.natTable.getConfigRegistry()));
+    }
+
+    @Test
+    public void shouldSeeMixedFilter() {
+        setupFixture(false, false);
+
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 1, 1, "Homer"));
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 1, new ArrayList<>(Arrays.asList("Simpson"))));
+        FilterRowDataLayer<PersonWithAddress> filterRowDataLayer = this.filterRowHeaderLayer.getFilterRowDataLayer();
+        assertTrue(ComboBoxFilterUtils.isFilterActive(filterRowDataLayer, this.filterRowComboBoxDataProvider, this.natTable.getConfigRegistry()));
+    }
+
+    @Test
+    public void shouldNotSeeFilterAfterClear() {
+        setupFixture(false, false);
+
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 1, 1, "Homer"));
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 1, new ArrayList<>(Arrays.asList("Simpson"))));
+        this.natTable.doCommand(new ClearAllFiltersCommand());
+        FilterRowDataLayer<PersonWithAddress> filterRowDataLayer = this.filterRowHeaderLayer.getFilterRowDataLayer();
+        assertFalse(ComboBoxFilterUtils.isFilterActive(filterRowDataLayer, this.filterRowComboBoxDataProvider, this.natTable.getConfigRegistry()));
     }
 
     private static List<String> LASTNAMES = Arrays.asList("Simpson", "Flanders", "Leonard", "Carlson", "Lovejoy", null);

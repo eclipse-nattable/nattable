@@ -94,4 +94,45 @@ public final class ComboBoxFilterUtils {
         return (cellEditor instanceof FilterRowComboBoxCellEditor);
     }
 
+    /**
+     * Checks if a filter is active. Handles default editors and combobox filter
+     * editors.
+     *
+     * @param <T>
+     *            The type of the underlying row objects.
+     * @param filterRowDataLayer
+     *            The {@link FilterRowDataLayer} needed to access the filter
+     *            data.
+     * @param comboBoxDataProvider
+     *            The {@link IComboBoxDataProvider} that provides the entries
+     *            available in the filter combo.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to retrieve the configured
+     *            cell editor.
+     * @return <code>true</code> if any type of filter is currently applied on
+     *         the table, <code>false</code> if not.
+     *
+     * @since 2.2
+     */
+    public static <T> boolean isFilterActive(
+            FilterRowDataLayer<T> filterRowDataLayer,
+            IComboBoxDataProvider comboBoxDataProvider,
+            IConfigRegistry configRegistry) {
+
+        for (int column = 0; column < filterRowDataLayer.getFilterRowDataProvider().getColumnCount(); column++) {
+            Object filterValue = filterRowDataLayer.getDataValue(column, 0);
+            if (ComboBoxFilterUtils.isFilterRowComboBoxCellEditor(configRegistry, column)) {
+                // if combobox filter, check if all is selected
+                if (!ComboBoxFilterUtils.isAllSelected(column, filterValue, comboBoxDataProvider)) {
+                    return true;
+                }
+            } else {
+                if (filterValue != null && !filterValue.toString().isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }
