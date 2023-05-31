@@ -743,9 +743,10 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
      *            SELECT_ALL value will be applied for all columns, otherwise
      *            the value will be only applied for columns that have a
      *            combobox filter editor configured.
+     *
+     * @since 2.2
      */
-    private void setAllValuesSelected(boolean performEditorCheck) {
-        // TODO 2.2 make this method public
+    public void setAllValuesSelected(boolean performEditorCheck) {
         FilterRowDataProvider<T> dataProvider = this.filterRowDataLayer.getFilterRowDataProvider();
         dataProvider.getFilterIndexToObjectMap().clear();
         for (int i = 0; i < dataProvider.getColumnCount(); i++) {
