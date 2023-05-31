@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: NatTable extension for Eclipse 4
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.extension.e4;singleton:=true
-Bundle-Version: 2.1.1.qualifier
+Bundle-Version: 2.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.swt;bundle-version="3.103.0",
  org.eclipse.e4.ui.css.core;bundle-version="0.11.0",
@@ -40,8 +40,8 @@ Import-Package: javax.inject;version="1.0.0",
  org.eclipse.nebula.widgets.nattable.util;version="[2.1.0,3.0.0)",
  org.slf4j;version="1.7.2"
 Bundle-ActivationPolicy: lazy
-Export-Package: org.eclipse.nebula.widgets.nattable.extension.e4.css;version="2.1.1",
- org.eclipse.nebula.widgets.nattable.extension.e4.painterfactory;version="2.1.1",
- org.eclipse.nebula.widgets.nattable.extension.e4.selection;version="2.1.1"
+Export-Package: org.eclipse.nebula.widgets.nattable.extension.e4.css;version="2.2.0",
+ org.eclipse.nebula.widgets.nattable.extension.e4.painterfactory;version="2.2.0",
+ org.eclipse.nebula.widgets.nattable.extension.e4.selection;version="2.2.0"
 Automatic-Module-Name: org.eclipse.nebula.widgets.nattable.extension.e4
 Bundle-Vendor: Eclipse Nebula NatTable
