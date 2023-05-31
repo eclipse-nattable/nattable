@@ -19,10 +19,6 @@
       %license
    </license>
 
-   <requires>
-      <import plugin="org.slf4j.api"/>
-   </requires>
-
    <plugin
          id="org.eclipse.nebula.widgets.nattable.extension.nebula"
          download-size="0"
