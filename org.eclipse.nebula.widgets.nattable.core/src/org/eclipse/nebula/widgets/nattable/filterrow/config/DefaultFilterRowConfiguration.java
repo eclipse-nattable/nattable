@@ -31,6 +31,7 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorat
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.viewport.action.ShowColumnInViewportAction;
 import org.eclipse.swt.SWT;
 
@@ -84,10 +85,10 @@ public class DefaultFilterRowConfiguration extends AbstractRegistryConfiguration
     @Override
     public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
         uiBindingRegistry.registerFirstMouseDownBinding(
-                new FilterRowMouseEventMatcher(),
+                new FilterRowMouseEventMatcher(MouseEventMatcher.LEFT_BUTTON),
                 new ShowColumnInViewportAction());
         uiBindingRegistry.registerFirstSingleClickBinding(
-                new FilterRowMouseEventMatcher(),
+                new FilterRowMouseEventMatcher(MouseEventMatcher.LEFT_BUTTON),
                 new MouseEditAction());
         uiBindingRegistry.registerFirstSingleClickBinding(
                 new ClearFilterIconMouseEventMatcher(this.cellPainter),
