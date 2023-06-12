@@ -500,6 +500,7 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 
         Label rowCount = new Label(container, SWT.NONE);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(rowCount);
         rowCount.setText(bodyLayerStack.getFilterList().size() + " / " + bodyLayerStack.getSortedList().size());
 
         natTable.addLayerListener(new ILayerListener() {

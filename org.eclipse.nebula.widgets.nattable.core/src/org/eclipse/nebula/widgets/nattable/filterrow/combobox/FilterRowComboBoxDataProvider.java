@@ -308,15 +308,6 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
                 }
             }
 
-            // if the all value cache is not the same as the given cache and the
-            // all value cache does not contain the cache for the given column,
-            // the collected values are also set to the all value cache. This
-            // should only happen the first time a combo is opened and if we do
-            // not perform this action, the first filter operation will fail as
-            // the all value cache will reset the filter when built up.
-            if (cache != this.allValueCache && !this.allValueCache.containsKey(columnIndex)) {
-                this.allValueCache.put(columnIndex, result);
-            }
             return result;
         } else {
             return collectValues(collection, columnIndex);
