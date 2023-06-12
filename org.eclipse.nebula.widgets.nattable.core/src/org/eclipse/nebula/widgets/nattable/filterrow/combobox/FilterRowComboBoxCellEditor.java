@@ -13,6 +13,12 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.eclipse.nebula.widgets.nattable.data.convert.ConversionFailedException;
 import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
@@ -66,6 +72,18 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
      * @since 2.1
      */
     private boolean closeOnEnterInDropdownFilter = false;
+
+    /**
+     * Collection of selected items that are currently not visible in the combo.
+     * Only needed in case an IComboBoxDataProvider is configured that provided
+     * only items that are currently visible in the table to support iterative
+     * filtering. This list will be added to the canonical values on commit to
+     * avoid that the items that are not shown in the combo get unselected in a
+     * filter process.
+     *
+     * @since 2.2
+     */
+    private List<?> notVisibleSelected;
 
     /**
      * Create a new {@link FilterRowComboBoxCellEditor} based on the given
@@ -150,10 +168,59 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
         return combo;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void setCanonicalValue(Object canonicalValue) {
         this.currentCanonicalValue = canonicalValue;
+
+        if (getComboBoxDataProvider() != null
+                && getComboBoxDataProvider() instanceof FilterRowComboBoxDataProvider
+                && ((FilterRowComboBoxDataProvider) getComboBoxDataProvider()).getFilterCollection() != null) {
+
+            // calculate the diff between the currently visible items and all
+            // available items
+            List<?> allValues = ((FilterRowComboBoxDataProvider) getComboBoxDataProvider()).getAllValues(getColumnIndex());
+            List<?> visibleValues = getComboBoxDataProvider().getValues(getColumnIndex(), getRowIndex());
+            List<?> diffValues = new ArrayList<>(allValues);
+            diffValues.removeAll(visibleValues);
+
+            // ensure that items that are not selected don't get added, to avoid
+            // that they get selected on filtering
+            if (canonicalValue instanceof Collection) {
+                Collection cValues = (Collection) canonicalValue;
+                for (Iterator<?> it = diffValues.iterator(); it.hasNext();) {
+                    Object object = it.next();
+                    if (!cValues.contains(object)) {
+                        it.remove();
+                    }
+                }
+            }
+
+            // store the real values instead of the placeholder here
+            if (EditConstants.SELECT_ALL_ITEMS_VALUE.equals(canonicalValue)) {
+                this.currentCanonicalValue = allValues;
+            }
+
+            // convert the not visible but selected items so they can be simply
+            // added in getCanonicalValue() in the commit process
+            this.notVisibleSelected = diffValues.stream()
+                    .map(v -> handleConversion(v, this.conversionEditErrorHandler))
+                    .collect(Collectors.toList());
+        }
+
         super.setCanonicalValue(canonicalValue);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public Object getCanonicalValue() {
+        // add the currently not visible selected canonical values to avoid that
+        // the filter changes
+        Object canonicalValue = super.getCanonicalValue();
+        if (canonicalValue instanceof Collection && this.notVisibleSelected != null) {
+            ((Collection) canonicalValue).addAll(this.notVisibleSelected);
+        }
+        return canonicalValue;
     }
 
     @Override
@@ -185,7 +252,6 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
 
         if (!isClosed()) {
             try {
-                // always do the conversion
                 Object canonicalValue = getCanonicalValue();
                 if ((canonicalValue != null && this.currentCanonicalValue == null)
                         || (canonicalValue == null && this.currentCanonicalValue != null)
@@ -260,7 +326,7 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
      *         on the list is applied based on the current visible items,
      *         <code>false</code> if only the dropdown content is filtered
      *         without applying a filter (default).
-     * 
+     *
      * @see #configureDropdownFilter(boolean, boolean)
      * @since 2.2
      */
@@ -273,7 +339,7 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
      * @return <code>true</code> if the editor is closed on pressing ENTER when
      *         having focus in the combobox filter control, <code>false</code>
      *         if nothing happens (default).
-     * 
+     *
      * @see #configureDropdownFilter(boolean, boolean)
      * @since 2.2
      */

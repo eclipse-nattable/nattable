@@ -721,4 +721,15 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
     public void setFocusOnText(boolean focusOnText) {
         this.focusOnText = focusOnText;
     }
+
+    /**
+     *
+     * @return The {@link IComboBoxDataProvider} that is responsible for
+     *         populating the items to the dropdown box.
+     * 
+     * @since 2.2
+     */
+    public IComboBoxDataProvider getComboBoxDataProvider() {
+        return this.dataProvider;
+    }
 }
