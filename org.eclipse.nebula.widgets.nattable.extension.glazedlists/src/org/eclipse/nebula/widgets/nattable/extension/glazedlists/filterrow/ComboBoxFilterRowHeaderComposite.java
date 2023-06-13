@@ -828,7 +828,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
                 this.filterRowDataLayer.setDataValueByPosition(
                         columnPosition,
                         0,
-                        getComboBoxDataProvider().getAllValues(columnIndex));
+                        EditConstants.SELECT_ALL_ITEMS_VALUE);
                 handled = true;
             }
         } else if (command instanceof ClearAllFiltersCommand) {
