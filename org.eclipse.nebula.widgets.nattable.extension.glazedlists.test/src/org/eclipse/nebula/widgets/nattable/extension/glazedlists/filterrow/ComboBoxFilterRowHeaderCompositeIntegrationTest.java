@@ -257,6 +257,8 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
 
     @Test
     public void shouldFilterOnLoadPersistedState() {
+        ((GlazedListsFilterRowComboBoxDataProvider<ExtendedPersonWithAddress>) this.filterRowHeaderLayer.getComboBoxDataProvider()).deactivate();
+
         // load the possible values first to simulate same behavior as in UI,
         // otherwise exceptions might occur
         this.filterRowHeaderLayer.comboBoxDataProvider.getValues(0, 0);
