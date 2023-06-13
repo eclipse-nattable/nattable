@@ -453,6 +453,15 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
             // - the editor is a FilterRowComboBoxCellEditor
             // - the filter was not cleared
             FilterAppliedEvent filterEvent = (FilterAppliedEvent) event;
+
+            // if caching is enabled and the filter was cleared for a single
+            // column, we update the valueCache for that column to ensure that
+            // the filter changed check operates on the correct values and the
+            // correct values are shown in the combo
+            if (this.cachingEnabled && filterEvent.isCleared() && filterEvent.getColumnIndex() > -1) {
+                this.valueCache.put(filterEvent.getColumnIndex(), collectValues(this.getFilterCollection(), filterEvent.getColumnIndex()));
+            }
+
             // only update the collection references if the value was changed
             boolean filterChanged = isFilterChanged(filterEvent.getColumnIndex(), filterEvent.getOldValue(), filterEvent.getNewValue());
 
@@ -472,7 +481,7 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
                     int column = filterEvent.getColumnIndex();
                     for (Iterator<Entry<Integer, List<?>>> it = this.valueCache.entrySet().iterator(); it.hasNext();) {
                         Entry<Integer, List<?>> entry = it.next();
-                        if (entry.getKey() != column || filterEvent.isCleared()) {
+                        if (entry.getKey() != column) {
                             this.valueCache.put(entry.getKey(), collectValues(this.getFilterCollection(), entry.getKey()));
                         }
                     }
