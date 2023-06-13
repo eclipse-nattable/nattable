@@ -13,6 +13,7 @@
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -239,5 +240,20 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
      */
     public void discardEventsToProcess() {
         this.eventsToProcess.set(false);
+    }
+
+    @Override
+    protected List<?> collectValues(Collection<T> collection, int columnIndex) {
+        if (collection instanceof EventList) {
+            ca.odell.glazedlists.util.concurrent.ReadWriteLock collectionLock =
+                    ((EventList<T>) collection).getReadWriteLock();
+            collectionLock.readLock().lock();
+            try {
+                return super.collectValues(collection, columnIndex);
+            } finally {
+                collectionLock.readLock().unlock();
+            }
+        }
+        return super.collectValues(collection, columnIndex);
     }
 }

@@ -590,6 +590,15 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                     ColumnLabelAccumulator.COLUMN_LABEL_PREFIX
                             + DataModelConstants.MARRIED_COLUMN_POSITION);
 
+            // Postalcode
+
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new DefaultIntegerDisplayConverter(false),
+                    DisplayMode.NORMAL,
+                    ColumnLabelAccumulator.COLUMN_LABEL_PREFIX
+                            + DataModelConstants.POSTALCODE_COLUMN_POSITION);
+
         }
     }
 
