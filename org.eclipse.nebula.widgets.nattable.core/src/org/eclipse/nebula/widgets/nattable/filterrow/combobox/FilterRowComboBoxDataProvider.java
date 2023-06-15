@@ -1063,9 +1063,26 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
                 if (this.lastAppliedFilterColumn != columnIndex) {
                     setLastFilter(
                             columnIndex,
-                            new ArrayList<>(this.previousAppliedFilterCollection == null ? this.baseCollection : this.filterCollection));
+                            new ArrayList<>((this.previousAppliedFilterCollection == null && !isFilterApplied()) ? this.baseCollection : this.filterCollection));
                 }
             }
+        }
+        return false;
+    }
+
+    /**
+     * Simplified check if a filter is applied by comparing the size of the base
+     * collection with the size of the filter collection.
+     *
+     * @return <code>true</code> if a filter collection is set and the size is
+     *         less than the size of the base collection, <code>false</code> if
+     *         no filter collection is set or the size is equal.
+     *
+     * @since 2.2
+     */
+    protected boolean isFilterApplied() {
+        if (this.filterCollection != null && this.baseCollection.size() > this.filterCollection.size()) {
+            return true;
         }
         return false;
     }
