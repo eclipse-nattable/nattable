@@ -1461,6 +1461,89 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
             "false, true",
             "false, false"
     })
+    public void shouldNotShowAllAfterCleanAndApply(boolean handleListChanges, boolean caching) throws InterruptedException {
+        setupFixture(handleListChanges, caching);
+
+        // first load all values
+        List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        List<?> streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+
+        // first check if all values are there
+        assertTrue(ObjectUtils.collectionsEqual(LASTNAMES, lastnames), "not all values in collection");
+        assertTrue(ObjectUtils.collectionsEqual(STREETS, streets), "not all values in collection");
+
+        // filter for lastname
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 1, new ArrayList<>(Arrays.asList("Simpson"))));
+
+        // now check that the values for the street column are reduced
+        streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+        assertFalse(ObjectUtils.collectionsEqual(STREETS, streets), "all values in collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "South Street"), streets), "not the reduced collection");
+
+        // apply filter in lastname
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 6, 1, new ArrayList<>(Arrays.asList("Evergreen Terrace"))));
+
+        // lastnames should now only contain the visible entry, streets are
+        // still same as before
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), lastnames), "not the reduced collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "South Street"), streets), "not the previous reduced collection");
+
+        // clear the street filter (sets the lastAppliedFilterColumn to -1)
+        this.natTable.doCommand(new ClearFilterCommand(this.natTable, 6));
+
+        // TODO
+        // wait so the list change events are processed everywhere
+        Thread.sleep(500);
+
+        // lastnames should now only contain the visible entry, streets are
+        // still same as before
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), lastnames), "not the reduced collection");
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "South Street"), streets), "not the previous reduced collection");
+
+        // Note:
+        // the following might not be expected, as the user sees that a filter
+        // is applied, but only sees a single entry that is selected. Currently
+        // it is not possible to restore to a previous state of the dropdown
+        // content.
+
+        // only the applied filter values should be selected
+        // although only a single item is selected and visible in the combo,
+        // isAllSelected should be false
+        assertFalse(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1),
+                        this.filterRowComboBoxDataProvider),
+                "all values selected");
+        assertTrue(ObjectUtils.collectionsEqual(
+                Arrays.asList("Simpson"),
+                (Collection<?>) this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1)));
+
+        // apply a street filter again
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 6, 1, new ArrayList<>(Arrays.asList("Evergreen Terrace"))));
+
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        streets = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.STREET_COLUMN_POSITION, 0);
+
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Simpson"), lastnames), "not the reduced collection");
+        // this failed in a case without caching as the wrong list was now used
+        // to collect the data. it returned all values.
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Evergreen Terrace", "South Street"), streets), "not the previous reduced collection");
+    }
+
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "true, false",
+            "false, true",
+            "false, false"
+    })
     public void shouldNotUpdateFilterOnCommitAllAvailableAfterFilter(boolean handleListChanges, boolean caching) throws InterruptedException {
         setupFixture(handleListChanges, caching);
 

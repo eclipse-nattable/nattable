@@ -137,7 +137,7 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
         // the select all item the change is also committed
         combo.addCheckStateListener(event -> {
             if (event.getChecked()) {
-                setCanonicalValue(EditConstants.SELECT_ALL_ITEMS_VALUE);
+                setEditorValue(new String[] { EditConstants.SELECT_ALL_ITEMS_VALUE });
             }
             commit(MoveDirectionEnum.NONE,
                     (!FilterRowComboBoxCellEditor.this.multiselect
