@@ -144,6 +144,22 @@
 				<extensions>true</extensions>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.3.0</version>
+				<configuration>
+					<rules>
+						<requireJavaVersion>
+							<version>17</version>
+							<message>The NatTable build requires at least Java 17 for running Tycho.</message>
+						</requireJavaVersion>
+						<requireMavenVersion>
+							<version>3.8.6</version>
+						</requireMavenVersion>
+					</rules>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>target-platform-configuration</artifactId>
 				<version>${tycho-version}</version>
