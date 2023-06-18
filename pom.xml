@@ -135,6 +135,7 @@
     </pluginRepositories>
     
 	<build>
+		<defaultGoal>clean verify</defaultGoal>
 		<plugins>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
