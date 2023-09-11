@@ -24,6 +24,7 @@ import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
+import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.nebula.widgets.nattable.widget.NatCombo;
 import org.eclipse.swt.SWT;
@@ -253,11 +254,7 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
         if (!isClosed()) {
             try {
                 Object canonicalValue = getCanonicalValue();
-                if ((canonicalValue != null && this.currentCanonicalValue == null)
-                        || (canonicalValue == null && this.currentCanonicalValue != null)
-                        || (canonicalValue != null
-                                && this.currentCanonicalValue != null
-                                && !canonicalValue.equals(this.currentCanonicalValue))) {
+                if (!canonicalValuesEquals(canonicalValue)) {
                     if (super.commit(direction, closeAfterCommit)) {
                         this.currentCanonicalValue = canonicalValue;
 
@@ -290,6 +287,39 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
             }
         }
         return false;
+    }
+
+    @SuppressWarnings("rawtypes")
+    private boolean canonicalValuesEquals(Object canonicalValue) {
+        if (canonicalValue != null && this.currentCanonicalValue == null) {
+            return false;
+        }
+
+        if (canonicalValue == null && this.currentCanonicalValue != null) {
+            return false;
+        }
+
+        if (canonicalValue != null && this.currentCanonicalValue != null) {
+            if (canonicalValue instanceof Collection && !(this.currentCanonicalValue instanceof Collection)) {
+                return false;
+            }
+
+            if (!(canonicalValue instanceof Collection) && this.currentCanonicalValue instanceof Collection) {
+                return false;
+            }
+
+            if (canonicalValue instanceof Collection && this.currentCanonicalValue instanceof Collection) {
+                return ObjectUtils.collectionsEqual(
+                        (Collection) canonicalValue,
+                        (Collection) this.currentCanonicalValue);
+            } else {
+                return canonicalValue.equals(this.currentCanonicalValue);
+            }
+        }
+
+        // should only happen if canonicalValue and currentCanonicalValue are
+        // null
+        return true;
     }
 
     /**
