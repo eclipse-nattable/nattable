@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByDataLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderLayer;
@@ -107,8 +108,11 @@ public class _200_Group_by extends AbstractNatExample {
                         groupByModel, eventList, reflectiveColumnPropertyAccessor, configRegistry);
 
         // Body layer
+        GlazedListsEventLayer<Object> glazedListsEventLayer =
+                new GlazedListsEventLayer<>(bodyDataLayer, bodyDataLayer.getTreeList());
+
         ColumnReorderLayer columnReorderLayer =
-                new ColumnReorderLayer(bodyDataLayer);
+                new ColumnReorderLayer(glazedListsEventLayer);
         ColumnHideShowLayer columnHideShowLayer =
                 new ColumnHideShowLayer(columnReorderLayer);
         SelectionLayer selectionLayer =
