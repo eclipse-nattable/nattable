@@ -118,6 +118,7 @@ public class RichTextCellPainter extends AbstractCellPainter {
 
         String htmlText = getHtmlText(cell, configRegistry);
 
+        Rectangle initialPainterBounds = new Rectangle(bounds.x, bounds.y - this.richTextPainter.getParagraphSpace(), bounds.width, bounds.height);
         Rectangle painterBounds = new Rectangle(bounds.x, bounds.y - this.richTextPainter.getParagraphSpace(), bounds.width, bounds.height);
 
         // if a vertical alignment is set != TOP we need to update the bounds
@@ -131,6 +132,7 @@ public class RichTextCellPainter extends AbstractCellPainter {
         VerticalAlignmentEnum verticalAlignment =
                 cellStyle.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT);
         if (verticalAlignment != VerticalAlignmentEnum.TOP) {
+
             this.richTextPainter.preCalculate(htmlText, gc, painterBounds, this.wrapText);
             int contentHeight = this.richTextPainter.getPreferredSize().y - 2 * this.richTextPainter.getParagraphSpace();
             int verticalAlignmentPadding = CellStyleUtil.getVerticalAlignmentPadding(
@@ -144,7 +146,7 @@ public class RichTextCellPainter extends AbstractCellPainter {
         this.richTextPainter.paintHTML(htmlText, gc, painterBounds);
 
         int height = this.richTextPainter.getPreferredSize().y - 2 * this.richTextPainter.getParagraphSpace();
-        if (performRowResize(height, painterBounds)) {
+        if (performRowResize(height, initialPainterBounds)) {
             cell.getLayer().doCommand(
                     new RowResizeCommand(
                             cell.getLayer(),
@@ -152,7 +154,7 @@ public class RichTextCellPainter extends AbstractCellPainter {
                             GUIHelper.convertVerticalDpiToPixel(height, configRegistry) + (cell.getBounds().height - bounds.height)));
         }
 
-        if (performColumnResize(this.richTextPainter.getPreferredSize().x, painterBounds)) {
+        if (performColumnResize(this.richTextPainter.getPreferredSize().x, initialPainterBounds)) {
             cell.getLayer().doCommand(
                     new ColumnResizeCommand(
                             cell.getLayer(),
