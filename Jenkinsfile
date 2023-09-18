@@ -32,13 +32,13 @@ pipeline {
 					   pushd $BUILD_DIR
                        RESPONSE=\$(curl -s -X POST -F file=@${DMG} -F 'options={"primaryBundleId": "'${PRIMARY_BUNDLE_ID}'", "staple": true};type=application/json' https://cbi.eclipse.org/macos/xcrun/notarize)
       
-					   UUID=\$(echo $RESPONSE | grep -Po '"uuid"\s*:\s*"\K[^"]+')
-					   STATUS=\$(echo $RESPONSE | grep -Po '"status"\s*:\s*"\K[^"]+')
+					   UUID=\$(echo $RESPONSE | grep -Po '"uuid"\\s*:\\s*"\\K[^"]+')
+					   STATUS=\$(echo $RESPONSE | grep -Po '"status"\\s*:\\s*"\\K[^"]+')
 							
 					   while [[ ${STATUS} == 'IN_PROGRESS' ]]; do
 						 sleep 1m
 						 RESPONSE=\$(curl -s https://cbi.eclipse.org/macos/xcrun/${UUID}/status)
-					     STATUS=\$(echo $RESPONSE | grep -Po '"status"\s*:\s*"\K[^"]+')
+					     STATUS=\$(echo $RESPONSE | grep -Po '"status"\\s*:\\s*"\\K[^"]+')
 					   done
 							
 					   if [[ ${STATUS} != 'COMPLETE' ]]; then
