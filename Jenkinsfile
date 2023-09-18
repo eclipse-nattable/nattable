@@ -10,7 +10,7 @@ pipeline {
     }
     environment {
 		BUILD_DIR = "${WORKSPACE}/org.eclipse.nebula.widgets.nattable.examples.e4.product/target/products/"
-		DMG = org.eclipse.nebula.widgets.nattable.examples.e4.product-macosx.cocoa.x86_64.dmg
+		DMG = "org.eclipse.nebula.widgets.nattable.examples.e4.product-macosx.cocoa.x86_64.dmg"
         PRIMARY_BUNDLE_ID = "app-bundle"
 		SNAPSHOTS_DIR = /home/data/httpd/download.eclipse.org/nattable/snapshots
 		SNAPSHOT_BUILD_DIR = "${SNAPSHOTS_DIR}/${BUILD_NUMBER}"
