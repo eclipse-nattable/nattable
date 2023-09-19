@@ -87,7 +87,7 @@ pipeline {
 
                        # Copy latest snapshot build to release (only enabled for release build) 
                        # cp -r ${SNAPSHOT_BUILD_DIR} /home/data/httpd/download.eclipse.org/nattable/releases/2.0.0
-                       EOF
+                       << EOF
                        '''
                 }
             }
