@@ -4,6 +4,9 @@ pipeline {
             label 'migration'
         }
     }
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
     tools {
         maven 'apache-maven-latest'
         jdk 'openjdk-jdk17-latest'
@@ -14,7 +17,7 @@ pipeline {
         PRIMARY_BUNDLE_ID = "app-bundle"
         SNAPSHOTS_DIR = "/home/data/httpd/download.eclipse.org/nattable/snapshots"
         SNAPSHOT_BUILD_DIR = "${SNAPSHOTS_DIR}/${BUILD_NUMBER}"
-        SSH_HOST="genie.nattable@projects-storage.eclipse.org"
+        SSH_HOST = "genie.nattable@projects-storage.eclipse.org"
     }
     stages {
         stage('Build') {
@@ -25,6 +28,14 @@ pipeline {
             }
         }
         stage('Notarize') {
+            when {
+                allOf {
+                    not {
+                        changeRequest()
+                    }
+                    anyOf { branch 'releases/*'; branch 'master' }
+                }
+            }
             steps {
                 sh '''
                    echo "Notarize..."
@@ -53,6 +64,14 @@ pipeline {
             }
         }
         stage('Deploy') {
+            when {
+                allOf {
+                    not {
+                        changeRequest()
+                    }
+                    anyOf { branch 'releases/*'; branch 'master' }
+                }
+            }
             steps {
                 sshagent(['projects-storage.eclipse.org-bot-ssh']) {
                     sh '''
