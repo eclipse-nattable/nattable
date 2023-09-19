@@ -26,38 +26,36 @@ pipeline {
         }
         stage('Notarize') {
             steps {
-                sshagent(['projects-storage.eclipse.org-bot-ssh']) {
-                    sh """
-                       echo "Notarize..."
-                       pushd $BUILD_DIR
-                       RESPONSE=\$(curl -s -X POST -F file=@${DMG} -F 'options={"primaryBundleId": "'${PRIMARY_BUNDLE_ID}'", "staple": true};type=application/json' https://cbi.eclipse.org/macos/xcrun/notarize)
+                sh '''
+                   echo "Notarize..."
+                   pushd $BUILD_DIR
+                   RESPONSE=\$(curl -s -X POST -F file=@${DMG} -F 'options={"primaryBundleId": "'${PRIMARY_BUNDLE_ID}'", "staple": true};type=application/json' https://cbi.eclipse.org/macos/xcrun/notarize)
       
-                       UUID=\$(echo $RESPONSE | grep -Po '"uuid"\\s*:\\s*"\\K[^"]+')
-                       STATUS=\$(echo $RESPONSE | grep -Po '"status"\\s*:\\s*"\\K[^"]+')
-                            
-                       while [[ ${STATUS} == 'IN_PROGRESS' ]]; do
-                         sleep 1m
-                         RESPONSE=\$(curl -s https://cbi.eclipse.org/macos/xcrun/${UUID}/status)
-                         STATUS=\$(echo $RESPONSE | grep -Po '"status"\\s*:\\s*"\\K[^"]+')
-                       done
-                            
-                       if [[ ${STATUS} != 'COMPLETE' ]]; then
-                         echo "Notarization failed: ${RESPONSE}"
-                         exit 1
-                       fi
-                            
-                       rm "${DMG}"
-                            
-                       curl -JO https://cbi.eclipse.org/macos/xcrun/${UUID}/download
-                       popd
-                       """
-                }
+                   UUID=\$(echo $RESPONSE | grep -Po '"uuid"\\s*:\\s*"\\K[^"]+')
+                   STATUS=\$(echo $RESPONSE | grep -Po '"status"\\s*:\\s*"\\K[^"]+')
+
+                   while [[ ${STATUS} == 'IN_PROGRESS' ]]; do
+                     sleep 1m
+                     RESPONSE=\$(curl -s https://cbi.eclipse.org/macos/xcrun/${UUID}/status)
+                     STATUS=\$(echo $RESPONSE | grep -Po '"status"\\s*:\\s*"\\K[^"]+')
+                   done
+
+                   if [[ ${STATUS} != 'COMPLETE' ]]; then
+                     echo "Notarization failed: ${RESPONSE}"
+                     exit 1
+                   fi
+
+                   rm "${DMG}"
+
+                   curl -JO https://cbi.eclipse.org/macos/xcrun/${UUID}/download
+                   popd
+                   '''
             }
         }
         stage('Deploy') {
             steps {
                 sshagent(['projects-storage.eclipse.org-bot-ssh']) {
-                    sh """
+                    sh '''
                        echo "Deploying..."
                        # Copy from Jenkins to download.eclipse.org
                        ssh ${SSH_HOST} mkdir -p ${SNAPSHOT_BUILD_DIR}/repository
@@ -90,7 +88,7 @@ pipeline {
                        # Copy latest snapshot build to release (only enabled for release build) 
                        # cp -r ${SNAPSHOT_BUILD_DIR} /home/data/httpd/download.eclipse.org/nattable/releases/2.0.0
                        EOF
-                       """
+                       '''
                 }
             }
         }
