@@ -14,8 +14,15 @@ To get started with NatTable it is recommended to read through the [NatTable Get
 
 One of the best ways to get familiar with NatTable is to have a look at example code. There are several options to have a look at the NatTable Examples code:
 
-* Checkout the sources from Git which is explained in our [Contribution Guide](CONTRIBUTION.md).
-* Download the [NatTable Examples Application](https://www.eclipse.org/nattable/documentation.php?page=examples_application) open an example and inspect the *View Source* link at the bottom of the page.
+* Browse through the examples in [`org.eclipse.nebula.widgets.nattable.examples`](https://github.com/eclipse-nebula-nattable/nattable/tree/master/org.eclipse.nebula.widgets.nattable.examples/src/org/eclipse/nebula/widgets/nattable/examples)
+* Checkout the sources from GitHub and inspect the project `org.eclipse.nebula.widgets.nattable.examples`.
+* Download the [NatTable Examples Application](https://eclipse.dev/nattable/documentation.php?page=examples_application) open an example and inspect the *View Source* link at the bottom of the page.
+
+## Downloads
+
+You can find update site URLs and downloadable repository archives of the current release and all older releases in [NatTable Downloads](https://eclipse.dev/nattable/download.php).
+
+If you are interested in SNAPSHOT builds, you can find the update site URLs and all downloadable resources in [NatTable SNAPSHOTS](https://download.eclipse.org/nattable/snapshots/) 
 
 ## Additional information
 
