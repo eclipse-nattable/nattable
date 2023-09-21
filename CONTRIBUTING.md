@@ -9,13 +9,11 @@ NatTable is a subproject of the Nebula Project, the home of further supplemental
 
 The project details can be found [here](https://projects.eclipse.org/projects/technology.nebula.nattable).
 
-This project uses Bugzilla to track ongoing development and issues.
+This project uses [GitHub Issues](/issues) to track ongoing development and issues.
+Be sure to search for existing bugs before you create another one. Remember that ontributions are always welcome!
 
+Previously this project used Bugzilla. Until the Eclipse Foundation is not shutting down Bugzilla, you can find solved issues there:
 * [Search for issues](https://bugs.eclipse.org/bugs/buglist.cgi?product=NatTable)
-* [Report a new issue](https://bugs.eclipse.org/bugs/enter_bug.cgi?product=NatTable)
-
-Be sure to search for existing bugs before you create another one. Remember that
-contributions are always welcome!
 
 ## Eclipse Contributor Agreement
 
@@ -30,9 +28,16 @@ Contributor Agreement (ECA) on file.
 
 For more information, please have a look at the [Eclipse Committer Handbook](https://www.eclipse.org/projects/handbook/#resources-commit)
 
+## Setup and Workflow
+
+The NatTable project basically follows the same process as the Eclipse Platform. As a project hosted on GitHub, we accept pull requests. Please follow the guidelines in the [Eclipse Platform Contribution Guide](https://github.com/eclipse-platform/.github/blob/main/CONTRIBUTING.md) if you want to create a pull request for the NatTable project:
+* [Setting up Your Eclipse and GitHub Account](https://github.com/eclipse-platform/.github/blob/main/CONTRIBUTING.md#setting-up-your-eclipse-and-github-account)
+* [Recommended Workflow](https://github.com/eclipse-platform/.github/blob/main/CONTRIBUTING.md#recommended-workflow)
+* [Commit Message Recommendations](https://github.com/eclipse-platform/.github/blob/main/CONTRIBUTING.md#commit-message-recommendations)
+
 ## Contact
 
-Contact the project developers via the [project's "dev" list](https://dev.eclipse.org/mailman/listinfo/nattable-dev).
+Contact the project developers via the [project's "dev" mailing list](https://dev.eclipse.org/mailman/listinfo/nattable-dev).
 
 ## Environment
 
@@ -40,49 +45,9 @@ The development tools with minimum versions that are used by the NatTable team a
 
 * JDK 17
 * Eclipse 4.26 (2022-12)
-* Maven 3.8.6 with Tycho 3.0.3
+* Maven 3.8.6 with Tycho 4.0.2
 * Git
-* Gerrit
 * JUnit5
-
-## Gerrit server configuration
-
-To be able to contribute to the project, patches need to be provided via Gerrit. You therefore need a Gerrit account and configure the authentication there. This is explained for example [here](https://www.vogella.com/tutorials/EclipsePlatformDevelopment/article.html#exercise-setup-user-account).
-
-## Obtaining sources and importing projects into Eclipse
-
-The NatTable sources are hosted in Git. To get the sources you need to clone the repository either via command line or via EGit Eclipse integration.
-
-### Cloning via command line
-
-Change to the directory where you want to store the local working copy of the NatTable repository (NATTABLE_REPO).
-
-Clone the repository to that directory by executing the following Git command:
-
-```
-git clone ssh://<user_id>@git.eclipse.org:29418/nattable/org.eclipse.nebula.widgets.nattable
-```
-
-After that, import the projects into Eclipse
-
-* File -> Import
-* General -> Existing Projects into Workspace
-* Next
-* Select root directory: (NATTABLE_REPO/org.eclipse.nebula.widgets.nattable)
-* Finish
-
-### Cloning via EGit
-
-First, verify that the default repository folder as set on the main Git preference page is to your liking.
-
-Then, clone the repository and import the projects:
-
-* File -> Import
-* Git -> Projects from Git
-* Select Clone URI
-* Enter the URI  
-`ssh://<user_id>@git.eclipse.org:29418/nattable/org.eclipse.nebula.widgets.nattable`
-* Import existing projects into the workspace from the newly created working directory
 
 ### Source code organization
 
@@ -153,33 +118,3 @@ After the build successfully finished, you will find an Update Site archive in
 *NATTABLE_TRUNK/nattable/org.eclipse.nebula.widgets.nattable.updatesite/target*
 
 that you can use for example in a local target definition.
-
-### Contributing Patches
-
-We use Gerrit for reviewing and accepting patches. Please have a look at the [Eclipse Gerrit Guide](https://wiki.eclipse.org/Gerrit#Doing_Code_Reviews_with_Gerrit).
-
-* Make small logical changes.
-* Provide a meaningful commit message. It should contain the name of the related bug ticket. (See [A Note About Git Commit Messages for guidelines](https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html))
-* Review and follow the Eclipse Due Diligence Process
-  * [Intellectual Property](https://www.eclipse.org/projects/handbook/#ip)
-  * [Due Diligence for Prerequisites](https://www.eclipse.org/projects/handbook/#ip-prereq-diligence)
-
-## Contributing to the NatTable website
-
-To contribute to the website the following repositories need to be cloned:
-
-```
-git clone ssh://<user_id>@git.eclipse.org:29418/www.eclipse.org/nattable
-git clone ssh://<user_id>@git.eclipse.org:29418/www.eclipse.org/nattable
-```
-
-To test locally we recommend a local webserver installation with PHP support, e.g. [XAMPP](https://www.apachefriends.org/de/index.html).
-
-If XAMPP is used, ensure that the two cloned repositories are accessible in the webserver. This can be done for example by setting symbolic links in the *htdocs* directory of XAMPP.
-
-* On Windows open a console as Administrator
-* Change directory: *<install_dir>\xampp\htdocs*
-* `mklink /D nattable <clone_dir>\nattable`
-* `mklink /D "eclipse.org-common" <clone_dir>\eclipse.org-common`
-
-Once the symbolic links are in place, start XAMPP via control center and open *localhost/nattable* in a browser.
