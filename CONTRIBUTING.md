@@ -9,7 +9,7 @@ NatTable is a subproject of the Nebula Project, the home of further supplemental
 
 The project details can be found [here](https://projects.eclipse.org/projects/technology.nebula.nattable).
 
-This project uses [GitHub Issues](/issues) to track ongoing development and issues.
+This project uses [GitHub Issues](https://github.com/eclipse-nebula-nattable/nattable/issues) to track ongoing development and issues.
 Be sure to search for existing bugs before you create another one. Remember that ontributions are always welcome!
 
 Previously this project used Bugzilla. Until the Eclipse Foundation is not shutting down Bugzilla, you can find solved issues there:
