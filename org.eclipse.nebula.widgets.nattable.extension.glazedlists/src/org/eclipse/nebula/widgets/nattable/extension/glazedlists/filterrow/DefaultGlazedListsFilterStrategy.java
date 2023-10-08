@@ -207,26 +207,28 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
                     }
                 }
 
+                EventList<MatcherEditor<T>> allMatcherEditors = new BasicEventList<>();
+                allMatcherEditors.addAll(stringMatcherEditors);
+                allMatcherEditors.addAll(thresholdMatcherEditors);
+
                 String[] separator = FilterRowUtils.getSeparatorCharacters(textDelimiter);
 
-                if (!stringMatcherEditors.isEmpty()) {
-                    CompositeMatcherEditor<T> stringCompositeMatcherEditor = new CompositeMatcherEditor<>(stringMatcherEditors);
-                    if (separator == null || filterText.contains(separator[1])) {
-                        stringCompositeMatcherEditor.setMode(CompositeMatcherEditor.OR);
+                if (!allMatcherEditors.isEmpty()) {
+                    CompositeMatcherEditor<T> allCompositeMatcherEditor = new CompositeMatcherEditor<>(allMatcherEditors);
+                    if (!thresholdMatcherEditors.isEmpty()) {
+                        if (separator == null || filterText.contains(separator[0])) {
+                            allCompositeMatcherEditor.setMode(CompositeMatcherEditor.AND);
+                        } else {
+                            allCompositeMatcherEditor.setMode(CompositeMatcherEditor.OR);
+                        }
                     } else {
-                        stringCompositeMatcherEditor.setMode(CompositeMatcherEditor.AND);
+                        if (separator == null || filterText.contains(separator[1])) {
+                            allCompositeMatcherEditor.setMode(CompositeMatcherEditor.OR);
+                        } else {
+                            allCompositeMatcherEditor.setMode(CompositeMatcherEditor.AND);
+                        }
                     }
-                    matcherEditors.add(stringCompositeMatcherEditor);
-                }
-
-                if (!thresholdMatcherEditors.isEmpty()) {
-                    CompositeMatcherEditor<T> thresholdCompositeMatcherEditor = new CompositeMatcherEditor<>(thresholdMatcherEditors);
-                    if (separator == null || filterText.contains(separator[0])) {
-                        thresholdCompositeMatcherEditor.setMode(CompositeMatcherEditor.AND);
-                    } else {
-                        thresholdCompositeMatcherEditor.setMode(CompositeMatcherEditor.OR);
-                    }
-                    matcherEditors.add(thresholdCompositeMatcherEditor);
+                    matcherEditors.add(allCompositeMatcherEditor);
                 }
             }
 
