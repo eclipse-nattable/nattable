@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 2022 Dirk Fauth.
+ * Copyright (c) 2018, 2023 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -70,7 +70,7 @@ public class DefaultGlazedListsFilterStrategyTest {
         dataProvider = new FilterRowDataProvider<>(
                 new DefaultGlazedListsFilterStrategy<>(
                         filterList,
-                        new ReflectiveColumnPropertyAccessor<Person>(personPropertyNames),
+                        new ReflectiveColumnPropertyAccessor<>(personPropertyNames),
                         configRegistry),
                 columnHeaderLayer,
                 columnHeaderLayer.getDataProvider(), configRegistry);
@@ -190,7 +190,7 @@ public class DefaultGlazedListsFilterStrategyTest {
         FilterRowDataProvider<Person> dataProvider = new FilterRowDataProvider<>(
                 new DefaultGlazedListsFilterStrategy<>(
                         persons,
-                        new ReflectiveColumnPropertyAccessor<Person>(personPropertyNames),
+                        new ReflectiveColumnPropertyAccessor<>(personPropertyNames),
                         configRegistry),
                 columnHeaderLayer,
                 columnHeaderLayer.getDataProvider(), configRegistry);
@@ -252,7 +252,7 @@ public class DefaultGlazedListsFilterStrategyTest {
         FilterRowDataProvider<Person> dataProvider = new FilterRowDataProvider<>(
                 new DefaultGlazedListsFilterStrategy<>(
                         persons,
-                        new ReflectiveColumnPropertyAccessor<Person>(personPropertyNames),
+                        new ReflectiveColumnPropertyAccessor<>(personPropertyNames),
                         configRegistry),
                 columnHeaderLayer,
                 columnHeaderLayer.getDataProvider(), configRegistry);
@@ -333,7 +333,7 @@ public class DefaultGlazedListsFilterStrategyTest {
         FilterRowDataProvider<Person> dataProvider = new FilterRowDataProvider<>(
                 new DefaultGlazedListsFilterStrategy<>(
                         persons,
-                        new ReflectiveColumnPropertyAccessor<Person>(personPropertyNames),
+                        new ReflectiveColumnPropertyAccessor<>(personPropertyNames),
                         configRegistry),
                 columnHeaderLayer,
                 columnHeaderLayer.getDataProvider(), configRegistry);
@@ -396,6 +396,105 @@ public class DefaultGlazedListsFilterStrategyTest {
         // get all Persons with < 30 | > 100
         // should return all Bart and all Marge
         dataProvider.setDataValue(5, 1, "< 30 | > 100");
+        assertEquals(5, persons.size());
+
+        // now also filter Marge to only get the Bart entries
+        // test to verify that combined filters are working
+        dataProvider.setDataValue(0, 1, "Bart");
+        assertEquals(3, persons.size());
+    }
+
+    @Test
+    public void shouldFilterThresholdsAndStrings() {
+        FilterList<Person> persons = new FilterList<>(GlazedLists.eventList(PersonService.getFixedPersons()));
+        DataLayerFixture columnHeaderLayer = new DataLayerFixture(6, 2, 100, 50);
+
+        ConfigRegistry configRegistry = new ConfigRegistry();
+
+        new DefaultNatTableStyleConfiguration().configureRegistry(configRegistry);
+        new DefaultFilterRowConfiguration().configureRegistry(configRegistry);
+
+        // register the FILTER_DISPLAY_CONVERTER and the REGULAR_EXPRESSION text
+        // matching mode to enable threshold matching
+        configRegistry.registerConfigAttribute(
+                FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
+                new DefaultDoubleDisplayConverter(),
+                DisplayMode.NORMAL,
+                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + "5");
+
+        configRegistry.registerConfigAttribute(
+                FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                TextMatchingMode.REGULAR_EXPRESSION,
+                DisplayMode.NORMAL,
+                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + "5");
+
+        // register a TEXT_DELIMITER to be able to combine filters
+        // use the regular expression to use & for AND and | for OR
+        configRegistry.registerConfigAttribute(
+                FilterRowConfigAttributes.TEXT_DELIMITER, "[&\\|]");
+
+        FilterRowDataProvider<Person> dataProvider = new FilterRowDataProvider<>(
+                new DefaultGlazedListsFilterStrategy<>(
+                        persons,
+                        new ReflectiveColumnPropertyAccessor<>(personPropertyNames),
+                        configRegistry),
+                columnHeaderLayer,
+                columnHeaderLayer.getDataProvider(), configRegistry);
+
+        assertEquals(18, persons.size());
+
+        // set money of all Bart entries to null
+        dataProvider.setDataValue(0, 1, "Bart");
+        assertEquals(3, persons.size());
+        for (Person person : persons) {
+            person.setMoney(null);
+        }
+
+        // set money of all Lisa entries to 90
+        dataProvider.setDataValue(0, 1, "Lisa");
+        assertEquals(2, persons.size());
+        for (Person person : persons) {
+            person.setMoney(90d);
+        }
+
+        // set money of all Marge entries to 200
+        dataProvider.setDataValue(0, 1, "Marge");
+        assertEquals(2, persons.size());
+        for (Person person : persons) {
+            person.setMoney(200d);
+        }
+
+        // set money of all Rod entries to 40
+        dataProvider.setDataValue(0, 1, "Rod");
+        assertEquals(2, persons.size());
+        for (Person person : persons) {
+            person.setMoney(40d);
+        }
+
+        // set money of all Tod entries to 60
+        dataProvider.setDataValue(0, 1, "Tod");
+        assertEquals(2, persons.size());
+        for (Person person : persons) {
+            person.setMoney(60d);
+        }
+
+        dataProvider.clearAllFilters();
+
+        assertEquals(18, persons.size());
+
+        // get all Persons with >= 200
+        // this means all Marges
+        dataProvider.setDataValue(5, 1, ">=200");
+        assertEquals(2, persons.size());
+
+        // get all Persons with no money
+        // this means all Barts
+        dataProvider.setDataValue(5, 1, "^$");
+        assertEquals(3, persons.size());
+
+        // get all Persons with >= 100 or no money
+        // this means all Marges and all Barts
+        dataProvider.setDataValue(5, 1, ">= 200 | ^$");
         assertEquals(5, persons.size());
 
         // now also filter Marge to only get the Bart entries
