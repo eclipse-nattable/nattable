@@ -78,6 +78,10 @@ public class ScalingUiBindingConfiguration extends AbstractUiBindingConfiguratio
                 new ZoomInScalingAction(this.updater));
 
         uiBindingRegistry.registerKeyBinding(
+                new KeyEventMatcher(SWT.MOD1, '='),
+                new ZoomInScalingAction(this.updater));
+
+        uiBindingRegistry.registerKeyBinding(
                 new KeyEventMatcher(SWT.MOD1, '-'),
                 new ZoomOutScalingAction(this.updater));
 
