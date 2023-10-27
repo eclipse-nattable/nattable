@@ -23,6 +23,8 @@ import org.eclipse.nebula.widgets.nattable.data.convert.ConversionFailedExceptio
 import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
@@ -30,8 +32,11 @@ import org.eclipse.nebula.widgets.nattable.widget.NatCombo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,6 +90,58 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
      * @since 2.2
      */
     private List<?> notVisibleSelected;
+
+    /**
+     * Special resize listener that gets added to the parent control at editor
+     * control creation to fix the positioning of editor control and dropdown
+     * shell.
+     * <p>
+     * If the NatTable is scrolled to the very right position, and a filter is
+     * applied that causes to hide the vertical scrollbar, the rendering gets
+     * into an inconsistent state. The columns are moved to the right to fill
+     * the space of the hidden scrollbar, but the editor and the shell stay at
+     * the current position. This results in an inconsistent rendering state,
+     * which is fixed with this listener.
+     * </p>
+     *
+     * @since 2.2
+     */
+    private Listener resizeListener = new Listener() {
+
+        @Override
+        public void handleEvent(Event event) {
+            ILayer layer = FilterRowComboBoxCellEditor.this.layerCell.getLayer();
+            ILayerCell cell =
+                    layer.getCellByPosition(
+                            getColumnPosition(),
+                            getRowPosition());
+            if (!cell.getBounds().equals(FilterRowComboBoxCellEditor.this.layerCell.getBounds())) {
+                Rectangle cellBounds = cell.getBounds();
+                Rectangle editorBounds = layer.getLayerPainter().adjustCellBounds(
+                        getColumnPosition(),
+                        getRowPosition(),
+                        new Rectangle(cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height));
+
+                final NatCombo editorControl = getEditorControl();
+
+                editorBounds = calculateControlBounds(editorBounds);
+
+                // TODO introduce more generic way to identify the border width
+                // the currently fixed border width of 1 is handled
+                // because of the fixed border width possibly applied via
+                // NatTableBorderOverlayPainter
+                if (editorBounds.x == 0) {
+                    editorBounds.x += 1;
+                    editorBounds.width -= 1;
+                }
+
+                if (editorControl != null && !editorControl.isDisposed()) {
+                    editorControl.setBounds(editorBounds);
+                    editorControl.showDropdownControl();
+                }
+            }
+        }
+    };
 
     /**
      * Create a new {@link FilterRowComboBoxCellEditor} based on the given
@@ -166,7 +223,16 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
             });
         }
 
+        parent.addListener(SWT.Resize, this.resizeListener);
+
         return combo;
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        // remove the special resize listener on the parent on close
+        this.parent.removeListener(SWT.Resize, this.resizeListener);
     }
 
     @SuppressWarnings("rawtypes")
