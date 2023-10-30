@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.conflation;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
@@ -24,6 +26,8 @@ import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
 public class VisualChangeEventConflater extends AbstractEventConflater {
 
     private final NatTable natTable;
+
+    private volatile AtomicBoolean running = new AtomicBoolean(false);
 
     public VisualChangeEventConflater(NatTable ownerLayer) {
         this.natTable = ownerLayer;
@@ -39,10 +43,14 @@ public class VisualChangeEventConflater extends AbstractEventConflater {
     @Override
     public Runnable getConflaterTask() {
         return () -> {
-            if (!VisualChangeEventConflater.this.queue.isEmpty()) {
+            if (!VisualChangeEventConflater.this.queue.isEmpty() && this.running.compareAndSet(false, true)) {
                 clearQueue();
 
-                VisualChangeEventConflater.this.natTable.getDisplay().asyncExec(VisualChangeEventConflater.this.natTable::updateResize);
+                VisualChangeEventConflater.this.natTable.getDisplay().asyncExec(() -> {
+                    VisualChangeEventConflater.this.natTable.updateResize();
+                    this.running.set(false);
+                });
+
             }
         };
     }
