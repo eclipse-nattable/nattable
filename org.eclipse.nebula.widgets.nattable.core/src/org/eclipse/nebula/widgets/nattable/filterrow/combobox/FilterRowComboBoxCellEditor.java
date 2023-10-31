@@ -127,7 +127,7 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
                             colPos,
                             getRowPosition());
 
-            if (getColumnPosition() < colPos || !cell.getBounds().equals(bounds)) {
+            if (getColumnPosition() < colPos || (cell != null && !cell.getBounds().equals(bounds))) {
                 close();
                 EditController.editCell(
                         cell,
