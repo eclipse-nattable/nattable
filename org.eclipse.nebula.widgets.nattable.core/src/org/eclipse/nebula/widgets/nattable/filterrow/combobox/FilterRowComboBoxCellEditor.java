@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.data.convert.ConversionFailedException;
 import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
+import org.eclipse.nebula.widgets.nattable.edit.EditController;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -111,34 +112,28 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
         @Override
         public void handleEvent(Event event) {
             ILayer layer = FilterRowComboBoxCellEditor.this.layerCell.getLayer();
+            Rectangle bounds = FilterRowComboBoxCellEditor.this.layerCell.getBounds();
+            int colEnd = bounds.x + bounds.width - 1;
+            int colPos = layer.getColumnPositionByX(colEnd);
+
+            // if we notice that the position of the column for which an editor
+            // was opened has changed we close the current editor and open a new
+            // one for the updated column position. The situation can happen if
+            // a filter operation hides the scrollbar, so the table is moved to
+            // the right. This could also bring in a new column which leads to
+            // column position shifting.
             ILayerCell cell =
                     layer.getCellByPosition(
-                            getColumnPosition(),
+                            colPos,
                             getRowPosition());
-            if (!cell.getBounds().equals(FilterRowComboBoxCellEditor.this.layerCell.getBounds())) {
-                Rectangle cellBounds = cell.getBounds();
-                Rectangle editorBounds = layer.getLayerPainter().adjustCellBounds(
-                        getColumnPosition(),
-                        getRowPosition(),
-                        new Rectangle(cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height));
 
-                final NatCombo editorControl = getEditorControl();
-
-                editorBounds = calculateControlBounds(editorBounds);
-
-                // TODO introduce more generic way to identify the border width
-                // the currently fixed border width of 1 is handled
-                // because of the fixed border width possibly applied via
-                // NatTableBorderOverlayPainter
-                if (editorBounds.x == 0) {
-                    editorBounds.x += 1;
-                    editorBounds.width -= 1;
-                }
-
-                if (editorControl != null && !editorControl.isDisposed()) {
-                    editorControl.setBounds(editorBounds);
-                    editorControl.showDropdownControl();
-                }
+            if (getColumnPosition() < colPos || !cell.getBounds().equals(bounds)) {
+                close();
+                EditController.editCell(
+                        cell,
+                        FilterRowComboBoxCellEditor.this.parent,
+                        FilterRowComboBoxCellEditor.this.currentCanonicalValue,
+                        FilterRowComboBoxCellEditor.this.configRegistry);
             }
         }
     };
