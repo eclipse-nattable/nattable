@@ -321,7 +321,6 @@ public class FilterNatCombo extends NatCombo {
 
         // add a column to be able to resize the item width in the dropdown
         new TableColumn(this.selectAllItemViewer.getTable(), SWT.NONE);
-        this.selectAllItemViewer.getTable().addListener(SWT.Resize, event -> calculateColumnWidth());
 
         FormData data = new FormData();
         if (this.showDropdownFilter) {
