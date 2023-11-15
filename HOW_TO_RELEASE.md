@@ -8,7 +8,8 @@ This document describes the process on how to release Nebula NatTable.
  * Create and push a release branch for the version that should be released (e.g. releases/2.0.2)
  * Create a release in the project management: https://projects.eclipse.org/node/1463/create-release
    * Ensure that the project information is updated (e.g. set the correct Release Type)
- * Add the new version to the Bugzilla Manager
+ * Create a tag for the new version based on the last commit
+ * Ensure that there is a milestone for the release and that all issues that are resolved with this milestone are correctly assigned.
 
 ## Release to Eclipse
 
@@ -32,8 +33,10 @@ This document describes the process on how to release Nebula NatTable.
    * If everything is correct *Close* the repository, otherwise *Drop* it and fix any issues
    * Once it is closed, press the *Release* button to trigger the release to the Central repository
 
- * Create a tag for the new version based on the last commit
- * Finally update the version in the master branch via `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=NEW_VERSION_NUMBER.qualifier`
+## Release to GitHub
+
+ * Create a release on GitHub and upload the release artifacts from the Eclipse build 
+ * Update the version in the master branch via `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=NEW_VERSION_NUMBER.qualifier`
 
 ## Update the website
 
