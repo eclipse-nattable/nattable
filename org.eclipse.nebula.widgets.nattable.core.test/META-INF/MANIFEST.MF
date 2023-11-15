@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: NatTable Core Tests
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.core.tests
-Bundle-Version: 2.2.1.qualifier
+Bundle-Version: 2.2.1
 Fragment-Host: org.eclipse.nebula.widgets.nattable.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.eclipse.core.commands.common,
