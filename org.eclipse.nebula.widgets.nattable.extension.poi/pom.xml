@@ -15,6 +15,30 @@
     <artifactId>org.eclipse.nebula.widgets.nattable.extension.poi</artifactId>
     <version>2.2.1-SNAPSHOT</version>
     <packaging>eclipse-plugin</packaging>
+    
+	<name>Nebula NatTable Apache POI Extension</name>
+	<description>Nebula NatTable Apache POI Extension</description>
+	<url>https://projects.eclipse.org/projects/technology.nebula.nattable</url>
+    
+    <licenses>
+        <license>
+            <name>Eclipse Public License - v 2.0</name>
+            <url>https://www.eclipse.org/legal/epl-2.0/</url>
+        </license>
+    </licenses>
+
+	<developers>
+    	<developer>
+			<name>Dirk Fauth</name>
+			<email>dirk.fauth@googlemail.com</email>
+		</developer>
+	</developers>
+  
+    <scm>
+        <connection>scm:git:git://github.com/eclipse-nebula-nattable/nattable.git</connection>
+        <developerConnection>scm:git:https://github.com/eclipse-nebula-nattable/nattable.git</developerConnection>
+        <url>https://github.com/eclipse-nebula-nattable/nattable.git</url>
+    </scm>
 
     <dependencies>
     	<dependency>
