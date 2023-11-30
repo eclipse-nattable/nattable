@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2023 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,7 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Collection;
+
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
@@ -199,7 +202,8 @@ public class EditUtilsTest {
         this.natTable.getConfigRegistry().registerConfigAttribute(
                 EditConfigAttributes.CELL_EDITOR,
                 new CheckBoxCellEditor(),
-                DisplayMode.EDIT, TEST_LABEL);
+                DisplayMode.EDIT,
+                TEST_LABEL);
 
         assertFalse(EditUtils.isEditorSame(this.selectionLayer, this.natTable.getConfigRegistry()));
     }
@@ -272,4 +276,52 @@ public class EditUtilsTest {
         assertTrue(EditUtils.isValueSame(this.selectionLayer));
     }
 
+    @Test
+    public void testGetSelectedCellsForEditing() {
+        this.selectionLayer.selectCell(1, 1, false, true);
+        this.selectionLayer.selectCell(2, 2, false, true);
+        this.selectionLayer.selectCell(3, 3, false, true);
+
+        Collection<ILayerCell> selectedCellsForEditing = EditUtils.getSelectedCellsForEditing(this.selectionLayer);
+        Collection<ILayerCell> editableCellsInSelection = EditUtils.getEditableCellsInSelection(this.selectionLayer, this.natTable.getConfigRegistry());
+
+        assertEquals(3, selectedCellsForEditing.size());
+        assertEquals(0, editableCellsInSelection.size());
+    }
+
+    @Test
+    public void testGetSelectedCellsForEditingEditingEnabled() {
+        this.natTable.enableEditingOnAllCells();
+
+        this.selectionLayer.selectCell(1, 1, false, true);
+        this.selectionLayer.selectCell(2, 2, false, true);
+        this.selectionLayer.selectCell(3, 3, false, true);
+
+        Collection<ILayerCell> selectedCellsForEditing = EditUtils.getSelectedCellsForEditing(this.selectionLayer);
+        Collection<ILayerCell> editableCellsInSelection = EditUtils.getEditableCellsInSelection(this.selectionLayer, this.natTable.getConfigRegistry());
+
+        assertEquals(3, selectedCellsForEditing.size());
+        assertEquals(3, editableCellsInSelection.size());
+    }
+
+    @Test
+    public void testGetSelectedCellsForEditingEditingEnabledForSingleCell() {
+        DataLayer bodyDataLayer = (DataLayer) this.gridLayerStack.getBodyDataLayer();
+        this.natTable.registerLabelOnColumn(bodyDataLayer, 2, TEST_LABEL);
+        this.natTable.getConfigRegistry().registerConfigAttribute(
+                EditConfigAttributes.CELL_EDITABLE_RULE,
+                IEditableRule.ALWAYS_EDITABLE,
+                DisplayMode.EDIT,
+                TEST_LABEL);
+
+        this.selectionLayer.selectCell(1, 1, false, true);
+        this.selectionLayer.selectCell(2, 2, false, true);
+        this.selectionLayer.selectCell(3, 3, false, true);
+
+        Collection<ILayerCell> selectedCellsForEditing = EditUtils.getSelectedCellsForEditing(this.selectionLayer);
+        Collection<ILayerCell> editableCellsInSelection = EditUtils.getEditableCellsInSelection(this.selectionLayer, this.natTable.getConfigRegistry());
+
+        assertEquals(3, selectedCellsForEditing.size());
+        assertEquals(1, editableCellsInSelection.size());
+    }
 }

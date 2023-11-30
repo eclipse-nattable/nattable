@@ -145,4 +145,15 @@ public final class EditConfigAttributes {
      * @see ICellEditDialog#DIALOG_MESSAGE
      */
     public static final ConfigAttribute<Map<String, Object>> EDIT_DIALOG_SETTINGS = new ConfigAttribute<>();
+
+    /**
+     * The configuration attribute to specify if multi-edit should only be
+     * possible if all selected cells are editable (default) or if the not
+     * editable cells should be ignored in the processing. If there is no value
+     * set for this configuration attribute, the default <code>true</code> is
+     * used.
+     *
+     * @since 2.3
+     */
+    public static final ConfigAttribute<Boolean> MULTI_EDIT_ALL_SELECTED_EDITABLE = new ConfigAttribute<>();
 }
