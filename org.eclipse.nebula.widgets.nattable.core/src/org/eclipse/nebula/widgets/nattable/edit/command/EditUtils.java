@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ package org.eclipse.nebula.widgets.nattable.edit.command;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -204,7 +205,7 @@ public final class EditUtils {
      *
      * @param cellCoords
      *            The coordinates of the cell to check the editable state,
-     *            related to the given {@link ILayer}
+     *            related to the given {@link ILayer}.
      * @param configRegistry
      *            The {@link IConfigRegistry} needed to access the configured
      *            {@link IEditableRule}s.
@@ -214,7 +215,22 @@ public final class EditUtils {
      * @since 1.6
      */
     public static boolean isCellEditable(PositionCoordinate cellCoords, IConfigRegistry configRegistry) {
-        ILayerCell layerCell = cellCoords.getLayer().getCellByPosition(cellCoords.columnPosition, cellCoords.rowPosition);
+        return isCellEditable(cellCoords.getLayer().getCellByPosition(cellCoords.columnPosition, cellCoords.rowPosition), configRegistry);
+    }
+
+    /**
+     * Checks if the given {@link ILayerCell} is editable or not.
+     *
+     * @param layerCell
+     *            The cell to check the editable state.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to access the configured
+     *            {@link IEditableRule}s.
+     * @return <code>true</code> if the cell is editable, <code>false</code> if
+     *         not
+     * @since 2.3
+     */
+    public static boolean isCellEditable(ILayerCell layerCell, IConfigRegistry configRegistry) {
         if (layerCell != null) {
             LabelStack labelStack = layerCell.getConfigLabels();
 
@@ -565,6 +581,70 @@ public final class EditUtils {
      */
     public static Collection<ILayerCell> getSelectedCellsForEditing(SelectionLayer selectionLayer, IUniqueIndexLayer upperLayer) {
         Collection<ILayerCell> selectedCells = getSelectedCellsForEditing(selectionLayer);
+        if (upperLayer != null) {
+            ArrayList<ILayerCell> convertedCells = new ArrayList<>();
+            for (ILayerCell cell : selectedCells) {
+                int convertedColPos = LayerUtil.convertColumnPosition(cell.getLayer(), cell.getColumnPosition(), upperLayer);
+                int convertedRowPos = LayerUtil.convertRowPosition(cell.getLayer(), cell.getRowPosition(), upperLayer);
+                convertedCells.add(upperLayer.getCellByPosition(convertedColPos, convertedRowPos));
+            }
+            return convertedCells;
+        }
+        return selectedCells;
+    }
+
+    /**
+     * Returns all cells from the {@link SelectionLayer} that are selected AND
+     * editable.
+     *
+     * @param selectionLayer
+     *            The {@link SelectionLayer} to retrieve the current selection.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to access the configured
+     *            {@link IEditableRule}s.
+     * @return The selected {@link ILayerCell}s that are editable.
+     * @since 2.3
+     */
+    public static Collection<ILayerCell> getEditableCellsInSelection(SelectionLayer selectionLayer, IConfigRegistry configRegistry) {
+        Collection<ILayerCell> selectedCells = getSelectedCellsForEditing(selectionLayer);
+        for (Iterator<ILayerCell> it = selectedCells.iterator(); it.hasNext();) {
+            if (!isCellEditable(it.next(), configRegistry)) {
+                it.remove();
+            }
+        }
+        return selectedCells;
+    }
+
+    /**
+     * Returns all cells from the {@link SelectionLayer} that are selected AND
+     * editable.
+     * <p>
+     * <b>Note:</b><br>
+     * Converts the {@link SelectionLayer} based cells to the given upperLayer
+     * to be able to inspect the cells if that layer on top of the
+     * {@link SelectionLayer} adds information that needs to be inspected for
+     * editing checks, e.g. a tree layer.
+     * </p>
+     *
+     * @param selectionLayer
+     *            The {@link SelectionLayer} to retrieve the current selection.
+     * @param upperLayer
+     *            The layer on top of the given {@link SelectionLayer} to which
+     *            the selection should be converted to. Can be <code>null</code>
+     *            which causes the resulting selected cells to be related to the
+     *            {@link SelectionLayer}.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to access the configured
+     *            {@link IEditableRule}s.
+     * @return The selected {@link ILayerCell}s that are editable, related to
+     *         the given upperLayer.
+     *
+     * @see EditUtils#getEditableCellsInSelection(SelectionLayer,
+     *      IConfigRegistry)
+     * @since 2.3
+     */
+    public static Collection<ILayerCell> getEditableCellsInSelection(SelectionLayer selectionLayer, IUniqueIndexLayer upperLayer, IConfigRegistry configRegistry) {
+        Collection<ILayerCell> selectedCells = getEditableCellsInSelection(selectionLayer, configRegistry);
         if (upperLayer != null) {
             ArrayList<ILayerCell> convertedCells = new ArrayList<>();
             for (ILayerCell cell : selectedCells) {
