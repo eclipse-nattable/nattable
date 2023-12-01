@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2020 CEA LIST.
+ * Copyright (c) 2015, 2023 CEA LIST.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.ContextualDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
@@ -49,6 +50,8 @@ public class MarkupDisplayConverter extends ContextualDisplayConverter {
         String result = null;
         if (wrappedConverterResult != null) {
             result = wrappedConverterResult.toString();
+
+            result = StringEscapeUtils.escapeHtml4(String.valueOf(result));
 
             // add markups
             for (MarkupProcessor markup : this.markups.values()) {
