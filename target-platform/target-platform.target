@@ -17,6 +17,7 @@
       <unit id="ca.odell.glazedlists" version="1.11.0.v20190926-1838"/>
       <unit id="org.apache.commons.collections4" version="4.4.0.v20200420-1700"/>
       <unit id="org.apache.commons.codec" version="1.14.0.v20200818-1422"/>
+      <unit id="org.apache.commons.lang3" version="3.1.0.v201403281430"/>
       <unit id="org.apache.commons.math3" version="3.6.1.v20200817-1830"/>
       <unit id="org.apache.poi" version="4.1.1.v20200604-1524"/>
       <unit id="org.slf4j.api" version="1.7.30.v20200204-2150"/>

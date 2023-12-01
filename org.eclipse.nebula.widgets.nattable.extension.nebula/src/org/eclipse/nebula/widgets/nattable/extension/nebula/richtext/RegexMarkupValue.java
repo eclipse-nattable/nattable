@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2016, 2020 Dirk Fauth.
+ * Copyright (c) 2016, 2023 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -23,6 +23,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.XMLEvent;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.nebula.widgets.richtext.RichTextPainter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +65,9 @@ public class RegexMarkupValue implements MarkupProcessor {
      *            The String that should be added as suffix.
      */
     public RegexMarkupValue(String value, String markupPrefix, String markupSuffix) {
-        this.originalRegexValue = value;
+        // this.originalRegexValue = value;
+        this.originalRegexValue = StringEscapeUtils.escapeHtml4(String.valueOf(value));
+
         this.markupPrefix = markupPrefix;
         this.markupSuffix = markupSuffix;
 
@@ -80,6 +83,7 @@ public class RegexMarkupValue implements MarkupProcessor {
             try (StringReader reader = new StringReader(RichTextPainter.FAKE_ROOT_TAG_START + input + RichTextPainter.FAKE_ROOT_TAG_END)) {
                 parser = this.factory.createXMLEventReader(reader);
 
+                String textToParse = "";
                 while (parser.hasNext()) {
                     XMLEvent event = parser.nextEvent();
 
@@ -89,15 +93,28 @@ public class RegexMarkupValue implements MarkupProcessor {
                         case XMLStreamConstants.END_DOCUMENT:
                             parser.close();
                             break;
+                        case XMLStreamConstants.START_ELEMENT:
+                        case XMLStreamConstants.END_ELEMENT:
+                            // if we have collected text to parse, parse the
+                            // characters
+                            if (textToParse.length() > 0) {
+                                textToParse = StringEscapeUtils.escapeHtml4(String.valueOf(textToParse));
+                                if (this.caseInsensitive) {
+                                    int flags = this.unicodeCase ? Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE : Pattern.CASE_INSENSITIVE;
+                                    result += Pattern.compile(getOriginalRegexValue(), flags).matcher(textToParse).replaceAll(this.markupValue);
+                                } else {
+                                    result += Pattern.compile(getOriginalRegexValue()).matcher(textToParse).replaceAll(this.markupValue);
+                                }
+                                // clear the text to parse for a possible second
+                                // character sequence
+                                textToParse = "";
+                            }
+                            // add the end tag also
+                            result += event.toString();
+                            break;
                         case XMLStreamConstants.CHARACTERS:
                             Characters characters = event.asCharacters();
-                            String text = characters.getData();
-                            if (this.caseInsensitive) {
-                                int flags = this.unicodeCase ? Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE : Pattern.CASE_INSENSITIVE;
-                                result += Pattern.compile(getOriginalRegexValue(), flags).matcher(text).replaceAll(this.markupValue);
-                            } else {
-                                result += Pattern.compile(getOriginalRegexValue()).matcher(text).replaceAll(this.markupValue);
-                            }
+                            textToParse += characters.getData();
                             break;
                         default:
                             result += event.toString();
@@ -139,7 +156,7 @@ public class RegexMarkupValue implements MarkupProcessor {
      *            surrounded by a markup.
      */
     public void setRegexValue(String value) {
-        this.originalRegexValue = value;
+        this.originalRegexValue = StringEscapeUtils.escapeHtml4(String.valueOf(value));
         this.markupRegexValue = this.markupPrefix + value + this.markupSuffix;
     }
 
