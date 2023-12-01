@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,6 +12,9 @@
  *     Dirk Fauth <dirk.fauth@googlemail.com> - enhancement for extensions
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.sort.painter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -26,13 +29,8 @@ import org.eclipse.swt.graphics.Image;
  */
 public class SortIconPainter extends ImagePainter {
 
-    private Image upImage0;
-    private Image upImage1;
-    private Image upImage2;
-
-    private Image downImage0;
-    private Image downImage1;
-    private Image downImage2;
+    private List<Image> upImages = new ArrayList<>();
+    private List<Image> downImages = new ArrayList<>();
 
     /**
      * Create a SortIconPainter that uses the default icons (black triangles)
@@ -70,16 +68,17 @@ public class SortIconPainter extends ImagePainter {
         super(null, paintBg);
 
         String postFix = ""; //$NON-NLS-1$
-        if (invertIcons)
+        if (invertIcons) {
             postFix = "_inv"; //$NON-NLS-1$
+        }
 
-        this.upImage0 = GUIHelper.getImage("up_0" + postFix); //$NON-NLS-1$
-        this.upImage1 = GUIHelper.getImage("up_1" + postFix); //$NON-NLS-1$
-        this.upImage2 = GUIHelper.getImage("up_2" + postFix); //$NON-NLS-1$
+        this.upImages.add(GUIHelper.getImage("up_0" + postFix)); //$NON-NLS-1$
+        this.upImages.add(GUIHelper.getImage("up_1" + postFix)); //$NON-NLS-1$
+        this.upImages.add(GUIHelper.getImage("up_2" + postFix)); //$NON-NLS-1$
 
-        this.downImage0 = GUIHelper.getImage("down_0" + postFix); //$NON-NLS-1$
-        this.downImage1 = GUIHelper.getImage("down_1" + postFix); //$NON-NLS-1$
-        this.downImage2 = GUIHelper.getImage("down_2" + postFix); //$NON-NLS-1$
+        this.downImages.add(GUIHelper.getImage("down_0" + postFix)); //$NON-NLS-1$
+        this.downImages.add(GUIHelper.getImage("down_1" + postFix)); //$NON-NLS-1$
+        this.downImages.add(GUIHelper.getImage("down_2" + postFix)); //$NON-NLS-1$
     }
 
     @Override
@@ -125,16 +124,9 @@ public class SortIconPainter extends ImagePainter {
      *         sort state.
      */
     protected Image selectUpImage(int sortSequence) {
-        switch (sortSequence) {
-            case 0:
-                return this.upImage0;
-            case 1:
-                return this.upImage1;
-            case 2:
-                return this.upImage2;
-            default:
-                return this.upImage2;
-        }
+        return (sortSequence < this.upImages.size())
+                ? this.upImages.get(sortSequence)
+                : this.upImages.get(this.upImages.size() - 1);
     }
 
     /**
@@ -147,16 +139,9 @@ public class SortIconPainter extends ImagePainter {
      *         sort state.
      */
     protected Image selectDownImage(int sortSequence) {
-        switch (sortSequence) {
-            case 0:
-                return this.downImage0;
-            case 1:
-                return this.downImage1;
-            case 2:
-                return this.downImage2;
-            default:
-                return this.downImage2;
-        }
+        return (sortSequence < this.downImages.size())
+                ? this.downImages.get(sortSequence)
+                : this.downImages.get(this.downImages.size() - 1);
     }
 
     /**
@@ -175,15 +160,34 @@ public class SortIconPainter extends ImagePainter {
      * @param downImage2
      *            Image to be used to indicate third level descending sorting.
      */
-    public void setSortImages(Image upImage0, Image upImage1, Image upImage2,
+    public void setSortImages(
+            Image upImage0, Image upImage1, Image upImage2,
             Image downImage0, Image downImage1, Image downImage2) {
 
-        this.upImage0 = upImage0;
-        this.upImage1 = upImage1;
-        this.upImage2 = upImage2;
+        this.upImages.clear();
+        this.upImages.add(upImage0);
+        this.upImages.add(upImage1);
+        this.upImages.add(upImage2);
 
-        this.downImage0 = downImage0;
-        this.downImage1 = downImage1;
-        this.downImage2 = downImage2;
+        this.downImages.clear();
+        this.downImages.add(downImage0);
+        this.downImages.add(downImage1);
+        this.downImages.add(downImage2);
+    }
+
+    /**
+     * Set the images that should be used to indicate the current sort state.
+     *
+     * @param upImages
+     *            Images that should be used to indicate ascending sorting.
+     * @param downImages
+     *            Images that should be used to indicate descending sorting.
+     *
+     * @since 2.3
+     */
+    public void setSortImages(List<Image> upImages, List<Image> downImages) {
+
+        this.upImages = upImages;
+        this.downImages = downImages;
     }
 }
