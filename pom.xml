@@ -51,6 +51,7 @@
 		<module>org.eclipse.nebula.widgets.nattable.extension.glazedlists.source.feature</module>
 
 		<module>org.eclipse.nebula.widgets.nattable.extension.nebula</module>
+		<module>org.eclipse.nebula.widgets.nattable.extension.nebula.test</module>
 		<module>org.eclipse.nebula.widgets.nattable.extension.nebula.feature</module>
 		<module>org.eclipse.nebula.widgets.nattable.extension.nebula.source.feature</module>
 
