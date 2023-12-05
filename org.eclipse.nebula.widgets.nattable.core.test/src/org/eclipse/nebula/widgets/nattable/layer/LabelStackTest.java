@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, 2022 Dirk Fauth.
+ * Copyright (c) 2020, 2023 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.junit.jupiter.api.Test;
@@ -136,5 +137,98 @@ public class LabelStackTest {
         iterator = labels.iterator();
         assertEquals("One", iterator.next());
         assertEquals("Three", iterator.next());
+    }
+
+    @Test
+    public void shouldFindSingleLabel() {
+        LabelStack labels = new LabelStack();
+        labels.add("One");
+        labels.add("Two");
+        labels.add("Three");
+
+        assertTrue(labels.hasLabel("One"));
+        assertTrue(labels.hasLabel("Two"));
+        assertTrue(labels.hasLabel("Three"));
+    }
+
+    @Test
+    public void shouldNotFindSingleLabel() {
+        LabelStack labels = new LabelStack();
+        labels.add("One");
+        labels.add("Two");
+        labels.add("Three");
+
+        assertFalse(labels.hasLabel("Four"));
+        assertFalse(labels.hasLabel("Five"));
+        assertFalse(labels.hasLabel("Six"));
+    }
+
+    @Test
+    public void shouldFindAllLabels() {
+        LabelStack labels = new LabelStack();
+        labels.add("One");
+        labels.add("Two");
+        labels.add("Three");
+
+        assertTrue(labels.hasAllLabels());
+        assertTrue(labels.hasAllLabels("Two"));
+        assertTrue(labels.hasAllLabels("One", "Two"));
+        assertTrue(labels.hasAllLabels("One", "Three"));
+        assertTrue(labels.hasAllLabels("One", "Two", "Three"));
+    }
+
+    @Test
+    public void shouldFindAllLabelsList() {
+        LabelStack labels = new LabelStack();
+        labels.add("One");
+        labels.add("Two");
+        labels.add("Three");
+
+        ArrayList<String> toCheck = new ArrayList<>();
+        toCheck.add("One");
+        toCheck.add("Two");
+        toCheck.add("Three");
+        assertTrue(labels.hasAllLabels(toCheck));
+    }
+
+    @Test
+    public void shouldNotFindAllLabels() {
+        LabelStack labels = new LabelStack();
+        labels.add("One");
+        labels.add("Two");
+        labels.add("Four");
+
+        assertFalse(labels.hasAllLabels("One", "Two", "Three"));
+    }
+
+    @Test
+    public void shouldNotFindAllLabelsList() {
+        LabelStack labels = new LabelStack();
+        labels.add("One");
+        labels.add("Two");
+        labels.add("Four");
+
+        ArrayList<String> toCheck = new ArrayList<>();
+        toCheck.add("One");
+        toCheck.add("Two");
+        toCheck.add("Three");
+        assertFalse(labels.hasAllLabels(toCheck));
+    }
+
+    @Test
+    public void shouldHandleNull() {
+        LabelStack labels = new LabelStack();
+        labels.add("One");
+        labels.add("Two");
+        labels.add("Trhee");
+
+        assertFalse(labels.hasAllLabels("One", null, "Two"));
+
+        labels.add(null);
+
+        assertTrue(labels.hasAllLabels("One", null, "Two"));
+
+        ArrayList<String> toCheck = null;
+        assertFalse(labels.hasAllLabels(toCheck));
     }
 }

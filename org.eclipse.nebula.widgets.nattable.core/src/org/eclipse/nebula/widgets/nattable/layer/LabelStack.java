@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -99,6 +99,35 @@ public class LabelStack extends LinkedList<String> {
      */
     public boolean hasLabel(String label) {
         return contains(label);
+    }
+
+    /**
+     * Check if all given labels are on the label stack.
+     *
+     * @param labels
+     *            The labels to test.
+     * @return <code>true</code> if the label stack contains all given labels,
+     *         <code>false</code> if not.
+     * @since 2.3
+     */
+    public boolean hasAllLabels(String... labels) {
+        return hasAllLabels(Arrays.asList(labels));
+    }
+
+    /**
+     * Check if all given labels are on the label stack.
+     *
+     * @param labels
+     *            The labels to test.
+     * @return <code>true</code> if the label stack contains all given labels,
+     *         <code>false</code> if not.
+     * @since 2.3
+     */
+    public boolean hasAllLabels(List<String> labels) {
+        if (labels == null) {
+            return false;
+        }
+        return containsAll(labels);
     }
 
     /**
