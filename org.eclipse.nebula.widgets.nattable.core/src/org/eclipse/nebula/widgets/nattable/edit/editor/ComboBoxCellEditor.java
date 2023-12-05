@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2022 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -166,6 +166,23 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
     private boolean focusOnText = false;
 
     /**
+     * Flag to configure whether the focus should be set to the dropdown filter
+     * field.
+     *
+     * @since 2.3
+     */
+    private boolean focusOnDropDownFilter = false;
+
+    /**
+     * Flag to configure if a click on the item should update the checkbox
+     * state. By default set to <code>false</code> to separate item selection
+     * via mouse click and checkbox handling.
+     *
+     * @since 2.3
+     */
+    private boolean linkItemAndCheckbox = false;
+
+    /**
      * Create a new single selection {@link ComboBoxCellEditor} based on the
      * given list of items, showing the default number of items in the dropdown
      * of the combo.
@@ -263,13 +280,13 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
             this.combo.addTextControlListener(new ControlAdapter() {
                 @Override
                 public void controlResized(ControlEvent e) {
-                    ComboBoxCellEditor.this.combo.showDropdownControl(focusOnText);
+                    ComboBoxCellEditor.this.combo.showDropdownControl(focusOnText, ComboBoxCellEditor.this.focusOnDropDownFilter);
                     ComboBoxCellEditor.this.combo.removeTextControlListener(this);
                 }
 
                 @Override
                 public void controlMoved(ControlEvent e) {
-                    ComboBoxCellEditor.this.combo.showDropdownControl(focusOnText);
+                    ComboBoxCellEditor.this.combo.showDropdownControl(focusOnText, ComboBoxCellEditor.this.focusOnDropDownFilter);
                     ComboBoxCellEditor.this.combo.removeTextControlListener(this);
                 }
             });
@@ -447,9 +464,10 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
         if (this.useCheckbox) {
             style |= SWT.CHECK;
         }
+
         final NatCombo combo = (this.iconImage == null)
-                ? new NatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.showDropdownFilter)
-                : new NatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.iconImage, this.showDropdownFilter);
+                ? new NatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.showDropdownFilter, this.linkItemAndCheckbox)
+                : new NatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.iconImage, this.showDropdownFilter, this.linkItemAndCheckbox);
 
         if (this.freeEdit) {
             combo.setCursor(Display.getDefault().getSystemCursor(SWT.CURSOR_IBEAM));
@@ -724,9 +742,61 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 
     /**
      *
+     * @return <code>true</code> if the focus on the activated combobox is set
+     *         to the dropdown filter field, <code>false</code> if the dropdown
+     *         gets the focus. Default is <code>false</code>.
+     *
+     * @since 2.3
+     */
+    public boolean isFocusOnDropdownFilter() {
+        return this.focusOnDropDownFilter;
+    }
+
+    /**
+     * Configure if the focus on the activated combobox should be set to the
+     * dropdown filter field, if it was activated via
+     * {@link #setShowDropdownFilter(boolean)}.
+     *
+     * @param focusOnDropDownFilter
+     *            <code>true</code> if the focus on the activated combobox
+     *            should be set to the dropdown filter field, <code>false</code>
+     *            if the dropdown should get the focus.
+     *
+     * @since 2.3
+     */
+    public void setFocusOnDropdownFilter(boolean focusOnDropDownFilter) {
+        this.focusOnDropDownFilter = focusOnDropDownFilter;
+    }
+
+    /**
+     *
+     * @return <code>true</code> if a click on the item updates the checkbox
+     *         state, <code>false</code> if a click on an item does not affect
+     *         the checkbox state. Default is <code>false</code>.
+     *
+     * @since 2.3
+     */
+    public boolean isLinkItemAndCheckbox() {
+        return this.linkItemAndCheckbox;
+    }
+
+    /**
+     * @param linkItemAndCheckbox
+     *            <code>true</code> if a click on the item should update the
+     *            checkbox state, <code>false</code> if a click on an item
+     *            should not affect the checkbox state.
+     *
+     * @since 2.3
+     */
+    public void setLinkItemAndCheckbox(boolean linkItemAndCheckbox) {
+        this.linkItemAndCheckbox = linkItemAndCheckbox;
+    }
+
+    /**
+     *
      * @return The {@link IComboBoxDataProvider} that is responsible for
      *         populating the items to the dropdown box.
-     * 
+     *
      * @since 2.2
      */
     public IComboBoxDataProvider getComboBoxDataProvider() {

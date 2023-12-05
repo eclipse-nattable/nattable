@@ -23,6 +23,7 @@ import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ICheckStateProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
@@ -32,13 +33,18 @@ import org.eclipse.nebula.widgets.nattable.widget.NatCombo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -182,7 +188,35 @@ public class FilterNatCombo extends NatCombo {
      * @since 1.4
      */
     public FilterNatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style, boolean showDropdownFilter) {
-        this(parent, cellStyle, maxVisibleItems, style, GUIHelper.getImage("down_2"), showDropdownFilter); //$NON-NLS-1$
+        this(parent, cellStyle, maxVisibleItems, style, GUIHelper.getImage("down_2"), showDropdownFilter, false); //$NON-NLS-1$
+    }
+
+    /**
+     * Creates a new FilterNatCombo using the given IStyle for rendering,
+     * showing the given amount of items at once in the dropdown.
+     *
+     * @param parent
+     *            A widget that will be the parent of this NatCombo
+     * @param cellStyle
+     *            Style configuration containing horizontal alignment, font,
+     *            foreground and background color information.
+     * @param maxVisibleItems
+     *            the max number of items the drop down will show before
+     *            introducing a scroll bar.
+     * @param style
+     *            The style for the Text Control to construct. Uses this style
+     *            adding internal styles via ConfigRegistry.
+     * @param showDropdownFilter
+     *            Flag indicating whether the filter of the dropdown control
+     *            should be displayed
+     * @param linkItemAndCheckbox
+     *            Flag indicating if a click on the item in the dropdown should
+     *            update the checkbox.
+     *
+     * @since 2.3
+     */
+    public FilterNatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style, boolean showDropdownFilter, boolean linkItemAndCheckbox) {
+        this(parent, cellStyle, maxVisibleItems, style, GUIHelper.getImage("down_2"), showDropdownFilter, linkItemAndCheckbox); //$NON-NLS-1$
     }
 
     /**
@@ -228,7 +262,6 @@ public class FilterNatCombo extends NatCombo {
      *            The image to use as overlay to the {@link Text} Control if the
      *            dropdown is visible. Using this image will indicate that the
      *            control is an open combo to the user.
-     *
      * @param showDropdownFilter
      *            Flag indicating whether the filter of the dropdown control
      *            should be displayed
@@ -237,6 +270,38 @@ public class FilterNatCombo extends NatCombo {
      */
     public FilterNatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style, Image iconImage, boolean showDropdownFilter) {
         super(parent, cellStyle, maxVisibleItems, style, iconImage, showDropdownFilter);
+    }
+
+    /**
+     * Creates a new FilterNatCombo using the given IStyle for rendering,
+     * showing the given amount of items at once in the dropdown.
+     *
+     * @param parent
+     *            A widget that will be the parent of this NatCombo
+     * @param cellStyle
+     *            Style configuration containing horizontal alignment, font,
+     *            foreground and background color information.
+     * @param maxVisibleItems
+     *            the max number of items the drop down will show before
+     *            introducing a scroll bar.
+     * @param style
+     *            The style for the {@link Text} Control to construct. Uses this
+     *            style adding internal styles via ConfigRegistry.
+     * @param iconImage
+     *            The image to use as overlay to the {@link Text} Control if the
+     *            dropdown is visible. Using this image will indicate that the
+     *            control is an open combo to the user.
+     * @param showDropdownFilter
+     *            Flag indicating whether the filter of the dropdown control
+     *            should be displayed
+     * @param linkItemAndCheckbox
+     *            Flag indicating if a click on the item in the dropdown should
+     *            update the checkbox.
+     *
+     * @since 2.3
+     */
+    public FilterNatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style, Image iconImage, boolean showDropdownFilter, boolean linkItemAndCheckbox) {
+        super(parent, cellStyle, maxVisibleItems, style, iconImage, showDropdownFilter, linkItemAndCheckbox);
     }
 
     @Override
@@ -442,6 +507,19 @@ public class FilterNatCombo extends NatCombo {
             }
         });
 
+        // avoid that the selectAllItemViewer shows a selection
+        this.selectAllItemViewer.getTable().addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                FilterNatCombo.this.selectAllItemViewer.setSelection(new StructuredSelection());
+            }
+        });
+
+        if (this.linkItemAndCheckbox) {
+            this.selectAllItemViewer.getTable().addMouseListener(
+                    new LinkItemAndCheckboxMouseListener(this.selectAllItemViewer));
+        }
+
         // add a selection listener to the items that simply refreshes the
         // select all checkbox
         this.dropdownTable.addSelectionListener(new SelectionAdapter() {
@@ -629,6 +707,19 @@ public class FilterNatCombo extends NatCombo {
             this.selectAllItemViewer.refresh();
         });
 
+        if (this.linkItemAndCheckbox) {
+            this.addToFilterItemViewer.getTable().addMouseListener(
+                    new LinkItemAndCheckboxMouseListener(this.addToFilterItemViewer));
+        }
+
+        // avoid that the addToFilterItemViewer shows a selection
+        this.addToFilterItemViewer.getTable().addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                FilterNatCombo.this.addToFilterItemViewer.setSelection(new StructuredSelection());
+            }
+        });
+
         // add an additional selection listener to show/hide the "add to filter"
         // item based on whether the state of all now visible items is the same
         // as in the initial selection
@@ -637,7 +728,7 @@ public class FilterNatCombo extends NatCombo {
             public void widgetSelected(SelectionEvent e) {
                 boolean selected = e.detail != SWT.CHECK;
 
-                if (!selected) {
+                if (!selected || FilterNatCombo.this.linkItemAndCheckbox) {
                     // handle only checkbox interactions
                     TableItem clickedItem = (TableItem) e.item;
                     updateAddToFilterVisibility(clickedItem);
@@ -919,6 +1010,43 @@ public class FilterNatCombo extends NatCombo {
                 // items selected) we do not directly apply
                 if (FilterNatCombo.this.filterModifyAction != null) {
                     FilterNatCombo.this.filterModifyAction.run();
+                }
+            }
+        }
+    }
+
+    /**
+     * {@link MouseListener} that is used to link clicks on an item of the given
+     * {@link CheckboxTableViewer} with the checkbox.
+     *
+     * @since 2.3
+     */
+    protected class LinkItemAndCheckboxMouseListener extends MouseAdapter {
+
+        private CheckboxTableViewer viewer;
+
+        public LinkItemAndCheckboxMouseListener(CheckboxTableViewer viewer) {
+            this.viewer = viewer;
+        }
+
+        @Override
+        public void mouseDown(MouseEvent e) {
+            TableItem item = this.viewer.getTable().getItem(new Point(e.x, e.y));
+            if (item != null) {
+                // Checkbox doesn't belong to the bounding box of the
+                // item. Therefore clicks on the checkbox can be
+                // determined by the x-coordinate.
+                Rectangle itemBounds = item.getBounds();
+                if (e.x >= itemBounds.x) {
+                    // Clicks on the checkbox should only trigger the
+                    // check, not the selection
+                    boolean isSelected = item.getChecked();
+                    item.setChecked(!isSelected);
+                    Event event = new Event();
+                    event.item = item;
+                    event.widget = this.viewer.getTable();
+                    event.detail = SWT.CHECK;
+                    this.viewer.handleSelect(new SelectionEvent(event));
                 }
             }
         }
