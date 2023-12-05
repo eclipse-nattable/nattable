@@ -35,7 +35,6 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.slf4j.Logger;
@@ -171,20 +170,33 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
     @Override
     public NatCombo createEditorControl(Composite parent) {
         int style = SWT.READ_ONLY | SWT.MULTI | SWT.CHECK;
-        final FilterNatCombo combo = this.iconImage == null
-                ? new FilterNatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.showDropdownFilter)
-                : new FilterNatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.iconImage, this.showDropdownFilter);
 
-        if (this.freeEdit) {
-            combo.setCursor(Display.getDefault().getSystemCursor(SWT.CURSOR_IBEAM));
-        } else {
-            combo.setCursor(Display.getDefault().getSystemCursor(SWT.CURSOR_ARROW));
-        }
+        final FilterNatCombo combo = this.iconImage == null
+                ? new FilterNatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.showDropdownFilter, isLinkItemAndCheckbox())
+                : new FilterNatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.iconImage, this.showDropdownFilter, isLinkItemAndCheckbox());
 
         combo.setMultiselectValueSeparator(this.multiselectValueSeparator);
         combo.setMultiselectTextBracket(this.multiselectTextPrefix, this.multiselectTextSuffix);
 
         addNatComboListener(combo);
+
+        parent.addListener(SWT.Resize, this.resizeListener);
+
+        return combo;
+    }
+
+    /**
+     * Registers special listeners to the {@link FilterNatCombo} regarding the
+     * {@link EditModeEnum}, that are needed to commit/close or change the
+     * visibility state of the {@link NatCombo} dependent on UI interactions.
+     * Additionally adds special listeners regarding the filter behavior.
+     *
+     * @param combo
+     *            The {@link FilterNatCombo} to add the listeners to.
+     * @since 2.3
+     */
+    protected void addNatComboListener(FilterNatCombo combo) {
+        super.addNatComboListener(combo);
 
         // additionally add the ICheckStateListener so on changing the value of
         // the select all item the change is also committed
@@ -218,9 +230,16 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
             });
         }
 
-        parent.addListener(SWT.Resize, this.resizeListener);
-
-        return combo;
+        combo.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent event) {
+                if (event.keyCode == SWT.SPACE) {
+                    commit(MoveDirectionEnum.NONE,
+                            (!FilterRowComboBoxCellEditor.this.multiselect
+                                    && FilterRowComboBoxCellEditor.this.editMode == EditModeEnum.INLINE));
+                }
+            }
+        });
     }
 
     @Override
@@ -406,7 +425,39 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
      * @since 2.1
      */
     public void configureDropdownFilter(boolean applyFilter, boolean closeOnEnter) {
+        configureDropdownFilter(applyFilter, closeOnEnter, false);
+    }
+
+    /**
+     * This method will activate the usage of the dropdown filter via setting
+     * {@link #setShowDropdownFilter(boolean)} to <code>true</code>.
+     * Additionally it is possible to configure behavior like whether a filter
+     * should be applied to the content on filtering the dropdown or if the
+     * editor should be closed on pressing ENTER when having the focus in the
+     * dropdown filter control.
+     *
+     * @param applyFilter
+     *            <code>true</code> if on filtering the combobox content, a
+     *            filter on the list should be applied based on the current
+     *            visible items, <code>false</code> if only the dropdown content
+     *            should be filtered without applying a filter (default).
+     * @param closeOnEnter
+     *            <code>true</code> if the editor should be closed on pressing
+     *            ENTER when having focus in the combobox filter control,
+     *            <code>false</code> if nothing should happen (default).
+     * @param focusOnDropDownFilter
+     *            <code>true</code> if the focus on the activated combobox
+     *            should be set to the dropdown filter field, <code>false</code>
+     *            if the dropdown should get the focus.
+     *
+     * @see #setShowDropdownFilter(boolean)
+     * @see #setFocusOnDropdownFilter(boolean)
+     *
+     * @since 2.3
+     */
+    public void configureDropdownFilter(boolean applyFilter, boolean closeOnEnter, boolean focusOnDropDownFilter) {
         setShowDropdownFilter(true);
+        setFocusOnDropdownFilter(focusOnDropDownFilter);
         this.applyFilterOnDropdownFilter = applyFilter;
         this.closeOnEnterInDropdownFilter = closeOnEnter;
     }

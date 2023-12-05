@@ -227,6 +227,15 @@ public class NatCombo extends Composite {
     protected boolean useCheckbox;
 
     /**
+     * Flag to configure if a click on the item should update the checkbox
+     * state. By default set to <code>false</code> to separate item selection
+     * via mouse click and checkbox handling.
+     *
+     * @since 2.3
+     */
+    protected boolean linkItemAndCheckbox;
+
+    /**
      * String that is used to separate values in the String representation
      * showed in the text control if multiselect is supported.
      */
@@ -348,14 +357,42 @@ public class NatCombo extends Composite {
      * @param style
      *            The style for the Text Control to construct. Uses this style
      *            adding internal styles via ConfigRegistry.
-     *
      * @param showDropdownFilter
      *            Flag indicating whether the dropdown filter is displayed
      *
      * @since 1.4
      */
     public NatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style, boolean showDropdownFilter) {
-        this(parent, cellStyle, maxVisibleItems, style, GUIHelper.getImage("down_2"), showDropdownFilter); //$NON-NLS-1$
+        this(parent, cellStyle, maxVisibleItems, style, GUIHelper.getImage("down_2"), showDropdownFilter, false); //$NON-NLS-1$
+    }
+
+    /**
+     * Creates a new NatCombo using the given IStyle for rendering, showing the
+     * given amount of items at once in the dropdown. Creating the NatCombo with
+     * this constructor, there is no free edit and no multiple selection
+     * enabled.
+     *
+     * @param parent
+     *            A widget that will be the parent of this NatCombo
+     * @param cellStyle
+     *            Style configuration containing horizontal alignment, font,
+     *            foreground and background color information.
+     * @param maxVisibleItems
+     *            the max number of items the drop down will show before
+     *            introducing a scroll bar.
+     * @param style
+     *            The style for the Text Control to construct. Uses this style
+     *            adding internal styles via ConfigRegistry.
+     * @param showDropdownFilter
+     *            Flag indicating whether the dropdown filter is displayed
+     * @param linkItemAndCheckbox
+     *            Flag indicating if a click on the item in the dropdown should
+     *            update the checkbox.
+     *
+     * @since 2.3
+     */
+    public NatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style, boolean showDropdownFilter, boolean linkItemAndCheckbox) {
+        this(parent, cellStyle, maxVisibleItems, style, GUIHelper.getImage("down_2"), showDropdownFilter, linkItemAndCheckbox); //$NON-NLS-1$
     }
 
     /**
@@ -401,13 +438,43 @@ public class NatCombo extends Composite {
      *            The image to use as overlay to the {@link Text} Control if the
      *            dropdown is visible. Using this image will indicate that the
      *            control is an open combo to the user.
-     *
      * @param showDropdownFilter
-     *            Flag indicating whether the dropdown filter is displayed
+     *            Flag indicating whether the dropdown filter is displayed.
      *
      * @since 1.4
      */
     public NatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style, Image iconImage, boolean showDropdownFilter) {
+        this(parent, cellStyle, maxVisibleItems, style, iconImage, false, false);
+    }
+
+    /**
+     * Creates a new NatCombo using the given IStyle for rendering, showing the
+     * given amount of items at once in the dropdown.
+     *
+     * @param parent
+     *            A widget that will be the parent of this NatCombo
+     * @param cellStyle
+     *            Style configuration containing horizontal alignment, font,
+     *            foreground and background color information.
+     * @param maxVisibleItems
+     *            the max number of items the drop down will show before
+     *            introducing a scroll bar.
+     * @param style
+     *            The style for the {@link Text} Control to construct. Uses this
+     *            style adding internal styles via ConfigRegistry.
+     * @param iconImage
+     *            The image to use as overlay to the {@link Text} Control if the
+     *            dropdown is visible. Using this image will indicate that the
+     *            control is an open combo to the user.
+     * @param showDropdownFilter
+     *            Flag indicating whether the dropdown filter is displayed.
+     * @param linkItemAndCheckbox
+     *            Flag indicating if a click on the item in the dropdown should
+     *            update the checkbox.
+     *
+     * @since 2.3
+     */
+    public NatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style, Image iconImage, boolean showDropdownFilter, boolean linkItemAndCheckbox) {
         super(parent, SWT.NONE);
 
         this.cellStyle = cellStyle;
@@ -417,6 +484,7 @@ public class NatCombo extends Composite {
         this.widgetStyle = style;
 
         this.showDropdownFilter = showDropdownFilter;
+        this.linkItemAndCheckbox = linkItemAndCheckbox;
         this.freeEdit = (style & SWT.READ_ONLY) == 0;
         this.multiselect = (style & SWT.MULTI) != 0;
         this.useCheckbox = (style & SWT.CHECK) != 0;
@@ -648,7 +716,13 @@ public class NatCombo extends Composite {
         this.dropdownTable.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent event) {
-                if (event.keyCode == SWT.ARROW_DOWN) {
+                if ((event.keyCode == SWT.CR)
+                        || (event.keyCode == SWT.KEYPAD_CR)) {
+                    updateTextControl(true);
+                } else if (event.keyCode == SWT.F2 && NatCombo.this.freeEdit) {
+                    NatCombo.this.text.forceFocus();
+                    hideDropdownControl();
+                } else if (event.keyCode == SWT.ARROW_DOWN) {
                     int selected = NatCombo.this.dropdownTable.getSelectionIndex();
                     if (selected < 0) {
                         // no selection before, select the first entry
@@ -659,6 +733,19 @@ public class NatCombo extends Composite {
                         }
                         event.doit = false;
                     }
+                } else if (event.keyCode == SWT.SPACE) {
+                    if (NatCombo.this.multiselect && NatCombo.this.useCheckbox && NatCombo.this.dropdownTable.getSelectionCount() >= 1) {
+                        TableItem[] selection = NatCombo.this.dropdownTable.getSelection();
+                        boolean isSelected = selection[0].getChecked();
+                        for (TableItem chosenItem : selection) {
+                            NatCombo.this.selectionStateMap.put(chosenItem.getText(), !isSelected);
+                            if (NatCombo.this.useCheckbox) {
+                                chosenItem.setChecked(!isSelected);
+                            }
+                        }
+                        updateTextControl(false);
+                        event.doit = false;
+                    }
                 }
             }
         });
@@ -667,7 +754,8 @@ public class NatCombo extends Composite {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 boolean selected = e.detail != SWT.CHECK;
-                boolean isCtrlPressed = (e.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL;
+                boolean isCtrlPressed = (e.stateMask & SWT.MODIFIER_MASK) == SWT.MOD1;
+                boolean isShiftPressed = (e.stateMask & SWT.MODIFIER_MASK) == SWT.MOD2;
                 TableItem chosenItem = (TableItem) e.item;
 
                 // Given the ability to filter we need to find the item's
@@ -689,7 +777,7 @@ public class NatCombo extends Composite {
                 } else {
                     // handle item interactions
 
-                    if (!NatCombo.this.multiselect || (!NatCombo.this.useCheckbox && !isCtrlPressed)) {
+                    if (!NatCombo.this.multiselect || (!NatCombo.this.useCheckbox && !isCtrlPressed && !isShiftPressed)) {
                         // A single item was selected. Clear all previous state
                         NatCombo.this.itemList.forEach(item -> NatCombo.this.selectionStateMap.put(item, Boolean.FALSE));
 
@@ -700,6 +788,12 @@ public class NatCombo extends Composite {
                         NatCombo.this.selectionStateMap.put(chosenItem.getText(), isSelected);
                         if (NatCombo.this.useCheckbox) {
                             chosenItem.setChecked(isSelected);
+                        }
+                    } else if (NatCombo.this.multiselect && isShiftPressed && !NatCombo.this.useCheckbox) {
+                        TableItem[] selection = NatCombo.this.dropdownTable.getSelection();
+                        NatCombo.this.itemList.forEach(item -> NatCombo.this.selectionStateMap.put(item, Boolean.FALSE));
+                        for (TableItem selectedItem : selection) {
+                            NatCombo.this.selectionStateMap.put(selectedItem.getText(), Boolean.TRUE);
                         }
                     }
                 }
@@ -722,20 +816,32 @@ public class NatCombo extends Composite {
             }
         });
 
-        this.dropdownTable.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent event) {
-                if ((event.keyCode == SWT.CR)
-                        || (event.keyCode == SWT.KEYPAD_CR)) {
-                    updateTextControl(true);
-                } else if (event.keyCode == SWT.F2 && NatCombo.this.freeEdit) {
-                    NatCombo.this.text.forceFocus();
-                    hideDropdownControl();
-                }
-            }
-        });
-
         this.dropdownTable.addFocusListener(new FocusListenerWrapper());
+
+        if (this.linkItemAndCheckbox) {
+            this.dropdownTable.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseDown(MouseEvent e) {
+                    TableItem item = NatCombo.this.dropdownTable.getItem(new Point(e.x, e.y));
+                    if (item != null) {
+                        // Checkbox doesn't belong to the bounding box of the
+                        // item. Therefore clicks on the checkbox can be
+                        // determined by the x-coordinate.
+                        Rectangle itemBounds = item.getBounds();
+                        if (e.x >= itemBounds.x) {
+                            // Clicks on the checkbox should only trigger the
+                            // check, not the selection
+                            boolean isSelected = item.getChecked();
+                            NatCombo.this.selectionStateMap.put(item.getText(), !isSelected);
+                            if (NatCombo.this.useCheckbox) {
+                                item.setChecked(!isSelected);
+                            }
+                            updateTextControl(false);
+                        }
+                    }
+                }
+            });
+        }
 
         FormLayout layout = new FormLayout();
         layout.spacing = 0;
@@ -836,6 +942,39 @@ public class NatCombo extends Composite {
         }
         calculateBounds();
         this.dropdownShell.open();
+        if (focusOnText) {
+            this.text.forceFocus();
+            this.text.setSelection(this.text.getText().length());
+        }
+    }
+
+    /**
+     * Shows the dropdown of this NatCombo. Will always calculate the size of
+     * the dropdown regarding the current size of the Text control.
+     *
+     * @param focusOnText
+     *            <code>true</code> if the focus should be set to the text
+     *            control instead of the dropdown after opening the dropdown.
+     * @param focusOnFilterBox
+     *            <code>true</code> if the focus should be set to the filterbox
+     *            control instead of the dropdown after opening the dropdown.
+     *            Has only an effect if {@link #showDropdownFilter} is
+     *            <code>true</code> and the <code>focusOnText</code> parameter
+     *            is set to <code>false</code>.
+     *
+     * @since 2.3
+     */
+    public void showDropdownControl(boolean focusOnText, boolean focusOnFilterBox) {
+        if (this.dropdownShell == null || this.dropdownShell.isDisposed()) {
+            createDropdownControl(this.widgetStyle);
+        }
+        calculateBounds();
+        this.dropdownShell.open();
+
+        if (focusOnFilterBox && this.filterBox != null && !this.filterBox.isDisposed()) {
+            this.filterBox.forceFocus();
+        }
+
         if (focusOnText) {
             this.text.forceFocus();
             this.text.setSelection(this.text.getText().length());
