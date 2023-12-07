@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Dirk Fauth.
+ * Copyright (c) 2019, 2023 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -53,9 +53,39 @@ public class RowGroupsCommandHandler extends AbstractLayerCommandHandler<IRowGro
     private final RowGroupHeaderLayer contextLayer;
     private final SelectionLayer selectionLayer;
 
+    private boolean clearSelection = true;
+
+    /**
+     *
+     * @param contextLayer
+     *            The {@link RowGroupHeaderLayer} this command handler is
+     *            connected to.
+     * @param selectionLayer
+     *            The {@link SelectionLayer} needed to get the selection and
+     *            perform reordering tasks if necessary.
+     */
     public RowGroupsCommandHandler(RowGroupHeaderLayer contextLayer, SelectionLayer selectionLayer) {
+        this(contextLayer, selectionLayer, true);
+    }
+
+    /**
+     *
+     * @param contextLayer
+     *            The {@link RowGroupHeaderLayer} this command handler is
+     *            connected to.
+     * @param selectionLayer
+     *            The {@link SelectionLayer} needed to get the selection and
+     *            perform reordering tasks if necessary.
+     * @param clearSelection
+     *            <code>true</code> if the selection should be cleared after
+     *            group/ungroup, <code>false</code> if the selection should stay
+     *            unchanged.
+     * @since 2.3
+     */
+    public RowGroupsCommandHandler(RowGroupHeaderLayer contextLayer, SelectionLayer selectionLayer, boolean clearSelection) {
         this.contextLayer = contextLayer;
         this.selectionLayer = selectionLayer;
+        this.clearSelection = clearSelection;
     }
 
     @Override
@@ -95,24 +125,13 @@ public class RowGroupsCommandHandler extends AbstractLayerCommandHandler<IRowGro
      *         <code>false</code> if there are no rows fully selected.
      */
     protected boolean handleCreateRowGroupCommand(String rowGroupName) {
-        int[] fullySelectedRows = this.selectionLayer.getFullySelectedRowPositions();
 
         // we operate on the GroupModel directly to avoid the position
         // transformation
         GroupModel model = this.contextLayer.getGroupModel();
 
-        MutableIntList positionsToGroup = IntLists.mutable.empty();
-        if (fullySelectedRows != null && fullySelectedRows.length > 0) {
-            for (int row : fullySelectedRows) {
-                // convert to position layer
-                // needed because the group model takes the positions based on
-                // the position layer
-                int converted = LayerUtil.convertRowPosition(this.selectionLayer, row, this.contextLayer.getPositionLayer());
-                if (converted > -1) {
-                    positionsToGroup.add(converted);
-                }
-            }
-
+        MutableIntList positionsToGroup = getPositionsToProcess();
+        if (!positionsToGroup.isEmpty()) {
             HashSet<Group> existingGroups = new HashSet<>();
             for (MutableIntIterator it = positionsToGroup.intIterator(); it.hasNext();) {
                 int row = it.next();
@@ -152,7 +171,9 @@ public class RowGroupsCommandHandler extends AbstractLayerCommandHandler<IRowGro
             // create the row group
             this.contextLayer.addGroup(rowGroupName, this.selectionLayer.getRowIndexByPosition(selectedPositions.get(0)), selectedPositions.size());
 
-            this.selectionLayer.clear();
+            if (this.clearSelection) {
+                this.selectionLayer.clear();
+            }
 
             this.contextLayer.fireLayerEvent(new GroupRowsEvent(this.contextLayer));
 
@@ -187,20 +208,8 @@ public class RowGroupsCommandHandler extends AbstractLayerCommandHandler<IRowGro
      * Will also trigger a reorder to ensure a consistent group rendering
      */
     protected void handleUngroupCommand() {
-        // Grab fully selected row positions
-        int[] fullySelectedRows = this.selectionLayer.getFullySelectedRowPositions();
-
-        if (fullySelectedRows != null && fullySelectedRows.length > 0) {
-            MutableIntList positionsToUngroup = IntLists.mutable.empty();
-            for (int row : fullySelectedRows) {
-                // convert to position layer
-                // needed because the group model takes the positions based on
-                // the position layer
-                int converted = LayerUtil.convertRowPosition(this.selectionLayer, row, this.contextLayer.getPositionLayer());
-                if (converted > -1) {
-                    positionsToUngroup.add(converted);
-                }
-            }
+        MutableIntList positionsToUngroup = getPositionsToProcess();
+        if (!positionsToUngroup.isEmpty()) {
 
             // we operate on the GroupModel directly to avoid the position
             // transformation
@@ -242,10 +251,44 @@ public class RowGroupsCommandHandler extends AbstractLayerCommandHandler<IRowGro
                 });
             }
 
-            this.selectionLayer.clear();
+            if (this.clearSelection) {
+                this.selectionLayer.clear();
+            }
 
             this.contextLayer.fireLayerEvent(new UngroupRowsEvent(this.contextLayer));
         }
+    }
+
+    /**
+     * Return the collection of row positions related to the
+     * {@link RowGroupHeaderLayer#getPositionLayer()} that should be added to a
+     * row group.
+     * <p>
+     * The default implementation uses the {@link SelectionLayer} to retrieve
+     * the fully selected row positions.
+     *
+     * @return The collection of row positions related to the
+     *         {@link RowGroupHeaderLayer#getPositionLayer()} that should be
+     *         added to a row group.
+     * @since 2.3
+     */
+    protected MutableIntList getPositionsToProcess() {
+        MutableIntList positionsToProcess = IntLists.mutable.empty();
+
+        // Grab fully selected row positions
+        int[] fullySelectedRows = this.selectionLayer.getFullySelectedRowPositions();
+        if (fullySelectedRows != null && fullySelectedRows.length > 0) {
+            for (int row : fullySelectedRows) {
+                // convert to position layer
+                // needed because the group model takes the positions based on
+                // the position layer
+                int converted = LayerUtil.convertRowPosition(this.selectionLayer, row, this.contextLayer.getPositionLayer());
+                if (converted > -1) {
+                    positionsToProcess.add(converted);
+                }
+            }
+        }
+        return positionsToProcess;
     }
 
     // TODO Dialog should not be opened by the command handler
