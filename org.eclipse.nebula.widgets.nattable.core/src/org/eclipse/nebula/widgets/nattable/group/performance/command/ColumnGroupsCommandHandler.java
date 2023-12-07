@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Dirk Fauth.
+ * Copyright (c) 2019, 2023 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -53,9 +53,39 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
     private final ColumnGroupHeaderLayer contextLayer;
     private final SelectionLayer selectionLayer;
 
+    private boolean clearSelection = true;
+
+    /**
+     *
+     * @param contextLayer
+     *            The {@link ColumnGroupHeaderLayer} this command handler is
+     *            connected to.
+     * @param selectionLayer
+     *            The {@link SelectionLayer} needed to get the selection and
+     *            perform reordering tasks if necessary.
+     */
     public ColumnGroupsCommandHandler(ColumnGroupHeaderLayer contextLayer, SelectionLayer selectionLayer) {
+        this(contextLayer, selectionLayer, true);
+    }
+
+    /**
+     *
+     * @param contextLayer
+     *            The {@link ColumnGroupHeaderLayer} this command handler is
+     *            connected to.
+     * @param selectionLayer
+     *            The {@link SelectionLayer} needed to get the selection and
+     *            perform reordering tasks if necessary.
+     * @param clearSelection
+     *            <code>true</code> if the selection should be cleared after
+     *            group/ungroup, <code>false</code> if the selection should stay
+     *            unchanged.
+     * @since 2.3
+     */
+    public ColumnGroupsCommandHandler(ColumnGroupHeaderLayer contextLayer, SelectionLayer selectionLayer, boolean clearSelection) {
         this.contextLayer = contextLayer;
         this.selectionLayer = selectionLayer;
+        this.clearSelection = clearSelection;
     }
 
     @Override
@@ -95,24 +125,13 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
      *         <code>false</code> if there are no columns fully selected.
      */
     protected boolean handleCreateColumnGroupCommand(String columnGroupName) {
-        int[] fullySelectedColumns = this.selectionLayer.getFullySelectedColumnPositions();
 
         // we operate on the GroupModel directly to avoid the position
         // transformation
         GroupModel model = this.contextLayer.getGroupModel();
 
-        MutableIntList positionsToGroup = IntLists.mutable.empty();
-        if (fullySelectedColumns != null && fullySelectedColumns.length > 0) {
-            for (int column : fullySelectedColumns) {
-                // convert to position layer
-                // needed because the group model takes the positions based on
-                // the position layer
-                int converted = LayerUtil.convertColumnPosition(this.selectionLayer, column, this.contextLayer.getPositionLayer());
-                if (converted > -1) {
-                    positionsToGroup.add(converted);
-                }
-            }
-
+        MutableIntList positionsToGroup = getPositionsToProcess();
+        if (!positionsToGroup.isEmpty()) {
             HashSet<Group> existingGroups = new HashSet<>();
             for (MutableIntIterator it = positionsToGroup.intIterator(); it.hasNext();) {
                 int column = it.next();
@@ -153,7 +172,9 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
             // create the column group
             this.contextLayer.addGroup(columnGroupName, this.selectionLayer.getColumnIndexByPosition(selectedPositions.get(0)), selectedPositions.size());
 
-            this.selectionLayer.clear();
+            if (this.clearSelection) {
+                this.selectionLayer.clear();
+            }
 
             this.contextLayer.fireLayerEvent(new GroupColumnsEvent(this.contextLayer));
 
@@ -189,20 +210,8 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
      * rendering
      */
     protected void handleUngroupCommand() {
-        // Grab fully selected column positions
-        int[] fullySelectedColumns = this.selectionLayer.getFullySelectedColumnPositions();
-
-        if (fullySelectedColumns != null && fullySelectedColumns.length > 0) {
-            MutableIntList positionsToUngroup = IntLists.mutable.empty();
-            for (int column : fullySelectedColumns) {
-                // convert to position layer
-                // needed because the group model takes the positions based on
-                // the position layer
-                int converted = LayerUtil.convertColumnPosition(this.selectionLayer, column, this.contextLayer.getPositionLayer());
-                if (converted > -1) {
-                    positionsToUngroup.add(converted);
-                }
-            }
+        MutableIntList positionsToUngroup = getPositionsToProcess();
+        if (!positionsToUngroup.isEmpty()) {
 
             // we operate on the GroupModel directly to avoid the position
             // transformation
@@ -244,10 +253,44 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
                 });
             }
 
-            this.selectionLayer.clear();
+            if (this.clearSelection) {
+                this.selectionLayer.clear();
+            }
 
             this.contextLayer.fireLayerEvent(new UngroupColumnsEvent(this.contextLayer));
         }
+    }
+
+    /**
+     * Return the collection of column positions related to the
+     * {@link ColumnGroupHeaderLayer#getPositionLayer()} that should be added to
+     * a column group.
+     * <p>
+     * The default implementation uses the {@link SelectionLayer} to retrieve
+     * the fully selected column positions.
+     *
+     * @return The collection of column positions related to the
+     *         {@link ColumnGroupHeaderLayer#getPositionLayer()} that should be
+     *         added to a column group.
+     * @since 2.3
+     */
+    protected MutableIntList getPositionsToProcess() {
+        MutableIntList positionsToProcess = IntLists.mutable.empty();
+
+        // Grab fully selected column positions
+        int[] fullySelectedColumns = this.selectionLayer.getFullySelectedColumnPositions();
+        if (fullySelectedColumns != null && fullySelectedColumns.length > 0) {
+            for (int column : fullySelectedColumns) {
+                // convert to position layer
+                // needed because the group model takes the positions based on
+                // the position layer
+                int converted = LayerUtil.convertColumnPosition(this.selectionLayer, column, this.contextLayer.getPositionLayer());
+                if (converted > -1) {
+                    positionsToProcess.add(converted);
+                }
+            }
+        }
+        return positionsToProcess;
     }
 
     // TODO Dialog should not be opened by the command handler
