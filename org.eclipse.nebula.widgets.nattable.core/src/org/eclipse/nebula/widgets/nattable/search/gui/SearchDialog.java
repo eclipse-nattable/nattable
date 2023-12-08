@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -100,41 +100,117 @@ public class SearchDialog extends Dialog {
     private Rectangle dialogPositionValue;
 
     // Find Combo box
-    private Combo findCombo;
+    /**
+     * The label for the find combo.
+     *
+     * @since 2.3
+     */
+    private Label findLabel;
+    /**
+     * The input field for the search phrase.
+     *
+     * @since 2.3
+     */
+    protected Combo findCombo;
     private List<String> findHistory = new ArrayList<>(5);
 
     // Direction radio
-    private Button forwardButton;
-    private boolean forwardValue = true;
+    /**
+     * @since 2.3
+     */
+    protected Button forwardButton;
+    /**
+     * @since 2.3
+     */
+    protected boolean forwardValue = true;
 
     // Scope radio
-    private Button allButton;
-    private boolean allValue = true;
-    private Button selectionButton;
+    /**
+     * @since 2.3
+     */
+    protected Button allButton;
+    /**
+     * @since 2.3
+     */
+    protected boolean allValue = true;
+    /**
+     * @since 2.3
+     */
+    protected Button selectionButton;
 
     // Options and cached values.
-    private Button caseSensitiveButton;
-    private boolean caseSensitiveValue;
-    private Button wrapSearchButton;
-    private boolean wrapSearchValue = true;
-    private Button wholeWordButton;
-    private boolean wholeWordValue;
-    private Button incrementalButton;
-    private boolean incrementalValue;
-    private Button columnFirstButton;
-    private boolean columnFirstValue;
-    // TODO
-    // private Button includeCollapsedButton;
-    // private boolean includeCollapsedValue = true;
-    private Button regexButton;
-    private boolean regexValue;
+    /**
+     * @since 2.3
+     */
+    protected Button caseSensitiveButton;
+    /**
+     * @since 2.3
+     */
+    protected boolean caseSensitiveValue;
+    /**
+     * @since 2.3
+     */
+    protected Button wrapSearchButton;
+    /**
+     * @since 2.3
+     */
+    protected boolean wrapSearchValue = true;
+    /**
+     * @since 2.3
+     */
+    protected Button wholeWordButton;
+    /**
+     * @since 2.3
+     */
+    protected boolean wholeWordValue;
+    /**
+     * @since 2.3
+     */
+    protected Button incrementalButton;
+    /**
+     * @since 2.3
+     */
+    protected boolean incrementalValue;
+    /**
+     * @since 2.3
+     */
+    protected Button columnFirstButton;
+    /**
+     * @since 2.3
+     */
+    protected boolean columnFirstValue;
+    /**
+     * @since 2.3
+     */
+    protected Button regexButton;
+    /**
+     * @since 2.3
+     */
+    protected boolean regexValue;
 
     // Status label
-    private Label statusLabel;
+    /**
+     * The label to show the search status.
+     *
+     * @since 2.3
+     */
+    protected Label statusLabel;
+    private String notFoundStatusString = Messages.getString("Search.textNotFound"); //$NON-NLS-1$
+    private String wrappedStatusString = Messages.getString("Search.wrappedSearch"); //$NON-NLS-1$
 
     // Find button
-    private Button findButton;
-    private ModifyListener findComboModifyListener;
+    /**
+     * The <i>Find</i> button.
+     *
+     * @since 2.3
+     */
+    protected Button findButton;
+    /**
+     * The {@link ModifyListener} to be attached on the input field.
+     *
+     * @since 2.3
+     */
+    protected ModifyListener findComboModifyListener;
 
     public SearchDialog(Shell shell, Comparator<?> comparator, int style) {
         super(shell);
@@ -287,16 +363,30 @@ public class SearchDialog extends Dialog {
             return;
         }
         this.dialogPositionValue = getShell().getBounds();
-        this.forwardValue = this.forwardButton.getSelection();
-        this.allValue = this.allButton.getSelection();
-        this.caseSensitiveValue = this.caseSensitiveButton.getSelection();
-        this.wrapSearchValue = this.wrapSearchButton.getSelection();
-        this.wholeWordValue = this.wholeWordButton.getSelection();
-        this.incrementalValue = this.incrementalButton.getSelection();
-        this.regexValue = this.regexButton.getSelection();
-        // TODO
-        // includeCollapsedValue = includeCollapsedButton.getSelection();
-        this.columnFirstValue = this.columnFirstButton.getSelection();
+        if (this.forwardButton != null) {
+            this.forwardValue = this.forwardButton.getSelection();
+        }
+        if (this.allButton != null) {
+            this.allValue = this.allButton.getSelection();
+        }
+        if (this.caseSensitiveButton != null) {
+            this.caseSensitiveValue = this.caseSensitiveButton.getSelection();
+        }
+        if (this.wrapSearchButton != null) {
+            this.wrapSearchValue = this.wrapSearchButton.getSelection();
+        }
+        if (this.wholeWordButton != null) {
+            this.wholeWordValue = this.wholeWordButton.getSelection();
+        }
+        if (this.incrementalButton != null) {
+            this.incrementalValue = this.incrementalButton.getSelection();
+        }
+        if (this.regexButton != null) {
+            this.regexValue = this.regexButton.getSelection();
+        }
+        if (this.columnFirstButton != null) {
+            this.columnFirstValue = this.columnFirstButton.getSelection();
+        }
         writeConfiguration();
     }
 
@@ -304,44 +394,84 @@ public class SearchDialog extends Dialog {
     protected Control createContents(final Composite parent) {
         final Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new GridLayout(1, false));
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(composite);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL)
-                .grab(true, false).applyTo(createInputPanel(composite));
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL)
-                .grab(true, false).applyTo(createOptionsPanel(composite));
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL)
-                .grab(true, true).applyTo(createStatusPanel(composite));
-        GridDataFactory.swtDefaults().align(SWT.FILL, SWT.BOTTOM)
-                .grab(true, true).applyTo(createButtonSection(composite));
+        GridDataFactory
+                .fillDefaults()
+                .grab(true, true)
+                .applyTo(composite);
+        GridDataFactory
+                .fillDefaults()
+                .align(SWT.FILL, SWT.FILL)
+                .grab(true, false)
+                .applyTo(createInputPanel(composite));
+        GridDataFactory
+                .fillDefaults()
+                .align(SWT.FILL, SWT.FILL)
+                .grab(true, false)
+                .applyTo(createOptionsPanel(composite));
+        GridDataFactory
+                .fillDefaults()
+                .align(SWT.FILL, SWT.FILL)
+                .grab(true, true)
+                .applyTo(createStatusPanel(composite));
+        GridDataFactory
+                .swtDefaults()
+                .align(SWT.FILL, SWT.BOTTOM)
+                .grab(true, true)
+                .applyTo(createButtonSection(composite));
         return composite;
     }
 
-    private Composite createStatusPanel(Composite composite) {
+    /**
+     * Create the panel to show the status.
+     *
+     * @param composite
+     *            The parent composite.
+     * @return The status panel.
+     * @since 2.3
+     */
+    protected Composite createStatusPanel(Composite composite) {
         Composite panel = new Composite(composite, SWT.NONE);
         panel.setLayout(new GridLayout(1, false));
         this.statusLabel = new Label(panel, SWT.LEFT);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER)
-                .grab(true, false).applyTo(this.statusLabel);
+        GridDataFactory
+                .fillDefaults()
+                .align(SWT.FILL, SWT.CENTER)
+                .grab(true, false)
+                .applyTo(this.statusLabel);
         return panel;
     }
 
-    private Composite createButtonSection(Composite composite) {
+    /**
+     * Create the section with the action buttons.
+     *
+     * @param composite
+     *            The parent composite.
+     * @return The button panel.
+     * @since 2.3
+     */
+    protected Composite createButtonSection(Composite composite) {
 
         Composite panel = new Composite(composite, SWT.NONE);
         GridLayout layout = new GridLayout(1, false);
         panel.setLayout(layout);
 
         Label label = new Label(panel, SWT.LEFT);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER)
-                .grab(true, false).applyTo(label);
+        GridDataFactory
+                .fillDefaults()
+                .align(SWT.FILL, SWT.CENTER)
+                .grab(true, false)
+                .applyTo(label);
 
         this.findButton = createButton(
                 panel,
                 IDialogConstants.CLIENT_ID,
                 Messages.getString("Search.findButtonLabel"), false); //$NON-NLS-1$
         int buttonWidth = getButtonWidthHint(this.findButton);
-        GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM)
-                .grab(false, false).hint(buttonWidth, SWT.DEFAULT)
+        GridDataFactory
+                .swtDefaults()
+                .align(SWT.RIGHT, SWT.BOTTOM)
+                .grab(false, false)
+                .hint(buttonWidth, SWT.DEFAULT)
                 .applyTo(this.findButton);
 
         this.findButton.setEnabled(false);
@@ -354,11 +484,16 @@ public class SearchDialog extends Dialog {
             }
         });
 
-        Button closeButton = createButton(panel, IDialogConstants.CANCEL_ID,
+        Button closeButton = createButton(
+                panel,
+                IDialogConstants.CANCEL_ID,
                 Messages.getString("Search.closeButtonLabel"), false); //$NON-NLS-1$
         buttonWidth = getButtonWidthHint(closeButton);
-        GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM)
-                .grab(false, false).hint(buttonWidth, SWT.DEFAULT)
+        GridDataFactory
+                .swtDefaults()
+                .align(SWT.RIGHT, SWT.BOTTOM)
+                .grab(false, false)
+                .hint(buttonWidth, SWT.DEFAULT)
                 .applyTo(closeButton);
 
         return panel;
@@ -371,24 +506,31 @@ public class SearchDialog extends Dialog {
         return Math.max(widthHint, button.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
     }
 
-    private Composite createInputPanel(final Composite composite) {
+    /**
+     * Create the input panel.
+     *
+     * @param composite
+     *            The parent composite.
+     * @return The input panel.
+     * @since 2.3
+     */
+    protected Composite createInputPanel(final Composite composite) {
         final Composite row = new Composite(composite, SWT.NONE);
         row.setLayout(new GridLayout(2, false));
 
-        final Label findLabel = new Label(row, SWT.NONE);
-        findLabel.setText(Messages.getString("Search.findLabel") + ":"); //$NON-NLS-1$ //$NON-NLS-2$
-        GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER)
-                .applyTo(findLabel);
+        this.findLabel = new Label(row, SWT.NONE);
+        this.findLabel.setText(Messages.getString("Search.findLabel") + ":"); //$NON-NLS-1$ //$NON-NLS-2$
+        GridDataFactory
+                .fillDefaults()
+                .align(SWT.LEFT, SWT.CENTER)
+                .applyTo(this.findLabel);
 
         this.findCombo = new Combo(row, SWT.DROP_DOWN | SWT.BORDER);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(this.findCombo);
-        this.findComboModifyListener = e -> {
-            if (SearchDialog.this.allValue && SearchDialog.this.incrementalButton.isEnabled()
-                    && SearchDialog.this.incrementalButton.getSelection()) {
-                doIncrementalFind();
-            }
-            SearchDialog.this.findButton.setEnabled(SearchDialog.this.findCombo.getText().length() > 0 && SearchDialog.this.selectionLayer != null);
-        };
+        GridDataFactory
+                .fillDefaults()
+                .grab(true, false)
+                .applyTo(this.findCombo);
+        this.findComboModifyListener = getFindComboModifyListener();
         this.findCombo.addModifyListener(this.findComboModifyListener);
         this.findCombo.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -402,12 +544,49 @@ public class SearchDialog extends Dialog {
         return row;
     }
 
-    private Composite createOptionsPanel(final Composite composite) {
+    /**
+     *
+     * @return The label for the find combo.
+     * @since 2.3
+     */
+    protected Label getFindLabel() {
+        return this.findLabel;
+    }
+
+    /**
+     *
+     * @return The {@link ModifyListener} attached to the find combo.
+     * @since 2.3
+     */
+    protected ModifyListener getFindComboModifyListener() {
+        return e -> {
+            boolean incremental = this.incrementalButton != null
+                    && SearchDialog.this.incrementalButton.isEnabled()
+                    && SearchDialog.this.incrementalButton.getSelection();
+            if (SearchDialog.this.allValue && incremental) {
+                doIncrementalFind();
+            }
+            SearchDialog.this.findButton.setEnabled(SearchDialog.this.findCombo.getText().length() > 0 && SearchDialog.this.selectionLayer != null);
+        };
+    }
+
+    /**
+     * Create the search options panel.
+     *
+     * @param composite
+     *            The parent composite.
+     * @return The panel containing the search options.
+     * @since 2.3
+     */
+    protected Composite createOptionsPanel(final Composite composite) {
         final Composite row = new Composite(composite, SWT.NONE);
         row.setLayout(new GridLayout(2, true));
 
         final Group directionGroup = new Group(row, SWT.SHADOW_ETCHED_IN);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(directionGroup);
+        GridDataFactory
+                .fillDefaults()
+                .grab(true, true)
+                .applyTo(directionGroup);
         directionGroup.setText(Messages.getString("Search.direction")); //$NON-NLS-1$
         RowLayout rowLayout = new RowLayout(SWT.VERTICAL);
         rowLayout.marginHeight = rowLayout.marginWidth = 3;
@@ -428,7 +607,10 @@ public class SearchDialog extends Dialog {
         backwardButton.setSelection(!this.forwardValue);
 
         final Group scopeGroup = new Group(row, SWT.SHADOW_ETCHED_IN);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(scopeGroup);
+        GridDataFactory
+                .fillDefaults()
+                .grab(true, true)
+                .applyTo(scopeGroup);
         scopeGroup.setText(Messages.getString("Search.scope")); //$NON-NLS-1$
         rowLayout = new RowLayout(SWT.VERTICAL);
         rowLayout.marginHeight = rowLayout.marginWidth = 3;
@@ -447,7 +629,11 @@ public class SearchDialog extends Dialog {
         this.selectionButton.setSelection(!this.allValue);
 
         final Group optionsGroup = new Group(row, SWT.SHADOW_ETCHED_IN);
-        GridDataFactory.fillDefaults().grab(true, true).span(2, 1).applyTo(optionsGroup);
+        GridDataFactory
+                .fillDefaults()
+                .grab(true, true)
+                .span(2, 1)
+                .applyTo(optionsGroup);
         optionsGroup.setText(Messages.getString("Search.options")); //$NON-NLS-1$
         optionsGroup.setLayout(new GridLayout(2, true));
         this.caseSensitiveButton = new Button(optionsGroup, SWT.CHECK);
@@ -484,16 +670,16 @@ public class SearchDialog extends Dialog {
         this.columnFirstButton = new Button(optionsGroup, SWT.CHECK);
         this.columnFirstButton.setText(Messages.getString("Search.columnFirstLabel")); //$NON-NLS-1$
         this.columnFirstButton.setSelection(this.columnFirstValue);
-        // TODO
-        // includeCollapsedButton = new Button(optionsGroup, SWT.CHECK);
-        // includeCollapsedButton.setText(Messages.getString("Search.includeCollapsedLabel"));
-        // //$NON-NLS-1$
-        // includeCollapsedButton.setSelection(includeCollapsedValue);
 
         return row;
     }
 
-    private void doFind() {
+    /**
+     * Trigger the search.
+     *
+     * @since 2.3
+     */
+    protected void doFind() {
         doFindInit();
         doFind0(false, this.findCombo.getText());
     }
@@ -579,7 +765,7 @@ public class SearchDialog extends Dialog {
                 SearchDialog.this.natTable.doCommand(searchCommand);
                 if (searchEventListener.pos == null) {
                     // Beep and show status if not found
-                    SearchDialog.this.statusLabel.setText(Messages.getString("Search.textNotFound")); //$NON-NLS-1$
+                    SearchDialog.this.statusLabel.setText(getNotFoundStatusString());
                     getShell().getDisplay().beep();
                 } else {
                     SelectionItem selection = new SelectionItem(text, searchEventListener.pos);
@@ -599,7 +785,7 @@ public class SearchDialog extends Dialog {
                         int secondaryDelta = SearchDialog.this.columnFirstValue ? rowDelta : columnDelta;
                         if (primaryDelta < 0 || !isIncremental
                                 && primaryDelta == 0 && secondaryDelta <= 0) {
-                            SearchDialog.this.statusLabel.setText(Messages.getString("Search.wrappedSearch")); //$NON-NLS-1$
+                            SearchDialog.this.statusLabel.setText(getWrappedStatusString());
                             getShell().getDisplay().beep();
                         }
                     }
@@ -633,7 +819,12 @@ public class SearchDialog extends Dialog {
         return pos;
     }
 
-    private void resetIncrementalSelections() {
+    /**
+     * Reset the selections.
+     *
+     * @since 2.3
+     */
+    protected void resetIncrementalSelections() {
         SelectionItem selection = this.selections.peek();
         this.selections.clear();
         this.selections.push(selection);
@@ -652,16 +843,30 @@ public class SearchDialog extends Dialog {
     }
 
     private SearchCommand createSearchCommand(String text, boolean isIncremental) {
-        this.forwardValue = this.forwardButton.getSelection();
-        this.allValue = this.allButton.getSelection();
-        this.caseSensitiveValue = this.caseSensitiveButton.getSelection();
-        this.wrapSearchValue = this.wrapSearchButton.getSelection();
-        this.wholeWordValue = this.wholeWordButton.getSelection();
-        this.incrementalValue = this.incrementalButton.getSelection();
-        this.regexValue = this.regexButton.getSelection();
-        // TODO
-        // includeCollapsedValue = includeCollapsedButton.getSelection();
-        this.columnFirstValue = this.columnFirstButton.getSelection();
+        if (this.forwardButton != null) {
+            this.forwardValue = this.forwardButton.getSelection();
+        }
+        if (this.allButton != null) {
+            this.allValue = this.allButton.getSelection();
+        }
+        if (this.caseSensitiveButton != null) {
+            this.caseSensitiveValue = this.caseSensitiveButton.getSelection();
+        }
+        if (this.wrapSearchButton != null) {
+            this.wrapSearchValue = this.wrapSearchButton.getSelection();
+        }
+        if (this.wholeWordButton != null) {
+            this.wholeWordValue = this.wholeWordButton.getSelection();
+        }
+        if (this.incrementalButton != null) {
+            this.incrementalValue = this.incrementalButton.getSelection();
+        }
+        if (this.regexButton != null) {
+            this.regexValue = this.regexButton.getSelection();
+        }
+        if (this.columnFirstButton != null) {
+            this.columnFirstValue = this.columnFirstButton.getSelection();
+        }
 
         SearchDirection searchDirection = this.forwardValue ? SearchDirection.SEARCH_FORWARD : SearchDirection.SEARCH_BACKWARDS;
         ISearchStrategy searchStrategy;
@@ -679,8 +884,6 @@ public class SearchDialog extends Dialog {
                 this.caseSensitiveValue,
                 !this.regexValue && this.wholeWordValue,
                 !this.regexValue && this.allValue && isIncremental, this.regexValue,
-                // TODO
-                // includeCollapsedValue, comparator);
                 false,
                 this.comparator);
     }
@@ -733,9 +936,15 @@ public class SearchDialog extends Dialog {
         }
     }
 
-    private void updateButtons() {
-        final boolean regex = this.regexButton.getSelection();
-        final boolean allMode = this.allButton.getSelection();
+    /**
+     * Update the whole word and the incremental button according to the
+     * selection of the regex and the all button.
+     *
+     * @since 2.3
+     */
+    protected void updateButtons() {
+        boolean regex = this.regexButton != null ? this.regexButton.getSelection() : false;
+        boolean allMode = this.allButton != null ? this.allButton.getSelection() : false;
         this.wholeWordButton.setEnabled(!regex);
         this.incrementalButton.setEnabled(!regex && allMode);
     }
@@ -781,10 +990,6 @@ public class SearchDialog extends Dialog {
         this.wholeWordValue = s.getBoolean("wholeword"); //$NON-NLS-1$
         this.incrementalValue = s.getBoolean("incremental"); //$NON-NLS-1$
         this.regexValue = s.getBoolean("isRegEx"); //$NON-NLS-1$
-        // TODO
-        // includeCollapsedValue = s.get("includeCollapsed") == null
-        // //$NON-NLS-1$
-        // || s.getBoolean("includeCollapsed"); //$NON-NLS-1$
         this.columnFirstValue = s.getBoolean("columnFirst"); //$NON-NLS-1$
 
         String[] findHistoryConfig = s.getArray("findhistory"); //$NON-NLS-1$
@@ -810,8 +1015,6 @@ public class SearchDialog extends Dialog {
         s.put("wholeword", this.wholeWordValue); //$NON-NLS-1$
         s.put("incremental", this.incrementalValue); //$NON-NLS-1$
         s.put("isRegEx", this.regexValue); //$NON-NLS-1$
-        // TODO
-        // s.put("includeCollapsed", includeCollapsedValue); //$NON-NLS-1$
         s.put("columnFirst", this.columnFirstValue); //$NON-NLS-1$
 
         String findString = this.findCombo.getText();
@@ -851,5 +1054,43 @@ public class SearchDialog extends Dialog {
         history.toArray(names);
         settings.put(sectionName, names);
 
+    }
+
+    /**
+     *
+     * @return The string to be shown if the search did not find anything.
+     * @since 2.3
+     */
+    protected String getNotFoundStatusString() {
+        return this.notFoundStatusString;
+    }
+
+    /**
+     *
+     * @param notFoundStatusString
+     *            The string to be shown if the search did not find anything.
+     * @since 2.3
+     */
+    protected void setNotFoundStatusString(String notFoundStatusString) {
+        this.notFoundStatusString = notFoundStatusString;
+    }
+
+    /**
+     *
+     * @return The string to be shown if the search is wrapped.
+     * @since 2.3
+     */
+    protected String getWrappedStatusString() {
+        return this.wrappedStatusString;
+    }
+
+    /**
+     *
+     * @param wrappedStatusString
+     *            The string to be shown if the search is wrapped.
+     * @since 2.3
+     */
+    protected void setWrappedStatusString(String wrappedStatusString) {
+        this.wrappedStatusString = wrappedStatusString;
     }
 }
