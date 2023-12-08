@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.search.action;
 
+import java.util.Comparator;
+
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.search.CellValueAsStringComparator;
@@ -22,6 +24,7 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * An action for opening a Find dialog on a NatTable. Supports both modal and
@@ -34,6 +37,7 @@ public class SearchAction implements IKeyAction {
     private NatTable natTable;
     private IDialogSettings dialogSettings;
     private boolean modal;
+    private SearchDialogCreator creator;
 
     private DisposeListener listener = e -> {
         if (this.dialog != null) {
@@ -47,10 +51,30 @@ public class SearchAction implements IKeyAction {
     };
 
     /**
+     * @since 2.3
+     */
+    public interface SearchDialogCreator {
+        SearchDialog create(Shell shell, Comparator<?> comparator, int style);
+    }
+
+    /**
      * Constructs an action with a modal Find dialog.
      */
     public SearchAction() {
-        this(null, null, true);
+        this(null, null, true, (n, c, s) -> new SearchDialog(n, c, s));
+    }
+
+    /**
+     * Constructs an action with a modal Find dialog that is created via the
+     * given creator function
+     *
+     * @param creator
+     *            The {@link SearchDialogCreator} used to create the find
+     *            dialog.
+     * @since 2.3
+     */
+    public SearchAction(SearchDialogCreator creator) {
+        this(null, null, true, creator);
     }
 
     /**
@@ -63,16 +87,37 @@ public class SearchAction implements IKeyAction {
      *            dialog.
      */
     public SearchAction(NatTable natTable, IDialogSettings dialogSettings) {
-        this(natTable, dialogSettings, false);
+        this(natTable, dialogSettings, false, (n, c, s) -> new SearchDialog(n, c, s));
         if (natTable == null) {
             throw new IllegalArgumentException();
         }
     }
 
-    private SearchAction(NatTable natTable, IDialogSettings dialogSettings, boolean modal) {
+    /**
+     * Constructs an action with a non-modal (i.e., sharable) Find dialog.
+     *
+     * @param natTable
+     *            The NatTable instance to perform the search action on.
+     * @param dialogSettings
+     *            The dialog settings that should be used to create the search
+     *            dialog.
+     * @param creator
+     *            The {@link SearchDialogCreator} used to create the find
+     *            dialog.
+     * @since 2.3
+     */
+    public SearchAction(NatTable natTable, IDialogSettings dialogSettings, SearchDialogCreator creator) {
+        this(natTable, dialogSettings, false, (n, c, s) -> new SearchDialog(n, c, s));
+        if (natTable == null) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private SearchAction(NatTable natTable, IDialogSettings dialogSettings, boolean modal, SearchDialogCreator creator) {
         this.natTable = natTable;
         this.dialogSettings = dialogSettings;
         this.modal = modal;
+        this.creator = creator;
         if (natTable != null) {
             natTable.addFocusListener(new FocusAdapter() {
                 @Override
@@ -130,7 +175,7 @@ public class SearchAction implements IKeyAction {
         }
         setActiveContext();
         if (this.dialog == null) {
-            this.dialog = new SearchDialog(this.natTable.getShell(),
+            this.dialog = this.creator.create(this.natTable.getShell(),
                     new CellValueAsStringComparator<>(),
                     this.modal ? SWT.NONE : SWT.APPLICATION_MODAL);
             this.dialog.setInput(this.natTable, this.dialogSettings);
