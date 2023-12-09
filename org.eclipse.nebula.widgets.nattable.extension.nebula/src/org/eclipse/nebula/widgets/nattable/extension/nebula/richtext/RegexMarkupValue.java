@@ -14,6 +14,7 @@
 package org.eclipse.nebula.widgets.nattable.extension.nebula.richtext;
 
 import java.io.StringReader;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.stream.XMLEventReader;
@@ -79,6 +80,14 @@ public class RegexMarkupValue implements MarkupProcessor {
     public String applyMarkup(String input) {
         String result = "";
         if (getOriginalRegexValue() != null && !getOriginalRegexValue().isEmpty()) {
+            Pattern pattern = null;
+            if (this.caseInsensitive) {
+                int flags = this.unicodeCase ? Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE : Pattern.CASE_INSENSITIVE;
+                pattern = Pattern.compile(getOriginalRegexValue(), flags);
+            } else {
+                pattern = Pattern.compile(getOriginalRegexValue());
+            }
+
             XMLEventReader parser = null;
             try (StringReader reader = new StringReader(RichTextPainter.FAKE_ROOT_TAG_START + input + RichTextPainter.FAKE_ROOT_TAG_END)) {
                 parser = this.factory.createXMLEventReader(reader);
@@ -99,11 +108,11 @@ public class RegexMarkupValue implements MarkupProcessor {
                             // characters
                             if (textToParse.length() > 0) {
                                 textToParse = StringEscapeUtils.escapeHtml4(String.valueOf(textToParse));
-                                if (this.caseInsensitive) {
-                                    int flags = this.unicodeCase ? Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE : Pattern.CASE_INSENSITIVE;
-                                    result += Pattern.compile(getOriginalRegexValue(), flags).matcher(textToParse).replaceAll(this.markupValue);
+                                Matcher matcher = pattern.matcher(textToParse);
+                                if (matcher.groupCount() > 0) {
+                                    result += matcher.replaceAll(this.markupValue);
                                 } else {
-                                    result += Pattern.compile(getOriginalRegexValue()).matcher(textToParse).replaceAll(this.markupValue);
+                                    result += matcher.replaceAll(this.markupRegexValue);
                                 }
                                 // clear the text to parse for a possible second
                                 // character sequence
@@ -142,7 +151,7 @@ public class RegexMarkupValue implements MarkupProcessor {
     @Override
     public String removeMarkup(String input) {
         if (getOriginalRegexValue() != null && !getOriginalRegexValue().isEmpty()) {
-            return input.replaceAll(getMarkupRegexValue(), GROUP_INDEX_PLACEHOLDER);
+            return input.replaceAll(this.markupPrefix, "").replaceAll(this.markupSuffix, "");
         }
         return input;
     }
