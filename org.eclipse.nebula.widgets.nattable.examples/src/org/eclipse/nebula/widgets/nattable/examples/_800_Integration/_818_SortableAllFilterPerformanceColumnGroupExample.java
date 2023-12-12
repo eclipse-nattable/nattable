@@ -783,6 +783,8 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
 
         private final SelectionLayer selectionLayer;
 
+        private final FreezeLayer freezeLayer;
+
         public BodyLayerStack(List<T> values, IColumnPropertyAccessor<T> columnPropertyAccessor) {
             // wrapping of the list to show into GlazedLists
             // see http://publicobject.com/glazedlists/ for further information
@@ -813,9 +815,9 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
             this.selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
             ViewportLayer viewportLayer = new ViewportLayer(this.selectionLayer);
 
-            FreezeLayer freezeLayer = new FreezeLayer(this.selectionLayer);
+            this.freezeLayer = new FreezeLayer(this.selectionLayer);
             CompositeFreezeLayer compositeFreezeLayer =
-                    new CompositeFreezeLayer(freezeLayer, viewportLayer, this.selectionLayer);
+                    new CompositeFreezeLayer(this.freezeLayer, viewportLayer, this.selectionLayer);
 
             setUnderlyingLayer(compositeFreezeLayer);
         }
@@ -1617,7 +1619,17 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                         }
                     })
                     .withInspectLabelsMenuItem()
-                    .build();
+                    .withSubMenu("Freeze")
+                    .withFreezeColumnMenuItem()
+                    .withVisibleState(PopupMenuBuilder.FREEZE_COLUMN_MENU_ITEM_ID, natEventData -> !bodyLayerStack.freezeLayer.isFrozen())
+                    .withFreezeRowMenuItem()
+                    .withVisibleState(PopupMenuBuilder.FREEZE_ROW_MENU_ITEM_ID, natEventData -> !bodyLayerStack.freezeLayer.isFrozen())
+                    .withFreezePositionMenuItem(true)
+                    .withVisibleState(PopupMenuBuilder.FREEZE_POSITION_MENU_ITEM_ID, natEventData -> !bodyLayerStack.freezeLayer.isFrozen())
+                    .withUnfreezeMenuItem()
+                    .withVisibleState(PopupMenuBuilder.UNFREEZE_MENU_ITEM_ID, natEventData -> bodyLayerStack.freezeLayer.isFrozen())
+                    .buildSubMenu()
+                    .build(true);
         }
 
         @Override

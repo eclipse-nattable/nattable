@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2019, 2020 Dirk Fauth.
+ * Copyright (c) 2019, 2023 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,7 +27,6 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
-import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.e4.AbstractE4NatExamplePart;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
@@ -75,7 +74,7 @@ public class MenuExample extends AbstractE4NatExamplePart {
         IDataProvider bodyDataProvider =
                 new ListDataProvider<>(
                         PersonService.getPersons(10),
-                        new ReflectiveColumnPropertyAccessor<Person>(propertyNames));
+                        new ReflectiveColumnPropertyAccessor<>(propertyNames));
 
         DefaultGridLayer gridLayer =
                 new DefaultGridLayer(bodyDataProvider,
@@ -103,7 +102,7 @@ public class MenuExample extends AbstractE4NatExamplePart {
                 // and register the DisposeListener
                 new PopupMenuBuilder(natTable, e4Menu)
                         .withInspectLabelsMenuItem()
-                        .build();
+                        .build(true);
 
                 // register the UI binding
                 uiBindingRegistry.registerMouseDownBinding(
