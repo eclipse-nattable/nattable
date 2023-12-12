@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,6 +21,7 @@ import java.util.List;
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.export.command.ExportTableCommandHandler;
@@ -29,6 +30,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowPositionHideCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -126,6 +128,14 @@ public class PopupMenuBuilder {
     protected final MenuItemStateMap enablement = new MenuItemStateMap();
 
     /**
+     * The parent {@link PopupMenuBuilder} in case this instance is for building
+     * a submenu.
+     *
+     * @since 2.3
+     */
+    protected PopupMenuBuilder parentBuilder;
+
+    /**
      * Creates {@link PopupMenuBuilder} that builds up a new {@link Menu} that
      * is only configurable with this instance of {@link PopupMenuBuilder}. Uses
      * a {@link MenuManager} internally to be able to configure visibility and
@@ -155,7 +165,7 @@ public class PopupMenuBuilder {
      * @since 1.6
      */
     public PopupMenuBuilder(MenuManager manager) {
-        this(null, manager);
+        this((NatTable) null, manager);
     }
 
     /**
@@ -228,6 +238,51 @@ public class PopupMenuBuilder {
         if (mgr instanceof MenuManager) {
             this.menuManager = (MenuManager) mgr;
         }
+    }
+
+    /**
+     * Constructor to create a submenu. Intended to be used internally via
+     * {@link #withSubMenu(String, String, ImageDescriptor)}.
+     *
+     * @param natTable
+     *            The active NatTable instance which might be needed for
+     *            creation of menu items that need the NatTable instance to
+     *            work.
+     * @param parent
+     *            The parent {@link PopupMenuBuilder} to which this instance
+     *            should be added to create a submenu.
+     * @param menu
+     *            The {@link Menu} instance that represents the submenu.
+     * @see #withSubMenu(String, String, ImageDescriptor)
+     * @since 2.3
+     */
+    public PopupMenuBuilder(NatTable natTable, PopupMenuBuilder parent, Menu menu) {
+        this.natTable = natTable;
+        this.parentBuilder = parent;
+        this.popupMenu = menu;
+    }
+
+    /**
+     * Constructor to create a submenu. Intended to be used internally via
+     * {@link #withSubMenu(String, String, ImageDescriptor)}.
+     *
+     * @param natTable
+     *            The active NatTable instance which might be needed for
+     *            creation of menu items that need the NatTable instance to
+     *            work.
+     * @param parent
+     *            The parent {@link PopupMenuBuilder} to which this instance
+     *            should be added to create a submenu.
+     * @param menuManager
+     *            The {@link MenuManager} that should be used to create the
+     *            submenu.
+     * @see #withSubMenu(String, String, ImageDescriptor)
+     * @since 2.3
+     */
+    public PopupMenuBuilder(NatTable natTable, PopupMenuBuilder parent, MenuManager menuManager) {
+        this.natTable = natTable;
+        this.parentBuilder = parent;
+        this.menuManager = menuManager;
     }
 
     /**
@@ -1029,6 +1084,87 @@ public class PopupMenuBuilder {
     }
 
     /**
+     * Adds a submenu to the popup menu with the given label.
+     *
+     * @param label
+     *            The label to be used for the submenu.
+     * @return the {@link PopupMenuBuilder} of the submenu.
+     * @see #withSubMenu(String, String, ImageDescriptor)
+     * @since 2.3
+     */
+    public PopupMenuBuilder withSubMenu(String label) {
+        return withSubMenu(null, label);
+    }
+
+    /**
+     * Adds a submenu to the popup menu with the given id and label.
+     *
+     * @param id
+     *            The id to identify the submenu. Necessary if there should be
+     *            visibility constraints for specific submenus.
+     * @param label
+     *            The label to be used for the submenu.
+     * @return the {@link PopupMenuBuilder} of the submenu.
+     * @see #withSubMenu(String, String, ImageDescriptor)
+     * @since 2.3
+     */
+    public PopupMenuBuilder withSubMenu(String id, String label) {
+        return withSubMenu(id, label, null);
+    }
+
+    /**
+     * Adds a submenu to the popup menu with the given id, label and image.
+     *
+     * @param id
+     *            The id to identify the submenu. Necessary if there should be
+     *            visibility constraints for specific submenus.
+     * @param label
+     *            The label to be used for the submenu.
+     * @param image
+     *            The image to be used for the submenu.
+     * @return the {@link PopupMenuBuilder} of the submenu.
+     * @see MenuManager#MenuManager(String, ImageDescriptor, String)
+     * @since 2.3
+     */
+    public PopupMenuBuilder withSubMenu(String id, String label, ImageDescriptor image) {
+        if (this.menuManager == null) {
+            MenuItem item = new MenuItem(this.popupMenu, SWT.CASCADE);
+            item.setText(label);
+            if (image != null) {
+                item.setImage(image.createImage());
+            }
+            Menu subMenu = new Menu(this.popupMenu);
+            item.setMenu(subMenu);
+            return new PopupMenuBuilder(this.natTable, this, subMenu);
+        } else {
+            MenuManager subMenu = new MenuManager(label, image, id) {
+                @Override
+                public boolean isDynamic() {
+                    // by default this is false, which leads to inconsistencies
+                    // for submenus
+                    return hasDynamicItems();
+                }
+            };
+            this.menuManager.add(subMenu);
+            return new PopupMenuBuilder(this.natTable, this, subMenu);
+        }
+    }
+
+    /**
+     * Build the submenu and return the parent {@link PopupMenuBuilder} to
+     * implement the builder pattern.
+     *
+     * @return The parent {@link PopupMenuBuilder}.
+     * @since 2.3
+     */
+    public PopupMenuBuilder buildSubMenu() {
+        if (this.parentBuilder == null) {
+            throw new IllegalStateException("The current PopupMenuBuilder is not for a sub menu"); //$NON-NLS-1$
+        }
+        return this.parentBuilder;
+    }
+
+    /**
      * Sets the given NatTable to this builder and returns the
      * {@link MenuManager} that is used to create the context menu.
      * <p>
@@ -1062,11 +1198,50 @@ public class PopupMenuBuilder {
      * @return The {@link Menu} that is created by this builder.
      */
     public Menu build() {
+        // only register a DisposeListener that disposes the Menu, to ensure
+        // that use cases where a MenuManager is reused across table instances
+        // is not disposed accidentally.
+        return build(false);
+    }
+
+    /**
+     * Builds and returns the created {@link Menu}.
+     * <p>
+     * <b>Note:</b> Calling this method will also add a {@link DisposeListener}
+     * to the NatTable instance to ensure the created {@link Menu} is disposed
+     * when the NatTable itself gets disposed. Via the
+     * <code>diposeMenuManager</code> parameter it is possible to configure if
+     * also the internally used {@link MenuManager} should be disposed or not.
+     * </p>
+     * <p>
+     * <b>Note:</b> Generally it is recommended to trigger the disposal of the
+     * {@link MenuManager}. Especially if submenus are created, as otherwise the
+     * {@link MenuItem} of the submenu will not be disposed and causes resource
+     * leaks.
+     * </p>
+     *
+     * @param diposeMenuManager
+     *            <code>true</code> if the internally used {@link MenuManager}
+     *            should be disposed, <code>false</code> if not. Default is
+     *            <code>false</code> to avoid unintentionally disposing it.
+     * @return The {@link Menu} that is created by this builder.
+     * @since 2.3
+     */
+    public Menu build(boolean diposeMenuManager) {
+
+        if (this.parentBuilder != null) {
+            throw new IllegalStateException("Parent instance is not null, maybe you are operating on a sub menu. Call buildSubMenu() instead."); //$NON-NLS-1$
+        }
 
         this.natTable.addDisposeListener(e -> {
+            if (diposeMenuManager && PopupMenuBuilder.this.menuManager != null) {
+                PopupMenuBuilder.this.menuManager.dispose();
+            }
+
             if (PopupMenuBuilder.this.popupMenu != null
-                    && !PopupMenuBuilder.this.popupMenu.isDisposed())
+                    && !PopupMenuBuilder.this.popupMenu.isDisposed()) {
                 PopupMenuBuilder.this.popupMenu.dispose();
+            }
         });
 
         return this.popupMenu;
@@ -1176,9 +1351,7 @@ public class PopupMenuBuilder {
         @Override
         public boolean isEnabled() {
             if (getId() != null) {
-                Object eventData = (PopupMenuBuilder.this.popupMenu != null && !PopupMenuBuilder.this.popupMenu.isDisposed())
-                        ? PopupMenuBuilder.this.popupMenu.getData(MenuItemProviders.NAT_EVENT_DATA_KEY)
-                        : PopupMenuBuilder.this.menuManager.getMenu().getData(MenuItemProviders.NAT_EVENT_DATA_KEY);
+                Object eventData = getEventData(PopupMenuBuilder.this);
                 if (eventData instanceof NatEventData) {
                     return PopupMenuBuilder.this.enablement.isActive(getId(), (NatEventData) eventData);
                 }
@@ -1189,14 +1362,22 @@ public class PopupMenuBuilder {
         @Override
         public boolean isVisible() {
             if (getId() != null) {
-                Object eventData = (PopupMenuBuilder.this.popupMenu != null && !PopupMenuBuilder.this.popupMenu.isDisposed())
-                        ? PopupMenuBuilder.this.popupMenu.getData(MenuItemProviders.NAT_EVENT_DATA_KEY)
-                        : PopupMenuBuilder.this.menuManager.getMenu().getData(MenuItemProviders.NAT_EVENT_DATA_KEY);
+                Object eventData = getEventData(PopupMenuBuilder.this);
                 if (eventData instanceof NatEventData) {
                     return PopupMenuBuilder.this.visibility.isActive(getId(), (NatEventData) eventData);
                 }
             }
             return true;
+        }
+
+        private Object getEventData(PopupMenuBuilder builder) {
+            if (builder.parentBuilder != null) {
+                return getEventData(builder.parentBuilder);
+            } else {
+                return (builder.popupMenu != null && !builder.popupMenu.isDisposed())
+                        ? builder.popupMenu.getData(MenuItemProviders.NAT_EVENT_DATA_KEY)
+                        : builder.menuManager.getMenu().getData(MenuItemProviders.NAT_EVENT_DATA_KEY);
+            }
         }
 
         @Override

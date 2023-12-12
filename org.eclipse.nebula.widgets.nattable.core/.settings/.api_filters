@@ -8,6 +8,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/org/eclipse/nebula/widgets/nattable/ui/menu/PopupMenuBuilder.java" type="org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder">
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder"/>
+                <message_argument value="parentBuilder"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/org/eclipse/nebula/widgets/nattable/widget/NatCombo.java" type="org.eclipse.nebula.widgets.nattable.widget.NatCombo">
         <filter id="336658481">
             <message_arguments>
