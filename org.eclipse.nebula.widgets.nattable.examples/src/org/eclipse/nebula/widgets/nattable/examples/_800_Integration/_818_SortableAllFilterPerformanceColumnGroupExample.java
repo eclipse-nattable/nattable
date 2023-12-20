@@ -27,6 +27,7 @@ import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.jface.fieldassist.SimpleContentProposalProvider;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.columnChooser.command.DisplayColumnChooserCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -59,6 +60,11 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
+import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.export.IExportFormatter;
+import org.eclipse.nebula.widgets.nattable.export.command.ExportCommand;
+import org.eclipse.nebula.widgets.nattable.export.csv.CsvExporter;
+import org.eclipse.nebula.widgets.nattable.export.image.config.DefaultImageExportBindings;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxFilterRowHeaderComposite;
@@ -69,6 +75,8 @@ import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.MarkupDispl
 import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.RegexMarkupValue;
 import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.RichTextCellPainter;
 import org.eclipse.nebula.widgets.nattable.extension.nebula.richtext.RichTextConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.extension.poi.HSSFExcelExporter;
+import org.eclipse.nebula.widgets.nattable.extension.poi.PoiExcelExporter;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowPainter;
@@ -316,6 +324,33 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
 
         natTable.addConfiguration(new SingleClickSortConfiguration());
 
+        // export configuration
+        natTable.addConfiguration(new AbstractRegistryConfiguration() {
+            @Override
+            public void configureRegistry(IConfigRegistry configRegistry) {
+                // the ILayerExporter to export to Excel via Apache POI
+                PoiExcelExporter exporter = new HSSFExcelExporter();
+                exporter.setApplyBackgroundColor(false);
+                configRegistry.registerConfigAttribute(
+                        ExportConfigAttributes.EXPORTER,
+                        exporter);
+
+                configRegistry.registerConfigAttribute(
+                        ExportConfigAttributes.EXPORT_FORMATTER,
+                        new IExportFormatter() {
+                            @Override
+                            public Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry) {
+                                // simply return the data value which is an
+                                // integer for the row header doing this avoids
+                                // the default conversion to string for export
+                                return cell.getDataValue();
+                            }
+                        },
+                        DisplayMode.NORMAL,
+                        GridRegion.ROW_HEADER);
+            }
+        });
+
         // add a ui binding to clear the hover in the column header also if you
         // move over a column group or filter row cell
         natTable.addConfiguration(new AbstractUiBindingConfiguration() {
@@ -328,6 +363,8 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
             }
         });
 
+        natTable.addConfiguration(new DefaultImageExportBindings());
+
         // header menu configuration
         natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
 
@@ -335,7 +372,36 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
             protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
                 return super.createCornerMenu(natTable)
                         .withStateManagerMenuItemProvider()
-                        .withClearAllFilters();
+                        .withClearAllFilters()
+                        .withSubMenu("Export")
+                        .withMenuItemProvider((natTable1, popupMenu) -> {
+                            MenuItem export = new MenuItem(popupMenu, SWT.PUSH);
+                            export.setText(Messages.getLocalizedMessage("Export to CSV"));
+                            export.setEnabled(true);
+
+                            export.addSelectionListener(new SelectionAdapter() {
+                                @Override
+                                public void widgetSelected(SelectionEvent e) {
+                                    natTable.doCommand(new ExportCommand(natTable.getConfigRegistry(), natTable.getShell(), true, true, new CsvExporter()));
+                                }
+                            });
+
+                        })
+                        .withMenuItemProvider((natTable1, popupMenu) -> {
+                            MenuItem export = new MenuItem(popupMenu, SWT.PUSH);
+                            export.setText(Messages.getLocalizedMessage("Export to Excel"));
+                            export.setEnabled(true);
+
+                            export.addSelectionListener(new SelectionAdapter() {
+                                @Override
+                                public void widgetSelected(SelectionEvent e) {
+                                    natTable.doCommand(new ExportCommand(natTable.getConfigRegistry(), natTable.getShell(), true, true));
+                                }
+                            });
+
+                        })
+                        .withExportToImageMenuItem()
+                        .buildSubMenu();
             }
 
             @Override

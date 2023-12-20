@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -95,6 +97,15 @@ public class NatExporter {
     private boolean runAsynchronously = true;
 
     /**
+     * Flag to configure whether the progress should be reported via
+     * {@link ProgressMonitorDialog}. If set to <code>false</code> a custom
+     * shell with a {@link ProgressBar} will be shown.
+     *
+     * @since 2.3
+     */
+    private boolean useProgressDialog = false;
+
+    /**
      * Create a new {@link NatExporter}.
      *
      * @param shell
@@ -128,8 +139,32 @@ public class NatExporter {
      * @since 1.6
      */
     public NatExporter(Shell shell, boolean executeSynchronously) {
+        this(shell, executeSynchronously, false);
+    }
+
+    /**
+     * Create a new {@link NatExporter}.
+     *
+     * @param shell
+     *            The {@link Shell} that should be used to open sub-dialogs and
+     *            perform export operations in a background thread. Can be
+     *            <code>null</code> but could lead to
+     *            {@link NullPointerException}s if {@link IExporter} are
+     *            configured, that use a {@link FileOutputStreamProvider}.
+     * @param executeSynchronously
+     *            Configure whether the export should be performed
+     *            asynchronously or synchronously. By default the decision
+     *            whether the execution should be performed synchronously or not
+     *            is made based on whether a {@link Shell} is set or not. If a
+     *            {@link Shell} is set and this flag is set to <code>true</code>
+     *            the execution is performed synchronously.
+     *
+     * @since 2.3
+     */
+    public NatExporter(Shell shell, boolean executeSynchronously, boolean useProgressDialog) {
         this.shell = shell;
         this.runAsynchronously = !executeSynchronously;
+        this.useProgressDialog = useProgressDialog;
     }
 
     /**
@@ -172,18 +207,64 @@ public class NatExporter {
             final ILayer layer,
             final IConfigRegistry configRegistry) {
 
-        exportSingle(exporter, (exp, outputStream) -> {
+        if (this.useProgressDialog && this.shell != null) {
+
+            ProgressMonitorDialog dialog = getProgressMonitorDialog();
             try {
-                exp.exportBegin(outputStream);
+                dialog.run(true, true, monitor -> {
+                    exportSingle(exporter, monitor, (exp, outputStream, m) -> {
+                        try {
+                            exp.exportBegin(outputStream);
 
-                exportLayer(exp, outputStream, "", layer, configRegistry); //$NON-NLS-1$
+                            exportLayer(exp, outputStream, m, "", layer, configRegistry, true); //$NON-NLS-1$
 
-                exp.exportEnd(outputStream);
-            } catch (IOException e) {
-                // exception is handled in the caller
+                            exp.exportEnd(outputStream);
+                        } catch (IOException e) {
+                            // exception is handled in the caller
+                            throw new RuntimeException(e);
+                        }
+                    });
+                });
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        });
+
+        } else {
+
+            exportSingle(exporter, null, (exp, outputStream, monitor) -> {
+                try {
+                    exp.exportBegin(outputStream);
+
+                    exportLayer(exp, outputStream, "", layer, configRegistry); //$NON-NLS-1$
+
+                    exp.exportEnd(outputStream);
+                } catch (IOException e) {
+                    // exception is handled in the caller
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+    }
+
+    /**
+     *
+     * @return The {@link ProgressMonitorDialog} that is used to report the
+     *         export progress to a user, in case {@link #useProgressDialog} is
+     *         <code>true</code>.
+     * @see #useProgressDialog
+     *
+     * @since 2.3
+     */
+    protected ProgressMonitorDialog getProgressMonitorDialog() {
+        ProgressMonitorDialog dialog = new ProgressMonitorDialog(this.shell) {
+            @Override
+            protected void configureShell(Shell shell) {
+                super.configureShell(shell);
+                shell.setText(Messages.getString("NatExporter.exporting")); //$NON-NLS-1$
+            }
+        };
+
+        return dialog;
     }
 
     /**
@@ -228,19 +309,35 @@ public class NatExporter {
             final ILayer layer,
             final IConfigRegistry configRegistry) {
 
-        exportSingle(exporter, (exp, outputStream) -> exportLayer(exp, outputStream, layer, configRegistry));
+        if (this.useProgressDialog && this.shell != null) {
+
+            ProgressMonitorDialog dialog = getProgressMonitorDialog();
+            try {
+                dialog.run(true, true, monitor -> {
+                    exportSingle(exporter, monitor, (exp, outputStream, m) -> exportLayer(exp, outputStream, m, layer, configRegistry));
+                });
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+        } else {
+            exportSingle(exporter, null, (exp, outputStream, m) -> exportLayer(exp, outputStream, m, layer, configRegistry));
+        }
     }
 
     /**
      * Functional interface used to specify how the export should be performed
-     * for different exporter interface implementations. Can be removed once the
-     * source API level is updated to Java 1.8
+     * for different exporter interface implementations.
      *
      * @param <T>
+     *            The {@link IExporter} to use for exporting.
      * @param <U>
+     *            The {@link OutputStream} to write the export to.
+     * @param <V>
+     *            The {@link IProgressMonitor} used to report the progress.
      */
-    private interface BiConsumer<T, U> {
-        void apply(T t, U u);
+    private interface TriConsumer<T, U, V> {
+        void accept(T t, U u, V v);
     }
 
     /**
@@ -251,13 +348,13 @@ public class NatExporter {
      *            The consumer implementation that is used to execute the export
      *            and produce the output to an {@link OutputStream}
      */
-    private <T extends IExporter> void exportSingle(final T exporter, final BiConsumer<T, OutputStream> executable) {
+    private <T extends IExporter> void exportSingle(final T exporter, final IProgressMonitor monitor, final TriConsumer<T, OutputStream, IProgressMonitor> executable) {
 
         Runnable exportRunnable = () -> {
             final OutputStream outputStream = getOutputStream(exporter);
             if (outputStream != null) {
                 try {
-                    executable.apply(exporter, outputStream);
+                    executable.accept(exporter, outputStream, monitor);
 
                     NatExporter.this.exportSucceeded = true;
                 } catch (Exception e1) {
@@ -275,7 +372,7 @@ public class NatExporter {
             }
         };
 
-        if (this.shell != null) {
+        if (this.shell != null && monitor == null) {
             // Run with the SWT display so that the progress bar can paint
             if (this.runAsynchronously) {
                 this.shell.getDisplay().asyncExec(exportRunnable);
@@ -343,9 +440,23 @@ public class NatExporter {
                         exporter.exportLayerBegin(outputStream, sheetName);
                     }
 
-                    for (String name : natTablesMap.keySet()) {
-                        NatTable natTable = natTablesMap.get(name);
-                        exportLayer(exporter, outputStream, name, natTable, natTable.getConfigRegistry(), !exportOnSameSheet);
+                    if (this.useProgressDialog && this.shell != null) {
+                        ProgressMonitorDialog dialog = getProgressMonitorDialog();
+                        try {
+                            dialog.run(true, true, monitor -> {
+                                for (String name : natTablesMap.keySet()) {
+                                    NatTable natTable = natTablesMap.get(name);
+                                    exportLayer(exporter, outputStream, monitor, name, natTable, natTable.getConfigRegistry(), !exportOnSameSheet);
+                                }
+                            });
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        for (String name : natTablesMap.keySet()) {
+                            NatTable natTable = natTablesMap.get(name);
+                            exportLayer(exporter, outputStream, null, name, natTable, natTable.getConfigRegistry(), !exportOnSameSheet);
+                        }
                     }
 
                     if (exportOnSameSheet) {
@@ -463,58 +574,138 @@ public class NatExporter {
             final IConfigRegistry configRegistry,
             final boolean initExportLayer) {
 
-        exportLayer(new ITableExporter() {
+        exportLayer(
+                exporter,
+                outputStream,
+                null,
+                layerName,
+                layer,
+                configRegistry,
+                initExportLayer);
+    }
 
-            @Override
-            public void exportTable(Shell shell, ProgressBar progressBar, OutputStream outputStream,
-                    ILayer layer, IConfigRegistry configRegistry) throws IOException {
+    /**
+     * /** Exports the given layer to the outputStream using the provided
+     * exporter. The {@link ILayerExporter#exportBegin(OutputStream)} method
+     * should be called before this method is invoked, and
+     * {@link ILayerExporter#exportEnd(OutputStream)} should be called after
+     * this method returns. If multiple layers are being exported as part of a
+     * single logical export operation, then
+     * {@link ILayerExporter#exportBegin(OutputStream)} will be called once at
+     * the very beginning, followed by n calls to this method, and finally
+     * followed by {@link ILayerExporter#exportEnd(OutputStream)}.
+     *
+     * @param exporter
+     *            The {@link ILayerExporter} that should be used for exporting.
+     * @param outputStream
+     *            The {@link OutputStream} that should be used to write the
+     *            export to.
+     * @param monitor
+     *            The {@link IProgressMonitor} used to report the export process
+     *            to the user. Can be <code>null</code>.
+     * @param layerName
+     *            The name that should be set as sheet name of the export.
+     * @param layer
+     *            The {@link ILayer} that should be exported.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to retrieve the export
+     *            configurations.
+     * @param initExportLayer
+     *            flag to configure whether
+     *            {@link ILayerExporter#exportLayerBegin(OutputStream, String)}
+     *            and
+     *            {@link ILayerExporter#exportLayerEnd(OutputStream, String)}
+     *            should be called or not. Should be set to <code>true</code> if
+     *            multiple NatTable instances should be exported on the same
+     *            sheet.
+     *
+     * @since 2.3
+     */
+    protected void exportLayer(
+            final ILayerExporter exporter,
+            final OutputStream outputStream,
+            final IProgressMonitor monitor,
+            final String layerName,
+            final ILayer layer,
+            final IConfigRegistry configRegistry,
+            final boolean initExportLayer) {
 
-                if (initExportLayer) {
-                    exporter.exportLayerBegin(outputStream, layerName);
-                }
+        exportLayer(
+                new ITableExporter() {
+                    @Override
+                    public void exportTable(
+                            Shell shell,
+                            ProgressBar progressBar,
+                            OutputStream outputStream,
+                            ILayer layer,
+                            IConfigRegistry configRegistry) throws IOException {
 
-                int layerHeight = layer.getHeight();
-
-                for (int rowPosition = 0; rowPosition < layer.getRowCount(); rowPosition++) {
-                    if (layer.getRowHeightByPosition(rowPosition) > 0
-                            && layer.getStartYOfRowPosition(rowPosition) < layerHeight) {
-                        exporter.exportRowBegin(outputStream, rowPosition);
-                        if (progressBar != null) {
-                            progressBar.setSelection(rowPosition);
+                        if (initExportLayer) {
+                            exporter.exportLayerBegin(outputStream, layerName);
                         }
 
-                        for (int columnPosition = 0; columnPosition < layer.getColumnCount(); columnPosition++) {
-                            ILayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);
-                            if (cell != null) {
-                                IExportFormatter exportFormatter = configRegistry.getConfigAttribute(
-                                        ExportConfigAttributes.EXPORT_FORMATTER,
-                                        cell.getDisplayMode(),
-                                        cell.getConfigLabels());
-                                Object exportDisplayValue = exportFormatter.formatForExport(cell, configRegistry);
+                        int layerHeight = layer.getHeight();
 
-                                exporter.exportCell(outputStream, exportDisplayValue, cell, configRegistry);
+                        for (int rowPosition = 0; rowPosition < layer.getRowCount(); rowPosition++) {
+
+                            if (layer.getRowHeightByPosition(rowPosition) > 0
+                                    && layer.getStartYOfRowPosition(rowPosition) < layerHeight) {
+
+                                exporter.exportRowBegin(outputStream, rowPosition);
+
+                                if (progressBar != null) {
+                                    progressBar.setSelection(rowPosition);
+                                }
+
+                                for (int columnPosition = 0; columnPosition < layer.getColumnCount(); columnPosition++) {
+
+                                    ILayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);
+                                    if (cell != null) {
+                                        IExportFormatter exportFormatter = configRegistry.getConfigAttribute(
+                                                ExportConfigAttributes.EXPORT_FORMATTER,
+                                                cell.getDisplayMode(),
+                                                cell.getConfigLabels());
+                                        Object exportDisplayValue = exportFormatter.formatForExport(cell, configRegistry);
+
+                                        exporter.exportCell(outputStream, exportDisplayValue, cell, configRegistry);
+
+                                        if (monitor != null && monitor.isCanceled()) {
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                exporter.exportRowEnd(outputStream, rowPosition);
+
+                                if (monitor != null) {
+                                    monitor.worked(1);
+
+                                    if (monitor.isCanceled()) {
+                                        break;
+                                    }
+                                }
                             }
                         }
 
-                        exporter.exportRowEnd(outputStream, rowPosition);
+                        if (initExportLayer) {
+                            exporter.exportLayerEnd(outputStream, layerName);
+                        }
                     }
-                }
 
-                if (initExportLayer) {
-                    exporter.exportLayerEnd(outputStream, layerName);
-                }
-            }
+                    @Override
+                    public OutputStream getOutputStream(Shell shell) {
+                        return exporter.getOutputStream(shell);
+                    }
 
-            @Override
-            public OutputStream getOutputStream(Shell shell) {
-                return exporter.getOutputStream(shell);
-            }
-
-            @Override
-            public Object getResult() {
-                return exporter.getResult();
-            }
-        }, outputStream, layer, configRegistry);
+                    @Override
+                    public Object getResult() {
+                        return exporter.getResult();
+                    }
+                },
+                outputStream,
+                monitor,
+                layer,
+                configRegistry);
     }
 
     /**
@@ -540,14 +731,135 @@ public class NatExporter {
             final ILayer layer,
             final IConfigRegistry configRegistry) {
 
+        exportLayer(
+                exporter,
+                outputStream,
+                null,
+                layer,
+                configRegistry);
+    }
+
+    /**
+     * Exports the given {@link ILayer} to the given {@link OutputStream} using
+     * the provided {@link ITableExporter}.
+     *
+     * @param exporter
+     *            The {@link ITableExporter} that should be used for exporting.
+     * @param outputStream
+     *            The {@link OutputStream} that should be used to write the
+     *            export to.
+     * @param monitor
+     *            The {@link IProgressMonitor} used to report the export process
+     *            to the user. Can be <code>null</code>.
+     * @param layer
+     *            The {@link ILayer} that should be exported.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to retrieve the export
+     *            configurations.
+     *
+     * @since 2.3
+     */
+    protected void exportLayer(
+            final ITableExporter exporter,
+            final OutputStream outputStream,
+            final IProgressMonitor monitor,
+            final ILayer layer,
+            final IConfigRegistry configRegistry) {
+
+        IClientAreaProvider originalClientAreaProvider = layer.getClientAreaProvider();
+
+        ProgressBar progressBar = null;
+        try {
+            if (this.shell != null && monitor == null) {
+                Shell childShell = new Shell(this.shell.getDisplay(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+                childShell.setText(Messages.getString("NatExporter.exporting")); //$NON-NLS-1$
+
+                int endRow = layer.getRowCount() - 1;
+
+                progressBar = new ProgressBar(childShell, SWT.SMOOTH);
+                progressBar.setMinimum(0);
+                progressBar.setMaximum(endRow);
+                progressBar.setBounds(0, 0, 400, 25);
+                progressBar.setFocus();
+
+                childShell.pack();
+                childShell.open();
+            }
+
+            if (monitor != null) {
+                monitor.beginTask(" ", layer.getRowCount() + 1); //$NON-NLS-1$
+                monitor.subTask(getPrepareSubTaskName());
+            }
+
+            if (this.shell != null) {
+                this.shell.getDisplay().syncExec(() -> {
+                    prepareExportProcess(layer, configRegistry);
+                });
+            } else {
+                prepareExportProcess(layer, configRegistry);
+            }
+
+            if (monitor != null) {
+                monitor.worked(1);
+
+                if (monitor.isCanceled()) {
+                    return;
+                }
+            }
+
+            try {
+                if (monitor != null) {
+                    monitor.subTask(getExportSubTaskName());
+                }
+                exporter.exportTable(this.shell, progressBar, outputStream, layer, configRegistry);
+                if (monitor != null) {
+                    monitor.worked(1);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                if (monitor != null) {
+                    monitor.done();
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (this.shell != null) {
+                this.shell.getDisplay().syncExec(() -> {
+                    finalizeExportProcess(layer, originalClientAreaProvider);
+                });
+            } else {
+                finalizeExportProcess(layer, originalClientAreaProvider);
+            }
+
+            if (progressBar != null) {
+                Shell childShell = progressBar.getShell();
+                progressBar.dispose();
+                childShell.dispose();
+            }
+        }
+    }
+
+    /**
+     * Prepare the table for the export process. This involves disabling the
+     * viewport for example.
+     *
+     * @param layer
+     *            The {@link ILayer} that should be exported.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to retrieve the export
+     *            configurations.
+     * @since 2.3
+     */
+    protected void prepareExportProcess(ILayer layer, IConfigRegistry configRegistry) {
+
         if (this.preRender) {
             AutoResizeHelper.autoResize(layer, configRegistry);
         }
 
-        IClientAreaProvider originalClientAreaProvider = layer.getClientAreaProvider();
-
-        // This needs to be done so that the layer can return all the cells
-        // not just the ones visible in the viewport
+        // This needs to be done so that the layer can return all the cells not
+        // just the ones visible in the viewport
         layer.doCommand(new TurnViewportOffCommand());
         setClientAreaToMaximum(layer);
 
@@ -559,42 +871,50 @@ public class NatExporter {
         // formula evaluation is disabled so the formula itself is exported
         // instead of the calculated value
         layer.doCommand(new DisableFormulaEvaluationCommand());
+    }
 
-        ProgressBar progressBar = null;
+    /**
+     * Reset the table state. This means to set back the state that was changed
+     * in {@link #prepareExportProcess(ILayer, IConfigRegistry)}, e.g. enable
+     * the viewport for example.
+     *
+     * @param layer
+     *            The {@link ILayer} that should be exported.
+     * @param originalClientAreaProvider
+     *            The original {@link IClientAreaProvider}, which was replaced
+     *            via {@link #setClientAreaToMaximum(ILayer)}.
+     * @since 2.3
+     */
+    protected void finalizeExportProcess(ILayer layer, IClientAreaProvider originalClientAreaProvider) {
+        // These must be fired at the end of the thread execution
+        layer.setClientAreaProvider(originalClientAreaProvider);
+        layer.doCommand(new TurnViewportOnCommand());
 
-        if (this.shell != null) {
-            Shell childShell = new Shell(this.shell.getDisplay(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-            childShell.setText(Messages.getString("NatExporter.exporting")); //$NON-NLS-1$
+        layer.doCommand(new EnableFormulaEvaluationCommand());
+    }
 
-            int endRow = layer.getRowCount() - 1;
+    /**
+     *
+     * @return The name that should be shown for the "prepare" subtask in the
+     *         {@link ProgressMonitorDialog}.
+     * @see NatExporter#useProgressDialog
+     *
+     * @since 2.3
+     */
+    protected String getPrepareSubTaskName() {
+        return Messages.getString("NatExporter.subtask.prepare"); //$NON-NLS-1$
+    }
 
-            progressBar = new ProgressBar(childShell, SWT.SMOOTH);
-            progressBar.setMinimum(0);
-            progressBar.setMaximum(endRow);
-            progressBar.setBounds(0, 0, 400, 25);
-            progressBar.setFocus();
-
-            childShell.pack();
-            childShell.open();
-        }
-
-        try {
-            exporter.exportTable(this.shell, progressBar, outputStream, layer, configRegistry);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            // These must be fired at the end of the thread execution
-            layer.setClientAreaProvider(originalClientAreaProvider);
-            layer.doCommand(new TurnViewportOnCommand());
-
-            layer.doCommand(new EnableFormulaEvaluationCommand());
-
-            if (progressBar != null) {
-                Shell childShell = progressBar.getShell();
-                progressBar.dispose();
-                childShell.dispose();
-            }
-        }
+    /**
+     *
+     * @return The name that should be shown for the "export data" subtask in
+     *         the {@link ProgressMonitorDialog}.
+     * @see NatExporter#useProgressDialog
+     *
+     * @since 2.3
+     */
+    protected String getExportSubTaskName() {
+        return Messages.getString("NatExporter.subtask.export"); //$NON-NLS-1$
     }
 
     /**
@@ -707,5 +1027,29 @@ public class NatExporter {
      */
     public void disablePreRendering() {
         this.preRender = false;
+    }
+
+    /**
+     * @return <code>true</code> if the progress is reported via
+     *         {@link ProgressMonitorDialog}, <code>false</code> if a custom
+     *         shell with a {@link ProgressBar} will be shown.
+     * @since 2.3
+     */
+    public boolean isUseProgressDialog() {
+        return this.useProgressDialog;
+    }
+
+    /**
+     * Configure how the export progress should be visualized. Will only have an
+     * effect if the {@link NatExporter} was created with a {@link Shell}.
+     *
+     * @param useProgressDialog
+     *            <code>true</code> if the progress should be reported via
+     *            {@link ProgressMonitorDialog}, <code>false</code> if a custom
+     *            shell with a {@link ProgressBar} should be shown.
+     * @since 2.3
+     */
+    public void setUseProgressDialog(boolean useProgressDialog) {
+        this.useProgressDialog = useProgressDialog;
     }
 }

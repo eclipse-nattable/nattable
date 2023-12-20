@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -39,8 +39,7 @@ public class FileOutputStreamProvider implements IOutputStreamProvider {
      */
     protected int extFilterIndex = -1;
 
-    public FileOutputStreamProvider(
-            String defaultFileName, String[] defaultFilterNames, String[] defaultFilterExtensions) {
+    public FileOutputStreamProvider(String defaultFileName, String[] defaultFilterNames, String[] defaultFilterExtensions) {
         this.defaultFileName = defaultFileName;
         this.defaultFilterNames = defaultFilterNames;
         this.defaultFilterExtensions = defaultFilterExtensions;
@@ -53,38 +52,47 @@ public class FileOutputStreamProvider implements IOutputStreamProvider {
      */
     @Override
     public OutputStream getOutputStream(Shell shell) {
-        FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-
-        String filterPath;
-        String relativeFileName;
-
-        int lastIndexOfFileSeparator = this.defaultFileName.lastIndexOf(File.separator);
-        if (lastIndexOfFileSeparator >= 0) {
-            filterPath = this.defaultFileName.substring(0, lastIndexOfFileSeparator);
-            relativeFileName = this.defaultFileName.substring(lastIndexOfFileSeparator + 1);
-        } else {
-            filterPath = "/"; //$NON-NLS-1$
-            relativeFileName = this.defaultFileName;
+        if (shell == null) {
+            throw new IllegalArgumentException("Shell can not be null"); //$NON-NLS-1$
         }
 
-        dialog.setFilterPath(filterPath);
-        dialog.setOverwrite(true);
+        // ensure the FileDialog is opened in the UI thread
+        shell.getDisplay().syncExec(() -> {
 
-        dialog.setFileName(relativeFileName);
-        dialog.setFilterNames(this.defaultFilterNames);
-        dialog.setFilterExtensions(this.defaultFilterExtensions);
-        this.currentFileName = dialog.open();
+            FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 
-        // reset the extension filter index each time the FileDialog is opened
-        // to avoid the case that if the dialog is cancelled, the old value
-        // index could be accidentally reused
-        this.extFilterIndex = -1;
+            String filterPath;
+            String relativeFileName;
+
+            int lastIndexOfFileSeparator = this.defaultFileName.lastIndexOf(File.separator);
+            if (lastIndexOfFileSeparator >= 0) {
+                filterPath = this.defaultFileName.substring(0, lastIndexOfFileSeparator);
+                relativeFileName = this.defaultFileName.substring(lastIndexOfFileSeparator + 1);
+            } else {
+                filterPath = "/"; //$NON-NLS-1$
+                relativeFileName = this.defaultFileName;
+            }
+
+            dialog.setFilterPath(filterPath);
+            dialog.setOverwrite(true);
+
+            dialog.setFileName(relativeFileName);
+            dialog.setFilterNames(this.defaultFilterNames);
+            dialog.setFilterExtensions(this.defaultFilterExtensions);
+            this.currentFileName = dialog.open();
+
+            // reset the extension filter index each time the FileDialog is
+            // opened
+            // to avoid the case that if the dialog is cancelled, the old value
+            // index could be accidentally reused
+            this.extFilterIndex = -1;
+
+            this.extFilterIndex = dialog.getFilterIndex();
+        });
 
         if (this.currentFileName == null) {
             return null;
         }
-
-        this.extFilterIndex = dialog.getFilterIndex();
 
         try {
             return new PrintStream(this.currentFileName);
