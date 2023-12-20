@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2023 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -37,8 +37,19 @@ public class ExportCommandHandler extends AbstractLayerCommandHandler<ExportComm
 
     @Override
     public boolean doCommand(final ExportCommand command) {
-        new NatExporter(command.getShell(), command.isExecuteSynchronously())
-                .exportSingleLayer(this.layer, command.getConfigRegistry());
+        if (command.getExporter() == null) {
+            new NatExporter(
+                    command.getShell(),
+                    command.isExecuteSynchronously(),
+                    command.isUseProgressDialog())
+                            .exportSingleLayer(this.layer, command.getConfigRegistry());
+        } else {
+            new NatExporter(
+                    command.getShell(),
+                    command.isExecuteSynchronously(),
+                    command.isUseProgressDialog())
+                            .exportSingleLayer(command.getExporter(), this.layer, command.getConfigRegistry());
+        }
 
         return true;
     }
