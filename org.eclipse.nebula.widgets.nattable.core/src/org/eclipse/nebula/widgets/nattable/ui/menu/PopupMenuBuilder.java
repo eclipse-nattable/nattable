@@ -1089,8 +1089,8 @@ public class PopupMenuBuilder {
      * @param label
      *            The label to be used for the submenu.
      * @return the {@link PopupMenuBuilder} of the submenu.
-     * @see #withSubMenu(String, String, ImageDescriptor)
      * @since 2.3
+     * @see #withSubMenu(String, String, ImageDescriptor)
      */
     public PopupMenuBuilder withSubMenu(String label) {
         return withSubMenu(null, label);
@@ -1105,8 +1105,8 @@ public class PopupMenuBuilder {
      * @param label
      *            The label to be used for the submenu.
      * @return the {@link PopupMenuBuilder} of the submenu.
-     * @see #withSubMenu(String, String, ImageDescriptor)
      * @since 2.3
+     * @see #withSubMenu(String, String, ImageDescriptor)
      */
     public PopupMenuBuilder withSubMenu(String id, String label) {
         return withSubMenu(id, label, null);
@@ -1123,8 +1123,8 @@ public class PopupMenuBuilder {
      * @param image
      *            The image to be used for the submenu.
      * @return the {@link PopupMenuBuilder} of the submenu.
-     * @see MenuManager#MenuManager(String, ImageDescriptor, String)
      * @since 2.3
+     * @see MenuManager#MenuManager(String, ImageDescriptor, String)
      */
     public PopupMenuBuilder withSubMenu(String id, String label, ImageDescriptor image) {
         if (this.menuManager == null) {
@@ -1138,11 +1138,43 @@ public class PopupMenuBuilder {
             return new PopupMenuBuilder(this.natTable, this, subMenu);
         } else {
             MenuManager subMenu = new MenuManager(label, image, id) {
+
+                @Override
+                public void fill(Menu menu, int index) {
+                    if (menu.isEnabled()) {
+                        List<MenuItem> beforeItems = Arrays.asList(menu.getItems());
+                        super.fill(menu, index);
+                        MenuItem[] afterItems = menu.getItems();
+
+                        for (MenuItem item : afterItems) {
+                            if (!beforeItems.contains(item)) {
+                                // isEnabled() seems to be not called by the
+                                // framework on opening a menu therefore we set
+                                // it ourself. For this we also need to ensure
+                                // isDynamic() returns true for re-rendering.
+                                item.setEnabled(isEnabled());
+                            }
+                        }
+
+                        getMenu().setEnabled(isEnabled());
+                    }
+                }
+
                 @Override
                 public boolean isDynamic() {
                     // by default this is false, which leads to inconsistencies
                     // for submenus
                     return hasDynamicItems();
+                }
+
+                @Override
+                public boolean isEnabled() {
+                    return PopupMenuBuilder.this.isEnabled(getId());
+                }
+
+                @Override
+                public boolean isVisible() {
+                    return PopupMenuBuilder.this.isVisible(getId());
                 }
             };
             this.menuManager.add(subMenu);
@@ -1300,6 +1332,82 @@ public class PopupMenuBuilder {
     }
 
     /**
+     *
+     * @param contributionItemId
+     *            The id of the menu item to check.
+     * @return <code>true</code> if the menu item is enabled, <code>false</code>
+     *         if not.
+     * @since 2.3
+     * @see #withEnabledState(String, IMenuItemState)
+     */
+    protected boolean isEnabled(String contributionItemId) {
+        if (contributionItemId != null) {
+            NatEventData eventData = getNatEventData();
+            if (eventData != null) {
+                return this.enablement.isActive(contributionItemId, eventData);
+            }
+        }
+        return true;
+    }
+
+    /**
+     *
+     * @param contributionItemId
+     *            The id of the menu item to check.
+     * @return <code>true</code> if the menu item is visible, <code>false</code>
+     *         if not.
+     * @since 2.3
+     * @see #withVisibleState(String, IMenuItemState)
+     */
+    protected boolean isVisible(String contributionItemId) {
+        if (contributionItemId != null) {
+            NatEventData eventData = getNatEventData();
+            if (eventData != null) {
+                return this.visibility.isActive(contributionItemId, eventData);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Return the {@link NatEventData} that is set to the {@link Menu} created
+     * by this {@link PopupMenuBuilder}. For a sub menu the {@link NatEventData}
+     * of the root parent menu is returned.
+     *
+     * @return The {@link NatEventData} set to the created {@link Menu}.
+     * @since 2.3
+     */
+    protected NatEventData getNatEventData() {
+        return getNatEventData(this);
+    }
+
+    /**
+     * Return the {@link NatEventData} that is set to the {@link Menu} created
+     * by this {@link PopupMenuBuilder}. For a sub menu the {@link NatEventData}
+     * of the root parent menu is returned.
+     *
+     * @param builder
+     *            The {@link PopupMenuBuilder} to retrieve the
+     *            {@link NatEventData} from.
+     * @return The {@link NatEventData} set to the created {@link Menu}.
+     */
+    private NatEventData getNatEventData(PopupMenuBuilder builder) {
+        if (builder.parentBuilder != null) {
+            return getNatEventData(builder.parentBuilder);
+        } else {
+            Object natEventData = (builder.popupMenu != null && !builder.popupMenu.isDisposed())
+                    ? builder.popupMenu.getData(MenuItemProviders.NAT_EVENT_DATA_KEY)
+                    : builder.menuManager.getMenu().getData(MenuItemProviders.NAT_EVENT_DATA_KEY);
+
+            if (natEventData != null && natEventData instanceof NatEventData) {
+                return (NatEventData) natEventData;
+            }
+
+            return null;
+        }
+    }
+
+    /**
      * Wrapper class to build up a {@link ContributionItem} based on a given
      * {@link IMenuItemProvider}. If an id is set it is possible to register
      * state checkers for enabled and visible state.
@@ -1328,17 +1436,19 @@ public class PopupMenuBuilder {
 
         @Override
         public void fill(Menu menu, int index) {
-            List<MenuItem> beforeItems = Arrays.asList(menu.getItems());
-            this.provider.addMenuItem(PopupMenuBuilder.this.natTable, menu);
-            MenuItem[] afterItems = menu.getItems();
+            if (menu.isEnabled()) {
+                List<MenuItem> beforeItems = Arrays.asList(menu.getItems());
+                this.provider.addMenuItem(PopupMenuBuilder.this.natTable, menu);
+                MenuItem[] afterItems = menu.getItems();
 
-            for (MenuItem item : afterItems) {
-                if (!beforeItems.contains(item)) {
-                    // isEnabled() seems to be not called by the framework on
-                    // opening a menu therefore we set it ourself. For this we
-                    // also need to ensure isDynamic() returns true for
-                    // re-rendering.
-                    item.setEnabled(isEnabled());
+                for (MenuItem item : afterItems) {
+                    if (!beforeItems.contains(item)) {
+                        // isEnabled() seems to be not called by the framework
+                        // on opening a menu therefore we set it ourself. For
+                        // this we also need to ensure isDynamic() returns true
+                        // for re-rendering.
+                        item.setEnabled(isEnabled());
+                    }
                 }
             }
         }
@@ -1350,34 +1460,12 @@ public class PopupMenuBuilder {
 
         @Override
         public boolean isEnabled() {
-            if (getId() != null) {
-                Object eventData = getEventData(PopupMenuBuilder.this);
-                if (eventData instanceof NatEventData) {
-                    return PopupMenuBuilder.this.enablement.isActive(getId(), (NatEventData) eventData);
-                }
-            }
-            return true;
+            return PopupMenuBuilder.this.isEnabled(getId());
         }
 
         @Override
         public boolean isVisible() {
-            if (getId() != null) {
-                Object eventData = getEventData(PopupMenuBuilder.this);
-                if (eventData instanceof NatEventData) {
-                    return PopupMenuBuilder.this.visibility.isActive(getId(), (NatEventData) eventData);
-                }
-            }
-            return true;
-        }
-
-        private Object getEventData(PopupMenuBuilder builder) {
-            if (builder.parentBuilder != null) {
-                return getEventData(builder.parentBuilder);
-            } else {
-                return (builder.popupMenu != null && !builder.popupMenu.isDisposed())
-                        ? builder.popupMenu.getData(MenuItemProviders.NAT_EVENT_DATA_KEY)
-                        : builder.menuManager.getMenu().getData(MenuItemProviders.NAT_EVENT_DATA_KEY);
-            }
+            return PopupMenuBuilder.this.isVisible(getId());
         }
 
         @Override
