@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023 Original authors and others.
+ * Copyright (c) 2023, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -50,7 +50,6 @@ public class MarkupProcessorTest {
     @Test
     public void shouldMatch() {
     	// matching
-    	converter = new MarkupDisplayConverter();
     	converter.registerMarkup("blubb", "<b>", "</b>");
     	
     	runTest(converter, "abcblubbdef", "abc<b>blubb</b>def");
@@ -80,7 +79,6 @@ public class MarkupProcessorTest {
     @Test
     public void shouldMatchRegex() {
     	// matching
-    	converter = new MarkupDisplayConverter();
     	converter.registerRegexMarkup("^(.*)$", "<b>", "</b>");
     	
     	runTest(converter, "abcdef", "<b>abcdef</b>");
@@ -91,7 +89,6 @@ public class MarkupProcessorTest {
     @Test
     public void shouldMatchRegexSpecialCharacter() {
     	// matching
-    	converter = new MarkupDisplayConverter();
     	converter.registerRegexMarkup("(&!0)", "<b>", "</b>");
     	
     	runTest(converter, "&!08", "<b>&amp;!0</b>8");
@@ -100,7 +97,6 @@ public class MarkupProcessorTest {
     @Test
     public void shouldNotMatchWithTwoMarkup() {
     	// two markup non matching
-    	converter = new MarkupDisplayConverter();
     	converter.registerRegexMarkup("(ZZ)", "<b>", "</b>");
     	converter.registerRegexMarkup("(span)", "<span>", "</<span>");
     	
@@ -112,7 +108,6 @@ public class MarkupProcessorTest {
     @Test
     public void shouldMatchFirstWithTwoMarkup() {
     	// two markup first matching
-    	converter = new MarkupDisplayConverter();
     	converter.registerRegexMarkup("^(.*)$", "<b>", "</b>");
     	converter.registerRegexMarkup("(span)", "<span>", "</<span>");
     	
@@ -124,7 +119,6 @@ public class MarkupProcessorTest {
     @Test
     public void shouldMatchSecondWithTwoMarkup() {
     	// two markup second matching
-    	converter = new MarkupDisplayConverter();
     	converter.registerRegexMarkup("(ZZ)", "<b>", "</b>");
     	converter.registerRegexMarkup("^(.*)$", "<span>", "</span>");
     	
@@ -136,7 +130,6 @@ public class MarkupProcessorTest {
     @Test
     public void shouldMatchBothWithTwoMarkup() {
     	// two markup both matching
-    	converter = new MarkupDisplayConverter();
     	// order is important as the content is wrapped with the markup,
     	// so the outer tag needs to be registered first
     	converter.registerMarkup("1", new RegexMarkupValue("^(.*)$", "<span>", "</span>"));
@@ -150,7 +143,6 @@ public class MarkupProcessorTest {
     @Test
     public void shouldMatchWithTwoMarkup() {
     	// two markup regex matching
-    	converter = new MarkupDisplayConverter();
     	converter.registerRegexMarkup("(" + Pattern.quote("|") + ")", "<b>", "</b>");
     	converter.registerRegexMarkup("(" + Pattern.quote("<") + ")", "<span>", "</span>");
     	
@@ -162,7 +154,6 @@ public class MarkupProcessorTest {
     @Test
     public void shouldMatchHtmlFullTextWithTwoMarkup() {
     	// markup html full text matching
-    	converter = new MarkupDisplayConverter();
     	converter.registerRegexMarkup("(" + Pattern.quote("<") + ")", "<span>", "</span>");
     	runTest(converter, "x<02", "x<span><</span>02", "x<span>&lt;</span>02");
     	
@@ -178,7 +169,6 @@ public class MarkupProcessorTest {
     @Test
     public void shouldSecondMatchesFirst() {
     	// second matches first success
-    	converter = new MarkupDisplayConverter();
     	converter.registerRegexMarkup("^(.*)$", "<span>", "</span>");
     	converter.registerRegexMarkup("(-)", "<b>", "</b>");
     	runTest(converter, "x-02", "<span>x<b>-</b>02</span>", "<span>x<b>-</b>02</span>");
@@ -188,7 +178,6 @@ public class MarkupProcessorTest {
     public void shouldFirstMatchesSecond() {
     	// second matches first fail
     	// because the elements between the tags are parsed separately
-    	converter = new MarkupDisplayConverter();
     	converter.registerRegexMarkup("(-)", "<b>", "</b>");
     	converter.registerRegexMarkup("^(.*)$", "<span>", "</span>");
     	runTest(converter, "x-02", "<span>x</span><b><span>-</span></b><span>02</span>", "<span>x</span><b><span>-</span></b><span>02</span>");
@@ -246,7 +235,6 @@ public class MarkupProcessorTest {
     @Test
     public void shouldMatchRegexForMultiLabel() {
     	// matching
-    	converter = new MarkupDisplayConverter();
     	converter.registerRegexMarkupForLabel("^(.*)$", "<b>", "</b>", "BOLD", "ITALIC");
     	
     	runTest(converter, "abcdef", "<b>abcdef</b>", Arrays.asList("BOLD", "ITALIC"));
@@ -257,7 +245,6 @@ public class MarkupProcessorTest {
     @Test
     public void shouldMatchRegexForDifferentMultiLabel() {
     	// matching
-    	converter = new MarkupDisplayConverter();
     	converter.registerRegexMarkupForLabel("^(.*)$", "<strong>", "</strong>", "BOLD");
     	converter.registerRegexMarkupForLabel("^(.*)$", "<em>", "</em>", "ITALIC");
     	converter.registerRegexMarkupForLabel("^(.*)$", "<u>", "</u>", "BOLD", "ITALIC");
@@ -273,7 +260,6 @@ public class MarkupProcessorTest {
     @Test
     public void shouldMatchRegexGeneralAndLabel() {
     	// matching
-    	converter = new MarkupDisplayConverter();
     	converter.registerRegexMarkup("^(.*)$", "<strong>", "</strong>");
     	converter.registerRegexMarkupForLabel("^(.*)$", "<u>", "</u>", "IMPORTANT");
     	
@@ -286,6 +272,35 @@ public class MarkupProcessorTest {
     	runTest(converter, "abcdef");
     	runTest(converter, "abcdef", Arrays.asList("ITALIC"));
     	runTest(converter, "abcdef", Arrays.asList("IMPORTANT"));
+    }
+
+    @Test
+    public void shouldMatchStringCaseSensitive() {
+    	RegexMarkupValue markup = new RegexMarkupValue("u", "<b>", "</b>");
+    	markup.setCaseInsensitive(false);
+    	converter.registerMarkup("u", markup);
+    	
+    	runTest(converter, "Unum&", "Un<b>u</b>m&", "Un<b>u</b>m&amp;");
+    }
+    
+    @Test
+    public void shouldMatchStringWithHtmlEntities() {
+    	converter.registerRegexMarkup("u", "<b>", "</b>");
+    	
+    	runTest(converter, "Onum&", "On<b>u</b>m&", "On<b>u</b>m&amp;");
+    	
+    	converter.unregisterMarkup("u");
+    	runTest(converter, "Onum&");
+    	
+    	converter.registerRegexMarkup("m", "<b>", "</b>");
+    	runTest(converter, "Onum&", "Onu<b>m</b>&", "Onu<b>m</b>&amp;");
+    	runTest(converter, "Onum&Onum", "Onu<b>m</b>&Onu<b>m</b>", "Onu<b>m</b>&amp;Onu<b>m</b>");
+    }
+    
+    @Test
+    public void shouldMatchStringWithMultipleHtmlEntities() {
+    	converter.registerRegexMarkup("m", "<b>", "</b>");
+    	runTest(converter, "Onüm&Onüm", "Onü<b>m</b>&Onü<b>m</b>", "On&uuml;<b>m</b>&amp;On&uuml;<b>m</b>");
     }
 
     private void runTest(MarkupDisplayConverter converter, String toTest) {
