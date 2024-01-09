@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2016, 2023 Dirk Fauth.
+ * Copyright (c) 2016, 2024 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,9 +22,14 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Characters;
+import javax.xml.stream.events.EntityReference;
 import javax.xml.stream.events.XMLEvent;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.eclipse.collections.api.factory.Lists;
+import org.eclipse.collections.api.list.MutableList;
+import org.eclipse.collections.api.tuple.primitive.IntIntPair;
+import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.eclipse.nebula.widgets.richtext.RichTextPainter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +47,7 @@ public class RegexMarkupValue implements MarkupProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(RegexMarkupValue.class);
 
     private static final String GROUP_INDEX_PLACEHOLDER = "$1";
+    private static final Pattern HTML_ENTITY_PATTERN = Pattern.compile("\\&([^\\&])*;");
 
     private String originalRegexValue;
     private String markupPrefix;
@@ -51,6 +57,10 @@ public class RegexMarkupValue implements MarkupProcessor {
     private String markupRegexValue;
 
     private XMLInputFactory factory = XMLInputFactory.newInstance();
+    {
+        // disable replacement of entity references to report them as characters
+        this.factory.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, false);
+    }
 
     private boolean caseInsensitive = true;
     private boolean unicodeCase = false;
@@ -66,7 +76,6 @@ public class RegexMarkupValue implements MarkupProcessor {
      *            The String that should be added as suffix.
      */
     public RegexMarkupValue(String value, String markupPrefix, String markupSuffix) {
-        // this.originalRegexValue = value;
         this.originalRegexValue = StringEscapeUtils.escapeHtml4(String.valueOf(value));
 
         this.markupPrefix = markupPrefix;
@@ -109,11 +118,35 @@ public class RegexMarkupValue implements MarkupProcessor {
                             if (textToParse.length() > 0) {
                                 textToParse = StringEscapeUtils.escapeHtml4(String.valueOf(textToParse));
                                 Matcher matcher = pattern.matcher(textToParse);
-                                if (matcher.groupCount() > 0) {
-                                    result += matcher.replaceAll(this.markupValue);
-                                } else {
-                                    result += matcher.replaceAll(this.markupRegexValue);
+
+                                Matcher htmlMatcher = HTML_ENTITY_PATTERN.matcher(textToParse);
+                                MutableList<IntIntPair> entityIndexes = Lists.mutable.empty();
+                                while (htmlMatcher.find()) {
+                                    entityIndexes.add(PrimitiveTuples.pair(htmlMatcher.start(), htmlMatcher.end()));
                                 }
+
+                                int rStart = 0;
+                                int rEnd = textToParse.length();
+                                while (matcher.find()) {
+                                    // first add the text before the match
+                                    result += textToParse.substring(rStart, matcher.start());
+
+                                    if (entityIndexes.anySatisfy(pair -> matcher.start() > pair.getOne() && matcher.end() < pair.getTwo())) {
+                                        result += matcher.group();
+                                    } else {
+                                        // then add the replacement
+                                        if (matcher.groupCount() > 0) {
+                                            String group = matcher.group();
+                                            Matcher tmpMatcher = pattern.matcher(group);
+                                            result += tmpMatcher.replaceAll(this.markupValue);
+                                        } else {
+                                            result += this.markupRegexValue;
+                                        }
+                                    }
+                                    rStart = matcher.end();
+                                }
+                                result += textToParse.substring(rStart, rEnd);
+
                                 // clear the text to parse for a possible second
                                 // character sequence
                                 textToParse = "";
@@ -124,6 +157,15 @@ public class RegexMarkupValue implements MarkupProcessor {
                         case XMLStreamConstants.CHARACTERS:
                             Characters characters = event.asCharacters();
                             textToParse += characters.getData();
+                            break;
+                        case XMLStreamConstants.ENTITY_REFERENCE:
+                            // We disabled the replacement of entities for the
+                            // XMLEventReader as it is handled by the encoding
+                            // of StringEscapeUtils. This way we avoid issues
+                            // for entities that are not known to the
+                            // XMLEventReader.
+                            EntityReference e = (EntityReference) event;
+                            textToParse += StringEscapeUtils.unescapeHtml4("&" + e.getName() + ";");
                             break;
                         default:
                             result += event.toString();
