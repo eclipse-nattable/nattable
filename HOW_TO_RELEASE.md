@@ -4,6 +4,8 @@ This document describes the process on how to release Nebula NatTable.
 
 ## Preparation
 
+ * In case of a major or minor release, ensure that the DEPENDENCIES information is up to date.  
+ Update it via the [Eclipse Dash License Tool](https://github.com/eclipse/dash-licenses) `mvn org.eclipse.dash:license-tool-plugin:license-check -Ddash.summary=DEPENDENCIES -Dtycho.target.eager=true`
  * Ensure that everything is checked in to the master branch
  * Create and push a release branch for the version that should be released (e.g. releases/2.0.2)
  * Create a release in the project management: https://projects.eclipse.org/node/1463/create-release
@@ -36,6 +38,9 @@ This document describes the process on how to release Nebula NatTable.
 ## Release to GitHub
 
  * Create a release on GitHub and upload the release artifacts from the Eclipse build 
+ 
+## Finalization
+
  * Update the version in the master branch via `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=NEW_VERSION_NUMBER.qualifier`
 
 ## Update the website

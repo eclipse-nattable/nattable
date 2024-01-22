@@ -1,48 +1,51 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    
-    <parent>
-        <groupId>org.eclipse.nebula.widgets.nattable</groupId>
-        <artifactId>parent</artifactId>
-        <version>2.3.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-    
-    <modelVersion>4.0.0</modelVersion>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <groupId>org.eclipse.nebula.widgets.nattable</groupId>
-    <artifactId>org.eclipse.nebula.widgets.nattable.extension.nebula</artifactId>
-    <version>2.3.0-SNAPSHOT</version>
-    <packaging>eclipse-plugin</packaging>
+	<parent>
+		<groupId>org.eclipse.nebula.widgets.nattable</groupId>
+		<artifactId>parent</artifactId>
+		<version>2.3.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.eclipse.nebula.widgets.nattable</groupId>
+	<artifactId>org.eclipse.nebula.widgets.nattable.extension.nebula</artifactId>
+	<version>2.3.0-SNAPSHOT</version>
+	<packaging>eclipse-plugin</packaging>
 
 	<name>Nebula NatTable Nebula Extension</name>
 	<description>Nebula NatTable Nebula Extension</description>
 	<url>https://projects.eclipse.org/projects/technology.nebula.nattable</url>
-    
-    <licenses>
-        <license>
-            <name>Eclipse Public License - v 2.0</name>
-            <url>https://www.eclipse.org/legal/epl-2.0/</url>
-        </license>
-    </licenses>
+
+	<licenses>
+		<license>
+			<name>Eclipse Public License - v 2.0</name>
+			<url>https://www.eclipse.org/legal/epl-2.0/</url>
+		</license>
+	</licenses>
 
 	<developers>
-    	<developer>
+		<developer>
 			<name>Dirk Fauth</name>
 			<email>dirk.fauth@googlemail.com</email>
 		</developer>
 	</developers>
-  
-    <scm>
-        <connection>scm:git:git://github.com/eclipse-nebula-nattable/nattable.git</connection>
-        <developerConnection>scm:git:https://github.com/eclipse-nebula-nattable/nattable.git</developerConnection>
-        <url>https://github.com/eclipse-nebula-nattable/nattable.git</url>
-    </scm>
-	
-    <dependencies>
-    	<!--
-    	Unfortunately the Eclipse Nebula dependencies are not available via Maven repositories.
+
+	<scm>
+		<connection>
+			scm:git:git://github.com/eclipse-nebula-nattable/nattable.git</connection>
+		<developerConnection>
+			scm:git:https://github.com/eclipse-nebula-nattable/nattable.git</developerConnection>
+		<url>https://github.com/eclipse-nebula-nattable/nattable.git</url>
+	</scm>
+
+	<dependencies>
+		<!--
+    	Unfortunately the Eclipse Nebula dependencies are not available via Maven
+		repositories.
     	Dependencies would be 
     	
     	org.eclipse.nebula.cwt:1.1.0
@@ -50,20 +53,25 @@
     	org.eclipse.nebula.widgets.richtext:1.5.1
     	
     	-->
-    	<dependency>
-		    <groupId>org.eclipse.platform</groupId>
-		    <artifactId>org.eclipse.swt</artifactId>
-		    <version>3.112.0</version>
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.swt</artifactId>
+			<version>3.112.0</version>
 		</dependency>
-    	<dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-api</artifactId>
-		    <version>1.7.30</version>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.30</version>
 		</dependency>
-    	<dependency>
-		    <groupId>org.eclipse.nebula.widgets.nattable</groupId>
-		    <artifactId>org.eclipse.nebula.widgets.nattable.core</artifactId>
-		    <version>2.3.0-SNAPSHOT</version>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.1</version>
 		</dependency>
-    </dependencies>
+		<dependency>
+			<groupId>org.eclipse.nebula.widgets.nattable</groupId>
+			<artifactId>org.eclipse.nebula.widgets.nattable.core</artifactId>
+			<version>2.3.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
 </project>
