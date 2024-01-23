@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -94,7 +94,18 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
                     executeClickAction(this.singleClickAction, event);
                 }
             }
-        } else if (this.doubleClickAction == null) {
+        } else if (this.doubleClickAction != null) {
+            // If a doubleClick action is registered but no singleClick action,
+            // wait to see if this mouseUp is part of a doubleClick or
+            // not and switch mode back in case if not.
+            this.delayedSingleClickRunnable = () -> {
+                MouseModeEventHandler.this.delayedSingleClickRunnable = null;
+                if (!MouseModeEventHandler.this.doubleClick) {
+                    switchMode(Mode.NORMAL_MODE);
+                }
+            };
+            event.display.timerExec(event.display.getDoubleClickTime(), this.delayedSingleClickRunnable);
+        } else {
             // No single or double click action registered when mouseUp
             // detected. Switch back to normal mode.
             switchMode(Mode.NORMAL_MODE);
