@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2023 Dirk Fauth and others.
+ * Copyright (c) 2013, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -596,26 +596,71 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
             IConfigRegistry configRegistry,
             boolean useDefaultConfiguration) {
 
-        super(1, 2);
+        this(
+                filterStrategy,
+                comboBoxDataProvider,
+                columnHeaderLayer,
+                new FilterRowDataLayer<>(
+                        filterStrategy,
+                        columnHeaderLayer,
+                        columnHeaderDataProvider,
+                        configRegistry),
+                configRegistry,
+                useDefaultConfiguration);
+    }
 
-        setChildLayer("columnHeader", columnHeaderLayer, 0, 0); //$NON-NLS-1$
+    /**
+     * Creates a new ComboBoxFilterRowHeaderComposite based on the given
+     * informations. Will use the given ComboBoxGlazedListsFilterStrategy
+     * instead of creating a new one.
+     *
+     * @param filterStrategy
+     *            The ComboBoxGlazedListsFilterStrategy that should be used for
+     *            filtering.
+     * @param comboBoxDataProvider
+     *            The FilterRowComboBoxDataProvider that should be used to fill
+     *            the filter comboboxes.
+     * @param columnHeaderLayer
+     *            The columnheader layer the filter row layer is related to.
+     *            Needed for building this CompositeLayer, dimensionally connect
+     *            the filter row to and retrieve information and perform actions
+     *            related to filtering.
+     * @param filterRowDataLayer
+     *            The {@link FilterRowDataLayer} which is used for backing the
+     *            filter data and is rendered in the second row of this
+     *            {@link CompositeLayer}.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to retrieve various
+     *            configurations.
+     * @param useDefaultConfiguration
+     *            Tell whether the default configuration should be used or not.
+     *            If not you need to ensure to add a configuration that adds at
+     *            least the needed configuration specified in
+     *            ComboBoxFilterRowConfiguration
+     * @since 2.3
+     */
+    public ComboBoxFilterRowHeaderComposite(
+            ComboBoxGlazedListsFilterStrategy<T> filterStrategy,
+            FilterRowComboBoxDataProvider<T> comboBoxDataProvider,
+            ILayer columnHeaderLayer,
+            FilterRowDataLayer<T> filterRowDataLayer,
+            IConfigRegistry configRegistry,
+            boolean useDefaultConfiguration) {
+
+        super(1, 2);
 
         this.filterStrategy = filterStrategy;
 
         this.comboBoxDataProvider = comboBoxDataProvider;
         this.comboBoxDataProvider.addCacheUpdateListener(this);
 
-        this.filterRowDataLayer =
-                new FilterRowDataLayer<>(
-                        this.filterStrategy,
-                        columnHeaderLayer,
-                        columnHeaderDataProvider,
-                        configRegistry);
+        this.filterRowDataLayer = filterRowDataLayer;
 
         this.configRegistry = configRegistry;
 
         setAllValuesSelected();
 
+        setChildLayer("columnHeader", columnHeaderLayer, 0, 0); //$NON-NLS-1$
         setChildLayer(GridRegion.FILTER_ROW, this.filterRowDataLayer, 0, 1);
 
         if (useDefaultConfiguration) {
