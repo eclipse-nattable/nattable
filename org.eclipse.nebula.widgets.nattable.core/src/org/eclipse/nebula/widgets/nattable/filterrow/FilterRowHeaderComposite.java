@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ package org.eclipse.nebula.widgets.nattable.filterrow;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ToggleFilterRowCommand;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
@@ -39,23 +40,68 @@ public class FilterRowHeaderComposite<T> extends CompositeLayer {
     private final FilterRowDataLayer<T> filterRowDataLayer;
     private boolean filterRowVisible = true;
 
+    /**
+     * Creates a {@link FilterRowHeaderComposite} with a created
+     * {@link FilterRowDataLayer}.
+     *
+     * @param filterStrategy
+     *            The {@link IFilterStrategy} to which the set filter value
+     *            should be applied. Used to create a
+     *            {@link FilterRowDataLayer}.
+     * @param columnHeaderLayer
+     *            The {@link ILayer} to which the {@link FilterRowDataLayer} is
+     *            dependent. Will be placed in the first row of this
+     *            {@link CompositeLayer}. Typically the
+     *            {@link ColumnHeaderLayer}.
+     * @param columnHeaderDataProvider
+     *            The {@link IDataProvider} of the column header needed to
+     *            retrieve the real column count of the column header and not a
+     *            transformed one. Used to create a {@link FilterRowDataLayer}.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to retrieve the
+     *            {@link IDisplayConverter} for converting the values on state
+     *            save/load operations. Used to create a
+     *            {@link FilterRowDataLayer}.
+     */
     public FilterRowHeaderComposite(
             IFilterStrategy<T> filterStrategy,
             ILayer columnHeaderLayer,
             IDataProvider columnHeaderDataProvider,
             IConfigRegistry configRegistry) {
 
+        this(columnHeaderLayer, new FilterRowDataLayer<>(
+                filterStrategy,
+                columnHeaderLayer,
+                columnHeaderDataProvider,
+                configRegistry));
+    }
+
+    /**
+     * Creates a {@link FilterRowHeaderComposite} with the provided
+     * {@link FilterRowDataLayer}. Allows to use a {@link FilterRowDataLayer}
+     * with a custom configuration.
+     *
+     * @param columnHeaderLayer
+     *            The {@link ILayer} to which the {@link FilterRowDataLayer} is
+     *            dependent. Will be placed in the first row of this
+     *            {@link CompositeLayer}. Typically the
+     *            {@link ColumnHeaderLayer}.
+     * @param filterRowDataLayer
+     *            The {@link FilterRowDataLayer} which is used for backing the
+     *            filter data and is rendered in the second row of this
+     *            {@link CompositeLayer}.
+     *
+     * @since 2.3
+     */
+    public FilterRowHeaderComposite(
+            ILayer columnHeaderLayer,
+            FilterRowDataLayer<T> filterRowDataLayer) {
+
         super(1, 2);
 
+        this.filterRowDataLayer = filterRowDataLayer;
+
         setChildLayer("columnHeader", columnHeaderLayer, 0, 0); //$NON-NLS-1$
-
-        this.filterRowDataLayer =
-                new FilterRowDataLayer<>(
-                        filterStrategy,
-                        columnHeaderLayer,
-                        columnHeaderDataProvider,
-                        configRegistry);
-
         setChildLayer(GridRegion.FILTER_ROW, this.filterRowDataLayer, 0, 1);
     }
 

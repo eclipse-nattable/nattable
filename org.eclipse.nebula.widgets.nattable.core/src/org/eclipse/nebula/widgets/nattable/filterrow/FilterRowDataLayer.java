@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,12 +18,14 @@ import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearAllFiltersCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearFilterCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.DefaultFilterRowConfiguration;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
+import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
@@ -46,23 +48,78 @@ public class FilterRowDataLayer<T> extends DataLayer {
     public static final String PERSISTENCE_KEY_FILTER_ROW_TOKENS = ".filterTokens"; //$NON-NLS-1$
 
     /**
-     * The ILayer to which this FilterRowDataLayer is dependent. Typically the
-     * ColumnHeaderLayer.
+     * The {@link ILayer} to which this {@link FilterRowDataLayer} is dependent.
+     * Typically the {@link ColumnHeaderLayer}.
      */
     private ILayer columnHeaderLayer;
 
+    /**
+     * Creates a {@link FilterRowDataLayer} with the default configuration
+     * {@link DefaultFilterRowConfiguration}.
+     *
+     * @param filterStrategy
+     *            The {@link IFilterStrategy} to which the set filter value
+     *            should be applied.
+     * @param columnHeaderLayer
+     *            The {@link ILayer} to which this {@link FilterRowDataLayer} is
+     *            dependent. Typically the {@link ColumnHeaderLayer}.
+     * @param columnHeaderDataProvider
+     *            The {@link IDataProvider} of the column header needed to
+     *            retrieve the real column count of the column header and not a
+     *            transformed one.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to retrieve the
+     *            {@link IDisplayConverter} for converting the values on state
+     *            save/load operations.
+     */
     public FilterRowDataLayer(
             IFilterStrategy<T> filterStrategy,
             ILayer columnHeaderLayer,
             IDataProvider columnHeaderDataProvider,
             IConfigRegistry configRegistry) {
 
+        this(filterStrategy, columnHeaderLayer, columnHeaderDataProvider, configRegistry, true);
+    }
+
+    /**
+     * Creates a {@link FilterRowDataLayer}.
+     *
+     * @param filterStrategy
+     *            The {@link IFilterStrategy} to which the set filter value
+     *            should be applied.
+     * @param columnHeaderLayer
+     *            The {@link ILayer} to which this {@link FilterRowDataLayer} is
+     *            dependent. Typically the {@link ColumnHeaderLayer}.
+     * @param columnHeaderDataProvider
+     *            The {@link IDataProvider} of the column header needed to
+     *            retrieve the real column count of the column header and not a
+     *            transformed one.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} needed to retrieve the
+     *            {@link IDisplayConverter} for converting the values on state
+     *            save/load operations.
+     * @param useDefaultConfiguration
+     *            <code>true</code> if the default configuration should be
+     *            applied, <code>false</code> if a custom configuration will be
+     *            applied afterwards.
+     *
+     * @since 2.3
+     */
+    public FilterRowDataLayer(
+            IFilterStrategy<T> filterStrategy,
+            ILayer columnHeaderLayer,
+            IDataProvider columnHeaderDataProvider,
+            IConfigRegistry configRegistry,
+            boolean useDefaultConfiguration) {
+
         super(new FilterRowDataProvider<T>(
                 filterStrategy, columnHeaderLayer, columnHeaderDataProvider, configRegistry));
 
         this.columnHeaderLayer = columnHeaderLayer;
 
-        addConfiguration(new DefaultFilterRowConfiguration());
+        if (useDefaultConfiguration) {
+            addConfiguration(new DefaultFilterRowConfiguration());
+        }
 
         // register an UpdateDataCommandHandler that does not check for equality
         // and always performs an update so the filtering can be triggered by
