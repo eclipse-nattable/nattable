@@ -76,8 +76,8 @@ public class DragModeEventHandler extends AbstractModeEventHandler {
                     && MouseEventHelper.eventOnSameCell(this.natTable, this.mouseDownEvent, event)) {
                 // switching back to the parent mode to correctly handle
                 // possible double clicks
-                switchMode(this.parentModeEventHandler);
                 this.parentModeEventHandler.mouseUp(event);
+                switchMode(this.parentModeEventHandler);
             } else {
                 switchMode(Mode.NORMAL_MODE);
             }
