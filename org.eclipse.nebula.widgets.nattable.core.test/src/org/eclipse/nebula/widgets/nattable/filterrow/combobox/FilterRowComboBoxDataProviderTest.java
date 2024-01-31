@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Dirk Fauth and others.
+ * Copyright (c) 2019, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,13 +16,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
+import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
+import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultColumnHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.sort.SortConfigAttributes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,13 +36,14 @@ public class FilterRowComboBoxDataProviderTest {
 
     private List<MyRowObject> persons = getObjects();
     private FilterRowComboBoxDataProvider<MyRowObject> provider;
+    private String[] propertyNames = new String[] {
+            "firstName",
+            "lastName",
+            "married",
+            "birthday",
+            "city" };
     private IColumnAccessor<MyRowObject> bodyDataColumnAccessor =
-            new ReflectiveColumnPropertyAccessor<>(new String[] {
-                    "firstName",
-                    "lastName",
-                    "married",
-                    "birthday",
-                    "city" });
+            new ReflectiveColumnPropertyAccessor<>(this.propertyNames);
 
     @BeforeEach
     public void setup() {
@@ -78,6 +85,49 @@ public class FilterRowComboBoxDataProviderTest {
         assertEquals(5, values.size());
 
         assertNull(values.get(0));
+    }
+
+    @Test
+    public void shouldUseConfiguredComparator() {
+        // build a fake column header layer
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(this.propertyNames);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+
+        // build a fake ConfigRegistry with a comparator that sorts descending
+        ConfigRegistry configRegistry = new ConfigRegistry();
+        configRegistry.registerConfigAttribute(
+                SortConfigAttributes.SORT_COMPARATOR,
+                new Comparator<String>() {
+
+                    @Override
+                    public int compare(String o1, String o2) {
+                        return o2.toString().compareTo(o1.toString());
+                    }
+                });
+
+        this.provider.configureComparator(columnHeaderDataLayer, configRegistry);
+
+        List<?> values = this.provider.collectValues(0);
+        assertEquals(8, values.size());
+
+        assertEquals("Tod", values.get(0));
+        assertEquals("Rod", values.get(1));
+        assertEquals("Ned", values.get(2));
+        assertEquals("Maude", values.get(3));
+        assertEquals("Marge", values.get(4));
+        assertEquals("Lisa", values.get(5));
+        assertEquals("Homer", values.get(6));
+        assertEquals("Bart", values.get(7));
+
+        values = this.provider.collectValues(1);
+        assertEquals(3, values.size());
+
+        assertNull(values.get(0));
+        assertEquals("Simpson", values.get(1));
+        assertEquals("Flanders", values.get(2));
+
     }
 
     private List<MyRowObject> getObjects() {
