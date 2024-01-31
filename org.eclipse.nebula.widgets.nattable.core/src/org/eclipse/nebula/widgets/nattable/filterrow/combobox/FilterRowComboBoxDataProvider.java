@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2023 Dirk Fauth and others.
+ * Copyright (c) 2013, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -29,6 +29,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.config.NullComparator;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
@@ -37,9 +39,11 @@ import org.eclipse.nebula.widgets.nattable.edit.event.DataUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.filterrow.event.FilterAppliedEvent;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
+import org.eclipse.nebula.widgets.nattable.sort.SortConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
 /**
@@ -182,6 +186,24 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      * @since 2.1
      */
     private int lastAppliedFilterColumn = -1;
+
+    /**
+     * The DataLayer of the column header region. Needed to be able to get the
+     * cell which is needed to get the comparator that should be used to sort
+     * the filter collection.
+     *
+     * @since 2.3
+     */
+    private ILayer columnHeaderDataLayer;
+
+    /**
+     * The {@link IConfigRegistry} used to retrieve the comparator to be used to
+     * sort the filter collection. Only has an effect if also
+     * {@link #columnHeaderLayer} is set.
+     *
+     * @since 2.3
+     */
+    private IConfigRegistry configRegistry;
 
     /**
      * @param bodyLayer
@@ -411,7 +433,7 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
                 .findFirst()
                 .orElse(null);
         if (firstNonNull instanceof Comparable) {
-            result.sort(Comparator.nullsFirst(Comparator.naturalOrder()));
+            result.sort(Comparator.nullsFirst(getColumnComparator(columnIndex)));
         } else {
             // always ensure that null is at the first position
             int index = result.indexOf(null);
@@ -1085,6 +1107,54 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
             return true;
         }
         return false;
+    }
+
+    /**
+     * Set the {@link IConfigRegistry} that should be used to retrieve the
+     * comparator to sort the filter collection. If one of the parameters is
+     * <code>null</code> the filter collection will always be sorted via
+     * {@link Comparator#naturalOrder()}.
+     *
+     * @param columnHeaderDataLayer
+     *            The DataLayer of the column header region. Needed to be able
+     *            to get the cell which is needed to get the comparator that
+     *            should be used to sort the filter collection.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} of the underlying NatTable.
+     * @since 2.3
+     */
+    public void configureComparator(ILayer columnHeaderDataLayer, IConfigRegistry configRegistry) {
+        this.columnHeaderDataLayer = columnHeaderDataLayer;
+        this.configRegistry = configRegistry;
+    }
+
+    /**
+     * Return the {@link Comparator} that should be used to sort the filter
+     * collection of the given column.
+     *
+     * @param columnIndex
+     *            The column for which the {@link Comparator} should be
+     *            returned.
+     * @return The {@link Comparator} that should be used to sort the filter
+     *         collection of the given column. The default is
+     *         {@link Comparator#naturalOrder()}.
+     * @since 2.3
+     */
+    protected Comparator<?> getColumnComparator(int columnIndex) {
+        if (this.configRegistry != null && this.columnHeaderDataLayer != null) {
+            ILayerCell cell = this.columnHeaderDataLayer.getCellByPosition(columnIndex, 0);
+            if (cell != null) {
+                Comparator<?> comparator = this.configRegistry.getConfigAttribute(
+                        SortConfigAttributes.SORT_COMPARATOR,
+                        cell.getDisplayMode(),
+                        cell.getConfigLabels());
+
+                if (!(comparator instanceof NullComparator)) {
+                    return comparator;
+                }
+            }
+        }
+        return Comparator.naturalOrder();
     }
 
     /**
