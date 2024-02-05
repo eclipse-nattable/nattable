@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2023 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -107,7 +107,7 @@ public class EditSelectionCommandHandler extends AbstractLayerCommandHandler<Edi
             // determine the initial value
             Object initialEditValue = initialValue;
             if (initialValue == null
-                    && EditUtils.isValueSame(this.selectionLayer, this.upperLayer)) {
+                    && EditUtils.isValueSame(selectedCells)) {
                 ILayerCell cell = selectedCells.iterator().next();
                 initialEditValue = this.selectionLayer.getDataValueByPosition(
                         cell.getColumnPosition(),
