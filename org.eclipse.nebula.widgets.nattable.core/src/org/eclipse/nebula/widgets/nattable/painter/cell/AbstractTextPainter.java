@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ package org.eclipse.nebula.widgets.nattable.painter.cell;
 
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.regex.Pattern;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
@@ -49,6 +50,17 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      */
     public static final String NEW_LINE_REGEX = "\\n\\r|\\r\\n|\\n|\\r"; //$NON-NLS-1$
 
+    /**
+     * The {@link Pattern} to find predefined new lines in the text to show. Is
+     * used for word wrapping to preserve user defined new lines. To be platform
+     * independent \n and \r and the combination of both are used to find user
+     * defined new lines.
+     *
+     * @see #NEW_LINE_REGEX
+     * @since 2.3
+     */
+    public static final Pattern NEW_LINE_PATTERN = Pattern.compile(NEW_LINE_REGEX);
+
     public static final String LINE_SEPARATOR = System.getProperty("line.separator"); //$NON-NLS-1$
 
     /**
@@ -70,6 +82,11 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
     private boolean strikethrough;
 
     private boolean trimText = true;
+
+    /**
+     * @since 2.3
+     */
+    private boolean cutText = true;
 
     private Color originalBackground;
     private Color originalForeground;
@@ -282,7 +299,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      * @return the number of lines for the given text
      */
     protected int getNumberOfNewLines(String text) {
-        String[] lines = text.split(NEW_LINE_REGEX);
+        String[] lines = NEW_LINE_PATTERN.split(text);
         return lines.length;
     }
 
@@ -351,7 +368,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
         int textLength = getLengthFromCache(gc, text);
 
         if (this.wordWrapping || (!this.calculateByTextLength && this.wrapText)) {
-            String[] lines = text.split(NEW_LINE_REGEX);
+            String[] lines = NEW_LINE_PATTERN.split(text);
             for (String line : lines) {
                 if (output.length() > 0) {
                     output.append(LINE_SEPARATOR);
@@ -373,7 +390,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
                 // calculate length by finding the longest word in text
                 textLength = (availableLength - (2 * this.spacing));
 
-                String[] lines = text.split(NEW_LINE_REGEX);
+                String[] lines = NEW_LINE_PATTERN.split(text);
                 for (String line : lines) {
                     if (output.length() > 0) {
                         output.append(LINE_SEPARATOR);
@@ -469,6 +486,12 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      *         text as it was given if it fits into the available space
      */
     private String modifyTextToDisplay(String text, GC gc, int availableLength) {
+        // if the painter is configured to not cut the text and append ..., we
+        // directly return the given text, as no further calculation is needed
+        if (!isCutText()) {
+            return text;
+        }
+
         // length of the text on GC taking new lines into account
         // this means the textLength is the value of the longest line
         int textLength = getLengthFromCache(gc, text);
@@ -476,7 +499,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
             // as looking at the text length without taking new lines into
             // account we have to look at every line itself
             StringBuilder result = new StringBuilder();
-            String[] lines = text.split(NEW_LINE_REGEX);
+            String[] lines = NEW_LINE_PATTERN.split(text);
             for (String line : lines) {
                 if (result.length() > 0) {
                     result.append(LINE_SEPARATOR);
@@ -820,5 +843,34 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      */
     public void setLineSpacing(int spacing) {
         this.lineSpacing = spacing;
+    }
+
+    /**
+     *
+     * @return <code>true</code> if the text is cut and the end of the text
+     *         should be shown with ..., <code>false</code> if the text is
+     *         showed unmodified, which means the text cut is done by the GC
+     *         clipping. Default is <code>true</code>.
+     *
+     * @since 2.3
+     */
+    public boolean isCutText() {
+        return this.cutText;
+    }
+
+    /**
+     * Configure the behavior for text modification if not enough space is
+     * available in the cell for rendering the text.
+     *
+     * @param cutText
+     *            <code>true</code> if the text should be cut and the end of the
+     *            text should be shown with ..., <code>false</code> if the text
+     *            should be showed unmodified, which means the text cut is done
+     *            by the GC clipping. Default is <code>true</code>.
+     *
+     * @since 2.3
+     */
+    public void setCutText(boolean cutText) {
+        this.cutText = cutText;
     }
 }
