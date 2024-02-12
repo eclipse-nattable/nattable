@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
@@ -204,6 +205,14 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      * @since 2.3
      */
     private IConfigRegistry configRegistry;
+
+    /**
+     * {@link Predicate} that allows to filter the values that are contained in
+     * the filter combo box. By default filters nothing.
+     *
+     * @since 2.3
+     */
+    private Predicate<T> contentFilter = t -> true;
 
     /**
      * @param bodyLayer
@@ -418,6 +427,7 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
         List result = collection.stream()
                 .unordered()
                 .parallel()
+                .filter(this.contentFilter)
                 .map(x -> this.columnAccessor.getDataValue(x, columnIndex))
                 .map(x -> {
                     if (isDistinctNullAndEmpty()) {
@@ -1149,12 +1159,28 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
                         cell.getDisplayMode(),
                         cell.getConfigLabels());
 
-                if (!(comparator instanceof NullComparator)) {
+                if (comparator != null && !(comparator instanceof NullComparator)) {
                     return comparator;
                 }
             }
         }
         return Comparator.naturalOrder();
+    }
+
+    /**
+     *
+     * @param predicate
+     *            The {@link Predicate} to define which values should not be
+     *            added to the filter combobox. Setting <code>null</code> will
+     *            result in no filtering, which is the default.
+     * @since 2.3
+     */
+    public void setContentFilter(Predicate<T> predicate) {
+        if (predicate == null) {
+            this.contentFilter = t -> true;
+        } else {
+            this.contentFilter = predicate;
+        }
     }
 
     /**
