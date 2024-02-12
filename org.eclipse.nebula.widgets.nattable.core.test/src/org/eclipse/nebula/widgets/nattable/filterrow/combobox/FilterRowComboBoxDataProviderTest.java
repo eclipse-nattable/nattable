@@ -130,6 +130,36 @@ public class FilterRowComboBoxDataProviderTest {
 
     }
 
+    @Test
+    public void shouldCollectUniqueValuesFiltered() {
+        this.provider.setContentFilter(t -> !"Lisa".equals(t.firstName));
+
+        List<?> values = this.provider.collectValues(0);
+        assertEquals(7, values.size());
+
+        assertEquals("Bart", values.get(0));
+        assertEquals("Homer", values.get(1));
+        assertEquals("Marge", values.get(2));
+        assertEquals("Maude", values.get(3));
+        assertEquals("Ned", values.get(4));
+        assertEquals("Rod", values.get(5));
+        assertEquals("Tod", values.get(6));
+
+        this.provider.setContentFilter(null);
+
+        values = this.provider.collectValues(0);
+        assertEquals(8, values.size());
+
+        assertEquals("Bart", values.get(0));
+        assertEquals("Homer", values.get(1));
+        assertEquals("Lisa", values.get(2));
+        assertEquals("Marge", values.get(3));
+        assertEquals("Maude", values.get(4));
+        assertEquals("Ned", values.get(5));
+        assertEquals("Rod", values.get(6));
+        assertEquals("Tod", values.get(7));
+    }
+
     private List<MyRowObject> getObjects() {
         List<MyRowObject> result = new ArrayList<>();
 
