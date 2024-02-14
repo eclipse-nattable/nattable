@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -47,7 +47,7 @@ public class PercentageBarDecorator extends CellPainterWrapper {
     public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
         Pattern originalBackgroundPattern = gc.getBackgroundPattern();
 
-        double factor = Math.min(1.0, ((Number) cell.getDataValue()).doubleValue());
+        double factor = Math.min(1.0, convertDataType(cell).doubleValue());
         factor = Math.max(0.0, factor);
 
         Rectangle bar = new Rectangle(
@@ -100,6 +100,23 @@ public class PercentageBarDecorator extends CellPainterWrapper {
         }
 
         super.paintCell(cell, gc, rectangle, configRegistry);
+    }
+
+    /**
+     * Converts the data type to a {@link Number}. If the value is not a
+     * {@link Number} it will simply return 0.
+     *
+     * @param cell
+     *            The cell for which the {@link Number} value is requested.
+     * @return The {@link Number} value to show. Should be a factor value <= 1.0
+     *         to be interpreted as a percentage.
+     * @since 2.3
+     */
+    protected Number convertDataType(ILayerCell cell) {
+        if (cell.getDataValue() instanceof Number) {
+            return (Number) cell.getDataValue();
+        }
+        return Double.valueOf(0);
     }
 
 }
