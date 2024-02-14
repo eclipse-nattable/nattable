@@ -13,6 +13,7 @@
 package org.eclipse.nebula.widgets.nattable.painter.cell.decorator;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
@@ -47,7 +48,7 @@ public class PercentageBarDecorator extends CellPainterWrapper {
     public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
         Pattern originalBackgroundPattern = gc.getBackgroundPattern();
 
-        double factor = Math.min(1.0, convertDataType(cell).doubleValue());
+        double factor = Math.min(1.0, convertDataType(cell, configRegistry).doubleValue());
         factor = Math.max(0.0, factor);
 
         Rectangle bar = new Rectangle(
@@ -108,11 +109,14 @@ public class PercentageBarDecorator extends CellPainterWrapper {
      *
      * @param cell
      *            The cell for which the {@link Number} value is requested.
-     * @return The {@link Number} value to show. Should be a factor value <= 1.0
-     *         to be interpreted as a percentage.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} to retrieve the
+     *            {@link IDisplayConverter} for the cell.
+     * @return The {@link Number} value to show. Should be a factor value &lt;=
+     *         1.0 to be interpreted as a percentage.
      * @since 2.3
      */
-    protected Number convertDataType(ILayerCell cell) {
+    protected Number convertDataType(ILayerCell cell, IConfigRegistry configRegistry) {
         if (cell.getDataValue() instanceof Number) {
             return (Number) cell.getDataValue();
         }
