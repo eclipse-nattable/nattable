@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.eclipse.nebula.widgets.nattable</groupId>
         <artifactId>parent</artifactId>
-        <version>2.3.0-SNAPSHOT</version>
+        <version>2.3.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
@@ -13,7 +13,7 @@
 
     <groupId>org.eclipse.nebula.widgets.nattable</groupId>
     <artifactId>org.eclipse.nebula.widgets.nattable.extension.poi</artifactId>
-    <version>2.3.0-SNAPSHOT</version>
+    <version>2.3.0</version>
     <packaging>eclipse-plugin</packaging>
     
 	<name>Nebula NatTable Apache POI Extension</name>
@@ -59,7 +59,7 @@
     	<dependency>
 		    <groupId>org.eclipse.nebula.widgets.nattable</groupId>
 		    <artifactId>org.eclipse.nebula.widgets.nattable.core</artifactId>
-		    <version>2.3.0-SNAPSHOT</version>
+		    <version>2.3.0</version>
 		</dependency>
     </dependencies>
 </project>
