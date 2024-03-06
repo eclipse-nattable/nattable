@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.editor;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -70,10 +71,13 @@ import org.eclipse.swt.widgets.Text;
  * <ul>
  * <li>The data value in the NatTable cell needs to be an array or a collection
  * of values</li>
- * <li><code>getCanonicalValue()</code> will directly update the underlying
- * NatTable data model</li>
- * <li>Committing the value in the NatTable framework code will simply replace
- * the list reference with itself</li>
+ * <li><code>getCanonicalValue()</code> will try to create a copy of the
+ * underlying data to provide the same behavior as other editors. If this is not
+ * working, e.g. if a Collection is not <code>Cloneable</code>, it will directly
+ * update the underlying NatTable data model</li>
+ * <li>If it is not possible to create a copy of the data, committing the value
+ * in the NatTable framework code will simply replace the list reference with
+ * itself</li>
  * <li>It does only support validation error styling for conversion and
  * validation errors as well</li>
  * </ul>
@@ -206,19 +210,43 @@ public class TableCellEditor extends AbstractCellEditor {
         }
 
         if (this.layerCell.getDataValue().getClass().isArray()) {
-            Object[] cellDataArray = (Object[]) this.layerCell.getDataValue();
+            Object[] originalDataArray = (Object[]) this.layerCell.getDataValue();
+            // create a copy of the current array and update the copy, which is
+            // then returned
+            Object[] cellDataArray = originalDataArray.clone();
             for (int i = 0; i < cellDataArray.length; i++) {
                 cellDataArray[i] = dataValues[i];
             }
+            return cellDataArray;
         } else if (this.layerCell.getDataValue() instanceof Collection) {
-            // we don't create new collections, we operate on the existing
+            // we don't create new collections, we try to clone the existing or
+            // operate directly on the existing
             // this is because we don't know the exact collection implementation
             // that we would need to create for type safety and performing an
             // instanceof check for every possible collection implementation
             // would be to complicated and could never be complete
-            Collection cellDataCollection = (Collection) this.layerCell.getDataValue();
+            Collection originalDataCollection = (Collection) this.layerCell.getDataValue();
+            Collection cellDataCollection = originalDataCollection;
+
+            if (originalDataCollection instanceof Cloneable) {
+                // if the collection is Cloneable, we try to create a clone that
+                // we update, so the editing process is the same as with the
+                // other NatTable editors
+                try {
+                    Method cloneMethod = originalDataCollection.getClass().getMethod("clone"); //$NON-NLS-1$
+                    cellDataCollection = (Collection) cloneMethod.invoke(originalDataCollection);
+                } catch (Exception e) {
+                    // do nothing, clone failed!
+                }
+            }
+
+            // if the collection is not Cloneable or the clone operation failed,
+            // we simply operate on the existing collection
+
             cellDataCollection.clear();
             cellDataCollection.addAll(Arrays.asList(dataValues));
+
+            return cellDataCollection;
         }
         return this.layerCell.getDataValue();
     }
@@ -531,7 +559,9 @@ public class TableCellEditor extends AbstractCellEditor {
 
                 @Override
                 public void cancelEditor() {
-                    close();
+                    if (TableCellEditor.this.editMode == EditModeEnum.INLINE) {
+                        close();
+                    }
                 }
 
                 @Override
@@ -579,7 +609,7 @@ public class TableCellEditor extends AbstractCellEditor {
                                             ((StructuredSelection) TableCellEditor.this.viewer.getSelection()).getFirstElement(), 1);
                                 }
                             } else {
-                                commit(MoveDirectionEnum.NONE);
+                                commit(MoveDirectionEnum.NONE, TableCellEditor.this.editMode == EditModeEnum.INLINE);
                             }
                         } else {
                             TableCellEditor.this.viewer.editElement(((StructuredSelection) TableCellEditor.this.viewer.getSelection()).getFirstElement(), 1);
@@ -614,7 +644,12 @@ public class TableCellEditor extends AbstractCellEditor {
                 }
             });
 
-            this.editor.getControl().addFocusListener(TableCellEditor.this.focusListener);
+            // need to add the InternalFocusListener also to the CellEditor of
+            // the JFace Table, so editor and table share the same focus
+            // listener
+            if (TableCellEditor.this.editMode == EditModeEnum.INLINE) {
+                this.editor.getControl().addFocusListener(TableCellEditor.this.focusListener);
+            }
 
             TableCellEditor.this.labelProvider.applyCellStyle(this.editor.getControl(), element);
 
