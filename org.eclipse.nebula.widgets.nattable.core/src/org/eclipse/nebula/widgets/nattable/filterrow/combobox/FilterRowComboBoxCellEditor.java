@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2023 Dirk Fauth and others.
+ * Copyright (c) 2013, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -246,7 +246,9 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
     public void close() {
         super.close();
         // remove the special resize listener on the parent on close
-        this.parent.removeListener(SWT.Resize, this.resizeListener);
+        if (!this.parent.isDisposed()) {
+            this.parent.removeListener(SWT.Resize, this.resizeListener);
+        }
     }
 
     @SuppressWarnings("rawtypes")

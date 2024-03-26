@@ -1181,6 +1181,10 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
         } else {
             this.contentFilter = predicate;
         }
+
+        if (this.cachingEnabled) {
+            clearCache(true);
+        }
     }
 
     /**

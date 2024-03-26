@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023 Dirk Fauth.
+ * Copyright (c) 2023, 2024 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -1769,6 +1769,100 @@ public class MixedComboBoxFilterRowHeaderIntegrationTest {
         this.natTable.doCommand(new ClearAllFiltersCommand());
         FilterRowDataLayer<PersonWithAddress> filterRowDataLayer = this.filterRowHeaderLayer.getFilterRowDataLayer();
         assertFalse(ComboBoxFilterUtils.isFilterActive(filterRowDataLayer, this.filterRowComboBoxDataProvider, this.natTable.getConfigRegistry()));
+    }
+
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "true, false",
+            "false, true",
+            "false, false"
+    })
+    public void shouldApplyContentFilter(boolean handleListChanges, boolean caching) {
+        setupFixture(handleListChanges, caching);
+
+        List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        assertTrue(ObjectUtils.collectionsEqual(LASTNAMES, lastnames), "not all values in collection");
+        assertTrue(ComboBoxFilterUtils.isAllSelected(DataModelConstants.LASTNAME_COLUMN_POSITION, lastnames, this.filterRowComboBoxDataProvider));
+
+        this.filterRowComboBoxDataProvider.setContentFilter(t -> !"Simpson".equals(t.getLastName()));
+
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Flanders", "Leonard", "Carlson", "Lovejoy", null), lastnames), "not all values in collection");
+        assertTrue(ComboBoxFilterUtils.isAllSelected(DataModelConstants.LASTNAME_COLUMN_POSITION, lastnames, this.filterRowComboBoxDataProvider));
+
+        this.filterRowComboBoxDataProvider.setContentFilter(null);
+
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        assertTrue(ObjectUtils.collectionsEqual(LASTNAMES, lastnames), "not all values in collection");
+        assertTrue(ComboBoxFilterUtils.isAllSelected(DataModelConstants.LASTNAME_COLUMN_POSITION, lastnames, this.filterRowComboBoxDataProvider));
+    }
+
+    @ParameterizedTest(name = "listchanges={0}, caching={1}")
+    @CsvSource({
+            "true, true",
+            "true, false",
+            "false, true",
+            "false, false"
+    })
+    public void shouldApplyContentFilterAfterFiltering(boolean handleListChanges, boolean caching) throws InterruptedException {
+        setupFixture(handleListChanges, caching);
+
+        List<?> lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        assertTrue(ObjectUtils.collectionsEqual(LASTNAMES, lastnames), "not all values in collection");
+        assertTrue(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1),
+                        this.filterRowComboBoxDataProvider),
+                "not all values selected");
+
+        // apply filter
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 1, new ArrayList<>(Arrays.asList("Flanders", "Leonard", "Carlson", "Lovejoy", null))));
+        assertEquals(15, this.bodyLayer.getFilterList().size());
+
+        Thread.sleep(200);
+
+        // still all values should be in the collection, but not all is selected
+        // anymore
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        assertTrue(ObjectUtils.collectionsEqual(LASTNAMES, lastnames), "not all values in collection");
+        assertFalse(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1),
+                        this.filterRowComboBoxDataProvider),
+                "all values selected");
+
+        // remove filter
+        this.natTable.doCommand(new UpdateDataCommand(this.natTable, 2, 1, new ArrayList<>(LASTNAMES)));
+        assertEquals(30, this.bodyLayer.getFilterList().size());
+
+        Thread.sleep(200);
+
+        this.filterRowComboBoxDataProvider.setContentFilter(t -> !"Simpson".equals(t.getLastName()));
+
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        assertTrue(ObjectUtils.collectionsEqual(Arrays.asList("Flanders", "Leonard", "Carlson", "Lovejoy", null), lastnames), "not all values in collection");
+        // this one fails if the data collection of the set filter value and the
+        // collection of the possible values (filtered) are checked for equality
+        assertTrue(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1),
+                        this.filterRowComboBoxDataProvider),
+                "not all values selected");
+
+        this.filterRowComboBoxDataProvider.setContentFilter(null);
+
+        lastnames = this.filterRowComboBoxDataProvider.getValues(DataModelConstants.LASTNAME_COLUMN_POSITION, 0);
+        assertTrue(ObjectUtils.collectionsEqual(LASTNAMES, lastnames), "not all values in collection");
+        assertTrue(
+                ComboBoxFilterUtils.isAllSelected(
+                        DataModelConstants.LASTNAME_COLUMN_POSITION,
+                        this.filterRowHeaderLayer.getDataValueByPosition(DataModelConstants.LASTNAME_COLUMN_POSITION, 1),
+                        this.filterRowComboBoxDataProvider),
+                "not all values selected");
     }
 
     private static List<String> LASTNAMES = Arrays.asList("Simpson", "Flanders", "Leonard", "Carlson", "Lovejoy", null);
