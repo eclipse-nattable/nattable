@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -38,6 +38,9 @@ import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand
 import org.eclipse.nebula.widgets.nattable.layer.event.RowDeleteEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowInsertEvent;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
+import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
+import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
+import org.eclipse.nebula.widgets.nattable.reorder.command.MultiRowReorderCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
@@ -75,7 +78,8 @@ public class CompositeFreezeLayerHideShowTest {
     };
 
     private DataLayer dataLayer;
-    private ColumnReorderLayer reorderLayer;
+    private ColumnReorderLayer columnReorderLayer;
+    private RowReorderLayer rowReorderLayer;
     private RowHideShowLayer rowHideShowLayer;
     private ColumnHideShowLayer columnHideShowLayer;
     private SelectionLayer selectionLayer;
@@ -86,8 +90,9 @@ public class CompositeFreezeLayerHideShowTest {
     @BeforeEach
     public void setup() {
         this.dataLayer = new DataLayer(this.testDataProvider);
-        this.reorderLayer = new ColumnReorderLayer(this.dataLayer);
-        this.rowHideShowLayer = new RowHideShowLayer(this.reorderLayer);
+        this.columnReorderLayer = new ColumnReorderLayer(this.dataLayer);
+        this.rowReorderLayer = new RowReorderLayer(this.columnReorderLayer);
+        this.rowHideShowLayer = new RowHideShowLayer(this.rowReorderLayer);
         this.columnHideShowLayer = new ColumnHideShowLayer(this.rowHideShowLayer);
         this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
         this.viewportLayer = new ViewportLayer(this.selectionLayer);
@@ -1709,6 +1714,80 @@ public class CompositeFreezeLayerHideShowTest {
 
         assertEquals(0, this.viewportLayer.getMinimumOrigin().getX());
         assertEquals(60, this.viewportLayer.getMinimumOrigin().getY());
+
+        reset();
+    }
+
+    @Test
+    public void testMultiColumnReorderBothRegions() {
+        this.compositeFreezeLayer.doCommand(
+                new FreezeColumnCommand(this.compositeFreezeLayer, 0));
+
+        assertEquals(1, this.freezeLayer.getColumnCount());
+        assertEquals(0, this.freezeLayer.getRowCount());
+        assertEquals(0, this.freezeLayer.getBottomRightPosition().columnPosition);
+        assertEquals(-1, this.freezeLayer.getBottomRightPosition().rowPosition);
+
+        assertEquals(4, this.viewportLayer.getColumnCount());
+        assertEquals(5, this.viewportLayer.getRowCount());
+        assertEquals(1, this.viewportLayer.getMinimumOriginColumnPosition());
+        assertEquals(0, this.viewportLayer.getMinimumOriginRowPosition());
+        assertEquals(100, this.viewportLayer.getMinimumOrigin().getX());
+        assertEquals(0, this.viewportLayer.getMinimumOrigin().getY());
+
+        // multi reorder so that column 0 and column 3 are next to each other
+        // while 0 stays in frozen area and 3 stays in non-frozen area
+        this.compositeFreezeLayer.doCommand(
+                new MultiColumnReorderCommand(this.compositeFreezeLayer, new int[] { 0, 3 }, 0));
+
+        assertEquals(1, this.freezeLayer.getColumnCount());
+        assertEquals(0, this.freezeLayer.getRowCount());
+        assertEquals(0, this.freezeLayer.getBottomRightPosition().columnPosition);
+        assertEquals(-1, this.freezeLayer.getBottomRightPosition().rowPosition);
+
+        assertEquals(4, this.viewportLayer.getColumnCount());
+        assertEquals(5, this.viewportLayer.getRowCount());
+        assertEquals(1, this.viewportLayer.getMinimumOriginColumnPosition());
+        assertEquals(0, this.viewportLayer.getMinimumOriginRowPosition());
+        assertEquals(100, this.viewportLayer.getMinimumOrigin().getX());
+        assertEquals(0, this.viewportLayer.getMinimumOrigin().getY());
+
+        reset();
+    }
+
+    @Test
+    public void testMultiRowReorderBothRegions() {
+        this.compositeFreezeLayer.doCommand(
+                new FreezeRowCommand(this.compositeFreezeLayer, 0));
+
+        assertEquals(0, this.freezeLayer.getColumnCount());
+        assertEquals(1, this.freezeLayer.getRowCount());
+        assertEquals(-1, this.freezeLayer.getBottomRightPosition().columnPosition);
+        assertEquals(0, this.freezeLayer.getBottomRightPosition().rowPosition);
+
+        assertEquals(5, this.viewportLayer.getColumnCount());
+        assertEquals(4, this.viewportLayer.getRowCount());
+        assertEquals(0, this.viewportLayer.getMinimumOriginColumnPosition());
+        assertEquals(1, this.viewportLayer.getMinimumOriginRowPosition());
+        assertEquals(0, this.viewportLayer.getMinimumOrigin().getX());
+        assertEquals(20, this.viewportLayer.getMinimumOrigin().getY());
+
+        // multi reorder so that row 0 and row 3 are next to each other
+        // while 0 stays in frozen area and 3 stays in non-frozen area
+        this.compositeFreezeLayer.doCommand(
+                new MultiRowReorderCommand(this.compositeFreezeLayer, new int[] { 0, 3 }, 0));
+
+        assertEquals(0, this.freezeLayer.getColumnCount());
+        assertEquals(1, this.freezeLayer.getRowCount());
+        assertEquals(-1, this.freezeLayer.getBottomRightPosition().columnPosition);
+        assertEquals(0, this.freezeLayer.getBottomRightPosition().rowPosition);
+
+        assertEquals(5, this.viewportLayer.getColumnCount());
+        assertEquals(4, this.viewportLayer.getRowCount());
+        assertEquals(0, this.viewportLayer.getMinimumOriginColumnPosition());
+        assertEquals(1, this.viewportLayer.getMinimumOriginRowPosition());
+        assertEquals(0, this.viewportLayer.getMinimumOrigin().getX());
+        assertEquals(20, this.viewportLayer.getMinimumOrigin().getY());
 
         reset();
     }
