@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -43,8 +43,7 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
             this.viewportLayer.invalidateHorizontalStructure();
 
             int columnOffset = 0;
-            int minimumOriginColumnPosition = this.viewportLayer
-                    .getMinimumOriginColumnPosition();
+            int minimumOriginColumnPosition = this.viewportLayer.getMinimumOriginColumnPosition();
 
             Collection<StructuralDiff> columnDiffs = event.getColumnDiffs();
             if (columnDiffs != null) {
@@ -55,24 +54,23 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
                     // was hidden, so we try to determine the correct value now
                     // if it is shown again
                     minimumOriginColumnPosition = scrollableLayer
-                            .getColumnPositionByX(this.viewportLayer
-                                    .getMinimumOrigin().getX());
+                            .getColumnPositionByX(this.viewportLayer.getMinimumOrigin().getX());
                 }
                 for (StructuralDiff columnDiff : columnDiffs) {
                     DiffTypeEnum diffType = columnDiff.getDiffType();
                     if (diffType == DiffTypeEnum.ADD) {
-                        Range afterPositionRange = columnDiff
-                                .getAfterPositionRange();
+                        Range afterPositionRange = columnDiff.getAfterPositionRange();
                         if (minimumOriginColumnPosition > 0) {
+                            int mocp = minimumOriginColumnPosition;
                             for (int i = afterPositionRange.start; i < afterPositionRange.end; i++) {
-                                if (i < minimumOriginColumnPosition) {
-                                    minimumOriginColumnPosition++;
+                                if (i < mocp) {
+                                    mocp++;
+                                    columnOffset += 1;
                                 }
                             }
                         }
                     } else if (diffType == DiffTypeEnum.DELETE) {
-                        Range beforePositionRange = columnDiff
-                                .getBeforePositionRange();
+                        Range beforePositionRange = columnDiff.getBeforePositionRange();
                         if (minimumOriginColumnPosition > 0) {
                             for (int i = beforePositionRange.start; i < beforePositionRange.end; i++) {
                                 if (i < minimumOriginColumnPosition) {
@@ -84,8 +82,7 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
                 }
             }
 
-            int minimumOriginColumn = minimumOriginColumnPosition
-                    + columnOffset;
+            int minimumOriginColumn = minimumOriginColumnPosition + columnOffset;
 
             // in case of split viewports we use the min column position instead
             // of the calculated value
@@ -97,18 +94,15 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
             // viewport is moved
             // to the frozen region, the minimum origin need to be updated in
             // another way
-            int startX = scrollableLayer
-                    .getStartXOfColumnPosition(minimumOriginColumn);
+            int startX = scrollableLayer.getStartXOfColumnPosition(minimumOriginColumn);
             if (startX < 0 && minimumOriginColumnPosition > 0) {
                 int columnCount = scrollableLayer.getColumnCount();
                 if (columnCount == 0) {
                     // special case when all columns are hidden
                     startX = 0;
                 } else {
-                    startX = scrollableLayer
-                            .getStartXOfColumnPosition(columnCount - 1)
-                            + scrollableLayer
-                                    .getColumnWidthByPosition(columnCount - 1);
+                    startX = scrollableLayer.getStartXOfColumnPosition(columnCount - 1)
+                            + scrollableLayer.getColumnWidthByPosition(columnCount - 1);
                 }
             }
 
@@ -119,8 +113,7 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
             this.viewportLayer.invalidateVerticalStructure();
 
             int rowOffset = 0;
-            int minimumOriginRowPosition = this.viewportLayer
-                    .getMinimumOriginRowPosition();
+            int minimumOriginRowPosition = this.viewportLayer.getMinimumOriginRowPosition();
 
             Collection<StructuralDiff> rowDiffs = event.getRowDiffs();
             if (rowDiffs != null) {
@@ -131,24 +124,23 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
                     // was hidden, so we try to determine the correct value now
                     // if it is shown again
                     minimumOriginRowPosition = scrollableLayer
-                            .getRowPositionByY(this.viewportLayer.getMinimumOrigin()
-                                    .getY());
+                            .getRowPositionByY(this.viewportLayer.getMinimumOrigin().getY());
                 }
                 for (StructuralDiff rowDiff : rowDiffs) {
                     DiffTypeEnum diffType = rowDiff.getDiffType();
                     if (diffType == DiffTypeEnum.ADD) {
-                        Range afterPositionRange = rowDiff
-                                .getAfterPositionRange();
+                        Range afterPositionRange = rowDiff.getAfterPositionRange();
                         if (minimumOriginRowPosition > 0) {
+                            int morp = minimumOriginRowPosition;
                             for (int i = afterPositionRange.start; i < afterPositionRange.end; i++) {
-                                if (i < minimumOriginRowPosition) {
-                                    minimumOriginRowPosition++;
+                                if (i < morp) {
+                                    morp++;
+                                    rowOffset += 1;
                                 }
                             }
                         }
                     } else if (diffType == DiffTypeEnum.DELETE) {
-                        Range beforePositionRange = rowDiff
-                                .getBeforePositionRange();
+                        Range beforePositionRange = rowDiff.getBeforePositionRange();
                         if (minimumOriginRowPosition > 0) {
                             for (int i = beforePositionRange.start; i < beforePositionRange.end; i++) {
                                 if (i < minimumOriginRowPosition) {
@@ -172,18 +164,15 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
             // viewport is moved
             // to the frozen region, the minimum origin need to be updated in
             // another way
-            int startY = scrollableLayer
-                    .getStartYOfRowPosition(minimumOriginRow);
+            int startY = scrollableLayer.getStartYOfRowPosition(minimumOriginRow);
             if (startY < 0 && minimumOriginRowPosition > 0) {
                 int rowCount = scrollableLayer.getRowCount();
                 if (rowCount == 0) {
                     // special case when all rows are hidden
                     startY = 0;
                 } else {
-                    startY = scrollableLayer
-                            .getStartYOfRowPosition(rowCount - 1)
-                            + scrollableLayer
-                                    .getRowHeightByPosition(rowCount - 1);
+                    startY = scrollableLayer.getStartYOfRowPosition(rowCount - 1)
+                            + scrollableLayer.getRowHeightByPosition(rowCount - 1);
                 }
             }
             this.viewportLayer.setMinimumOriginY(startY);
