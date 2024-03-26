@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2023 Dirk Fauth.
+ * Copyright (c) 2019, 2024 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -339,7 +339,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
             IUniqueIndexLayer positionLayer,
             SelectionLayer selectionLayer,
             boolean useDefaultConfiguration) {
-        this(underlyingHeaderLayer, selectionLayer, selectionLayer, 1, useDefaultConfiguration);
+        this(underlyingHeaderLayer, positionLayer, selectionLayer, 1, useDefaultConfiguration);
     }
 
     /**
