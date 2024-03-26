@@ -1117,6 +1117,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                                     Serializable rowId = rowIdAccessor.getRowId(rowObject);
                                     _6037_MixedFilterRowExample.this.filterExcludes.remove(rowId);
                                     filterStrategy.applyFilter(filterRowDataProvider.getFilterIndexToObjectMap());
+                                    natTable.refresh(false);
                                 }
                             });
                         }

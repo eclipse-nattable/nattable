@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023 Dirk Fauth and others.
+ * Copyright (c) 2023, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -23,7 +23,6 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
 /**
  * Helper class for Excel like combo box filters.
@@ -51,7 +50,7 @@ public final class ComboBoxFilterUtils {
      * @return <code>true</code> if all values are selected and therefore no
      *         filter is applied, <code>false</code> if not.
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static boolean isAllSelected(int columnIndex, Object cellData, IComboBoxDataProvider comboBoxDataProvider) {
         if (EditConstants.SELECT_ALL_ITEMS_VALUE.equals(cellData)) {
             return true;
@@ -67,7 +66,7 @@ public final class ComboBoxFilterUtils {
                 dataProviderList = comboBoxDataProvider.getValues(columnIndex, 0);
             }
 
-            return ObjectUtils.collectionsEqual(dataCollection, dataProviderList);
+            return dataCollection.containsAll(dataProviderList);
         }
 
         return false;
