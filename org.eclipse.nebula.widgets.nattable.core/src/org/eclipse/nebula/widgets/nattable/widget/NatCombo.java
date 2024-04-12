@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2023 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -1738,6 +1738,7 @@ public class NatCombo extends Composite {
             if (null != NatCombo.this.dropdownTableViewer && !NatCombo.this.dropdownTable.isDisposed()) {
                 NatCombo.this.dropdownTableViewer.refresh();
                 setSelection();
+                NatCombo.this.dropdownTableViewer.getTable().update();
                 calculateBounds();
             }
         }
