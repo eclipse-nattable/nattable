@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2023 Dirk Fauth and others.
+ * Copyright (c) 2013, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -123,7 +123,7 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
         this.future = SCHEDULER.scheduleAtFixedRate(() -> {
             if (this.cachingEnabled
                     && this.active
-                    && GlazedListsFilterRowComboBoxDataProvider.this.eventsToProcess.compareAndSet(true, false)) {
+                    && this.eventsToProcess.compareAndSet(true, false)) {
                 clearCache(true);
             }
         }, 0L, 100L);
@@ -168,7 +168,6 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
         super.dispose();
         if (this.terminated.compareAndSet(false, true)) {
             SCHEDULER.unschedule(this.future);
-            SCHEDULER.shutdownNow();
         }
     }
 

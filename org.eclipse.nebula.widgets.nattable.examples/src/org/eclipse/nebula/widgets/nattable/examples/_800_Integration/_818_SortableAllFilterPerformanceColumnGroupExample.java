@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023 Dirk Fauth and others.
+ * Copyright (c) 2023, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -158,6 +158,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -574,7 +575,9 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
             @Override
             public void handleLayerEvent(ILayerEvent event) {
                 if (event instanceof RowStructuralRefreshEvent) {
-                    rowCount.setText(bodyLayerStack.getFilterList().size() + " / " + bodyLayerStack.getSortedList().size());
+                    Display.getDefault().asyncExec(() -> {
+                        rowCount.setText(bodyLayerStack.getFilterList().size() + " / " + bodyLayerStack.getSortedList().size());
+                    });
                 }
             }
         });
