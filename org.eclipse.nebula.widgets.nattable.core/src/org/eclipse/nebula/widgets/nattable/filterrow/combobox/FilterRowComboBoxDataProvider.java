@@ -46,6 +46,8 @@ import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.sort.SortConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * IComboBoxDataProvider that provides items for a combobox in the filter row.
@@ -66,6 +68,8 @@ import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
  *            access the data columnwise.
  */
 public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, ILayerListener, ILayerCommandHandler<UpdateDataCommand> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FilterRowComboBoxDataProvider.class);
 
     /**
      * The base collection used to collect the distinct values from. This need
@@ -652,6 +656,8 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
                 // fire event for every column
                 fireCacheUpdateEvent(updateEvent);
             }
+        } catch (Exception e) {
+            LOG.error("Error on clear cache", e); //$NON-NLS-1$
         } finally {
             cacheLock.writeLock().unlock();
         }
