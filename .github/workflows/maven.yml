@@ -26,4 +26,8 @@ jobs:
     - name: Install xvfb
       run: sudo apt-get install xvfb
     - name: Build NatTable with Javadoc
-      run: xvfb-run mvn clean compile javadoc:aggregate verify
+      env:
+       JAVA_HOME: ${{ env.JAVA_HOME_17_X64 }}
+      run: | 
+        cp .github/toolchains.xml ~/.m2/toolchains.xml
+        xvfb-run mvn clean compile javadoc:aggregate verify

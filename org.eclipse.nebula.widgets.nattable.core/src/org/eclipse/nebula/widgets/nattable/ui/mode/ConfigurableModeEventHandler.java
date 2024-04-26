@@ -71,14 +71,15 @@ public class ConfigurableModeEventHandler extends AbstractModeEventHandler {
     public synchronized void mouseMove(MouseEvent event) {
         if (event.x >= 0 && event.y >= 0) {
             event.data = NatEventData.createInstanceFromEvent(event);
+            LabelStack regionLabels = this.natTable.getRegionLabelsByXY(event.x, event.y);
 
             // check if current active move actions are still active
             for (Iterator<MouseMoveAction> it = this.currentActiveMoveActions.iterator(); it.hasNext();) {
                 MouseMoveAction currentAction = it.next();
-                LabelStack regionLabels = this.natTable.getRegionLabelsByXY(event.x, event.y);
-                if (currentAction.mouseEventMatcher.matches(this.natTable, event, regionLabels) && currentAction.reexecuteEntryAction) {
+                boolean matches = currentAction.mouseEventMatcher.matches(this.natTable, event, regionLabels);
+                if (matches && currentAction.reexecuteEntryAction) {
                     currentAction.run(this.natTable, event);
-                } else {
+                } else if (!matches) {
                     currentAction.runExit(this.natTable, event);
                     it.remove();
                 }
