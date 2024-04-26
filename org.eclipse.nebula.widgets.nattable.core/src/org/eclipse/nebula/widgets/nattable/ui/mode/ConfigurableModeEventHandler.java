@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,11 +12,17 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.mode;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
+import org.eclipse.nebula.widgets.nattable.ui.action.MouseMoveAction;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
@@ -59,13 +65,34 @@ public class ConfigurableModeEventHandler extends AbstractModeEventHandler {
         }
     }
 
+    private List<MouseMoveAction> currentActiveMoveActions = new ArrayList<>();
+
     @Override
     public synchronized void mouseMove(MouseEvent event) {
         if (event.x >= 0 && event.y >= 0) {
+            event.data = NatEventData.createInstanceFromEvent(event);
+
+            // check if current active move actions are still active
+            for (Iterator<MouseMoveAction> it = this.currentActiveMoveActions.iterator(); it.hasNext();) {
+                MouseMoveAction currentAction = it.next();
+                LabelStack regionLabels = this.natTable.getRegionLabelsByXY(event.x, event.y);
+                if (currentAction.mouseEventMatcher.matches(this.natTable, event, regionLabels) && currentAction.reexecuteEntryAction) {
+                    currentAction.run(this.natTable, event);
+                } else {
+                    currentAction.runExit(this.natTable, event);
+                    it.remove();
+                }
+            }
+
             IMouseAction mouseMoveAction = getUiBindingRegistry().getMouseMoveAction(event);
+
             if (mouseMoveAction != null) {
-                event.data = NatEventData.createInstanceFromEvent(event);
-                mouseMoveAction.run(this.natTable, event);
+                if (mouseMoveAction instanceof MouseMoveAction && !this.currentActiveMoveActions.contains(mouseMoveAction)) {
+                    mouseMoveAction.run(this.natTable, event);
+                    this.currentActiveMoveActions.add((MouseMoveAction) mouseMoveAction);
+                } else if (!(mouseMoveAction instanceof MouseMoveAction)) {
+                    mouseMoveAction.run(this.natTable, event);
+                }
             } else {
                 this.natTable.setCursor(null);
             }
@@ -98,9 +125,13 @@ public class ConfigurableModeEventHandler extends AbstractModeEventHandler {
 
     @Override
     public synchronized void mouseExit(MouseEvent event) {
+        event.data = NatEventData.createInstanceFromEvent(event);
+
+        // ensure that any current active move action is exited
+        this.currentActiveMoveActions.forEach(action -> action.runExit(this.natTable, event));
+
         IMouseAction mouseExitAction = getUiBindingRegistry().getMouseExitAction(event);
         if (mouseExitAction != null) {
-            event.data = NatEventData.createInstanceFromEvent(event);
             mouseExitAction.run(this.natTable, event);
         } else {
             this.natTable.setCursor(null);

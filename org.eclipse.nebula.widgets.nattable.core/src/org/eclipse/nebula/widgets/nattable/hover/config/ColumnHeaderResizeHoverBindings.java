@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2022 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,6 +21,7 @@ import org.eclipse.nebula.widgets.nattable.resize.action.AutoResizeColumnAction;
 import org.eclipse.nebula.widgets.nattable.resize.action.ColumnResizeCursorAction;
 import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEventMatcher;
 import org.eclipse.nebula.widgets.nattable.resize.mode.ColumnResizeDragMode;
+import org.eclipse.nebula.widgets.nattable.ui.action.ClearCursorAction;
 import org.eclipse.nebula.widgets.nattable.ui.action.NoOpMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
@@ -46,25 +47,15 @@ public class ColumnHeaderResizeHoverBindings extends AbstractUiBindingConfigurat
         // Mouse move - Show resize cursor
         uiBindingRegistry.registerFirstMouseMoveBinding(
                 new ColumnResizeEventMatcher(SWT.NONE, GridRegion.COLUMN_HEADER, 0),
-                new ColumnResizeCursorAction());
+                new ColumnResizeCursorAction(),
+                new ClearCursorAction());
 
         // apply a hover styling on moving the mouse over a NatTable and clear
         // the cursor
         uiBindingRegistry.registerMouseMoveBinding(
                 new MouseEventMatcher(GridRegion.COLUMN_HEADER),
-                new HoverStylingByIndexAction(this.layer));
-
-        // clear any hover styling if the mouse is moved out of a NatTable
-        // region
-        uiBindingRegistry.registerMouseMoveBinding((natTable, event, regionLabels) -> ((natTable != null && regionLabels == null) || regionLabels != null
-                && regionLabels.hasLabel(GridRegion.CORNER)), new ClearHoverStylingAction());
-
-        // clear any hover styling if the mouse is moved out of the NatTable
-        // area
-        // always return true for the matcher because it is only asked in case
-        // the mouse exits the NatTable client area, therefore further checks
-        // are not necessary
-        uiBindingRegistry.registerMouseExitBinding((natTable, event, regionLabels) -> true, new ClearHoverStylingAction());
+                new HoverStylingByIndexAction(this.layer),
+                new ClearHoverStylingAction());
 
         // Column resize
         uiBindingRegistry.registerFirstMouseDragMode(

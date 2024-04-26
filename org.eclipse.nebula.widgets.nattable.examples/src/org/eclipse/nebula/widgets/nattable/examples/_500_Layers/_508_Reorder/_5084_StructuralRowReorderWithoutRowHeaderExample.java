@@ -131,9 +131,6 @@ public class _5084_StructuralRowReorderWithoutRowHeaderExample extends AbstractN
         SelectionLayer selectionLayer =
                 new SelectionLayer(bodyDataLayer, false);
 
-        // add the custom configuration to enable the structural row reordering
-        bodyDataLayer.addConfiguration(new StructuralRowReorderConfiguration(selectionLayer));
-
         // use a RowSelectionModel that will perform row selections and is able
         // to identify a row via unique ID
         selectionLayer.setSelectionModel(new RowSelectionModel<Person>(
@@ -163,6 +160,9 @@ public class _5084_StructuralRowReorderWithoutRowHeaderExample extends AbstractN
         ILayer columnHeaderLayer =
                 new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
 
+        // add the custom configuration to enable the structural row reordering
+        bodyDataLayer.addConfiguration(new StructuralRowReorderConfiguration(columnHeaderLayer, selectionLayer));
+
         // set the region labels to make default configurations work, e.g.
         // selection
         CompositeLayer compositeLayer = new CompositeLayer(1, 2);
@@ -186,9 +186,11 @@ public class _5084_StructuralRowReorderWithoutRowHeaderExample extends AbstractN
                         CellEdgeEnum.LEFT,
                         this.dragHandlePainter);
 
+        private final ILayer columnHeaderLayerStack;
         private final SelectionLayer selectionLayer;
 
-        public StructuralRowReorderConfiguration(SelectionLayer selectionLayer) {
+        public StructuralRowReorderConfiguration(ILayer columnHeaderLayerStack, SelectionLayer selectionLayer) {
+            this.columnHeaderLayerStack = columnHeaderLayerStack;
             this.selectionLayer = selectionLayer;
         }
 
@@ -212,9 +214,7 @@ public class _5084_StructuralRowReorderWithoutRowHeaderExample extends AbstractN
                             GridRegion.BODY,
                             0,
                             this.dragHandlePainter),
-                    new HandCursorAction());
-            uiBindingRegistry.registerMouseMoveBinding(
-                    new MouseEventMatcher(),
+                    new HandCursorAction(),
                     new ClearCursorAction());
 
             // Override the mouse down binding to avoid a row selection if
@@ -249,12 +249,12 @@ public class _5084_StructuralRowReorderWithoutRowHeaderExample extends AbstractN
                             GridRegion.BODY,
                             MouseEventMatcher.LEFT_BUTTON,
                             this.dragHandlePainter),
-                    new AggregateDragMode(new RowDragMode(), new MultiRowReorderDragMode(this.selectionLayer)));
+                    new AggregateDragMode(new RowDragMode(), new MultiRowReorderDragMode(this.columnHeaderLayerStack, this.selectionLayer)));
 
             // register drag mode binding on right click in any cell of the body
             uiBindingRegistry.registerMouseDragMode(
                     MouseEventMatcher.bodyRightClick(SWT.NONE),
-                    new AggregateDragMode(new RowDragMode(), new MultiRowReorderDragMode(this.selectionLayer)));
+                    new AggregateDragMode(new RowDragMode(), new MultiRowReorderDragMode(this.columnHeaderLayerStack, this.selectionLayer)));
 
             // register binding to select a row on right mouse down
             // simply to select the row so it is highlighted for the reorder
@@ -328,11 +328,13 @@ public class _5084_StructuralRowReorderWithoutRowHeaderExample extends AbstractN
      */
     class MultiRowReorderDragMode extends RowReorderDragMode {
 
+        private ILayer columnHeaderLayerStack;
         private SelectionLayer selectionLayer;
         private int[] selectedRowPositions;
 
-        public MultiRowReorderDragMode(SelectionLayer selectionLayer) {
+        public MultiRowReorderDragMode(ILayer columnHeaderLayerStack, SelectionLayer selectionLayer) {
             super();
+            this.columnHeaderLayerStack = columnHeaderLayerStack;
             this.selectionLayer = selectionLayer;
         }
 
@@ -362,9 +364,13 @@ public class _5084_StructuralRowReorderWithoutRowHeaderExample extends AbstractN
             int dragToGridRowPosition = -1;
 
             if (moveDirection != null) {
-                dragToGridRowPosition = LayerUtil.convertRowPosition(this.natTable, gridRowPosition, this.selectionLayer);
-                if (moveDirection == CellEdgeEnum.BOTTOM) {
-                    dragToGridRowPosition += 1;
+                if (gridRowPosition <= this.columnHeaderLayerStack.getRowCount() - 1) {
+                    dragToGridRowPosition = (moveDirection == CellEdgeEnum.BOTTOM) ? 0 : -1;
+                } else {
+                    dragToGridRowPosition = LayerUtil.convertRowPosition(this.natTable, gridRowPosition, this.selectionLayer);
+                    if (moveDirection == CellEdgeEnum.BOTTOM) {
+                        dragToGridRowPosition += 1;
+                    }
                 }
             }
 

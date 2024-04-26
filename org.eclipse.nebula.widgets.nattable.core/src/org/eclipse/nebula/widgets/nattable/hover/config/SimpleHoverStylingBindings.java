@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -55,26 +55,9 @@ public class SimpleHoverStylingBindings extends AbstractUiBindingConfiguration {
                     int height = SimpleHoverStylingBindings.this.layer.getPreferredHeight();
 
                     return ((event.x > 0 && event.x < width) && (event.y > 0 && event.y < height));
-                }, new HoverStylingAction(this.layer));
-
-        // clear any hover styling if the mouse is moved out of the region area
-        uiBindingRegistry.registerMouseMoveBinding((natTable, event, regionLabels) -> {
-            int width = SimpleHoverStylingBindings.this.layer.getPreferredWidth();
-            int height = SimpleHoverStylingBindings.this.layer.getPreferredHeight();
-
-            return ((event.x < 0 || event.x > width) || (event.y < 0 || event.y > height));
-        }, new ClearHoverStylingAction());
-
-        // clear any hover styling if the mouse is moved out of a NatTable
-        // region
-        uiBindingRegistry.registerMouseMoveBinding((natTable, event, regionLabels) -> (natTable != null && regionLabels == null), new ClearHoverStylingAction());
-
-        // clear any hover styling if the mouse is moved out of the NatTable
-        // area
-        // always return true for the matcher because it is only asked in case
-        // the mouse exits the NatTable client area, therefore further checks
-        // are not necessary
-        uiBindingRegistry.registerMouseExitBinding((natTable, event, regionLabels) -> true, new ClearHoverStylingAction());
+                },
+                new HoverStylingAction(this.layer),
+                new ClearHoverStylingAction());
     }
 
 }

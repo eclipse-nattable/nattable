@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,9 +14,8 @@ package org.eclipse.nebula.widgets.nattable.hover.action;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
-import org.eclipse.nebula.widgets.nattable.hover.command.ClearHoverStylingCommand;
 import org.eclipse.nebula.widgets.nattable.hover.command.HoverStylingCommand;
-import org.eclipse.nebula.widgets.nattable.ui.action.ClearCursorAction;
+import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.swt.events.MouseEvent;
 
 /**
@@ -25,12 +24,10 @@ import org.eclipse.swt.events.MouseEvent;
  * <p>
  * Will also clear any set cursor by default.
  *
- * @author Dirk Fauth
- *
  * @see HoverLayer
  * @see HoverStylingCommand
  */
-public class HoverStylingAction extends ClearCursorAction {
+public class HoverStylingAction implements IMouseAction {
 
     /**
      * The HoverLayer that is responsible for handling the hover styling
@@ -51,13 +48,6 @@ public class HoverStylingAction extends ClearCursorAction {
 
     @Override
     public void run(NatTable natTable, MouseEvent event) {
-        // clear the cursor on hovering
-        super.run(natTable, event);
-
-        // ensure to clear the hover styling in other possible HoverLayer in the
-        // composition
-        natTable.doCommand(new ClearHoverStylingCommand(this.hoverLayer));
-
         int natColumnPos = natTable.getColumnPositionByX(event.x);
         int natRowPos = natTable.getRowPositionByY(event.y);
 

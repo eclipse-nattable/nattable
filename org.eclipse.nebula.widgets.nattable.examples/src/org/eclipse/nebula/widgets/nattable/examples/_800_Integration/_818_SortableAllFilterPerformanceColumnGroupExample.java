@@ -106,6 +106,7 @@ import org.eclipse.nebula.widgets.nattable.group.performance.ColumnGroupHeaderLa
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
 import org.eclipse.nebula.widgets.nattable.hover.action.ClearHoverStylingAction;
+import org.eclipse.nebula.widgets.nattable.hover.action.HoverStylingByIndexAction;
 import org.eclipse.nebula.widgets.nattable.hover.config.ColumnHeaderResizeHoverBindings;
 import org.eclipse.nebula.widgets.nattable.hover.config.RowHeaderResizeHoverBindings;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
@@ -352,15 +353,24 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
             }
         });
 
-        // add a ui binding to clear the hover in the column header also if you
-        // move over a column group or filter row cell
         natTable.addConfiguration(new AbstractUiBindingConfiguration() {
 
             @Override
             public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-                uiBindingRegistry.registerFirstMouseMoveBinding((natTable, event, regionLabels) -> ((natTable != null && regionLabels == null) || regionLabels != null
-                        && (regionLabels.hasLabel(GridRegion.BODY) || regionLabels.hasLabel(GridRegion.COLUMN_GROUP_HEADER) || regionLabels.hasLabel(GridRegion.FILTER_ROW))),
+                // first remove the binding for hover on the column header
+                uiBindingRegistry.unregisterMouseMoveBinding(
+                        new MouseEventMatcher(GridRegion.COLUMN_HEADER));
+                // register a new binding for the hover on the column header,
+                // but not in the column group or the filter row
+                uiBindingRegistry.registerMouseMoveBinding(
+                        (natTable, event, regionLabels) -> natTable != null
+                                && regionLabels != null
+                                && regionLabels.hasLabel(GridRegion.COLUMN_HEADER)
+                                && !regionLabels.hasLabel(GridRegion.COLUMN_GROUP_HEADER)
+                                && !regionLabels.hasLabel(GridRegion.FILTER_ROW),
+                        new HoverStylingByIndexAction(columnHeaderLayerStack.getHoverLayer()),
                         new ClearHoverStylingAction());
+
             }
         });
 
@@ -929,6 +939,7 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
     class ColumnHeaderLayerStack<T> extends AbstractLayerTransform {
         private final IDataProvider columnHeaderDataProvider;
         private final DataLayer columnHeaderDataLayer;
+        private final HoverLayer columnHoverLayer;
         private final ColumnHeaderLayer columnHeaderLayer;
         private final ColumnGroupHeaderLayer columnGroupHeaderLayer;
 
@@ -947,18 +958,18 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
             this.columnHeaderDataLayer =
                     new DefaultColumnHeaderDataLayer(this.columnHeaderDataProvider);
 
-            HoverLayer columnHoverLayer =
+            this.columnHoverLayer =
                     new HoverLayer(this.columnHeaderDataLayer, false);
 
             this.columnHeaderLayer =
                     new ColumnHeaderLayer(
-                            columnHoverLayer,
+                            this.columnHoverLayer,
                             bodyLayerStack,
                             bodyLayerStack.getSelectionLayer(),
                             false);
 
             this.columnHeaderLayer.addConfiguration(
-                    new ColumnHeaderResizeHoverBindings(columnHoverLayer));
+                    new ColumnHeaderResizeHoverBindings(this.columnHoverLayer));
 
             SortHeaderLayer<T> sortHeaderLayer =
                     new SortHeaderLayer<>(
@@ -1050,6 +1061,10 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
 
         public DataLayer getColumnHeaderDataLayer() {
             return this.columnHeaderDataLayer;
+        }
+
+        public HoverLayer getHoverLayer() {
+            return this.columnHoverLayer;
         }
 
         public ColumnHeaderLayer getColumnHeaderLayer() {

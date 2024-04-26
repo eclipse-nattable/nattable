@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 2020 Dirk Fauth and others.
+ * Copyright (c) 2018, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -127,7 +127,8 @@ public class HideIndicatorMenuConfiguration extends AbstractUiBindingConfigurati
                             GridRegion.COLUMN_HEADER,
                             0,
                             this.columnHeaderLayer),
-                    new ColumnResizeCursorAction());
+                    new ColumnResizeCursorAction(),
+                    new ClearCursorAction());
 
             uiBindingRegistry.registerFirstMouseDownBinding(
                     new ColumnHideIndicatorEventMatcher(
@@ -146,7 +147,8 @@ public class HideIndicatorMenuConfiguration extends AbstractUiBindingConfigurati
                             GridRegion.ROW_HEADER,
                             0,
                             this.rowHeaderLayer),
-                    new RowResizeCursorAction());
+                    new RowResizeCursorAction(),
+                    new ClearCursorAction());
 
             uiBindingRegistry.registerFirstMouseDownBinding(
                     new RowHideIndicatorEventMatcher(
@@ -155,13 +157,6 @@ public class HideIndicatorMenuConfiguration extends AbstractUiBindingConfigurati
                             MouseEventMatcher.RIGHT_BUTTON,
                             this.rowHeaderLayer),
                     new PopupMenuAction(this.rowHideIndicatorMenu));
-        }
-
-        if (this.columnHideIndicatorMenu != null
-                || this.rowHideIndicatorMenu != null) {
-            uiBindingRegistry.registerMouseMoveBinding(
-                    new MouseEventMatcher(),
-                    new ClearCursorAction());
         }
     }
 
