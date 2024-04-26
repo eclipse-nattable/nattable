@@ -20,6 +20,10 @@ jobs:
         java-version: ${{ matrix.java }}
         distribution: 'temurin' # See 'Supported distributions' for available options
         cache: maven
+    - name: Set up Maven
+      uses: stCarolas/setup-maven@v5
+      with:
+        maven-version: 3.9.6
     - name: Install xvfb
       run: sudo apt-get install xvfb
     - name: Build NatTable with Javadoc
