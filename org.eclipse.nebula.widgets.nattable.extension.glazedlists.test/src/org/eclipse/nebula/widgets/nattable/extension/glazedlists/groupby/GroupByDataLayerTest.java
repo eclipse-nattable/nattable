@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2023 Dirk Fauth and others.
+ * Copyright (c) 2014, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -281,6 +282,72 @@ public class GroupByDataLayerTest {
         o = this.dataLayer.getTreeList().get(25);
         assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
         assertEquals("Marge", ((GroupByObject) o).getValue());
+    }
+
+    @Test
+    public void testTwoLevelGroupingAddRemoveAll() {
+        assertEquals(18, this.dataLayer.getRowCount());
+
+        // groupBy lastname and firstname
+        boolean changed = this.groupByModel.addAllGroupByColumnIndexes(1, 0);
+        assertTrue(changed);
+
+        changed = this.groupByModel.addAllGroupByColumnIndexes(1, 0);
+        assertFalse(changed);
+
+        // 18 data rows + 2 GroupBy rows lastname + 8 data rows firstname
+        assertEquals(28, this.dataLayer.getRowCount());
+
+        // Flanders
+        Object o = this.dataLayer.getTreeList().get(0);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals("Flanders", ((GroupByObject) o).getValue());
+
+        o = this.dataLayer.getTreeList().get(1);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals("Maude", ((GroupByObject) o).getValue());
+
+        o = this.dataLayer.getTreeList().get(4);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals("Ned", ((GroupByObject) o).getValue());
+
+        o = this.dataLayer.getTreeList().get(7);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals("Rodd", ((GroupByObject) o).getValue());
+
+        o = this.dataLayer.getTreeList().get(10);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals("Todd", ((GroupByObject) o).getValue());
+
+        // Simpsons
+        o = this.dataLayer.getTreeList().get(13);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals("Simpson", ((GroupByObject) o).getValue());
+
+        o = this.dataLayer.getTreeList().get(14);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals("Bart", ((GroupByObject) o).getValue());
+
+        o = this.dataLayer.getTreeList().get(18);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals("Homer", ((GroupByObject) o).getValue());
+
+        o = this.dataLayer.getTreeList().get(22);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals("Lisa", ((GroupByObject) o).getValue());
+
+        o = this.dataLayer.getTreeList().get(25);
+        assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
+        assertEquals("Marge", ((GroupByObject) o).getValue());
+
+        // remove groupBy lastname and firstname
+        changed = this.groupByModel.removeAllGroupByColumnIndexes(1, 0);
+        assertTrue(changed);
+
+        changed = this.groupByModel.removeAllGroupByColumnIndexes(1, 0);
+        assertFalse(changed);
+
+        assertEquals(18, this.dataLayer.getRowCount());
     }
 
     @Test
@@ -1258,6 +1325,20 @@ public class GroupByDataLayerTest {
         o = this.dataLayer.getTreeList().get(12);
         assertTrue(o instanceof GroupByObject, "Object is not a GroupByObject");
         assertEquals(temp3, ((GroupByObject) o).getValue());
+    }
 
+    @Test
+    public void shouldUpdateGroupByModelViaAPI() {
+        this.groupByModel.addGroupByColumnIndex(1);
+        assertEquals(Arrays.asList(1), this.groupByModel.getGroupByColumnIndexes());
+
+        this.groupByModel.addAllGroupByColumnIndexes(4, 0);
+        assertEquals(Arrays.asList(1, 4, 0), this.groupByModel.getGroupByColumnIndexes());
+
+        this.groupByModel.setGroupByColumnIndexes(0, 2);
+        assertEquals(Arrays.asList(0, 2), this.groupByModel.getGroupByColumnIndexes());
+
+        this.groupByModel.clearGroupByColumnIndexes();
+        assertTrue(this.groupByModel.getGroupByColumnIndexes().isEmpty());
     }
 }
