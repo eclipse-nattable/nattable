@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2023 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,10 +14,12 @@
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
@@ -52,6 +54,48 @@ public class GroupByModel extends Observable implements IPersistable {
     }
 
     /**
+     * Add the given column indexes to the list of column indexes that are
+     * currently grouped.
+     *
+     * @param columnIndexes
+     *            The column indexes to add to the grouping.
+     * @return <code>true</code> if the list did not already contain any of the
+     *         given column indexes, <code>false</code> if the list is
+     *         unchanged.
+     *
+     * @since 2.4
+     */
+    public boolean addAllGroupByColumnIndexes(int... columnIndexes) {
+        boolean changed = false;
+        for (int index : columnIndexes) {
+            if (!this.groupByColumnIndexes.contains(index)) {
+                this.groupByColumnIndexes.add(index);
+                changed = true;
+            }
+        }
+        if (changed) {
+            update();
+        }
+        return changed;
+    }
+
+    /**
+     * Set the given column indexes to the list of column indexes that are
+     * currently grouped. Simply overrides the existing grouping, and therefore
+     * always triggers an update.
+     *
+     * @param columnIndexes
+     *            The column indexes to add to the grouping.
+     *
+     * @since 2.4
+     */
+    public void setGroupByColumnIndexes(int... columnIndexes) {
+        this.groupByColumnIndexes.clear();
+        this.groupByColumnIndexes.addAll(Arrays.stream(columnIndexes).boxed().collect(Collectors.toList()));
+        update();
+    }
+
+    /**
      * Remove the given column index from the list of column indexes that are
      * currently grouped.
      *
@@ -69,6 +113,32 @@ public class GroupByModel extends Observable implements IPersistable {
             // unchanged
             return false;
         }
+    }
+
+    /**
+     * Remove the given column indexes from the list of column indexes that are
+     * currently grouped.
+     *
+     * @param columnIndexes
+     *            The column indexes to remove from the grouping.
+     * @return <code>true</code> if the list contained any of the elements and
+     *         was therefore changed, <code>false</code> if the list is
+     *         unchanged.
+     *
+     * @since 2.4
+     */
+    public boolean removeAllGroupByColumnIndexes(int... columnIndexes) {
+        boolean changed = false;
+        for (int index : columnIndexes) {
+            if (this.groupByColumnIndexes.contains(index)) {
+                this.groupByColumnIndexes.remove(Integer.valueOf(index));
+                changed = true;
+            }
+        }
+        if (changed) {
+            update();
+        }
+        return changed;
     }
 
     /**

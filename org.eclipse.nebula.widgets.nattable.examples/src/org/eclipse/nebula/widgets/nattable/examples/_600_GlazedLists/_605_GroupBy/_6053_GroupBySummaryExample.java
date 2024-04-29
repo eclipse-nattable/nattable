@@ -30,9 +30,9 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 import org.eclipse.nebula.widgets.nattable.dataset.person.ExtendedPersonWithAddress;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples._600_GlazedLists._605_GroupBy._6052_GroupByCustomTypesExample.MyRowObject.Gender;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
@@ -342,6 +342,42 @@ public class _6053_GroupBySummaryExample extends AbstractNatExample {
                             GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
                 }
                 natTable.doCommand(new VisualRefreshCommand());
+            }
+        });
+
+        Button groupLastFirstButton = new Button(buttonPanel, SWT.PUSH);
+        groupLastFirstButton.setText("GroupBy Lastname Firstname");
+        groupLastFirstButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                bodyLayerStack.groupByModel.setGroupByColumnIndexes(1, 0);
+            }
+        });
+
+        Button groupFirstLastButton = new Button(buttonPanel, SWT.PUSH);
+        groupFirstLastButton.setText("GroupBy Firstname Lastname");
+        groupFirstLastButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                bodyLayerStack.groupByModel.setGroupByColumnIndexes(0, 1);
+            }
+        });
+
+        Button groupLastMarriedButton = new Button(buttonPanel, SWT.PUSH);
+        groupLastMarriedButton.setText("GroupBy Lastname Gender");
+        groupLastMarriedButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                bodyLayerStack.groupByModel.setGroupByColumnIndexes(1, 5);
+            }
+        });
+
+        Button clearGroupByButton = new Button(buttonPanel, SWT.PUSH);
+        clearGroupByButton.setText("Clear GroupBy");
+        clearGroupByButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                bodyLayerStack.groupByModel.clearGroupByColumnIndexes();
             }
         });
 
