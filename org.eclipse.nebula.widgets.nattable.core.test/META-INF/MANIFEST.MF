@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: NatTable Core Tests
-Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.core.tests
+Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.core.test
 Bundle-Version: 2.4.0.qualifier
 Fragment-Host: org.eclipse.nebula.widgets.nattable.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -22,4 +22,4 @@ Export-Package: org.eclipse.nebula.widgets.nattable.test.fixture,
  org.eclipse.nebula.widgets.nattable.test.fixture.layer,
  org.eclipse.nebula.widgets.nattable.test.integration
 Bundle-Vendor: Eclipse Nebula NatTable
-Automatic-Module-Name: org.eclipse.nebula.widgets.nattable.core.tests
+Automatic-Module-Name: org.eclipse.nebula.widgets.nattable.core.test

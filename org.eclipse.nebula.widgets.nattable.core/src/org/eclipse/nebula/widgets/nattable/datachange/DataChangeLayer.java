@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2020 Dirk Fauth.
+ * Copyright (c) 2017, 2024 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -405,6 +405,23 @@ public class DataChangeLayer extends AbstractIndexLayerTransform {
     public boolean isCellDirty(int columnPosition, int rowPosition) {
         for (DataChangeHandler handler : this.dataChangeHandler) {
             if (handler.isCellDirty(columnPosition, rowPosition)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if there is a dirty state.
+     *
+     * @return <code>true</code> if there is a dirty state (data has changed and
+     *         not saved yet), <code>false</code> if not.
+     *
+     * @since 2.4
+     */
+    public boolean isDirty() {
+        for (DataChangeHandler handler : this.dataChangeHandler) {
+            if (handler.isDirty()) {
                 return true;
             }
         }

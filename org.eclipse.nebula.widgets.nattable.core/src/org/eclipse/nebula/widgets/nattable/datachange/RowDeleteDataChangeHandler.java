@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 2020 Dirk Fauth.
+ * Copyright (c) 2018, 2024 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -65,6 +65,11 @@ public class RowDeleteDataChangeHandler extends AbstractDataChangeHandler<RowDel
     public boolean isCellDirty(int columnPosition, int rowPosition) {
         // there are no visible cells for deleted rows
         return false;
+    }
+
+    @Override
+    public boolean isDirty() {
+        return !this.dataChanges.isEmpty();
     }
 
     @Override
