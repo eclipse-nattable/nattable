@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2022 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -32,6 +32,7 @@ import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -355,7 +356,21 @@ public class TextCellEditor extends AbstractCellEditor {
 
         // add a key listener that will commit or close the editor for special
         // key strokes and executes conversion/validation on input to the editor
-        textControl.addKeyListener(new KeyAdapter() {
+        textControl.addKeyListener(getTextKeyListener());
+
+        return textControl;
+    }
+
+    /**
+     *
+     * @return The {@link KeyListener} that is added to the {@link Text} control
+     *         to commit or close the editor for special key strokes and
+     *         executes conversion/validation on input to the editor.
+     *
+     * @since 2.4
+     */
+    protected KeyListener getTextKeyListener() {
+        return new KeyAdapter() {
 
             @Override
             public void keyPressed(KeyEvent event) {
@@ -384,7 +399,7 @@ public class TextCellEditor extends AbstractCellEditor {
                         }
 
                         if (TextCellEditor.this.editMode == EditModeEnum.DIALOG) {
-                            parent.forceFocus();
+                            TextCellEditor.this.parent.forceFocus();
                         }
                     } else if (event.keyCode == SWT.ESC && event.stateMask == 0) {
                         close();
@@ -431,9 +446,7 @@ public class TextCellEditor extends AbstractCellEditor {
                     // an exception
                 }
             }
-        });
-
-        return textControl;
+        };
     }
 
     @Override
