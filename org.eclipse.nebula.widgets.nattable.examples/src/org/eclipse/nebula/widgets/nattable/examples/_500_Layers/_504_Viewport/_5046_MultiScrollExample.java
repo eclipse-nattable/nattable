@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, 2020 Dirk Fauth and others.
+ * Copyright (c) 2016, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -52,6 +52,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.command.ClearAllSelectionsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectAllCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
+import org.eclipse.nebula.widgets.nattable.ui.action.ClearCursorAction;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.util.ClientAreaAdapter;
@@ -194,7 +195,8 @@ public class _5046_MultiScrollExample extends AbstractNatExample {
         // Mouse move - Show resize cursor
         natTable.getUiBindingRegistry().registerFirstMouseMoveBinding(
                 new ClientAreaResizeMatcher(gridLayer),
-                new VerticalResizeCursorAction());
+                new VerticalResizeCursorAction(),
+                new ClearCursorAction());
 
         natTable.getUiBindingRegistry().registerFirstMouseDragMode(
                 new ClientAreaResizeMatcher(gridLayer),
@@ -458,7 +460,7 @@ public class _5046_MultiScrollExample extends AbstractNatExample {
         public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
             int viewportBorderX = this.gridLayer.getRowHeaderLayer().getWidth() + this.gridLayer.getStructureBody().getWidth();
             if (regionLabels != null && regionLabels.hasLabel(GridRegion.COLUMN_HEADER)
-                    && (event.x >= viewportBorderX && event.x <= viewportBorderX + 4)) {
+                    && (event.x >= viewportBorderX && event.x <= viewportBorderX + GUIHelper.convertHorizontalPixelToDpi(4))) {
                 return true;
             }
             return false;

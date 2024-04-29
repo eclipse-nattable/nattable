@@ -7,17 +7,16 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java: [ '17' ]
-    name: Java ${{ matrix.java }} compile
+    name: Java 17 compile
     steps:
     - name: Git Checkout
       uses: actions/checkout@v4
-    - name: Set up JDK ${{ matrix.java }}
+    - name: Set up JDKs
       uses: actions/setup-java@v4
       with:
-        java-version: ${{ matrix.java }}
+        java-version: |
+          8
+          17
         distribution: 'temurin' # See 'Supported distributions' for available options
         cache: maven
     - name: Set up Maven
@@ -27,4 +26,8 @@ jobs:
     - name: Install xvfb
       run: sudo apt-get install xvfb
     - name: Build NatTable with Javadoc
-      run: xvfb-run mvn clean compile javadoc:aggregate verify
+      env:
+       JAVA_HOME: ${{ env.JAVA_HOME_17_X64 }}
+      run: | 
+        cp .github/toolchains.xml ~/.m2/toolchains.xml
+        xvfb-run mvn clean compile javadoc:aggregate verify

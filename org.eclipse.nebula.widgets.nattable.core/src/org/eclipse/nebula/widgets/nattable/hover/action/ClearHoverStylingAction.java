@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,7 +15,7 @@ package org.eclipse.nebula.widgets.nattable.hover.action;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
 import org.eclipse.nebula.widgets.nattable.hover.command.ClearHoverStylingCommand;
-import org.eclipse.nebula.widgets.nattable.ui.action.ClearCursorAction;
+import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.swt.events.MouseEvent;
 
 /**
@@ -24,12 +24,10 @@ import org.eclipse.swt.events.MouseEvent;
  * <p>
  * Will also clear any set cursor by default.
  *
- * @author Dirk Fauth
- *
  * @see HoverLayer
  * @see ClearHoverStylingCommand
  */
-public class ClearHoverStylingAction extends ClearCursorAction {
+public class ClearHoverStylingAction implements IMouseAction {
 
     /**
      * The HoverLayer whose hover styling should not be cleared.
@@ -57,8 +55,6 @@ public class ClearHoverStylingAction extends ClearCursorAction {
 
     @Override
     public void run(NatTable natTable, MouseEvent event) {
-        super.run(natTable, event);
-
         natTable.doCommand(new ClearHoverStylingCommand(this.hoverLayer));
     }
 }

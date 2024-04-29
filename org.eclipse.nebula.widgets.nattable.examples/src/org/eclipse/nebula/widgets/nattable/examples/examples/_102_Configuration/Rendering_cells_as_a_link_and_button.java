@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -38,6 +38,7 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.style.TextDecorationEnum;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
+import org.eclipse.nebula.widgets.nattable.ui.action.ClearCursorAction;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.CellLabelMouseEventMatcher;
@@ -241,9 +242,12 @@ public class Rendering_cells_as_a_link_and_button extends AbstractNatExample {
             uiBindingRegistry.registerMouseDownBinding(mouseEventMatcher, this);
 
             // show hand cursor, which is usually used for links
-            uiBindingRegistry.registerFirstMouseMoveBinding(mouseHoverMatcher, (natTable, event) -> {
-                natTable.setCursor(natTable.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
-            });
+            uiBindingRegistry.registerFirstMouseMoveBinding(
+                    mouseHoverMatcher,
+                    (natTable, event) -> {
+                        natTable.setCursor(natTable.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
+                    },
+                    new ClearCursorAction());
 
         }
 

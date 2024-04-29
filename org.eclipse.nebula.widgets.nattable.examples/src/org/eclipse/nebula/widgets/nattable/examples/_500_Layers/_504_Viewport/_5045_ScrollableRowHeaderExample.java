@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2020 Dirk Fauth and others.
+ * Copyright (c) 2015, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -44,6 +44,7 @@ import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.resize.action.VerticalResizeCursorAction;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayerPainter;
+import org.eclipse.nebula.widgets.nattable.ui.action.ClearCursorAction;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.util.ClientAreaAdapter;
@@ -208,7 +209,8 @@ public class _5045_ScrollableRowHeaderExample extends AbstractNatExample {
         // Mouse move - Show resize cursor
         natTable.getUiBindingRegistry().registerFirstMouseMoveBinding(
                 new ClientAreaResizeMatcher(compositeLayer),
-                new VerticalResizeCursorAction());
+                new VerticalResizeCursorAction(),
+                new ClearCursorAction());
 
         natTable.getUiBindingRegistry().registerFirstMouseDragMode(
                 new ClientAreaResizeMatcher(compositeLayer),
@@ -280,8 +282,9 @@ public class _5045_ScrollableRowHeaderExample extends AbstractNatExample {
 
         @Override
         public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
+            int adjust = GUIHelper.convertHorizontalPixelToDpi(5);
             if (regionLabels != null && regionLabels.hasLabel(GridRegion.COLUMN_HEADER)
-                    && (event.x > this.rowHeaderLayer.getWidth() - 5 && event.x < this.rowHeaderLayer.getWidth() + 5)) {
+                    && (event.x > this.rowHeaderLayer.getWidth() - adjust && event.x < this.rowHeaderLayer.getWidth() + adjust)) {
                 return true;
             }
             return false;

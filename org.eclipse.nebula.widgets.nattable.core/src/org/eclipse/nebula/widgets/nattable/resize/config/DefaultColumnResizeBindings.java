@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,7 +21,6 @@ import org.eclipse.nebula.widgets.nattable.resize.mode.ColumnResizeDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.ClearCursorAction;
 import org.eclipse.nebula.widgets.nattable.ui.action.NoOpMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
-import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.swt.SWT;
 
 public class DefaultColumnResizeBindings extends AbstractUiBindingConfiguration {
@@ -31,9 +30,7 @@ public class DefaultColumnResizeBindings extends AbstractUiBindingConfiguration 
         // Mouse move - Show resize cursor
         uiBindingRegistry.registerFirstMouseMoveBinding(
                 new ColumnResizeEventMatcher(SWT.NONE, GridRegion.COLUMN_HEADER, 0),
-                new ColumnResizeCursorAction());
-        uiBindingRegistry.registerMouseMoveBinding(
-                new MouseEventMatcher(),
+                new ColumnResizeCursorAction(),
                 new ClearCursorAction());
 
         // Column resize

@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2020 CEA LIST.
+ * Copyright (c) 2015, 2024 CEA LIST.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,7 +26,6 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.ui.action.ClearCursorAction;
 import org.eclipse.nebula.widgets.nattable.ui.action.NoOpMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
-import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 
 /**
  * Default configuration for fill handle functionality. Registers the
@@ -82,9 +81,7 @@ public class FillHandleConfiguration extends AbstractLayerConfiguration<NatTable
         // Show fill handle cursor
         uiBindingRegistry.registerFirstMouseMoveBinding(
                 matcher,
-                new FillHandleCursorAction());
-        uiBindingRegistry.registerMouseMoveBinding(
-                new MouseEventMatcher(),
+                new FillHandleCursorAction(),
                 new ClearCursorAction());
 
         // Mouse drag
