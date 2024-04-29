@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 2020 Dirk Fauth.
+ * Copyright (c) 2018, 2024 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -86,4 +86,13 @@ public interface DataChangeHandler {
      */
     boolean isCellDirty(int columnPosition, int rowPosition);
 
+    /**
+     * Checks if there is a dirty state tracked by this handler.
+     *
+     * @return <code>true</code> if there is a dirty state (data has changed and
+     *         not saved yet), <code>false</code> if not.
+     *
+     * @since 2.4
+     */
+    boolean isDirty();
 }

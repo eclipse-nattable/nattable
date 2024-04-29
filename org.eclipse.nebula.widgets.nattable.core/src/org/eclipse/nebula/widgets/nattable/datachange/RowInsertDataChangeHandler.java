@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 2020 Dirk Fauth.
+ * Copyright (c) 2018, 2024 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -195,6 +195,11 @@ public class RowInsertDataChangeHandler extends AbstractDataChangeHandler<RowIns
     @Override
     public boolean isCellDirty(int columnPosition, int rowPosition) {
         return isRowDirty(rowPosition);
+    }
+
+    @Override
+    public boolean isDirty() {
+        return !this.dataChanges.isEmpty();
     }
 
     @Override

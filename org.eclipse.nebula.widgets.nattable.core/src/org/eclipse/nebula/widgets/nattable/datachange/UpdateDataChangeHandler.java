@@ -495,6 +495,11 @@ public abstract class UpdateDataChangeHandler<T extends UpdateDataChange> extend
         return false;
     }
 
+    @Override
+    public boolean isDirty() {
+        return !this.dataChanges.isEmpty();
+    }
+
     /**
      * Configure if the changes tracked by the {@link DataChangeLayer} should
      * also be updated on a horizontal/column structural changes. The update is
