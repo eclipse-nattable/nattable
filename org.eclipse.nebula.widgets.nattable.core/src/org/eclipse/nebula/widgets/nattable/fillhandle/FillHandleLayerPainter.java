@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2020 CEA LIST and others.
+ * Copyright (c) 2015, 2024 CEA LIST and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -221,6 +221,12 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
             IConfigRegistry configRegistry) {
 
         Rectangle positionRectangle = getPositionRectangleFromPixelRectangle(natLayer, pixelRectangle);
+
+        // nothing to draw, we exit
+        if (positionRectangle.width <= 0 || positionRectangle.height <= 0) {
+            return;
+        }
+
         int columnPositionOffset = positionRectangle.x;
         int rowPositionOffset = positionRectangle.y;
 
