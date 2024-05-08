@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2020 CEA LIST.
+ * Copyright (c) 2015, 2024 CEA LIST.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -98,13 +98,12 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                 for (int j = 0; j < pasteWidth; j++) {
                     ILayerCell cell = cells[(j + columnStartAdjustment) % this.clipboard.getCopiedCells()[0].length];
 
-                    Object cellValue = getPasteValue(cell, command, pasteColumn, pasteRow);
-
                     if (EditUtils.isCellEditable(
                             new PositionCoordinate(this.selectionLayer,
                                     pasteColumn,
                                     pasteRow),
                             command.configRegistry)) {
+                        Object cellValue = getPasteValue(cell, command, pasteColumn, pasteRow);
                         this.selectionLayer.doCommand(new UpdateDataCommand(this.selectionLayer, pasteColumn, pasteRow, cellValue));
                     }
 
