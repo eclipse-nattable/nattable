@@ -130,6 +130,7 @@ public class ConfigurableModeEventHandler extends AbstractModeEventHandler {
 
         // ensure that any current active move action is exited
         this.currentActiveMoveActions.forEach(action -> action.runExit(this.natTable, event));
+        this.currentActiveMoveActions.clear();
 
         IMouseAction mouseExitAction = getUiBindingRegistry().getMouseExitAction(event);
         if (mouseExitAction != null) {
