@@ -25,14 +25,14 @@
    </requires>
 
    <plugin
-         id="javax.annotation"
+         id="jakarta.annotation-api"
          download-size="28"
          install-size="58"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="javax.inject"
+         id="jakarta.inject.jakarta.inject-api"
          download-size="16"
          install-size="28"
          version="0.0.0"
@@ -303,13 +303,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.equinox.ds"
-         download-size="192"
-         install-size="394"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.equinox.event"
          download-size="33"
          install-size="59"
@@ -371,13 +364,6 @@
          id="org.eclipse.equinox.simpleconfigurator"
          download-size="43"
          install-size="80"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.equinox.util"
-         download-size="75"
-         install-size="139"
          version="0.0.0"
          unpack="false"/>
 
@@ -458,34 +444,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.w3c.css.sac"
-         download-size="37"
-         install-size="65"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.w3c.dom.events"
-         download-size="17"
-         install-size="26"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.w3c.dom.smil"
-         download-size="19"
-         install-size="37"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.w3c.dom.svg"
-         download-size="95"
-         install-size="140"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.apache.felix.scr"
          download-size="0"
          install-size="0"
@@ -521,7 +479,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.apache.commons.io"
+         id="org.apache.commons.commons-io"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -543,13 +501,6 @@
 
    <plugin
          id="org.apache.commons.logging"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.ibm.icu.base"
          download-size="0"
          install-size="0"
          version="0.0.0"
