@@ -14,7 +14,7 @@ Require-Bundle: ca.odell.glazedlists,
  org.eclipse.nebula.widgets.nattable.extension.poi,
  org.eclipse.nebula.widgets.richtext,
  org.apache.commons.math3,
- org.apache.commons.collections4
+ org.apache.commons.commons-collections4
 Bundle-Vendor: Eclipse Nebula NatTable
 Export-Package: org.eclipse.nebula.widgets.nattable.examples,
  org.eclipse.nebula.widgets.nattable.examples.runner
