@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -162,7 +162,7 @@ public class TabbedNatExampleRunner {
             Class<? extends INatExample> exampleClass = getExampleClass(path);
             if (exampleClass != null) {
                 try {
-                    example = exampleClass.newInstance();
+                    example = exampleClass.getDeclaredConstructor().newInstance();
                     examplePathMap.put(examplePath, example);
                 } catch (Exception e) {
                     throw new RuntimeException(e);

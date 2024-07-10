@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.nebula.widgets.nattable.examples.e4.feature"
       label="%featureName"
-      version="2.4.0.qualifier"
+      version="2.5.0.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
@@ -21,38 +21,26 @@
 
    <plugin
          id="org.eclipse.nebula.widgets.nattable.examples.e4"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.nebula.widgets.nattable.dataset"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.nebula.widgets.nattable.examples"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="slf4j.simple"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="slf4j.api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.logging.log4j.to.slf4j"
+         version="0.0.0"/>
 
 </feature>

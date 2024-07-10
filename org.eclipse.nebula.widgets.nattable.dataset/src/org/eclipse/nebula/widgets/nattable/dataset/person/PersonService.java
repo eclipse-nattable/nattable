@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,6 +13,7 @@
 package org.eclipse.nebula.widgets.nattable.dataset.person;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -428,7 +429,7 @@ public final class PersonService {
     public static Double createRandomMoneyAmount() {
         Double result = randomGenerator.nextDouble() * 1000;
         BigDecimal bd = new BigDecimal(result);
-        bd = bd.setScale(2, BigDecimal.ROUND_HALF_UP);
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
 }

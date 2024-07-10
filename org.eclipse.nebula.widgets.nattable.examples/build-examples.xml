@@ -19,60 +19,78 @@
             <fileset dir="../org.eclipse.nebula.widgets.nattable.extension.poi/target/classes"/>
             <fileset dir="../org.eclipse.nebula.widgets.nattable.dataset/target/classes"/>
             <fileset dir="../org.eclipse.nebula.widgets.nattable.examples/target/classes"/>
-        	<zipfileset
-            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.eclipse.nebula.cwt_1.1.0.201912241810.jar"/>
-        	<zipfileset
-            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.eclipse.nebula.widgets.cdatetime_1.5.0.202011020719.jar"/>
-        	<zipfileset
-            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.eclipse.nebula.widgets.richtext_1.4.0.202011020719.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/ca.odell.glazedlists_1.11.0.v20190926-1838.jar"/>
+            	src="lib/ca.odell.glazedlists_1.11.0.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.apache.poi_4.1.1.v20200604-1524.jar"/>
+            	src="lib/com.zaxxer.sparsebits_1.3.0.v20230929-1000.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.apache.commons.codec_1.14.0.v20200818-1422.jar"/>
+            	src="lib/org.apache.commons.commons-codec_1.17.0.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.apache.commons.collections4_4.4.0.v20200420-1700.jar"/>
+            	src="lib/org.apache.commons.commons-collections4_4.4.0.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.apache.commons.math3_3.6.1.v20200817-1830.jar"/>
+            	src="lib/org.apache.commons.commons-io_2.16.1.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.apache.commons.logging_1.1.1.v201101211721.jar"/>
+            	src="lib/org.apache.commons.lang3_3.14.0.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.eclipse.core.commands_3.9.100.v20180404-1234.jar"/>
+            	src="lib/org.apache.commons.logging_1.2.0.v20180409-1502.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.eclipse.core.runtime_3.14.0.v20180417-0825.jar"/>
+            	src="lib/org.apache.commons.math3_3.6.1.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.eclipse.equinox.common_3.10.0.v20180412-1130.jar"/>
+            	src="lib/org.apache.commons.text_1.12.0.jar"/>
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.apache.logging.log4j.api_2.23.1.jar"/>
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.apache.logging.log4j.to.slf4j_2.23.1.jar"/>
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.apache.poi_5.3.0.v20240703-1000.jar"/>
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.eclipse.collections_11.1.0.v20220705-1455.jar"/>
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.eclipse.core.commands_3.10.200.v20220512-0851.jar"/>
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.eclipse.core.runtime_3.25.0.v20220506-1157.jar"/>
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.eclipse.equinox.common_3.16.100.v20220315-2327.jar"/>
             <zipfileset
             		excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.eclipse.equinox.registry_3.8.0.v20180426-1327.jar"/>
+            	src="lib/org.eclipse.equinox.registry_3.11.100.v20211021-1418.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.eclipse.jface_3.14.0.v20180423-0714.jar"/>
+            	src="lib/org.eclipse.jface_3.26.0.v20220513-0449.jar"/>
+        	<zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.eclipse.nebula.cwt_1.1.0.202402091246.jar"/>
+        	<zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.eclipse.nebula.widgets.cdatetime_1.5.0.202402091246.jar"/>
+        	<zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.eclipse.nebula.widgets.richtext_1.5.1.202402091246.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.eclipse.osgi_3.13.0.v20180409-1500.jar"/>
+            	src="lib/org.eclipse.osgi_3.18.0.v20220516-2155.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.eclipse.collections_10.4.0.v20200820-2049.jar"/>
+            	src="lib/slf4j.api_2.0.13.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.slf4j.api_1.7.30.v20200204-2150.jar"/>
-            <zipfileset
-            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.slf4j.binding.simple_1.7.30.v20200204-2150.jar"/>
+            	src="lib/slf4j.simple_2.0.13.jar"/>
         </jar>
 
     </target>

@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2023 CEA LIST.
+ * Copyright (c) 2015, 2024 CEA LIST.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.ContextualDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;

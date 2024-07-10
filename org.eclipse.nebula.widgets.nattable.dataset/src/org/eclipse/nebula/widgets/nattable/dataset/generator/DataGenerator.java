@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -30,7 +30,7 @@ public class DataGenerator<T> {
     public T generate(Class<T> dataClass) throws GeneratorException {
 
         try {
-            T dataContainer = dataClass.newInstance();
+            T dataContainer = dataClass.getDeclaredConstructor().newInstance();
             final ValueGeneratorFactory generatorFactory = new ValueGeneratorFactory();
 
             for (Field field : dataClass.getDeclaredFields()) {
@@ -75,7 +75,11 @@ public class DataGenerator<T> {
             // Class<? extends IValueGenerator> generatorClass =
             // annotation.value();
             Class<? extends IValueGenerator> generatorClass = annotation.value();
-            return generatorClass.newInstance();
+            try {
+                return generatorClass.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                throw new InstantiationException(e.getMessage());
+            }
         }
     }
 

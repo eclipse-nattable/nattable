@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2023 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -90,7 +90,7 @@ import ca.odell.glazedlists.matchers.Matcher;
  * @see GroupByColumnAccessor
  * @see GroupByDataLayerConfiguration
  */
-public class GroupByDataLayer<T> extends DataLayer implements Observer {
+public class GroupByDataLayer<T> extends DataLayer implements Observer, GroupByModelListener {
 
     /**
      * Label that indicates the shown tree item object as GroupByObject
@@ -472,7 +472,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         this.columnAccessor = columnAccessor;
 
         this.groupByModel = groupByModel;
-        this.groupByModel.addObserver(this);
+        this.groupByModel.addGroupByModelListener(this);
 
         this.groupByColumnAccessor = new GroupByColumnAccessor(columnAccessor);
 
@@ -633,8 +633,14 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         });
     }
 
+    // TODO remove once Observer is removed from the class hierarchy
     @Override
     public void update(Observable o, Object arg) {
+        handleGroupByModelChange(this.groupByModel);
+    }
+
+    @Override
+    public void handleGroupByModelChange(GroupByModel groupByModel) {
         // Perform the update showing the busy indicator, as removing and
         // re-applying the sorting and filtering around building the tree
         // structure costs time

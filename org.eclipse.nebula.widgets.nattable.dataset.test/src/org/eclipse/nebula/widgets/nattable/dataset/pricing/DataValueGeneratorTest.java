@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2022 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -51,7 +51,7 @@ public class DataValueGeneratorTest {
                 try {
                     Class<? extends IValueGenerator> generatorClass = field
                             .getAnnotation(DataValueGenerator.class).value();
-                    IValueGenerator generator = generatorClass.newInstance();
+                    IValueGenerator generator = generatorClass.getDeclaredConstructor().newInstance();
                     Object newValue = generator.newValue(random);
                     // System.out.println("newValue: "+newValue + "\t" +
                     // generator.getClass().getName());

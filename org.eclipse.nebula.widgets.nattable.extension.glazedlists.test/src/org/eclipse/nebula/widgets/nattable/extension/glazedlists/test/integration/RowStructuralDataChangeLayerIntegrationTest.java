@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 2022 Dirk Fauth.
+ * Copyright (c) 2018, 2024 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -45,8 +45,8 @@ import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.LayerListenerFixture;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,7 +69,7 @@ public class RowStructuralDataChangeLayerIntegrationTest {
     private RowInsertDataChangeHandler insertHandler;
     private RowDeleteDataChangeHandler deleteHandler;
 
-    private CountDownLatch lock = new CountDownLatch(1);
+    private LayerListenerFixture listenerFixture;
 
     @BeforeEach
     public void setup() {
@@ -120,11 +120,8 @@ public class RowStructuralDataChangeLayerIntegrationTest {
                 // enable tracking of row structural changes
                 true);
 
-        this.dataChangeLayer.addLayerListener(event -> {
-            if (event instanceof RowStructuralRefreshEvent) {
-                RowStructuralDataChangeLayerIntegrationTest.this.lock.countDown();
-            }
-        });
+        this.listenerFixture = new LayerListenerFixture();
+        this.dataChangeLayer.addLayerListener(this.listenerFixture);
 
         for (DataChangeHandler h : this.dataChangeLayer.getDataChangeHandler()) {
             if (h instanceof RowInsertDataChangeHandler) {
@@ -416,11 +413,14 @@ public class RowStructuralDataChangeLayerIntegrationTest {
     public void shouldKeepChangeOnFilter() throws InterruptedException {
         this.dataChangeLayer.doCommand(new UpdateDataCommand(this.dataChangeLayer, 1, 1, "Lovejoy"));
 
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        this.listenerFixture.setCountDownLatch(countDownLatch);
+
         this.filterList.setMatcher(item -> item.getLastName().equals("Simpson"));
 
         // give the GlazedListsEventLayer some time to trigger the
         // RowStructuralRefreshEvent
-        boolean completed = this.lock.await(1000, TimeUnit.MILLISECONDS);
+        boolean completed = countDownLatch.await(1000, TimeUnit.MILLISECONDS);
 
         assertTrue(completed, "Timeout - no event received");
 
@@ -428,12 +428,13 @@ public class RowStructuralDataChangeLayerIntegrationTest {
         assertFalse(this.dataChangeLayer.getDataChanges().isEmpty());
         assertFalse(this.dataChangeLayer.isColumnDirty(1), "Column 1 is dirty");
 
-        this.lock = new CountDownLatch(1);
+        countDownLatch = new CountDownLatch(1);
+        this.listenerFixture.setCountDownLatch(countDownLatch);
         this.filterList.setMatcher(null);
 
         // give the GlazedListsEventLayer some time to trigger the
         // RowStructuralRefreshEvent
-        completed = this.lock.await(1000, TimeUnit.MILLISECONDS);
+        completed = countDownLatch.await(1000, TimeUnit.MILLISECONDS);
 
         assertTrue(completed, "Timeout - no event received");
 
@@ -454,11 +455,14 @@ public class RowStructuralDataChangeLayerIntegrationTest {
         assertFalse(this.dataChangeLayer.getDataChanges().isEmpty());
         assertFalse(this.dataChangeLayer.isColumnDirty(1), "Column 1 is dirty");
 
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        this.listenerFixture.setCountDownLatch(countDownLatch);
+
         this.filterList.setMatcher(null);
 
         // give the GlazedListsEventLayer some time to trigger the
         // RowStructuralRefreshEvent
-        boolean completed = this.lock.await(1000, TimeUnit.MILLISECONDS);
+        boolean completed = countDownLatch.await(1000, TimeUnit.MILLISECONDS);
 
         assertTrue(completed, "Timeout - no event received");
 

@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.nebula.widgets.nattable.extension.nebula.feature"
       label="%featureName"
-      version="2.4.0.qualifier"
+      version="2.5.0.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
@@ -21,36 +21,26 @@
 
    <plugin
          id="org.eclipse.nebula.widgets.nattable.extension.nebula"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.nebula.widgets.richtext"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="org.eclipse.nebula.widgets.cdatetime"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.nebula.cwt"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.commons.text"
+         version="0.0.0"/>
 
    <plugin
          id="org.apache.commons.lang3"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
 </feature>

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Dirk Fauth and others.
+ * Copyright (c) 2012, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -302,11 +302,11 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
                                 } catch (InterruptedException e) {
                                     Thread.currentThread().interrupt();
                                 }
-                                return new Double(colTwo.doubleValue() + colThree.doubleValue()) / colOne.doubleValue();
+                                return Double.valueOf(colTwo.doubleValue() + colThree.doubleValue()) / colOne.doubleValue();
                             }
                         });
 
-                return result == null ? new Double(0) : result;
+                return result == null ? Double.valueOf(0) : result;
             }
 
             return super.getDataValue(colIndex, rowIndex);
