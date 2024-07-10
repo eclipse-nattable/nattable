@@ -16,13 +16,14 @@ jobs:
       with:
         java-version: |
           8
+          11
           17
         distribution: 'temurin' # See 'Supported distributions' for available options
         cache: maven
     - name: Set up Maven
       uses: stCarolas/setup-maven@v5
       with:
-        maven-version: 3.9.6
+        maven-version: 3.9.8
     - name: Install xvfb
       run: sudo apt-get install xvfb
     - name: Build NatTable with Javadoc
