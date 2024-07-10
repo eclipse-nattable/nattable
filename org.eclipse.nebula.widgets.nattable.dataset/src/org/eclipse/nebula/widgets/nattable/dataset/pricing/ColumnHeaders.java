@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -59,7 +59,7 @@ public enum ColumnHeaders {
         Map<String, Integer> propertyMap = new LinkedHashMap<String, Integer>();
         String[] properties = getProperties();
         for (int index = 0; index < properties.length; index++) {
-            propertyMap.put(properties[index], new Integer(index));
+            propertyMap.put(properties[index], Integer.valueOf(index));
         }
         return propertyMap;
     }

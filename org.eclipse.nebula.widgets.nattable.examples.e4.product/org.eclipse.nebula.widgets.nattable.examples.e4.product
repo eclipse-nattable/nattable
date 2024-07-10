@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="org.eclipse.nebula.widgets.nattable.examples.e4" uid="org.eclipse.nebula.widgets.nattable.examples.e4.product" id="org.eclipse.nebula.widgets.nattable.examples.e4.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.4.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="org.eclipse.nebula.widgets.nattable.examples.e4" uid="org.eclipse.nebula.widgets.nattable.examples.e4.product" id="org.eclipse.nebula.widgets.nattable.examples.e4.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.5.0.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="true">
 
    <configIni use="default">
    </configIni>
@@ -313,24 +313,24 @@ version(s), and exceptions or additional permissions here}.&quot;
    <features>
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>
-      <feature id="org.eclipse.nebula.widgets.nattable.examples.e4.rcp.feature"/>
+      <feature id="org.eclipse.e4.rcp"/>
+      <feature id="org.eclipse.collections.feature"/>
       <feature id="org.eclipse.nebula.widgets.nattable.core.feature"/>
       <feature id="org.eclipse.nebula.widgets.nattable.extension.e4.feature"/>
       <feature id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature"/>
       <feature id="org.eclipse.nebula.widgets.nattable.examples.e4.feature"/>
       <feature id="org.eclipse.nebula.widgets.nattable.extension.nebula.feature"/>
       <feature id="org.eclipse.nebula.widgets.nattable.extension.poi.feature"/>
-      <feature id="org.eclipse.collections.feature" installMode="root"/>
    </features>
 
    <configurations>
-      <plugin id="org.apache.aries.spifly.dynamic.bundle" autoStart="true" startLevel="2"/>
-      <plugin id="org.apache.felix.scr" autoStart="true" startLevel="2"/>
-      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="4"/>
-      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2"/>
-      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2"/>
-      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1"/>
-      <plugin id="slf4j.simple" autoStart="true" startLevel="2"/>
+      <plugin id="org.apache.aries.spifly.dynamic.bundle" autoStart="true" startLevel="2" />
+      <plugin id="org.apache.felix.scr" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="4" />
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+      <plugin id="slf4j.simple" autoStart="true" startLevel="2" />
    </configurations>
 
    <preferencesInfo>

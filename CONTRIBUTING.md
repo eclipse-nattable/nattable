@@ -43,9 +43,9 @@ Contact the project developers via the [project's "dev" mailing list](https://de
 
 The development tools with minimum versions that are used by the NatTable team are:
 
-* JDK 17
-* Eclipse 4.26 (2022-12)
-* Maven 3.8.6 with Tycho 4.0.2
+* JDK 21
+* Eclipse 4.32 (2024-06)
+* Maven 3.9.8 with Tycho 4.0.8
 * Git
 * JUnit5
 
@@ -74,7 +74,7 @@ Although not required you might want to install m2e together with the Tycho conn
 
 ### Java Requirements
 
-NatTable Core has a Java 8 and Eclipse Platform 3.5 (Galileo) as minimum requirements, so dependencies to newer Java and platform versions must be avoided. The Nebula extension and the E4 extension have a minimum dependency to Java 8 and Eclipse Neon.
+NatTable Core has a Java 11 and Eclipse Platform 4.16 (2020-06) as minimum requirements, so dependencies to newer Java and platform versions must be avoided.
 
 ### Dependencies
 

@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2016, 2020 Dirk Fauth.
+ * Copyright (c) 2016, 2024 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -234,7 +234,7 @@ public class NavigationPart {
         Class<? extends INatExample> exampleClass = getExampleClass(path, loader);
         if (exampleClass != null) {
             try {
-                example = exampleClass.newInstance();
+                example = exampleClass.getDeclaredConstructor().newInstance();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

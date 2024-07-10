@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -129,16 +129,16 @@ public class ColumnGroupModelTest {
         List<Integer> columnIndexesInGroup = this.model.getColumnGroupByIndex(0).getMembers();
 
         assertTrue(2 == columnIndexesInGroup.size());
-        assertTrue(columnIndexesInGroup.contains(new Integer(0)));
-        assertTrue(columnIndexesInGroup.contains(new Integer(1)));
+        assertTrue(columnIndexesInGroup.contains(Integer.valueOf(0)));
+        assertTrue(columnIndexesInGroup.contains(Integer.valueOf(1)));
 
         assertTrue(this.model.insertColumnIndexes(this.model.getColumnGroupByIndex(0).getName(), 4));
         columnIndexesInGroup = this.model.getColumnGroupByIndex(0).getMembers();
 
         assertEquals(3, columnIndexesInGroup.size());
-        assertTrue(columnIndexesInGroup.contains(new Integer(0)));
-        assertTrue(columnIndexesInGroup.contains(new Integer(1)));
-        assertTrue(columnIndexesInGroup.contains(new Integer(4)));
+        assertTrue(columnIndexesInGroup.contains(Integer.valueOf(0)));
+        assertTrue(columnIndexesInGroup.contains(Integer.valueOf(1)));
+        assertTrue(columnIndexesInGroup.contains(Integer.valueOf(4)));
 
         assertTrue(this.model.isPartOfAGroup(4));
     }
@@ -151,8 +151,8 @@ public class ColumnGroupModelTest {
 
         List<Integer> columnIndexesInGroup = this.model.getColumnGroupByIndex(0).getMembers();
         assertEquals(2, columnIndexesInGroup.size());
-        assertTrue(columnIndexesInGroup.contains(new Integer(0)));
-        assertTrue(columnIndexesInGroup.contains(new Integer(1)));
+        assertTrue(columnIndexesInGroup.contains(Integer.valueOf(0)));
+        assertTrue(columnIndexesInGroup.contains(Integer.valueOf(1)));
     }
 
     @Test

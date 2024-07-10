@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Dirk Fauth and others.
+ * Copyright (c) 2012, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -198,7 +198,7 @@ public class _303_CalculatedDataExample extends AbstractNatExample {
                     return rowObject.getColumnTwoNumber()
                             + rowObject.getColumnThreeNumber();
                 case 4: // calculate the percentage
-                    return new Double((double) rowObject.getColumnTwoNumber()
+                    return Double.valueOf((double) rowObject.getColumnTwoNumber()
                             + (double) rowObject.getColumnThreeNumber())
                             / rowObject.getColumnOneNumber();
             }

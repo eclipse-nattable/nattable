@@ -1765,6 +1765,7 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
         return result;
     }
 
+    @SuppressWarnings("unused")
     private static List<ExtendedPersonWithAddress> createPersons(int startId) {
         List<ExtendedPersonWithAddress> result = new ArrayList<>();
 

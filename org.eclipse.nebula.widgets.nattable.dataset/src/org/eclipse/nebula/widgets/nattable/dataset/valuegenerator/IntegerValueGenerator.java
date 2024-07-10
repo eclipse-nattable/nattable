@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -44,7 +44,7 @@ public class IntegerValueGenerator implements IValueGenerator {
 
     @Override
     public Object newValue(Random random) {
-        return new Integer(this.floor + random.nextInt(this.range));
+        return Integer.valueOf(this.floor + random.nextInt(this.range));
     }
 
 }

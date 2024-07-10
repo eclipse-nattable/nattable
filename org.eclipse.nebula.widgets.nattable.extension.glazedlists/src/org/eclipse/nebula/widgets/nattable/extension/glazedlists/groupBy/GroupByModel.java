@@ -33,6 +33,8 @@ public class GroupByModel extends Observable implements IPersistable {
 
     private List<Integer> groupByColumnIndexes = new ArrayList<>();
 
+    private List<GroupByModelListener> listener = new ArrayList<>();
+
     /**
      * Add the given column index to the list of column indexes that are
      * currently grouped.
@@ -182,8 +184,7 @@ public class GroupByModel extends Observable implements IPersistable {
             }
         }
 
-        setChanged();
-        notifyObservers();
+        update();
     }
 
     /**
@@ -193,7 +194,41 @@ public class GroupByModel extends Observable implements IPersistable {
      * @see #notifyObservers()
      */
     public void update() {
+        // TODO remove once Observable is dropped from class hierarchy
         setChanged();
         notifyObservers();
+
+        fireGroupByModelChange();
+    }
+
+    /**
+     * Add a listener for changes on this {@link GroupByModel}.
+     *
+     * @param listener
+     *            The listener to add.
+     * @since 2.5
+     */
+    public void addGroupByModelListener(GroupByModelListener listener) {
+        this.listener.add(listener);
+    }
+
+    /**
+     * Remove a listener for changes on this {@link GroupByModel}.
+     *
+     * @param listener
+     *            The listener to remove.
+     * @since 2.5
+     */
+    public void removeGroupByModelListener(GroupByModelListener listener) {
+        this.listener.remove(listener);
+    }
+
+    /**
+     * Inform the registered listeners on changes on this {@link GroupByModel}.
+     *
+     * @since 2.5
+     */
+    protected void fireGroupByModelChange() {
+        this.listener.stream().forEach(l -> l.handleGroupByModelChange(this));
     }
 }

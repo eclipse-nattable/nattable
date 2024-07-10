@@ -25,7 +25,7 @@ import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.EntityReference;
 import javax.xml.stream.events.XMLEvent;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.tuple.primitive.IntIntPair;
