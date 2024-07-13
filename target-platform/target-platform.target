@@ -31,18 +31,9 @@
       <unit id="org.apache.poi" version="0.0.0"/>
       <unit id="org.apache.poi.ooxml" version="0.0.0"/>
       <unit id="org.apache.poi.ooxml.schemas" version="0.0.0"/>
+      <unit id="org.apache.logging.log4j.to.slf4j" version="0.0.0"/>
       <unit id="slf4j.simple" version="0.0.0"/>
       <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/milestone/latest"/>
     </location>
-	  <location includeDependencyDepth="none" includeSource="true" missingManifest="generate" type="Maven">
-		  <dependencies>
-			  <dependency>
-				  <groupId>org.apache.logging.log4j</groupId>
-				  <artifactId>log4j-to-slf4j</artifactId>
-				  <version>2.23.1</version>
-				  <type>jar</type>
-			  </dependency>
-		  </dependencies>
-	  </location>
   </locations>
 </target>
