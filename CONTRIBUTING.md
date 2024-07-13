@@ -68,6 +68,12 @@ In addition there are also various feature projects necessary for release engine
 
 ## Development IDE Configuration
 
+### Automated Setup
+
+You can set up a pre-configured IDE for the development of the NatTable using the following link:
+
+[![Create Eclipse Development Environment for Eclipse Nebula](https://download.eclipse.org/oomph/www/setups/svg/NatTable.svg)](https://www.eclipse.org/setups/installer/?url=https://raw.githubusercontent.com/eclipse-nattable/nattable/master/setup/NatTableConfiguration.setup&show=true "Click to open Eclipse-Installer Auto Launch or drag into your running installer")
+
 ### Tools
 
 Although not required you might want to install m2e together with the Tycho connector in order to be able to build out of the IDE. This step is optional.
