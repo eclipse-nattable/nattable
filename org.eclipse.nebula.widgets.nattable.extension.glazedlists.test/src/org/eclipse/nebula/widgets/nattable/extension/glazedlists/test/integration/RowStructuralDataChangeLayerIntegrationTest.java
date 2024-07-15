@@ -428,6 +428,10 @@ public class RowStructuralDataChangeLayerIntegrationTest {
         assertFalse(this.dataChangeLayer.getDataChanges().isEmpty());
         assertFalse(this.dataChangeLayer.isColumnDirty(1), "Column 1 is dirty");
 
+        // short sleep to avoid handling the next step in the previous
+        // processing
+        Thread.sleep(100);
+
         countDownLatch = new CountDownLatch(1);
         this.listenerFixture.setCountDownLatch(countDownLatch);
         this.filterList.setMatcher(null);

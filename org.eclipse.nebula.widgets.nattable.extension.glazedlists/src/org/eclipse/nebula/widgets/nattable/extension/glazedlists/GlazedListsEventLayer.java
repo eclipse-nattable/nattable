@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2023 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -58,7 +58,7 @@ public class GlazedListsEventLayer<T>
     private EventList<T> eventList;
     private boolean testMode = false;
     private boolean structuralChangeEventsToProcess = false;
-    private boolean eventsToProcess = false;
+    private AtomicBoolean eventsToProcess = new AtomicBoolean(false);
     private AtomicBoolean terminated = new AtomicBoolean(false);
 
     private boolean active = true;
@@ -81,7 +81,7 @@ public class GlazedListsEventLayer<T>
      */
     protected Runnable getEventNotifier() {
         return () -> {
-            if (GlazedListsEventLayer.this.eventsToProcess && GlazedListsEventLayer.this.active) {
+            if (GlazedListsEventLayer.this.active && GlazedListsEventLayer.this.eventsToProcess.compareAndSet(true, false)) {
                 ILayerEvent layerEvent;
                 if (GlazedListsEventLayer.this.structuralChangeEventsToProcess) {
                     layerEvent = new RowStructuralRefreshEvent(getUnderlyingLayer());
@@ -90,7 +90,6 @@ public class GlazedListsEventLayer<T>
                 }
                 fireEventFromSWTDisplayThread(layerEvent);
 
-                GlazedListsEventLayer.this.eventsToProcess = false;
                 GlazedListsEventLayer.this.structuralChangeEventsToProcess = false;
             }
         };
@@ -106,7 +105,7 @@ public class GlazedListsEventLayer<T>
                 this.structuralChangeEventsToProcess = true;
             }
         }
-        this.eventsToProcess = true;
+        this.eventsToProcess.set(true);
     }
 
     // PropertyChangeListener
@@ -232,7 +231,7 @@ public class GlazedListsEventLayer<T>
      * @since 1.6
      */
     public void discardEventsToProcess() {
-        this.eventsToProcess = false;
+        this.eventsToProcess.set(false);
         this.structuralChangeEventsToProcess = false;
     }
 
