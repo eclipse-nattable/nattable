@@ -86,36 +86,41 @@ public class RowDragMode implements IDragMode {
         Image image = null;
         GC gc = null;
 
-        for (int columnPosition = 0; columnPosition < natTable.getColumnCount(); columnPosition++) {
-            cell = natTable.getCellByPosition(columnPosition, rowPosition);
+        try {
+            for (int columnPosition = 0; columnPosition < natTable.getColumnCount(); columnPosition++) {
+                cell = natTable.getCellByPosition(columnPosition, rowPosition);
 
-            if (cell != null) {
-                Rectangle cellBounds = cell.getBounds();
-                this.yOffset = this.currentEvent.y - cellBounds.y;
+                if (cell != null) {
+                    Rectangle cellBounds = cell.getBounds();
+                    this.yOffset = this.currentEvent.y - cellBounds.y;
 
-                if (image == null && gc == null) {
-                    image = new Image(natTable.getDisplay(), natTable.getWidth(), cellBounds.height);
-                    gc = new GC(image);
-                }
+                    if (image == null && gc == null) {
+                        image = new Image(natTable.getDisplay(), natTable.getWidth(), cellBounds.height);
+                        gc = new GC(image);
+                    }
 
-                ICellPainter cellPainter = cell.getLayer().getCellPainter(columnPosition, rowPosition, cell, configRegistry);
-                if (cellPainter != null) {
-                    cellPainter.paintCell(cell, gc, new Rectangle(x, 0, cellBounds.width, cellBounds.height), configRegistry);
-                    x += cellBounds.width;
+                    ICellPainter cellPainter = cell.getLayer().getCellPainter(columnPosition, rowPosition, cell, configRegistry);
+                    if (cellPainter != null) {
+                        cellPainter.paintCell(cell, gc, new Rectangle(x, 0, cellBounds.width, cellBounds.height), configRegistry);
+                        x += cellBounds.width;
+                    }
                 }
             }
-        }
 
-        if (gc != null) {
-            gc.dispose();
-        }
+            if (image != null) {
+                ImageData imageData = image.getImageData();
+                imageData.alpha = 150;
 
-        if (image != null) {
-            ImageData imageData = image.getImageData();
-            image.dispose();
-            imageData.alpha = 150;
+                this.rowImage = new Image(natTable.getDisplay(), imageData);
+            }
+        } finally {
+            if (gc != null) {
+                gc.dispose();
+            }
 
-            this.rowImage = new Image(natTable.getDisplay(), imageData);
+            if (image != null) {
+                image.dispose();
+            }
         }
     }
 

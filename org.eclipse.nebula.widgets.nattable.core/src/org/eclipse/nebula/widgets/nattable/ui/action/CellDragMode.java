@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -84,18 +84,21 @@ public class CellDragMode implements IDragMode {
             Image image = new Image(natTable.getDisplay(), cellBounds.width, cellBounds.height);
 
             GC gc = new GC(image);
-            IConfigRegistry configRegistry = natTable.getConfigRegistry();
-            ICellPainter cellPainter = cell.getLayer().getCellPainter(columnPosition, rowPosition, cell, configRegistry);
-            if (cellPainter != null) {
-                cellPainter.paintCell(cell, gc, new Rectangle(0, 0, cellBounds.width, cellBounds.height), configRegistry);
+            try {
+                IConfigRegistry configRegistry = natTable.getConfigRegistry();
+                ICellPainter cellPainter = cell.getLayer().getCellPainter(columnPosition, rowPosition, cell, configRegistry);
+                if (cellPainter != null) {
+                    cellPainter.paintCell(cell, gc, new Rectangle(0, 0, cellBounds.width, cellBounds.height), configRegistry);
+                }
+
+                ImageData imageData = image.getImageData();
+                imageData.alpha = 150;
+
+                this.cellImage = new Image(natTable.getDisplay(), imageData);
+            } finally {
+                gc.dispose();
+                image.dispose();
             }
-            gc.dispose();
-
-            ImageData imageData = image.getImageData();
-            image.dispose();
-            imageData.alpha = 150;
-
-            this.cellImage = new Image(natTable.getDisplay(), imageData);
         }
     }
 

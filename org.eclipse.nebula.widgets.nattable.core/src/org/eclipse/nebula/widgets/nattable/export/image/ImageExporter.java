@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2020 Original authors and others.
+ * Copyright (c) 2017, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -128,13 +128,13 @@ public class ImageExporter implements ITableExporter {
         final Image image = new Image(shell.getDisplay(), width, height);
         GC gc = new GC(image);
 
-        Rectangle layerBounds = new Rectangle(0, 0, width, height);
-        layer.getLayerPainter().paintLayer(layer, gc, 0, 0, layerBounds, configRegistry);
-
-        ImageLoader imageLoader = new ImageLoader();
-        imageLoader.data = new ImageData[] { image.getImageData() };
-
         try {
+            Rectangle layerBounds = new Rectangle(0, 0, width, height);
+            layer.getLayerPainter().paintLayer(layer, gc, 0, 0, layerBounds, configRegistry);
+
+            ImageLoader imageLoader = new ImageLoader();
+            imageLoader.data = new ImageData[] { image.getImageData() };
+
             if (this.outputStreamProvider instanceof FileOutputStreamProvider) {
                 final FileOutputStreamProvider fileOutputStreamProvider = (FileOutputStreamProvider) this.outputStreamProvider;
                 final String selectedFilterExt = DEFAULT_FILTER_EXTENSIONS[fileOutputStreamProvider.getExtensionFilterIndex()];
