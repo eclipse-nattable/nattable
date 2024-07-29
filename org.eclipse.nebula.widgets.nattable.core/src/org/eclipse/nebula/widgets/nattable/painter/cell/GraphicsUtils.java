@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -117,52 +117,57 @@ public final class GraphicsUtils {
         // Create a GC so we can draw the image
         GC stringGc = new GC(stringImage);
 
-        // Set attributes from the original GC to the new GC
-        stringGc.setAntialias(gc.getAntialias());
-        stringGc.setTextAntialias(gc.getTextAntialias());
-        stringGc.setForeground(gc.getForeground());
-        stringGc.setBackground(gc.getBackground());
-        stringGc.setFont(gc.getFont());
+        try {
+            // Set attributes from the original GC to the new GC
+            stringGc.setAntialias(gc.getAntialias());
+            stringGc.setTextAntialias(gc.getTextAntialias());
+            stringGc.setForeground(gc.getForeground());
+            stringGc.setBackground(gc.getBackground());
+            stringGc.setFont(gc.getFont());
 
-        // Fill the image with the specified background color
-        // to avoid white spaces if the text does not fill the
-        // whole image (e.g. on new lines)
-        stringGc.fillRectangle(0, 0, pt.x, pt.y);
+            // Fill the image with the specified background color
+            // to avoid white spaces if the text does not fill the
+            // whole image (e.g. on new lines)
+            stringGc.fillRectangle(0, 0, pt.x, pt.y);
 
-        // Draw the text onto the image
-        stringGc.drawText(string, 0, 0);
+            // Draw the text onto the image
+            stringGc.drawText(string, 0, 0);
 
-        // draw underline and/or strikethrough
-        if (underline || strikethrough) {
-            // check and draw underline and strikethrough separately so it is
-            // possible to combine both
-            if (underline) {
-                // y = start y of text + font height
-                // - half of the font descent so the underline is between the
-                // baseline and the bottom
-                int underlineY = pt.y
-                        - (stringGc.getFontMetrics().getDescent() / 2);
-                stringGc.drawLine(0, underlineY, pt.x, underlineY);
+            // draw underline and/or strikethrough
+            if (underline || strikethrough) {
+                // check and draw underline and strikethrough separately so it
+                // is
+                // possible to combine both
+                if (underline) {
+                    // y = start y of text + font height
+                    // - half of the font descent so the underline is between
+                    // the
+                    // baseline and the bottom
+                    int underlineY = pt.y
+                            - (stringGc.getFontMetrics().getDescent() / 2);
+                    stringGc.drawLine(0, underlineY, pt.x, underlineY);
+                }
+
+                if (strikethrough) {
+                    // y = start y of text + half of font height + ascent so
+                    // lower
+                    // case characters are
+                    // also strikethrough
+                    int strikeY = (pt.y / 2)
+                            + (stringGc.getFontMetrics().getLeading() / 2);
+                    stringGc.drawLine(0, strikeY, pt.x, strikeY);
+                }
             }
 
-            if (strikethrough) {
-                // y = start y of text + half of font height + ascent so lower
-                // case characters are
-                // also strikethrough
-                int strikeY = (pt.y / 2)
-                        + (stringGc.getFontMetrics().getLeading() / 2);
-                stringGc.drawLine(0, strikeY, pt.x, strikeY);
-            }
+            // Draw the image vertically onto the original GC
+            drawVerticalImage(stringImage, x, y, paintBackground, gc, style);
+        } finally {
+            // Dispose the new GC
+            stringGc.dispose();
+
+            // Dispose the image
+            stringImage.dispose();
         }
-
-        // Draw the image vertically onto the original GC
-        drawVerticalImage(stringImage, x, y, paintBackground, gc, style);
-
-        // Dispose the new GC
-        stringGc.dispose();
-
-        // Dispose the image
-        stringImage.dispose();
     }
 
     /**
@@ -296,36 +301,41 @@ public final class GraphicsUtils {
 
         // Create a GC to calculate font's dimensions
         GC gc = new GC(display);
-        gc.setFont(font);
+        Image stringImage = null;
+        try {
+            gc.setFont(font);
 
-        // Determine string's dimensions
-        Point pt = gc.textExtent(text);
+            // Determine string's dimensions
+            Point pt = gc.textExtent(text);
 
-        // Dispose that gc
-        gc.dispose();
+            // Dispose that gc
+            gc.dispose();
 
-        // Create an image the same size as the string
-        Image stringImage = new Image(display, pt.x, pt.y);
-        // Create a gc for the image
-        gc = new GC(stringImage);
-        gc.setFont(font);
-        gc.setForeground(foreground);
-        gc.setBackground(background);
+            // Create an image the same size as the string
+            stringImage = new Image(display, pt.x, pt.y);
+            // Create a gc for the image
+            gc = new GC(stringImage);
+            gc.setFont(font);
+            gc.setForeground(foreground);
+            gc.setBackground(background);
 
-        // Draw the text onto the image
-        gc.drawText(text, 0, 0);
+            // Draw the text onto the image
+            gc.drawText(text, 0, 0);
 
-        // Draw the image vertically onto the original GC
-        Image image = createRotatedImage(stringImage, style);
+            // Draw the image vertically onto the original GC
+            Image image = createRotatedImage(stringImage, style);
 
-        // Dispose the new GC
-        gc.dispose();
+            // Return the rotated image
+            return image;
+        } finally {
+            // Dispose the new GC
+            gc.dispose();
 
-        // Dispose the horizontal image
-        stringImage.dispose();
-
-        // Return the rotated image
-        return image;
+            // Dispose the horizontal image
+            if (stringImage != null) {
+                stringImage.dispose();
+            }
+        }
     }
 
     /**

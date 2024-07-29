@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -60,13 +60,15 @@ public class MaxCellBoundsHelper {
 
         GC gc = gcFactory.createGC();
         if (gc != null) {
-            int[] columnWidths = new int[columnPositions.length];
-            for (int i = 0; i < columnPositions.length; i++) {
-                columnWidths[i] = getPreferredColumnWidth(layer, columnPositions[i], configRegistry, gc);
+            try {
+                int[] columnWidths = new int[columnPositions.length];
+                for (int i = 0; i < columnPositions.length; i++) {
+                    columnWidths[i] = getPreferredColumnWidth(layer, columnPositions[i], configRegistry, gc);
+                }
+                return columnWidths;
+            } finally {
+                gc.dispose();
             }
-            gc.dispose();
-
-            return columnWidths;
         } else {
             return new int[0];
         }
@@ -154,13 +156,15 @@ public class MaxCellBoundsHelper {
 
         GC gc = gcFactory.createGC();
         if (gc != null) {
-            int[] rowHeights = new int[rowPositions.length];
-            for (int i = 0; i < rowPositions.length; i++) {
-                rowHeights[i] = getPreferredRowHeight(layer, rowPositions[i], configRegistry, gc);
+            try {
+                int[] rowHeights = new int[rowPositions.length];
+                for (int i = 0; i < rowPositions.length; i++) {
+                    rowHeights[i] = getPreferredRowHeight(layer, rowPositions[i], configRegistry, gc);
+                }
+                return rowHeights;
+            } finally {
+                gc.dispose();
             }
-            gc.dispose();
-
-            return rowHeights;
         } else {
             return new int[0];
         }

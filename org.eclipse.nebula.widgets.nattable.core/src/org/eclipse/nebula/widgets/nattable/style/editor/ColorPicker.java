@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -62,9 +62,12 @@ public class ColorPicker extends CLabel {
         Display display = Display.getCurrent();
         this.image = new Image(display, new Rectangle(10, 10, 70, 20));
         GC gc = new GC(this.image);
-        gc.setBackground(color);
-        gc.fillRectangle(this.image.getBounds());
-        gc.dispose();
+        try {
+            gc.setBackground(color);
+            gc.fillRectangle(this.image.getBounds());
+        } finally {
+            gc.dispose();
+        }
         return this.image;
     }
 
