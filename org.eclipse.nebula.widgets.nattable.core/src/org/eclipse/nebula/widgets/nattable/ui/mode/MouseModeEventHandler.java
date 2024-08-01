@@ -68,8 +68,13 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
         if (this.delayedSingleClickRunnable == null) {
             this.doubleClick = false;
         } else {
-            // avoid execution of single click action and trigger double click
-            mouseDoubleClick(event);
+            // ensure that the double click is not executed twice
+            // fix for https://github.com/eclipse-nattable/nattable/issues/102
+            if (!this.doubleClick) {
+                // avoid execution of single click action and trigger double
+                // click
+                mouseDoubleClick(event);
+            }
             return;
         }
 
