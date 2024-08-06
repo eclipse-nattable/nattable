@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2020 CEA LIST.
+ * Copyright (c) 2015, 2024 CEA LIST.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -31,6 +31,7 @@ import org.eclipse.nebula.widgets.nattable.fillhandle.event.FillHandleEventMatch
 import org.eclipse.nebula.widgets.nattable.formula.FormulaDataProvider;
 import org.eclipse.nebula.widgets.nattable.formula.FormulaEditDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.formula.FormulaResultDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.formula.action.FormulaFillHandleColumnAction;
 import org.eclipse.nebula.widgets.nattable.formula.action.FormulaFillHandleDragMode;
 import org.eclipse.nebula.widgets.nattable.formula.command.DisableFormulaEvaluationCommandHandler;
 import org.eclipse.nebula.widgets.nattable.formula.command.EnableFormulaEvaluationCommandHandler;
@@ -128,12 +129,21 @@ public class DefaultFormulaConfiguration implements IConfiguration {
                 new KeyEventMatcher(SWT.NONE, SWT.ESC),
                 new ClearClipboardAction(this.clipboard));
 
+        FillHandleEventMatcher matcher = new FillHandleEventMatcher((FillHandleLayerPainter) this.selectionLayer.getLayerPainter());
+
         // Mouse drag
         // trigger the handle drag operations
         // Note: we ensure a FillHandleLayerPainter is set in configureLayer
         uiBindingRegistry.registerFirstMouseDragMode(
-                new FillHandleEventMatcher((FillHandleLayerPainter) this.selectionLayer.getLayerPainter()),
+                matcher,
                 new FormulaFillHandleDragMode(this.selectionLayer, this.clipboard, this.dataProvider));
+
+        // Mouse double click
+        // trigger the handle double click operation
+        // Note: we ensure a FillHandleLayerPainter is set in configureLayer
+        uiBindingRegistry.registerFirstDoubleClickBinding(
+                matcher,
+                new FormulaFillHandleColumnAction(this.selectionLayer, this.clipboard, this.dataProvider));
 
     }
 
