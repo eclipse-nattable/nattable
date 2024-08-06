@@ -17,6 +17,7 @@ import org.eclipse.nebula.widgets.nattable.config.AbstractLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
 import org.eclipse.nebula.widgets.nattable.copy.command.InternalCopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.fillhandle.FillHandleLayerPainter;
+import org.eclipse.nebula.widgets.nattable.fillhandle.action.FillHandleColumnAction;
 import org.eclipse.nebula.widgets.nattable.fillhandle.action.FillHandleCursorAction;
 import org.eclipse.nebula.widgets.nattable.fillhandle.action.FillHandleDragMode;
 import org.eclipse.nebula.widgets.nattable.fillhandle.command.FillHandlePasteCommandHandler;
@@ -89,6 +90,12 @@ public class FillHandleConfiguration extends AbstractLayerConfiguration<NatTable
         uiBindingRegistry.registerFirstMouseDragMode(
                 matcher,
                 new FillHandleDragMode(this.selectionLayer, this.clipboard));
+
+        // Mouse double click
+        // trigger the handle double click operation
+        uiBindingRegistry.registerDoubleClickBinding(
+                matcher,
+                new FillHandleColumnAction(this.selectionLayer, this.clipboard));
 
         // Mouse click
         // ensure no selection is triggered on mouse down on the handle

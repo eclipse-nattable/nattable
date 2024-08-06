@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2020 CEA LIST and others.
+ * Copyright (c) 2015, 2024 CEA LIST and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,9 +12,6 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.fillhandle.action;
 
-import java.util.Date;
-
-import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.Direction;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
@@ -30,17 +27,10 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
 import org.eclipse.nebula.widgets.nattable.viewport.action.AutoScrollDragMode;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MenuAdapter;
-import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 
 /**
  * The {@link IDragMode} that is registered to get triggered for dragging the
@@ -247,29 +237,7 @@ public class FillHandleDragMode extends AutoScrollDragMode {
      *         if not.
      */
     protected boolean showMenu(final NatTable natTable) {
-        if (this.clipboard == null || this.clipboard.getCopiedCells() == null) {
-            return false;
-        }
-
-        Class<?> type = null;
-        for (ILayerCell[] cells : this.clipboard.getCopiedCells()) {
-            for (ILayerCell cell : cells) {
-                if (cell.getDataValue() == null) {
-                    return false;
-                } else {
-                    if (type == null) {
-                        type = cell.getDataValue().getClass();
-                        if (!Number.class.isAssignableFrom(type)
-                                && !Date.class.isAssignableFrom(type)) {
-                            return false;
-                        }
-                    } else if (type != cell.getDataValue().getClass()) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
+        return FillHandleActionHelper.showMenu(natTable, this.clipboard);
     }
 
     /**
@@ -282,46 +250,10 @@ public class FillHandleDragMode extends AutoScrollDragMode {
     protected void openMenu(final NatTable natTable) {
         // lazily create the menu
         if (this.menu == null || this.menu.isDisposed()) {
-            this.menu = new Menu(natTable);
-            MenuItem copyItem = new MenuItem(this.menu, SWT.PUSH);
-            copyItem.setText(Messages.getLocalizedMessage("%FillHandleDragMode.menu.item.copy")); //$NON-NLS-1$
-            copyItem.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    natTable.doCommand(
-                            new FillHandlePasteCommand(
-                                    FillHandleOperation.COPY,
-                                    FillHandleDragMode.this.direction,
-                                    natTable.getConfigRegistry()));
-                }
-            });
-            MenuItem seriesItem = new MenuItem(this.menu, SWT.PUSH);
-            seriesItem.setText(Messages.getLocalizedMessage("%FillHandleDragMode.menu.item.series")); //$NON-NLS-1$
-            seriesItem.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    natTable.doCommand(
-                            new FillHandlePasteCommand(
-                                    FillHandleOperation.SERIES,
-                                    FillHandleDragMode.this.direction,
-                                    natTable.getConfigRegistry()));
-                }
-            });
-
-            // add a menu listener to reset the fill state when the menu is
-            // closed
-            this.menu.addMenuListener(new MenuAdapter() {
-                @Override
-                public void menuHidden(MenuEvent e) {
-                    // perform the reset operation asynchronously because on
-                    // several OS the hide event is processed BEFORE the
-                    // selection event
-                    Display.getDefault().asyncExec(() -> reset(natTable));
-                }
-            });
-
-            // add the dispose listener for disposing the menu
-            natTable.addDisposeListener(e -> FillHandleDragMode.this.menu.dispose());
+            this.menu = FillHandleActionHelper.createFillHandleMenu(
+                    natTable,
+                    () -> FillHandleDragMode.this.direction,
+                    (n) -> reset(n));
         }
 
         this.menu.setVisible(true);
