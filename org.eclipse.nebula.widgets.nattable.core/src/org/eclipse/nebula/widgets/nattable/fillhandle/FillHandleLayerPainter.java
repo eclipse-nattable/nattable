@@ -38,6 +38,7 @@ import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
@@ -322,13 +323,14 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
 
         Rectangle bounds = fillHandleCell.getBounds();
 
-        int fillHandleWidth = GUIHelper.convertHorizontalPixelToDpi(7, configRegistry);
-        int fillHandleHeight = GUIHelper.convertVerticalPixelToDpi(7, configRegistry);
+        Point fillHandleSize = getHandleSize(configRegistry);
+        int fillHandleWidth = GUIHelper.convertHorizontalPixelToDpi(fillHandleSize.x, configRegistry);
+        int fillHandleHeight = GUIHelper.convertVerticalPixelToDpi(fillHandleSize.y, configRegistry);
 
         // positions offset starting from the lower right corner of the fill
         // handle cell
-        int fillHandleOffsetX = -GUIHelper.convertHorizontalPixelToDpi(4, configRegistry);
-        int fillHandleOffsetY = -GUIHelper.convertVerticalPixelToDpi(4, configRegistry);
+        int fillHandleOffsetX = -GUIHelper.convertHorizontalPixelToDpi((fillHandleSize.x / 2) + 1, configRegistry);
+        int fillHandleOffsetY = -GUIHelper.convertVerticalPixelToDpi((fillHandleSize.y / 2) + 1, configRegistry);
 
         Rectangle handleInterior = new Rectangle(
                 bounds.x + bounds.width + fillHandleOffsetX,
@@ -546,6 +548,32 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
         }
 
         return borderStyle;
+    }
+
+    /**
+     * Get the size that should be used to render the fill handle. If the
+     * {@link IConfigRegistry} is <code>null</code> or does not contain
+     * configurations for the size of the fill handle, a default size is used.
+     *
+     * @param configRegistry
+     *            The {@link ConfigRegistry} to retrieve the style information
+     *            from.
+     * @return the size of the fill handle.
+     *
+     * @since 2.5
+     */
+    protected Point getHandleSize(IConfigRegistry configRegistry) {
+        if (configRegistry != null) {
+            Point size = configRegistry.getConfigAttribute(
+                    FillHandleConfigAttributes.FILL_HANDLE_SIZE,
+                    DisplayMode.NORMAL);
+
+            if (size != null) {
+                return size;
+            }
+        }
+
+        return new Point(7, 7);
     }
 
     /**

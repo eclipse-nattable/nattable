@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2020 CEA LIST.
+ * Copyright (c) 2015, 2024 CEA LIST.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,7 @@ import org.eclipse.nebula.widgets.nattable.config.Direction;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
 
 /**
  * This interface contains {@link ConfigAttribute}s that can be used to
@@ -60,4 +61,11 @@ public final class FillHandleConfigAttributes {
      * implicitly.
      */
     public static final ConfigAttribute<Direction> ALLOWED_FILL_DIRECTION = new ConfigAttribute<>();
+
+    /**
+     * ConfigAttribute to configure the size of the fill handle.
+     *
+     * @since 2.5
+     */
+    public static final ConfigAttribute<Point> FILL_HANDLE_SIZE = new ConfigAttribute<>();
 }
