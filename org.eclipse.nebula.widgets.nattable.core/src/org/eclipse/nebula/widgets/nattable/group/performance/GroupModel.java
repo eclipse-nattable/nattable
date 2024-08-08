@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2023 Dirk Fauth.
+ * Copyright (c) 2019, 2024 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,6 +27,7 @@ import org.eclipse.collections.api.set.primitive.IntSet;
 import org.eclipse.collections.api.set.primitive.MutableIntSet;
 import org.eclipse.collections.impl.factory.primitive.IntLists;
 import org.eclipse.collections.impl.factory.primitive.IntSets;
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
@@ -1201,6 +1202,36 @@ public class GroupModel implements IPersistable {
             // check if the member indexes are all visible
             MutableIntList memberPositions = this.members
                     .collectInt(member -> getPositionByIndex(member), IntLists.mutable.empty());
+
+            // check if members are still consecutive
+            // ignore hidden columns here, as they are handled afterwards
+            int[][] groupedByContiguous = PositionUtil.getGroupedByContiguous(
+                    memberPositions.primitiveStream().filter(v -> v >= 0).toArray());
+            if (groupedByContiguous.length > 1) {
+                // members are not consecutive anymore
+                // determine the biggest consecutive group that will remain as
+                // the group, in case of multiple same size sub-groups, use the
+                // most left as the remaining group
+                int[] groupedToKeep = null;
+                for (int i = 0; i < groupedByContiguous.length; i++) {
+                    int[] notConsecutive = groupedByContiguous[i];
+                    if (groupedToKeep == null || notConsecutive.length > groupedToKeep.length) {
+                        groupedToKeep = notConsecutive;
+                    }
+                }
+
+                for (int i = 0; i < groupedByContiguous.length; i++) {
+                    int[] notConsecutive = groupedByContiguous[i];
+                    if (notConsecutive != groupedToKeep) {
+                        memberPositions.removeAll(notConsecutive);
+
+                        MutableIntList notConsecutiveIndexes = IntLists.mutable.of(notConsecutive)
+                                .collectInt(memberPos -> getIndexByPosition(memberPos), IntLists.mutable.empty());
+                        removeMembers(notConsecutiveIndexes.toArray());
+                        setOriginalSpan(this.originalSpan - notConsecutive.length);
+                    }
+                }
+            }
 
             int hidden = memberPositions.count(pos -> pos == -1);
             int smallestPosition = memberPositions.select(pos -> pos >= 0).minIfEmpty(-1);
