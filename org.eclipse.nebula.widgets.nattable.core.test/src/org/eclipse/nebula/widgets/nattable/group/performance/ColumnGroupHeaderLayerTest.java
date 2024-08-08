@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2023 Dirk Fauth.
+ * Copyright (c) 2019, 2024 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11941,6 +11941,424 @@ public class ColumnGroupHeaderLayerTest {
         group2.removeStaticIndexes(5, 6);
 
         verifyCleanState();
+    }
+
+    @Test
+    public void shouldHandleResetOfColumnReorderEndOfGroupRightToLeft() {
+        // remove all groups
+        this.columnGroupHeaderLayer.removeGroup(0);
+        this.columnGroupHeaderLayer.removeGroup(4);
+        this.columnGroupHeaderLayer.removeGroup(8);
+        this.columnGroupHeaderLayer.removeGroup(11);
+
+        // reorder column 8 to position 4
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 8, 4));
+
+        this.columnGroupHeaderLayer.addGroup("Person", 0, 4);
+        Group group = this.groupModel.getGroupByPosition(0);
+
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(4, group.getVisibleSpan());
+
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+        assertTrue(group.hasMember(2));
+        assertTrue(group.hasMember(7));
+
+        // reset reordering
+        this.gridLayer.doCommand(new ResetColumnReorderCommand());
+
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(3, group.getVisibleSpan());
+
+        assertEquals(3, group.getMembers().length);
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+        assertTrue(group.hasMember(2));
+    }
+
+    @Test
+    public void shouldHandleResetOfColumnReorderMiddleOfGroupRightToLeft() {
+        // remove all groups
+        this.columnGroupHeaderLayer.removeGroup(0);
+        this.columnGroupHeaderLayer.removeGroup(4);
+        this.columnGroupHeaderLayer.removeGroup(8);
+        this.columnGroupHeaderLayer.removeGroup(11);
+
+        // reorder column 8 to position 3
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 8, 3));
+
+        this.columnGroupHeaderLayer.addGroup("Person", 0, 4);
+        Group group = this.groupModel.getGroupByPosition(0);
+
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(4, group.getVisibleSpan());
+
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+        assertTrue(group.hasMember(2));
+        assertTrue(group.hasMember(7));
+
+        // reset reordering
+        this.gridLayer.doCommand(new ResetColumnReorderCommand());
+
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(3, group.getVisibleSpan());
+
+        assertEquals(3, group.getMembers().length);
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+        assertTrue(group.hasMember(2));
+    }
+
+    @Test
+    public void shouldHandleResetOfColumnReorderStartOfGroupRightToLeft() {
+        // remove all groups
+        this.columnGroupHeaderLayer.removeGroup(0);
+        this.columnGroupHeaderLayer.removeGroup(4);
+        this.columnGroupHeaderLayer.removeGroup(8);
+        this.columnGroupHeaderLayer.removeGroup(11);
+
+        // reorder column 8 to position 1
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 8, 1));
+
+        this.columnGroupHeaderLayer.addGroup("Person", 7, 4);
+        Group group = this.groupModel.getGroupByPosition(0);
+
+        assertEquals(7, group.getStartIndex());
+        assertEquals(7, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(4, group.getVisibleSpan());
+
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+        assertTrue(group.hasMember(2));
+        assertTrue(group.hasMember(7));
+
+        // reset reordering
+        this.gridLayer.doCommand(new ResetColumnReorderCommand());
+
+        // as there is only a single column moved out of the group, the group is
+        // kept and the start index is updated.
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(3, group.getVisibleSpan());
+
+        assertEquals(3, group.getMembers().length);
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+        assertTrue(group.hasMember(2));
+    }
+
+    @Test
+    public void shouldHandleResetOfColumnReorderEndOfGroupLeftToRight() {
+        // remove all groups
+        this.columnGroupHeaderLayer.removeGroup(0);
+        this.columnGroupHeaderLayer.removeGroup(4);
+        this.columnGroupHeaderLayer.removeGroup(8);
+        this.columnGroupHeaderLayer.removeGroup(11);
+
+        // reorder column 1 to position 8
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 2, 8));
+
+        this.columnGroupHeaderLayer.addGroup("Address", 4, 4);
+        Group group = this.groupModel.getGroupByPosition(4);
+
+        assertEquals(4, group.getStartIndex());
+        assertEquals(4, group.getVisibleStartIndex());
+        assertEquals(3, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(4, group.getVisibleSpan());
+
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(4));
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+        assertTrue(group.hasMember(1));
+
+        // reset reordering
+        this.gridLayer.doCommand(new ResetColumnReorderCommand());
+
+        assertEquals(4, group.getStartIndex());
+        assertEquals(4, group.getVisibleStartIndex());
+        assertEquals(4, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(3, group.getVisibleSpan());
+
+        assertEquals(3, group.getMembers().length);
+        assertTrue(group.hasMember(4));
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+    }
+
+    @Test
+    public void shouldHandleResetOfColumnReorderMiddleOfGroupLeftToRight() {
+        // remove all groups
+        this.columnGroupHeaderLayer.removeGroup(0);
+        this.columnGroupHeaderLayer.removeGroup(4);
+        this.columnGroupHeaderLayer.removeGroup(8);
+        this.columnGroupHeaderLayer.removeGroup(11);
+
+        // reorder column 1 to position 5
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 2, 6));
+
+        this.columnGroupHeaderLayer.addGroup("Address", 4, 4);
+        Group group = this.groupModel.getGroupByPosition(4);
+
+        assertEquals(4, group.getStartIndex());
+        assertEquals(4, group.getVisibleStartIndex());
+        assertEquals(3, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(4, group.getVisibleSpan());
+
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(4));
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+        assertTrue(group.hasMember(1));
+
+        // reset reordering
+        this.gridLayer.doCommand(new ResetColumnReorderCommand());
+
+        assertEquals(4, group.getStartIndex());
+        assertEquals(4, group.getVisibleStartIndex());
+        assertEquals(4, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(3, group.getVisibleSpan());
+
+        assertEquals(3, group.getMembers().length);
+        assertTrue(group.hasMember(4));
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+    }
+
+    @Test
+    public void shouldHandleResetOfColumnReorderStartOfGroupLeftToRight() {
+        // remove all groups
+        this.columnGroupHeaderLayer.removeGroup(0);
+        this.columnGroupHeaderLayer.removeGroup(4);
+        this.columnGroupHeaderLayer.removeGroup(8);
+        this.columnGroupHeaderLayer.removeGroup(11);
+
+        // reorder column 1 to position 4
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 2, 5));
+
+        this.columnGroupHeaderLayer.addGroup("Address", 1, 4);
+        Group group = this.groupModel.getGroupByPosition(4);
+
+        assertEquals(1, group.getStartIndex());
+        assertEquals(1, group.getVisibleStartIndex());
+        assertEquals(3, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(4, group.getVisibleSpan());
+
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(4));
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+        assertTrue(group.hasMember(1));
+
+        // reset reordering
+        this.gridLayer.doCommand(new ResetColumnReorderCommand());
+
+        assertEquals(4, group.getStartIndex());
+        assertEquals(4, group.getVisibleStartIndex());
+        assertEquals(4, group.getVisibleStartPosition());
+        assertEquals(3, group.getOriginalSpan());
+        assertEquals(3, group.getVisibleSpan());
+
+        assertEquals(3, group.getMembers().length);
+        assertTrue(group.hasMember(4));
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(6));
+    }
+
+    @Test
+    public void shouldHandleResetOfColumnReorderEndOfGroupRightToLeftSameSize() {
+        // remove all groups
+        this.columnGroupHeaderLayer.removeGroup(0);
+        this.columnGroupHeaderLayer.removeGroup(4);
+        this.columnGroupHeaderLayer.removeGroup(8);
+        this.columnGroupHeaderLayer.removeGroup(11);
+
+        // reorder column 8 to position 3
+        // reorder column 9 to position 4
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 8, 3));
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 9, 4));
+
+        this.columnGroupHeaderLayer.addGroup("Person", 0, 4);
+        Group group = this.groupModel.getGroupByPosition(0);
+
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(4, group.getVisibleSpan());
+
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+        assertTrue(group.hasMember(7));
+        assertTrue(group.hasMember(8));
+
+        // reset reordering
+        this.gridLayer.doCommand(new ResetColumnReorderCommand());
+
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(2, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        assertEquals(2, group.getMembers().length);
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+    }
+
+    @Test
+    public void shouldHandleResetOfColumnReorderStartOfGroupRightToLeftSameSize() {
+        // remove all groups
+        this.columnGroupHeaderLayer.removeGroup(0);
+        this.columnGroupHeaderLayer.removeGroup(4);
+        this.columnGroupHeaderLayer.removeGroup(8);
+        this.columnGroupHeaderLayer.removeGroup(11);
+
+        // reorder column 8 to position 1
+        // reorder column 9 to position 2
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 8, 1));
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 9, 2));
+
+        this.columnGroupHeaderLayer.addGroup("Person", 7, 4);
+        Group group = this.groupModel.getGroupByPosition(0);
+
+        assertEquals(7, group.getStartIndex());
+        assertEquals(7, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(4, group.getVisibleSpan());
+
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+        assertTrue(group.hasMember(7));
+        assertTrue(group.hasMember(8));
+
+        // reset reordering
+        this.gridLayer.doCommand(new ResetColumnReorderCommand());
+
+        // the reset splits the group into two subgroups with same size, the
+        // most left is kept in this case
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(2, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        assertEquals(2, group.getMembers().length);
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+    }
+
+    @Test
+    public void shouldHandleResetOfColumnReorderEndOfGroupLeftToRightSameSize() {
+        // remove all groups
+        this.columnGroupHeaderLayer.removeGroup(0);
+        this.columnGroupHeaderLayer.removeGroup(4);
+        this.columnGroupHeaderLayer.removeGroup(8);
+        this.columnGroupHeaderLayer.removeGroup(11);
+
+        // reorder column 0 to position 8
+        // reorder column 1 to position 9
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 2, 7));
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 1, 7));
+
+        this.columnGroupHeaderLayer.addGroup("Address", 4, 4);
+        Group group = this.groupModel.getGroupByPosition(4);
+
+        assertEquals(4, group.getStartIndex());
+        assertEquals(4, group.getVisibleStartIndex());
+        assertEquals(2, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(4, group.getVisibleSpan());
+
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(4));
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+
+        // reset reordering
+        this.gridLayer.doCommand(new ResetColumnReorderCommand());
+
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(2, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        assertEquals(2, group.getMembers().length);
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+    }
+
+    @Test
+    public void shouldHandleResetOfColumnReorderStartOfGroupLeftToRightSameSize() {
+        // remove all groups
+        this.columnGroupHeaderLayer.removeGroup(0);
+        this.columnGroupHeaderLayer.removeGroup(4);
+        this.columnGroupHeaderLayer.removeGroup(8);
+        this.columnGroupHeaderLayer.removeGroup(11);
+
+        // reorder column 0 to position 4
+        // reorder column 1 to position 5
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 1, 5));
+        this.gridLayer.doCommand(new ColumnReorderCommand(this.gridLayer, 1, 5));
+
+        this.columnGroupHeaderLayer.addGroup("Address", 0, 4);
+        Group group = this.groupModel.getGroupByPosition(4);
+
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(2, group.getVisibleStartPosition());
+        assertEquals(4, group.getOriginalSpan());
+        assertEquals(4, group.getVisibleSpan());
+
+        assertEquals(4, group.getMembers().length);
+        assertTrue(group.hasMember(4));
+        assertTrue(group.hasMember(5));
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
+
+        // reset reordering
+        this.gridLayer.doCommand(new ResetColumnReorderCommand());
+
+        assertEquals(0, group.getStartIndex());
+        assertEquals(0, group.getVisibleStartIndex());
+        assertEquals(0, group.getVisibleStartPosition());
+        assertEquals(2, group.getOriginalSpan());
+        assertEquals(2, group.getVisibleSpan());
+
+        assertEquals(2, group.getMembers().length);
+        assertTrue(group.hasMember(0));
+        assertTrue(group.hasMember(1));
     }
 
     @Test
