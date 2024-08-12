@@ -27,16 +27,19 @@
             	src="lib/com.zaxxer.sparsebits_1.3.0.v20230929-1000.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.apache.commons.commons-codec_1.17.0.jar"/>
+            	src="lib/org.apache.commons.commons-codec_1.17.1.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/org.apache.commons.commons-collections4_4.4.0.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.apache.commons.commons-compress_1.26.2.jar"/>
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/org.apache.commons.commons-io_2.16.1.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.apache.commons.lang3_3.14.0.jar"/>
+            	src="lib/org.apache.commons.lang3_3.15.0.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/org.apache.commons.logging_1.2.0.v20180409-1502.jar"/>
@@ -55,6 +58,15 @@
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/org.apache.poi_5.3.0.v20240703-1000.jar"/>
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.apache.poi.ooxml_5.3.0.v20240703-1000.jar"/>
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.apache.poi.ooxml.schemas_5.3.0.v20240703-1000.jar"/>
+            <zipfileset
+            	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
+            	src="lib/org.apache.xmlbeans_5.2.1.v20240527-0800.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/org.eclipse.collections_11.1.0.v20220705-1455.jar"/>
