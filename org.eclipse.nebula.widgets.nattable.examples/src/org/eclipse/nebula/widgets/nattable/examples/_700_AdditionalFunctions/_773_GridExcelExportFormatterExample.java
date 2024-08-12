@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -29,9 +29,11 @@ import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleR
 import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.export.IExportFormatter;
 import org.eclipse.nebula.widgets.nattable.export.command.ExportCommand;
+import org.eclipse.nebula.widgets.nattable.export.csv.CsvExporter;
 import org.eclipse.nebula.widgets.nattable.export.image.config.DefaultImageExportBindings;
 import org.eclipse.nebula.widgets.nattable.extension.poi.HSSFExcelExporter;
 import org.eclipse.nebula.widgets.nattable.extension.poi.PoiExcelExporter;
+import org.eclipse.nebula.widgets.nattable.extension.poi.XSSFExcelExporter;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -58,6 +60,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -89,7 +92,7 @@ public class _773_GridExcelExportFormatterExample extends AbstractNatExample {
         GridDataFactory.fillDefaults().grab(true, true).applyTo(gridPanel);
 
         Composite buttonPanel = new Composite(panel, SWT.NONE);
-        buttonPanel.setLayout(new GridLayout());
+        buttonPanel.setLayout(new RowLayout());
         GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
 
         // property names of the Person class
@@ -207,15 +210,50 @@ public class _773_GridExcelExportFormatterExample extends AbstractNatExample {
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 
-        Button addColumnButton = new Button(buttonPanel, SWT.PUSH);
-        addColumnButton.setText("Export");
-        addColumnButton.addSelectionListener(new SelectionAdapter() {
+        Button exportCsvButton = new Button(buttonPanel, SWT.PUSH);
+        exportCsvButton.setText("Export CSV");
+        exportCsvButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 natTable.doCommand(
                         new ExportCommand(
                                 natTable.getConfigRegistry(),
+                                natTable.getShell(),
+                                false,
+                                false,
+                                new CsvExporter()));
+            }
+        });
+
+        Button exportXlsButton = new Button(buttonPanel, SWT.PUSH);
+        exportXlsButton.setText("Export XLS");
+        exportXlsButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                natTable.doCommand(
+                        // the default uses the HSSFExcelExporter from the
+                        // ConfigRegistry
+                        new ExportCommand(
+                                natTable.getConfigRegistry(),
                                 natTable.getShell()));
+            }
+        });
+
+        Button exportXlsxButton = new Button(buttonPanel, SWT.PUSH);
+        exportXlsxButton.setText("Export XLSX");
+        exportXlsxButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                PoiExcelExporter exporter = new XSSFExcelExporter();
+                exporter.setApplyVerticalTextConfiguration(true);
+                exporter.setApplyBackgroundColor(false);
+                natTable.doCommand(
+                        new ExportCommand(
+                                natTable.getConfigRegistry(),
+                                natTable.getShell(),
+                                false,
+                                false,
+                                exporter));
             }
         });
 
