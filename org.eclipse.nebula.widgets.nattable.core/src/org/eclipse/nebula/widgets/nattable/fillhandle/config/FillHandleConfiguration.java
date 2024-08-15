@@ -16,6 +16,7 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
 import org.eclipse.nebula.widgets.nattable.copy.command.InternalCopyDataCommandHandler;
+import org.eclipse.nebula.widgets.nattable.fillhandle.FillHandleBoundsProvider;
 import org.eclipse.nebula.widgets.nattable.fillhandle.FillHandleLayerPainter;
 import org.eclipse.nebula.widgets.nattable.fillhandle.action.FillHandleColumnAction;
 import org.eclipse.nebula.widgets.nattable.fillhandle.action.FillHandleCursorAction;
@@ -42,6 +43,8 @@ public class FillHandleConfiguration extends AbstractLayerConfiguration<NatTable
 
     protected InternalCellClipboard clipboard;
 
+    private FillHandleBoundsProvider fillHandleBoundsProvider;
+
     /**
      * Create the FillHandleConfiguration for a NatTable.
      *
@@ -51,10 +54,29 @@ public class FillHandleConfiguration extends AbstractLayerConfiguration<NatTable
      *            be <code>null</code>.
      */
     public FillHandleConfiguration(SelectionLayer selectionLayer) {
+        this(selectionLayer, null);
+    }
+
+    /**
+     * Create the FillHandleConfiguration for a NatTable.
+     *
+     * @param selectionLayer
+     *            The {@link SelectionLayer} needed to determine the current
+     *            selection on which the fill handle will be rendered. Can not
+     *            be <code>null</code>.
+     * @param boundsProvider
+     *            The {@link FillHandleBoundsProvider} that is used to determine
+     *            the fill handle bounds. Can be <code>null</code> in which case
+     *            the {@link FillHandleLayerPainter} is used that is created in
+     *            {@link #configureTypedLayer(NatTable)}
+     * @since 2.5
+     */
+    public FillHandleConfiguration(SelectionLayer selectionLayer, FillHandleBoundsProvider boundsProvider) {
         if (selectionLayer == null) {
             throw new IllegalArgumentException("SelectionLayer can not be null"); //$NON-NLS-1$
         }
         this.selectionLayer = selectionLayer;
+        this.fillHandleBoundsProvider = boundsProvider;
     }
 
     @Override
@@ -76,7 +98,9 @@ public class FillHandleConfiguration extends AbstractLayerConfiguration<NatTable
 
     @Override
     public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-        FillHandleEventMatcher matcher = new FillHandleEventMatcher(this.painter);
+        FillHandleEventMatcher matcher = this.fillHandleBoundsProvider != null
+                ? new FillHandleEventMatcher(this.fillHandleBoundsProvider)
+                : new FillHandleEventMatcher((FillHandleBoundsProvider) this.painter);
 
         // Mouse move
         // Show fill handle cursor

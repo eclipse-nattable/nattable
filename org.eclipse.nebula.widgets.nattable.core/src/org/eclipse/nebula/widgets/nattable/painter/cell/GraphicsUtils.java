@@ -1245,41 +1245,107 @@ public final class GraphicsUtils {
 
         switch (borderMode) {
             case CENTERED:
-                if (resultingRectangle.width > 0) {
+                if (borderWidth > 0) {
                     resultingRectangle.x = resultingRectangle.x - (borderWidth / 2);
                     resultingRectangle.width = resultingRectangle.width + (borderWidth - 1);
                 } else {
-                    resultingRectangle.x = resultingRectangle.x + ((borderWidth - 1) / 2);
-                    resultingRectangle.width = resultingRectangle.width - (borderWidth - 1);
+                    resultingRectangle.x = resultingRectangle.x - ((borderWidth / 2));
+                    resultingRectangle.width = resultingRectangle.width + (borderWidth + 1);
                 }
 
-                if (resultingRectangle.height > 0) {
+                if (borderWidth > 0) {
                     resultingRectangle.y = resultingRectangle.y - (borderWidth / 2);
                     resultingRectangle.height = resultingRectangle.height + (borderWidth - 1);
                 } else {
-                    resultingRectangle.y = resultingRectangle.y + ((borderWidth - 1) / 2);
-                    resultingRectangle.height = resultingRectangle.height - (borderWidth - 1);
+                    resultingRectangle.y = resultingRectangle.y - ((borderWidth / 2));
+                    resultingRectangle.height = resultingRectangle.height + (borderWidth + 1);
                 }
                 break;
             case EXTERNAL:
-                if (resultingRectangle.width > 0) {
+                if (borderWidth > 0) {
                     resultingRectangle.x = resultingRectangle.x - (borderWidth - 1);
                     resultingRectangle.width = resultingRectangle.width + ((borderWidth - 1) * 2);
                 } else {
-                    resultingRectangle.x = resultingRectangle.x + (borderWidth - 1);
-                    resultingRectangle.width = resultingRectangle.width - ((borderWidth - 1) * 2);
+                    resultingRectangle.x = resultingRectangle.x - (borderWidth + 1);
+                    resultingRectangle.width = resultingRectangle.width + ((borderWidth + 1) * 2);
                 }
 
-                if (resultingRectangle.height > 0) {
+                if (borderWidth > 0) {
                     resultingRectangle.y = resultingRectangle.y - (borderWidth - 1);
                     resultingRectangle.height = resultingRectangle.height + ((borderWidth - 1) * 2);
                 } else {
-                    resultingRectangle.y = resultingRectangle.y + (borderWidth - 1);
-                    resultingRectangle.height = resultingRectangle.height - ((borderWidth - 1) * 2);
+                    resultingRectangle.y = resultingRectangle.y - (borderWidth + 1);
+                    resultingRectangle.height = resultingRectangle.height + ((borderWidth + 1) * 2);
                 }
                 break;
             case INTERNAL:
                 // the external bounds remain the same
+                break;
+        }
+
+        return resultingRectangle;
+    }
+
+    /**
+     * Returns the internal bounds of the rectangle that was used by painting
+     * <code>rectangle</code> with <code>borderStyle</code> using one of the
+     * <code>GraphicsUtils.drawRectangle...</code> methods.
+     *
+     * @param rectangle
+     *            the rectangle with border to consider
+     * @param borderStyle
+     *            the border style to consider
+     * @return the internal bounds of the internal rectangle
+     *
+     * @since 2.5
+     */
+    public static Rectangle getInternalBounds(Rectangle rectangle, BorderStyle borderStyle) {
+        if (rectangle == null || borderStyle == null) {
+            return null;
+        }
+
+        Rectangle resultingRectangle = new Rectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+
+        int borderWidth = borderStyle.getThickness();
+        BorderModeEnum borderMode = borderStyle.getBorderMode();
+
+        switch (borderMode) {
+            case CENTERED:
+                if (borderWidth > 0) {
+                    resultingRectangle.x = resultingRectangle.x + (borderWidth / 2);
+                    resultingRectangle.width = resultingRectangle.width - (borderWidth - 1);
+                } else {
+                    resultingRectangle.x = resultingRectangle.x + (borderWidth / 2);
+                    resultingRectangle.width = resultingRectangle.width - (borderWidth + 1);
+                }
+
+                if (borderWidth > 0) {
+                    resultingRectangle.y = resultingRectangle.y + (borderWidth / 2);
+                    resultingRectangle.height = resultingRectangle.height - (borderWidth - 1);
+                } else {
+                    resultingRectangle.y = resultingRectangle.y + (borderWidth / 2);
+                    resultingRectangle.height = resultingRectangle.height - (borderWidth + 1);
+                }
+                break;
+            case EXTERNAL:
+                if (borderWidth > 0) {
+                    resultingRectangle.x = resultingRectangle.x + (borderWidth - 1);
+                    resultingRectangle.width = resultingRectangle.width - ((borderWidth - 1) * 2);
+                } else {
+                    resultingRectangle.x = resultingRectangle.x + (borderWidth + 1);
+                    resultingRectangle.width = resultingRectangle.width - ((borderWidth + 1) * 2);
+                }
+
+                if (borderWidth > 0) {
+                    resultingRectangle.y = resultingRectangle.y + (borderWidth - 1);
+                    resultingRectangle.height = resultingRectangle.height - ((borderWidth - 1) * 2);
+                } else {
+                    resultingRectangle.y = resultingRectangle.y + (borderWidth + 1);
+                    resultingRectangle.height = resultingRectangle.height - ((borderWidth + 1) * 2);
+                }
+                break;
+            case INTERNAL:
+                // the bounds remain the same
                 break;
         }
 

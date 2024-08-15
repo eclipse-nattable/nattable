@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2020 CEA LIST.
+ * Copyright (c) 2015, 2024 CEA LIST.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,6 +13,7 @@
 package org.eclipse.nebula.widgets.nattable.fillhandle.event;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.fillhandle.FillHandleBoundsProvider;
 import org.eclipse.nebula.widgets.nattable.fillhandle.FillHandleLayerPainter;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
@@ -26,7 +27,12 @@ import org.eclipse.swt.events.MouseEvent;
  */
 public class FillHandleEventMatcher extends MouseEventMatcher {
 
+    @Deprecated
     protected FillHandleLayerPainter fillHandlePainter;
+    /**
+     * @since 2.5
+     */
+    protected FillHandleBoundsProvider fillHandleBoundsProvider;
 
     /**
      * Create a {@link FillHandleEventMatcher} that reacts when the mouse is
@@ -38,17 +44,37 @@ public class FillHandleEventMatcher extends MouseEventMatcher {
      *            determine the bounds of the fill handle. Can not be
      *            <code>null</code>.
      */
+    @Deprecated
     public FillHandleEventMatcher(FillHandleLayerPainter fillHandlePainter) {
         if (fillHandlePainter == null) {
             throw new IllegalArgumentException("FillHandleLayerPainter can not be null"); //$NON-NLS-1$
         }
         this.fillHandlePainter = fillHandlePainter;
+        this.fillHandleBoundsProvider = fillHandlePainter;
+    }
+
+    /**
+     * Create a {@link FillHandleEventMatcher} that reacts when the mouse is
+     * moved over the fill handle bounds provided by the given
+     * {@link FillHandleBoundsProvider}.
+     *
+     * @param fillHandleBoundsProvider
+     *            The {@link FillHandleBoundsProvider} that should be used to
+     *            determine the bounds of the fill handle. Can not be
+     *            <code>null</code>.
+     * @since 2.5
+     */
+    public FillHandleEventMatcher(FillHandleBoundsProvider fillHandleBoundsProvider) {
+        if (fillHandleBoundsProvider == null) {
+            throw new IllegalArgumentException("FillHandleBoundsProvider can not be null"); //$NON-NLS-1$
+        }
+        this.fillHandleBoundsProvider = fillHandleBoundsProvider;
     }
 
     @Override
     public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
-        if (this.fillHandlePainter.getSelectionHandleBounds() != null) {
-            return this.fillHandlePainter.getSelectionHandleBounds().contains(event.x, event.y);
+        if (this.fillHandleBoundsProvider.getSelectionHandleBounds() != null) {
+            return this.fillHandleBoundsProvider.getSelectionHandleBounds().contains(event.x, event.y);
         }
         return false;
     }
