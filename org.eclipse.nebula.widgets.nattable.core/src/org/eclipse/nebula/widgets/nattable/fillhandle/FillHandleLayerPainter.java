@@ -15,7 +15,6 @@
 package org.eclipse.nebula.widgets.nattable.fillhandle;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
@@ -29,10 +28,6 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayerPainter;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
-import org.eclipse.nebula.widgets.nattable.style.BorderStyle.BorderModeEnum;
-import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
-import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
-import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -65,7 +60,7 @@ import org.eclipse.swt.graphics.Rectangle;
  *
  * @since 1.4
  */
-public class FillHandleLayerPainter extends SelectionLayerPainter {
+public class FillHandleLayerPainter extends SelectionLayerPainter implements FillHandleBoundsProvider {
 
     /**
      * The bounds of the current visible selection handle or <code>null</code>
@@ -452,16 +447,7 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
      * @since 1.5
      */
     protected BorderStyle getHandleRegionBorderStyle(IConfigRegistry configRegistry) {
-        BorderStyle borderStyle = configRegistry.getConfigAttribute(
-                FillHandleConfigAttributes.FILL_HANDLE_REGION_BORDER_STYLE,
-                DisplayMode.NORMAL);
-
-        // if there is no border style configured, use the default
-        if (borderStyle == null) {
-            borderStyle = new BorderStyle(2, GUIHelper.getColor(0, 125, 10), LineStyleEnum.SOLID, BorderModeEnum.INTERNAL);
-        }
-
-        return borderStyle;
+        return FillHandleLayerPainterHelper.getHandleRegionBorderStyle(configRegistry);
     }
 
     /**
@@ -480,16 +466,7 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
      * @since 1.5
      */
     protected Color getHandleColor(IConfigRegistry configRegistry) {
-        if (configRegistry != null) {
-            Color color = configRegistry.getConfigAttribute(
-                    FillHandleConfigAttributes.FILL_HANDLE_COLOR,
-                    DisplayMode.NORMAL);
-
-            if (color != null) {
-                return color;
-            }
-        }
-        return GUIHelper.getColor(0, 125, 10);
+        return FillHandleLayerPainterHelper.getHandleColor(configRegistry);
     }
 
     /**
@@ -508,16 +485,7 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
      * @since 1.5
      */
     protected BorderStyle getHandleBorderStyle(IConfigRegistry configRegistry) {
-        if (configRegistry != null) {
-            BorderStyle borderStyle = configRegistry.getConfigAttribute(
-                    FillHandleConfigAttributes.FILL_HANDLE_BORDER_STYLE,
-                    DisplayMode.NORMAL);
-
-            if (borderStyle != null) {
-                return borderStyle;
-            }
-        }
-        return new BorderStyle(1, GUIHelper.COLOR_WHITE, LineStyleEnum.SOLID, BorderModeEnum.CENTERED);
+        return FillHandleLayerPainterHelper.getHandleBorderStyle(configRegistry);
     }
 
     /**
@@ -536,18 +504,7 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
      * @since 1.6
      */
     protected BorderStyle getCopyBorderStyle(IConfigRegistry configRegistry) {
-        IStyle cellStyle = configRegistry.getConfigAttribute(
-                CellConfigAttributes.CELL_STYLE,
-                DisplayMode.NORMAL,
-                SelectionStyleLabels.COPY_BORDER_STYLE);
-        BorderStyle borderStyle = cellStyle != null ? cellStyle.getAttributeValue(CellStyleAttributes.BORDER_STYLE) : null;
-
-        // if there is no border style configured, use the default
-        if (borderStyle == null) {
-            borderStyle = new BorderStyle(1, GUIHelper.COLOR_BLACK, LineStyleEnum.DASHED, BorderModeEnum.CENTERED);
-        }
-
-        return borderStyle;
+        return FillHandleLayerPainterHelper.getCopyBorderStyle(configRegistry);
     }
 
     /**
@@ -563,17 +520,7 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
      * @since 2.5
      */
     protected Point getHandleSize(IConfigRegistry configRegistry) {
-        if (configRegistry != null) {
-            Point size = configRegistry.getConfigAttribute(
-                    FillHandleConfigAttributes.FILL_HANDLE_SIZE,
-                    DisplayMode.NORMAL);
-
-            if (size != null) {
-                return size;
-            }
-        }
-
-        return new Point(7, 7);
+        return FillHandleLayerPainterHelper.getHandleSize(configRegistry);
     }
 
     /**
@@ -581,6 +528,7 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
      * @return The bounds of the current visible selection handle or
      *         <code>null</code> if no fill handle is currently rendered.
      */
+    @Override
     public Rectangle getSelectionHandleBounds() {
         return this.handleBounds;
     }

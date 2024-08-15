@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2023 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -1069,12 +1069,29 @@ public class CompositeLayer extends AbstractLayer {
                     childLayer.getLayerPainter().paintLayer(
                             natLayer, gc, x, y, childLayerRectangle, configuration);
 
+                    processLayerPainterInformation(childLayer.getLayerPainter());
+
                     gc.setClipping(originalClipping);
                     y += childLayer.getHeight();
                 }
 
                 x += CompositeLayer.this.childLayerLayout[layoutX][0].getWidth();
             }
+        }
+
+        /**
+         * Process the information stored in a {@link ILayerPainter} of a
+         * composite region. Needed to avoid that the information is lost if the
+         * same painter is used in all regions, e.g. the FillHandleLayerPainter.
+         *
+         * @param painter
+         *            The {@link ILayerPainter} of a composite region.
+         * @since 2.5
+         */
+        protected void processLayerPainterInformation(ILayerPainter painter) {
+            // by default does nothing, but can be overridden to retrieve and
+            // store information from the painter, e.g. in case of the
+            // FillHandleLayerPainter the selection handle region bounds
         }
 
         @Override

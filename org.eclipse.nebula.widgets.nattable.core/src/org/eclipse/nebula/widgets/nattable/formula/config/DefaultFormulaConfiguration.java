@@ -26,6 +26,7 @@ import org.eclipse.nebula.widgets.nattable.edit.action.DeleteSelectionAction;
 import org.eclipse.nebula.widgets.nattable.edit.command.DeleteSelectionCommandHandler;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.export.command.ExportCommandHandler;
+import org.eclipse.nebula.widgets.nattable.fillhandle.FillHandleBoundsProvider;
 import org.eclipse.nebula.widgets.nattable.fillhandle.FillHandleLayerPainter;
 import org.eclipse.nebula.widgets.nattable.fillhandle.event.FillHandleEventMatcher;
 import org.eclipse.nebula.widgets.nattable.formula.FormulaDataProvider;
@@ -65,10 +66,45 @@ public class DefaultFormulaConfiguration implements IConfiguration {
 
     private InternalCellClipboard clipboard;
 
+    private FillHandleBoundsProvider fillHandleBoundsProvider;
+
+    /**
+     *
+     * @param dataProvider
+     *            The {@link FormulaDataProvider} that is able to evaluate
+     *            formulas.
+     * @param selectionLayer
+     *            The {@link SelectionLayer} on which several ui bindings should
+     *            be registered.
+     * @param clipboard
+     *            The {@link InternalCellClipboard} that should be used to
+     *            support internal copy &amp; paste interactions.
+     */
     public DefaultFormulaConfiguration(FormulaDataProvider dataProvider, SelectionLayer selectionLayer, InternalCellClipboard clipboard) {
+        this(dataProvider, selectionLayer, clipboard, null);
+    }
+
+    /**
+     *
+     * @param dataProvider
+     *            The {@link FormulaDataProvider} that is able to evaluate
+     *            formulas.
+     * @param selectionLayer
+     *            The {@link SelectionLayer} on which several ui bindings should
+     *            be registered.
+     * @param clipboard
+     *            The {@link InternalCellClipboard} that should be used to
+     *            support internal copy &amp; paste interactions.
+     * @param boundsProvider
+     *            The {@link FillHandleBoundsProvider} that should be used to
+     *            create the matcher for interactions with the fill handle.
+     * @since 2.5
+     */
+    public DefaultFormulaConfiguration(FormulaDataProvider dataProvider, SelectionLayer selectionLayer, InternalCellClipboard clipboard, FillHandleBoundsProvider boundsProvider) {
         this.dataProvider = dataProvider;
         this.selectionLayer = selectionLayer;
         this.clipboard = clipboard;
+        this.fillHandleBoundsProvider = boundsProvider;
     }
 
     @Override
@@ -129,7 +165,13 @@ public class DefaultFormulaConfiguration implements IConfiguration {
                 new KeyEventMatcher(SWT.NONE, SWT.ESC),
                 new ClearClipboardAction(this.clipboard));
 
-        FillHandleEventMatcher matcher = new FillHandleEventMatcher((FillHandleLayerPainter) this.selectionLayer.getLayerPainter());
+        if (this.fillHandleBoundsProvider == null) {
+            FillHandleLayerPainter layerPainter = new FillHandleLayerPainter(this.clipboard);
+            this.selectionLayer.setLayerPainter(layerPainter);
+            this.fillHandleBoundsProvider = layerPainter;
+        }
+
+        FillHandleEventMatcher matcher = new FillHandleEventMatcher(this.fillHandleBoundsProvider);
 
         // Mouse drag
         // trigger the handle drag operations
@@ -170,10 +212,18 @@ public class DefaultFormulaConfiguration implements IConfiguration {
 
         // add the layer painter that renders a border around copied cells
         if (!(this.selectionLayer.getLayerPainter() instanceof FillHandleLayerPainter)) {
-            this.selectionLayer.setLayerPainter(new FillHandleLayerPainter(this.clipboard));
+            FillHandleLayerPainter layerPainter = new FillHandleLayerPainter(this.clipboard);
+            this.selectionLayer.setLayerPainter(layerPainter);
+            if (this.fillHandleBoundsProvider == null) {
+                this.fillHandleBoundsProvider = layerPainter;
+            }
         } else {
             // ensure the clipboard is set
-            ((FillHandleLayerPainter) this.selectionLayer.getLayerPainter()).setClipboard(this.clipboard);
+            FillHandleLayerPainter layerPainter = ((FillHandleLayerPainter) this.selectionLayer.getLayerPainter());
+            layerPainter.setClipboard(this.clipboard);
+            if (this.fillHandleBoundsProvider == null) {
+                this.fillHandleBoundsProvider = layerPainter;
+            }
         }
 
         // register special copy+paste command handlers
