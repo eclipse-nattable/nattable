@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -266,19 +266,50 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
         return this.columnWidthConfig.getDefaultSize();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <b>Note:</b><br>
+     * This method returns the configured column width according to the current
+     * scaling. To get the configured column width without scaling, call
+     * {@link #getConfiguredColumnWidthByPosition(int)}.
+     * </p>
+     */
     @Override
     public int getColumnWidthByPosition(int columnPosition) {
         return this.columnWidthConfig.getSize(columnPosition);
     }
 
+    /**
+     * Set the width of the given column. The width needs to be specified in
+     * pixels unscaled.
+     *
+     * @param columnPosition
+     *            The column position in this layer.
+     * @param width
+     *            The width in pixels to set.
+     */
     public void setColumnWidthByPosition(int columnPosition, int width) {
         setColumnWidthByPosition(columnPosition, width, true);
     }
 
+    /**
+     * Set the width of the given column. The width needs to be specified in
+     * pixels unscaled.
+     *
+     * @param columnPosition
+     *            The column position in this layer.
+     * @param width
+     *            The width in pixels to set.
+     * @param fireEvent
+     *            <code>true</code> if a {@link ColumnResizeEvent} should be
+     *            fired.
+     */
     public void setColumnWidthByPosition(int columnPosition, int width, boolean fireEvent) {
         this.columnWidthConfig.setSize(columnPosition, width);
-        if (fireEvent)
+        if (fireEvent) {
             fireLayerEvent(new ColumnResizeEvent(this, columnPosition));
+        }
     }
 
     public void setColumnWidthPercentageByPosition(int columnPosition, int width) {
@@ -411,19 +442,49 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
         return this.rowHeightConfig.getDefaultSize();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <b>Note:</b><br>
+     * This method returns the configured row height according to the current
+     * scaling. To get the configured row height without scaling, call
+     * {@link #getConfiguredRowHeightByPosition(int)}.
+     * </p>
+     */
     @Override
     public int getRowHeightByPosition(int rowPosition) {
         return this.rowHeightConfig.getSize(rowPosition);
     }
 
+    /**
+     * Set the height of the given row. The height needs to be specified in
+     * pixels unscaled.
+     *
+     * @param rowPosition
+     *            The row position in this layer.
+     * @param height
+     *            The height in pixels to set.
+     */
     public void setRowHeightByPosition(int rowPosition, int height) {
         setRowHeightByPosition(rowPosition, height, true);
     }
 
+    /**
+     * Set the height of the given row. The height needs to be specified in
+     * pixels unscaled.
+     *
+     * @param rowPosition
+     *            The row position in this layer.
+     * @param height
+     *            The height in pixels to set.
+     * @param fireEvent
+     *            <code>true</code> if a {@link RowResizeEvent} should be fired.
+     */
     public void setRowHeightByPosition(int rowPosition, int height, boolean fireEvent) {
         this.rowHeightConfig.setSize(rowPosition, height);
-        if (fireEvent)
+        if (fireEvent) {
             fireLayerEvent(new RowResizeEvent(this, rowPosition));
+        }
     }
 
     public void setRowHeightPercentageByPosition(int rowPosition, int height) {
