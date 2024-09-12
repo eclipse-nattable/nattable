@@ -5,7 +5,12 @@ This document describes the process on how to release Nebula NatTable.
 ## Preparation
 
  * In case of a major or minor release, ensure that the DEPENDENCIES information is up to date.  
- Update it via the [Eclipse Dash License Tool](https://github.com/eclipse/dash-licenses) `mvn org.eclipse.dash:license-tool-plugin:license-check -Ddash.summary=DEPENDENCIES -Dtycho.target.eager=true`
+   * Either directly update it via the [Eclipse Dash License Tool](https://github.com/eclipse/dash-licenses) `mvn org.eclipse.dash:license-tool-plugin:license-check -Ddash.summary=DEPENDENCIES -Dtycho.target.eager=true`
+   * Or run the `license-check` profile which also generates an SBOM `mvn clean verify -Plicense-check -DskipTests=true -Dtycho.target.eager=true`
+   * In case of `unknown` or `restricted` entries in the DEPENDENCIES, create __IP Team Review Requests__ via  
+   ```
+   mvn org.eclipse.dash:license-tool-plugin:license-check -Ddash.summary=DEPENDENCIES -Dtycho.target.eager=true -Ddash.iplab.token=<TOKEN>
+   ```
  * Ensure that everything is checked in to the master branch
  * Create and push a release branch for the version that should be released (e.g. releases/2.0.2)
  * Create a release in the project management: https://projects.eclipse.org/node/1463/create-release
@@ -45,11 +50,9 @@ This document describes the process on how to release Nebula NatTable.
 
 ## Update the website
 
- * Update download.php to add the new version for downloading
- * Update documentation.php to correct the link to the API docs
- * Update pages/_index.html to add the news about the new release
- * Update documentation/start.html to correct the link to the API docs
- * Update documentation/examples_application.html to correct the links to the examples applications
+ * Update content/download.md to add the new version for downloading
+ * Update content/examples/index.md to correct the links to the examples applications
+ * Create a news or New & Noteworthy page in content/news to add the news about the new release
 
 
  More details on the publishing process of Eclipse projects to Maven Central can be found [here](https://wiki.eclipse.org/Tycho:How_to_deploy_to_a_Maven_repository)
