@@ -19,7 +19,12 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.eclipse.collections.api.list.primitive.IntList;
+import org.eclipse.collections.api.map.primitive.MutableObjectIntMap;
+import org.eclipse.collections.impl.factory.primitive.IntLists;
+import org.eclipse.collections.impl.factory.primitive.ObjectIntMaps;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -32,7 +37,6 @@ import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.LetterOrDigitKeyEventMatcher;
-import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
@@ -131,6 +135,15 @@ public class NatCombo extends Composite {
      * java.util.List. Needed for indexed operations in the dropdown
      */
     protected java.util.List<String> itemList;
+
+    /**
+     * Mapping of item to index in the {@link #itemList}. Used for performance
+     * optimizations of index related operations, e.g. getting the index of an
+     * item.
+     *
+     * @since 2.5
+     */
+    private MutableObjectIntMap<String> itemMap;
 
     /**
      * Map used to hold the selection state of items in the drop. Needed to
@@ -525,6 +538,12 @@ public class NatCombo extends Composite {
     public void setItems(String[] items) {
         if (items != null) {
             this.itemList = Arrays.asList(items);
+
+            this.itemMap = ObjectIntMaps.mutable.empty();
+            for (int i = 0; i < this.itemList.size(); i++) {
+                this.itemMap.put(this.itemList.get(i), i);
+            }
+
             this.selectionStateMap = new LinkedHashMap<>();
             for (String item : items) {
                 this.selectionStateMap.put(item, Boolean.FALSE);
@@ -1119,11 +1138,11 @@ public class NatCombo extends Composite {
         if (this.selectionStateMap != null) {
             for (String item : this.selectionStateMap.keySet()) {
                 if (this.selectionStateMap.get(item)) {
-                    return this.itemList.indexOf(item);
+                    return getItemIndex(item);
                 }
             }
         } else if (!this.text.isDisposed()) {
-            return this.itemList.indexOf(this.text.getText());
+            return getItemIndex(this.text.getText());
         }
         return -1;
     }
@@ -1141,22 +1160,15 @@ public class NatCombo extends Composite {
      */
     public int[] getSelectionIndices() {
         if (this.selectionStateMap != null) {
-            List<Integer> selectedIndices = new ArrayList<>();
-            for (String item : this.selectionStateMap.keySet()) {
-                if (this.selectionStateMap.get(item)) {
-                    selectedIndices.add(this.itemList.indexOf(item));
-                }
-            }
-            int[] indices = new int[selectedIndices.size()];
-            for (int i = 0; i < selectedIndices.size(); i++) {
-                indices[i] = selectedIndices.get(i);
-            }
-            return indices;
+            return this.selectionStateMap.entrySet().stream()
+                    .filter(entry -> entry.getValue())
+                    .mapToInt(entry -> getItemIndex(entry.getKey()))
+                    .toArray();
         } else {
             String[] selectedItems = getTextAsArray();
             int[] result = new int[selectedItems.length];
             for (int i = 0; i < selectedItems.length; i++) {
-                result[i] = this.itemList.indexOf(selectedItems[i]);
+                result[i] = getItemIndex(selectedItems[i]);
             }
             return result;
         }
@@ -1169,16 +1181,24 @@ public class NatCombo extends Composite {
      */
     public int getSelectionCount() {
         if (this.selectionStateMap != null) {
-            List<Integer> selectedIndices = new ArrayList<>();
-            for (String item : this.selectionStateMap.keySet()) {
-                if (this.selectionStateMap.get(item)) {
-                    selectedIndices.add(this.itemList.indexOf(item));
-                }
-            }
-            return selectedIndices.size();
+            return (int) this.selectionStateMap.entrySet().stream()
+                    .filter(entry -> entry.getValue())
+                    .count();
         } else {
             return getTextAsArray().length;
         }
+    }
+
+    /**
+     * Returns the zero-relative index of the requested item.
+     *
+     * @param item
+     *            the item of which the index is requested.
+     * @return the index of the item.
+     * @since 2.5
+     */
+    protected int getItemIndex(String item) {
+        return this.itemMap.get(item);
     }
 
     /**
@@ -1273,7 +1293,7 @@ public class NatCombo extends Composite {
     public void select(int[] indices) {
         if (!getDropdownTable().isDisposed()) {
             getDropdownTable().select(indices);
-            List<Integer> indicesList = ArrayUtil.asIntegerList(indices);
+            IntList indicesList = IntLists.immutable.of(indices);
             for (int i = 0; i < this.itemList.size(); i++) {
                 this.selectionStateMap.put(this.itemList.get(i), indicesList.contains(i));
             }
@@ -1494,11 +1514,12 @@ public class NatCombo extends Composite {
      *            The Strings that represent the selected items
      */
     protected void setDropdownSelection(String[] selection) {
-        java.util.List<String> selectionList = Arrays.asList(selection);
+        Map<String, Boolean> selectionMap = Arrays.stream(selection).collect(Collectors.toMap(e -> e, e -> Boolean.TRUE));
         java.util.List<TableItem> selectedItems = new ArrayList<>();
+        boolean containsSelectAll = selectionMap.getOrDefault(EditConstants.SELECT_ALL_ITEMS_VALUE, Boolean.FALSE);
         for (TableItem item : getDropdownTable().getItems()) {
-            if (selectionList.contains(EditConstants.SELECT_ALL_ITEMS_VALUE)
-                    || selectionList.contains(item.getText())) {
+            if (containsSelectAll
+                    || selectionMap.getOrDefault(item.getText(), Boolean.FALSE)) {
                 this.selectionStateMap.put(item.getText(), Boolean.TRUE);
                 if (this.useCheckbox) {
                     item.setChecked(true);
