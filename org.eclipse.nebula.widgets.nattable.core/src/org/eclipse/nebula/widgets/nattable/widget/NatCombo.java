@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.eclipse.collections.api.list.primitive.IntList;
 import org.eclipse.collections.api.map.primitive.MutableObjectIntMap;
-import org.eclipse.collections.impl.factory.primitive.IntLists;
+import org.eclipse.collections.api.set.primitive.IntSet;
+import org.eclipse.collections.impl.factory.primitive.IntSets;
 import org.eclipse.collections.impl.factory.primitive.ObjectIntMaps;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -1293,9 +1293,9 @@ public class NatCombo extends Composite {
     public void select(int[] indices) {
         if (!getDropdownTable().isDisposed()) {
             getDropdownTable().select(indices);
-            IntList indicesList = IntLists.immutable.of(indices);
+            IntSet indicesSet = IntSets.immutable.of(indices);
             for (int i = 0; i < this.itemList.size(); i++) {
-                this.selectionStateMap.put(this.itemList.get(i), indicesList.contains(i));
+                this.selectionStateMap.put(this.itemList.get(i), indicesSet.contains(i));
             }
             this.text.setText(getTransformedTextForSelection());
         } else {
