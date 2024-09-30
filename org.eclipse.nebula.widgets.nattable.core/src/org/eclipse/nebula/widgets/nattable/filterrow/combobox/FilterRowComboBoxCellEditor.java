@@ -13,8 +13,8 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -264,7 +264,7 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
             // available items
             List<?> allValues = ((FilterRowComboBoxDataProvider) getComboBoxDataProvider()).getAllValues(getColumnIndex());
             List<?> visibleValues = getComboBoxDataProvider().getValues(getColumnIndex(), getRowIndex());
-            List<?> diffValues = new ArrayList<>(allValues);
+            HashSet<?> diffValues = new HashSet<>(allValues);
             diffValues.removeAll(visibleValues);
 
             // ensure that items that are not selected don't get added, to avoid

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2023 Dirk Fauth and others.
+ * Copyright (c) 2013, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -191,12 +192,9 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
                 FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
 
         if (object instanceof Collection) {
-            String result = ""; //$NON-NLS-1$
             Collection valueCollection = (Collection) object;
+            StringJoiner joiner = new StringJoiner("|", "(", ")"); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
             for (Object value : valueCollection) {
-                if (result.length() > 0) {
-                    result += "|"; //$NON-NLS-1$
-                }
                 String convertedValue = displayConverter.canonicalToDisplayValue(
                         new LayerCell(null, columnIndex, 0),
                         this.configRegistry,
@@ -204,12 +202,12 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
                 if (convertedValue.isEmpty()) {
                     // for an empty String add the regular expression for empty
                     // String
-                    result += "^$"; //$NON-NLS-1$
+                    joiner.add("^$"); //$NON-NLS-1$
                 } else {
-                    result += Pattern.quote(convertedValue);
+                    joiner.add(Pattern.quote(convertedValue));
                 }
             }
-            return "(" + result + ")"; //$NON-NLS-1$//$NON-NLS-2$
+            return joiner.toString();
         }
 
         if (displayConverter != null) {

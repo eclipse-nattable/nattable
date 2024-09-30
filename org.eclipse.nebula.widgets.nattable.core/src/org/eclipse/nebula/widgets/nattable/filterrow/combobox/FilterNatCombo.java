@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2023 Dirk Fauth and others.
+ * Copyright (c) 2013, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -568,7 +569,7 @@ public class FilterNatCombo extends NatCombo {
         if (!getDropdownTable().isDisposed()) {
             return getDropdownTable().getSelectionIndex();
         } else if (this.filterText != null && this.filterText.length() > 0) {
-            return this.itemList.indexOf(this.filterText);
+            return getItemIndex(this.filterText);
         }
         return -1;
     }
@@ -845,22 +846,20 @@ public class FilterNatCombo extends NatCombo {
     @Override
     protected String getTransformedText(String[] values) {
         String result = ""; //$NON-NLS-1$
-        if (this.multiselect) {
-            for (int i = 0; i < values.length; i++) {
-                String selection = values[i];
-                result += selection;
-                if ((i + 1) < values.length) {
-                    result += this.multiselectValueSeparator;
-                }
-            }
+        if (values.length > 0) {
             // if at least one value was selected, add the prefix and suffix
             // we check the values array instead of the result length because
             // there can be also an empty String be selected
-            if (values.length > 0) {
-                result = this.multiselectTextPrefix + result + this.multiselectTextSuffix;
+            if (this.multiselect) {
+                StringJoiner joiner = new StringJoiner(
+                        this.multiselectValueSeparator,
+                        this.multiselectTextPrefix,
+                        this.multiselectTextSuffix);
+                Arrays.stream(values).forEach(joiner::add);
+                result = joiner.toString();
+            } else {
+                result = values[0];
             }
-        } else if (values.length > 0) {
-            result = values[0];
         }
         return result;
     }
