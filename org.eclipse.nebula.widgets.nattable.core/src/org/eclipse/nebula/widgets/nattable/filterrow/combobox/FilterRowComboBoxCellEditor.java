@@ -251,7 +251,7 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
         }
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public void setCanonicalValue(Object canonicalValue) {
         this.currentCanonicalValue = canonicalValue;
@@ -265,12 +265,12 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
             List<?> allValues = ((FilterRowComboBoxDataProvider) getComboBoxDataProvider()).getAllValues(getColumnIndex());
             List<?> visibleValues = getComboBoxDataProvider().getValues(getColumnIndex(), getRowIndex());
             HashSet<?> diffValues = new HashSet<>(allValues);
-            diffValues.removeAll(visibleValues);
+            diffValues.removeAll(new HashSet<>(visibleValues));
 
             // ensure that items that are not selected don't get added, to avoid
             // that they get selected on filtering
             if (canonicalValue instanceof Collection) {
-                Collection cValues = (Collection) canonicalValue;
+                Collection cValues = new HashSet((Collection) canonicalValue);
                 for (Iterator<?> it = diffValues.iterator(); it.hasNext();) {
                     Object object = it.next();
                     if (!cValues.contains(object)) {

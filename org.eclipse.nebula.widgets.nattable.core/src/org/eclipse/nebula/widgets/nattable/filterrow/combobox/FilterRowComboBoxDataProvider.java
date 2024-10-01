@@ -761,15 +761,18 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
 
         // find the added values
         if (cacheAfter != null && cacheBefore != null) {
+            Set<Object> cacheBeforeSet = new HashSet<>(cacheBefore);
+            Set<Object> cacheAfterSet = new HashSet<>(cacheAfter);
+
             for (Object after : cacheAfter) {
-                if (!cacheBefore.contains(after)) {
+                if (!cacheBeforeSet.contains(after)) {
                     addedValues.add(after);
                 }
             }
 
             // find the removed values
             for (Object before : cacheBefore) {
-                if (!cacheAfter.contains(before)) {
+                if (!cacheAfterSet.contains(before)) {
                     removedValues.add(before);
                 }
             }
@@ -1092,7 +1095,7 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
                 if (EditConstants.SELECT_ALL_ITEMS_VALUE.equals(dataValue)
                         || (dataValue instanceof Collection
                                 && (ObjectUtils.collectionsEqual(filterValue, (Collection) dataValue)
-                                        || ((Collection) dataValue).containsAll(filterValue)))) {
+                                        || new HashSet(((Collection) dataValue)).containsAll(filterValue)))) {
                     return true;
                 }
             } else {

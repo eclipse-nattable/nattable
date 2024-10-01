@@ -12,9 +12,8 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 
@@ -911,8 +910,8 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
                         && !event.getAddedItems(i).isEmpty()) {
                     // as the filter collection is a list, we need to ensure
                     // that no double values are added
-                    List itemsToAdd = new ArrayList(event.getAddedItems(i));
-                    itemsToAdd.removeAll(filterCollection);
+                    HashSet itemsToAdd = new HashSet(event.getAddedItems(i));
+                    itemsToAdd.removeAll(new HashSet(filterCollection));
 
                     filterCollection.addAll(itemsToAdd);
                 }

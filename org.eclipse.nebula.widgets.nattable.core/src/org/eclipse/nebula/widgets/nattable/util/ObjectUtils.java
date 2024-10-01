@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2023 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -227,29 +228,39 @@ public final class ObjectUtils {
      *
      * @since 2.1
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static boolean collectionsEqual(Collection c1, Collection c2) {
-        if ((c1 != null && c2 != null) && c1.size() == c2.size()) {
+        if ((c1 != null && c2 != null)) {
 
-            if (!c1.equals(c2)) {
-                // as equality for collections take into account the order and
-                // the elements we perform an additional check if the same items
-                // regardless the order are contained in both lists
-                for (Object f1 : c1) {
-                    if (!c2.contains(f1)) {
-                        return false;
+            // as we check for content equality, double values in the
+            // collections do not count, and the performance increases using a
+            // HashSet
+            HashSet hc1 = new HashSet(c1);
+            HashSet hc2 = new HashSet(c2);
+
+            if (hc1.size() == hc2.size()) {
+
+                if (!hc1.equals(hc2)) {
+                    // as equality for collections take into account the order
+                    // and the elements we perform an additional check if the
+                    // same items regardless the order are contained in both
+                    // lists
+                    for (Object f1 : hc1) {
+                        if (!hc2.contains(f1)) {
+                            return false;
+                        }
+                    }
+                    // as lists can contain the same element twice, we also
+                    // perform a counter check
+                    for (Object f2 : hc2) {
+                        if (!hc1.contains(f2)) {
+                            return false;
+                        }
                     }
                 }
-                // as lists can contain the same element twice, we also perform
-                // a counter check
-                for (Object f2 : c2) {
-                    if (!c1.contains(f2)) {
-                        return false;
-                    }
-                }
+
+                return true;
             }
-
-            return true;
         }
 
         return false;
