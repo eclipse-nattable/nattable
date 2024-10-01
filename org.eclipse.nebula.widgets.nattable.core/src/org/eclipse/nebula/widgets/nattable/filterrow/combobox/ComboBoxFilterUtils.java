@@ -13,6 +13,7 @@
 package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -66,7 +67,7 @@ public final class ComboBoxFilterUtils {
                 dataProviderList = comboBoxDataProvider.getValues(columnIndex, 0);
             }
 
-            return dataCollection.containsAll(dataProviderList);
+            return new HashSet<>(dataCollection).containsAll(dataProviderList);
         }
 
         return false;
