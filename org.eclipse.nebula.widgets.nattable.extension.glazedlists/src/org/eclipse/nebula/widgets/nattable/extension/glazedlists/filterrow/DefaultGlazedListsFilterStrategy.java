@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2023 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,12 +13,17 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;
 
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
@@ -31,6 +36,7 @@ import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +47,9 @@ import ca.odell.glazedlists.FunctionList;
 import ca.odell.glazedlists.FunctionList.Function;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.TextFilterator;
+import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
 import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
+import ca.odell.glazedlists.matchers.Matcher;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.matchers.Matchers;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
@@ -162,6 +170,9 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 
             for (Entry<Integer, Object> mapEntry : filterIndexToObjectMap.entrySet()) {
                 Integer columnIndex = mapEntry.getKey();
+                // we create the filterText before accessing the other
+                // configuration values, because a converter might change the
+                // configuration dynamically based on the value
                 String filterText = getStringFromColumnObject(columnIndex, mapEntry.getValue());
 
                 String textDelimiter = this.configRegistry.getConfigAttribute(
@@ -179,56 +190,71 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
                         FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
                 final Function<T, Object> columnValueProvider = getColumnValueProvider(columnIndex);
 
-                List<ParseResult> parseResults = FilterRowUtils.parse(filterText, textDelimiter, textMatchingMode);
+                if (mapEntry.getValue() instanceof Collection && textMatchingMode.equals(TextMatchingMode.EXACT)) {
+                    // if the filter value is a collection and the
+                    // TextMatchingMode is EXACT the most efficient way is using
+                    // a SetMatcherEditor
+                    Set<String> filterValues = (Set<String>) ((Collection) mapEntry.getValue())
+                            .stream()
+                            .map(v -> getStringFromColumnObject(columnIndex, v))
+                            .collect(Collectors.toSet());
+                    matcherEditors.add(getSetMatcherEditor(columnIndex, filterValues, displayConverter));
 
-                EventList<MatcherEditor<T>> stringMatcherEditors = new BasicEventList<>();
-                EventList<MatcherEditor<T>> thresholdMatcherEditors = new BasicEventList<>();
-                for (ParseResult parseResult : parseResults) {
-                    try {
-                        MatchType matchOperation = parseResult.getMatchOperation();
-                        if (matchOperation == MatchType.NONE) {
-                            stringMatcherEditors.add(getTextMatcherEditor(
-                                    columnIndex,
-                                    textMatchingMode,
-                                    displayConverter,
-                                    parseResult.getValueToMatch()));
-                        } else {
-                            Object threshold =
-                                    displayConverter.displayToCanonicalValue(parseResult.getValueToMatch());
-                            thresholdMatcherEditors.add(getThresholdMatcherEditor(
-                                    columnIndex,
-                                    threshold,
-                                    comparator,
-                                    columnValueProvider,
-                                    matchOperation));
-                        }
-                    } catch (PatternSyntaxException e) {
-                        LOG.warn("Error on applying a filter: {}", e.getLocalizedMessage()); //$NON-NLS-1$
-                    }
-                }
+                } else {
+                    // if the filter value is not a collection, or it is a
+                    // collection but the TextMatchingMode is REGULAR_EXPRESSION
+                    // process the filter value as string
+                    List<ParseResult> parseResults = FilterRowUtils.parse(filterText, textDelimiter, textMatchingMode);
 
-                EventList<MatcherEditor<T>> allMatcherEditors = new BasicEventList<>();
-                allMatcherEditors.addAll(stringMatcherEditors);
-                allMatcherEditors.addAll(thresholdMatcherEditors);
-
-                String[] separator = FilterRowUtils.getSeparatorCharacters(textDelimiter);
-
-                if (!allMatcherEditors.isEmpty()) {
-                    CompositeMatcherEditor<T> allCompositeMatcherEditor = new CompositeMatcherEditor<>(allMatcherEditors);
-                    if (!thresholdMatcherEditors.isEmpty()) {
-                        if (separator == null || filterText.contains(separator[0])) {
-                            allCompositeMatcherEditor.setMode(CompositeMatcherEditor.AND);
-                        } else {
-                            allCompositeMatcherEditor.setMode(CompositeMatcherEditor.OR);
-                        }
-                    } else {
-                        if (separator == null || filterText.contains(separator[1])) {
-                            allCompositeMatcherEditor.setMode(CompositeMatcherEditor.OR);
-                        } else {
-                            allCompositeMatcherEditor.setMode(CompositeMatcherEditor.AND);
+                    EventList<MatcherEditor<T>> stringMatcherEditors = new BasicEventList<>();
+                    EventList<MatcherEditor<T>> thresholdMatcherEditors = new BasicEventList<>();
+                    for (ParseResult parseResult : parseResults) {
+                        try {
+                            MatchType matchOperation = parseResult.getMatchOperation();
+                            if (matchOperation == MatchType.NONE) {
+                                stringMatcherEditors.add(getTextMatcherEditor(
+                                        columnIndex,
+                                        textMatchingMode,
+                                        displayConverter,
+                                        parseResult.getValueToMatch()));
+                            } else {
+                                Object threshold =
+                                        displayConverter.displayToCanonicalValue(parseResult.getValueToMatch());
+                                thresholdMatcherEditors.add(getThresholdMatcherEditor(
+                                        columnIndex,
+                                        threshold,
+                                        comparator,
+                                        columnValueProvider,
+                                        matchOperation));
+                            }
+                        } catch (PatternSyntaxException e) {
+                            LOG.warn("Error on applying a filter: {}", e.getLocalizedMessage()); //$NON-NLS-1$
                         }
                     }
-                    matcherEditors.add(allCompositeMatcherEditor);
+
+                    EventList<MatcherEditor<T>> allMatcherEditors = new BasicEventList<>();
+                    allMatcherEditors.addAll(stringMatcherEditors);
+                    allMatcherEditors.addAll(thresholdMatcherEditors);
+
+                    String[] separator = FilterRowUtils.getSeparatorCharacters(textDelimiter);
+
+                    if (!allMatcherEditors.isEmpty()) {
+                        CompositeMatcherEditor<T> allCompositeMatcherEditor = new CompositeMatcherEditor<>(allMatcherEditors);
+                        if (!thresholdMatcherEditors.isEmpty()) {
+                            if (separator == null || filterText.contains(separator[0])) {
+                                allCompositeMatcherEditor.setMode(CompositeMatcherEditor.AND);
+                            } else {
+                                allCompositeMatcherEditor.setMode(CompositeMatcherEditor.OR);
+                            }
+                        } else {
+                            if (separator == null || filterText.contains(separator[1])) {
+                                allCompositeMatcherEditor.setMode(CompositeMatcherEditor.OR);
+                            } else {
+                                allCompositeMatcherEditor.setMode(CompositeMatcherEditor.AND);
+                            }
+                        }
+                        matcherEditors.add(allCompositeMatcherEditor);
+                    }
                 }
             }
 
@@ -423,6 +449,25 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
     }
 
     /**
+     * Sets up a {@link MatcherEditor} for a collection of Strings.
+     *
+     * @param columnIndex
+     *            the column index of the column for which the matcher editor is
+     *            being set up
+     * @param filterValues
+     *            the values entered by the user in the filter row
+     * @param converter
+     *            The {@link IDisplayConverter} used for converting the cell
+     *            value to a String
+     * @return A {@link ColumnSetMatcherEditor} based on the given information.
+     *
+     * @since 2.5
+     */
+    protected MatcherEditor<T> getSetMatcherEditor(Integer columnIndex, Set<String> filterValues, IDisplayConverter converter) {
+        return new ColumnSetMatcherEditor(columnIndex, filterValues, converter);
+    }
+
+    /**
      *
      * @param textMatchingMode
      *            The NatTable TextMatchingMode for which the GlazedLists
@@ -535,6 +580,8 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
                         // MatchOperation is not visible and must be a
                         // references instance, so the 'equals' is not needed
                         && firstThreshold.getMatchOperation() == secondThreshold.getMatchOperation();
+            } else {
+                result = first.equals(second);
             }
         }
 
@@ -621,4 +668,86 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
         }
     }
 
+    /**
+     * Adoption of the GlazedLists SetMatcherEditor.
+     * <p>
+     * It does not support different modes, as our logic for empty collections
+     * is EMPTY_MATCH_NONE. It additionally provides state informations, which
+     * allows us to identify an equal MatcherEditor and remove it instead of
+     * updating an existing one. This is needed because we do not have a single
+     * instance of the MatcherEditors. We create them on demand for every column
+     * that has a filter configured.
+     *
+     * @since 2.5
+     */
+    public class ColumnSetMatcherEditor extends AbstractMatcherEditor<T> {
+        private final Integer columnIndex;
+        private final Set<String> filterValues;
+        private final IDisplayConverter converter;
+
+        public ColumnSetMatcherEditor(Integer columnIndex, Set<String> filterValues, IDisplayConverter converter) {
+            this.columnIndex = columnIndex;
+            this.filterValues = filterValues;
+            this.converter = converter;
+
+            if (this.filterValues.isEmpty()) {
+                this.fireMatchNone();
+            } else {
+                this.fireChanged(new SetMatcher<T, String>(
+                        filterValues,
+                        t -> {
+                            Object cellData = DefaultGlazedListsFilterStrategy.this.columnAccessor.getDataValue(t, columnIndex);
+                            Object displayValue = this.converter.canonicalToDisplayValue(cellData);
+                            displayValue = (displayValue != null) ? displayValue : ""; //$NON-NLS-1$
+                            return displayValue.toString();
+                        }));
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getOuterType().hashCode();
+            result = prime * result + Objects.hash(this.columnIndex, this.filterValues);
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            @SuppressWarnings("unchecked")
+            ColumnSetMatcherEditor other = (ColumnSetMatcherEditor) obj;
+            if (!getOuterType().equals(other.getOuterType()))
+                return false;
+            return Objects.equals(this.columnIndex, other.columnIndex)
+                    && ObjectUtils.collectionsEqual(this.filterValues, other.filterValues);
+        }
+
+        private class SetMatcher<E, O> implements Matcher<E> {
+
+            private final Set<O> matchSet;
+            private final Function<E, O> fn;
+
+            private SetMatcher(final Set<O> matchSet, final Function<E, O> fn) {
+                this.matchSet = new HashSet<O>(matchSet);
+                this.fn = fn;
+            }
+
+            @Override
+            public boolean matches(final E input) {
+                boolean result = this.matchSet.contains(this.fn.evaluate(input));
+                return result;
+            }
+        }
+
+        private DefaultGlazedListsFilterStrategy<T> getOuterType() {
+            return DefaultGlazedListsFilterStrategy.this;
+        }
+    }
 }
