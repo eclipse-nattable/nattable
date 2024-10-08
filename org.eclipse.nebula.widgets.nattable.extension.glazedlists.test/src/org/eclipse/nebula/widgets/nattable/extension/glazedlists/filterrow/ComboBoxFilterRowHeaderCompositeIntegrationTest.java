@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2022 Dirk Fauth.
+ * Copyright (c) 2019, 2024 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -72,7 +72,6 @@ import org.eclipse.nebula.widgets.nattable.sort.config.DefaultSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -93,7 +92,7 @@ import ca.odell.glazedlists.TransformedList;
  */
 public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
 
-    private static ArrayList<ExtendedPersonWithAddress> values = new ArrayList<>();
+    private ArrayList<ExtendedPersonWithAddress> values = new ArrayList<>();
 
     private BodyLayerStack<ExtendedPersonWithAddress> bodyLayer;
     private ComboBoxFilterRowHeaderComposite<ExtendedPersonWithAddress> filterRowHeaderLayer;
@@ -101,15 +100,12 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
 
     private GlazedListsSortModel<ExtendedPersonWithAddress> sortModel;
 
-    @BeforeAll
-    public static void setupClass() {
-        for (int i = 0; i < 300; i++) {
-            values.addAll(createValues(i * 30));
-        }
-    }
-
     @BeforeEach
     public void setup() {
+        for (int i = 0; i < 300; i++) {
+            this.values.addAll(createValues(i * 30));
+        }
+
         // create a new ConfigRegistry which will be needed for GlazedLists
         // handling
         ConfigRegistry configRegistry = new ConfigRegistry();
@@ -144,7 +140,7 @@ public class ComboBoxFilterRowHeaderCompositeIntegrationTest {
         // know the ConfigRegistry
         this.bodyLayer =
                 new BodyLayerStack<>(
-                        values,
+                        this.values,
                         columnPropertyAccessor,
                         configRegistry);
 
