@@ -21,7 +21,9 @@ import org.eclipse.nebula.widgets.nattable.ui.mode.Mode;
 import org.eclipse.nebula.widgets.nattable.ui.mode.ModeSupport;
 import org.eclipse.nebula.widgets.nattable.ui.mode.MouseModeEventHandler;
 import org.eclipse.nebula.widgets.nattable.ui.util.MouseEventHelper;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
 
 public class DragModeEventHandler extends AbstractModeEventHandler {
@@ -91,5 +93,12 @@ public class DragModeEventHandler extends AbstractModeEventHandler {
         // so we simple skip the drag operation by calling mouseUp using the
         // initial mouseDown event
         mouseUp(this.mouseDownEvent);
+    }
+
+    @Override
+    public void keyPressed(KeyEvent event) {
+        if (event.keyCode == SWT.ESC) {
+            mouseUp(this.mouseDownEvent);
+        }
     }
 }
