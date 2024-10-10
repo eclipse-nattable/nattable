@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2022 Dirk Fauth.
+ * Copyright (c) 2017, 2024 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,13 +27,16 @@ import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataProvider;
+import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterRowConfiguration;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.DefaultFilterRowConfiguration;
+import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -42,13 +45,14 @@ import ca.odell.glazedlists.matchers.Matcher;
 
 public class ComboBoxGlazedListsFilterStrategyTest {
 
-    private static FilterList<Person> filterList;
+    private static EventList<Person> baseCollection;
+    private FilterList<Person> filterList;
 
-    private static ConfigRegistry configRegistry;
-    private static DataLayerFixture columnHeaderLayer;
-    private static FilterRowComboBoxDataProvider<Person> comboBoxDataProvider;
-    private static ComboBoxGlazedListsFilterStrategy<Person> filterStrategy;
-    private static FilterRowDataProvider<Person> dataProvider;
+    private ConfigRegistry configRegistry;
+    private DataLayerFixture columnHeaderLayer;
+    private FilterRowComboBoxDataProvider<Person> comboBoxDataProvider;
+    private ComboBoxGlazedListsFilterStrategy<Person> filterStrategy;
+    private FilterRowDataProvider<Person> dataProvider;
 
     private static String[] personPropertyNames = {
             "firstName",
@@ -68,163 +72,225 @@ public class ComboBoxGlazedListsFilterStrategyTest {
     @BeforeAll
     public static void init() {
         // initialize the collection with a big amount of values
-        EventList<Person> baseCollection = GlazedLists.eventList(PersonService.getFixedPersons());
+        baseCollection = GlazedLists.eventList(PersonService.getFixedPersons());
         for (int i = 1; i < 1000; i++) {
             baseCollection.addAll(PersonService.getFixedPersons());
         }
-        filterList = new FilterList<>(GlazedLists.eventList(baseCollection));
-
-        configRegistry = new ConfigRegistry();
-
-        new DefaultNatTableStyleConfiguration().configureRegistry(configRegistry);
-        new DefaultFilterRowConfiguration().configureRegistry(configRegistry);
-        new ComboBoxFilterRowConfiguration().configureRegistry(configRegistry);
-
-        columnHeaderLayer = new DataLayerFixture(5, 2, 100, 50);
-
-        IColumnAccessor<Person> bodyDataColumnAccessor = new ReflectiveColumnPropertyAccessor<>(personPropertyNames);
-        comboBoxDataProvider = new GlazedListsFilterRowComboBoxDataProvider<>(
-                new DataLayer(new ListDataProvider<>(filterList, bodyDataColumnAccessor)),
-                baseCollection,
-                bodyDataColumnAccessor);
-
-        filterStrategy = new ComboBoxGlazedListsFilterStrategy<>(
-                comboBoxDataProvider,
-                filterList,
-                bodyDataColumnAccessor,
-                configRegistry);
-        dataProvider = new FilterRowDataProvider<>(
-                filterStrategy,
-                columnHeaderLayer,
-                columnHeaderLayer.getDataProvider(), configRegistry);
     }
 
     @BeforeEach
     public void setup() {
-        for (int i = 0; i < dataProvider.getColumnCount(); i++) {
-            dataProvider.getFilterIndexToObjectMap().put(i, EditConstants.SELECT_ALL_ITEMS_VALUE);
+        this.filterList = new FilterList<>(GlazedLists.eventList(baseCollection));
+
+        this.configRegistry = new ConfigRegistry();
+
+        new DefaultNatTableStyleConfiguration().configureRegistry(this.configRegistry);
+        new DefaultFilterRowConfiguration().configureRegistry(this.configRegistry);
+        new ComboBoxFilterRowConfiguration().configureRegistry(this.configRegistry);
+
+        this.columnHeaderLayer = new DataLayerFixture(5, 2, 100, 50);
+
+        IColumnAccessor<Person> bodyDataColumnAccessor = new ReflectiveColumnPropertyAccessor<>(personPropertyNames);
+        this.comboBoxDataProvider = new GlazedListsFilterRowComboBoxDataProvider<>(
+                new DataLayer(new ListDataProvider<>(this.filterList, bodyDataColumnAccessor)),
+                baseCollection,
+                bodyDataColumnAccessor);
+
+        this.filterStrategy = new ComboBoxGlazedListsFilterStrategy<>(
+                this.comboBoxDataProvider,
+                this.filterList,
+                bodyDataColumnAccessor,
+                this.configRegistry);
+        this.dataProvider = new FilterRowDataProvider<>(
+                this.filterStrategy,
+                this.columnHeaderLayer,
+                this.columnHeaderLayer.getDataProvider(), this.configRegistry);
+
+        for (int i = 0; i < this.dataProvider.getColumnCount(); i++) {
+            this.dataProvider.getFilterIndexToObjectMap().put(i, EditConstants.SELECT_ALL_ITEMS_VALUE);
         }
-        filterStrategy.applyFilter(dataProvider.getFilterIndexToObjectMap());
+        this.filterStrategy.applyFilter(this.dataProvider.getFilterIndexToObjectMap());
     }
 
-    @Test
-    public void shouldFilterForSimpsons() {
-        assertEquals(18000, filterList.size());
-
-        dataProvider.setDataValue(1, 1, Arrays.asList("Simpson"));
-
-        assertEquals(10000, filterList.size());
+    void setMatchMode(String matchMode) {
+        TextMatchingMode mode = TextMatchingMode.valueOf(matchMode);
+        this.configRegistry.registerConfigAttribute(
+                FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                mode);
     }
 
-    @Test
-    public void shouldFilterForMultipleCriteria() {
-        assertEquals(18000, filterList.size());
+    @ParameterizedTest(name = "matchMode={0}")
+    @CsvSource({
+            "REGULAR_EXPRESSION",
+            "EXACT"
+    })
+    public void shouldFilterForSimpsons(String matchMode) {
+        setMatchMode(matchMode);
 
-        dataProvider.setDataValue(0, 1, Arrays.asList("Homer", "Marge", "Maude"));
+        assertEquals(18000, this.filterList.size());
 
-        assertEquals(7000, filterList.size());
+        this.dataProvider.setDataValue(1, 1, Arrays.asList("Simpson"));
 
-        dataProvider.setDataValue(1, 1, Arrays.asList("Flanders"));
-
-        assertEquals(2000, filterList.size());
+        assertEquals(10000, this.filterList.size());
     }
 
-    @Test
-    public void shouldResetFilterinSameOrder() {
-        dataProvider.setDataValue(0, 1, Arrays.asList("Homer", "Marge", "Maude"));
-        dataProvider.setDataValue(1, 1, Arrays.asList("Flanders"));
-        assertEquals(2000, filterList.size());
+    @ParameterizedTest(name = "matchMode={0}")
+    @CsvSource({
+            "REGULAR_EXPRESSION",
+            "EXACT"
+    })
+    public void shouldFilterForMultipleCriteria(String matchMode) {
+        setMatchMode(matchMode);
+
+        assertEquals(18000, this.filterList.size());
+
+        this.dataProvider.setDataValue(0, 1, Arrays.asList("Homer", "Marge", "Maude"));
+
+        assertEquals(7000, this.filterList.size());
+
+        this.dataProvider.setDataValue(1, 1, Arrays.asList("Flanders"));
+
+        assertEquals(2000, this.filterList.size());
+    }
+
+    @ParameterizedTest(name = "matchMode={0}")
+    @CsvSource({
+            "REGULAR_EXPRESSION",
+            "EXACT"
+    })
+    public void shouldResetFilterinSameOrder(String matchMode) {
+        setMatchMode(matchMode);
+
+        this.dataProvider.setDataValue(0, 1, Arrays.asList("Homer", "Marge", "Maude"));
+        this.dataProvider.setDataValue(1, 1, Arrays.asList("Flanders"));
+        assertEquals(2000, this.filterList.size());
 
         // this will imply to select all values
-        dataProvider.setDataValue(1, 1, comboBoxDataProvider.getValues(1, 0));
-        assertEquals(7000, filterList.size());
+        this.dataProvider.setDataValue(1, 1, this.comboBoxDataProvider.getValues(1, 0));
+        assertEquals(7000, this.filterList.size());
 
         // setting null should be the same as selecting all
-        dataProvider.setDataValue(0, 1, null);
-        assertEquals(18000, filterList.size());
+        this.dataProvider.setDataValue(0, 1, null);
+        assertEquals(18000, this.filterList.size());
     }
 
-    @Test
-    public void shouldResetFilterinDifferentOrder() {
-        dataProvider.setDataValue(0, 1, Arrays.asList("Homer", "Marge", "Maude"));
-        dataProvider.setDataValue(1, 1, Arrays.asList("Flanders"));
-        assertEquals(2000, filterList.size());
+    @ParameterizedTest(name = "matchMode={0}")
+    @CsvSource({
+            "REGULAR_EXPRESSION",
+            "EXACT"
+    })
+    public void shouldResetFilterinDifferentOrder(String matchMode) {
+        setMatchMode(matchMode);
 
-        dataProvider.setDataValue(0, 1, comboBoxDataProvider.getValues(0, 0));
-        assertEquals(8000, filterList.size());
+        this.dataProvider.setDataValue(0, 1, Arrays.asList("Homer", "Marge", "Maude"));
+        this.dataProvider.setDataValue(1, 1, Arrays.asList("Flanders"));
+        assertEquals(2000, this.filterList.size());
 
-        dataProvider.setDataValue(1, 1, comboBoxDataProvider.getValues(1, 0));
-        assertEquals(18000, filterList.size());
+        this.dataProvider.setDataValue(0, 1, this.comboBoxDataProvider.getValues(0, 0));
+        assertEquals(8000, this.filterList.size());
+
+        this.dataProvider.setDataValue(1, 1, this.comboBoxDataProvider.getValues(1, 0));
+        assertEquals(18000, this.filterList.size());
     }
 
-    @Test
-    public void shouldFilterAll() {
-        dataProvider.setDataValue(0, 1, new ArrayList<>());
-        assertEquals(0, filterList.size());
+    @ParameterizedTest(name = "matchMode={0}")
+    @CsvSource({
+            "REGULAR_EXPRESSION",
+            "EXACT"
+    })
+    public void shouldFilterAll(String matchMode) {
+        setMatchMode(matchMode);
+
+        this.dataProvider.setDataValue(0, 1, new ArrayList<>());
+        assertEquals(0, this.filterList.size());
     }
 
     // with static filter
 
-    @Test
-    public void shouldFilterForSimpsonsWithStaticHomerFilter() {
-        filterStrategy.addStaticFilter(homerFilter);
-        assertEquals(15000, filterList.size());
+    @ParameterizedTest(name = "matchMode={0}")
+    @CsvSource({
+            "REGULAR_EXPRESSION",
+            "EXACT"
+    })
+    public void shouldFilterForSimpsonsWithStaticHomerFilter(String matchMode) {
+        setMatchMode(matchMode);
 
-        dataProvider.setDataValue(1, 1, Arrays.asList("Simpson"));
-        assertEquals(7000, filterList.size());
+        this.filterStrategy.addStaticFilter(homerFilter);
+        assertEquals(15000, this.filterList.size());
 
-        filterStrategy.removeStaticFilter(homerFilter);
-        assertEquals(10000, filterList.size());
+        this.dataProvider.setDataValue(1, 1, Arrays.asList("Simpson"));
+        assertEquals(7000, this.filterList.size());
+
+        this.filterStrategy.removeStaticFilter(homerFilter);
+        assertEquals(10000, this.filterList.size());
     }
 
-    @Test
-    public void shouldFilterForMultipleCriteriaWithStaticHomerFilter() {
-        filterStrategy.addStaticFilter(homerFilter);
-        assertEquals(15000, filterList.size());
+    @ParameterizedTest(name = "matchMode={0}")
+    @CsvSource({
+            "REGULAR_EXPRESSION",
+            "EXACT"
+    })
+    public void shouldFilterForMultipleCriteriaWithStaticHomerFilter(String matchMode) {
+        setMatchMode(matchMode);
 
-        dataProvider.setDataValue(0, 1, Arrays.asList("Homer", "Marge", "Maude"));
-        assertEquals(4000, filterList.size());
+        this.filterStrategy.addStaticFilter(homerFilter);
+        assertEquals(15000, this.filterList.size());
 
-        dataProvider.setDataValue(1, 1, Arrays.asList("Simpson"));
-        assertEquals(2000, filterList.size());
+        this.dataProvider.setDataValue(0, 1, Arrays.asList("Homer", "Marge", "Maude"));
+        assertEquals(4000, this.filterList.size());
 
-        filterStrategy.removeStaticFilter(homerFilter);
-        assertEquals(5000, filterList.size());
+        this.dataProvider.setDataValue(1, 1, Arrays.asList("Simpson"));
+        assertEquals(2000, this.filterList.size());
+
+        this.filterStrategy.removeStaticFilter(homerFilter);
+        assertEquals(5000, this.filterList.size());
     }
 
-    @Test
-    public void shouldResetFilterinSameOrderWithStaticHomerFilter() {
-        filterStrategy.addStaticFilter(homerFilter);
+    @ParameterizedTest(name = "matchMode={0}")
+    @CsvSource({
+            "REGULAR_EXPRESSION",
+            "EXACT"
+    })
+    public void shouldResetFilterinSameOrderWithStaticHomerFilter(String matchMode) {
+        setMatchMode(matchMode);
 
-        dataProvider.setDataValue(0, 1, Arrays.asList("Homer", "Marge", "Maude"));
-        dataProvider.setDataValue(1, 1, Arrays.asList("Simpson"));
-        assertEquals(2000, filterList.size());
+        this.filterStrategy.addStaticFilter(homerFilter);
 
-        dataProvider.setDataValue(1, 1, comboBoxDataProvider.getValues(1, 0));
-        assertEquals(4000, filterList.size());
+        this.dataProvider.setDataValue(0, 1, Arrays.asList("Homer", "Marge", "Maude"));
+        this.dataProvider.setDataValue(1, 1, Arrays.asList("Simpson"));
+        assertEquals(2000, this.filterList.size());
 
-        dataProvider.setDataValue(0, 1, comboBoxDataProvider.getValues(0, 0));
-        assertEquals(15000, filterList.size());
+        this.dataProvider.setDataValue(1, 1, this.comboBoxDataProvider.getValues(1, 0));
+        assertEquals(4000, this.filterList.size());
 
-        filterStrategy.removeStaticFilter(homerFilter);
-        assertEquals(18000, filterList.size());
+        this.dataProvider.setDataValue(0, 1, this.comboBoxDataProvider.getValues(0, 0));
+        assertEquals(15000, this.filterList.size());
+
+        this.filterStrategy.removeStaticFilter(homerFilter);
+        assertEquals(18000, this.filterList.size());
     }
 
-    @Test
-    public void shouldResetFilterinDifferentOrderWithStaticHomerFilter() {
-        filterStrategy.addStaticFilter(homerFilter);
+    @ParameterizedTest(name = "matchMode={0}")
+    @CsvSource({
+            "REGULAR_EXPRESSION",
+            "EXACT"
+    })
+    public void shouldResetFilterinDifferentOrderWithStaticHomerFilter(String matchMode) {
+        setMatchMode(matchMode);
 
-        dataProvider.setDataValue(0, 1, Arrays.asList("Homer", "Marge", "Maude"));
-        dataProvider.setDataValue(1, 1, Arrays.asList("Simpson"));
-        assertEquals(2000, filterList.size());
+        this.filterStrategy.addStaticFilter(homerFilter);
 
-        dataProvider.setDataValue(0, 1, comboBoxDataProvider.getValues(0, 0));
-        assertEquals(7000, filterList.size());
+        this.dataProvider.setDataValue(0, 1, Arrays.asList("Homer", "Marge", "Maude"));
+        this.dataProvider.setDataValue(1, 1, Arrays.asList("Simpson"));
+        assertEquals(2000, this.filterList.size());
 
-        dataProvider.setDataValue(1, 1, comboBoxDataProvider.getValues(1, 0));
-        assertEquals(15000, filterList.size());
+        this.dataProvider.setDataValue(0, 1, this.comboBoxDataProvider.getValues(0, 0));
+        assertEquals(7000, this.filterList.size());
 
-        filterStrategy.removeStaticFilter(homerFilter);
-        assertEquals(18000, filterList.size());
+        this.dataProvider.setDataValue(1, 1, this.comboBoxDataProvider.getValues(1, 0));
+        assertEquals(15000, this.filterList.size());
+
+        this.filterStrategy.removeStaticFilter(homerFilter);
+        assertEquals(18000, this.filterList.size());
     }
 }
