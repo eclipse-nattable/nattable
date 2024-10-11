@@ -98,7 +98,17 @@ public class DragModeEventHandler extends AbstractModeEventHandler {
     @Override
     public void keyPressed(KeyEvent event) {
         if (event.keyCode == SWT.ESC) {
+            // pressing ESC will always cancel the drag mode
             mouseUp(this.mouseDownEvent);
+        } else if (this.dragMode instanceof IDragModeWithKeySupport) {
+            ((IDragModeWithKeySupport) this.dragMode).keyPressed(this.natTable, event);
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent event) {
+        if (this.dragMode instanceof IDragModeWithKeySupport) {
+            ((IDragModeWithKeySupport) this.dragMode).keyReleased(this.natTable, event);
         }
     }
 }
