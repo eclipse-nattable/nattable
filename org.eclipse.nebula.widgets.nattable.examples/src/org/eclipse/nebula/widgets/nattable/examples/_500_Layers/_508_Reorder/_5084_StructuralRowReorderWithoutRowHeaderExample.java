@@ -28,6 +28,8 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.command.RowInsertCommand;
+import org.eclipse.nebula.widgets.nattable.data.command.RowInsertCommandHandler;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
@@ -44,6 +46,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent;
+import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ImagePainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
@@ -57,6 +60,7 @@ import org.eclipse.nebula.widgets.nattable.selection.config.DefaultRowSelectionL
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.AggregateDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.ClearCursorAction;
+import org.eclipse.nebula.widgets.nattable.ui.action.IDragModeWithKeySupport;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.action.NoOpMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.action.RowDragMode;
@@ -67,8 +71,11 @@ import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -122,6 +129,10 @@ public class _5084_StructuralRowReorderWithoutRowHeaderExample extends AbstractN
         DataLayer bodyDataLayer =
                 new DataLayer(bodyDataProvider);
 
+        // add the RowInsertCommandHandler to be able to copy a row
+        bodyDataLayer.registerCommandHandler(
+                new RowInsertCommandHandler<>(contents));
+
         // add a config label accumulator, so we can change the rendering per
         // column
         bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
@@ -161,7 +172,7 @@ public class _5084_StructuralRowReorderWithoutRowHeaderExample extends AbstractN
                 new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
 
         // add the custom configuration to enable the structural row reordering
-        bodyDataLayer.addConfiguration(new StructuralRowReorderConfiguration(columnHeaderLayer, selectionLayer));
+        bodyDataLayer.addConfiguration(new StructuralRowReorderConfiguration(columnHeaderLayer, selectionLayer, bodyDataProvider));
 
         // set the region labels to make default configurations work, e.g.
         // selection
@@ -188,10 +199,12 @@ public class _5084_StructuralRowReorderWithoutRowHeaderExample extends AbstractN
 
         private final ILayer columnHeaderLayerStack;
         private final SelectionLayer selectionLayer;
+        private final IRowDataProvider<Person> dataProvider;
 
-        public StructuralRowReorderConfiguration(ILayer columnHeaderLayerStack, SelectionLayer selectionLayer) {
+        public StructuralRowReorderConfiguration(ILayer columnHeaderLayerStack, SelectionLayer selectionLayer, IRowDataProvider<Person> dataProvider) {
             this.columnHeaderLayerStack = columnHeaderLayerStack;
             this.selectionLayer = selectionLayer;
+            this.dataProvider = dataProvider;
         }
 
         @Override
@@ -249,12 +262,16 @@ public class _5084_StructuralRowReorderWithoutRowHeaderExample extends AbstractN
                             GridRegion.BODY,
                             MouseEventMatcher.LEFT_BUTTON,
                             this.dragHandlePainter),
-                    new AggregateDragMode(new RowDragMode(), new MultiRowReorderDragMode(this.columnHeaderLayerStack, this.selectionLayer)));
+                    new AggregateDragMode(
+                            new RowDragMode(),
+                            new MultiRowReorderDragMode(this.columnHeaderLayerStack, this.selectionLayer, this.dataProvider)));
 
             // register drag mode binding on right click in any cell of the body
             uiBindingRegistry.registerMouseDragMode(
                     MouseEventMatcher.bodyRightClick(SWT.NONE),
-                    new AggregateDragMode(new RowDragMode(), new MultiRowReorderDragMode(this.columnHeaderLayerStack, this.selectionLayer)));
+                    new AggregateDragMode(
+                            new RowDragMode(),
+                            new MultiRowReorderDragMode(this.columnHeaderLayerStack, this.selectionLayer, this.dataProvider)));
 
             // register binding to select a row on right mouse down
             // simply to select the row so it is highlighted for the reorder
@@ -326,16 +343,26 @@ public class _5084_StructuralRowReorderWithoutRowHeaderExample extends AbstractN
     /**
      * Extended {@link RowReorderDragMode} that supports multi row reordering.
      */
-    class MultiRowReorderDragMode extends RowReorderDragMode {
+    class MultiRowReorderDragMode extends RowReorderDragMode implements IDragModeWithKeySupport {
 
         private ILayer columnHeaderLayerStack;
         private SelectionLayer selectionLayer;
         private int[] selectedRowPositions;
 
-        public MultiRowReorderDragMode(ILayer columnHeaderLayerStack, SelectionLayer selectionLayer) {
+        private IRowDataProvider<Person> dataProvider;
+        private Image infoImage;
+        protected InfoOverlayPainter infoImageOverlayPainter = new InfoOverlayPainter();
+        private boolean copy = false;
+
+        public MultiRowReorderDragMode(
+                ILayer columnHeaderLayerStack,
+                SelectionLayer selectionLayer,
+                IRowDataProvider<Person> dataProvider) {
+
             super();
             this.columnHeaderLayerStack = columnHeaderLayerStack;
             this.selectionLayer = selectionLayer;
+            this.dataProvider = dataProvider;
         }
 
         @Override
@@ -348,8 +375,54 @@ public class _5084_StructuralRowReorderWithoutRowHeaderExample extends AbstractN
             this.selectedRowPositions = PositionUtil.getPositions(this.selectionLayer.getSelectedRowPositions());
 
             natTable.addOverlayPainter(this.targetOverlayPainter);
+            natTable.addOverlayPainter(this.infoImageOverlayPainter);
 
             // natTable.doCommand(new ClearAllSelectionsCommand());
+        }
+
+        @Override
+        public void mouseUp(NatTable natTable, MouseEvent event) {
+            natTable.removeOverlayPainter(this.infoImageOverlayPainter);
+
+            if (this.infoImage != null) {
+                this.infoImage.dispose();
+            }
+
+            if (this.copy) {
+                // Cancel any active viewport drag
+                // we call super with the initial event, which actually skips
+                // the reorder
+                super.mouseUp(natTable, this.initialEvent);
+
+                this.copy = false;
+
+                // remove the overlaypainter of the RowReorderDragMode
+                natTable.removeOverlayPainter(this.targetOverlayPainter);
+
+                List<Person> copiedPersons = new ArrayList<>();
+                int augment = 1;
+                for (int rowPos : this.selectedRowPositions) {
+                    int rowIndex = this.selectionLayer.getRowIndexByPosition(rowPos);
+                    Person selected = this.dataProvider.getRowObject(rowIndex);
+                    Person copyPerson = new Person(
+                            this.dataProvider.getRowCount() + augment++,
+                            selected.getFirstName(),
+                            selected.getLastName(),
+                            selected.getGender(),
+                            selected.isMarried(),
+                            selected.getBirthday());
+
+                    copiedPersons.add(copyPerson);
+                }
+
+                int dragToGridRowPosition = getDragToGridRowPosition(
+                        getMoveDirection(event.y),
+                        natTable.getRowPositionByY(event.y));
+                int toRowIndex = natTable.getRowIndexByPosition(dragToGridRowPosition);
+                natTable.doCommand(new RowInsertCommand<>(toRowIndex + 1, copiedPersons));
+            } else {
+                super.mouseUp(natTable, event);
+            }
         }
 
         @Override
@@ -410,6 +483,57 @@ public class _5084_StructuralRowReorderWithoutRowHeaderExample extends AbstractN
         protected void fireMoveEndCommand(NatTable natTable, int dragToGridRowPosition) {
             natTable.doCommand(new MultiRowReorderCommand(this.selectionLayer, this.selectedRowPositions, dragToGridRowPosition));
         }
+
+        @Override
+        public void keyPressed(NatTable natTable, KeyEvent event) {
+            if (event.keyCode == SWT.MOD1) {
+                this.copy = true;
+
+                GC gc = null;
+                try {
+                    this.infoImage = new Image(natTable.getDisplay(), 160, 30);
+                    gc = new GC(this.infoImage);
+
+                    gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+                    gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLUE));
+
+                    gc.fillRectangle(0, 0, 160, 30);
+                    gc.drawText("+ Create a copy", 10, 0);
+
+                    natTable.redraw(0, 0, natTable.getWidth(), natTable.getHeight(), false);
+                } finally {
+                    if (gc != null) {
+                        gc.dispose();
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void keyReleased(NatTable natTable, KeyEvent event) {
+            if (event.keyCode == SWT.MOD1) {
+                this.copy = false;
+
+                this.infoImage.dispose();
+                this.infoImage = null;
+
+                natTable.redraw(0, 0, natTable.getWidth(), natTable.getHeight(), false);
+            }
+        }
+
+        private class InfoOverlayPainter implements IOverlayPainter {
+
+            @Override
+            public void paintOverlay(GC gc, ILayer layer) {
+                if (MultiRowReorderDragMode.this.infoImage != null && !MultiRowReorderDragMode.this.infoImage.isDisposed()) {
+                    gc.drawImage(
+                            MultiRowReorderDragMode.this.infoImage,
+                            20,
+                            MultiRowReorderDragMode.this.currentEvent.y + 20);
+                }
+            }
+        }
+
     }
 
     /**

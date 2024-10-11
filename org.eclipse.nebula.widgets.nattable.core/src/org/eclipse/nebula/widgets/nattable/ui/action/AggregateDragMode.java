@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,9 +16,10 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
 
-public class AggregateDragMode implements IDragMode {
+public class AggregateDragMode implements IDragMode, IDragModeWithKeySupport {
 
     private MouseEvent initialEvent;
     private MouseEvent currentEvent;
@@ -76,6 +77,22 @@ public class AggregateDragMode implements IDragMode {
 
     protected MouseEvent getCurrentEvent() {
         return this.currentEvent;
+    }
+
+    @Override
+    public void keyPressed(NatTable natTable, KeyEvent event) {
+        for (IDragMode dragMode : this.dragModes) {
+            if (dragMode instanceof IDragModeWithKeySupport)
+                ((IDragModeWithKeySupport) dragMode).keyPressed(natTable, event);
+        }
+    }
+
+    @Override
+    public void keyReleased(NatTable natTable, KeyEvent event) {
+        for (IDragMode dragMode : this.dragModes) {
+            if (dragMode instanceof IDragModeWithKeySupport)
+                ((IDragModeWithKeySupport) dragMode).keyReleased(natTable, event);
+        }
     }
 
 }
