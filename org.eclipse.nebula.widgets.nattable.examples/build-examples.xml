@@ -36,7 +36,7 @@
             	src="lib/org.apache.commons.commons-compress_1.26.2.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.apache.commons.commons-io_2.16.1.jar"/>
+            	src="lib/org.apache.commons.commons-io_2.17.0.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/org.apache.commons.lang3_3.15.0.jar"/>
@@ -51,10 +51,10 @@
             	src="lib/org.apache.commons.text_1.12.0.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.apache.logging.log4j.api_2.23.1.jar"/>
+            	src="lib/org.apache.logging.log4j.api_2.24.1.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.apache.logging.log4j.to.slf4j_2.23.1.jar"/>
+            	src="lib/org.apache.logging.log4j.to.slf4j_2.24.1.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/org.apache.poi_5.3.0.v20240703-1000.jar"/>
@@ -66,7 +66,7 @@
             	src="lib/org.apache.poi.ooxml.schemas_5.3.0.v20240703-1000.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.apache.xmlbeans_5.2.1.v20240527-0800.jar"/>
+            	src="lib/org.apache.xmlbeans_5.2.2.v20241105-1800.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/org.eclipse.collections_11.1.0.v20220705-1455.jar"/>
