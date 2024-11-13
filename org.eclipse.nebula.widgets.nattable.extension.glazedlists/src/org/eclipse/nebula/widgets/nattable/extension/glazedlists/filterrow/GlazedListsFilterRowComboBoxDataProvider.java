@@ -120,7 +120,7 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
         }
 
         // Start the event conflation thread
-        this.future = SCHEDULER.scheduleAtFixedRate(() -> {
+        this.future = SCHEDULER.scheduleWithFixedDelay(() -> {
             if (this.cachingEnabled
                     && this.active
                     && this.eventsToProcess.compareAndSet(true, false)) {
