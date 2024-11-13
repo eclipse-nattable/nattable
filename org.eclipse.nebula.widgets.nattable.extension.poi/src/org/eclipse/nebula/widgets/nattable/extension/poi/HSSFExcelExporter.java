@@ -24,6 +24,10 @@ import org.eclipse.nebula.widgets.nattable.export.FileOutputStreamProvider;
 import org.eclipse.nebula.widgets.nattable.export.IOutputStreamProvider;
 import org.eclipse.swt.graphics.Color;
 
+/**
+ * Exporter that uses HSSF, which is the POI Project's pure Java implementation
+ * of the Excel '97(-2007) file format.
+ */
 public class HSSFExcelExporter extends PoiExcelExporter {
 
     private List<Color> colorIndex = new ArrayList<>();

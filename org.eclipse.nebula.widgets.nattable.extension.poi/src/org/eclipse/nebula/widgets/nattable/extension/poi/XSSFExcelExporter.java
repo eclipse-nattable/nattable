@@ -24,6 +24,12 @@ import org.eclipse.nebula.widgets.nattable.export.FileOutputStreamProvider;
 import org.eclipse.nebula.widgets.nattable.export.IOutputStreamProvider;
 import org.eclipse.swt.graphics.Color;
 
+/**
+ * Exporter that uses XSSF, which is the POI Project's pure Java implementation
+ * of the Excel 2007 OOXML (.xlsx) file format.
+ *
+ * @since 2.5
+ */
 public class XSSFExcelExporter extends PoiExcelExporter {
 
     private HashMap<Color, XSSFColor> colorIndex = new HashMap<>();
