@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsLockHelper;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
 import org.eclipse.nebula.widgets.nattable.filterrow.IFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.filterrow.ParseResult;
@@ -155,12 +156,9 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 
         if (filterIndexToObjectMap.isEmpty()) {
             // wait until all listeners had the chance to handle the clear event
-            try {
-                this.filterLock.writeLock().lock();
-                this.matcherEditor.getMatcherEditors().clear();
-            } finally {
-                this.filterLock.writeLock().unlock();
-            }
+            GlazedListsLockHelper.performWriteOperation(
+                    this.filterLock,
+                    () -> this.matcherEditor.getMatcherEditors().clear());
 
             return;
         }
@@ -259,44 +257,43 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
             }
 
             // wait until all listeners had the chance to handle the clear event
-            try {
-                this.filterLock.writeLock().lock();
+            GlazedListsLockHelper.performWriteOperation(
+                    this.filterLock,
+                    () -> {
+                        boolean changed = false;
 
-                boolean changed = false;
+                        // Remove the existing matchers that are removed from
+                        // 'filterIndexToObjectMap'
+                        final Iterator<MatcherEditor<T>> existingMatcherEditors =
+                                this.matcherEditor.getMatcherEditors().iterator();
+                        while (existingMatcherEditors.hasNext()) {
+                            final MatcherEditor<T> existingMatcherEditor = existingMatcherEditors.next();
+                            if (!containsMatcherEditor(matcherEditors, existingMatcherEditor)) {
+                                existingMatcherEditors.remove();
+                                changed = true;
+                            }
+                        }
 
-                // Remove the existing matchers that are removed from
-                // 'filterIndexToObjectMap'
-                final Iterator<MatcherEditor<T>> existingMatcherEditors =
-                        this.matcherEditor.getMatcherEditors().iterator();
-                while (existingMatcherEditors.hasNext()) {
-                    final MatcherEditor<T> existingMatcherEditor = existingMatcherEditors.next();
-                    if (!containsMatcherEditor(matcherEditors, existingMatcherEditor)) {
-                        existingMatcherEditors.remove();
-                        changed = true;
-                    }
-                }
+                        // Add the new matchers that are added from
+                        // 'filterIndexToObjectMap'
+                        for (final MatcherEditor<T> me : matcherEditors) {
+                            if (!containsMatcherEditor(this.matcherEditor.getMatcherEditors(), me)) {
+                                this.matcherEditor.getMatcherEditors().add(me);
+                                changed = true;
+                            }
+                        }
 
-                // Add the new matchers that are added from
-                // 'filterIndexToObjectMap'
-                for (final MatcherEditor<T> me : matcherEditors) {
-                    if (!containsMatcherEditor(this.matcherEditor.getMatcherEditors(), me)) {
-                        this.matcherEditor.getMatcherEditors().add(me);
-                        changed = true;
-                    }
-                }
-
-                // If there was no change to the MatcherEditors but
-                // applyFilter() was called, probably the re-evaluation of the
-                // filter was requested. To trigger the re-evaluation we need to
-                // add a MatcherEditor that matches all.
-                if (!changed) {
-                    this.matcherEditor.getMatcherEditors().add(this.matchAll);
-                    this.matcherEditor.getMatcherEditors().remove(this.matchAll);
-                }
-
-            } finally {
-                this.filterLock.writeLock().unlock();
-            }
+                        // If there was no change to the MatcherEditors but
+                        // applyFilter() was called, probably the re-evaluation
+                        // of the
+                        // filter was requested. To trigger the re-evaluation we
+                        // need to
+                        // add a MatcherEditor that matches all.
+                        if (!changed) {
+                            this.matcherEditor.getMatcherEditors().add(this.matchAll);
+                            this.matcherEditor.getMatcherEditors().remove(this.matchAll);
+                        }
+                    });
 
         } catch (Exception e) {
             LOG.error("Error on applying a filter", e); //$NON-NLS-1$

@@ -37,6 +37,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsLockHelper;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeData;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
@@ -606,30 +607,31 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer, GroupByM
         // groupby structure costs time. This is related to dynamically building
         // a tree structure with additional objects
         BusyIndicator.showWhile(Display.getDefault(), () -> {
-            GroupByDataLayer.this.eventList.getReadWriteLock().writeLock().lock();
-            try {
-                /*
-                 * The workaround for the update issue suggested on the mailing
-                 * list iterates over the whole list. This causes a lot of list
-                 * change events, which also cost processing time. Instead we
-                 * are performing a clear()-addAll() which is slightly faster.
-                 */
-                EventList<T> temp = GlazedLists.eventList(GroupByDataLayer.this.eventList);
-                GroupByDataLayer.this.eventList.clear();
-                GroupByDataLayer.this.eventList.addAll(temp);
+            GlazedListsLockHelper.performWriteOperation(
+                    GroupByDataLayer.this.eventList.getReadWriteLock(),
+                    () -> {
+                        /*
+                         * The workaround for the update issue suggested on the
+                         * mailing list iterates over the whole list. This
+                         * causes a lot of list change events, which also cost
+                         * processing time. Instead we are performing a
+                         * clear()-addAll() which is slightly faster.
+                         */
+                        EventList<T> temp = GlazedLists.eventList(GroupByDataLayer.this.eventList);
+                        GroupByDataLayer.this.eventList.clear();
+                        GroupByDataLayer.this.eventList.addAll(temp);
 
-                /*
-                 * Collect the created GroupByObjects and cleanup local caches
-                 */
-                if (GroupByDataLayer.this.groupByExpansionModel != null) {
-                    FilterList<Object> groupByObjects = new FilterList<>(
-                            GroupByDataLayer.this.treeList,
-                            GroupByDataLayer.this.groupByMatcher);
-                    GroupByDataLayer.this.groupByExpansionModel.cleanupCollapsed(groupByObjects);
-                }
-            } finally {
-                GroupByDataLayer.this.eventList.getReadWriteLock().writeLock().unlock();
-            }
+                        /*
+                         * Collect the created GroupByObjects and cleanup local
+                         * caches
+                         */
+                        if (GroupByDataLayer.this.groupByExpansionModel != null) {
+                            FilterList<Object> groupByObjects = new FilterList<>(
+                                    GroupByDataLayer.this.treeList,
+                                    GroupByDataLayer.this.groupByMatcher);
+                            GroupByDataLayer.this.groupByExpansionModel.cleanupCollapsed(groupByObjects);
+                        }
+                    });
         });
     }
 

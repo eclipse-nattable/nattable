@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -38,6 +38,7 @@ import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsLockHelper;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.DarkGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.DefaultGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigAttributes;
@@ -538,19 +539,20 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         change.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                bodyLayerStack.getSortedList().getReadWriteLock().writeLock().lock();
-                try {
-                    // deactivate
-                    bodyLayerStack.getGlazedListsEventLayer().deactivate();
-                    // clear
-                    bodyLayerStack.getSortedList().clear();
-                    // addall
-                    bodyLayerStack.getSortedList().addAll(PersonService.getExtendedPersonsWithAddress(1000));
-                } finally {
-                    bodyLayerStack.getSortedList().getReadWriteLock().writeLock().unlock();
-                    // activate
-                    bodyLayerStack.getGlazedListsEventLayer().activate();
-                }
+                GlazedListsLockHelper.performWriteOperation(
+                        bodyLayerStack.getSortedList().getReadWriteLock(),
+                        () -> {
+                            // deactivate
+                            bodyLayerStack.getGlazedListsEventLayer().deactivate();
+                            // clear
+                            bodyLayerStack.getSortedList().clear();
+                            // addall
+                            bodyLayerStack.getSortedList().addAll(PersonService.getExtendedPersonsWithAddress(1000));
+                        },
+                        () -> {
+                            // activate
+                            bodyLayerStack.getGlazedListsEventLayer().activate();
+                        });
             }
         });
 

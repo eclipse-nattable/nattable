@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Dirk Fauth.
+ * Copyright (c) 2019, 2024 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,7 @@ import java.util.TreeMap;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.command.RowObjectDeleteCommand;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsLockHelper;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowObjectDeleteEvent;
 
@@ -61,21 +62,20 @@ public class GlazedListsRowObjectDeleteCommandHandler<T> implements ILayerComman
         // first we need to determine the indexes so we are able to revert the
         // changes via DataChangeLayer in the correct order again
         int[] indexes = new int[command.getObjectsToDelete().size()];
-        int idx = 0;
         Map<Integer, T> deleted = new TreeMap<>();
 
-        this.bodyData.getReadWriteLock().writeLock().lock();
-        try {
-            for (Object rowObject : command.getObjectsToDelete()) {
-                int index = this.bodyData.indexOf(rowObject);
-                deleted.put(index, (T) rowObject);
-                indexes[idx] = index;
-                idx++;
-            }
-            this.bodyData.removeAll(command.getObjectsToDelete());
-        } finally {
-            this.bodyData.getReadWriteLock().writeLock().unlock();
-        }
+        GlazedListsLockHelper.performWriteOperation(
+                this.bodyData.getReadWriteLock(),
+                () -> {
+                    int idx = 0;
+                    for (Object rowObject : command.getObjectsToDelete()) {
+                        int index = this.bodyData.indexOf(rowObject);
+                        deleted.put(index, (T) rowObject);
+                        indexes[idx] = index;
+                        idx++;
+                    }
+                    this.bodyData.removeAll(command.getObjectsToDelete());
+                });
 
         // fire the event to refresh
         targetLayer.fireLayerEvent(new RowObjectDeleteEvent(targetLayer, deleted));

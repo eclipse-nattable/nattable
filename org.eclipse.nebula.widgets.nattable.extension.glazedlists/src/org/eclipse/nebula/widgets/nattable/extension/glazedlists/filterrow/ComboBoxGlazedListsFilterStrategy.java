@@ -30,6 +30,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsLockHelper;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterUtils;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
@@ -126,12 +127,9 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
     @Override
     public void applyFilter(Map<Integer, Object> filterIndexToObjectMap) {
         if (filterIndexToObjectMap.isEmpty() && hasComboBoxFilterEditorRegistered()) {
-            this.filterLock.writeLock().lock();
-            try {
-                this.getMatcherEditor().getMatcherEditors().add(this.matchNone);
-            } finally {
-                this.filterLock.writeLock().unlock();
-            }
+            GlazedListsLockHelper.performWriteOperation(
+                    this.filterLock,
+                    () -> this.getMatcherEditor().getMatcherEditors().add(this.matchNone));
             return;
         }
 
@@ -161,12 +159,9 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
                 if (filterCollection == null || filterCollection.isEmpty()) {
                     // for one column there are no items selected in the combo,
                     // therefore nothing matches
-                    this.filterLock.writeLock().lock();
-                    try {
-                        this.getMatcherEditor().getMatcherEditors().add(this.matchNone);
-                    } finally {
-                        this.filterLock.writeLock().unlock();
-                    }
+                    GlazedListsLockHelper.performWriteOperation(
+                            this.filterLock,
+                            () -> this.getMatcherEditor().getMatcherEditors().add(this.matchNone));
                     return;
                 } else if (filterCollectionsEqual(filterCollection, dataProviderList)) {
                     it.remove();
