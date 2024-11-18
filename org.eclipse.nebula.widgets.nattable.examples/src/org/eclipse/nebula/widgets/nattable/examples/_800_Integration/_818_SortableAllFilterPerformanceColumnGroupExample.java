@@ -67,6 +67,7 @@ import org.eclipse.nebula.widgets.nattable.export.csv.CsvExporter;
 import org.eclipse.nebula.widgets.nattable.export.image.config.DefaultImageExportBindings;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsLockHelper;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxFilterRowHeaderComposite;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxGlazedListsWithExcludeFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.FilterRowUtils;
@@ -643,29 +644,30 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
         replaceContentButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                bodyLayerStack.getSortedList().getReadWriteLock().writeLock().lock();
-                try {
-                    // deactivate
-                    bodyLayerStack.getGlazedListsEventLayer().deactivate();
-                    columnHeaderLayerStack.getFilterRowComboBoxDataProvider().deactivate();
+                GlazedListsLockHelper.performWriteOperation(
+                        bodyLayerStack.getSortedList().getReadWriteLock(),
+                        () -> {
+                            // deactivate
+                            bodyLayerStack.getGlazedListsEventLayer().deactivate();
+                            columnHeaderLayerStack.getFilterRowComboBoxDataProvider().deactivate();
 
-                    // clear
-                    bodyLayerStack.getSortedList().clear();
+                            // clear
+                            bodyLayerStack.getSortedList().clear();
 
-                    // addall
-                    if (_818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersonsActive.compareAndSet(true, false)) {
-                        bodyLayerStack.getSortedList().addAll(_818_SortableAllFilterPerformanceColumnGroupExample.this.mixedPersons);
-                    } else {
-                        _818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersonsActive.set(true);
-                        bodyLayerStack.getSortedList().addAll(_818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersons);
-                        // bodyLayerStack.getSortedList().addAll(PersonService.getPersonsWithAddress(200));
-                    }
-                } finally {
-                    bodyLayerStack.getSortedList().getReadWriteLock().writeLock().unlock();
-                    // activate
-                    bodyLayerStack.getGlazedListsEventLayer().activate();
-                    columnHeaderLayerStack.getFilterRowComboBoxDataProvider().activate();
-                }
+                            // addall
+                            if (_818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersonsActive.compareAndSet(true, false)) {
+                                bodyLayerStack.getSortedList().addAll(_818_SortableAllFilterPerformanceColumnGroupExample.this.mixedPersons);
+                            } else {
+                                _818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersonsActive.set(true);
+                                bodyLayerStack.getSortedList().addAll(_818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersons);
+                                // bodyLayerStack.getSortedList().addAll(PersonService.getPersonsWithAddress(200));
+                            }
+                        },
+                        () -> {
+                            // activate
+                            bodyLayerStack.getGlazedListsEventLayer().activate();
+                            columnHeaderLayerStack.getFilterRowComboBoxDataProvider().activate();
+                        });
             }
         });
 
@@ -674,27 +676,28 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
         reapplyContentButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                bodyLayerStack.getSortedList().getReadWriteLock().writeLock().lock();
-                try {
-                    // deactivate
-                    bodyLayerStack.getGlazedListsEventLayer().deactivate();
-                    columnHeaderLayerStack.getFilterRowComboBoxDataProvider().deactivate();
+                GlazedListsLockHelper.performWriteOperation(
+                        bodyLayerStack.getSortedList().getReadWriteLock(),
+                        () -> {
+                            // deactivate
+                            bodyLayerStack.getGlazedListsEventLayer().deactivate();
+                            columnHeaderLayerStack.getFilterRowComboBoxDataProvider().deactivate();
 
-                    // clear
-                    bodyLayerStack.getSortedList().clear();
+                            // clear
+                            bodyLayerStack.getSortedList().clear();
 
-                    // addall
-                    if (_818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersonsActive.get()) {
-                        bodyLayerStack.getSortedList().addAll(_818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersons);
-                    } else {
-                        bodyLayerStack.getSortedList().addAll(_818_SortableAllFilterPerformanceColumnGroupExample.this.mixedPersons);
-                    }
-                } finally {
-                    bodyLayerStack.getSortedList().getReadWriteLock().writeLock().unlock();
-                    // activate
-                    bodyLayerStack.getGlazedListsEventLayer().activate();
-                    columnHeaderLayerStack.getFilterRowComboBoxDataProvider().activate();
-                }
+                            // addall
+                            if (_818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersonsActive.get()) {
+                                bodyLayerStack.getSortedList().addAll(_818_SortableAllFilterPerformanceColumnGroupExample.this.alternativePersons);
+                            } else {
+                                bodyLayerStack.getSortedList().addAll(_818_SortableAllFilterPerformanceColumnGroupExample.this.mixedPersons);
+                            }
+                        },
+                        () -> {
+                            // activate
+                            bodyLayerStack.getGlazedListsEventLayer().activate();
+                            columnHeaderLayerStack.getFilterRowComboBoxDataProvider().activate();
+                        });
             }
         });
 

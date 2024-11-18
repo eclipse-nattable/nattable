@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, 2023 Dirk Fauth and others.
+ * Copyright (c) 2016, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -52,6 +52,7 @@ import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsLockHelper;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.data.command.GlazedListsRowInsertCommandHandler;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.data.command.GlazedListsRowObjectDeleteCommandHandler;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxFilterRowHeaderComposite;
@@ -576,36 +577,38 @@ public class _813_SortableGroupByWithComboBoxFilterExample extends AbstractNatEx
                 address.setPostalCode(12345);
                 address.setCity("In the clouds");
 
-                bodyLayerStack.getEventList().getReadWriteLock().writeLock().lock();
-                try {
-                    Person person = new Person(42, "Ralph", "Wiggum", Gender.MALE, false, new Date());
-                    ExtendedPersonWithAddress entry = new ExtendedPersonWithAddress(person, address,
-                            "0000", "The little Ralphy", 0,
-                            new ArrayList<String>(), new ArrayList<String>());
-                    bodyLayerStack.getEventList().add(entry);
+                GlazedListsLockHelper.performWriteOperation(
+                        bodyLayerStack.getEventList().getReadWriteLock(),
+                        () -> {
+                            Person person = new Person(42, "Ralph", "Wiggum", Gender.MALE, false, new Date());
+                            ExtendedPersonWithAddress entry = new ExtendedPersonWithAddress(person, address,
+                                    "0000", "The little Ralphy", 0,
+                                    new ArrayList<String>(), new ArrayList<String>());
+                            bodyLayerStack.getEventList().add(entry);
 
-                    person = new Person(42, "Clancy", "Wiggum", Gender.MALE, true, new Date());
-                    entry = new ExtendedPersonWithAddress(person, address,
-                            "XXXL", "It is Chief Wiggum", 0, new ArrayList<String>(), new ArrayList<String>());
-                    bodyLayerStack.getEventList().add(entry);
+                            person = new Person(42, "Clancy", "Wiggum", Gender.MALE, true, new Date());
+                            entry = new ExtendedPersonWithAddress(person, address,
+                                    "XXXL", "It is Chief Wiggum", 0, new ArrayList<String>(), new ArrayList<String>());
+                            bodyLayerStack.getEventList().add(entry);
 
-                    person = new Person(42, "Sarah", "Wiggum", Gender.FEMALE, true, new Date());
-                    entry = new ExtendedPersonWithAddress(person, address,
-                            "mommy", "Little Ralphy's mother", 0,
-                            new ArrayList<String>(), new ArrayList<String>());
-                    bodyLayerStack.getEventList().add(entry);
-                } finally {
-                    bodyLayerStack.getEventList().getReadWriteLock().writeLock().unlock();
-                    // Inserting new objects could cause the creation of new
-                    // GroupByObjects dependent on the GroupBy state. If
-                    // additionally to the GroupBy state a sorting is applied on
-                    // a column that contain a GroupBy summary value, the
-                    // comparison and therefore the sorting is incorrect as the
-                    // GroupBy summary value cannot be calculated. Therefore the
-                    // sorting is re-applied after the insert operation to have
-                    // a reliable sorting.
-                    sortModel.refresh();
-                }
+                            person = new Person(42, "Sarah", "Wiggum", Gender.FEMALE, true, new Date());
+                            entry = new ExtendedPersonWithAddress(person, address,
+                                    "mommy", "Little Ralphy's mother", 0,
+                                    new ArrayList<String>(), new ArrayList<String>());
+                            bodyLayerStack.getEventList().add(entry);
+                        },
+                        () -> {
+                            // Inserting new objects could cause the creation of
+                            // new GroupByObjects dependent on the GroupBy
+                            // state. If additionally to the GroupBy state a
+                            // sorting is applied on a column that contain a
+                            // GroupBy summary value, the comparison and
+                            // therefore the sorting is incorrect as the GroupBy
+                            // summary value cannot be calculated. Therefore the
+                            // sorting is re-applied after the insert operation
+                            // to have a reliable sorting.
+                            sortModel.refresh();
+                        });
             }
         });
 

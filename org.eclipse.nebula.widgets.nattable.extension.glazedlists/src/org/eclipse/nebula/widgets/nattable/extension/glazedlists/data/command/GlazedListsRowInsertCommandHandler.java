@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Dirk Fauth.
+ * Copyright (c) 2019, 2024 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,7 @@ import java.util.List;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.command.RowInsertCommand;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsLockHelper;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowInsertEvent;
 
@@ -52,28 +53,25 @@ public class GlazedListsRowInsertCommandHandler<T> implements ILayerCommandHandl
     public boolean doCommand(ILayer targetLayer, RowInsertCommand command) {
         // convert the transported position to the target layer
         if (command.convertToTargetLayer(targetLayer)) {
-            RowInsertEvent event = null;
-            this.bodyData.getReadWriteLock().writeLock().lock();
-            try {
-                // add the elements
-                if (command.getRowIndex() < 0 || command.getRowIndex() >= this.bodyData.size()) {
-                    this.bodyData.addAll(command.getObjects());
-                    // fire the event to refresh
-                    event = new RowInsertEvent(
-                            targetLayer,
-                            new Range(this.bodyData.size() - command.getObjects().size(), this.bodyData.size()));
-                } else {
-                    this.bodyData.addAll(command.getRowIndex(), command.getObjects());
-                    event = new RowInsertEvent(
-                            targetLayer,
-                            new Range(command.getRowIndex(), command.getRowIndex() + command.getObjects().size()));
-                }
-            } finally {
-                this.bodyData.getReadWriteLock().writeLock().unlock();
-            }
+            GlazedListsLockHelper.performWriteOperation(
+                    this.bodyData.getReadWriteLock(),
+                    () -> {
 
-            // fire the event to refresh
-            targetLayer.fireLayerEvent(event);
+                        // add the elements
+                        if (command.getRowIndex() < 0 || command.getRowIndex() >= this.bodyData.size()) {
+                            this.bodyData.addAll(command.getObjects());
+                            // fire the event to refresh
+                            targetLayer.fireLayerEvent(new RowInsertEvent(
+                                    targetLayer,
+                                    new Range(this.bodyData.size() - command.getObjects().size(), this.bodyData.size())));
+                        } else {
+                            this.bodyData.addAll(command.getRowIndex(), command.getObjects());
+                            // fire the event to refresh
+                            targetLayer.fireLayerEvent(new RowInsertEvent(
+                                    targetLayer,
+                                    new Range(command.getRowIndex(), command.getRowIndex() + command.getObjects().size())));
+                        }
+                    });
             return true;
         }
         return false;

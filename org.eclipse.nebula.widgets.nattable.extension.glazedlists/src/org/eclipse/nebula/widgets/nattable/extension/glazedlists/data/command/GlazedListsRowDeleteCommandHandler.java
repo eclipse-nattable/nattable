@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Dirk Fauth.
+ * Copyright (c) 2019, 2024 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.command.RowDeleteCommand;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsLockHelper;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowObjectDeleteEvent;
 
@@ -60,16 +61,15 @@ public class GlazedListsRowDeleteCommandHandler<T> implements ILayerCommandHandl
             int[] positions = command.getRowPositionsArray();
             Map<Integer, T> deleted = new HashMap<>();
 
-            this.bodyData.getReadWriteLock().writeLock().lock();
-            try {
-                for (int i = positions.length - 1; i >= 0; i--) {
-                    // remove the element
-                    int pos = positions[i];
-                    deleted.put(pos, this.bodyData.remove(pos));
-                }
-            } finally {
-                this.bodyData.getReadWriteLock().writeLock().unlock();
-            }
+            GlazedListsLockHelper.performWriteOperation(
+                    this.bodyData.getReadWriteLock(),
+                    () -> {
+                        for (int i = positions.length - 1; i >= 0; i--) {
+                            // remove the element
+                            int pos = positions[i];
+                            deleted.put(pos, this.bodyData.remove(pos));
+                        }
+                    });
 
             // fire the event to refresh
             targetLayer.fireLayerEvent(new RowObjectDeleteEvent(targetLayer, deleted));

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023 Dirk Fauth and others.
+ * Copyright (c) 2023, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsLockHelper;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
 
 import ca.odell.glazedlists.FilterList;
@@ -106,12 +107,9 @@ public class ComboBoxGlazedListsWithExcludeFilterStrategy<T> extends ComboBoxGla
     public void addExcludeFilter(final MatcherEditor<T> matcherEditor) {
         // add the new MatcherEditor to the CompositeMatcherEditor
         if (isActive()) {
-            this.filterLock.writeLock().lock();
-            try {
-                this.compositeMatcherEditor.getMatcherEditors().add(matcherEditor);
-            } finally {
-                this.filterLock.writeLock().unlock();
-            }
+            GlazedListsLockHelper.performWriteOperation(
+                    this.filterLock,
+                    () -> this.compositeMatcherEditor.getMatcherEditors().add(matcherEditor));
         }
 
         this.excludeMatcherEditor.put(matcherEditor.getMatcher(), matcherEditor);
@@ -126,12 +124,9 @@ public class ComboBoxGlazedListsWithExcludeFilterStrategy<T> extends ComboBoxGla
     public void removeExcludeFilter(final Matcher<T> matcher) {
         MatcherEditor<T> removed = this.excludeMatcherEditor.remove(matcher);
         if (removed != null && isActive()) {
-            this.filterLock.writeLock().lock();
-            try {
-                this.compositeMatcherEditor.getMatcherEditors().remove(removed);
-            } finally {
-                this.filterLock.writeLock().unlock();
-            }
+            GlazedListsLockHelper.performWriteOperation(
+                    this.filterLock,
+                    () -> this.compositeMatcherEditor.getMatcherEditors().remove(removed));
         }
     }
 
@@ -151,12 +146,9 @@ public class ComboBoxGlazedListsWithExcludeFilterStrategy<T> extends ComboBoxGla
     public void clearExcludeFilter() {
         Collection<MatcherEditor<T>> excludeMatcher = this.excludeMatcherEditor.values();
         if (!excludeMatcher.isEmpty() && isActive()) {
-            this.filterLock.writeLock().lock();
-            try {
-                this.compositeMatcherEditor.getMatcherEditors().removeAll(excludeMatcher);
-            } finally {
-                this.filterLock.writeLock().unlock();
-            }
+            GlazedListsLockHelper.performWriteOperation(
+                    this.filterLock,
+                    () -> this.compositeMatcherEditor.getMatcherEditors().removeAll(excludeMatcher));
         }
         this.excludeMatcherEditor.clear();
     }
@@ -166,12 +158,9 @@ public class ComboBoxGlazedListsWithExcludeFilterStrategy<T> extends ComboBoxGla
         if (!isActive()) {
             Collection<MatcherEditor<T>> excludeMatcher = this.excludeMatcherEditor.values();
             if (!excludeMatcher.isEmpty()) {
-                this.filterLock.writeLock().lock();
-                try {
-                    this.compositeMatcherEditor.getMatcherEditors().addAll(excludeMatcher);
-                } finally {
-                    this.filterLock.writeLock().unlock();
-                }
+                GlazedListsLockHelper.performWriteOperation(
+                        this.filterLock,
+                        () -> this.compositeMatcherEditor.getMatcherEditors().addAll(excludeMatcher));
             }
         }
         super.activateFilterStrategy();
@@ -182,12 +171,9 @@ public class ComboBoxGlazedListsWithExcludeFilterStrategy<T> extends ComboBoxGla
         if (isActive()) {
             Collection<MatcherEditor<T>> excludeMatcher = this.excludeMatcherEditor.values();
             if (!excludeMatcher.isEmpty()) {
-                this.filterLock.writeLock().lock();
-                try {
-                    this.compositeMatcherEditor.getMatcherEditors().removeAll(excludeMatcher);
-                } finally {
-                    this.filterLock.writeLock().unlock();
-                }
+                GlazedListsLockHelper.performWriteOperation(
+                        this.filterLock,
+                        () -> this.compositeMatcherEditor.getMatcherEditors().removeAll(excludeMatcher));
             }
         }
         super.deactivateFilterStrategy();

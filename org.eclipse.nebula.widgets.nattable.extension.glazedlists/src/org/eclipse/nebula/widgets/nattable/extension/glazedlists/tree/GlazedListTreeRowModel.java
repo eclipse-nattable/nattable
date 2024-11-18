@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsLockHelper;
 import org.eclipse.nebula.widgets.nattable.tree.AbstractTreeRowModel;
 
 import ca.odell.glazedlists.TreeList;
@@ -71,27 +72,28 @@ public class GlazedListTreeRowModel<T> extends AbstractTreeRowModel<T> {
     @Override
     public List<Integer> collapseAll() {
         TreeList<T> treeList = this.getTreeData().getTreeList();
-        treeList.getReadWriteLock().writeLock().lock();
-        try {
-            // iterating directly over the TreeList is a lot faster than
-            // checking the nodes
-            // which is related that on collapsing we only need to iterate once
-            // from bottom to top
-            for (int i = (treeList.size() - 1); i >= 0; i--) {
-                /*
-                 * Checks if the node at the given visible index has children
-                 * and is collapsible. If it is it will be collapsed otherwise
-                 * skipped. This backwards searching and collapsing mechanism is
-                 * necessary to ensure to really get every collapsible node in
-                 * the whole tree structure.
-                 */
-                if (hasChildren(i) && !isCollapsed(i)) {
-                    treeList.setExpanded(i, false);
-                }
-            }
-        } finally {
-            treeList.getReadWriteLock().writeLock().unlock();
-        }
+        GlazedListsLockHelper.performWriteOperation(
+                treeList.getReadWriteLock(),
+                () -> {
+                    // iterating directly over the TreeList is a lot faster than
+                    // checking the nodes
+                    // which is related that on collapsing we only need to
+                    // iterate once
+                    // from bottom to top
+                    for (int i = (treeList.size() - 1); i >= 0; i--) {
+                        /*
+                         * Checks if the node at the given visible index has
+                         * children and is collapsible. If it is it will be
+                         * collapsed otherwise skipped. This backwards searching
+                         * and collapsing mechanism is necessary to ensure to
+                         * really get every collapsible node in the whole tree
+                         * structure.
+                         */
+                        if (hasChildren(i) && !isCollapsed(i)) {
+                            treeList.setExpanded(i, false);
+                        }
+                    }
+                });
 
         notifyListeners();
         return new ArrayList<>();
@@ -174,27 +176,30 @@ public class GlazedListTreeRowModel<T> extends AbstractTreeRowModel<T> {
     protected void internalExpandAll() {
         TreeList<T> treeList = this.getTreeData().getTreeList();
 
-        boolean expandPerformed = false;
-        treeList.getReadWriteLock().writeLock().lock();
-        try {
-            // iterating directly over the TreeList is a lot faster than
-            // checking the nodes
-            for (int i = (treeList.size() - 1); i >= 0; i--) {
-                /*
-                 * Checks if the node at the given visible index has children
-                 * and is expandable. If it is it will be expanded otherwise
-                 * skipped. This backwards searching and expanding mechanism is
-                 * necessary to ensure to really get every expandable node in
-                 * the whole tree structure.
-                 */
-                if (hasChildren(i) && isCollapsed(i)) {
-                    treeList.setExpanded(i, true);
-                    expandPerformed = true;
-                }
-            }
-        } finally {
-            treeList.getReadWriteLock().writeLock().unlock();
-        }
+        boolean expandPerformed =
+                GlazedListsLockHelper.performWriteOperation(
+                        treeList.getReadWriteLock(),
+                        () -> {
+                            // iterating directly over the TreeList is a lot
+                            // faster than
+                            // checking the nodes
+                            boolean performed = false;
+                            for (int i = (treeList.size() - 1); i >= 0; i--) {
+                                /*
+                                 * Checks if the node at the given visible index
+                                 * has children and is expandable. If it is it
+                                 * will be expanded otherwise skipped. This
+                                 * backwards searching and expanding mechanism
+                                 * is necessary to ensure to really get every
+                                 * expandable node in the whole tree structure.
+                                 */
+                                if (hasChildren(i) && isCollapsed(i)) {
+                                    treeList.setExpanded(i, true);
+                                    performed = true;
+                                }
+                            }
+                            return performed;
+                        });
 
         // if at least one element was expanded we need to perform the step
         // again as we are only able to retrieve the visible nodes
@@ -226,27 +231,31 @@ public class GlazedListTreeRowModel<T> extends AbstractTreeRowModel<T> {
     protected void internalExpandToLevel(int level) {
         TreeList<T> treeList = this.getTreeData().getTreeList();
 
-        boolean expandPerformed = false;
-        treeList.getReadWriteLock().writeLock().lock();
-        try {
-            // iterating directly over the TreeList is a lot faster than
-            // checking the nodes
-            for (int i = (treeList.size() - 1); i >= 0; i--) {
-                /*
-                 * Checks if the node at the given visible index has children,
-                 * is expandable and is on a level below the given level. If it
-                 * is it will be expanded otherwise skipped. This backwards
-                 * searching and expanding mechanism is necessary to ensure to
-                 * really get every expandable node in the whole tree structure.
-                 */
-                if (hasChildren(i) && isCollapsed(i) && treeList.getTreeNode(i).path().size() <= level) {
-                    treeList.setExpanded(i, true);
-                    expandPerformed = true;
-                }
-            }
-        } finally {
-            treeList.getReadWriteLock().writeLock().unlock();
-        }
+        boolean expandPerformed =
+                GlazedListsLockHelper.performWriteOperation(
+                        treeList.getReadWriteLock(),
+                        () -> {
+                            // iterating directly over the TreeList is a lot
+                            // faster than
+                            // checking the nodes
+                            boolean performed = false;
+                            for (int i = (treeList.size() - 1); i >= 0; i--) {
+                                /*
+                                 * Checks if the node at the given visible index
+                                 * has children, is expandable and is on a level
+                                 * below the given level. If it is it will be
+                                 * expanded otherwise skipped. This backwards
+                                 * searching and expanding mechanism is
+                                 * necessary to ensure to really get every
+                                 * expandable node in the whole tree structure.
+                                 */
+                                if (hasChildren(i) && isCollapsed(i) && treeList.getTreeNode(i).path().size() <= level) {
+                                    treeList.setExpanded(i, true);
+                                    performed = true;
+                                }
+                            }
+                            return performed;
+                        });
 
         // if at least one element was expanded we need to perform the step
         // again as we are only able to retrieve the visible nodes

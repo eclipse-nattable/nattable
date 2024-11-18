@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2018, 2020 Dirk Fauth.
+ * Copyright (c) 2018, 2024 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import java.util.Map;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.NullComparator;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsLockHelper;
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalWrapper;
 import org.eclipse.nebula.widgets.nattable.hierarchical.HierarchicalWrapperComparator;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -149,18 +150,19 @@ public class HierarchicalWrapperSortModel implements ISortModel {
             }
 
             // perform the sorting
-            this.sortedList.getReadWriteLock().writeLock().lock();
-            try {
-                if (this.sortingState.isEmpty()) {
-                    // if we do not have a sorting state, we disable sorting
-                    this.sortedList.setComparator(null);
-                } else {
-                    // we have some sorting state, so we trigger a re-sort
-                    this.sortedList.setComparator(new HierarchicalWrapperComparator(this.columnAccessor, this.levelIndexMapping, this));
-                }
-            } finally {
-                this.sortedList.getReadWriteLock().writeLock().unlock();
-            }
+            GlazedListsLockHelper.performWriteOperation(
+                    this.sortedList.getReadWriteLock(),
+                    () -> {
+                        if (this.sortingState.isEmpty()) {
+                            // if we do not have a sorting state, we disable
+                            // sorting
+                            this.sortedList.setComparator(null);
+                        } else {
+                            // we have some sorting state, so we trigger a
+                            // re-sort
+                            this.sortedList.setComparator(new HierarchicalWrapperComparator(this.columnAccessor, this.levelIndexMapping, this));
+                        }
+                    });
         }
     }
 

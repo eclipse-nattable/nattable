@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2023 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsLockHelper;
 import org.eclipse.nebula.widgets.nattable.filterrow.IActivatableFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.filterrow.IFilterStrategy;
 
@@ -103,12 +104,9 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends DefaultGlazedList
     public void applyFilter(Map<Integer, Object> filterIndexToObjectMap) {
         super.applyFilter(filterIndexToObjectMap);
         if (this.active) {
-            this.filterLock.writeLock().lock();
-            try {
-                this.getMatcherEditor().getMatcherEditors().addAll(this.staticMatcherEditor.values());
-            } finally {
-                this.filterLock.writeLock().unlock();
-            }
+            GlazedListsLockHelper.performWriteOperation(
+                    this.filterLock,
+                    () -> this.getMatcherEditor().getMatcherEditors().addAll(this.staticMatcherEditor.values()));
         }
     }
 
@@ -135,12 +133,9 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends DefaultGlazedList
     public void addStaticFilter(final MatcherEditor<T> matcherEditor) {
         // add the new MatcherEditor to the CompositeMatcherEditor
         if (isActive()) {
-            this.filterLock.writeLock().lock();
-            try {
-                this.getMatcherEditor().getMatcherEditors().add(matcherEditor);
-            } finally {
-                this.filterLock.writeLock().unlock();
-            }
+            GlazedListsLockHelper.performWriteOperation(
+                    this.filterLock,
+                    () -> this.getMatcherEditor().getMatcherEditors().add(matcherEditor));
         }
 
         // remember the MatcherEditor so it can be restored after new
@@ -157,12 +152,9 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends DefaultGlazedList
     public void removeStaticFilter(final Matcher<T> matcher) {
         MatcherEditor<T> removed = this.staticMatcherEditor.remove(matcher);
         if (removed != null && isActive()) {
-            this.filterLock.writeLock().lock();
-            try {
-                this.getMatcherEditor().getMatcherEditors().remove(removed);
-            } finally {
-                this.filterLock.writeLock().unlock();
-            }
+            GlazedListsLockHelper.performWriteOperation(
+                    this.filterLock,
+                    () -> this.getMatcherEditor().getMatcherEditors().remove(removed));
         }
     }
 
@@ -184,12 +176,9 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends DefaultGlazedList
     public void clearStaticFilter() {
         Collection<MatcherEditor<T>> staticMatcher = this.staticMatcherEditor.values();
         if (!staticMatcher.isEmpty() && isActive()) {
-            this.filterLock.writeLock().lock();
-            try {
-                this.getMatcherEditor().getMatcherEditors().removeAll(staticMatcher);
-            } finally {
-                this.filterLock.writeLock().unlock();
-            }
+            GlazedListsLockHelper.performWriteOperation(
+                    this.filterLock,
+                    () -> this.getMatcherEditor().getMatcherEditors().removeAll(staticMatcher));
         }
         this.staticMatcherEditor.clear();
     }
@@ -201,12 +190,9 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends DefaultGlazedList
 
             Collection<MatcherEditor<T>> staticMatcher = this.staticMatcherEditor.values();
             if (!staticMatcher.isEmpty()) {
-                this.filterLock.writeLock().lock();
-                try {
-                    this.getMatcherEditor().getMatcherEditors().addAll(staticMatcher);
-                } finally {
-                    this.filterLock.writeLock().unlock();
-                }
+                GlazedListsLockHelper.performWriteOperation(
+                        this.filterLock,
+                        () -> this.getMatcherEditor().getMatcherEditors().addAll(staticMatcher));
             }
         }
     }
@@ -218,12 +204,9 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends DefaultGlazedList
 
             Collection<MatcherEditor<T>> staticMatcher = this.staticMatcherEditor.values();
             if (!staticMatcher.isEmpty()) {
-                this.filterLock.writeLock().lock();
-                try {
-                    this.getMatcherEditor().getMatcherEditors().removeAll(staticMatcher);
-                } finally {
-                    this.filterLock.writeLock().unlock();
-                }
+                GlazedListsLockHelper.performWriteOperation(
+                        this.filterLock,
+                        () -> this.getMatcherEditor().getMatcherEditors().removeAll(staticMatcher));
             }
         }
     }
