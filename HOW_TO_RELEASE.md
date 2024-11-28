@@ -28,7 +28,7 @@ This document describes the process on how to release Nebula NatTable.
 ## Release to Maven Central
 
  * Update the version to remove -SNAPSHOT and .qualifier from any version numbers in the release branch via `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=VERSION`
- * Trigger the Jenkins Job to release to Eclipse: https://ci.eclipse.org/nattable/job/nattable-release-maven/
+ * Trigger the Jenkins Job to release to Maven Central: https://ci.eclipse.org/nattable/job/nattable-release-maven/
  * Build with parameters
    * Select the branch that should be build and released
 

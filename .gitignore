@@ -13,6 +13,5 @@ org.eclipse.nebula.widgets.nattable.examples/src/**/Issue*.java
 
 .polyglot*
 
-.settings
 .project
 target-platform/target-platform-gen.target

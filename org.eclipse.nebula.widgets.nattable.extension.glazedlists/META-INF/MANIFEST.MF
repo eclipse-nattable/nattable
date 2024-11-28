@@ -2,18 +2,18 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: NatTable extension for GlazedLists
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.extension.glazedlists
-Bundle-Version: 2.5.0.qualifier
+Bundle-Version: 2.5.1.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-11
-Export-Package: org.eclipse.nebula.widgets.nattable.extension.glazedlists;version="2.5.0",
- org.eclipse.nebula.widgets.nattable.extension.glazedlists.data.command;version="2.5.0",
- org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;version="2.5.0",
- org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;version="2.5.0",
- org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.action;version="2.5.0",
- org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.command;version="2.5.0",
- org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary;version="2.5.0",
- org.eclipse.nebula.widgets.nattable.extension.glazedlists.hideshow;version="2.5.0",
- org.eclipse.nebula.widgets.nattable.extension.glazedlists.hierarchical;version="2.5.0",
- org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree;version="2.5.0"
+Export-Package: org.eclipse.nebula.widgets.nattable.extension.glazedlists;version="2.5.1",
+ org.eclipse.nebula.widgets.nattable.extension.glazedlists.data.command;version="2.5.1",
+ org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;version="2.5.1",
+ org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;version="2.5.1",
+ org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.action;version="2.5.1",
+ org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.command;version="2.5.1",
+ org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary;version="2.5.1",
+ org.eclipse.nebula.widgets.nattable.extension.glazedlists.hideshow;version="2.5.1",
+ org.eclipse.nebula.widgets.nattable.extension.glazedlists.hierarchical;version="2.5.1",
+ org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree;version="2.5.1"
 Import-Package: ca.odell.glazedlists;version="[1.11.0,2.0.0)",
  ca.odell.glazedlists.event;version="[1.11.0,2.0.0)",
  ca.odell.glazedlists.gui;version="[1.11.0,2.0.0)",
