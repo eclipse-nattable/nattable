@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="org.eclipse.nebula.widgets.nattable.examples.e4" uid="org.eclipse.nebula.widgets.nattable.examples.e4.product" id="org.eclipse.nebula.widgets.nattable.examples.e4.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.5.0.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="true">
+<product name="org.eclipse.nebula.widgets.nattable.examples.e4" uid="org.eclipse.nebula.widgets.nattable.examples.e4.product" id="org.eclipse.nebula.widgets.nattable.examples.e4.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.5.0" type="features" includeLaunchers="true" autoIncludeRequirements="true">
 
    <configIni use="default">
    </configIni>
