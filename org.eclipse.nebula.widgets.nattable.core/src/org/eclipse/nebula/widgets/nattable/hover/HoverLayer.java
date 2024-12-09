@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2022 Dirk Fauth and others.
+ * Copyright (c) 2013, 2024 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -20,6 +20,9 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualUpdateEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.ColumnVisualUpdateEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.RowVisualUpdateEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.swt.graphics.Point;
 
@@ -49,6 +52,19 @@ public class HoverLayer extends AbstractIndexLayerTransform {
      * located.
      */
     private Point currentHoveredCellPosition;
+    /**
+     * If set to <code>true</code> it will fire a {@link RowVisualUpdateEvent}
+     * on hover. If also {@link #fireColumnUpdates} it set to <code>true</code>,
+     * a {@link VisualRefreshEvent} will be fired on hover.
+     */
+    private boolean fireRowUpdates = false;
+    /**
+     * If set to <code>true</code> it will fire a
+     * {@link ColumnVisualUpdateEvent} on hover. If also {@link #fireRowUpdates}
+     * it set to <code>true</code>, a {@link VisualRefreshEvent} will be fired
+     * on hover.
+     */
+    private boolean fireColumnUpdates = false;
 
     /**
      * Create a new HoverLayer that uses the default configuration.
@@ -125,6 +141,38 @@ public class HoverLayer extends AbstractIndexLayerTransform {
     }
 
     /**
+     * Check if this HoverLayer knows the current hovered cell and if that cell
+     * is at the given row position.
+     *
+     * @param rowPosition
+     *            The row position of the cell that should be checked.
+     * @return <code>true</code> if the current hovered cell is in the given row
+     *         position, <code>false</code> if not.
+     *
+     * @since 2.6
+     */
+    public boolean isRowPositionHovered(int rowPosition) {
+        return this.currentHoveredCellPosition != null
+                && this.currentHoveredCellPosition.y == rowPosition;
+    }
+
+    /**
+     * Check if this HoverLayer knows the current hovered cell and if that cell
+     * is at the given column position.
+     *
+     * @param columnPosition
+     *            The column position of the cell that should be checked.
+     * @return <code>true</code> if the current hovered cell is in the given
+     *         column position, <code>false</code> if not.
+     *
+     * @since 2.6
+     */
+    public boolean isColumnPositionHovered(int columnPosition) {
+        return this.currentHoveredCellPosition != null
+                && this.currentHoveredCellPosition.x == columnPosition;
+    }
+
+    /**
      * @return The position of the cell that is currently hovered.
      */
     public Point getCurrentHoveredCellPosition() {
@@ -185,11 +233,11 @@ public class HoverLayer extends AbstractIndexLayerTransform {
             }
 
             if (oldHover != null) {
-                fireLayerEvent(new CellVisualUpdateEvent(this, oldHover.x, oldHover.y));
+                fireUpdateEvent(oldHover.x, oldHover.y);
             }
-            fireLayerEvent(new CellVisualUpdateEvent(this,
+            fireUpdateEvent(
                     this.currentHoveredCellPosition.x,
-                    this.currentHoveredCellPosition.y));
+                    this.currentHoveredCellPosition.y);
         }
     }
 
@@ -202,7 +250,85 @@ public class HoverLayer extends AbstractIndexLayerTransform {
         if (this.currentHoveredCellPosition != null) {
             Point oldHover = this.currentHoveredCellPosition;
             this.currentHoveredCellPosition = null;
-            fireLayerEvent(new CellVisualUpdateEvent(this, oldHover.x, oldHover.y));
+            fireUpdateEvent(oldHover.x, oldHover.y);
+        }
+    }
+
+    /**
+     * Configure whether visual updates for the whole row should be fired.
+     * <p>
+     * <b>Note:</b><br>
+     * If {@link #fireColumnUpdates} and {@link #fireRowUpdates} are set to
+     * <code>true</code> the whole table will be refreshed on hovering a single
+     * cell.
+     * </p>
+     *
+     * @param fireRowUpdates
+     *            <code>true</code> if visual updates for the whole row should
+     *            be fired.
+     *
+     * @since 2.6
+     */
+    public void setFireRowUpdates(boolean fireRowUpdates) {
+        this.fireRowUpdates = fireRowUpdates;
+    }
+
+    /**
+     *
+     * @return <code>true</code> if visual updates for the whole row are fired.
+     * @since 2.6
+     */
+    public boolean isFireRowUpdates() {
+        return this.fireRowUpdates;
+    }
+
+    /**
+     * Configure whether visual updates for the whole column should be fired.
+     * <p>
+     * <b>Note:</b><br>
+     * If {@link #fireColumnUpdates} and {@link #fireRowUpdates} are set to
+     * <code>true</code> the whole table will be refreshed on hovering a single
+     * cell.
+     * </p>
+     *
+     * @param fireColumnUpdates
+     *            <code>true</code> if visual updates for the whole column
+     *            should be fired.
+     *
+     * @since 2.6
+     */
+    public void setFireColumnUpdates(boolean fireColumnUpdates) {
+        this.fireColumnUpdates = fireColumnUpdates;
+    }
+
+    /**
+     *
+     * @return <code>true</code> if visual updates for the whole column are
+     *         fired.
+     * @since 2.6
+     */
+    public boolean isFireColumnUpdates() {
+        return this.fireColumnUpdates;
+    }
+
+    /**
+     * Fire a visual update event according to the configuration of
+     * {@link #fireColumnUpdates} and {@link #fireRowUpdates}.
+     *
+     * @param x
+     *            The column position for the visual update event.
+     * @param y
+     *            The row position of the visual update event.
+     */
+    private void fireUpdateEvent(int x, int y) {
+        if (this.fireRowUpdates && this.fireColumnUpdates) {
+            fireLayerEvent(new VisualRefreshEvent(this));
+        } else if (this.fireRowUpdates) {
+            fireLayerEvent(new RowVisualUpdateEvent(this, y));
+        } else if (this.fireColumnUpdates) {
+            fireLayerEvent(new ColumnVisualUpdateEvent(this, x));
+        } else {
+            fireLayerEvent(new CellVisualUpdateEvent(this, x, y));
         }
     }
 }
