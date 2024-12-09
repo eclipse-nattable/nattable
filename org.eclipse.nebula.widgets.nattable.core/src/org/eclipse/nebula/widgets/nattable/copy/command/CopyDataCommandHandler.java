@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2024 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -157,10 +157,12 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
      * @since 1.6
      */
     protected void internalDoCommand(CopyDataToClipboardCommand command, ILayerCell[][] assembledCopiedDataStructure) {
-        ISerializer serializer = this.copyFormattedText
-                ? new CopyFormattedTextToClipboardSerializer(assembledCopiedDataStructure, command)
-                : new CopyDataToClipboardSerializer(assembledCopiedDataStructure, command);
-        serializer.serialize();
+        if (assembledCopiedDataStructure != null) {
+            ISerializer serializer = this.copyFormattedText
+                    ? new CopyFormattedTextToClipboardSerializer(assembledCopiedDataStructure, command)
+                    : new CopyDataToClipboardSerializer(assembledCopiedDataStructure, command);
+            serializer.serialize();
+        }
     }
 
     @Override
