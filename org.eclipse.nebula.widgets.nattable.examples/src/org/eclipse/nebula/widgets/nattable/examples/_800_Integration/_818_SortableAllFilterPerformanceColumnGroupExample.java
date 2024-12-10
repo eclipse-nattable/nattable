@@ -66,8 +66,8 @@ import org.eclipse.nebula.widgets.nattable.export.command.ExportCommand;
 import org.eclipse.nebula.widgets.nattable.export.csv.CsvExporter;
 import org.eclipse.nebula.widgets.nattable.export.image.config.DefaultImageExportBindings;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsLockHelper;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxFilterRowHeaderComposite;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxGlazedListsWithExcludeFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.FilterRowUtils;
@@ -123,6 +123,10 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.ImagePainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CellPainterDecorator;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
@@ -145,6 +149,7 @@ import org.eclipse.nebula.widgets.nattable.ui.menu.MenuItemProviders;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.ui.scaling.ScalingUiBindingConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
@@ -154,6 +159,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -458,7 +464,9 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                 columnHeaderLayerStack.getFilterStrategy(),
                 columnHeaderLayerStack.getFilterRowHeaderLayer().getFilterRowDataLayer().getFilterRowDataProvider()));
 
-        natTable.addConfiguration(new ScalingUiBindingConfiguration(natTable));
+        // register scaling ui bindings with percentage updates for smaller zoom
+        // steps that cause pixeled icons on some scale factors
+        natTable.addConfiguration(new ScalingUiBindingConfiguration(natTable, true));
 
         // Register column chooser
         DisplayColumnChooserCommandHandler columnChooserCommandHandler =
@@ -485,10 +493,33 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
             @Override
             public void createPainterInstances() {
                 super.createPainterInstances();
-                this.filterRowCellPainter = configRegistry.getConfigAttribute(
-                        CellConfigAttributes.CELL_PAINTER,
-                        DisplayMode.NORMAL,
-                        GridRegion.FILTER_ROW);
+
+                // the following code is copied from the
+                // ComboBoxFilterRowConfiguration to support the dynamic scaling
+                // of the triangle
+                ImagePainter filterIconPainter = new ComboBoxFilterIconPainter(columnHeaderLayerStack.filterRowComboBoxDataProvider);
+                ICellPainter cellPainter = new CellPainterDecorator(new TextPainter() {
+                    {
+                        this.paintFg = false;
+                    }
+
+                    // override the preferred width and height to be 0, as
+                    // otherwise the String that is generated in the background
+                    // for multiple selection will be taken into account for
+                    // auto resizing
+
+                    @Override
+                    public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+                        return 0;
+                    }
+                }, CellEdgeEnum.RIGHT, filterIconPainter);
+
+                this.filterRowCellPainter = new FilterRowPainter(cellPainter, filterIconPainter);
 
                 this.defaultCellPainter = new BackgroundPainter(
                         new PaddingDecorator(new RichTextCellPainter(false, false), 0, 5, 0, 5, false));
@@ -496,29 +527,9 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
             }
         };
 
-        // add the style configuration for hover
+        // add the style configuration for hover and the painters with icons
+        // that need to be updated on dynamic scaling
         themeConfiguration.addThemeExtension(new IThemeExtension() {
-
-            @Override
-            public void unregisterStyles(IConfigRegistry configRegistry) {
-                configRegistry.unregisterConfigAttribute(
-                        CellConfigAttributes.CELL_STYLE,
-                        DisplayMode.HOVER,
-                        GridRegion.COLUMN_HEADER);
-                configRegistry.unregisterConfigAttribute(
-                        CellConfigAttributes.CELL_STYLE,
-                        DisplayMode.SELECT_HOVER,
-                        GridRegion.COLUMN_HEADER);
-
-                configRegistry.unregisterConfigAttribute(
-                        CellConfigAttributes.CELL_STYLE,
-                        DisplayMode.HOVER,
-                        GridRegion.ROW_HEADER);
-                configRegistry.unregisterConfigAttribute(
-                        CellConfigAttributes.CELL_STYLE,
-                        DisplayMode.SELECT_HOVER,
-                        GridRegion.ROW_HEADER);
-            }
 
             @Override
             public void registerStyles(IConfigRegistry configRegistry) {
@@ -559,6 +570,71 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                 configRegistry.registerConfigAttribute(
                         CellConfigAttributes.CELL_STYLE,
                         style,
+                        DisplayMode.SELECT_HOVER,
+                        GridRegion.ROW_HEADER);
+
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        new CheckBoxPainter(),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX
+                                + DataModelConstants.MARRIED_COLUMN_POSITION);
+
+                // register the FilterRowPainter in the first column to
+                // visualize the free edit filter field as the
+                // ComboBoxFilterRowConfiguration registers the
+                // ComboBoxFilterIconPainter as default
+                ICellPainter customFilterRowPainter = new PaddingDecorator(new FilterRowPainter(), 0, 0, 0, 5);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        customFilterRowPainter,
+                        DisplayMode.NORMAL,
+                        FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                                + DataModelConstants.FIRSTNAME_COLUMN_POSITION);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        customFilterRowPainter,
+                        DisplayMode.NORMAL,
+                        FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                                + DataModelConstants.GENDER_COLUMN_POSITION);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        customFilterRowPainter,
+                        DisplayMode.NORMAL,
+                        FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                                + DataModelConstants.MARRIED_COLUMN_POSITION);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        customFilterRowPainter,
+                        DisplayMode.NORMAL,
+                        FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                                + DataModelConstants.HOUSENUMBER_COLUMN_POSITION);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        customFilterRowPainter,
+                        DisplayMode.NORMAL,
+                        FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                                + DataModelConstants.BIRTHDAY_COLUMN_POSITION);
+
+            }
+
+            @Override
+            public void unregisterStyles(IConfigRegistry configRegistry) {
+                configRegistry.unregisterConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
+                        DisplayMode.HOVER,
+                        GridRegion.COLUMN_HEADER);
+                configRegistry.unregisterConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
+                        DisplayMode.SELECT_HOVER,
+                        GridRegion.COLUMN_HEADER);
+
+                configRegistry.unregisterConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
+                        DisplayMode.HOVER,
+                        GridRegion.ROW_HEADER);
+                configRegistry.unregisterConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
                         DisplayMode.SELECT_HOVER,
                         GridRegion.ROW_HEADER);
             }
@@ -1150,13 +1226,6 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                             + DataModelConstants.MARRIED_COLUMN_POSITION);
 
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER,
-                    new CheckBoxPainter(),
-                    DisplayMode.NORMAL,
-                    ColumnLabelAccumulator.COLUMN_LABEL_PREFIX
-                            + DataModelConstants.MARRIED_COLUMN_POSITION);
-
-            configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
                     new DefaultBooleanDisplayConverter(),
                     DisplayMode.NORMAL,
@@ -1214,16 +1283,6 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR,
                     editor,
-                    DisplayMode.NORMAL,
-                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
-                            + DataModelConstants.FIRSTNAME_COLUMN_POSITION);
-
-            // register the FilterRowPainter in the first column to visualize
-            // the free edit filter field as the ComboBoxFilterRowConfiguration
-            // registers the ComboBoxFilterIconPainter as default
-            configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER,
-                    new PaddingDecorator(new FilterRowPainter(), 0, 0, 0, 5),
                     DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
                             + DataModelConstants.FIRSTNAME_COLUMN_POSITION);
@@ -1288,13 +1347,6 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                             + DataModelConstants.GENDER_COLUMN_POSITION);
 
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER,
-                    new PaddingDecorator(new FilterRowPainter(), 0, 0, 0, 5),
-                    DisplayMode.NORMAL,
-                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
-                            + DataModelConstants.GENDER_COLUMN_POSITION);
-
-            configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
                     new DefaultDisplayConverter(),
                     DisplayMode.NORMAL,
@@ -1328,13 +1380,6 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                             + DataModelConstants.MARRIED_COLUMN_POSITION);
 
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER,
-                    new PaddingDecorator(new FilterRowPainter(), 0, 0, 0, 5),
-                    DisplayMode.NORMAL,
-                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
-                            + DataModelConstants.MARRIED_COLUMN_POSITION);
-
-            configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
                     new DefaultDisplayConverter(),
                     DisplayMode.NORMAL,
@@ -1349,13 +1394,6 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR,
                     new TextCellEditor(),
-                    DisplayMode.NORMAL,
-                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
-                            + DataModelConstants.HOUSENUMBER_COLUMN_POSITION);
-
-            configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER,
-                    new PaddingDecorator(new FilterRowPainter(), 0, 0, 0, 5),
                     DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
                             + DataModelConstants.HOUSENUMBER_COLUMN_POSITION);
@@ -1402,13 +1440,6 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR,
                     new TextCellEditor(),
-                    DisplayMode.NORMAL,
-                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
-                            + DataModelConstants.BIRTHDAY_COLUMN_POSITION);
-
-            configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER,
-                    new PaddingDecorator(new FilterRowPainter(), 0, 0, 0, 5),
                     DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
                             + DataModelConstants.BIRTHDAY_COLUMN_POSITION);
