@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, 2024 Dirk Fauth and others.
+ * Copyright (c) 2020, 2025 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,9 @@ import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseWheelListener;
 
 /**
  * Default configuration to add bindings to change the scaling / zoom level of a
@@ -101,8 +103,8 @@ public class ScalingUiBindingConfiguration extends AbstractUiBindingConfiguratio
      * @since 2.6
      */
     public ScalingUiBindingConfiguration(NatTable natTable, boolean percentageScalingChange, Consumer<IConfigRegistry> updater) {
-        if (natTable != null) {
-            natTable.addMouseWheelListener(new ScalingMouseWheelListener(percentageScalingChange, updater));
+        if (natTable != null && !PlatformHelper.isRAP()) {
+            PlatformHelper.callSetter(natTable, "addMouseWheelListener", MouseWheelListener.class, new ScalingMouseWheelListener(percentageScalingChange, updater)); //$NON-NLS-1$
         }
         this.percentageScalingChange = percentageScalingChange;
         this.updater = updater;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,7 +13,6 @@
 package org.eclipse.nebula.widgets.nattable.style.editor;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
@@ -21,6 +20,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 
 /**
  * Adds a separator line and label to the parent panel.
@@ -42,7 +42,7 @@ public class SeparatorPanel extends Composite {
         setLayoutData(layoutData);
 
         // Text label
-        StyledText gridLinesLabel = new StyledText(this, SWT.NONE);
+        Text gridLinesLabel = new Text(this, SWT.NONE);
         gridLinesLabel.setEditable(false);
         Display display = Display.getDefault();
         FontData data = display.getSystemFont().getFontData()[0];

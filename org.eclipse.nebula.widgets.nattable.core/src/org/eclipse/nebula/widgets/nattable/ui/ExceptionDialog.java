@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, 2020 Dirk Fauth and others.
+ * Copyright (c) 2016, 2025 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -19,6 +19,7 @@ import java.io.StringWriter;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -101,9 +102,9 @@ public class ExceptionDialog extends Dialog {
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         // create OK and Details buttons
-        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
+        createButton(parent, IDialogConstants.OK_ID, PlatformHelper.getIDialogConstantsLabel("OK_LABEL"), true); //$NON-NLS-1$
         if (this.exception != null) {
-            this.detailsButton = createButton(parent, IDialogConstants.DETAILS_ID, IDialogConstants.SHOW_DETAILS_LABEL, false);
+            this.detailsButton = createButton(parent, IDialogConstants.DETAILS_ID, PlatformHelper.getIDialogConstantsLabel("SHOW_DETAILS_LABEL"), false); //$NON-NLS-1$
         }
     }
 
@@ -123,11 +124,11 @@ public class ExceptionDialog extends Dialog {
         if (this.exceptionAreaCreated) {
             this.exceptionText.dispose();
             this.exceptionAreaCreated = false;
-            this.detailsButton.setText(IDialogConstants.SHOW_DETAILS_LABEL);
+            this.detailsButton.setText(PlatformHelper.getIDialogConstantsLabel("SHOW_DETAILS_LABEL")); //$NON-NLS-1$
             opened = false;
         } else {
             this.exceptionText = createExceptionText((Composite) getContents());
-            this.detailsButton.setText(IDialogConstants.HIDE_DETAILS_LABEL);
+            this.detailsButton.setText(PlatformHelper.getIDialogConstantsLabel("HIDE_DETAILS_LABEL")); //$NON-NLS-1$
             getContents().getShell().layout();
             opened = true;
         }

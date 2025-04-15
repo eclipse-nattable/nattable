@@ -222,10 +222,12 @@ Import-Package: org.eclipse.collections.api;version="10.1.0",
  org.eclipse.swt.events,
  org.eclipse.swt.graphics,
  org.eclipse.swt.layout,
- org.eclipse.swt.printing,
- org.eclipse.swt.program,
+ org.eclipse.swt.printing;resolution:=optional,
+ org.eclipse.swt.program;resolution:=optional,
  org.eclipse.swt.widgets,
+ org.osgi.framework;version="[1.10.0,2.0.0)",
  org.slf4j;version="1.7.2"
 Bundle-Vendor: Eclipse Nebula NatTable
 Require-Bundle: org.eclipse.equinox.common
 Automatic-Module-Name: org.eclipse.nebula.widgets.nattable.core
+Bundle-Activator: org.eclipse.nebula.widgets.nattable.Activator

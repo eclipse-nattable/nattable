@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ package org.eclipse.nebula.widgets.nattable.edit.editor;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -116,7 +117,7 @@ public class ControlDecorationProvider {
     public void showErrorDecorationHover(String errorText) {
         if (this.errorDecoration != null) {
             this.errorDecoration.show();
-            this.errorDecoration.showHoverText(errorText);
+            PlatformHelper.callSetter(this.errorDecoration, "showHoverText", String.class, errorText); //$NON-NLS-1$
         }
     }
 
@@ -175,8 +176,10 @@ public class ControlDecorationProvider {
      */
     public void dispose() {
         if (this.errorDecoration != null) {
-            this.errorDecoration.hide();
-            this.errorDecoration.dispose();
+            if (this.errorDecoration.getControl() != null && !this.errorDecoration.getControl().isDisposed()) {
+                this.errorDecoration.hide();
+                this.errorDecoration.dispose();
+            }
             this.errorDecoration = null;
         }
     }
@@ -193,43 +196,28 @@ public class ControlDecorationProvider {
 
         if (this.errorDecorationEnabled) {
 
-            final Image errorImage = FieldDecorationRegistry.getDefault()
-                    .getFieldDecoration(this.fieldDecorationId).getImage();
+            final Image errorImage = FieldDecorationRegistry.getDefault().getFieldDecoration(this.fieldDecorationId).getImage();
             if (this.decorationPositionOverride == SWT.DEFAULT) {
-                controlToDecorate.addPaintListener(new PaintListener() { // Using
-                                                                         // a
-                                                                         // PaintListener
-                                                                         // as
-                                                                         // bounds
-                                                                         // are
-                                                                         // only
-                                                                         // set
-                                                                         // AFTER
-                                                                         // activateCell()
+                // Using a PaintListener as bounds are only set AFTER
+                // activateCell()
+                PlatformHelper.callSetter(controlToDecorate, "addPaintListener", PaintListener.class, new PaintListener() { //$NON-NLS-1$
 
                     @Override
                     public void paintControl(PaintEvent e) {
-
-                        controlToDecorate.removePaintListener(this);
+                        PlatformHelper.callSetter(controlToDecorate, "removePaintListener", PaintListener.class, this); //$NON-NLS-1$
                         int position = SWT.TOP;
-                        final Rectangle textBounds = controlToDecorate
-                                .getBounds();
-                        final Rectangle parentClientArea = controlToDecorate
-                                .getParent().getClientArea();
-                        if ((parentClientArea.x + parentClientArea.width) > (textBounds.x
-                                + textBounds.width + errorImage
-                                        .getBounds().width)) {
+                        final Rectangle textBounds = controlToDecorate.getBounds();
+                        final Rectangle parentClientArea = controlToDecorate.getParent().getClientArea();
+                        if ((parentClientArea.x + parentClientArea.width) > (textBounds.x + textBounds.width + errorImage.getBounds().width)) {
                             position |= SWT.RIGHT;
                         } else {
                             position |= SWT.LEFT;
                         }
-                        ControlDecorationProvider.this.errorDecoration = newControlDecoration(
-                                controlToDecorate, errorImage, position);
+                        ControlDecorationProvider.this.errorDecoration = newControlDecoration(controlToDecorate, errorImage, position);
                     }
                 });
             } else {
-                this.errorDecoration = newControlDecoration(controlToDecorate,
-                        errorImage, this.decorationPositionOverride);
+                this.errorDecoration = newControlDecoration(controlToDecorate, errorImage, this.decorationPositionOverride);
             }
         }
     }
@@ -250,10 +238,8 @@ public class ControlDecorationProvider {
      *            <code>SWT.RIGHT</code>, and <code>SWT.CENTER</code>).
      * @return The created {@link ControlDecoration}
      */
-    private ControlDecoration newControlDecoration(Control controlToDecorate,
-            Image errorImage, int position) {
-        final ControlDecoration errorDecoration = new ControlDecoration(
-                controlToDecorate, position);
+    private ControlDecoration newControlDecoration(Control controlToDecorate, Image errorImage, int position) {
+        final ControlDecoration errorDecoration = new ControlDecoration(controlToDecorate, position);
         errorDecoration.setImage(errorImage);
         errorDecoration.setDescriptionText(this.errorDecorationText);
         errorDecoration.hide();

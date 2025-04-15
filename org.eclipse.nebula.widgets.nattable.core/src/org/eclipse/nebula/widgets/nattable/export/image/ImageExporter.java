@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2024 Original authors and others.
+ * Copyright (c) 2017, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -20,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.export.FileOutputStreamProvider;
 import org.eclipse.nebula.widgets.nattable.export.IOutputStreamProvider;
 import org.eclipse.nebula.widgets.nattable.export.ITableExporter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.GC;
@@ -120,6 +121,10 @@ public class ImageExporter implements ITableExporter {
 
         if (null == shell || null == layer || null == configRegistry) {
             throw new IllegalArgumentException("Shell, layer or configure registry must not be null"); //$NON-NLS-1$
+        }
+
+        if (PlatformHelper.isRAP()) {
+            throw new IllegalStateException("An export to image is not supported with RAP"); //$NON-NLS-1$
         }
 
         int width = layer.getWidth();

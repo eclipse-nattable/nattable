@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2022 Dirk Fauth and others.
+ * Copyright (c) 2012, 2025 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,6 +22,7 @@ import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
@@ -40,6 +41,7 @@ import org.eclipse.nebula.widgets.nattable.persistence.command.IStateChangedList
 import org.eclipse.nebula.widgets.nattable.persistence.command.StateChangeEvent;
 import org.eclipse.nebula.widgets.nattable.persistence.command.StateChangeEvent.StateChangeType;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -157,30 +159,28 @@ public class PersistenceDialog extends Dialog {
         this.properties = properties;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets
-     * .Composite)
-     */
     @Override
     protected Control createDialogArea(Composite parent) {
         Composite control = (Composite) super.createDialogArea(parent);
 
         Label viewerLabel = new Label(control, SWT.NONE);
-        viewerLabel
-                .setText(Messages.getString("PersistenceDialog.viewerLabel")); //$NON-NLS-1$
+        viewerLabel.setText(Messages.getString("PersistenceDialog.viewerLabel")); //$NON-NLS-1$
         GridDataFactory.fillDefaults().grab(true, false).applyTo(viewerLabel);
 
         this.viewer = new TableViewer(control);
         this.viewer.setContentProvider(new ArrayContentProvider());
-        this.viewer.setLabelProvider(new ViewConfigurationNameLabelProvider());
+        if (!PlatformHelper.isRAP()) {
+            this.viewer.setLabelProvider(new ViewConfigurationNameLabelProvider());
+        } else {
+            this.viewer.setLabelProvider(new SimpleViewConfigurationNameLabelProvider());
+        }
 
         // sort in alphabetical order
         this.viewer.setComparator(new ViewerComparator());
 
-        GridDataFactory.fillDefaults().grab(true, true)
+        GridDataFactory
+                .fillDefaults()
+                .grab(true, true)
                 .applyTo(this.viewer.getControl());
 
         // layout textbox
@@ -192,7 +192,9 @@ public class PersistenceDialog extends Dialog {
         Label label = new Label(nameContainer, SWT.NONE);
         label.setText(Messages.getString("PersistenceDialog.nameLabel")); //$NON-NLS-1$
         this.configNameText = new Text(nameContainer, SWT.BORDER);
-        GridDataFactory.fillDefaults().grab(true, false)
+        GridDataFactory
+                .fillDefaults()
+                .grab(true, false)
                 .applyTo(this.configNameText);
 
         this.configNameText.addKeyListener(new KeyAdapter() {
@@ -211,60 +213,52 @@ public class PersistenceDialog extends Dialog {
             }
         });
 
-        this.configNameDeco = new ControlDecoration(this.configNameText,
-                SWT.RIGHT);
+        this.configNameDeco = new ControlDecoration(this.configNameText, SWT.RIGHT);
         Image image = FieldDecorationRegistry.getDefault()
                 .getFieldDecoration(FieldDecorationRegistry.DEC_ERROR)
                 .getImage();
-        this.configNameDeco.setDescriptionText(Messages
-                .getString("PersistenceDialog.nameErrorText")); //$NON-NLS-1$
+        this.configNameDeco.setDescriptionText(Messages.getString("PersistenceDialog.nameErrorText")); //$NON-NLS-1$
         this.configNameDeco.setImage(image);
         this.configNameDeco.hide();
 
         // add click listener on viewer
-        this.viewer
-                .addSelectionChangedListener(event -> {
-                    ISelection selection = event.getSelection();
-                    if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
-                        String configName = ((IStructuredSelection) selection)
-                                .getFirstElement().toString();
-                        PersistenceDialog.this.configNameText.setText(configName);
-                    }
-                });
+        this.viewer.addSelectionChangedListener(event -> {
+            ISelection selection = event.getSelection();
+            if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
+                String configName = ((IStructuredSelection) selection)
+                        .getFirstElement().toString();
+                PersistenceDialog.this.configNameText.setText(configName);
+            }
+        });
 
         // add double click listener
         this.viewer.addDoubleClickListener(event -> buttonPressed(LOAD_ID));
 
-        this.viewer.add(PersistenceHelper.getAvailableStates(this.properties)
-                .toArray());
+        this.viewer.add(PersistenceHelper.getAvailableStates(this.properties).toArray());
 
         return control;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse
-     * .swt.widgets.Composite)
-     */
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, DELETE_ID,
+        createButton(
+                parent,
+                DELETE_ID,
                 Messages.getString("PersistenceDialog.buttonDelete"), false); //$NON-NLS-1$
-        createButton(parent, SAVE_ID,
+        createButton(
+                parent,
+                SAVE_ID,
                 Messages.getString("PersistenceDialog.buttonSave"), false); //$NON-NLS-1$
-        createButton(parent, LOAD_ID,
+        createButton(
+                parent,
+                LOAD_ID,
                 Messages.getString("PersistenceDialog.buttonLoad"), false); //$NON-NLS-1$
-        createButton(parent, IDialogConstants.OK_ID,
+        createButton(
+                parent,
+                IDialogConstants.OK_ID,
                 Messages.getString("PersistenceDialog.buttonDone"), false); //$NON-NLS-1$
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.jface.dialogs.Dialog#buttonPressed(int)
-     */
     @Override
     protected void buttonPressed(int buttonId) {
         if (buttonId == SAVE_ID) {
@@ -273,8 +267,7 @@ public class PersistenceDialog extends Dialog {
                 // it is not possible to store an empty configuration with this
                 // dialog
                 // this is because the configuration with an empty name is the
-                // default
-                // configuration
+                // default configuration
                 this.configNameDeco.show();
                 return;
             } else {
@@ -291,35 +284,30 @@ public class PersistenceDialog extends Dialog {
                 String element = this.viewer.getElementAt(i).toString();
                 if (configName.equals(element)) {
                     // fire event for a changed view configuration
-                    fireStateChange(new StateChangeEvent(configName,
-                            StateChangeType.CHANGE));
+                    fireStateChange(new StateChangeEvent(configName, StateChangeType.CHANGE));
                     return;
                 }
             }
 
             this.viewer.add(configName);
             // fire event for a newly created view configuration
-            fireStateChange(new StateChangeEvent(configName,
-                    StateChangeType.CREATE));
+            fireStateChange(new StateChangeEvent(configName, StateChangeType.CREATE));
         } else if (buttonId == DELETE_ID) {
             ISelection selection = this.viewer.getSelection();
             if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
-                String configName = ((IStructuredSelection) selection)
-                        .getFirstElement().toString();
+                String configName = ((IStructuredSelection) selection).getFirstElement().toString();
                 PersistenceHelper.deleteState(configName, this.properties);
                 // remove the state name out of the viewer
                 this.viewer.getTable().deselectAll();
                 this.viewer.remove(configName);
                 this.configNameText.setText(""); //$NON-NLS-1$
                 // fire event for a deleted view configuration
-                fireStateChange(new StateChangeEvent(configName,
-                        StateChangeType.DELETE));
+                fireStateChange(new StateChangeEvent(configName, StateChangeType.DELETE));
             }
         } else if (buttonId == LOAD_ID) {
             ISelection selection = this.viewer.getSelection();
             if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
-                String configName = ((IStructuredSelection) selection)
-                        .getFirstElement().toString();
+                String configName = ((IStructuredSelection) selection).getFirstElement().toString();
                 this.natTable.loadState(configName, this.properties);
                 setActiveViewConfigurationName(configName);
                 super.okPressed();
@@ -338,9 +326,12 @@ public class PersistenceDialog extends Dialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(
-                GUIHelper.convertHorizontalPixelToDpi(500, true),
-                GUIHelper.convertVerticalPixelToDpi(300, true));
+        Point size = super.getInitialSize();
+        int minHeight = GUIHelper.convertVerticalPixelToDpi(300, true);
+        if (size.y < minHeight) {
+            size.y = minHeight;
+        }
+        return size;
     }
 
     /**
@@ -419,8 +410,7 @@ public class PersistenceDialog extends Dialog {
      * @param listeners
      *            The listeners to remove.
      */
-    public void removeAllStateChangeListener(
-            List<IStateChangedListener> listeners) {
+    public void removeAllStateChangeListener(List<IStateChangedListener> listeners) {
         this.stateChangeListeners.removeAll(listeners);
     }
 
@@ -466,17 +456,40 @@ public class PersistenceDialog extends Dialog {
             }
             Styler styler = null;
             if (result.length() == 0) {
-                result = Messages
-                        .getString("PersistenceDialog.defaultStateConfigName"); //$NON-NLS-1$
+                result = Messages.getString("PersistenceDialog.defaultStateConfigName"); //$NON-NLS-1$
                 styler = this.italicStyler;
             }
 
-            StyledString styledString = new StyledString(prefix + result,
-                    styler);
+            StyledString styledString = new StyledString(prefix + result, styler);
             cell.setText(styledString.toString());
             cell.setStyleRanges(styledString.getStyleRanges());
 
             super.update(cell);
+        }
+    }
+
+    /**
+     * Simple CellLabelProvider that renders all view configurations the same
+     * way. Will also add a leading '*' to the current active view
+     * configuration.
+     *
+     * Used in case of RAP where the StyledCellLabelProvider is not known.
+     */
+    class SimpleViewConfigurationNameLabelProvider extends CellLabelProvider {
+
+        @Override
+        public void update(ViewerCell cell) {
+            Object element = cell.getElement();
+            String result = element == null ? "" : element.toString();//$NON-NLS-1$
+            String prefix = ""; //$NON-NLS-1$
+            if (result.equals(getActiveViewConfigurationName())) {
+                prefix = "* "; //$NON-NLS-1$
+            }
+            if (result.length() == 0) {
+                result = Messages.getString("PersistenceDialog.defaultStateConfigName"); //$NON-NLS-1$
+            }
+
+            cell.setText(prefix + result);
         }
     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.print.LayerPrinter;
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 
 /**
  * {@link ILayerCommandHandler} for handling the {@link PrintCommand}. Simply
@@ -39,7 +40,9 @@ public class PrintCommandHandler extends AbstractLayerCommandHandler<PrintComman
 
     @Override
     public boolean doCommand(PrintCommand command) {
-        new LayerPrinter(this.layer, command.getConfigRegistry()).print(command.getShell());
+        if (!PlatformHelper.isRAP()) {
+            new LayerPrinter(this.layer, command.getConfigRegistry()).print(command.getShell());
+        }
         return true;
     }
 

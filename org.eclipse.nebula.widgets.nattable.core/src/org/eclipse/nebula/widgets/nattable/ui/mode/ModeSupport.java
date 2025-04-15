@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ package org.eclipse.nebula.widgets.nattable.ui.mode;
 import java.util.EnumMap;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -34,12 +35,6 @@ import org.eclipse.swt.events.MouseTrackListener;
  */
 public class ModeSupport implements KeyListener, MouseListener, MouseMoveListener, MouseTrackListener, FocusListener {
 
-    private static final boolean IS_MAC;
-
-    static {
-        IS_MAC = System.getProperty("os.name").toLowerCase().indexOf("mac") >= 0; //$NON-NLS-1$ //$NON-NLS-2$
-    }
-
     private EnumMap<Mode, IModeEventHandler> modeEventHandlerMap = new EnumMap<>(Mode.class);
 
     private IModeEventHandler currentModeEventHandler;
@@ -47,9 +42,10 @@ public class ModeSupport implements KeyListener, MouseListener, MouseMoveListene
     public ModeSupport(NatTable natTable) {
         natTable.addKeyListener(this);
         natTable.addMouseListener(this);
-        natTable.addMouseMoveListener(this);
-        natTable.addMouseTrackListener(this);
         natTable.addFocusListener(this);
+
+        PlatformHelper.callSetter(natTable, "addMouseMoveListener", MouseMoveListener.class, this); //$NON-NLS-1$
+        PlatformHelper.callSetter(natTable, "addMouseTrackListener", MouseTrackListener.class, this); //$NON-NLS-1$
     }
 
     /**
@@ -157,7 +153,7 @@ public class ModeSupport implements KeyListener, MouseListener, MouseMoveListene
      *            The {@link MouseEvent} to modify
      */
     private void modifyMouseEventForMac(MouseEvent event) {
-        if (IS_MAC && event.stateMask == SWT.MOD4 && event.button == 1) {
+        if (PlatformHelper.isMAC() && event.stateMask == SWT.MOD4 && event.button == 1) {
             event.stateMask = event.stateMask & ~SWT.MOD4;
             event.button = 3;
         }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2025 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,6 +14,7 @@ package org.eclipse.nebula.widgets.nattable.edit.gui;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
@@ -34,13 +35,6 @@ public class FileDialogCellEditor extends AbstractDialogCellEditor {
      */
     private boolean closed = false;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.eclipse.nebula.widgets.nattable.edit.editor.AbstractDialogCellEditor
-     * #open()
-     */
     @Override
     public int open() {
         this.selectedFile = getDialogInstance().open();
@@ -54,76 +48,33 @@ public class FileDialogCellEditor extends AbstractDialogCellEditor {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.eclipse.nebula.widgets.nattable.edit.editor.AbstractDialogCellEditor
-     * #createDialogInstance()
-     */
     @Override
     public FileDialog createDialogInstance() {
         this.closed = false;
         return new FileDialog(this.parent.getShell(), SWT.OPEN);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.eclipse.nebula.widgets.nattable.edit.editor.AbstractDialogCellEditor
-     * #getDialogInstance()
-     */
     @Override
     public FileDialog getDialogInstance() {
         return (FileDialog) this.dialog;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.eclipse.nebula.widgets.nattable.edit.editor.AbstractDialogCellEditor
-     * #getEditorValue()
-     */
     @Override
     public Object getEditorValue() {
         return this.selectedFile;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.eclipse.nebula.widgets.nattable.edit.editor.AbstractDialogCellEditor
-     * #setEditorValue(java.lang.Object)
-     */
     @Override
     public void setEditorValue(Object value) {
-        getDialogInstance()
-                .setFileName(value != null ? value.toString() : null);
+        PlatformHelper.callSetter(getDialogInstance(), "setFileName", String.class, value != null ? value.toString() : null); //$NON-NLS-1$
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.eclipse.nebula.widgets.nattable.edit.editor.AbstractDialogCellEditor
-     * #close()
-     */
     @Override
     public void close() {
         // as the FileDialog does not support a programmatically way of closing,
         // this method is forced to do nothing
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.eclipse.nebula.widgets.nattable.edit.editor.AbstractDialogCellEditor
-     * #isClosed()
-     */
     @Override
     public boolean isClosed() {
         return this.closed;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2021 Edwin Park and others.
+ * Copyright (c) 2013, 2025 Edwin Park and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.viewport;
 
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
@@ -81,12 +82,16 @@ public class ScrollBarScroller implements IScroller<ScrollBar> {
 
     @Override
     public int getPageIncrement() {
-        return this.scrollBar.getPageIncrement();
+        Object result = PlatformHelper.callGetter(this.scrollBar, "getPageIncrement"); //$NON-NLS-1$
+        if (result != null) {
+            return (int) result;
+        }
+        return 0;
     }
 
     @Override
     public void setPageIncrement(int value) {
-        this.scrollBar.setPageIncrement(value);
+        PlatformHelper.callSetter(this.scrollBar, "setPageIncrement", int.class, value); //$NON-NLS-1$
     }
 
     @Override
@@ -101,12 +106,16 @@ public class ScrollBarScroller implements IScroller<ScrollBar> {
 
     @Override
     public int getIncrement() {
-        return this.scrollBar.getIncrement();
+        Object result = PlatformHelper.callGetter(this.scrollBar, "getIncrement"); //$NON-NLS-1$
+        if (result != null) {
+            return (int) result;
+        }
+        return 0;
     }
 
     @Override
     public void setIncrement(int value) {
-        this.scrollBar.setIncrement(value);
+        PlatformHelper.callSetter(this.scrollBar, "setIncrement", int.class, value); //$NON-NLS-1$
     }
 
     @Override

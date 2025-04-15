@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2023 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -72,6 +72,7 @@ import org.eclipse.nebula.widgets.nattable.ui.mode.Mode;
 import org.eclipse.nebula.widgets.nattable.ui.mode.ModeSupport;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.command.RecalculateScrollBarsCommand;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
@@ -281,14 +282,18 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
         this.conflaterChain.add(getVisualChangeEventConflater());
         this.conflaterChain.start();
 
-        parent.addListener(SWT.Resize, this.closeEditorOnParentResize);
+        if (!PlatformHelper.isRAP()) {
+            parent.addListener(SWT.Resize, this.closeEditorOnParentResize);
+        }
 
         addDisposeListener(e -> {
             doCommand(new DisposeResourcesCommand());
             NatTable.this.conflaterChain.stop();
             layer.dispose();
 
-            parent.removeListener(SWT.Resize, NatTable.this.closeEditorOnParentResize);
+            if (!PlatformHelper.isRAP()) {
+                parent.removeListener(SWT.Resize, NatTable.this.closeEditorOnParentResize);
+            }
         });
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2024 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -520,11 +520,11 @@ public class NatCombo extends Composite {
         getShell().addListener(SWT.Move, moveListener);
 
         addDisposeListener(e -> {
-            if (NatCombo.this.dropdownShell != null) {
-                NatCombo.this.dropdownShell.dispose();
-            }
-            NatCombo.this.text.dispose();
             NatCombo.this.getShell().removeListener(SWT.Move, moveListener);
+
+            if (NatCombo.this.dropdownShell != null && !NatCombo.this.dropdownShell.isDisposed()) {
+                NatCombo.this.dropdownShell.close();
+            }
         });
     }
 
@@ -752,7 +752,7 @@ public class NatCombo extends Composite {
                         }
                         event.doit = false;
                     }
-                } else if (event.keyCode == SWT.SPACE) {
+                } else if (event.keyCode == ' ') {
                     if (NatCombo.this.multiselect && NatCombo.this.useCheckbox && NatCombo.this.dropdownTable.getSelectionCount() >= 1) {
                         TableItem[] selection = NatCombo.this.dropdownTable.getSelection();
                         boolean isSelected = selection[0].getChecked();
@@ -777,6 +777,12 @@ public class NatCombo extends Composite {
                 boolean isShiftPressed = (e.stateMask & SWT.MODIFIER_MASK) == SWT.MOD2;
                 TableItem chosenItem = (TableItem) e.item;
 
+                // if no item is set in the SelectionEvent, we simply do nothing
+                // this seems to only happen in Eclipse 3 compatibility mode on
+                // pressing CTRL + A when the dropdown table has focus
+                if (chosenItem == null) {
+                    return;
+                }
                 // Given the ability to filter we need to find the item's
                 // table index which may not match the index in the itemList
                 int itemTableIndex = NatCombo.this.dropdownTable.indexOf(chosenItem);
@@ -1413,6 +1419,9 @@ public class NatCombo extends Composite {
     public void notifyListeners(int eventType, Event event) {
         if (this.dropdownTable != null && !this.dropdownTable.isDisposed()) {
             this.dropdownTable.notifyListeners(eventType, event);
+        }
+        if (!isDisposed()) {
+            super.notifyListeners(eventType, event);
         }
     }
 

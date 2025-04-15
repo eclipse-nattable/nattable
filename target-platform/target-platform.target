@@ -16,10 +16,11 @@
       <unit id="org.eclipse.collections.feature.feature.group" version="0.0.0"/>
       <repository location="https://download.eclipse.org/collections/11.1.0/repository"/>
     </location>
+    <!-- Stick with Nebula 3.1.1 for the moment, because CDateTime introduces a dependency update to SWT >= 3.126.0, which is at least Eclipse 2024-06 (4.32)  -->
     <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
       <unit id="org.eclipse.nebula.widgets.cdatetime" version="0.0.0"/>
       <unit id="org.eclipse.nebula.widgets.richtext" version="0.0.0"/>
-      <repository location="https://download.eclipse.org/nebula/updates/milestone/latest"/>
+      <repository location="https://download.eclipse.org/nebula/releases/latest"/>
     </location>
     <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
       <unit id="ca.odell.glazedlists" version="0.0.0"/>

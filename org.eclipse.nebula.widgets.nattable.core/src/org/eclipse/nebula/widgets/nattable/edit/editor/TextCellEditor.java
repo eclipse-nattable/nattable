@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2024 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -28,6 +28,7 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -384,6 +385,13 @@ public class TextCellEditor extends AbstractCellEditor {
                         if (isCommitWithCtrlKey()) {
                             commit = (event.stateMask == SWT.MOD1) ? true : false;
                         }
+
+                        // in case of RAP we need to avoid the commit in an edit
+                        // dialog, as the commit from the dialog otherwise fails
+                        if (PlatformHelper.isRAP() && TextCellEditor.this.editMode == EditModeEnum.DIALOG) {
+                            commit = false;
+                        }
+
                         MoveDirectionEnum move = MoveDirectionEnum.NONE;
                         if (TextCellEditor.this.moveSelectionOnEnter
                                 && TextCellEditor.this.editMode == EditModeEnum.INLINE) {

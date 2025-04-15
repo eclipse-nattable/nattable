@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2023 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,8 @@ package org.eclipse.nebula.widgets.nattable.export;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -35,9 +37,9 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRowValuesCommand;
 import org.eclipse.nebula.widgets.nattable.ui.ExceptionDialog;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
@@ -854,7 +856,7 @@ public class NatExporter {
      */
     protected void prepareExportProcess(ILayer layer, IConfigRegistry configRegistry) {
 
-        if (this.preRender) {
+        if (this.preRender && !PlatformHelper.isRAP()) {
             AutoResizeHelper.autoResize(layer, configRegistry);
         }
 
@@ -948,7 +950,14 @@ public class NatExporter {
                 && this.openResult
                 && exporter.getResult() != null
                 && exporter.getResult() instanceof File) {
-            Program.launch(((File) exporter.getResult()).getAbsolutePath());
+
+            try {
+                Class<?> program = Class.forName("org.eclipse.swt.program.Program"); //$NON-NLS-1$
+                Method launch = program.getMethod("launch", String.class); //$NON-NLS-1$
+                launch.invoke(null, ((File) exporter.getResult()).getAbsolutePath());
+            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                LOG.info("Could not open the export because org.eclipse.swt.program.Program, you are probably running a RAP application."); //$NON-NLS-1$
+            }
         }
     }
 
