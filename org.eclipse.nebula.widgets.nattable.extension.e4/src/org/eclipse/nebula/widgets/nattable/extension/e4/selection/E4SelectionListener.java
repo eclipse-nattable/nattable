@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, 2020 Dirk Fauth.
+ * Copyright (c) 2016, 2025 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,8 +13,6 @@
 package org.eclipse.nebula.widgets.nattable.extension.e4.selection;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
@@ -113,7 +111,6 @@ public class E4SelectionListener<T> implements ILayerListener {
      * @param rowDataProvider
      *            The {@link IRowDataProvider} to access the selected row data.
      */
-    @Inject
     public E4SelectionListener(
             ESelectionService service,
             SelectionLayer selectionLayer,
