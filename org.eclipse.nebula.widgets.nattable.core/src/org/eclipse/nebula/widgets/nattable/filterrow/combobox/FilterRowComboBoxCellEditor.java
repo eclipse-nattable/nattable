@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2024 Dirk Fauth and others.
+ * Copyright (c) 2013, 2025 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -233,7 +233,7 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
         combo.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent event) {
-                if (event.keyCode == SWT.SPACE) {
+                if (event.keyCode == ' ') {
                     commit(MoveDirectionEnum.NONE,
                             (!FilterRowComboBoxCellEditor.this.multiselect
                                     && FilterRowComboBoxCellEditor.this.editMode == EditModeEnum.INLINE));

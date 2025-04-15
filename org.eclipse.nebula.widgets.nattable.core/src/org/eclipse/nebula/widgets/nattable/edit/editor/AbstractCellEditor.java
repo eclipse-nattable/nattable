@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -393,16 +393,19 @@ public abstract class AbstractCellEditor implements ICellEditor {
 
     @Override
     public void close() {
-        this.closed = true;
-        if (this.parent != null && !this.parent.isDisposed()) {
-            this.parent.forceFocus();
-        }
+        if (!this.closed) {
+            this.closed = true;
 
-        removeEditorControlListeners();
+            removeEditorControlListeners();
 
-        Control editorControl = getEditorControl();
-        if (editorControl != null && !editorControl.isDisposed()) {
-            editorControl.dispose();
+            if (this.parent != null && !this.parent.isDisposed()) {
+                this.parent.forceFocus();
+            }
+
+            Control editorControl = getEditorControl();
+            if (editorControl != null && !editorControl.isDisposed()) {
+                editorControl.dispose();
+            }
         }
     }
 

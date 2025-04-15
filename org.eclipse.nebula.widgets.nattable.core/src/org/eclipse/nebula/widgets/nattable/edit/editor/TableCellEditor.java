@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2024 Dirk Fauth and others.
+ * Copyright (c) 2013, 2025 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -41,6 +41,7 @@ import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -434,6 +435,12 @@ public class TableCellEditor extends AbstractCellEditor {
      *         results in using the OS default height based on the font.
      */
     public int getFixedSubCellHeight() {
+        if (PlatformHelper.isRAP()) {
+            // RAP does not know the SWT.MeasureItem event
+            // it is therefore only possible to use the the default height based
+            // on the font
+            return -1;
+        }
         return this.fixedSubCellHeight;
     }
 

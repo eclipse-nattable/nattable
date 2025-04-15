@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2023 Dirk Fauth and others.
+ * Copyright (c) 2014, 2025 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.PaintEvent;
@@ -84,11 +85,11 @@ public class FilterRowTextCellEditor extends TextCellEditor {
 
             }
         };
-        parent.addPaintListener(paintListener);
+        PlatformHelper.callSetter(parent, "addPaintListener", PaintListener.class, paintListener); //$NON-NLS-1$
 
         text.addDisposeListener(e -> {
             service.shutdownNow();
-            parent.removePaintListener(paintListener);
+            PlatformHelper.callSetter(parent, "removePaintListener", PaintListener.class, paintListener); //$NON-NLS-1$
         });
 
         return text;

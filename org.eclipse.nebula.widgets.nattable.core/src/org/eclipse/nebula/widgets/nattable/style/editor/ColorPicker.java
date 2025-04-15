@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2024 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,10 +18,8 @@ import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -36,7 +34,6 @@ import org.eclipse.swt.widgets.Shell;
 public class ColorPicker extends CLabel {
 
     private Color selectedColor;
-    private Image image;
 
     public ColorPicker(Composite parent, final Color originalColor) {
         super(parent, SWT.SHADOW_OUT);
@@ -44,7 +41,7 @@ public class ColorPicker extends CLabel {
             throw new IllegalArgumentException("null"); //$NON-NLS-1$
         }
         this.selectedColor = originalColor;
-        setImage(getColorImage(originalColor));
+        setBackground(this.selectedColor);
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseDown(MouseEvent e) {
@@ -58,22 +55,17 @@ public class ColorPicker extends CLabel {
         });
     }
 
-    private Image getColorImage(Color color) {
-        Display display = Display.getCurrent();
-        this.image = new Image(display, new Rectangle(10, 10, 70, 20));
-        GC gc = new GC(this.image);
-        try {
-            gc.setBackground(color);
-            gc.fillRectangle(this.image.getBounds());
-        } finally {
-            gc.dispose();
-        }
-        return this.image;
+    @Override
+    public Point computeSize(int wHint, int hHint, boolean changed) {
+        // return a fixed size
+        return new Point(
+                GUIHelper.convertHorizontalPixelToDpi(70),
+                GUIHelper.convertVerticalDpiToPixel(20));
     }
 
     private void update(RGB selected) {
         this.selectedColor = GUIHelper.getColor(selected);
-        setImage(getColorImage(this.selectedColor));
+        setBackground(this.selectedColor);
     }
 
     /**
@@ -97,11 +89,5 @@ public class ColorPicker extends CLabel {
             throw new IllegalArgumentException("null"); //$NON-NLS-1$
         }
         update(backgroundColor.getRGB());
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-        this.image.dispose();
     }
 }

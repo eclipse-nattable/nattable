@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2024 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,9 +26,11 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.TextDecorationEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 
 /**
@@ -752,18 +754,25 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
         if ((ul || st) && length > 0) {
             // check and draw underline and strikethrough separately
             // so it is possible to combine both
+            FontMetrics metrics = gc.getFontMetrics();
             if (ul) {
                 // y = start y of text + font height - half of the font
                 // descent so the underline is between baseline and bottom
-                int underlineY = y + fontHeight - (gc.getFontMetrics().getDescent() / 2);
-                gc.drawLine(x, underlineY, x + length, underlineY);
+                Object descent = PlatformHelper.callGetter(metrics, "getDescent"); //$NON-NLS-1$
+                if (descent != null) {
+                    int underlineY = y + fontHeight - (((int) descent) / 2);
+                    gc.drawLine(x, underlineY, x + length, underlineY);
+                }
             }
 
             if (st) {
                 // y = start y of text + half of font height + ascent
                 // this way lower case characters are also strikethrough
-                int strikeY = y + (fontHeight / 2) + (gc.getFontMetrics().getLeading() / 2);
-                gc.drawLine(x, strikeY, x + length, strikeY);
+                Object leading = PlatformHelper.callGetter(metrics, "getLeading"); //$NON-NLS-1$
+                if (leading != null) {
+                    int strikeY = y + (fontHeight / 2) + (((int) leading) / 2);
+                    gc.drawLine(x, strikeY, x + length, strikeY);
+                }
             }
         }
     }

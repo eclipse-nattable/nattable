@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -20,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -231,7 +232,10 @@ public class VerticalTextPainter extends AbstractTextPainter {
                         int horizontalPadding = CellStyleUtil.getHorizontalAlignmentPadding(
                                 cellStyle, rectangle, contentHeight);
                         if (horizontalPadding != 0) {
-                            horizontalPadding += gc.getFontMetrics().getLeading();
+                            Object leading = PlatformHelper.callGetter(gc.getFontMetrics(), "getLeading"); //$NON-NLS-1$
+                            if (leading != null) {
+                                horizontalPadding += (int) leading;
+                            }
                         }
 
                         int xOffset = rectangle.y
@@ -288,7 +292,10 @@ public class VerticalTextPainter extends AbstractTextPainter {
 
                                 int horizontalPadding = CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentHeight);
                                 if (horizontalPadding != 0) {
-                                    horizontalPadding += gc.getFontMetrics().getLeading();
+                                    Object leading = PlatformHelper.callGetter(gc.getFontMetrics(), "getLeading"); //$NON-NLS-1$
+                                    if (leading != null) {
+                                        horizontalPadding += (int) leading;
+                                    }
                                 }
                                 int yOffset = -contentHeight
                                         - rectangle.y
