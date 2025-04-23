@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2024 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -30,6 +30,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
@@ -62,7 +63,6 @@ import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
 
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.TreeList;
 import ca.odell.glazedlists.TreeList.ExpansionModel;
@@ -626,9 +626,9 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer, GroupByM
                          * caches
                          */
                         if (GroupByDataLayer.this.groupByExpansionModel != null) {
-                            FilterList<Object> groupByObjects = new FilterList<>(
-                                    GroupByDataLayer.this.treeList,
-                                    GroupByDataLayer.this.groupByMatcher);
+                            List<Object> groupByObjects = this.treeList.stream()
+                                    .filter(t -> this.groupByMatcher.matches(t))
+                                    .collect(Collectors.toList());
                             GroupByDataLayer.this.groupByExpansionModel.cleanupCollapsed(groupByObjects);
                         }
                     });
@@ -1012,11 +1012,12 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer, GroupByM
      */
     public List<T> getItemsInGroup(GroupByObject group) {
         return this.itemsByGroup.computeIfAbsent(group, g -> {
-
             this.eventList.getReadWriteLock().readLock().lock();
             try {
-                FilterList<T> filterList = new FilterList<>(this.eventList, getGroupDescriptorMatcher(g, this.columnAccessor));
-                return new ArrayList<>(filterList);
+                Matcher<T> matcher = getGroupDescriptorMatcher(group, this.columnAccessor);
+                return this.eventList.stream()
+                        .filter(t -> matcher.matches(t))
+                        .collect(Collectors.toList());
             } finally {
                 this.eventList.getReadWriteLock().readLock().unlock();
             }

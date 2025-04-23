@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2024 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -268,7 +268,13 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
                                 this.matcherEditor.getMatcherEditors().iterator();
                         while (existingMatcherEditors.hasNext()) {
                             final MatcherEditor<T> existingMatcherEditor = existingMatcherEditors.next();
-                            if (!containsMatcherEditor(matcherEditors, existingMatcherEditor)) {
+                            if (existingMatcherEditor instanceof DefaultGlazedListsFilterStrategy.ColumnSetMatcherEditor
+                                    || !containsMatcherEditor(matcherEditors, existingMatcherEditor)) {
+                                // always remove an existing
+                                // ColumnSetMatcherEditor as a new one will be
+                                // added if necessary
+                                // done this way to avoid equals() checks based
+                                // on the filter values
                                 existingMatcherEditors.remove();
                                 changed = true;
                             }
@@ -285,10 +291,9 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 
                         // If there was no change to the MatcherEditors but
                         // applyFilter() was called, probably the re-evaluation
-                        // of the
-                        // filter was requested. To trigger the re-evaluation we
-                        // need to
-                        // add a MatcherEditor that matches all.
+                        // of the filter was requested. To trigger the
+                        // re-evaluation we need to add a MatcherEditor that
+                        // matches all.
                         if (!changed) {
                             this.matcherEditor.getMatcherEditors().add(this.matchAll);
                             this.matcherEditor.getMatcherEditors().remove(this.matchAll);
