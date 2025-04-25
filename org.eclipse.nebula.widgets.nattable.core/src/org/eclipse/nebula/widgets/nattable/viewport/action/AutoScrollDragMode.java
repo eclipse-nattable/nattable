@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2020 Dirk Fauth.
+ * Copyright (c) 2017, 2025 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -68,7 +68,9 @@ public abstract class AutoScrollDragMode implements IDragMode {
                 horizontalDiff = -event.x;
             } else if (event.x > (clientArea.width - this.horizontalBorderOffset)) {
                 horizontal = MoveDirectionEnum.RIGHT;
-                x = clientArea.width - 1;
+                int column = natTable.getColumnPositionByX(x);
+                int columnWidth = natTable.getColumnWidthByPosition(column);
+                x = clientArea.width - (columnWidth / 2);
                 horizontalDiff = event.x - clientArea.width;
             }
         }
@@ -82,7 +84,9 @@ public abstract class AutoScrollDragMode implements IDragMode {
                 verticalDiff = -event.y;
             } else if (event.y > clientArea.height - this.verticalBorderOffset) {
                 vertical = MoveDirectionEnum.DOWN;
-                y = clientArea.height - 1;
+                int row = natTable.getRowPositionByY(y);
+                int rowHeight = natTable.getRowHeightByPosition(row);
+                y = clientArea.height - (rowHeight / 2);
                 verticalDiff = event.y - clientArea.height;
             }
         }
