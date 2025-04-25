@@ -36,22 +36,15 @@ public final class PlatformHelper {
     private static final Logger LOG = LoggerFactory.getLogger(PlatformHelper.class);
 
     private static final boolean IS_MAC;
+    private static final boolean IS_RAP;
 
     static {
         IS_MAC = System.getProperty("os.name").toLowerCase().indexOf("mac") >= 0; //$NON-NLS-1$ //$NON-NLS-2$
+        IS_RAP = "rap".equals(SWT.getPlatform()); //$NON-NLS-1$
     }
 
     private PlatformHelper() {
         // empty private constructor to prevent instantiation
-    }
-
-    /**
-     *
-     * @return <code>true</code> if the SWT platform is <i>rap</i>,
-     *         <code>false</code> if not.
-     */
-    public static boolean isRAP() {
-        return "rap".equals(SWT.getPlatform()); //$NON-NLS-1$
     }
 
     /**
@@ -62,6 +55,15 @@ public final class PlatformHelper {
      */
     public static boolean isMAC() {
         return IS_MAC;
+    }
+
+    /**
+     *
+     * @return <code>true</code> if the SWT platform is <i>rap</i>,
+     *         <code>false</code> if not.
+     */
+    public static boolean isRAP() {
+        return IS_RAP;
     }
 
     private static Map<String, Optional<Method>> METHOD_MAPPING = new ConcurrentHashMap<>();
