@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2023 Dirk Fauth.
+ * Copyright (c) 2019, 2025 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -1358,5 +1358,25 @@ public class GroupModelTest {
         assertEquals(0, group3.getStaticIndexes().length);
         assertTrue(group3.hasMember(13));
         assertTrue(group3.hasMember(14));
+    }
+
+    @Test
+    public void shouldProvideVisibleState() {
+        assertTrue(this.model.isVisible());
+
+        // remove all indexes from group 1
+        this.model.removePositionsFromGroup(0, 1, 2, 3);
+        // still visible because other groups are not empty
+        assertTrue(this.model.isVisible());
+
+        // remove all indexes from group 2
+        this.model.removePositionsFromGroup(5, 6, 7);
+        // still visible because other groups are not empty
+        assertTrue(this.model.isVisible());
+
+        // remove all indexes from group 3
+        this.model.removePositionsFromGroup(12, 13);
+        // all groups are empty, so group model is not visible anymore
+        assertFalse(this.model.isVisible());
     }
 }
