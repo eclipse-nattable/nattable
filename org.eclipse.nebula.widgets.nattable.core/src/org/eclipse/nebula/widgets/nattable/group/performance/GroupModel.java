@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2024 Dirk Fauth.
+ * Copyright (c) 2019, 2025 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -754,6 +754,24 @@ public class GroupModel implements IPersistable {
      */
     public boolean isEmpty() {
         return this.groups.isEmpty();
+    }
+
+    /**
+     *
+     * @return <code>true</code> if there is at least one group with a visible
+     *         span > 0, <code>false</code> if there are no groups configured or
+     *         all groups have a visible span == 0.
+     * @since 2.6
+     */
+    public boolean isVisible() {
+        if (!isEmpty()) {
+            for (Group group : this.groups) {
+                if (group.getVisibleSpan() > 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2024 Dirk Fauth.
+ * Copyright (c) 2019, 2025 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14730,5 +14730,50 @@ public class ColumnGroupHeaderLayerTest {
         this.gridLayer.loadState("clean", properties);
 
         verifyCleanState();
+    }
+
+    @Test
+    public void shouldUpdateHeightOnHidingGroupedColumns() {
+        Group nameGroup = this.columnGroupHeaderLayer.getGroupByName("Person");
+        Group addressGroup = this.columnGroupHeaderLayer.getGroupByName("Address");
+
+        // remove facts and personal group
+        this.gridLayer.doCommand(new RemoveColumnGroupCommand(8));
+        this.gridLayer.doCommand(new RemoveColumnGroupCommand(11));
+
+        this.columnGroupHeaderLayer.setCalculateHeight(true);
+
+        assertTrue(this.columnGroupHeaderLayer.getGroupModel().isVisible());
+        assertEquals(4, nameGroup.getVisibleSpan());
+        assertEquals(4, addressGroup.getVisibleSpan());
+        assertEquals(40, this.columnGroupHeaderLayer.getHeight());
+        assertEquals(2, this.columnGroupHeaderLayer.getRowCount());
+
+        // hide columns in Person group
+        this.gridLayer.doCommand(new MultiColumnHideCommand(this.gridLayer, 1, 2, 3, 4));
+
+        assertTrue(this.columnGroupHeaderLayer.getGroupModel().isVisible());
+        assertEquals(0, nameGroup.getVisibleSpan());
+        assertEquals(4, addressGroup.getVisibleSpan());
+        assertEquals(40, this.columnGroupHeaderLayer.getHeight());
+        assertEquals(2, this.columnGroupHeaderLayer.getRowCount());
+
+        // hide columns in Address group
+        this.gridLayer.doCommand(new MultiColumnHideCommand(this.gridLayer, 1, 2, 3, 4));
+
+        assertFalse(this.columnGroupHeaderLayer.getGroupModel().isVisible());
+        assertEquals(0, nameGroup.getVisibleSpan());
+        assertEquals(0, addressGroup.getVisibleSpan());
+        assertEquals(20, this.columnGroupHeaderLayer.getHeight());
+        assertEquals(2, this.columnGroupHeaderLayer.getRowCount());
+
+        // show all columns again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertTrue(this.columnGroupHeaderLayer.getGroupModel().isVisible());
+        assertEquals(4, nameGroup.getVisibleSpan());
+        assertEquals(4, addressGroup.getVisibleSpan());
+        assertEquals(40, this.columnGroupHeaderLayer.getHeight());
+        assertEquals(2, this.columnGroupHeaderLayer.getRowCount());
     }
 }

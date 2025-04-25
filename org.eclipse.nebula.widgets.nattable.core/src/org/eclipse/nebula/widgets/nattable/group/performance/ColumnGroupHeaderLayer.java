@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2024 Dirk Fauth.
+ * Copyright (c) 2019, 2025 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -730,7 +730,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         int height = 0;
         for (int i = 0; i < this.model.size(); i++) {
             GroupModel groupModel = this.model.get(i);
-            if (!groupModel.isEmpty()) {
+            if (groupModel.isVisible()) {
                 height += this.rowHeightConfig.getSize(getRowPositionForLevel(i));
             }
         }
@@ -755,7 +755,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                 return this.rowHeightConfig.getSize(rowPosition);
             } else {
                 int level = getLevelForRowPosition(rowPosition);
-                return getGroupModel(level).isEmpty() ? 0 : this.rowHeightConfig.getSize(rowPosition);
+                return !getGroupModel(level).isVisible() ? 0 : this.rowHeightConfig.getSize(rowPosition);
             }
         } else {
             return this.underlyingLayer.getRowHeightByPosition(rowPosition - rowCount);
@@ -855,7 +855,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                 int startY = 0;
                 for (int i = 0; i < rowPosition; i++) {
                     GroupModel groupModel = this.model.get(i);
-                    if (!groupModel.isEmpty()) {
+                    if (groupModel.isVisible()) {
                         startY += this.rowHeightConfig.getSize(getRowPositionForLevel(i));
                     }
                 }

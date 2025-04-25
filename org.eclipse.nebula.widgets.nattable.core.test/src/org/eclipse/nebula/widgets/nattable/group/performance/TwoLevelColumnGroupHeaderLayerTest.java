@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Dirk Fauth.
+ * Copyright (c) 2019, 2025 Dirk Fauth.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -40,6 +40,7 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.command.ColumnGroupExpandCollapseCommand;
+import org.eclipse.nebula.widgets.nattable.group.command.RemoveColumnGroupCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroupReorderCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.command.ColumnGroupReorderEndCommand;
@@ -2496,5 +2497,59 @@ public class TwoLevelColumnGroupHeaderLayerTest {
         assertEquals(4, group2.getVisibleSpan());
 
         assertNull(this.columnGroupHeaderLayer.getGroupByPosition(1, 7));
+    }
+
+    @Test
+    public void shouldUpdateHeightOnHidingGroupedColumns() {
+        Group nameGroup = this.columnGroupHeaderLayer.getGroupByName("Person");
+        Group addressGroup = this.columnGroupHeaderLayer.getGroupByName("Address");
+
+        // remove facts and personal group
+        this.gridLayer.doCommand(new RemoveColumnGroupCommand(8));
+        this.gridLayer.doCommand(new RemoveColumnGroupCommand(11));
+
+        // change second level group to only include Address group
+        Group testGroup = this.columnGroupHeaderLayer.getGroupModel(1).getGroupByName("Test");
+        this.columnGroupHeaderLayer.removePositionsFromGroup(1, 8, 9, 10);
+
+        this.columnGroupHeaderLayer.setCalculateHeight(true);
+
+        assertTrue(this.columnGroupHeaderLayer.getGroupModel().isVisible());
+        assertEquals(4, nameGroup.getVisibleSpan());
+        assertEquals(4, addressGroup.getVisibleSpan());
+        assertEquals(4, testGroup.getVisibleSpan());
+        assertEquals(60, this.columnGroupHeaderLayer.getHeight());
+        assertEquals(3, this.columnGroupHeaderLayer.getRowCount());
+
+        // hide columns in Address group
+        this.gridLayer.doCommand(new MultiColumnHideCommand(this.gridLayer, 5, 6, 7, 8));
+
+        // this hides Test group in level 1, so height is reduced by one line
+        assertTrue(this.columnGroupHeaderLayer.getGroupModel().isVisible());
+        assertEquals(4, nameGroup.getVisibleSpan());
+        assertEquals(0, addressGroup.getVisibleSpan());
+        assertEquals(0, testGroup.getVisibleSpan());
+        assertEquals(40, this.columnGroupHeaderLayer.getHeight());
+        assertEquals(3, this.columnGroupHeaderLayer.getRowCount());
+
+        // hide columns in Person group
+        this.gridLayer.doCommand(new MultiColumnHideCommand(this.gridLayer, 1, 2, 3, 4));
+
+        assertFalse(this.columnGroupHeaderLayer.getGroupModel().isVisible());
+        assertEquals(0, nameGroup.getVisibleSpan());
+        assertEquals(0, addressGroup.getVisibleSpan());
+        assertEquals(0, testGroup.getVisibleSpan());
+        assertEquals(20, this.columnGroupHeaderLayer.getHeight());
+        assertEquals(3, this.columnGroupHeaderLayer.getRowCount());
+
+        // show all columns again
+        this.gridLayer.doCommand(new ShowAllColumnsCommand());
+
+        assertTrue(this.columnGroupHeaderLayer.getGroupModel().isVisible());
+        assertEquals(4, nameGroup.getVisibleSpan());
+        assertEquals(4, addressGroup.getVisibleSpan());
+        assertEquals(4, testGroup.getVisibleSpan());
+        assertEquals(60, this.columnGroupHeaderLayer.getHeight());
+        assertEquals(3, this.columnGroupHeaderLayer.getRowCount());
     }
 }
