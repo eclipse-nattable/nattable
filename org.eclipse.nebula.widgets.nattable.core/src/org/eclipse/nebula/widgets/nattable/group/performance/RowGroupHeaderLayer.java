@@ -677,19 +677,26 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
 
     // Columns
 
+    private int internalGetColumnCount() {
+        if (!this.calculateWidth) {
+            return this.model.size();
+        }
+        return (int) this.model.stream().filter(gm -> gm.isVisible()).count();
+    }
+
     @Override
     public int getColumnCount() {
-        return this.underlyingLayer.getColumnCount() + this.model.size();
+        return this.underlyingLayer.getColumnCount() + internalGetColumnCount();
     }
 
     @Override
     public int getPreferredColumnCount() {
-        return this.underlyingLayer.getPreferredColumnCount() + this.model.size();
+        return this.underlyingLayer.getPreferredColumnCount() + internalGetColumnCount();
     }
 
     @Override
     public int getColumnIndexByPosition(int columnPosition) {
-        int columnCount = this.model.size();
+        int columnCount = internalGetColumnCount();
         if (columnPosition < columnCount) {
             return columnPosition;
         } else {
@@ -699,7 +706,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
 
     @Override
     public int localToUnderlyingColumnPosition(int localColumnPosition) {
-        int columnCount = this.model.size();
+        int columnCount = internalGetColumnCount();
         if (localColumnPosition < columnCount) {
             return localColumnPosition;
         } else {
@@ -709,7 +716,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
 
     @Override
     public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
-        int columnCount = this.model.size();
+        int columnCount = internalGetColumnCount();
         return underlyingColumnPosition + columnCount;
     }
 
@@ -742,7 +749,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
 
     @Override
     public int getColumnWidthByPosition(int columnPosition) {
-        int columnCount = this.model.size();
+        int columnCount = internalGetColumnCount();
         if (columnPosition < columnCount) {
             if (!this.calculateWidth) {
                 return this.columnWidthConfig.getSize(columnPosition);
@@ -798,7 +805,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
      * @return The level for the given column position.
      */
     public int getLevelForColumnPosition(int columnPosition) {
-        return this.model.size() - columnPosition - 1;
+        return internalGetColumnCount() - columnPosition - 1;
     }
 
     // Column resize
@@ -831,16 +838,18 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
     @Override
     public int getColumnPositionByX(int x) {
         int groupWidth = getGroupingWidth();
-        if (x <= groupWidth) {
+        if (x == 0) {
+            return 0;
+        } else if (x <= groupWidth) {
             return LayerUtil.getColumnPositionByX(this, x);
         } else {
-            return this.model.size() + this.underlyingLayer.getColumnPositionByX(x - groupWidth);
+            return internalGetColumnCount() + this.underlyingLayer.getColumnPositionByX(x - groupWidth);
         }
     }
 
     @Override
     public int getStartXOfColumnPosition(int columnPosition) {
-        int columnCount = this.model.size();
+        int columnCount = internalGetColumnCount();
         if (columnPosition < columnCount) {
             if (!this.calculateWidth) {
                 return this.columnWidthConfig.getAggregateSize(columnPosition);
@@ -856,7 +865,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
             }
         } else {
             return getGroupingWidth()
-                    + this.underlyingLayer.getStartXOfColumnPosition(columnPosition - this.model.size());
+                    + this.underlyingLayer.getStartXOfColumnPosition(columnPosition - internalGetColumnCount());
         }
     }
 
@@ -865,7 +874,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
     @Override
     public ILayerCell getCellByPosition(final int columnPosition, final int rowPosition) {
         // Row group header cell
-        if (columnPosition < this.model.size()) {
+        if (columnPosition < internalGetColumnCount()) {
             int level = getLevelForColumnPosition(columnPosition);
             Group group = getGroupByPosition(level, rowPosition);
             if (group != null) {
@@ -876,7 +885,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                 // check if there is a level above that does not have a group
                 int column = columnPosition;
                 int columnSpan = 1;
-                while (level < (this.model.size() - 1)) {
+                while (level < (internalGetColumnCount() - 1)) {
                     level++;
                     Group upperGroup = getGroupByPosition(level, rowPosition);
                     if (upperGroup == null) {
@@ -994,12 +1003,12 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
             int columnSpan = 1;
             // check for special case if a row header data provider supports
             // multiple columns
-            if (columnPosition - 1 < this.model.size()) {
+            if (columnPosition - 1 < internalGetColumnCount()) {
                 // check if one column to the left has a group
                 int level = getLevelForColumnPosition(columnPosition - 1);
 
                 Group group = null;
-                while (level < this.model.size()) {
+                while (level < internalGetColumnCount()) {
                     group = getGroupByPosition(level, rowPosition);
                     if (group == null) {
                         columnSpan++;
@@ -1230,7 +1239,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
 
     @Override
     public DisplayMode getDisplayModeByPosition(int columnPosition, int rowPosition) {
-        if (columnPosition < this.model.size() && isPartOfAGroup(getLevelForColumnPosition(columnPosition), rowPosition)) {
+        if (columnPosition < internalGetColumnCount() && isPartOfAGroup(getLevelForColumnPosition(columnPosition), rowPosition)) {
             return DisplayMode.NORMAL;
         } else {
             int columnPos = columnPosition < this.model.size() ? columnPosition : columnPosition - this.model.size();
@@ -1244,7 +1253,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
         Object[] found = findGroupForCoordinates(columnPosition, posRow);
         Group group = found != null ? (Group) found[1] : null;
 
-        if (columnPosition < this.model.size() && group != null) {
+        if (columnPosition < internalGetColumnCount() && group != null) {
             LabelStack stack = new LabelStack();
             if (getConfigLabelAccumulator() != null) {
                 getConfigLabelAccumulator().accumulateConfigLabels(stack, columnPosition, rowPosition);
@@ -1261,14 +1270,14 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
 
             return stack;
         } else {
-            int columnPos = columnPosition < this.model.size() ? columnPosition : columnPosition - this.model.size();
+            int columnPos = columnPosition < internalGetColumnCount() ? columnPosition : columnPosition - internalGetColumnCount();
             return this.underlyingLayer.getConfigLabelsByPosition(columnPos, rowPosition);
         }
     }
 
     @Override
     public Object getDataValueByPosition(int columnPosition, int rowPosition) {
-        if (columnPosition < this.model.size()) {
+        if (columnPosition < internalGetColumnCount()) {
             int level = getLevelForColumnPosition(columnPosition);
             Group group = getGroupByPosition(level, rowPosition);
             while (group == null && level > 0) {
@@ -1287,7 +1296,7 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
     @Override
     public LabelStack getRegionLabelsByXY(int x, int y) {
         if (x < getGroupingWidth()) {
-            for (int i = 0; i < this.model.size(); i++) {
+            for (int i = 0; i < internalGetColumnCount(); i++) {
                 if (isPartOfAGroup(i, getRowPositionByY(y))) {
                     return new LabelStack(GridRegion.ROW_GROUP_HEADER);
                 }
