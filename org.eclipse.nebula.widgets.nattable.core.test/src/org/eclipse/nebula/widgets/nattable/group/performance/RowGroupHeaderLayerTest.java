@@ -11694,9 +11694,8 @@ public class RowGroupHeaderLayerTest {
         // Test calculated width
         this.rowGroupHeaderLayer.setCalculateWidth(true);
         assertEquals(40, this.rowGroupHeaderLayer.getWidth());
-        assertEquals(2, this.rowGroupHeaderLayer.getColumnCount());
-        assertEquals(0, this.rowGroupHeaderLayer.getColumnWidthByPosition(0));
-        assertEquals(40, this.rowGroupHeaderLayer.getColumnWidthByPosition(1));
+        assertEquals(1, this.rowGroupHeaderLayer.getColumnCount());
+        assertEquals(40, this.rowGroupHeaderLayer.getColumnWidthByPosition(0));
     }
 
     @Test
@@ -11727,9 +11726,8 @@ public class RowGroupHeaderLayerTest {
         this.rowGroupHeaderLayer.clearAllGroups();
 
         assertEquals(40, this.rowGroupHeaderLayer.getWidth());
-        assertEquals(2, this.rowGroupHeaderLayer.getColumnCount());
-        assertEquals(0, this.rowGroupHeaderLayer.getColumnWidthByPosition(0));
-        assertEquals(40, this.rowGroupHeaderLayer.getColumnWidthByPosition(1));
+        assertEquals(1, this.rowGroupHeaderLayer.getColumnCount());
+        assertEquals(40, this.rowGroupHeaderLayer.getColumnWidthByPosition(0));
 
         cell = this.rowGroupHeaderLayer.getCellByPosition(0, 0);
         assertEquals(1, cell.getDataValue());
@@ -11738,7 +11736,7 @@ public class RowGroupHeaderLayerTest {
         assertEquals(1, cell.getRowSpan());
         assertEquals(0, cell.getOriginColumnPosition());
         assertEquals(0, cell.getColumnPosition());
-        assertEquals(2, cell.getColumnSpan());
+        assertEquals(1, cell.getColumnSpan());
 
         this.rowGroupHeaderLayer.setCalculateWidth(false);
 
@@ -14719,38 +14717,124 @@ public class RowGroupHeaderLayerTest {
 
         this.rowGroupHeaderLayer.setCalculateWidth(true);
 
+        // test the group states
         assertTrue(this.rowGroupHeaderLayer.getGroupModel().isVisible());
         assertEquals(4, nameGroup.getVisibleSpan());
         assertEquals(4, addressGroup.getVisibleSpan());
         assertEquals(60, this.rowGroupHeaderLayer.getWidth());
         assertEquals(2, this.rowGroupHeaderLayer.getColumnCount());
+
+        // test the first cell in the group header (grouped cell)
+        ILayerCell cell = this.rowGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginRowPosition());
+        assertEquals(4, cell.getRowSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(80, cell.getBounds().height);
+        assertEquals(20, cell.getBounds().width);
+
+        // test the first non grouped cell
+        cell = this.rowGroupHeaderLayer.getCellByPosition(0, 8);
+        assertEquals(8, cell.getOriginRowPosition());
+        assertEquals(8, cell.getRowPosition());
+        assertEquals(8, cell.getRowIndex());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals(2, cell.getColumnSpan());
+        assertEquals(9, cell.getDataValue());
+        assertEquals(160, cell.getBounds().y);
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(20, cell.getBounds().height);
+        assertEquals(60, cell.getBounds().width);
 
         // hide columns in Person group
         this.gridLayer.doCommand(new MultiRowHideCommand(this.gridLayer, 1, 2, 3, 4));
 
+        // test the group states
         assertTrue(this.rowGroupHeaderLayer.getGroupModel().isVisible());
         assertEquals(0, nameGroup.getVisibleSpan());
         assertEquals(4, addressGroup.getVisibleSpan());
         assertEquals(60, this.rowGroupHeaderLayer.getWidth());
         assertEquals(2, this.rowGroupHeaderLayer.getColumnCount());
 
+        // test the first cell in the group header (grouped cell)
+        cell = this.rowGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginRowPosition());
+        assertEquals(4, cell.getRowSpan());
+        assertEquals("Address", cell.getDataValue());
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(80, cell.getBounds().height);
+        assertEquals(20, cell.getBounds().width);
+
+        // test the first non grouped cell
+        cell = this.rowGroupHeaderLayer.getCellByPosition(0, 4);
+        assertEquals(4, cell.getOriginRowPosition());
+        assertEquals(4, cell.getRowPosition());
+        assertEquals(8, cell.getRowIndex());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals(2, cell.getColumnSpan());
+        assertEquals(9, cell.getDataValue());
+        assertEquals(80, cell.getBounds().y);
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(20, cell.getBounds().height);
+        assertEquals(60, cell.getBounds().width);
+
         // hide columns in Address group
         this.gridLayer.doCommand(new MultiRowHideCommand(this.gridLayer, 1, 2, 3, 4));
 
+        // test the group states
         assertFalse(this.rowGroupHeaderLayer.getGroupModel().isVisible());
         assertEquals(0, nameGroup.getVisibleSpan());
         assertEquals(0, addressGroup.getVisibleSpan());
         assertEquals(40, this.rowGroupHeaderLayer.getWidth());
-        assertEquals(2, this.rowGroupHeaderLayer.getColumnCount());
+        assertEquals(1, this.rowGroupHeaderLayer.getColumnCount());
+
+        // test the first cell in the group header (now ungrouped cell)
+        cell = this.rowGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginRowPosition());
+        assertEquals(0, cell.getRowPosition());
+        assertEquals(8, cell.getRowIndex());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals(1, cell.getColumnSpan());
+        assertEquals(9, cell.getDataValue());
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(20, cell.getBounds().height);
+        assertEquals(40, cell.getBounds().width);
 
         // show all columns again
         this.gridLayer.doCommand(new ShowAllRowsCommand());
 
+        // test the group states
         assertTrue(this.rowGroupHeaderLayer.getGroupModel().isVisible());
         assertEquals(4, nameGroup.getVisibleSpan());
         assertEquals(4, addressGroup.getVisibleSpan());
         assertEquals(60, this.rowGroupHeaderLayer.getWidth());
         assertEquals(2, this.rowGroupHeaderLayer.getColumnCount());
+
+        // test the first cell in the group header (grouped cell)
+        cell = this.rowGroupHeaderLayer.getCellByPosition(0, 0);
+        assertEquals(0, cell.getOriginRowPosition());
+        assertEquals(4, cell.getRowSpan());
+        assertEquals("Person", cell.getDataValue());
+        assertEquals(0, cell.getBounds().y);
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(80, cell.getBounds().height);
+        assertEquals(20, cell.getBounds().width);
+
+        // test the first non grouped cell
+        cell = this.rowGroupHeaderLayer.getCellByPosition(0, 8);
+        assertEquals(8, cell.getOriginRowPosition());
+        assertEquals(8, cell.getRowPosition());
+        assertEquals(8, cell.getRowIndex());
+        assertEquals(1, cell.getRowSpan());
+        assertEquals(2, cell.getColumnSpan());
+        assertEquals(9, cell.getDataValue());
+        assertEquals(160, cell.getBounds().y);
+        assertEquals(0, cell.getBounds().x);
+        assertEquals(20, cell.getBounds().height);
+        assertEquals(60, cell.getBounds().width);
     }
 
 }
