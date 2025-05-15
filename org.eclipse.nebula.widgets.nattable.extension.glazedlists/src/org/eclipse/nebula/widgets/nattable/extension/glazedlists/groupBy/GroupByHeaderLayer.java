@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,7 +15,9 @@ package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.command.GroupByColumnCommandHandler;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.command.GroupByCommandHandler;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.command.UngroupByColumnCommandHandler;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -30,7 +32,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent
  */
 public class GroupByHeaderLayer extends DimensionallyDependentLayer {
 
-    public static final String GROUP_BY_REGION = "GROUP_BY_REGION"; //$NON-NLS-1$
+    public static final String GROUP_BY_REGION = GridRegion.GROUP_BY_REGION;
 
     private final GroupByModel groupByModel;
 
@@ -220,6 +222,7 @@ public class GroupByHeaderLayer extends DimensionallyDependentLayer {
 
         registerCommandHandler(new GroupByColumnCommandHandler(this));
         registerCommandHandler(new UngroupByColumnCommandHandler(this));
+        registerCommandHandler(new GroupByCommandHandler(this));
 
         GroupByHeaderConfiguration configuration = null;
         if (groupByHeaderConfiguration != null) {
@@ -270,5 +273,4 @@ public class GroupByHeaderLayer extends DimensionallyDependentLayer {
     public int getGroupByColumnIndexAtXY(int x, int y) {
         return this.groupByHeaderPainter.getGroupByColumnIndexAtXY(x, y);
     }
-
 }

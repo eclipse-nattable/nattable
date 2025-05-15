@@ -22,8 +22,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
  * The {@link ILayerCommandHandler} for handling
  * {@link UngroupByColumnIndexCommand}s.
  */
-public class UngroupByColumnCommandHandler extends
-        AbstractLayerCommandHandler<UngroupByColumnIndexCommand> {
+public class UngroupByColumnCommandHandler extends AbstractLayerCommandHandler<UngroupByColumnIndexCommand> {
 
     private final GroupByHeaderLayer groupByHeaderLayer;
 
@@ -40,10 +39,8 @@ public class UngroupByColumnCommandHandler extends
     @Override
     protected boolean doCommand(UngroupByColumnIndexCommand command) {
         int columnIndex = command.getGroupByColumnIndex();
-        if (this.groupByHeaderLayer.getGroupByModel().removeGroupByColumnIndex(
-                columnIndex)) {
-            this.groupByHeaderLayer.fireLayerEvent(new VisualRefreshEvent(
-                    this.groupByHeaderLayer));
+        if (this.groupByHeaderLayer.getGroupByModel().removeGroupByColumnIndex(columnIndex)) {
+            this.groupByHeaderLayer.fireLayerEvent(new VisualRefreshEvent(this.groupByHeaderLayer));
         }
         return true;
     }

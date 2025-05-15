@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2021 Dirk Fauth and others.
+ * Copyright (c) 2013, 2025 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -52,6 +52,8 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultColumnHeaderDataLay
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.groupby.GroupByCommand;
+import org.eclipse.nebula.widgets.nattable.groupby.GroupByCommand.GroupByAction;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
@@ -350,7 +352,7 @@ public class _6053_GroupBySummaryExample extends AbstractNatExample {
         groupLastFirstButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                bodyLayerStack.groupByModel.setGroupByColumnIndexes(1, 0);
+                natTable.doCommand(new GroupByCommand(GroupByAction.SET, 1, 0));
             }
         });
 
@@ -359,7 +361,7 @@ public class _6053_GroupBySummaryExample extends AbstractNatExample {
         groupFirstLastButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                bodyLayerStack.groupByModel.setGroupByColumnIndexes(0, 1);
+                natTable.doCommand(new GroupByCommand(GroupByAction.SET, 0, 1));
             }
         });
 
@@ -368,7 +370,7 @@ public class _6053_GroupBySummaryExample extends AbstractNatExample {
         groupLastMarriedButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                bodyLayerStack.groupByModel.setGroupByColumnIndexes(1, 5);
+                natTable.doCommand(new GroupByCommand(GroupByAction.SET, 1, 5));
             }
         });
 
@@ -377,7 +379,7 @@ public class _6053_GroupBySummaryExample extends AbstractNatExample {
         clearGroupByButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                bodyLayerStack.groupByModel.clearGroupByColumnIndexes();
+                natTable.doCommand(new GroupByCommand(GroupByAction.CLEAR));
             }
         });
 
