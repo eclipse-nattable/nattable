@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -33,4 +33,8 @@ public final class GridRegion {
     public static final String BODY = "BODY"; //$NON-NLS-1$
     public static final String DATAGRID = "DATAGRID"; //$NON-NLS-1$
     public static final String FILTER_ROW = "FILTER_ROW"; //$NON-NLS-1$
+    /**
+     * @since 2.6
+     */
+    public static final String GROUP_BY_REGION = "GROUP_BY_REGION"; //$NON-NLS-1$
 }
