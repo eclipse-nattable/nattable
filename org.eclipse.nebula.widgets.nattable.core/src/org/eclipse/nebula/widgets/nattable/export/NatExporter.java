@@ -40,6 +40,7 @@ import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
@@ -108,6 +109,16 @@ public class NatExporter {
     private boolean useProgressDialog = false;
 
     /**
+     * The {@link Runnable} that should be executed after the export finished
+     * successfully. Useful in case {@link #openResult} is set to
+     * <code>false</code> so an alternative for reporting the export success can
+     * be configured.
+     *
+     * @since 2.6
+     */
+    private Runnable successRunnable;
+
+    /**
      * Create a new {@link NatExporter}.
      *
      * @param shell
@@ -160,13 +171,56 @@ public class NatExporter {
      *            is made based on whether a {@link Shell} is set or not. If a
      *            {@link Shell} is set and this flag is set to <code>true</code>
      *            the execution is performed synchronously.
+     * @param useProgressDialog
+     *            Configure whether the progress should be reported via
+     *            {@link ProgressMonitorDialog}. If set to <code>false</code> a
+     *            custom shell with a {@link ProgressBar} will be shown if the
+     *            shell parameter is not <code>null</code>.
      *
      * @since 2.3
      */
     public NatExporter(Shell shell, boolean executeSynchronously, boolean useProgressDialog) {
+        this(shell, executeSynchronously, useProgressDialog, true, null);
+    }
+
+    /**
+     * Create a new {@link NatExporter}.
+     *
+     * @param shell
+     *            The {@link Shell} that should be used to open sub-dialogs and
+     *            perform export operations in a background thread. Can be
+     *            <code>null</code> but could lead to
+     *            {@link NullPointerException}s if {@link IExporter} are
+     *            configured, that use a {@link FileOutputStreamProvider}.
+     * @param executeSynchronously
+     *            Configure whether the export should be performed
+     *            asynchronously or synchronously. By default the decision
+     *            whether the execution should be performed synchronously or not
+     *            is made based on whether a {@link Shell} is set or not. If a
+     *            {@link Shell} is set and this flag is set to <code>true</code>
+     *            the execution is performed synchronously.
+     * @param useProgressDialog
+     *            Configure whether the progress should be reported via
+     *            {@link ProgressMonitorDialog}. If set to <code>false</code> a
+     *            custom shell with a {@link ProgressBar} will be shown if the
+     *            shell parameter is not <code>null</code>.
+     * @param openResult
+     *            Configure if the created export result should be opened after
+     *            the export is finished.
+     * @param successRunnable
+     *            The {@link Runnable} that should be executed after the export
+     *            finished successfully. Useful in case {@link #openResult} is
+     *            set to <code>false</code> so an alternative for reporting the
+     *            export success can be configured.
+     *
+     * @since 2.6
+     */
+    public NatExporter(Shell shell, boolean executeSynchronously, boolean useProgressDialog, boolean openResult, Runnable successRunnable) {
         this.shell = shell;
         this.runAsynchronously = !executeSynchronously;
         this.useProgressDialog = useProgressDialog;
+        this.openResult = openResult;
+        this.successRunnable = successRunnable;
     }
 
     /**
@@ -946,17 +1000,29 @@ public class NatExporter {
      * @since 1.5
      */
     protected void openExport(IExporter exporter) {
-        if (this.exportSucceeded
-                && this.openResult
-                && exporter.getResult() != null
-                && exporter.getResult() instanceof File) {
+        if (this.exportSucceeded) {
 
-            try {
-                Class<?> program = Class.forName("org.eclipse.swt.program.Program"); //$NON-NLS-1$
-                Method launch = program.getMethod("launch", String.class); //$NON-NLS-1$
-                launch.invoke(null, ((File) exporter.getResult()).getAbsolutePath());
-            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                LOG.info("Could not open the export because org.eclipse.swt.program.Program, you are probably running a RAP application."); //$NON-NLS-1$
+            if (this.successRunnable != null) {
+                if (this.shell != null) {
+                    this.shell.getDisplay().syncExec(() -> {
+                        this.successRunnable.run();
+                    });
+                } else {
+                    this.successRunnable.run();
+                }
+            }
+
+            if (this.openResult
+                    && exporter.getResult() != null
+                    && exporter.getResult() instanceof File) {
+
+                try {
+                    Class<?> program = Class.forName("org.eclipse.swt.program.Program"); //$NON-NLS-1$
+                    Method launch = program.getMethod("launch", String.class); //$NON-NLS-1$
+                    launch.invoke(null, ((File) exporter.getResult()).getAbsolutePath());
+                } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                    LOG.info("Could not open the export because org.eclipse.swt.program.Program, you are probably running a RAP application."); //$NON-NLS-1$
+                }
             }
         }
     }
@@ -1060,5 +1126,21 @@ public class NatExporter {
      */
     public void setUseProgressDialog(boolean useProgressDialog) {
         this.useProgressDialog = useProgressDialog;
+    }
+
+    /**
+     * Configure a {@link Runnable} that should be executed after a successful
+     * export operation. If a {@link #shell} is set, the {@link Runnable} is
+     * executed using {@link Display#syncExec(Runnable)}.
+     *
+     * @param successRunnable
+     *            The {@link Runnable} that should be executed after the export
+     *            finished successfully. Useful in case {@link #openResult} is
+     *            set to <code>false</code> so an alternative for reporting the
+     *            export success can be configured.
+     * @since 2.6
+     */
+    public void setSuccessRunnable(Runnable successRunnable) {
+        this.successRunnable = successRunnable;
     }
 }
