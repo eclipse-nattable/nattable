@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2023 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -31,6 +31,8 @@ public class ExportCommand extends AbstractContextFreeCommand {
     private final boolean executeSynchronously;
     private final boolean useProgressDialog;
     private final ILayerExporter exporter;
+    private final boolean openResult;
+    private final Runnable successRunnable;
 
     /**
      * Creates a new {@link ExportCommand}.
@@ -124,11 +126,59 @@ public class ExportCommand extends AbstractContextFreeCommand {
      * @since 2.3
      */
     public ExportCommand(IConfigRegistry configRegistry, Shell shell, boolean executeSynchronously, boolean useProgressDialog, ILayerExporter exporter) {
+        this(configRegistry, shell, executeSynchronously, useProgressDialog, exporter, true, null);
+    }
+
+    /**
+     * Creates a new {@link ExportCommand}.
+     *
+     * @param configRegistry
+     *            The {@link IConfigRegistry} that contains the necessary export
+     *            configurations.
+     * @param shell
+     *            The {@link Shell} that should be used to open sub-dialogs and
+     *            perform export operations in a background thread. Can be
+     *            <code>null</code> which definitely leads to synchronous
+     *            execution but could cause errors in case sub-dialogs should be
+     *            opened before exporting.
+     * @param executeSynchronously
+     *            Configure if the export should be performed synchronously even
+     *            if a {@link Shell} is set.
+     * @param useProgressDialog
+     *            Configure whether the progress should be reported via
+     *            {@link ProgressMonitorDialog}. If set to <code>false</code> a
+     *            custom shell with a {@link ProgressBar} will be shown if the
+     *            shell parameter is not <code>null</code>.
+     * @param exporter
+     *            The {@link ILayerExporter} that should be used. Can be
+     *            <code>null</code>, which causes the usage of the exporter
+     *            registered in the {@link IConfigRegistry}.
+     * @param openResult
+     *            Configure if the created export result should be opened after
+     *            the export is finished.
+     * @param successRunnable
+     *            The {@link Runnable} that should be executed after the export
+     *            finished successfully. Useful in case {@link #openResult} is
+     *            set to <code>false</code> so an alternative for reporting the
+     *            export success can be configured.
+     * @since 2.6
+     */
+    public ExportCommand(
+            IConfigRegistry configRegistry,
+            Shell shell,
+            boolean executeSynchronously,
+            boolean useProgressDialog,
+            ILayerExporter exporter,
+            boolean openResult,
+            Runnable successRunnable) {
+
         this.configRegistry = configRegistry;
         this.shell = shell;
         this.executeSynchronously = executeSynchronously;
         this.useProgressDialog = useProgressDialog;
         this.exporter = exporter;
+        this.openResult = openResult;
+        this.successRunnable = successRunnable;
     }
 
     /**
@@ -184,5 +234,27 @@ public class ExportCommand extends AbstractContextFreeCommand {
      */
     public ILayerExporter getExporter() {
         return this.exporter;
+    }
+
+    /**
+     *
+     * @return <code>true</code> if the created export file should be opened
+     *         after the export finished successfully, <code>false</code> if not
+     * @since 2.6
+     */
+    public boolean isOpenResult() {
+        return this.openResult;
+    }
+
+    /**
+     *
+     * @return The {@link Runnable} that should be executed after the export
+     *         finished successfully. Useful in case {@link #openResult} is set
+     *         to <code>false</code> so an alternative for reporting the export
+     *         success can be configured.
+     * @since 2.6
+     */
+    public Runnable getSuccessRunnable() {
+        return this.successRunnable;
     }
 }
