@@ -12,10 +12,6 @@
       <unit id="org.eclipse.license.feature.group" version="0.0.0"/>
       <repository location="http://download.eclipse.org/cbi/updates/license"/>
     </location>
-    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-      <unit id="org.eclipse.collections.feature.feature.group" version="0.0.0"/>
-      <repository location="https://download.eclipse.org/collections/11.1.0/repository"/>
-    </location>
     <!-- Stick with Nebula 3.1.1 for the moment, because CDateTime introduces a dependency update to SWT >= 3.126.0, which is at least Eclipse 2024-06 (4.32)  -->
     <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
       <unit id="org.eclipse.nebula.widgets.cdatetime" version="0.0.0"/>
@@ -36,5 +32,27 @@
       <unit id="slf4j.simple" version="0.0.0"/>
       <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/milestone/latest"/>
     </location>
+      <location includeDependencyDepth="none" includeSource="true" label="Eclipse Collections" missingManifest="ignore" type="Maven">
+          <dependencies>
+              <dependency>
+                  <groupId>org.apache.aries.spifly</groupId>
+                  <artifactId>org.apache.aries.spifly.dynamic.bundle</artifactId>
+                  <version>1.3.7</version>
+                  <type>jar</type>
+              </dependency>
+              <dependency>
+                  <groupId>org.eclipse.collections</groupId>
+                  <artifactId>eclipse-collections-api</artifactId>
+                  <version>12.0.0</version>
+                  <type>jar</type>
+              </dependency>
+              <dependency>
+                  <groupId>org.eclipse.collections</groupId>
+                  <artifactId>eclipse-collections</artifactId>
+                  <version>12.0.0</version>
+                  <type>jar</type>
+              </dependency>
+          </dependencies>
+      </location>
   </locations>
 </target>

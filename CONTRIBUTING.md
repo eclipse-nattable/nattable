@@ -9,8 +9,8 @@ NatTable is a subproject of the Nebula Project, the home of further supplemental
 
 The project details can be found [here](https://projects.eclipse.org/projects/technology.nebula.nattable).
 
-This project uses [GitHub Issues](https://github.com/eclipse-nebula-nattable/nattable/issues) to track ongoing development and issues.
-Be sure to search for existing bugs before you create another one. Remember that ontributions are always welcome!
+This project uses [GitHub Issues](https://github.com/eclipse-nattable/nattable/issues) to track ongoing development and issues.
+Be sure to search for existing bugs before you create another one. Remember that contributions are always welcome!
 
 Previously this project used Bugzilla. Until the Eclipse Foundation is not shutting down Bugzilla, you can find solved issues there:
 * [Search for issues](https://bugs.eclipse.org/bugs/buglist.cgi?product=NatTable)
@@ -45,7 +45,7 @@ The development tools with minimum versions that are used by the NatTable team a
 
 * JDK 21
 * Eclipse 4.32 (2024-06)
-* Maven 3.9.8 with Tycho 4.0.8
+* Maven 3.9.8 with Tycho 4.0.13
 * Git
 * JUnit5
 
@@ -60,9 +60,9 @@ The NatTable source is divided into the following main projects:
 * org.eclipse.nebula.widgets.nattable.extension.glazedlists.test - NatTable extensions for GlazedLists tests
 * org.eclipse.nebula.widgets.nattable.extension.nebula - NatTable extensions for Nebula
 * org.eclipse.nebula.widgets.nattable.extension.poi - NatTable extensions for Apache POI
-* org.eclipse.nebula.widgets.examples - NatTable example application containing several examples
-* org.eclipse.nebula.widgets.examples.e4 - NatTable examples for Eclipse 4
-* org.eclipse.nebula.widgets.examples.e4.product - NatTable examples application as Eclipse 4 application
+* org.eclipse.nebula.widgets.nattable.examples - NatTable example application containing several examples
+* org.eclipse.nebula.widgets.nattable.examples.e4 - NatTable examples for Eclipse 4
+* org.eclipse.nebula.widgets.nattable.examples.e4.product - NatTable examples application as Eclipse 4 application
 
 In addition there are also various feature projects necessary for release engineering. All of these projects are packaged as Eclipse plugins/OSGi bundles.
 

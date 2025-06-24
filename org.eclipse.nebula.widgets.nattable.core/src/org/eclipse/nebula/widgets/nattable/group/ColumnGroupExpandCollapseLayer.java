@@ -14,8 +14,8 @@ package org.eclipse.nebula.widgets.nattable.group;
 
 import java.util.Collection;
 
+import org.eclipse.collections.api.factory.primitive.IntSets;
 import org.eclipse.collections.api.set.primitive.MutableIntSet;
-import org.eclipse.collections.impl.factory.primitive.IntSets;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.group.command.ColumnGroupExpandCollapseCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.AbstractColumnHideShowLayer;
