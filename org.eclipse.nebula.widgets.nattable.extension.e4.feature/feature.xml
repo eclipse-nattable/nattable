@@ -19,17 +19,8 @@
       %license
    </license>
 
-   <requires>
-      <import plugin="org.eclipse.e4.ui.css.core"/>
-      <import plugin="org.eclipse.e4.ui.css.swt"/>
-      <import plugin="org.eclipse.e4.ui.css.swt.theme"/>
-   </requires>
-
    <plugin
          id="org.eclipse.nebula.widgets.nattable.extension.e4"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
 </feature>

@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.eclipse.collections.api.factory.primitive.IntSets;
+import org.eclipse.collections.api.factory.primitive.ObjectIntMaps;
 import org.eclipse.collections.api.map.primitive.MutableObjectIntMap;
 import org.eclipse.collections.api.set.primitive.IntSet;
-import org.eclipse.collections.impl.factory.primitive.IntSets;
-import org.eclipse.collections.impl.factory.primitive.ObjectIntMaps;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;

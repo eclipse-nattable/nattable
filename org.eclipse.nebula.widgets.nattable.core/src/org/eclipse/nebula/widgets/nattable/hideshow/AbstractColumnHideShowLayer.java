@@ -17,9 +17,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.eclipse.collections.api.factory.primitive.IntIntMaps;
 import org.eclipse.collections.api.map.primitive.IntIntMap;
 import org.eclipse.collections.api.map.primitive.MutableIntIntMap;
-import org.eclipse.collections.impl.factory.primitive.IntIntMaps;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;

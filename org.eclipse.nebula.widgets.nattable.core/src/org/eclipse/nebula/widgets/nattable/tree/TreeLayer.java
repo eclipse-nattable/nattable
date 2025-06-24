@@ -18,8 +18,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.collections.api.factory.primitive.IntSets;
 import org.eclipse.collections.api.set.primitive.MutableIntSet;
-import org.eclipse.collections.impl.factory.primitive.IntSets;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.hideshow.AbstractRowHideShowLayer;

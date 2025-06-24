@@ -23,24 +23,4 @@
          id="org.eclipse.nebula.widgets.nattable.extension.nebula"
          version="0.0.0"/>
 
-   <plugin
-         id="org.eclipse.nebula.widgets.richtext"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.nebula.widgets.cdatetime"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.nebula.cwt"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.commons.text"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.commons.lang3"
-         version="0.0.0"/>
-
 </feature>

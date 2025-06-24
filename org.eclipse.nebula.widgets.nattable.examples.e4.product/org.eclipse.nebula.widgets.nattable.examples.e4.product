@@ -314,7 +314,6 @@ version(s), and exceptions or additional permissions here}.&quot;
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>
       <feature id="org.eclipse.e4.rcp"/>
-      <feature id="org.eclipse.collections.feature"/>
       <feature id="org.eclipse.nebula.widgets.nattable.core.feature"/>
       <feature id="org.eclipse.nebula.widgets.nattable.extension.e4.feature"/>
       <feature id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature"/>

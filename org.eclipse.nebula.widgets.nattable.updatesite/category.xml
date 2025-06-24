@@ -30,7 +30,9 @@
    <feature id="org.eclipse.nebula.widgets.nattable.extension.poi.feature.source">
       <category name="nattable-extensions"/>
    </feature>
-   <bundle id="org.eclipse.nebula.widgets.nattable.dataset"/>
+   <bundle id="org.eclipse.nebula.widgets.nattable.dataset">
+      <category name="nattable-dataset"/>
+   </bundle>
    <category-def name="nattable-core" label="NatTable Core">
       <description>
          The core NatTable functions.
@@ -39,6 +41,11 @@
    <category-def name="nattable-extensions" label="NatTable Extensions">
       <description>
          Extensions to provide additional features based on third-party libraries.
+      </description>
+   </category-def>
+   <category-def name="nattable-dataset" label="NatTable DataSet">
+      <description>
+         NatTable example data used in examples.
       </description>
    </category-def>
 </site>

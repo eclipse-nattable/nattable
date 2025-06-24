@@ -23,44 +23,4 @@
          id="org.eclipse.nebula.widgets.nattable.extension.poi"
          version="0.0.0"/>
 
-   <plugin
-         id="org.apache.poi"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.commons.math3"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.commons.commons-collections4"
-         version="0.0.0"/>
-
-   <plugin
-         id="com.zaxxer.sparsebits"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.logging.log4j.api"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.commons.commons-io"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.commons.commons-compress"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.poi.ooxml"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.poi.ooxml.schemas"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.xmlbeans"
-         version="0.0.0"/>
-
 </feature>

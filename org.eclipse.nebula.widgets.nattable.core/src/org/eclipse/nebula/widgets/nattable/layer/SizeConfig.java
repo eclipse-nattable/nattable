@@ -18,6 +18,10 @@ package org.eclipse.nebula.widgets.nattable.layer;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import org.eclipse.collections.api.factory.primitive.IntBooleanMaps;
+import org.eclipse.collections.api.factory.primitive.IntDoubleMaps;
+import org.eclipse.collections.api.factory.primitive.IntIntMaps;
+import org.eclipse.collections.api.factory.primitive.IntLists;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
 import org.eclipse.collections.api.list.primitive.MutableIntList;
 import org.eclipse.collections.api.map.primitive.MutableIntBooleanMap;
@@ -26,10 +30,6 @@ import org.eclipse.collections.api.map.primitive.MutableIntIntMap;
 import org.eclipse.collections.api.tuple.primitive.IntBooleanPair;
 import org.eclipse.collections.api.tuple.primitive.IntDoublePair;
 import org.eclipse.collections.api.tuple.primitive.IntIntPair;
-import org.eclipse.collections.impl.factory.primitive.IntBooleanMaps;
-import org.eclipse.collections.impl.factory.primitive.IntDoubleMaps;
-import org.eclipse.collections.impl.factory.primitive.IntIntMaps;
-import org.eclipse.collections.impl.factory.primitive.IntLists;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
 /**

@@ -15,9 +15,9 @@ package org.eclipse.nebula.widgets.nattable.group.performance.command;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.eclipse.collections.api.factory.primitive.IntLists;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
 import org.eclipse.collections.api.list.primitive.MutableIntList;
-import org.eclipse.collections.impl.factory.primitive.IntLists;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.command.CreateColumnGroupCommand;

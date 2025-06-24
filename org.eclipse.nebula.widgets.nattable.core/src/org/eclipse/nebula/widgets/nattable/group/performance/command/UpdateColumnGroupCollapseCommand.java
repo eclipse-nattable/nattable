@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group.performance.command;
 
+import org.eclipse.collections.api.factory.primitive.IntSets;
 import org.eclipse.collections.api.set.primitive.MutableIntSet;
-import org.eclipse.collections.impl.factory.primitive.IntSets;
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel;
 import org.eclipse.nebula.widgets.nattable.group.performance.GroupModel.Group;

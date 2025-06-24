@@ -18,8 +18,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.collections.api.factory.primitive.IntLists;
 import org.eclipse.collections.api.list.primitive.MutableIntList;
-import org.eclipse.collections.impl.factory.primitive.IntLists;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.group.model.IRowGroup;
 import org.eclipse.nebula.widgets.nattable.group.model.IRowGroupModel;

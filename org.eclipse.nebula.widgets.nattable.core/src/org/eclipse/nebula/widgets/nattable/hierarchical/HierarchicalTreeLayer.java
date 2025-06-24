@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.collections.api.factory.primitive.IntLists;
+import org.eclipse.collections.api.factory.primitive.IntSets;
 import org.eclipse.collections.api.list.primitive.MutableIntList;
 import org.eclipse.collections.api.set.primitive.MutableIntSet;
-import org.eclipse.collections.impl.factory.primitive.IntLists;
-import org.eclipse.collections.impl.factory.primitive.IntSets;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;

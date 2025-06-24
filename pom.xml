@@ -64,7 +64,7 @@
 	</modules>
 
 	<properties>
-		<tycho-version>4.0.12</tycho-version>
+		<tycho-version>4.0.13</tycho-version>
         <cbi-version>1.5.2</cbi-version>
         <nattable-version>${project.version}</nattable-version>
 		
@@ -237,6 +237,20 @@
 						</execution>
 					</executions>
 				</plugin>
+                <plugin>
+                    <groupId>org.eclipse.tycho</groupId>
+                    <artifactId>tycho-surefire-plugin</artifactId>
+                    <version>${tycho-version}</version>
+                    <configuration>
+                        <bundleStartLevel>
+                            <bundle>
+                                <id>org.apache.aries.spifly.dynamic.bundle</id>
+                                <level>2</level>
+                                <autoStart>true</autoStart>
+                            </bundle>
+                        </bundleStartLevel>
+                    </configuration>
+                </plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>

@@ -17,10 +17,10 @@ import java.util.Collection;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import org.eclipse.collections.api.factory.primitive.IntLists;
+import org.eclipse.collections.api.factory.primitive.IntSets;
 import org.eclipse.collections.api.list.primitive.MutableIntList;
 import org.eclipse.collections.api.set.primitive.MutableIntSet;
-import org.eclipse.collections.impl.factory.primitive.IntLists;
-import org.eclipse.collections.impl.factory.primitive.IntSets;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnShowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.HideColumnByIndexCommandHandler;
