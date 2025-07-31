@@ -16,8 +16,8 @@
 	
 	<name>NatTable Update Site</name>
 
-	<build>
-		<plugins>
+    <build>
+        <plugins>
             <!-- See https://tycho.eclipseprojects.io/doc/latest/tycho-p2-repository-plugin/assemble-maven-repository-mojo.html -->
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
@@ -31,7 +31,7 @@
                     <categoryName>NatTable</categoryName>
                 </configuration>
             </plugin>
-            
+
             <!-- do not publish this artifact to Maven repositories -->
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -39,48 +39,48 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
-		</plugins>
-	</build>
+        </plugins>
+    </build>
 
-	<profiles>
-		<profile>
-			<id>sonar</id>
+    <profiles>
+        <profile>
+            <id>sonar</id>
 
-			<dependencies>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>org.eclipse.nebula.widgets.nattable.core.tests</artifactId>
-					<version>${project.version}</version>
-				</dependency>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>org.eclipse.nebula.widgets.nattable.extension.glazedlists.tests</artifactId>
-					<version>${project.version}</version>
-				</dependency>
-			</dependencies>
+            <dependencies>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>org.eclipse.nebula.widgets.nattable.core.tests</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>org.eclipse.nebula.widgets.nattable.extension.glazedlists.tests</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
 
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.jacoco</groupId>
-						<artifactId>jacoco-maven-plugin</artifactId>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
 
-						<executions>
-							<execution>
-								<id>report-aggregate</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>report-aggregate</goal>
-								</goals>
-								<configuration>
-									<title>Nebula NatTable</title>
-									<footer>Code Coverage Report for Nebula NatTable ${project.version}</footer>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+                        <executions>
+                            <execution>
+                                <id>report-aggregate</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>report-aggregate</goal>
+                                </goals>
+                                <configuration>
+                                    <title>Nebula NatTable</title>
+                                    <footer>Code Coverage Report for Nebula NatTable ${project.version}</footer>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

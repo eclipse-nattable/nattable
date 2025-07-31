@@ -1,49 +1,49 @@
 maven/mavencentral/com.github.virtuald/curvesapi/1.08, BSD-3-Clause, approved, clearlydefined
 maven/mavencentral/com.glazedlists/glazedlists/1.11.0, MPL-2.0 AND Apache-2.0, approved, CQ20790
 maven/mavencentral/com.zaxxer/SparseBitSet/1.3, Apache-2.0, approved, #10726
-maven/mavencentral/commons-codec/commons-codec/1.17.0, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #14583
-maven/mavencentral/commons-codec/commons-codec/1.17.1, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #14583
-maven/mavencentral/commons-io/commons-io/2.11.0, Apache-2.0, approved, CQ23745
+maven/mavencentral/commons-codec/commons-codec/1.18.0, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #19214
+maven/mavencentral/commons-codec/commons-codec/1.19.0, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #22613
 maven/mavencentral/commons-io/commons-io/2.17.0, Apache-2.0, approved, #16198
-maven/mavencentral/commons-logging/commons-logging/1.0.4, Apache-2.0, approved, CQ1029
+maven/mavencentral/commons-io/commons-io/2.20.0, Apache-2.0, approved, #22562
+maven/mavencentral/commons-logging/commons-logging/1.3.0, Apache-2.0, approved, #11783
 maven/mavencentral/jakarta.annotation/jakarta.annotation-api/2.1.1, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.ca
 maven/mavencentral/jakarta.inject/jakarta.inject-api/2.0.1, Apache-2.0, approved, ee4j.cdi
 maven/mavencentral/jakarta.servlet/jakarta.servlet-api/4.0.4, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.servlet
 maven/mavencentral/javax.inject/javax.inject/1, Apache-2.0, approved, CQ3555
 maven/mavencentral/org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/1.3.7, Apache-2.0, approved, #15243
-maven/mavencentral/org.apache.commons/commons-collections4/4.4, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.apache.commons/commons-compress/1.27.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.apache.commons/commons-collections4/4.5.0, Apache-2.0 AND LicenseRef-Public-Domain, approved, #20791
+maven/mavencentral/org.apache.commons/commons-compress/1.27.1, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #17651
 maven/mavencentral/org.apache.commons/commons-lang3/3.16.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.apache.commons/commons-lang3/3.17.0, Apache-2.0, approved, #16044
+maven/mavencentral/org.apache.commons/commons-lang3/3.18.0, Apache-2.0, approved, #22470
 maven/mavencentral/org.apache.commons/commons-math3/3.6.1, Apache-2.0 AND BSD-3-Clause AND BSD-2-Clause, approved, CQ22025
-maven/mavencentral/org.apache.commons/commons-text/1.12.0, Apache-2.0, approved, #14414
-maven/mavencentral/org.apache.logging.log4j/log4j-api/2.24.1, Apache-2.0, approved, #16095
-maven/mavencentral/org.apache.logging.log4j/log4j-to-slf4j/2.24.1, Apache-2.0, approved, #16094
-maven/mavencentral/org.apache.poi/poi-ooxml-lite/5.3.0, Apache-2.0 AND MIT AND Apache-2.0 AND W3C-19980720, approved, #15534
-maven/mavencentral/org.apache.poi/poi-ooxml/5.3.0, Apache-2.0 AND MIT AND Apache-2.0, approved, #15531
-maven/mavencentral/org.apache.poi/poi/5.3.0, Apache-2.0 AND (Apache-2.0 AND MIT), approved, #15532
-maven/mavencentral/org.apache.xmlbeans/xmlbeans/5.2.2, Apache-2.0, approved, #11782
-maven/mavencentral/org.apache.xmlgraphics/batik-anim/1.18, Apache-2.0, approved, #16572
-maven/mavencentral/org.apache.xmlgraphics/batik-awt-util/1.18, Apache-2.0, approved, #16558
-maven/mavencentral/org.apache.xmlgraphics/batik-bridge/1.18, Apache-2.0, approved, #16596
-maven/mavencentral/org.apache.xmlgraphics/batik-constants/1.18, Apache-2.0, approved, #16575
-maven/mavencentral/org.apache.xmlgraphics/batik-css/1.18, Apache-2.0, approved, #16597
-maven/mavencentral/org.apache.xmlgraphics/batik-dom/1.18, Apache-2.0 AND W3C, approved, #16576
-maven/mavencentral/org.apache.xmlgraphics/batik-ext/1.18, Apache-2.0 AND W3C, approved, #16594
-maven/mavencentral/org.apache.xmlgraphics/batik-gvt/1.18, Apache-2.0, approved, #16561
-maven/mavencentral/org.apache.xmlgraphics/batik-i18n/1.18, Apache-2.0, approved, #16582
-maven/mavencentral/org.apache.xmlgraphics/batik-parser/1.18, Apache-2.0, approved, #16564
-maven/mavencentral/org.apache.xmlgraphics/batik-script/1.18, Apache-2.0, approved, #16577
-maven/mavencentral/org.apache.xmlgraphics/batik-shared-resources/1.18, Apache-2.0, approved, #16599
-maven/mavencentral/org.apache.xmlgraphics/batik-svg-dom/1.18, Apache-2.0 AND W3C, approved, #16579
-maven/mavencentral/org.apache.xmlgraphics/batik-svggen/1.18, Apache-2.0, approved, #16595
-maven/mavencentral/org.apache.xmlgraphics/batik-util/1.18, Apache-2.0, approved, #16578
-maven/mavencentral/org.apache.xmlgraphics/batik-xml/1.18, Apache-2.0, approved, #16581
-maven/mavencentral/org.apache.xmlgraphics/xmlgraphics-commons/2.10, Apache-2.0, approved, #16598
-maven/mavencentral/org.apiguardian/apiguardian-api/1.1.2, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.apache.commons/commons-text/1.14.0, Apache-2.0, approved, #22632
+maven/mavencentral/org.apache.logging.log4j/log4j-api/2.25.1, Apache-2.0, approved, #21940
+maven/mavencentral/org.apache.logging.log4j/log4j-to-slf4j/2.25.1, Apache-2.0, approved, #21937
+maven/mavencentral/org.apache.poi/poi-ooxml-lite/5.4.1, Apache-2.0 AND MIT AND Apache-2.0 AND W3C-19980720, approved, #18529
+maven/mavencentral/org.apache.poi/poi-ooxml/5.4.1, Apache-2.0 AND MIT AND Apache-2.0, approved, #18527
+maven/mavencentral/org.apache.poi/poi/5.4.1, Apache-2.0 AND (Apache-2.0 AND MIT), approved, #18526
+maven/mavencentral/org.apache.xmlbeans/xmlbeans/5.3.0, Apache-2.0 AND W3C-19980720, approved, #17930
+maven/mavencentral/org.apache.xmlgraphics/batik-anim/1.19, Apache-2.0, approved, #20942
+maven/mavencentral/org.apache.xmlgraphics/batik-awt-util/1.19, Apache-2.0, approved, #20932
+maven/mavencentral/org.apache.xmlgraphics/batik-bridge/1.19, Apache-2.0, approved, #20965
+maven/mavencentral/org.apache.xmlgraphics/batik-constants/1.19, Apache-2.0, approved, #20945
+maven/mavencentral/org.apache.xmlgraphics/batik-css/1.19, Apache-2.0, approved, #20969
+maven/mavencentral/org.apache.xmlgraphics/batik-dom/1.19, Apache-2.0 AND W3C, approved, #20947
+maven/mavencentral/org.apache.xmlgraphics/batik-ext/1.19, Apache-2.0 AND W3C, approved, #20962
+maven/mavencentral/org.apache.xmlgraphics/batik-gvt/1.19, Apache-2.0, approved, #20934
+maven/mavencentral/org.apache.xmlgraphics/batik-i18n/1.19, Apache-2.0, approved, #20954
+maven/mavencentral/org.apache.xmlgraphics/batik-parser/1.19, Apache-2.0, approved, #20935
+maven/mavencentral/org.apache.xmlgraphics/batik-script/1.19, Apache-2.0, approved, #20948
+maven/mavencentral/org.apache.xmlgraphics/batik-shared-resources/1.19, Apache-2.0, approved, #20975
+maven/mavencentral/org.apache.xmlgraphics/batik-svg-dom/1.19, Apache-2.0 AND W3C, approved, #20951
+maven/mavencentral/org.apache.xmlgraphics/batik-svggen/1.19, Apache-2.0, approved, #20964
+maven/mavencentral/org.apache.xmlgraphics/batik-util/1.19, Apache-2.0, approved, #20949
+maven/mavencentral/org.apache.xmlgraphics/batik-xml/1.19, Apache-2.0, approved, #20952
+maven/mavencentral/org.apache.xmlgraphics/xmlgraphics-commons/2.11, Apache-2.0 AND Adobe-Glyph AND BSD-3-Clause, approved, #20971
+maven/mavencentral/org.apiguardian/apiguardian-api/1.1.2, Apache-2.0, approved, #17641
 maven/mavencentral/org.eclipse.birt.runtime/org.w3c.css.sac/1.3.1.v200903091627, EPL-2.0, approved, technology.birt
-maven/mavencentral/org.eclipse.collections/eclipse-collections-api/11.1.0, EPL-1.0 OR BSD-3-Clause, approved, technology.collections
-maven/mavencentral/org.eclipse.collections/eclipse-collections/11.1.0, EPL-1.0 OR BSD-3-Clause, approved, technology.collections
+maven/mavencentral/org.eclipse.collections/eclipse-collections-api/12.0.0, EPL-1.0 OR BSD-3-Clause, approved, technology.collections
+maven/mavencentral/org.eclipse.collections/eclipse-collections/12.0.0, EPL-1.0 OR BSD-3-Clause, approved, technology.collections
 maven/mavencentral/org.eclipse.jetty.toolchain/jetty-servlet-api/4.0.6, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty/jetty-http/10.0.9, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty/jetty-io/10.0.9, EPL-2.0 OR Apache-2.0, approved, rt.jetty
@@ -52,63 +52,64 @@ maven/mavencentral/org.eclipse.jetty/jetty-server/10.0.9, EPL-2.0 OR Apache-2.0,
 maven/mavencentral/org.eclipse.jetty/jetty-servlet/10.0.9, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty/jetty-util-ajax/10.0.9, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty/jetty-util/10.0.9, EPL-2.0 OR Apache-2.0, approved, rt.jetty
-maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.core.feature/2.5.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
-maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.core.test/2.5.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
-maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.core/2.5.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
-maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.dataset/2.5.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
-maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.examples.e4.feature/2.5.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
-maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.examples.e4/2.5.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
-maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.examples/2.5.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
-maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.extension.e4.feature/2.5.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
-maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.extension.e4/2.5.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
-maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature/2.5.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
-maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.extension.glazedlists/2.5.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
-maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.extension.nebula.feature/2.5.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
-maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.extension.nebula/2.5.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
-maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.extension.poi.feature/2.5.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
-maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.extension.poi/2.5.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
-maven/mavencentral/org.eclipse.platform/org.eclipse.core.commands/3.9.700, EPL-2.0, approved, eclipse.platform
-maven/mavencentral/org.eclipse.platform/org.eclipse.core.contenttype/3.9.400, EPL-2.0, approved, eclipse.platform
-maven/mavencentral/org.eclipse.platform/org.eclipse.core.jobs/3.15.300, EPL-2.0, approved, eclipse.platform
-maven/mavencentral/org.eclipse.platform/org.eclipse.core.runtime/3.31.100, EPL-2.0, approved, eclipse.platform
+maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.core.feature/2.6.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
+maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.core.test/2.6.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
+maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.core/2.6.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
+maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.dataset/2.6.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
+maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.examples.e4.feature/2.6.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
+maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.examples.e4/2.6.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
+maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.examples/2.6.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
+maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.extension.e4.feature/2.6.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
+maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.extension.e4/2.6.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
+maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature/2.6.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
+maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.extension.glazedlists/2.6.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
+maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.extension.nebula.feature/2.6.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
+maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.extension.nebula/2.6.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
+maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.extension.poi.feature/2.6.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
+maven/mavencentral/org.eclipse.nebula.widgets.nattable/org.eclipse.nebula.widgets.nattable.extension.poi/2.6.0-SNAPSHOT, EPL-2.0, approved, technology.nebula.nattable
+maven/mavencentral/org.eclipse.platform/org.eclipse.core.commands/3.10.200, EPL-2.0, approved, eclipse.platform
+maven/mavencentral/org.eclipse.platform/org.eclipse.core.contenttype/3.9.600, EPL-2.0, approved, eclipse.platform
+maven/mavencentral/org.eclipse.platform/org.eclipse.core.jobs/3.15.600, EPL-2.0, approved, eclipse.platform
+maven/mavencentral/org.eclipse.platform/org.eclipse.core.runtime/3.33.100, EPL-2.0, approved, eclipse.platform
 maven/mavencentral/org.eclipse.platform/org.eclipse.e4.core.di.annotations/1.6.600, EPL-2.0, approved, eclipse.platform
 maven/mavencentral/org.eclipse.platform/org.eclipse.e4.ui.css.core/0.12.1200, EPL-2.0, approved, eclipse.platform
 maven/mavencentral/org.eclipse.platform/org.eclipse.e4.ui.css.swt/0.13.1000, EPL-2.0, approved, eclipse.platform
-maven/mavencentral/org.eclipse.platform/org.eclipse.equinox.app/1.7.100, EPL-2.0, approved, eclipse.platform
-maven/mavencentral/org.eclipse.platform/org.eclipse.equinox.common/3.12.0, EPL-2.0, approved, eclipse.platform
-maven/mavencentral/org.eclipse.platform/org.eclipse.equinox.common/3.19.100, EPL-2.0, approved, eclipse.platform
-maven/mavencentral/org.eclipse.platform/org.eclipse.equinox.preferences/3.11.100, EPL-2.0, approved, eclipse.platform
-maven/mavencentral/org.eclipse.platform/org.eclipse.equinox.registry/3.12.100, EPL-2.0, approved, eclipse.platform
-maven/mavencentral/org.eclipse.platform/org.eclipse.jface/3.20.0, EPL-2.0, approved, eclipse.platform
-maven/mavencentral/org.eclipse.platform/org.eclipse.osgi/3.20.0, EPL-2.0, approved, eclipse.platform
+maven/mavencentral/org.eclipse.platform/org.eclipse.equinox.app/1.7.400, EPL-2.0, approved, eclipse.platform
+maven/mavencentral/org.eclipse.platform/org.eclipse.equinox.common/3.16.100, EPL-2.0, approved, eclipse.platform
+maven/mavencentral/org.eclipse.platform/org.eclipse.equinox.common/3.20.100, EPL-2.0, approved, eclipse.platform
+maven/mavencentral/org.eclipse.platform/org.eclipse.equinox.preferences/3.11.400, EPL-2.0, approved, eclipse.platform
+maven/mavencentral/org.eclipse.platform/org.eclipse.equinox.registry/3.12.400, EPL-2.0, approved, eclipse.platform
+maven/mavencentral/org.eclipse.platform/org.eclipse.jface/3.26.0, EPL-2.0, approved, eclipse.platform
+maven/mavencentral/org.eclipse.platform/org.eclipse.osgi/3.23.100, EPL-2.0, approved, eclipse.platform
 maven/mavencentral/org.eclipse.platform/org.eclipse.swt/3.114.100, EPL-2.0, approved, eclipse.platform
-maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.11.3, EPL-2.0, approved, #15935
-maven/mavencentral/org.junit.jupiter/junit-jupiter-engine/5.11.3, EPL-2.0, approved, #15939
-maven/mavencentral/org.junit.jupiter/junit-jupiter-params/5.11.3, EPL-2.0, approved, #15940
-maven/mavencentral/org.junit.platform/junit-platform-commons/1.11.3, EPL-2.0, approved, #15936
-maven/mavencentral/org.junit.platform/junit-platform-engine/1.11.3, EPL-2.0, approved, #15932
-maven/mavencentral/org.junit.platform/junit-platform-launcher/1.11.3, EPL-2.0, approved, #15934
+maven/mavencentral/org.eclipse.platform/org.eclipse.swt/3.120.0, EPL-2.0, approved, eclipse.platform
+maven/mavencentral/org.eclipse.platform/org.eclipse.swt/3.128.0, EPL-2.0, approved, eclipse.platform
+maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.13.4, EPL-2.0, approved, #21577
+maven/mavencentral/org.junit.jupiter/junit-jupiter-engine/5.13.4, EPL-2.0, approved, #21699
+maven/mavencentral/org.junit.jupiter/junit-jupiter-params/5.13.4, EPL-2.0, approved, #21706
+maven/mavencentral/org.junit.platform/junit-platform-commons/1.13.4, EPL-2.0, approved, #21576
+maven/mavencentral/org.junit.platform/junit-platform-engine/1.13.4, EPL-2.0, approved, #21701
+maven/mavencentral/org.junit.platform/junit-platform-launcher/1.13.4, EPL-2.0, approved, #21708
 maven/mavencentral/org.opentest4j/opentest4j/1.3.0, Apache-2.0, approved, #9713
-maven/mavencentral/org.osgi/org.osgi.service.prefs/1.1.2, Apache-2.0, approved, #15379
-maven/mavencentral/org.osgi/org.osgi.util.function/1.2.0, Apache-2.0, approved, #15222
-maven/mavencentral/org.osgi/org.osgi.util.measurement/1.0.2, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.osgi/org.osgi.util.position/1.0.1, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.osgi/org.osgi.util.promise/1.2.0, Apache-2.0, approved, #15682
-maven/mavencentral/org.osgi/org.osgi.util.xml/1.0.2, Apache-2.0, approved, #15377
+maven/mavencentral/org.osgi/org.osgi.service.prefs/1.1.2, Apache-2.0, approved, technology.osgi-technology
+maven/mavencentral/org.osgi/org.osgi.util.function/1.2.0, Apache-2.0, approved, technology.osgi-technology
+maven/mavencentral/org.osgi/org.osgi.util.measurement/1.0.2, Apache-2.0, approved, technology.osgi-technology
+maven/mavencentral/org.osgi/org.osgi.util.position/1.0.1, Apache-2.0, approved, technology.osgi-technology
+maven/mavencentral/org.osgi/org.osgi.util.promise/1.2.0, Apache-2.0, approved, technology.osgi-technology
+maven/mavencentral/org.osgi/org.osgi.util.xml/1.0.2, Apache-2.0, approved, technology.osgi-technology
 maven/mavencentral/org.osgi/osgi.annotation/8.0.1, Apache-2.0, approved, #6909
-maven/mavencentral/org.ow2.asm/asm-analysis/9.7.1, BSD-3-Clause, approved, #16463
-maven/mavencentral/org.ow2.asm/asm-commons/9.7.1, BSD-3-Clause, approved, #16465
-maven/mavencentral/org.ow2.asm/asm-tree/9.7.1, BSD-3-Clause, approved, #16466
-maven/mavencentral/org.ow2.asm/asm-util/9.7.1, BSD-3-Clause, approved, #16467
-maven/mavencentral/org.ow2.asm/asm/9.7.1, BSD-3-Clause, approved, #16464
+maven/mavencentral/org.ow2.asm/asm-analysis/9.8, BSD-3-Clause, approved, #20390
+maven/mavencentral/org.ow2.asm/asm-commons/9.8, BSD-3-Clause, approved, #20391
+maven/mavencentral/org.ow2.asm/asm-tree/9.8, BSD-3-Clause, approved, #20392
+maven/mavencentral/org.ow2.asm/asm-util/9.8, BSD-3-Clause, approved, #20389
+maven/mavencentral/org.ow2.asm/asm/9.8, BSD-3-Clause, approved, #20388
 maven/mavencentral/org.ow2.sat4j/org.ow2.sat4j.core/2.3.6, (EPL-1.0 OR LGPL-2.0-or-later) AND MIT, approved, #1929
 maven/mavencentral/org.ow2.sat4j/org.ow2.sat4j.pb/2.3.6, (EPL-1.0 OR LGPL-2.1-or-later) AND MIT, approved, #1928
 maven/mavencentral/org.slf4j/slf4j-api/1.7.30, MIT, approved, CQ13368
-maven/mavencentral/org.slf4j/slf4j-api/2.0.16, MIT, approved, #5915
-maven/mavencentral/org.slf4j/slf4j-simple/2.0.16, MIT, approved, #10372
+maven/mavencentral/org.slf4j/slf4j-api/2.0.17, MIT, approved, #5915
+maven/mavencentral/org.slf4j/slf4j-simple/2.0.17, MIT, approved, #10372
 maven/mavencentral/xml-apis/xml-apis-ext/1.3.04, Apache-2.0, approved, CQ1448
 maven/mavencentral/xml-apis/xml-apis/1.4.01, Apache-2.0 OR LicenseRef-Public-Domain OR W3C, approved, CQ9621
-p2/orbit/p2.eclipse.feature/org.eclipse.collections.feature/11.1.0.v20220705-1455, EPL-1.0 OR BSD-3-Clause, approved, technology.collections
 p2/orbit/p2.eclipse.feature/org.eclipse.e4.rcp.source/4.24.0.v20220530-1036, EPL-2.0, approved, eclipse.platform
 p2/orbit/p2.eclipse.feature/org.eclipse.e4.rcp/4.24.0.v20220530-1036, EPL-2.0, approved, eclipse.platform
 p2/orbit/p2.eclipse.feature/org.eclipse.ecf.core.feature.source/1.6.1.v20211005-1944, EPL-1.0, approved, rt.ecf
@@ -170,31 +171,31 @@ p2/orbit/p2.eclipse.plugin/javax.inject.source/1.0.0.v20220405-0441, Apache-2.0,
 p2/orbit/p2.eclipse.plugin/javax.inject/1.0.0.v20220405-0441, Apache-2.0, approved, CQ3555
 p2/orbit/p2.eclipse.plugin/javax.servlet.jsp.source/2.2.0.v201112011158, , approved, CQ4710
 p2/orbit/p2.eclipse.plugin/javax.servlet.jsp/2.2.0.v201112011158, , approved, CQ4710
-p2/orbit/p2.eclipse.plugin/junit-jupiter-migrationsupport/5.11.3, EPL-2.0, approved, #16021
-p2/orbit/p2.eclipse.plugin/junit-platform-runner/1.11.3, EPL-2.0, approved, #16093
-p2/orbit/p2.eclipse.plugin/junit-platform-suite-api/1.11.3, EPL-2.0, approved, #16092
-p2/orbit/p2.eclipse.plugin/junit-vintage-engine/5.11.3, EPL-2.0, approved, #16020
+p2/orbit/p2.eclipse.plugin/junit-jupiter-migrationsupport/5.13.4, EPL-2.0, approved, #22684
+p2/orbit/p2.eclipse.plugin/junit-platform-runner/1.13.4, EPL-2.0, approved, #22683
+p2/orbit/p2.eclipse.plugin/junit-platform-suite-api/1.13.4, EPL-2.0, approved, #22685
+p2/orbit/p2.eclipse.plugin/junit-vintage-engine/5.13.4, EPL-2.0, approved, #22682
 p2/orbit/p2.eclipse.plugin/org.apache.ant.source/1.10.12.v20211102-1452, Apache-2.0 AND EPL-2.0 AND W3C AND LicenseRef-Flora AND LicenseRef-Public-Domain, approved, CQ23806
 p2/orbit/p2.eclipse.plugin/org.apache.ant/1.10.12.v20211102-1452, Apache-2.0 AND EPL-2.0 AND W3C AND LicenseRef-Flora AND LicenseRef-Public-Domain, approved, CQ23806
-p2/orbit/p2.eclipse.plugin/org.apache.batik.anim/1.18.0.v20241009-1200, Apache-2.0, approved, #16601
-p2/orbit/p2.eclipse.plugin/org.apache.batik.awt.util/1.18.0.v20241009-1200, Apache-2.0, approved, #16569
-p2/orbit/p2.eclipse.plugin/org.apache.batik.bridge/1.18.0.v20241009-1200, Apache-2.0, approved, #16593
+p2/orbit/p2.eclipse.plugin/org.apache.batik.anim/1.19.0.v20250506-1400, Apache-2.0, approved, #20959
+p2/orbit/p2.eclipse.plugin/org.apache.batik.awt.util/1.19.0.v20250506-1400, Apache-2.0, approved, #20953
+p2/orbit/p2.eclipse.plugin/org.apache.batik.bridge/1.19.0.v20250506-1400, Apache-2.0, approved, #20970
 p2/orbit/p2.eclipse.plugin/org.apache.batik.constants.source/1.14.0.v20210324-0332, Apache-2.0, approved, #196
-p2/orbit/p2.eclipse.plugin/org.apache.batik.constants/1.18.0.v20241009-1200, Apache-2.0, approved, #16580
+p2/orbit/p2.eclipse.plugin/org.apache.batik.constants/1.19.0.v20250506-1400, Apache-2.0, approved, #20931
 p2/orbit/p2.eclipse.plugin/org.apache.batik.css.source/1.14.0.v20210324-0332, Apache-2.0, approved, #196
-p2/orbit/p2.eclipse.plugin/org.apache.batik.css/1.18.0.v20241009-1200, Apache-2.0, approved, #16571
-p2/orbit/p2.eclipse.plugin/org.apache.batik.dom.svg/1.18.0.v20241009-1200, Apache-2.0 AND W3C, approved, #16556
-p2/orbit/p2.eclipse.plugin/org.apache.batik.dom/1.18.0.v20241009-1200, Apache-2.0 AND W3C, approved, #16559
-p2/orbit/p2.eclipse.plugin/org.apache.batik.ext/1.18.0.v20241009-1200, Apache-2.0 AND W3C, approved, #16584
-p2/orbit/p2.eclipse.plugin/org.apache.batik.gvt/1.18.0.v20241009-1200, Apache-2.0, approved, #16560
+p2/orbit/p2.eclipse.plugin/org.apache.batik.css/1.19.0.v20250506-1400, Apache-2.0, approved, #20938
+p2/orbit/p2.eclipse.plugin/org.apache.batik.dom.svg/1.19.0.v20250506-1400, Apache-2.0 AND W3C, approved, #20950
+p2/orbit/p2.eclipse.plugin/org.apache.batik.dom/1.19.0.v20250506-1400, Apache-2.0 AND W3C, approved, #20974
+p2/orbit/p2.eclipse.plugin/org.apache.batik.ext/1.19.0.v20250506-1400, Apache-2.0 AND W3C, approved, #20940
+p2/orbit/p2.eclipse.plugin/org.apache.batik.gvt/1.19.0.v20250506-1400, Apache-2.0, approved, #20966
 p2/orbit/p2.eclipse.plugin/org.apache.batik.i18n.source/1.14.0.v20210324-0332, Apache-2.0, approved, #196
-p2/orbit/p2.eclipse.plugin/org.apache.batik.i18n/1.18.0.v20241009-1200, Apache-2.0, approved, #16573
-p2/orbit/p2.eclipse.plugin/org.apache.batik.parser/1.18.0.v20241009-1200, Apache-2.0, approved, #16557
-p2/orbit/p2.eclipse.plugin/org.apache.batik.script/1.18.0.v20241009-1200, Apache-2.0, approved, #16563
-p2/orbit/p2.eclipse.plugin/org.apache.batik.svggen/1.18.0.v20241009-1200, Apache-2.0, approved, #16562
+p2/orbit/p2.eclipse.plugin/org.apache.batik.i18n/1.19.0.v20250506-1400, Apache-2.0, approved, #20946
+p2/orbit/p2.eclipse.plugin/org.apache.batik.parser/1.19.0.v20250506-1400, Apache-2.0, approved, #20937
+p2/orbit/p2.eclipse.plugin/org.apache.batik.script/1.19.0.v20250506-1400, Apache-2.0, approved, #20936
+p2/orbit/p2.eclipse.plugin/org.apache.batik.svggen/1.19.0.v20250506-1400, Apache-2.0, approved, #20943
 p2/orbit/p2.eclipse.plugin/org.apache.batik.util.source/1.14.0.v20210324-0332, Apache-2.0, approved, #196
-p2/orbit/p2.eclipse.plugin/org.apache.batik.util/1.18.0.v20241009-1200, Apache-2.0, approved, #16592
-p2/orbit/p2.eclipse.plugin/org.apache.batik.xml/1.18.0.v20241009-1200, Apache-2.0, approved, #16574
+p2/orbit/p2.eclipse.plugin/org.apache.batik.util/1.19.0.v20250506-1400, Apache-2.0, approved, #20973
+p2/orbit/p2.eclipse.plugin/org.apache.batik.xml/1.19.0.v20250506-1400, Apache-2.0, approved, #20944
 p2/orbit/p2.eclipse.plugin/org.apache.commons.codec.source/1.14.0.v20200818-1422, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #3905
 p2/orbit/p2.eclipse.plugin/org.apache.commons.codec/1.14.0.v20200818-1422, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #3905
 p2/orbit/p2.eclipse.plugin/org.apache.commons.io.source/2.8.0.v20210415-0900, Apache-2.0, approved, CQ23182
@@ -227,13 +228,13 @@ p2/orbit/p2.eclipse.plugin/org.apache.lucene.analyzers-smartcn.source/8.4.1.v202
 p2/orbit/p2.eclipse.plugin/org.apache.lucene.analyzers-smartcn/8.4.1.v20200122-1459, Apache-2.0, approved, CQ21449
 p2/orbit/p2.eclipse.plugin/org.apache.lucene.core.source/8.4.1.v20200122-1459, Apache-2.0 AND BSD-3-Clause AND NCSA AND LicenseRef-sunpro AND ICU AND LicenseRef-unicode-mappings AND MIT, approved, #3051
 p2/orbit/p2.eclipse.plugin/org.apache.lucene.core/8.4.1.v20200122-1459, Apache-2.0 AND BSD-3-Clause AND NCSA AND LicenseRef-sunpro AND ICU AND LicenseRef-unicode-mappings AND MIT, approved, #3051
-p2/orbit/p2.eclipse.plugin/org.apache.poi.ooxml.schemas/5.3.0.v20240703-1000, Apache-2.0 AND MIT AND Apache-2.0 AND W3C-19980720, approved, #15535
-p2/orbit/p2.eclipse.plugin/org.apache.poi.ooxml/5.3.0.v20240703-1000, Apache-2.0 AND MIT AND Apache-2.0, approved, #15531
-p2/orbit/p2.eclipse.plugin/org.apache.poi/5.3.0.v20240703-1000, Apache-2.0 AND (Apache-2.0 AND MIT), approved, #15532
-p2/orbit/p2.eclipse.plugin/org.apache.xmlbeans/5.2.2.v20241105-1800, Apache-2.0, approved, #11782
+p2/orbit/p2.eclipse.plugin/org.apache.poi.ooxml.schemas/5.4.1.v20250715-1000, Apache-2.0 AND MIT AND Apache-2.0 AND W3C-19980720, approved, #18531
+p2/orbit/p2.eclipse.plugin/org.apache.poi.ooxml/5.4.1.v20250715-1000, Apache-2.0 AND MIT AND Apache-2.0, approved, #18527
+p2/orbit/p2.eclipse.plugin/org.apache.poi/5.4.1.v20250715-1000, Apache-2.0 AND (Apache-2.0 AND MIT), approved, #18526
+p2/orbit/p2.eclipse.plugin/org.apache.xmlbeans/5.3.0.v20241214-0800, Apache-2.0 AND W3C-19980720, approved, #17930
 p2/orbit/p2.eclipse.plugin/org.apache.xmlgraphics.source/2.6.0.v20210409-0748, Apache-2.0, approved, CQ23228
 p2/orbit/p2.eclipse.plugin/org.apache.xmlgraphics/2.6.0.v20210409-0748, Apache-2.0, approved, CQ23228
-p2/orbit/p2.eclipse.plugin/org.apiguardian.api/1.1.2, Apache-2.0, approved, #5353
+p2/orbit/p2.eclipse.plugin/org.apiguardian.api/1.1.2, Apache-2.0, approved, #17641
 p2/orbit/p2.eclipse.plugin/org.apiguardian.source/1.1.2.v20211018-1956, EPL-2.0 AND Apache-2.0, approved, CQ20556
 p2/orbit/p2.eclipse.plugin/org.apiguardian/1.1.2.v20211018-1956, EPL-2.0 AND Apache-2.0, approved, CQ20556
 p2/orbit/p2.eclipse.plugin/org.bouncycastle.bcpg/1.70.0.v20220507-1208, Apache-2.0, approved, #3894
@@ -244,7 +245,6 @@ p2/orbit/p2.eclipse.plugin/org.eclipse.ant.launching.source/1.3.300.v20220408-06
 p2/orbit/p2.eclipse.plugin/org.eclipse.ant.launching/1.3.300.v20220408-0629, EPL-2.0, approved, eclipse.platform
 p2/orbit/p2.eclipse.plugin/org.eclipse.ant.ui.source/3.8.200.v20220214-2001, EPL-2.0, approved, eclipse.platform
 p2/orbit/p2.eclipse.plugin/org.eclipse.ant.ui/3.8.200.v20220214-2001, EPL-2.0, approved, eclipse.platform
-p2/orbit/p2.eclipse.plugin/org.eclipse.collections/11.1.0.v20220705-1455, EPL-1.0 OR BSD-3-Clause, approved, technology.collections
 p2/orbit/p2.eclipse.plugin/org.eclipse.compare.core.source/3.7.0.v20220513-0551, EPL-2.0, approved, eclipse.platform
 p2/orbit/p2.eclipse.plugin/org.eclipse.compare.core/3.7.0.v20220513-0551, EPL-2.0, approved, eclipse.platform
 p2/orbit/p2.eclipse.plugin/org.eclipse.compare.source/3.8.400.v20220420-1133, EPL-2.0, approved, eclipse.platform
@@ -551,31 +551,31 @@ p2/orbit/p2.eclipse.plugin/org.eclipse.ltk.core.refactoring.source/3.12.200.v202
 p2/orbit/p2.eclipse.plugin/org.eclipse.ltk.core.refactoring/3.12.200.v20220502-1514, EPL-2.0, approved, eclipse.platform
 p2/orbit/p2.eclipse.plugin/org.eclipse.ltk.ui.refactoring.source/3.12.100.v20220329-1353, EPL-2.0, approved, eclipse.platform
 p2/orbit/p2.eclipse.plugin/org.eclipse.ltk.ui.refactoring/3.12.100.v20220329-1353, EPL-2.0, approved, eclipse.platform
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.cwt/1.1.0.202402091246, EPL-2.0, approved, technology.nebula
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.cdatetime/1.5.0.202402091246, EPL-2.0, approved, technology.nebula
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.core.source/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.core.test.source/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.core.test/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.core/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.dataset.source/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.dataset/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.examples.e4.source/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.examples.e4/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.examples.source/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.examples/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.e4.source/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.e4/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.glazedlists.source/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.glazedlists.test.source/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.glazedlists.test/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.glazedlists/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.nebula.source/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.nebula.test.source/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.nebula.test/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.nebula/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.poi.source/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.poi/2.5.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
-p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.richtext/1.5.1.202402091246, EPL-2.0, approved, technology.nebula
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.cwt/1.1.0.202402011804, EPL-2.0, approved, technology.nebula
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.cdatetime/1.5.0.202402011804, EPL-2.0, approved, technology.nebula
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.core.source/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.core.test.source/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.core.test/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.core/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.dataset.source/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.dataset/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.examples.e4.source/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.examples.e4/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.examples.source/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.examples/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.e4.source/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.e4/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.glazedlists.source/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.glazedlists.test.source/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.glazedlists.test/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.glazedlists/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.nebula.source/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.nebula.test.source/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.nebula.test/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.nebula/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.poi.source/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.nattable.extension.poi/2.6.0.qualifier, EPL-2.0, approved, technology.nebula.nattable
+p2/orbit/p2.eclipse.plugin/org.eclipse.nebula.widgets.richtext/1.5.1.202402011804, EPL-2.0, approved, technology.nebula
 p2/orbit/p2.eclipse.plugin/org.eclipse.osgi.compatibility.state.source/1.2.600.v20220207-1403, EPL-2.0, approved, eclipse.equinox
 p2/orbit/p2.eclipse.plugin/org.eclipse.osgi.compatibility.state/1.2.600.v20220207-1403, EPL-2.0, approved, eclipse.equinox
 p2/orbit/p2.eclipse.plugin/org.eclipse.osgi.services.source/3.10.200.v20210723-0643, EPL-2.0, approved, eclipse.equinox
@@ -661,8 +661,8 @@ p2/orbit/p2.eclipse.plugin/org.eclipse.text.quicksearch.source/1.1.300.v20211203
 p2/orbit/p2.eclipse.plugin/org.eclipse.text.quicksearch/1.1.300.v20211203-1705, EPL-2.0, approved, eclipse.platform
 p2/orbit/p2.eclipse.plugin/org.eclipse.text.source/3.12.100.v20220506-1404, EPL-2.0, approved, eclipse.platform
 p2/orbit/p2.eclipse.plugin/org.eclipse.text/3.12.100.v20220506-1404, EPL-2.0, approved, eclipse.platform
-p2/orbit/p2.eclipse.plugin/org.eclipse.tools.layout.spy.source/1.1.0.v20210110-1247, EPL-2.0, approved, eclipse.pde
-p2/orbit/p2.eclipse.plugin/org.eclipse.tools.layout.spy/1.1.0.v20210110-1247, EPL-2.0, approved, eclipse.pde
+p2/orbit/p2.eclipse.plugin/org.eclipse.tools.layout.spy.source/1.1.0.v20210110-1247, EPL-2.0, approved, tools.cdt
+p2/orbit/p2.eclipse.plugin/org.eclipse.tools.layout.spy/1.1.0.v20210110-1247, EPL-2.0, approved, tools.cdt
 p2/orbit/p2.eclipse.plugin/org.eclipse.ui.browser.source/3.7.100.v20211105-1434, EPL-2.0, approved, eclipse.platform
 p2/orbit/p2.eclipse.plugin/org.eclipse.ui.browser/3.7.100.v20211105-1434, EPL-2.0, approved, eclipse.platform
 p2/orbit/p2.eclipse.plugin/org.eclipse.ui.cheatsheets.source/3.7.300.v20210507-0822, EPL-2.0, approved, eclipse.platform
@@ -747,8 +747,8 @@ p2/orbit/p2.eclipse.plugin/org.junit.source/4.13.2.v20211018-1956, EPL-1.0, appr
 p2/orbit/p2.eclipse.plugin/org.junit.vintage.engine.source/5.8.1.v20211018-1956, EPL-2.0, approved, #3830
 p2/orbit/p2.eclipse.plugin/org.junit.vintage.engine/5.8.1.v20211018-1956, EPL-2.0, approved, #3830
 p2/orbit/p2.eclipse.plugin/org.junit/4.13.2.v20211018-1956, EPL-1.0, approved, CQ21439
-p2/orbit/p2.eclipse.plugin/org.opentest4j.source/1.2.0.v20211018-1956, EPL-2.0 AND Apache-2.0, approved, CQ20556
-p2/orbit/p2.eclipse.plugin/org.opentest4j/1.2.0.v20211018-1956, EPL-2.0 AND Apache-2.0, approved, CQ20556
+p2/orbit/p2.eclipse.plugin/org.opentest4j.source/1.2.0.v20211018-1956, Apache-2.0, approved, #17680
+p2/orbit/p2.eclipse.plugin/org.opentest4j/1.2.0.v20211018-1956, Apache-2.0, approved, #17680
 p2/orbit/p2.eclipse.plugin/org.slf4j.api.source/1.7.30.v20200204-2150, MIT, approved, CQ21574
 p2/orbit/p2.eclipse.plugin/org.slf4j.api/1.7.30.v20200204-2150, MIT, approved, CQ21574
 p2/orbit/p2.eclipse.plugin/org.tukaani.xz.source/1.9.0.v20210624-1259, LicenseRef-Public-Domain, approved, CQ23498
