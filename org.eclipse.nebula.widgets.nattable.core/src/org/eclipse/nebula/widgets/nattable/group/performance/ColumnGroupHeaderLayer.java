@@ -2362,6 +2362,9 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                     ((IStructuralChangeEvent) event).isHorizontalStructureChanged()) {
                 IStructuralChangeEvent changeEvent = (IStructuralChangeEvent) event;
                 Collection<StructuralDiff> columnDiffs = changeEvent.getColumnDiffs();
+
+                boolean performUpdate = false;
+
                 if (columnDiffs != null && !columnDiffs.isEmpty()) {
 
                     int[] deletedPositions = getDeletedPositions(columnDiffs);
@@ -2379,6 +2382,8 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                         } else {
                             handleDeleteDiffs(deletedPositions);
                         }
+
+                        performUpdate = true;
                     }
 
                     for (StructuralDiff diff : columnDiffs) {
@@ -2469,11 +2474,15 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
                                     doCommand(cmd);
                                 }
                             }
+
+                            performUpdate = true;
                         }
                     }
 
-                    // update visible start positions of all groups
-                    updateVisibleStartPositions();
+                    if (performUpdate) {
+                        // update visible start positions of all groups
+                        updateVisibleStartPositions();
+                    }
                 } else {
                     // trigger a consistency check as the details of the event
                     // probably where removed on converting the layer stack
