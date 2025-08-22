@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2021 Dirk Fauth and others.
+ * Copyright (c) 2013, 2025 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -187,11 +187,6 @@ public class _5043_VerticalSplitViewportExample extends AbstractNatExample {
         sliderTopComposite.setLayoutData(gridData);
 
         Slider sliderTop = new Slider(sliderTopComposite, SWT.VERTICAL);
-        gridData = new GridData();
-        gridData.horizontalAlignment = GridData.FILL;
-        gridData.verticalAlignment = GridData.FILL;
-        sliderTop.setLayoutData(gridData);
-
         top.setVerticalScroller(new SliderScroller(sliderTop));
 
         // Slider Bottom

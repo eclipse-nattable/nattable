@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2023 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -171,6 +171,15 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     }
 
     /**
+     *
+     * @return The scroller that is used for horizontal scrolling.
+     * @since 2.6
+     */
+    public IScroller<?> getHorizontalScroller() {
+        return this.horizontalScroller;
+    }
+
+    /**
      * Set a different vertical scroller than the default one.
      *
      * @param scroller
@@ -183,6 +192,15 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
             this.vBarListener.dispose();
             this.vBarListener = null;
         }
+    }
+
+    /**
+     *
+     * @return The scroller that is used for vertical scrolling.
+     * @since 2.6
+     */
+    public IScroller<?> getVerticalScroller() {
+        return this.verticalScroller;
     }
 
     public int getMaxWidth() {

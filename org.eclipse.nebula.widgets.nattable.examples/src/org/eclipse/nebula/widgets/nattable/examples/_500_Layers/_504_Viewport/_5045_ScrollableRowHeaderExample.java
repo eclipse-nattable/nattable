@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2024 Dirk Fauth and others.
+ * Copyright (c) 2015, 2025 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ package org.eclipse.nebula.widgets.nattable.examples._500_Layers._504_Viewport;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
@@ -183,6 +184,8 @@ public class _5045_ScrollableRowHeaderExample extends AbstractNatExample {
         gridLayout.verticalSpacing = 0;
         composite.setLayout(gridLayout);
 
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(composite);
+
         NatTable natTable = new NatTable(composite, gridLayer);
         GridData gridData = new GridData();
         gridData.horizontalAlignment = GridData.FILL;
@@ -219,14 +222,16 @@ public class _5045_ScrollableRowHeaderExample extends AbstractNatExample {
         return natTable;
     }
 
-    private void createSplitSliders(
-            Composite natTableParent, final ViewportLayer left, int fixedHeaderWidth, final ViewportLayer right) {
+    private void createSplitSliders(Composite natTableParent, final ViewportLayer left, int fixedHeaderWidth, final ViewportLayer right) {
+        // calculate the slider height according to the display scaling
+        int sliderHeight = GUIHelper.convertHorizontalPixelToDpi(17, true);
+
         Composite sliderComposite = new Composite(natTableParent, SWT.NONE);
         GridData gridData = new GridData();
         gridData.horizontalAlignment = GridData.FILL;
         gridData.grabExcessHorizontalSpace = true;
         gridData.grabExcessVerticalSpace = false;
-        gridData.heightHint = 17;
+        gridData.heightHint = sliderHeight;
         sliderComposite.setLayoutData(gridData);
 
         GridLayout gridLayout = new GridLayout(2, false);
@@ -243,7 +248,7 @@ public class _5045_ScrollableRowHeaderExample extends AbstractNatExample {
             @Override
             public Point computeSize(int wHint, int hHint, boolean changed) {
                 int width = ((ClientAreaAdapter) left.getClientAreaProvider()).getWidth() + fixedHeaderWidth;
-                return new Point(width, 17);
+                return new Point(width, sliderHeight);
             }
         };
         sliderLeftComposite.setLayout(new FillLayout());
@@ -253,11 +258,6 @@ public class _5045_ScrollableRowHeaderExample extends AbstractNatExample {
         sliderLeftComposite.setLayoutData(gridData);
 
         Slider sliderLeft = new Slider(sliderLeftComposite, SWT.HORIZONTAL);
-        gridData = new GridData();
-        gridData.horizontalAlignment = GridData.FILL;
-        gridData.verticalAlignment = GridData.FILL;
-        sliderLeft.setLayoutData(gridData);
-
         left.setHorizontalScroller(new SliderScroller(sliderLeft));
 
         // Slider Right

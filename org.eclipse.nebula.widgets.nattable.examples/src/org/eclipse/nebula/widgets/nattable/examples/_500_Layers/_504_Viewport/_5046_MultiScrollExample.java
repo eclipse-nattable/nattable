@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, 2024 Dirk Fauth and others.
+ * Copyright (c) 2016, 2025 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
@@ -152,6 +153,7 @@ public class _5046_MultiScrollExample extends AbstractNatExample {
         contentColumnHeaderLayer.setLayerPainter(new CellLayerPainter(true, false));
 
         ScrolledComposite sc = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(sc);
 
         // Wrap NatTable in composite so we can slap on the external horizontal
         // sliders
@@ -162,6 +164,8 @@ public class _5046_MultiScrollExample extends AbstractNatExample {
         gridLayout.horizontalSpacing = 0;
         gridLayout.verticalSpacing = 0;
         composite.setLayout(gridLayout);
+
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(composite);
 
         NatTable natTable = new NatTable(composite, gridLayer);
         GridData gridData = new GridData();
@@ -222,14 +226,16 @@ public class _5046_MultiScrollExample extends AbstractNatExample {
      * @param gridLayer
      * @param fixedHeaderWidth
      */
-    private void createSplitSliders(
-            Composite natTableParent, ExtendedGridLayer gridLayer, int fixedHeaderWidth) {
+    private void createSplitSliders(Composite natTableParent, ExtendedGridLayer gridLayer, int fixedHeaderWidth) {
+        // calculate the slider height according to the display scaling
+        int sliderHeight = GUIHelper.convertHorizontalPixelToDpi(17, true);
+
         Composite sliderComposite = new Composite(natTableParent, SWT.NONE);
         GridData gridData = new GridData();
         gridData.horizontalAlignment = GridData.FILL;
         gridData.grabExcessHorizontalSpace = true;
         gridData.grabExcessVerticalSpace = false;
-        gridData.heightHint = 17;
+        gridData.heightHint = sliderHeight;
         sliderComposite.setLayoutData(gridData);
 
         GridLayout gridLayout = new GridLayout(2, false);
@@ -246,7 +252,7 @@ public class _5046_MultiScrollExample extends AbstractNatExample {
             @Override
             public Point computeSize(int wHint, int hHint, boolean changed) {
                 int width = ((ClientAreaAdapter) gridLayer.getStructureBody().getViewportLayer().getClientAreaProvider()).getWidth() + fixedHeaderWidth;
-                return new Point(width, 17);
+                return new Point(width, sliderHeight);
             }
         };
         sliderLeftComposite.setLayout(new FillLayout());
@@ -256,11 +262,6 @@ public class _5046_MultiScrollExample extends AbstractNatExample {
         sliderLeftComposite.setLayoutData(gridData);
 
         Slider sliderLeft = new Slider(sliderLeftComposite, SWT.HORIZONTAL);
-        gridData = new GridData();
-        gridData.horizontalAlignment = GridData.FILL;
-        gridData.verticalAlignment = GridData.FILL;
-        sliderLeft.setLayoutData(gridData);
-
         gridLayer.getStructureBody().getViewportLayer().setHorizontalScroller(new SliderScroller(sliderLeft));
 
         // Slider Right
