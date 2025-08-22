@@ -46,6 +46,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupBy
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByModel;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.SortModelGroupByComparator;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.SummationGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowHeaderComposite;
@@ -171,12 +172,16 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
                         columnHeaderDataLayer),
                 false);
 
-        // connect sortModel to GroupByDataLayer to support sorting by group by
+        SortModelGroupByComparator<ExtendedPersonWithAddress> groupByComparator = new SortModelGroupByComparator<>(
+                bodyLayerStack.getGroupByModel(),
+                columnPropertyAccessor,
+                bodyLayerStack.getBodyDataLayer());
+        bodyLayerStack.getBodyDataLayer().setComparator(groupByComparator);
+
+        // connect sortModel to SortModelGroupByComparator to support sorting by
+        // group by
         // summary values
-        bodyLayerStack.getBodyDataLayer().initializeTreeComparator(
-                sortHeaderLayer.getSortModel(),
-                bodyLayerStack.getTreeLayer(),
-                true);
+        groupByComparator.setSortModel(sortHeaderLayer.getSortModel());
 
         // add the filter row functionality
         final FilterRowHeaderComposite<ExtendedPersonWithAddress> filterRowHeaderLayer =
@@ -462,6 +467,7 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
                     this.filterList,
                     columnPropertyAccessor,
                     configRegistry);
+
             // get the IDataProvider that was created by the GroupByDataLayer
             this.bodyDataProvider = this.bodyDataLayer.getDataProvider();
 
