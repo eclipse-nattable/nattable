@@ -14,8 +14,8 @@ package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
-import org.eclipse.nebula.widgets.nattable.config.DefaultComparator;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.sort.ISortModel;
@@ -78,7 +78,7 @@ public class SortModelGroupByComparator<T> extends GroupByComparator<T> {
         return result;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({ "unchecked" })
     protected int compareGroupByObjects(GroupByObject g1, GroupByObject g2) {
         List<Integer> sortColumns = this.sortModel.getSortedColumnIndexes();
         int result = 0;
@@ -106,8 +106,7 @@ public class SortModelGroupByComparator<T> extends GroupByComparator<T> {
         // if there is no result after comparing all sorted columns, compare the
         // values in the GroupByObjects
         if (result == 0) {
-            Comparator comparator = DefaultComparator.getInstance();
-            result = comparator.compare(g1.getValue(), g2.getValue());
+            result = defaultCompareGroupByColumns(g1, g2);
         }
 
         return result;
@@ -142,6 +141,21 @@ public class SortModelGroupByComparator<T> extends GroupByComparator<T> {
         }
 
         return 0;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected int defaultCompareGroupByColumns(GroupByObject g1, GroupByObject g2) {
+        int result = 0;
+
+        int groupByIndex = 0;
+        for (Map.Entry<Integer, Object> entry : g1.getDescriptor().entrySet()) {
+            groupByIndex = entry.getKey();
+        }
+
+        Comparator comparator = getComparator(groupByIndex);
+        result = comparator.compare(g1.getValue(), g2.getValue());
+
+        return result;
     }
 
     public boolean isSortBySummaryRows() {
