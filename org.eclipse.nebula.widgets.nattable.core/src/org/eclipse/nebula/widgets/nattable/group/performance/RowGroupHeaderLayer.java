@@ -2510,7 +2510,10 @@ public class RowGroupHeaderLayer extends AbstractLayerTransform {
                     // MutableIntList will be traversed to the the underlying
                     // array
                     MutableIntList groupPositionList = IntLists.mutable.of(Arrays.copyOf(positionList, positionList.length));
-                    while (!groupPositionList.isEmpty()) {
+                    int previousSize = Integer.MAX_VALUE;
+                    while (!groupPositionList.isEmpty() && groupPositionList.size() < previousSize) {
+                        previousSize = groupPositionList.size();
+
                         // find group and update visible span
                         // we need to iterate because one could hide the
                         // last row in one group and the first of
