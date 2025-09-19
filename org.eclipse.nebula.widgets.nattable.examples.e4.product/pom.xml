@@ -20,7 +20,6 @@
   <properties>
     <product-folder>org.eclipse.nebula.widgets.nattable.examples.e4.product</product-folder>
 	<macSigner.forceContinue>false</macSigner.forceContinue>
-    <maven.deploy.skip>true</maven.deploy.skip>
   </properties>
 
   <build>

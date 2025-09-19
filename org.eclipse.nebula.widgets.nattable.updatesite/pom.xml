@@ -16,10 +16,6 @@
 	
 	<name>NatTable Update Site</name>
 
-    <properties>
-        <maven.deploy.skip>true</maven.deploy.skip>
-    </properties>
-
     <build>
         <plugins>
             <!-- See https://tycho.eclipseprojects.io/doc/latest/tycho-p2-repository-plugin/assemble-maven-repository-mojo.html -->
