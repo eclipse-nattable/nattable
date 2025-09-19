@@ -41,7 +41,7 @@ GlazedLists 1.11
  * Project: http://www.glazedlists.com/
  * Source: https://github.com/glazedlists/glazedlists/
 
-Eclipse Nebula 3.1.1 (CWT 1.1.0, CDateTime 1.5.0, RichText 1.5.1)
+Eclipse Nebula 3.2.0 (CWT 1.1.0, CDateTime 1.5.0, RichText 1.6.0)
 
  * License: EPL-2.0
  * Project: https://www.eclipse.org/nebula/
@@ -53,7 +53,7 @@ Apache Commons Collections 4.5.0
  * Project: https://commons.apache.org/proper/commons-collections/
  * Source: https://github.com/apache/commons-collections
 
-Apache Commons Codec 1.18.0
+Apache Commons Codec 1.19.0
 
  * License: Apache-2.0
  * Project: https://commons.apache.org/proper/commons-codec/

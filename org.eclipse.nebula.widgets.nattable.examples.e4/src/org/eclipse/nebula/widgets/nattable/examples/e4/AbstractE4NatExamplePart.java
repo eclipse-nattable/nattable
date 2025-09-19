@@ -16,8 +16,6 @@ package org.eclipse.nebula.widgets.nattable.examples.e4;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.inject.Inject;
-
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -36,6 +34,8 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.inject.Inject;
 
 public class AbstractE4NatExamplePart extends AbstractNatExample {
 

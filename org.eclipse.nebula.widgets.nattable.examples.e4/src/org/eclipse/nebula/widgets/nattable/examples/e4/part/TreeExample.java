@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.annotation.PostConstruct;
-
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
@@ -69,6 +67,7 @@ import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TransformedList;
 import ca.odell.glazedlists.TreeList;
+import jakarta.annotation.PostConstruct;
 
 public class TreeExample extends AbstractE4NatExamplePart {
 
@@ -333,7 +332,7 @@ public class TreeExample extends AbstractE4NatExamplePart {
 
         @Override
         public Comparator<? super Object> getComparator(int depth) {
-            return new Comparator<Object>() {
+            return new Comparator<>() {
 
                 @Override
                 public int compare(Object o1, Object o2) {
@@ -377,7 +376,7 @@ public class TreeExample extends AbstractE4NatExamplePart {
 
         @Override
         public Comparator<? super Object> getComparator(final int depth) {
-            return new Comparator<Object>() {
+            return new Comparator<>() {
 
                 @Override
                 public int compare(Object o1, Object o2) {

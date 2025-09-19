@@ -16,9 +16,6 @@ package org.eclipse.nebula.widgets.nattable.examples.e4.part;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
@@ -41,6 +38,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 public class MenuExample extends AbstractE4NatExamplePart {
 
@@ -84,7 +84,7 @@ public class MenuExample extends AbstractE4NatExamplePart {
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
         // application model menu configuration
-        menuService.registerContextMenu(
+        this.menuService.registerContextMenu(
                 natTable,
                 "org.eclipse.nebula.widgets.nattable.examples.e4.popupmenu.0");
 

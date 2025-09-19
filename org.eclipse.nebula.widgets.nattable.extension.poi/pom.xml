@@ -53,7 +53,7 @@
     	<dependency>
 		    <groupId>org.eclipse.platform</groupId>
 		    <artifactId>org.eclipse.swt</artifactId>
-		    <version>3.120.0</version>
+		    <version>3.126.0</version>
 		</dependency>
     	<dependency>
 		    <groupId>org.slf4j</groupId>

@@ -48,13 +48,13 @@
     	
     	org.eclipse.nebula.cwt:1.1.0
     	org.eclipse.nebula.widgets.cdatetime:1.5.0
-    	org.eclipse.nebula.widgets.richtext:1.5.1
+    	org.eclipse.nebula.widgets.richtext:1.6.0
     	
     	-->
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.swt</artifactId>
-			<version>3.120.0</version>
+			<version>3.126.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -64,7 +64,7 @@
 		<dependency>
 		    <groupId>org.apache.commons</groupId>
 		    <artifactId>commons-text</artifactId>
-		    <version>1.13.1</version>
+		    <version>1.14.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.nebula.widgets.nattable</groupId>
