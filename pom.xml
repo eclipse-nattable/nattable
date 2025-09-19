@@ -415,6 +415,7 @@
                                 <excludeArtifact>org.eclipse.nebula.widgets.nattable.extension.poi.feature</excludeArtifact>
                                 <excludeArtifact>org.eclipse.nebula.widgets.nattable.extension.test.performance</excludeArtifact>
                                 <excludeArtifact>org.eclipse.nebula.widgets.nattable.updatesite</excludeArtifact>
+                                <excludeArtifact>target-platform</excludeArtifact>
                             </excludeArtifacts>
                         </configuration>
                     </plugin>
