@@ -109,6 +109,8 @@
         <dash.summary>DEPENDENCIES</dash.summary>
         <dash.projectId>technology.nebula.nattable</dash.projectId>
         <dash.repo>https://github.com/eclipse-nattable/nattable</dash.repo>
+        
+        <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
 
     <pluginRepositories>
@@ -410,6 +412,7 @@
                         <extensions>true</extensions>
                         <configuration>
                             <publishingServerId>central</publishingServerId>
+                            <skipPublishing>${maven.deploy.skip}</skipPublishing>
                         </configuration>
                     </plugin>
                 </plugins>
