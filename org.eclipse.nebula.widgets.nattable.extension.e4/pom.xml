@@ -64,10 +64,6 @@
 		    <artifactId>org.eclipse.e4.ui.workbench</artifactId>
 		    <version>1.15.400</version>
 		</dependency>
-		<!-- temporarily disabled because of incorrect dependency information in Maven Central -->
-		<!-- 
-		 -->
-		 
     	<dependency>
 		    <groupId>org.slf4j</groupId>
 		    <artifactId>slf4j-api</artifactId>

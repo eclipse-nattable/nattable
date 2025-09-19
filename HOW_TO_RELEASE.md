@@ -32,13 +32,12 @@ This document describes the process on how to release Nebula NatTable.
  * Build with parameters
    * Select the branch that should be build and released
 
- * Once the build finishes successfully, you have deployed the artifacts to the OSSRH staging area. According to the documentation you now need to release the deployment to Maven Central.
+ * Once the build finishes successfully, you have deployed the artifacts to Maven Central. According to the documentation you now need to release the deployment to Maven Central.
 
-   * Login to https://oss.sonatype.org/
-   * In the left menu check for *Build Promotion - Staging Repositories*
-   * Select your repository and validate if it meets your expectations
-   * If everything is correct *Close* the repository, otherwise *Drop* it and fix any issues
-   * Once it is closed, press the *Release* button to trigger the release to the Central repository
+   * Login to https://central.sonatype.com/
+   * Click on the account icon and select _View Deployments_
+   * Select your deployment and validate if it meets your expectations
+   * If everything is correct *Publish* the deployment, otherwise *Drop* it and fix any issues
 
 ## Release to GitHub
 
