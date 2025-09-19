@@ -16,9 +16,6 @@ package org.eclipse.nebula.widgets.nattable.examples.e4.part;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
 import org.eclipse.e4.ui.css.swt.CSSSWTConstants;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -58,6 +55,9 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 @SuppressWarnings("restriction")
 public class CSSExample extends AbstractE4NatExamplePart {

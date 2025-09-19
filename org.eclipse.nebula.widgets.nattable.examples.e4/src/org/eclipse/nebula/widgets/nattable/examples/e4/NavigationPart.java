@@ -26,9 +26,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -53,6 +50,9 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.wiring.BundleWiring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 public class NavigationPart {
 

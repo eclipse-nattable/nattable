@@ -157,7 +157,7 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
 
             int IMAGE_SIZE = GUIHelper.convertHorizontalPixelToDpi(16);
 
-            this.errorImage = this.resManager.createImage(ImageDescriptor.createFromImageDataProvider(new ImageDataProvider() {
+            this.errorImage = this.resManager.create(ImageDescriptor.createFromImageDataProvider(new ImageDataProvider() {
 
                 @Override
                 public ImageData getImageData(int zoom) {
@@ -166,7 +166,7 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
                 }
             }));
 
-            this.warningImage = this.resManager.createImage(ImageDescriptor.createFromImageDataProvider(new ImageDataProvider() {
+            this.warningImage = this.resManager.create(ImageDescriptor.createFromImageDataProvider(new ImageDataProvider() {
 
                 @Override
                 public ImageData getImageData(int zoom) {
@@ -175,7 +175,7 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
                 }
             }));
 
-            this.infoImage = this.resManager.createImage(ImageDescriptor.createFromImageDataProvider(new ImageDataProvider() {
+            this.infoImage = this.resManager.create(ImageDescriptor.createFromImageDataProvider(new ImageDataProvider() {
 
                 @Override
                 public ImageData getImageData(int zoom) {

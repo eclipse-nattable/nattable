@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2022 CEA LIST and others.
+ * Copyright (c) 2015, 2025 CEA LIST and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -946,8 +946,6 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
             // check property
             if (NatTableCSSConstants.BACKGROUND_COLOR.equalsIgnoreCase(property)) {
                 return this.backgroundSWTHandler.retrieveCSSPropertyBackgroundColor(control, pseudo, engine);
-            } else if (NatTableCSSConstants.BACKGROUND_IMAGE.equalsIgnoreCase(property)) {
-                return this.backgroundSWTHandler.retrieveCSSPropertyBackgroundImage(control, pseudo, engine);
             } else if (NatTableCSSConstants.CELL_BACKGROUND_COLOR.equalsIgnoreCase(property)) {
                 ICSSValueConverter cssValueConverter = engine.getCSSValueConverter(String.class);
                 return cssValueConverter.convert(
@@ -958,9 +956,6 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                                 label),
                         engine,
                         null);
-            } else if (NatTableCSSConstants.CELL_BACKGROUND_IMAGE.equalsIgnoreCase(property)) {
-                // TODO : manage path of Image.
-                return "none";
             } else if (NatTableCSSConstants.FOREGROUND_COLOR.equalsIgnoreCase(property)) {
                 ICSSValueConverter cssValueConverter = engine.getCSSValueConverter(String.class);
                 return cssValueConverter.convert(

@@ -13,8 +13,6 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.e4.part;
 
-import javax.annotation.PostConstruct;
-
 import org.eclipse.e4.ui.css.swt.CSSSWTConstants;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
@@ -29,6 +27,8 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+
+import jakarta.annotation.PostConstruct;
 
 @SuppressWarnings("restriction")
 public class PercentageExample extends AbstractE4NatExamplePart {

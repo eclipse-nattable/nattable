@@ -20,8 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.columnChooser.command.DisplayColumnChooserCommandHandler;
@@ -114,6 +112,7 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TransformedList;
+import jakarta.annotation.PostConstruct;
 
 public class DarkExample extends AbstractE4NatExamplePart {
 
@@ -191,7 +190,7 @@ public class DarkExample extends AbstractE4NatExamplePart {
         ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
                 sortHeaderLayer,
                 bodyLayerStack.getSelectionLayer(),
-                columnGroupModel);
+                this.columnGroupModel);
         columnGroupHeaderLayer.setCalculateHeight(true);
 
         // add the filter row functionality
@@ -271,9 +270,9 @@ public class DarkExample extends AbstractE4NatExamplePart {
         // add sorting configuration
         natTable.addConfiguration(new SingleClickSortConfiguration());
 
-        sumMoneySummaryProvider =
+        this.sumMoneySummaryProvider =
                 new SummationGroupBySummaryProvider<>(columnPropertyAccessor);
-        avgMoneySummaryProvider =
+        this.avgMoneySummaryProvider =
                 new AverageMoneyGroupBySummaryProvider();
 
         // add group by summary configuration
@@ -283,7 +282,7 @@ public class DarkExample extends AbstractE4NatExamplePart {
             public void configureRegistry(IConfigRegistry configRegistry) {
                 configRegistry.registerConfigAttribute(
                         GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                        sumMoneySummaryProvider,
+                        DarkExample.this.sumMoneySummaryProvider,
                         DisplayMode.NORMAL,
                         GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
 
@@ -442,18 +441,18 @@ public class DarkExample extends AbstractE4NatExamplePart {
                 // calculation gets triggered
                 bodyLayerStack.getBodyDataLayer().clearCache();
 
-                useMoneySum =
-                        !useMoneySum;
-                if (useMoneySum) {
+                DarkExample.this.useMoneySum =
+                        !DarkExample.this.useMoneySum;
+                if (DarkExample.this.useMoneySum) {
                     configRegistry.registerConfigAttribute(
                             GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                            sumMoneySummaryProvider,
+                            DarkExample.this.sumMoneySummaryProvider,
                             DisplayMode.NORMAL,
                             GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
                 } else {
                     configRegistry.registerConfigAttribute(
                             GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                            avgMoneySummaryProvider,
+                            DarkExample.this.avgMoneySummaryProvider,
                             DisplayMode.NORMAL,
                             GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
                 }
@@ -478,19 +477,19 @@ public class DarkExample extends AbstractE4NatExamplePart {
                 Person person = new Person(42, "Ralph", "Wiggum", Gender.MALE, false, new Date());
                 ExtendedPersonWithAddress entry = new ExtendedPersonWithAddress(person, address,
                         "0000", "The little Ralphy", PersonService.createRandomMoneyAmount(),
-                        new ArrayList<String>(), new ArrayList<String>());
+                        new ArrayList<>(), new ArrayList<>());
                 bodyLayerStack.getEventList().add(entry);
 
                 person = new Person(42, "Clancy", "Wiggum", Gender.MALE, true, new Date());
                 entry = new ExtendedPersonWithAddress(person, address,
                         "XXXL", "It is Chief Wiggum", PersonService.createRandomMoneyAmount(),
-                        new ArrayList<String>(), new ArrayList<String>());
+                        new ArrayList<>(), new ArrayList<>());
                 bodyLayerStack.getEventList().add(entry);
 
                 person = new Person(42, "Sarah", "Wiggum", Gender.FEMALE, true, new Date());
                 entry = new ExtendedPersonWithAddress(person, address,
                         "mommy", "Little Ralphy's mother", PersonService.createRandomMoneyAmount(),
-                        new ArrayList<String>(), new ArrayList<String>());
+                        new ArrayList<>(), new ArrayList<>());
                 bodyLayerStack.getEventList().add(entry);
             }
         });
@@ -576,13 +575,13 @@ public class DarkExample extends AbstractE4NatExamplePart {
             ColumnGroupReorderLayer columnGroupReorderLayer =
                     new ColumnGroupReorderLayer(
                             columnReorderLayer,
-                            columnGroupModel);
+                            DarkExample.this.columnGroupModel);
             this.columnHideShowLayer =
                     new ColumnHideShowLayer(columnGroupReorderLayer);
             ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer =
                     new ColumnGroupExpandCollapseLayer(
                             this.columnHideShowLayer,
-                            columnGroupModel);
+                            DarkExample.this.columnGroupModel);
 
             this.selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
 
@@ -691,11 +690,11 @@ public class DarkExample extends AbstractE4NatExamplePart {
         @Override
         public Object summarize(int columnIndex) {
             double total = 0;
-            int rowCount = dataProvider.getRowCount();
+            int rowCount = this.dataProvider.getRowCount();
             int valueRows = 0;
 
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                Object dataValue = dataProvider.getDataValue(columnIndex, rowIndex);
+                Object dataValue = this.dataProvider.getDataValue(columnIndex, rowIndex);
                 // this check is necessary because of the GroupByObject
                 if (dataValue instanceof Number) {
                     total = total + Double.parseDouble(dataValue.toString());
@@ -721,11 +720,11 @@ public class DarkExample extends AbstractE4NatExamplePart {
         @Override
         public Object summarize(int columnIndex) {
             double total = 0;
-            int rowCount = dataProvider.getRowCount();
+            int rowCount = this.dataProvider.getRowCount();
             int valueRows = 0;
 
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                Object dataValue = dataProvider.getDataValue(columnIndex, rowIndex);
+                Object dataValue = this.dataProvider.getDataValue(columnIndex, rowIndex);
                 // this check is necessary because of the GroupByObject
                 if (dataValue instanceof Number) {
                     total = total + Double.parseDouble(dataValue.toString());
