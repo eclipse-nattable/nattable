@@ -365,19 +365,63 @@
             </distributionManagement>
         </profile>
 
-        <!-- The profiles for publishing to Maven Central -->
+        <!-- The profile for publishing to Maven Central -->
         <profile>
-          <id>skip-deploy</id>
-          <activation>
-            <file>
-              <missing>pom.xml</missing>
-            </file>
-          </activation>
-          <properties>
-            <maven.deploy.skip>true</maven.deploy.skip>
-          </properties>
+            <id>maven-publish</id>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.2.8</version>
+                        <configuration>
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.8.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <excludeArtifacts>
+                                <excludeArtifact>org.eclipse.nebula.widgets.nattable.core.feature</excludeArtifact>
+                                <excludeArtifact>org.eclipse.nebula.widgets.nattable.core.test</excludeArtifact>
+                                <excludeArtifact>org.eclipse.nebula.widgets.nattable.dataset</excludeArtifact>
+                                <excludeArtifact>org.eclipse.nebula.widgets.nattable.dataset.test</excludeArtifact>
+                                <excludeArtifact>org.eclipse.nebula.widgets.nattable.examples</excludeArtifact>
+                                <excludeArtifact>org.eclipse.nebula.widgets.nattable.examples.e4</excludeArtifact>
+                                <excludeArtifact>org.eclipse.nebula.widgets.nattable.examples.e4.feature</excludeArtifact>
+                                <excludeArtifact>org.eclipse.nebula.widgets.nattable.examples.e4.product</excludeArtifact>
+                                <excludeArtifact>org.eclipse.nebula.widgets.nattable.extension.e4.feature</excludeArtifact>
+                                <excludeArtifact>org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature</excludeArtifact>
+                                <excludeArtifact>org.eclipse.nebula.widgets.nattable.extension.glazedlists.test</excludeArtifact>
+                                <excludeArtifact>org.eclipse.nebula.widgets.nattable.extension.nebula.feature</excludeArtifact>
+                                <excludeArtifact>org.eclipse.nebula.widgets.nattable.extension.nebula.test</excludeArtifact>
+                                <excludeArtifact>org.eclipse.nebula.widgets.nattable.extension.poi.feature</excludeArtifact>
+                                <excludeArtifact>org.eclipse.nebula.widgets.nattable.extension.test.performance</excludeArtifact>
+                                <excludeArtifact>org.eclipse.nebula.widgets.nattable.updatesite</excludeArtifact>
+                            </excludeArtifacts>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
-        
+
         <profile>
             <id>license-check</id>
             <build>
