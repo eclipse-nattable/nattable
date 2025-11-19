@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023, 2024 Dirk Fauth and others.
+ * Copyright (c) 2023, 2025 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,9 +12,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Function;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
@@ -35,6 +37,27 @@ public final class ComboBoxFilterUtils {
     private ComboBoxFilterUtils() {
         // private default constructor for helper class
     }
+
+    /**
+     * {@link Function} that maps a {@link String} that contains comma separated
+     * values to a {@link List} of trimmed {@link String}s.
+     *
+     * @since 2.7
+     */
+    public static Function<? super Object, ? extends Object> DEFAULT_LIST_VALUE_MAP_FUNCTION = o -> {
+        if (o instanceof String) {
+            String[] s = ((String) o).split(","); //$NON-NLS-1$
+
+            for (int i = 0; i < s.length; i++) {
+                String str = s[i];
+                if (str != null) {
+                    s[i] = str.trim();
+                }
+            }
+            return Arrays.asList(s);
+        }
+        return o;
+    };
 
     /**
      * Check if all values of the combo box are selected, which actually means

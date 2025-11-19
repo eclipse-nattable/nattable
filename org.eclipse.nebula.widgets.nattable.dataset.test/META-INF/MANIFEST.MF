@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: NatTable Dataset Utilities Tests
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.dataset.test
 Bundle-Version: 2.6.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Fragment-Host: org.eclipse.nebula.widgets.nattable.dataset
 Require-Bundle: junit-jupiter-api;bundle-version="5.10.0",
  junit-jupiter-engine;bundle-version="5.10.0",

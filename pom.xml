@@ -5,7 +5,7 @@
 
     <groupId>org.eclipse.nebula.widgets.nattable</groupId>
     <artifactId>parent</artifactId>
-    <version>2.6.0-SNAPSHOT</version>
+    <version>2.7.0-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -68,14 +68,14 @@
         <cbi-version>1.5.2</cbi-version>
         <nattable-version>${project.version}</nattable-version>
 
-        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.release>17</maven.compiler.release>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <jacoco.version>0.8.5</jacoco.version>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../org.eclipse.nebula.widgets.nattable.updatesite/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.surefire.reportsPath>${project.basedir}/../${project.artifactId}.test/target/surefire-reports/</sonar.surefire.reportsPath>
-        <sonar.java.source>11</sonar.java.source>
+        <sonar.java.source>17</sonar.java.source>
         <!-- coverage exclusions -->
         <!--
         <sonar.coverage.exclusions>
@@ -152,7 +152,7 @@
                             <message>The NatTable build requires at least Java 17 for running Tycho.</message>
                         </requireJavaVersion>
                         <requireMavenVersion>
-                            <version>3.8.6</version>
+                            <version>3.9.8</version>
                         </requireMavenVersion>
                     </rules>
                 </configuration>

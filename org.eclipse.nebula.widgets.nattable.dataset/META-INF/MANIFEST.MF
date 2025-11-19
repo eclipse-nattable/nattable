@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: NatTable Dataset Utilities (internal usage)
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.dataset
-Bundle-Version: 2.6.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-Version: 2.7.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: org.eclipse.nebula.widgets.nattable.dataset;version="1.4.0",
  org.eclipse.nebula.widgets.nattable.dataset.car;version="1.5.0",
  org.eclipse.nebula.widgets.nattable.dataset.fixture.data;version="1.4.0",

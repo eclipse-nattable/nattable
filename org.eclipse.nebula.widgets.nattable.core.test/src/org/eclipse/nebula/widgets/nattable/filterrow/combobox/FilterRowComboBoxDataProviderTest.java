@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2024 Dirk Fauth and others.
+ * Copyright (c) 2019, 2025 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -107,7 +107,7 @@ public class FilterRowComboBoxDataProviderTest {
                     }
                 });
 
-        this.provider.configureComparator(columnHeaderDataLayer, configRegistry);
+        this.provider.configureConfigRegistryAccess(columnHeaderDataLayer, configRegistry);
 
         List<?> values = this.provider.collectValues(0);
         assertEquals(8, values.size());

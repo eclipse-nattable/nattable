@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: NatTable Performance Tests
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.test.performance
 Bundle-Version: 1.1.1.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Import-Package: ca.odell.glazedlists,
  org.eclipse.collections.api;version="10.1.0",
  org.eclipse.collections.api.collection.primitive;version="10.1.0",
