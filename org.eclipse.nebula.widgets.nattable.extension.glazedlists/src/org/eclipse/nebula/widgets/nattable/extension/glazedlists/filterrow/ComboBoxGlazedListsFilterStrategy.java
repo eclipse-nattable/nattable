@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2024 Dirk Fauth and others.
+ * Copyright (c) 2013, 2025 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -32,6 +32,7 @@ import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsLockHelper;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterUtils;
+import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowCategoryValueMapper;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
@@ -178,7 +179,7 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
      * This implementation is able to handle Collections and will generate a
      * regular expression containing all values in the Collection.
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected String getStringFromColumnObject(final int columnIndex, final Object object) {
         final IDisplayConverter displayConverter = this.configRegistry.getConfigAttribute(
@@ -189,6 +190,13 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
         if (object instanceof Collection) {
             Collection valueCollection = (Collection) object;
             StringJoiner joiner = new StringJoiner("|", "(", ")"); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+
+            FilterRowCategoryValueMapper categoryValueMapper = this.comboBoxDataProvider.getCategoryValueMapper(columnIndex);
+            if (categoryValueMapper != null) {
+                // map categories back to values for filtering
+            	valueCollection = categoryValueMapper.resolveCategories(valueCollection);
+            }
+
             for (Object value : valueCollection) {
                 String convertedValue = displayConverter.canonicalToDisplayValue(
                         new LayerCell(null, columnIndex, 0),
@@ -198,7 +206,13 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
                     // for an empty String add the regular expression for empty
                     // String
                     joiner.add("^$"); //$NON-NLS-1$
+                } else if (this.comboBoxDataProvider.isFlattenCollectionValues(columnIndex)) {
+                    // for a flattened collection we need to match the value in
+                    // the string representation of the collection
+                    joiner.add(getFlattenedCollectionPatternPrefix() + Pattern.quote(convertedValue) + getFlattenedCollectionPatternSuffix());
                 } else {
+                    // normal case, just add the quoted value to search for the
+                    // exact match
                     joiner.add(Pattern.quote(convertedValue));
                 }
             }
@@ -238,5 +252,35 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
             }
         }
         return false;
+    }
+
+    /**
+     * Returns the pattern prefix for the regular expression when filtering for
+     * flattened collection values. By default this is ".*?(?&lt;=^|,|\[|\s)" to
+     * match values in a comma-separated list that may have spaces around them
+     * or start with a bracket.
+     *
+     * @return The pattern prefix for the regular expression when filtering for
+     *         flattened collection values.
+     *
+     * @since 2.7
+     */
+    protected String getFlattenedCollectionPatternPrefix() {
+        return ".*?(?<=^|,|\\[|\\s)"; //$NON-NLS-1$
+    }
+
+    /**
+     * Returns the pattern suffix for the regular expression when filtering for
+     * flattened collection values. By default this is "(?=,|\]|\s|$).*?" to
+     * match values in a comma-separated list that may have spaces around them
+     * or end with a bracket.
+     *
+     * @return The pattern suffix for the regular expression when filtering for
+     *         flattened collection values.
+     *
+     * @since 2.7
+     */
+    protected String getFlattenedCollectionPatternSuffix() {
+        return "(?=,|\\]|\\s|$).*?"; //$NON-NLS-1$
     }
 }

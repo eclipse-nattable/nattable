@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2025 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,9 +13,12 @@
 package org.eclipse.nebula.widgets.nattable.filterrow.config;
 
 import java.util.Comparator;
+import java.util.List;
+import java.util.function.Function;
 
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
+import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowCategoryValueMapper;
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 
 /**
@@ -50,4 +53,45 @@ public final class FilterRowConfigAttributes {
      * @since 2.0
      */
     public static final ConfigAttribute<IDisplayConverter> FILTER_CONTENT_DISPLAY_CONVERTER = new ConfigAttribute<>();
+
+    /**
+     * Flag to configure whether collection values in the cell should be
+     * flattened when using the combobox filter row.
+     *
+     * @since 2.7
+     */
+    public static final ConfigAttribute<Boolean> FLATTEN_COLLECTION_VALUES = new ConfigAttribute<>();
+
+    /**
+     * {@link Function} that maps a {@link String} that contains a collection of
+     * values to a {@link List} of trimmed {@link String}s.
+     *
+     * @since 2.7
+     */
+    public static final ConfigAttribute<Function<? super Object, ? extends Object>> LIST_VALUE_MAP_FUNCTION = new ConfigAttribute<>();
+
+    /**
+     * {@link FilterRowCategoryValueMapper} that is used to map values in a
+     * filter collection to a category. If a
+     * {@link FilterRowCategoryValueMapper} is set,
+     * {@link #FLATTEN_COLLECTION_VALUES} is automatically treated as
+     * <code>true</code>.
+     *
+     * @see #USE_CATEGORIES_ONLY
+     *
+     * @since 2.7
+     */
+    public static final ConfigAttribute<FilterRowCategoryValueMapper<?>> CATEGORY_VALUE_MAPPER = new ConfigAttribute<>();
+
+    /**
+     * Flag to configure whether values in the filter combobox should be
+     * replaced by the categories mapped via {@link #CATEGORY_VALUE_MAPPER} or
+     * if the categories should be added to the available values. If not set it
+     * will be treated as <code>false</code>.
+     *
+     * @see CATEGORY_VALUE_MAPPER
+     *
+     * @since 2.7
+     */
+    public static final ConfigAttribute<Boolean> USE_CATEGORIES_ONLY = new ConfigAttribute<>();
 }

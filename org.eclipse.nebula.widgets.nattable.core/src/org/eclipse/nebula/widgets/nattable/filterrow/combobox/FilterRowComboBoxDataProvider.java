@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2024 Dirk Fauth and others.
+ * Copyright (c) 2013, 2025 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,9 +26,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.eclipse.collections.api.factory.primitive.IntBooleanMaps;
+import org.eclipse.collections.api.factory.primitive.IntObjectMaps;
+import org.eclipse.collections.api.map.primitive.MutableIntBooleanMap;
+import org.eclipse.collections.api.map.primitive.MutableIntObjectMap;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.NullComparator;
@@ -37,6 +42,7 @@ import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.edit.event.DataUpdateEvent;
+import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.filterrow.event.FilterAppliedEvent;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
@@ -217,6 +223,39 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      * @since 2.3
      */
     private Predicate<T> contentFilter = t -> true;
+
+    /**
+     * Flags to configure if collection values should be extracted to single
+     * values in {@link #collectValues(int, Collection)}.
+     *
+     * @since 2.7
+     */
+    private MutableIntBooleanMap flattenCollectionValues = IntBooleanMaps.mutable.empty();
+
+    /**
+     * Custom map functions to transform the values before collecting distinct
+     * values in {@link #collectValues(int, Collection)}.
+     *
+     * @since 2.7
+     */
+    private MutableIntObjectMap<Function<? super Object, ? extends Object>> customMapper = IntObjectMaps.mutable.empty();
+
+    /**
+     * Map functions to transform the values into categories before collecting
+     * distinct values in {@link #collectValues(int, Collection)}.
+     *
+     * @since 2.7
+     */
+    private MutableIntObjectMap<FilterRowCategoryValueMapper<?>> categoryValueMapper = IntObjectMaps.mutable.empty();
+
+    /**
+     * Flag to configure if categories mapped via a
+     * {@link FilterRowCategoryValueMapper} should replace the values in the
+     * filter combobox or if they should be added.
+     *
+     * @since 2.7
+     */
+    private MutableIntBooleanMap categoriesOnly = IntBooleanMaps.mutable.empty();
 
     /**
      * @param bodyLayer
@@ -420,13 +459,13 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      *            The collection out of which the distinct values should be
      *            collected.
      * @param columnIndex
-     *            The column index for which the values should be collected
+     *            The column index for which the values should be collected.
      * @return List of all distinct values that are contained in the given
      *         collection for the given column.
      *
      * @since 2.1
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({ "rawtypes" })
     protected List<?> collectValues(Collection<T> collection, int columnIndex) {
         List result = collection.stream()
                 .unordered()
@@ -439,25 +478,102 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
                     }
                     return x;
                 })
+                .map(getCustomMapper(columnIndex))
                 .distinct()
                 .collect(Collectors.toList());
 
-        Object firstNonNull = result.stream()
+        if (isFlattenCollectionValues(columnIndex)) {
+            Set<Object> extractedValues = new HashSet<>();
+            for (Object value : result) {
+                if (value instanceof Collection) {
+                    extractedValues.addAll((Collection<?>) value);
+                } else {
+                    extractedValues.add(value);
+                }
+            }
+            result = new ArrayList<>(extractedValues);
+        }
+
+        sortCollection(result, columnIndex);
+
+        result = handleCategoriesCollection(result, columnIndex);
+
+        return result;
+    }
+
+    /**
+     * Sorts the given collection based on the comparator configured for the
+     * column if the values are of type {@link Comparable}. Ensures that
+     * <code>null</code> is always at the first position.
+     *
+     * @param collection
+     *            The collection to sort.
+     * @param columnIndex
+     *            The column index for which the comparator should be retrieved.
+     *
+     * @since 2.7
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected void sortCollection(List collection, int columnIndex) {
+        Object firstNonNull = collection.stream()
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(null);
         if (firstNonNull instanceof Comparable) {
-            result.sort(Comparator.nullsFirst(getColumnComparator(columnIndex)));
+            collection.sort(Comparator.nullsFirst(getColumnComparator(columnIndex)));
         } else {
             // always ensure that null is at the first position
-            int index = result.indexOf(null);
+            int index = collection.indexOf(null);
             if (index >= 0) {
-                result.remove(index);
-                result.add(0, null);
+                collection.remove(index);
+                collection.add(0, null);
+            }
+        }
+    }
+
+    /**
+     * Checks if a {@link FilterRowCategoryValueMapper} is configured for the
+     * given column. If so it will either add the categories to the list of
+     * values or replace the values with the categories based on the
+     * configuration.
+     *
+     * @param collection
+     *            List of all distinct values that are contained in the given
+     *            column.
+     * @param columnIndex
+     *            The column index for which the values should be collected
+     * @return List of values that should be used in the filter combobox after
+     *         handling categories.
+     *
+     * @since 2.7
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected List<?> handleCategoriesCollection(List collection, int columnIndex) {
+        FilterRowCategoryValueMapper<?> mapper = getCategoryValueMapper(columnIndex);
+        if (mapper != null) {
+            try {
+                List<Object> categories = mapper.valuesToCategories(collection);
+
+                sortCollection(categories, columnIndex);
+
+                if (!isCategoriesOnly(columnIndex)) {
+                    // check if the values collection contains a null and ensure
+                    // that there is only one null in the final list at the
+                    // first position
+                    boolean containsNull = collection.remove(null);
+                    if (!categories.contains(null) && containsNull) {
+                        categories.add(0, null);
+                    }
+                    collection.addAll(0, categories);
+                } else {
+                    return categories;
+                }
+            } catch (Exception e) {
+                LOG.error("Error while mapping values to categories for column index " + columnIndex, e); //$NON-NLS-1$
             }
         }
 
-        return result;
+        return collection;
     }
 
     @Override
@@ -1141,8 +1257,37 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      * @param configRegistry
      *            The {@link IConfigRegistry} of the underlying NatTable.
      * @since 2.3
+     * @deprecated Use
+     *             {@link #configureConfigRegistryAccess(ILayer, IConfigRegistry)}
+     *             instead.
      */
+    @Deprecated
     public void configureComparator(ILayer columnHeaderDataLayer, IConfigRegistry configRegistry) {
+        configureConfigRegistryAccess(columnHeaderDataLayer, configRegistry);
+    }
+
+    /**
+     * Set the {@link IConfigRegistry} that should be used to retrieve
+     * configurations like the comparator to sort the filter collection, or for
+     * combobox filterrows if String values should be mapped to a collection and
+     * if collection values should be flattened. If one of the parameters is
+     * <code>null</code> the filter collection will always be sorted via
+     * {@link Comparator#naturalOrder()} and the collection handling
+     * configurations are taken from the local members.
+     *
+     * @param columnHeaderDataLayer
+     *            The DataLayer of the column header region. Needed to be able
+     *            to get the cell which is needed to get the comparator that
+     *            should be used to sort the filter collection.
+     * @param configRegistry
+     *            The {@link IConfigRegistry} of the underlying NatTable.
+     *
+     * @see #isFlattenCollectionValues(int)
+     * @see #getCustomMapper(int)
+     *
+     * @since 2.7
+     */
+    public void configureConfigRegistryAccess(ILayer columnHeaderDataLayer, IConfigRegistry configRegistry) {
         this.columnHeaderDataLayer = columnHeaderDataLayer;
         this.configRegistry = configRegistry;
     }
@@ -1189,6 +1334,264 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
             this.contentFilter = t -> true;
         } else {
             this.contentFilter = predicate;
+        }
+
+        if (this.cachingEnabled) {
+            clearCache(true);
+        }
+    }
+
+    /**
+     *
+     * @return The {@link Predicate} that allows to filter the values that are
+     *         contained in the filter combo box. By default filters nothing.
+     *
+     * @since 2.7
+     */
+    protected Predicate<T> getContentFilter() {
+        return this.contentFilter;
+    }
+
+    /**
+     * Returns the setting if nested collection values should be flattened for a
+     * specific column. First checks if a {@link FilterRowCategoryValueMapper}
+     * is set for the given column, which enforces flattening of the collection
+     * values. * Then it checks if a configuration is registered via
+     * {@link FilterRowConfigAttributes#FLATTEN_COLLECTION_VALUES} in the
+     * {@link IConfigRegistry}, otherwise returns the locally registered value
+     * is registered via {@link #setFlattenCollectionValues(int, boolean)}. It
+     * can be overridden to handle specific columns differently. By default
+     * nested collection values are not flattened.
+     *
+     * @param columnIndex
+     *            The column index for which it should be checked if nested
+     *            collection values should be flattened.
+     * @return <code>true</code> if nested collection values should be flattened
+     *         to single values, <code>false</code> if nested collection values
+     *         should be treated as collections.
+     *
+     * @since 2.7
+     */
+    public boolean isFlattenCollectionValues(int columnIndex) {
+        // check if a FilterRowCategoryValueMapper is registered
+        if (getCategoryValueMapper(columnIndex) != null) {
+            return true;
+        }
+
+        if (this.configRegistry != null && this.columnHeaderDataLayer != null) {
+            ILayerCell cell = this.columnHeaderDataLayer.getCellByPosition(columnIndex, 0);
+            if (cell != null) {
+                Boolean flatten = this.configRegistry.getConfigAttribute(
+                        FilterRowConfigAttributes.FLATTEN_COLLECTION_VALUES,
+                        cell.getDisplayMode(),
+                        cell.getConfigLabels());
+
+                if (flatten != null) {
+                    return flatten;
+                }
+            }
+        }
+        return this.flattenCollectionValues.getIfAbsent(columnIndex, false);
+    }
+
+    /**
+     * Setting this value effects on how nested collection values are handled on
+     * collecting the values. <code>false</code> means nested collection values
+     * are treated as collections, <code>true</code> will flatten them to single
+     * values in the collected values.
+     *
+     * @param columnIndex
+     *            The column index of the column for which the setting should be
+     *            applied.
+     * @param flattenCollectionValues
+     *            <code>true</code> if nested collection values are flattened to
+     *            single values, <code>false</code> if nested collection values
+     *            are treated as collections.
+     *
+     * @since 2.7
+     */
+    public void setFlattenCollectionValues(int columnIndex, boolean flattenCollectionValues) {
+        this.flattenCollectionValues.put(columnIndex, flattenCollectionValues);
+        if (this.cachingEnabled) {
+            clearCache(true);
+        }
+    }
+
+    /**
+     * Returns the custom map function to transform the values before collecting
+     * the distinct values in {@link #collectValues(Collection, int)}. First
+     * checks if a custom map function is registered via
+     * {@link FilterRowConfigAttributes#LIST_VALUE_MAP_FUNCTION} in the
+     * {@link IConfigRegistry}, otherwise returns the locally registered map
+     * function that is registered via {@link #setCustomMapper(int, Function)}.
+     * By default maps to a no-op.
+     *
+     * @param columnIndex
+     *            The column index of the column for which the custom map
+     *            function should be retrieved.
+     * @return Map function that is added to transform the values before
+     *         collecting distinct values in
+     *         {@link #collectValues(Collection, int)}. By default maps to
+     *         itself as a no-op.
+     *
+     * @since 2.7
+     */
+    public Function<? super Object, ? extends Object> getCustomMapper(int columnIndex) {
+        if (this.configRegistry != null && this.columnHeaderDataLayer != null) {
+            ILayerCell cell = this.columnHeaderDataLayer.getCellByPosition(columnIndex, 0);
+            if (cell != null) {
+                Function<? super Object, ? extends Object> mapper = this.configRegistry.getConfigAttribute(
+                        FilterRowConfigAttributes.LIST_VALUE_MAP_FUNCTION,
+                        cell.getDisplayMode(),
+                        cell.getConfigLabels());
+
+                if (mapper != null) {
+                    return mapper;
+                }
+            }
+        }
+
+        return this.customMapper.getIfAbsentPut(columnIndex, o -> o);
+    }
+
+    /**
+     * Set a custom map function to transform the values before collecting
+     * distinct values in {@link #collectValues(Collection, int)}. Can be used
+     * for example to map a comma separated string to a collection of strings,
+     * which in combination with
+     * {@link #setFlattenCollectionValues(int, boolean)} can then be interpreted
+     * as multiple distinct values.
+     *
+     * @param columnIndex
+     *            The column index of the column for which the setting should be
+     *            applied.
+     * @param customMapper
+     *            Custom map function to transform the values before collecting
+     *            distinct values in {@link #collectValues(Collection, int)}.
+     *
+     * @since 2.7
+     */
+    public void setCustomMapper(int columnIndex, Function<? super Object, ? extends Object> customMapper) {
+        if (customMapper == null) {
+            this.customMapper.put(columnIndex, o -> o);
+        } else {
+            this.customMapper.put(columnIndex, customMapper);
+        }
+
+        if (this.cachingEnabled) {
+            clearCache(true);
+        }
+    }
+
+    /**
+     * Returns the setting if categories mapped via a
+     * {@link FilterRowCategoryValueMapper} should be added to the collection
+     * values or if they should replace them. It first checks if a configuration
+     * is registered via {@link FilterRowConfigAttributes#USE_CATEGORIES_ONLY}
+     * in the {@link IConfigRegistry}, otherwise returns the locally registered
+     * value is registered via {@link #setCategoriesOnly(int, boolean)}. It can
+     * be overridden to handle specific columns differently. By default
+     * categories are added..
+     *
+     * @param columnIndex
+     *            The column index for which it should be checked if categories
+     *            should be added or replace the collection values.
+     * @return <code>true</code> if categories should replace the collection
+     *         values, <code>false</code> if categories should be added.
+     *
+     * @since 2.7
+     */
+    public boolean isCategoriesOnly(int columnIndex) {
+        if (this.configRegistry != null && this.columnHeaderDataLayer != null) {
+            ILayerCell cell = this.columnHeaderDataLayer.getCellByPosition(columnIndex, 0);
+            if (cell != null) {
+                Boolean categoriesOnly = this.configRegistry.getConfigAttribute(
+                        FilterRowConfigAttributes.USE_CATEGORIES_ONLY,
+                        cell.getDisplayMode(),
+                        cell.getConfigLabels());
+
+                if (categoriesOnly != null) {
+                    return categoriesOnly;
+                }
+            }
+        }
+        return this.categoriesOnly.getIfAbsent(columnIndex, false);
+    }
+
+    /**
+     * Setting this value effects on how categories mapped via a
+     * {@link FilterRowCategoryValueMapper} should be handled. Setting it to
+     * <code>true</code> means that the distinct values in the filter combobox
+     * are replaced by the categories, so there are no single values to select.
+     * Setting it to <code>false</code> means to add the categories to the list
+     * of filter values.
+     *
+     * @param columnIndex
+     *            The column index of the column for which the setting should be
+     *            applied.
+     * @param categoriesOnly
+     *            <code>true</code> if the filter combobox should only contain
+     *            the categories, <code>false</code> if the categories should be
+     *            added to the values.
+     *
+     * @since 2.7
+     */
+    public void setCategoriesOnly(int columnIndex, boolean categoriesOnly) {
+        this.categoriesOnly.put(columnIndex, categoriesOnly);
+        if (this.cachingEnabled) {
+            clearCache(true);
+        }
+    }
+
+    /**
+     * Returns the {@link FilterRowCategoryValueMapper} that is used to map
+     * values in a filter collection to a category.
+     *
+     * @param columnIndex
+     *            The column index of the column for which the category value
+     *            mapper should be retrieved.
+     * @return The {@link FilterRowCategoryValueMapper} that is used to map
+     *         values in a filter collection to a category or <code>null</code>
+     *         if no mapper is set.
+     *
+     * @since 2.7
+     */
+    public FilterRowCategoryValueMapper<?> getCategoryValueMapper(int columnIndex) {
+        if (this.configRegistry != null && this.columnHeaderDataLayer != null) {
+            ILayerCell cell = this.columnHeaderDataLayer.getCellByPosition(columnIndex, 0);
+            if (cell != null) {
+                FilterRowCategoryValueMapper<?> mapper = this.configRegistry.getConfigAttribute(
+                        FilterRowConfigAttributes.CATEGORY_VALUE_MAPPER,
+                        cell.getDisplayMode(),
+                        cell.getConfigLabels());
+
+                if (mapper != null) {
+                    return mapper;
+                }
+            }
+        }
+
+        return this.categoryValueMapper.get(columnIndex);
+    }
+
+    /**
+     * Set a {@link FilterRowCategoryValueMapper} that is used to map values in
+     * the collection to categories.
+     *
+     * @param columnIndex
+     *            The column index of the column for which the setting should be
+     *            applied.
+     * @param mapper
+     *            The {@link FilterRowCategoryValueMapper} to be used to map
+     *            values in a filter.
+     *
+     * @since 2.7
+     */
+    public void setCategoryValueMapper(int columnIndex, FilterRowCategoryValueMapper<?> mapper) {
+        if (mapper == null) {
+            this.categoryValueMapper.remove(columnIndex);
+        } else {
+            this.categoryValueMapper.put(columnIndex, mapper);
         }
 
         if (this.cachingEnabled) {

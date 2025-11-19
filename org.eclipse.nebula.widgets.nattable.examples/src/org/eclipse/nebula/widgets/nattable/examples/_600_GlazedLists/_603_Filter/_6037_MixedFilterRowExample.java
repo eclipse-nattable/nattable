@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022, 2023 Dirk Fauth and others.
+ * Copyright (c) 2022, 2025 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ package org.eclipse.nebula.widgets.nattable.examples._600_GlazedLists._603_Filte
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -90,6 +91,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
@@ -99,6 +101,7 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorat
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.sort.SortConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.Style;
@@ -142,6 +145,7 @@ import ca.odell.glazedlists.matchers.Matcher;
 public class _6037_MixedFilterRowExample extends AbstractNatExample {
 
     private static final String EXCLUDE_LABEL = "EXCLUDE";
+    private static final String LIST_VALUES = "LIST_VALUES";
 
     private ArrayList<Serializable> filterExcludes = new ArrayList<>();
 
@@ -175,7 +179,8 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                 "address.street",
                 "address.housenumber",
                 "address.postalCode",
-                "address.city" };
+                "address.city",
+                "description" };
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<>();
@@ -188,6 +193,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         propertyToLabelMap.put("address.housenumber", "Housenumber");
         propertyToLabelMap.put("address.postalCode", "Postal Code");
         propertyToLabelMap.put("address.city", "City");
+        propertyToLabelMap.put("description", "Description");
 
         IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
                 new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
@@ -208,11 +214,35 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
         bodyLayerStack.getBodyDataLayer().setDataValue(2, 3, null);
         bodyLayerStack.getBodyDataLayer().setDataValue(2, 5, null);
 
+        // add some description values to test the combobox filter
+        for (int i = 0; i < bodyLayerStack.filterList.size(); i++) {
+            var person = bodyLayerStack.filterList.get(i);
+            int modulo = i % 5;
+            switch (modulo) {
+                case 0 -> person.setDescription("One");
+                case 1 -> person.setDescription("One, Two");
+                case 2 -> person.setDescription("One, Two, Three");
+                case 3 -> person.setDescription("One, Three, Five");
+                case 4 -> person.setDescription("Two, Four, Six");
+            }
+        }
+
         // build the column header layer
         IDataProvider columnHeaderDataProvider =
                 new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
         DataLayer columnHeaderDataLayer =
                 new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        columnHeaderDataLayer.setConfigLabelAccumulator(new IConfigLabelAccumulator() {
+
+            @Override
+            public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+                if (columnPosition == 9) {
+                    configLabels.addLabel(LIST_VALUES);
+                }
+
+            }
+        });
+
         ColumnHeaderLayer columnHeaderLayer =
                 new ColumnHeaderLayer(
                         columnHeaderDataLayer,
@@ -249,6 +279,7 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                         configRegistry,
                         false);
 
+        filterRowComboBoxDataProvider.configureConfigRegistryAccess(columnHeaderDataLayer, configRegistry);
         filterRowComboBoxDataProvider.setFilterCollection(bodyLayerStack.getFilterList(), filterRowHeaderLayer);
 
         // add a default ComboBoxFilterRowConfiguration with an updated editor
@@ -868,6 +899,76 @@ public class _6037_MixedFilterRowExample extends AbstractNatExample {
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
                             + DataModelConstants.BIRTHDAY_COLUMN_POSITION);
 
+            // register a map function to convert the description values to to a
+            // list
+            configRegistry.registerConfigAttribute(
+                    FilterRowConfigAttributes.LIST_VALUE_MAP_FUNCTION,
+                    ComboBoxFilterUtils.DEFAULT_LIST_VALUE_MAP_FUNCTION,
+                    DisplayMode.NORMAL,
+                    LIST_VALUES);
+
+            // register the flag to flatten the collection values in the
+            // resulting filter combobox
+            configRegistry.registerConfigAttribute(
+                    FilterRowConfigAttributes.FLATTEN_COLLECTION_VALUES,
+                    Boolean.TRUE,
+                    DisplayMode.NORMAL,
+                    LIST_VALUES);
+
+            // register a comparator to sort the list values according to its
+            // semantic value
+            configRegistry.registerConfigAttribute(
+                    SortConfigAttributes.SORT_COMPARATOR,
+                    new Comparator<String>() {
+                        @Override
+                        public int compare(String o1, String o2) {
+                            int o1Int = -1;
+                            switch (o1) {
+                                case "One":
+                                    o1Int = 0;
+                                    break;
+                                case "Two":
+                                    o1Int = 1;
+                                    break;
+                                case "Three":
+                                    o1Int = 2;
+                                    break;
+                                case "Four":
+                                    o1Int = 3;
+                                    break;
+                                case "Five":
+                                    o1Int = 4;
+                                    break;
+                                case "Six":
+                                    o1Int = 5;
+                                    break;
+                            }
+                            int o2Int = -1;
+                            switch (o2) {
+                                case "One":
+                                    o2Int = 0;
+                                    break;
+                                case "Two":
+                                    o2Int = 1;
+                                    break;
+                                case "Three":
+                                    o2Int = 2;
+                                    break;
+                                case "Four":
+                                    o2Int = 3;
+                                    break;
+                                case "Five":
+                                    o2Int = 4;
+                                    break;
+                                case "Six":
+                                    o2Int = 5;
+                                    break;
+                            }
+                            return o1Int < o2Int ? -1 : (o1Int == o2Int ? 0 : 1);
+                        }
+                    },
+                    DisplayMode.NORMAL,
+                    LIST_VALUES);
         }
     }
 
