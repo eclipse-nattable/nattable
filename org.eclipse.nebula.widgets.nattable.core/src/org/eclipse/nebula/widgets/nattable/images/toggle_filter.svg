@@ -1,0 +1,17 @@
+<!--
+Copyright (c) 2025 Janis Reinsch and others.
+
+This program and the accompanying materials are made
+available under the terms of the Eclipse Public License 2.0
+which is available at https://www.eclipse.org/legal/epl-2.0/
+
+SPDX-License-Identifier: EPL-2.0
+
+Contributors:
+	Janis Reinsch <janisreinsch+github@gmail.com> - initial API and implementation
+-->
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M9.25 12.8906L9.16992 12.8164L3.31348 7.41016C2.95458 7.07887 2.75 6.61245 2.75 6.12402V4.75H21.25V6.12402C21.25 6.61245 21.0454 7.07887 20.6865 7.41016L14.8301 12.8164L14.75 12.8906V19.833L9.25 22.125V12.8906Z" fill="#CFCFCF" stroke="#626262" stroke-width="0.5"/>
+<path d="M18.5 5.25H19.5C19.9142 5.25 20.25 5.58579 20.25 6V7.75H22C22.4142 7.75 22.75 8.08579 22.75 8.5V9.5C22.75 9.91421 22.4142 10.25 22 10.25H20.25V12C20.25 12.4142 19.9142 12.75 19.5 12.75H18.5C18.0858 12.75 17.75 12.4142 17.75 12V10.25H16C15.5858 10.25 15.25 9.91421 15.25 9.5V8.5C15.25 8.08579 15.5858 7.75 16 7.75H17.75V6C17.75 5.58579 18.0858 5.25 18.5 5.25Z" fill="#FDF2CA" stroke="#AB7111" stroke-width="0.5"/>
+<path d="M16 14.25H22C22.4142 14.25 22.75 14.5858 22.75 15V16C22.75 16.4142 22.4142 16.75 22 16.75H16C15.5858 16.75 15.25 16.4142 15.25 16V15C15.25 14.5858 15.5858 14.25 16 14.25Z" fill="#FDF2CA" stroke="#AB7111" stroke-width="0.5"/>
+</svg>

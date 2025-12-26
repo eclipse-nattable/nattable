@@ -1,0 +1,44 @@
+<!--
+Copyright (c) 2025 Janis Reinsch and others.
+
+This program and the accompanying materials are made
+available under the terms of the Eclipse Public License 2.0
+which is available at https://www.eclipse.org/legal/epl-2.0/
+
+SPDX-License-Identifier: EPL-2.0
+
+Contributors:
+	Janis Reinsch <janisreinsch+github@gmail.com> - initial API and implementation
+-->
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="path-1-inside-1_2035_59" fill="white">
+<path d="M8 7H16V21H8V7Z"/>
+</mask>
+<path d="M8 7H16V21H8V7Z" fill="#B3D1F6"/>
+<path d="M8 7V6.5H7.75V7H8ZM16 7H16.25V6.5H16V7ZM16 21V21.5H16.25V21H16ZM8 21H7.75V21.5H8V21ZM8 7V7.5H16V7V6.5H8V7ZM16 7H15.75V21H16H16.25V7H16ZM16 21V20.5H8V21V21.5H16V21ZM8 21H8.25V7H8H7.75V21H8Z" fill="#626262" mask="url(#path-1-inside-1_2035_59)"/>
+<mask id="path-3-inside-2_2035_59" fill="white">
+<path d="M0 7H8V21H0V7Z"/>
+</mask>
+<path d="M0 7H8V21H0V7Z" fill="white"/>
+<path d="M0 7V6.5H-0.5V7H0ZM8 7H8.25V6.5H8V7ZM8 21V21.5H8.25V21H8ZM0 21H-0.5V21.5H0V21ZM0 7V7.5H8V7V6.5H0V7ZM8 7H7.75V21H8H8.25V7H8ZM8 21V20.5H0V21V21.5H8V21ZM0 21H0.5V7H0H-0.5V21H0Z" fill="#626262" mask="url(#path-3-inside-2_2035_59)"/>
+<mask id="path-5-inside-3_2035_59" fill="white">
+<path d="M16 7H24V21H16V7Z"/>
+</mask>
+<path d="M16 7H24V21H16V7Z" fill="white"/>
+<path d="M16 7V6.5H15.75V7H16ZM24 7H24.5V6.5H24V7ZM24 21V21.5H24.5V21H24ZM16 21H15.75V21.5H16V21ZM16 7V7.5H24V7V6.5H16V7ZM24 7H23.5V21H24H24.5V7H24ZM24 21V20.5H16V21V21.5H24V21ZM16 21H16.25V7H16H15.75V21H16Z" fill="#626262" mask="url(#path-5-inside-3_2035_59)"/>
+<mask id="path-7-inside-4_2035_59" fill="white">
+<path d="M8 3H16V7H8V3Z"/>
+</mask>
+<path d="M8 3H16V7H8V3Z" fill="#376BA5"/>
+<path d="M8 3V2.5H7.75V3H8ZM16 3H16.25V2.5H16V3ZM8 3V3.5H16V3V2.5H8V3ZM16 3H15.75V7H16H16.25V3H16ZM8 7H8.25V3H8H7.75V7H8Z" fill="#626262" mask="url(#path-7-inside-4_2035_59)"/>
+<mask id="path-9-inside-5_2035_59" fill="white">
+<path d="M0 3H8V7H0V3Z"/>
+</mask>
+<path d="M0 3H8V7H0V3Z" fill="#9D9D9D"/>
+<path d="M0 3V2.5H-0.5V3H0ZM8 3H8.25V2.5H8V3ZM0 3V3.5H8V3V2.5H0V3ZM8 3H7.75V7H8H8.25V3H8ZM0 7H0.5V3H0H-0.5V7H0Z" fill="#626262" mask="url(#path-9-inside-5_2035_59)"/>
+<mask id="path-11-inside-6_2035_59" fill="white">
+<path d="M16 3H24V7H16V3Z"/>
+</mask>
+<path d="M16 3H24V7H16V3Z" fill="#9D9D9D"/>
+<path d="M16 3V2.5H15.75V3H16ZM24 3H24.5V2.5H24V3ZM16 3V3.5H24V3V2.5H16V3ZM24 3H23.5V7H24H24.5V3H24ZM16 7H16.25V3H16H15.75V7H16Z" fill="#626262" mask="url(#path-11-inside-6_2035_59)"/>
+</svg>

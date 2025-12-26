@@ -1,0 +1,46 @@
+<!--
+Copyright (c) 2025 Janis Reinsch and others.
+
+This program and the accompanying materials are made
+available under the terms of the Eclipse Public License 2.0
+which is available at https://www.eclipse.org/legal/epl-2.0/
+
+SPDX-License-Identifier: EPL-2.0
+
+Contributors:
+	Janis Reinsch <janisreinsch+github@gmail.com> - initial API and implementation
+-->
+<svg width="25" height="26" viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_i_2038_81)">
+<path d="M3.75 3.75H18.75V18.75H3.75V3.75Z" fill="white"/>
+</g>
+<path d="M18.75 1.25V3.75H3.75V18.75H1.25V1.25H18.75Z" fill="#9D9D9D"/>
+<path d="M3.75 1.25L3.75 18.75M7.5 1.25V3.75M11.25 1.25V3.75M15 1.25V3.75M1.25 1.25L18.75 1.25V18.75H1.25V1.25Z" stroke="#626262" stroke-width="0.5"/>
+<path d="M1.25 3.75H18.75" stroke="#626262" stroke-width="0.5"/>
+<path d="M1.25 16.25H3.75" stroke="#626262" stroke-width="0.5"/>
+<path d="M1.25 13.75H3.75" stroke="#626262" stroke-width="0.5"/>
+<path d="M1.25 11.25H3.75" stroke="#626262" stroke-width="0.5"/>
+<path d="M1.25 8.75H3.75" stroke="#626262" stroke-width="0.5"/>
+<path d="M1.25 6.25H3.75" stroke="#626262" stroke-width="0.5"/>
+<path d="M7.24265 22.3848L5.82843 20.9706L7.24265 16.7279L11.4853 20.9706L7.24265 22.3848Z" fill="#DFBF9F"/>
+<path d="M6.07 22.7756C5.67912 22.9059 5.30725 22.5341 5.43754 22.1432L6.18198 19.9099C6.18198 19.9099 6.64593 20.7274 7.06586 21.1473C7.48579 21.5673 8.3033 22.0312 8.3033 22.0312L6.07 22.7756Z" fill="#333333"/>
+<rect x="11.4853" y="20.9706" width="6" height="12" transform="rotate(-135 11.4853 20.9706)" fill="#DE9852"/>
+<path d="M22.0919 10.364L17.8492 6.12131L19.2635 4.7071C19.654 4.31657 20.2872 4.31657 20.6777 4.7071L23.5061 7.53553C23.8966 7.92605 23.8966 8.55921 23.5061 8.94974L22.0919 10.364Z" fill="#E01B1B"/>
+<rect x="19.9706" y="12.4853" width="6" height="3" transform="rotate(-135 19.9706 12.4853)" fill="#CFCFCF"/>
+<path d="M10.0711 20.2634C9.63446 19.8268 9.8006 19.2858 9.36398 18.8492C8.92736 18.4126 8.38638 18.5787 7.94976 18.1421C7.51314 17.7055 7.67927 17.1645 7.24266 16.7279L9.36398 18.8492L11.4853 20.9705C11.0487 20.5339 10.5077 20.7001 10.0711 20.2634Z" fill="#DE9852"/>
+<path d="M9.36405 21.6776L21.3849 9.65672L22.092 10.3638L11.4854 20.9704L9.36405 21.6776Z" fill="#333333" fill-opacity="0.15"/>
+<path d="M7.24273 22.3847L20.6778 8.94961L21.3849 9.65672L9.36405 21.6776L7.24273 22.3847Z" fill="#333333" fill-opacity="0.1"/>
+<path d="M6.53554 21.6777L19.9706 8.24263L20.6778 8.94961L7.24273 22.3847L6.53554 21.6777Z" fill="#333333" fill-opacity="0.05"/>
+<defs>
+<filter id="filter0_i_2038_81" x="3.75" y="3.75" width="15" height="19" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="4.5"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0"/>
+<feBlend mode="normal" in2="shape" result="effect1_innerShadow_2038_81"/>
+</filter>
+</defs>
+</svg>

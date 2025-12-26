@@ -1,0 +1,43 @@
+<!--
+Copyright (c) 2025 Janis Reinsch and others.
+
+This program and the accompanying materials are made
+available under the terms of the Eclipse Public License 2.0
+which is available at https://www.eclipse.org/legal/epl-2.0/
+
+SPDX-License-Identifier: EPL-2.0
+
+Contributors:
+	Janis Reinsch <janisreinsch+github@gmail.com> - initial API and implementation
+-->
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_i_2039_81)">
+<path d="M3.75 3.75H18.75V18.75H3.75V3.75Z" fill="white"/>
+</g>
+<path d="M18.75 1.25V3.75H3.75V18.75H1.25V1.25H18.75Z" fill="#9D9D9D"/>
+<path d="M3.75 1.25L3.75 18.75M7.5 1.25V3.75M11.25 1.25V3.75M15 1.25V3.75M1.25 1.25L18.75 1.25V18.75H1.25V1.25Z" stroke="#626262" stroke-width="0.5"/>
+<path d="M1.25 3.75H18.75" stroke="#626262" stroke-width="0.5"/>
+<path d="M1.25 16.25H3.75" stroke="#626262" stroke-width="0.5"/>
+<path d="M1.25 13.75H3.75" stroke="#626262" stroke-width="0.5"/>
+<path d="M1.25 11.25H3.75" stroke="#626262" stroke-width="0.5"/>
+<path d="M1.25 8.75H3.75" stroke="#626262" stroke-width="0.5"/>
+<path d="M1.25 6.25H3.75" stroke="#626262" stroke-width="0.5"/>
+<path d="M8 9.08334H10.0762C10.2974 9.08334 10.5079 9.18074 10.6504 9.34995L11.4678 10.3206C11.7053 10.6026 12.0551 10.766 12.4238 10.766H20.167C20.5811 10.7661 20.917 11.1019 20.917 11.516V21.2914C20.917 21.7055 20.5811 22.0412 20.167 22.0414H8C7.58579 22.0414 7.25 21.7056 7.25 21.2914V9.83334L7.25391 9.7562C7.29253 9.37823 7.61183 9.08334 8 9.08334Z" fill="#DE9852"/>
+<path d="M8 9.08334H10.0762C10.2974 9.08334 10.5079 9.18074 10.6504 9.34995L11.4678 10.3206C11.7053 10.6026 12.0551 10.766 12.4238 10.766H20.167C20.5811 10.7661 20.917 11.1019 20.917 11.516V21.2914C20.917 21.7055 20.5811 22.0412 20.167 22.0414H8C7.58579 22.0414 7.25 21.7056 7.25 21.2914V9.83334L7.25391 9.7562C7.29253 9.37823 7.61183 9.08334 8 9.08334Z" fill="#333333" fill-opacity="0.15"/>
+<path d="M8 9.08334H10.0762C10.2974 9.08334 10.5079 9.18074 10.6504 9.34995L11.4678 10.3206C11.7053 10.6026 12.0551 10.766 12.4238 10.766H20.167C20.5811 10.7661 20.917 11.1019 20.917 11.516V21.2914C20.917 21.7055 20.5811 22.0412 20.167 22.0414H8C7.58579 22.0414 7.25 21.7056 7.25 21.2914V9.83334L7.25391 9.7562C7.29253 9.37823 7.61183 9.08334 8 9.08334Z" stroke="#333333" stroke-width="0.5"/>
+<path opacity="0.75" d="M8.41666 13.375C8.41666 12.8227 8.86437 12.375 9.41666 12.375H18.75C19.3023 12.375 19.75 12.8227 19.75 13.375V22.2917H8.41666V13.375Z" fill="white"/>
+<path d="M8.77084 14.0833C8.77084 13.5311 9.21856 13.0833 9.77084 13.0833H19.1042C19.6565 13.0833 20.1042 13.5311 20.1042 14.0833V22.2917H8.77084V14.0833Z" fill="white"/>
+<path d="M10.5537 14.0417H22.6123C23.1242 14.0417 23.4861 14.5433 23.3242 15.029L21.1572 21.529C21.0551 21.835 20.7689 22.0415 20.4463 22.0417H8.3877C7.87578 22.0417 7.5139 21.54 7.67578 21.0544L9.84277 14.5544C9.94487 14.2483 10.2311 14.0418 10.5537 14.0417Z" fill="#DE9852" stroke="#333333" stroke-width="0.5"/>
+<defs>
+<filter id="filter0_i_2039_81" x="3.75" y="3.75" width="15" height="19" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="4.5"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0"/>
+<feBlend mode="normal" in2="shape" result="effect1_innerShadow_2039_81"/>
+</filter>
+</defs>
+</svg>

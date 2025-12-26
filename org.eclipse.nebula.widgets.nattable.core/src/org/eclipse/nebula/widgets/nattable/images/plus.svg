@@ -1,0 +1,16 @@
+<!--
+Copyright (c) 2025 Janis Reinsch and others.
+
+This program and the accompanying materials are made
+available under the terms of the Eclipse Public License 2.0
+which is available at https://www.eclipse.org/legal/epl-2.0/
+
+SPDX-License-Identifier: EPL-2.0
+
+Contributors:
+	Janis Reinsch <janisreinsch+github@gmail.com> - initial API and implementation
+-->
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="1.5" y="1.5" width="21" height="21" stroke="#9D9D9D" stroke-width="3"/>
+<path d="M10.5 10.5V5H13.5V10.5H19V13.5H13.5V19H10.5V13.5H5V10.5H10.5Z" fill="#333333"/>
+</svg>
