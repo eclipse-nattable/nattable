@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2024 Dirk Fauth and others.
+ * Copyright (c) 2013, 2026 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -534,7 +534,7 @@ public class FilterNatCombo extends NatCombo {
     @Override
     protected void setDropdownSelection(String[] selection) {
         super.setDropdownSelection(selection);
-        if (this.selectAllItemViewer != null) {
+        if (this.selectAllItemViewer != null && !this.selectAllItemViewer.getControl().isDisposed()) {
             this.selectAllItemViewer.refresh();
         }
     }

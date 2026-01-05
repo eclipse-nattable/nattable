@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2025 Dirk Fauth and others.
+ * Copyright (c) 2013, 2026 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -224,7 +224,12 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
                     if (event.keyCode == SWT.CR
                             || event.keyCode == SWT.KEYPAD_CR
                             || event.keyCode == SWT.ESC) {
-                        close();
+
+                        if (FilterRowComboBoxCellEditor.this.editMode == EditModeEnum.INLINE) {
+                            close();
+                        } else {
+                            combo.hideDropdownControl();
+                        }
                     }
                 }
             });
@@ -336,7 +341,7 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
         if (!isClosed()) {
             try {
                 Object canonicalValue = getCanonicalValue();
-                if (!canonicalValuesEquals(canonicalValue)) {
+                if (!canonicalValuesEquals(canonicalValue) || this.editMode == EditModeEnum.DIALOG) {
                     if (super.commit(direction, closeAfterCommit)) {
                         this.currentCanonicalValue = canonicalValue;
 
