@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2025 Dirk Fauth and others.
+ * Copyright (c) 2025, 2026 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -34,14 +35,19 @@ import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.dataset.person.ExtendedPersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.edit.gui.ICellEditDialog;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxFilterRowHeaderComposite;
+import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterIconPainter;
+import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterRowConfiguration;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterUtils;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowCategoryValueMapper;
+import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
@@ -56,18 +62,24 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.ui.menu.DebugMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -204,7 +216,8 @@ public class _6038_ExtendedExcelLikeFilterRowExample extends AbstractNatExample 
                         columnPropertyAccessor,
                         columnHeaderLayer,
                         columnHeaderDataProvider,
-                        configRegistry);
+                        configRegistry,
+                        false);
 
         // build the row header layer
         IDataProvider rowHeaderDataProvider =
@@ -247,6 +260,64 @@ public class _6038_ExtendedExcelLikeFilterRowExample extends AbstractNatExample 
         // manually
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+
+        natTable.addConfiguration(new AbstractRegistryConfiguration() {
+
+            @Override
+            public void configureRegistry(IConfigRegistry configRegistry) {
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.OPEN_IN_DIALOG,
+                        Boolean.FALSE,
+                        DisplayMode.EDIT,
+                        GridRegion.FILTER_ROW);
+
+                // configure a custom style for the filter row editor in a
+                // dialog
+                Style cellStyle = new Style();
+                cellStyle.setAttributeValue(
+                        CellStyleAttributes.BACKGROUND_COLOR,
+                        GUIHelper.COLOR_WHITE);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
+                        cellStyle,
+                        DisplayMode.EDIT,
+                        GridRegion.FILTER_ROW);
+
+                // configure custom dialog settings
+                Display display = Display.getCurrent();
+                Map<String, Object> editDialogSettings = new HashMap<>();
+                editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_TITLE, "Column Filter");
+                editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_RESIZABLE, Boolean.TRUE);
+
+                Point size = new Point(400, 300);
+                editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_SIZE, size);
+
+                int screenWidth = display.getBounds().width;
+                int screenHeight = display.getBounds().height;
+                Point location = new Point(
+                        (screenWidth / (2 * display.getMonitors().length)) - (size.x / 2),
+                        (screenHeight / 2) - (size.y / 2));
+                editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_LOCATION, location);
+
+                // add custum message
+                editDialogSettings.put(ICellEditDialog.DIALOG_MESSAGE, "Select the filter values to apply:");
+
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.EDIT_DIALOG_SETTINGS,
+                        editDialogSettings,
+                        DisplayMode.EDIT,
+                        GridRegion.FILTER_ROW);
+
+            }
+        });
+
+        FilterRowComboBoxCellEditor editor = new FilterRowComboBoxCellEditor(filterRowHeaderLayer.getComboBoxDataProvider(), 10);
+        editor.configureDropdownFilter(true, true);
+
+        natTable.addConfiguration(new ComboBoxFilterRowConfiguration(
+                editor,
+                new ComboBoxFilterIconPainter(filterRowHeaderLayer.getComboBoxDataProvider()),
+                filterRowHeaderLayer.getComboBoxDataProvider()));
 
         natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
             @Override
@@ -336,6 +407,49 @@ public class _6038_ExtendedExcelLikeFilterRowExample extends AbstractNatExample 
             public void widgetSelected(SelectionEvent e) {
                 boolean selected = addCategoriesButton.getSelection();
                 filterRowHeaderLayer.getComboBoxDataProvider().setCategoriesOnly(10, selected);
+            }
+        });
+
+        // Add checkbox to open filter in dialog
+        Button openInDialogCheckbox = new Button(buttonPanel, SWT.CHECK);
+        Button closeButtonCheckbox = new Button(buttonPanel, SWT.CHECK);
+
+        openInDialogCheckbox.setText("Open Filter in Dialog");
+        openInDialogCheckbox.setSelection(false);
+        openInDialogCheckbox.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                boolean selected = openInDialogCheckbox.getSelection();
+
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.OPEN_IN_DIALOG,
+                        selected,
+                        DisplayMode.EDIT,
+                        GridRegion.FILTER_ROW);
+
+                closeButtonCheckbox.setEnabled(selected);
+            }
+        });
+
+        // Add checkbox to control commit on edit behavior
+        closeButtonCheckbox.setText("Commit on Edit");
+        closeButtonCheckbox.setSelection(false);
+        closeButtonCheckbox.setEnabled(false);
+        closeButtonCheckbox.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                boolean selected = closeButtonCheckbox.getSelection();
+
+                Map<String, Object> editDialogSettings = configRegistry.getConfigAttribute(
+                        EditConfigAttributes.EDIT_DIALOG_SETTINGS,
+                        DisplayMode.EDIT,
+                        GridRegion.FILTER_ROW);
+                editDialogSettings.put(ICellEditDialog.DIALOG_COMMIT_EDITOR_ON_EDIT, selected);
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.EDIT_DIALOG_SETTINGS,
+                        editDialogSettings,
+                        DisplayMode.EDIT,
+                        GridRegion.FILTER_ROW);
             }
         });
 

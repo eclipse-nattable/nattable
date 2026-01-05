@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2026 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -59,6 +59,16 @@ public interface ICellEditDialog {
      * value needs to be a {@link java.lang.String}.
      */
     String DIALOG_MESSAGE = "DIALOG_MESSAGE"; //$NON-NLS-1$
+    /**
+     * Key to specify whether the cell editor shown in the dialog should
+     * directly commit on editing like in the inline mode, or if it should
+     * commit only on clicking the OK button. If set to <code>true</code> there
+     * will be also no OK/Cancel buttons but only a Close button. The default is
+     * <code>false</code>. The value needs to be a {@link java.lang.Boolean}.
+     *
+     * @since 2.7
+     */
+    String DIALOG_COMMIT_EDITOR_ON_EDIT = "DIALOG_COMMIT_EDITOR_ON_EDIT"; //$NON-NLS-1$
 
     /**
      * @return The canonical value that was committed to the editor control.
@@ -120,6 +130,7 @@ public interface ICellEditDialog {
      * @see ICellEditDialog#DIALOG_SHELL_SIZE
      * @see ICellEditDialog#DIALOG_SHELL_RESIZABLE
      * @see ICellEditDialog#DIALOG_MESSAGE
+     * @see ICellEditDialog#DIALOG_COMMIT_EDITOR_ON_EDIT
      * @see EditConfigAttributes#EDIT_DIALOG_SETTINGS
      */
     void setDialogSettings(Map<String, Object> editDialogSettings);

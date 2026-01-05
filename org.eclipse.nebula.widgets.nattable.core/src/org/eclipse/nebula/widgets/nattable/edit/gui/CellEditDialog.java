@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Dirk Fauth and others.
+ * Copyright (c) 2013, 2026 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ package org.eclipse.nebula.widgets.nattable.edit.gui;
 import java.util.Map;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.Messages;
@@ -22,6 +23,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.DialogEditHandler;
 import org.eclipse.nebula.widgets.nattable.edit.EditTypeEnum;
 import org.eclipse.nebula.widgets.nattable.edit.ICellEditHandler;
+import org.eclipse.nebula.widgets.nattable.edit.InlineEditHandler;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
@@ -206,11 +208,29 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
                     .applyTo(customMessageLabel);
         }
 
+        // If the dialog should commit the editor on edit like in the inline
+        // mode, we need to wrap the existing cell edit handler to commit the
+        // editor value in the data model directly and commit it in the dialog
+        // to be consistent.
+        ICellEditHandler eh = this.cellEditHandler;
+        if ((boolean) this.editDialogSettings.getOrDefault(DIALOG_COMMIT_EDITOR_ON_EDIT, Boolean.FALSE)) {
+            eh = new InlineEditHandler(
+                    this.cell.getLayer(),
+                    this.cell.getColumnPosition(),
+                    this.cell.getRowPosition()) {
+                @Override
+                public boolean commit(Object canonicalValue, MoveDirectionEnum direction) {
+                    CellEditDialog.this.cellEditHandler.commit(canonicalValue, direction);
+                    return super.commit(canonicalValue, direction);
+                }
+            };
+        }
+
         // activate the new editor
         this.cellEditor.activateCell(panel,
                 this.originalCanonicalValue,
                 EditModeEnum.DIALOG,
-                this.cellEditHandler,
+                eh,
                 this.cell,
                 this.configRegistry);
 
@@ -230,6 +250,15 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
         }
 
         return panel;
+    }
+
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        if ((boolean) this.editDialogSettings.getOrDefault(DIALOG_COMMIT_EDITOR_ON_EDIT, Boolean.FALSE)) {
+            createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CLOSE_LABEL, true);
+        } else {
+            super.createButtonsForButtonBar(parent);
+        }
     }
 
     @Override
