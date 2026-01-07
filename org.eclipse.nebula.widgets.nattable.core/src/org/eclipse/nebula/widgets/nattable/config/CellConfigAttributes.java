@@ -64,4 +64,14 @@ public final class CellConfigAttributes {
      * @since 1.4
      */
     public static final ConfigAttribute<Integer> GRID_LINE_WIDTH = new ConfigAttribute<>();
+
+    /**
+     * Attribute for configuring whether the selection background color should
+     * be blended with the normal background color. If not set or set to
+     * <code>false</code>, the selection background color will fully override
+     * the normal background color.
+     *
+     * @since 2.7
+     */
+    public static final ConfigAttribute<Boolean> BLEND_SELECTION_BACKGROUND = new ConfigAttribute<>();
 }

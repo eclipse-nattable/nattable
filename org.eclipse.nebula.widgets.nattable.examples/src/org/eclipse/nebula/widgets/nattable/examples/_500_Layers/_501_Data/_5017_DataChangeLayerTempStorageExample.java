@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2020 Dirk Fauth and others.
+ * Copyright (c) 2017, 2026 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -44,6 +44,7 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.DateCellEditor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
@@ -229,6 +230,13 @@ public class _5017_DataChangeLayerTempStorageExample extends AbstractNatExample 
 
         @Override
         public void configureRegistry(IConfigRegistry configRegistry) {
+            // configure to blend the background color on selection
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.BLEND_SELECTION_BACKGROUND,
+                    Boolean.TRUE,
+                    DisplayMode.NORMAL,
+                    GridRegion.BODY);
+
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITABLE_RULE,
                     IEditableRule.ALWAYS_EDITABLE);
