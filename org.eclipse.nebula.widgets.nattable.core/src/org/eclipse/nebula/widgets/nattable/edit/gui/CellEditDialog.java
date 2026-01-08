@@ -213,7 +213,7 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
         // editor value in the data model directly and commit it in the dialog
         // to be consistent.
         ICellEditHandler eh = this.cellEditHandler;
-        if ((boolean) this.editDialogSettings.getOrDefault(DIALOG_COMMIT_EDITOR_ON_EDIT, Boolean.FALSE)) {
+        if (this.editDialogSettings != null && (boolean) this.editDialogSettings.getOrDefault(DIALOG_COMMIT_EDITOR_ON_EDIT, Boolean.FALSE)) {
             eh = new InlineEditHandler(
                     this.cell.getLayer(),
                     this.cell.getColumnPosition(),
@@ -254,7 +254,7 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        if ((boolean) this.editDialogSettings.getOrDefault(DIALOG_COMMIT_EDITOR_ON_EDIT, Boolean.FALSE)) {
+        if (this.editDialogSettings != null && (boolean) this.editDialogSettings.getOrDefault(DIALOG_COMMIT_EDITOR_ON_EDIT, Boolean.FALSE)) {
             createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CLOSE_LABEL, true);
         } else {
             super.createButtonsForButtonBar(parent);
