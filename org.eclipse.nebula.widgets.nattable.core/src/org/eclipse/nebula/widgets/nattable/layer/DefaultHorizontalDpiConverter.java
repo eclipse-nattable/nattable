@@ -20,9 +20,13 @@ import org.eclipse.swt.widgets.Display;
  * {@link Display#getDPI()}.
  *
  * @since 2.0
+ * @deprecated As of version 2.7, use {@link DefaultZoomDpiConverter}
+ *             instead.
  */
+@Deprecated(since = "2.7", forRemoval = true)
 public class DefaultHorizontalDpiConverter extends AbstractDpiConverter {
 
+    @Deprecated
     @Override
     protected void readDpiFromDisplay() {
         Display.getDefault().syncExec(() -> DefaultHorizontalDpiConverter.this.dpi = Display.getDefault().getDPI().x);

@@ -37,8 +37,8 @@ import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsLockHelper;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.DarkGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.DefaultGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigAttributes;
@@ -86,6 +86,7 @@ import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.style.theme.DarkNatTableThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.theme.DefaultNatTableThemeConfiguration;
+import org.eclipse.nebula.widgets.nattable.style.theme.IThemeExtension;
 import org.eclipse.nebula.widgets.nattable.style.theme.ModernNatTableThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.theme.ThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.summaryrow.ISummaryProvider;
@@ -276,17 +277,21 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
         // add some additional styling
-        natTable.addConfiguration(new AbstractRegistryConfiguration() {
+        IThemeExtension alignmentThemeExtension = new IThemeExtension() {
 
             @Override
-            public void configureRegistry(IConfigRegistry configRegistry) {
+            public void registerStyles(IConfigRegistry configRegistry) {
+                IStyle style = new Style();
+                style.setAttributeValue(
+                        CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+                        HorizontalAlignmentEnum.CENTER);
                 configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.CELL_PAINTER,
-                        new CheckBoxPainter(),
+                        CellConfigAttributes.CELL_STYLE,
+                        style,
                         DisplayMode.NORMAL,
                         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
 
-                IStyle style = new Style();
+                style = new Style();
                 style.setAttributeValue(
                         CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                         HorizontalAlignmentEnum.RIGHT);
@@ -323,7 +328,76 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
                         style,
                         DisplayMode.SELECT, ROW_HEADER_SUMMARY_ROW);
             }
-        });
+
+            @Override
+            public void unregisterStyles(IConfigRegistry configRegistry) {
+                configRegistry.unregisterConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
+
+                configRegistry.unregisterConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2);
+                configRegistry.unregisterConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
+
+                configRegistry.unregisterConfigAttribute(
+                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
+
+                configRegistry.unregisterConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
+                        DisplayMode.NORMAL, ROW_HEADER_SUMMARY_ROW);
+                configRegistry.unregisterConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE,
+                        DisplayMode.SELECT, ROW_HEADER_SUMMARY_ROW);
+            }
+        };
+
+        // theme extension for the checkbox painter
+        IThemeExtension painterThemeExtension = new IThemeExtension() {
+            @Override
+            public void registerStyles(IConfigRegistry configRegistry) {
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        new CheckBoxPainter(),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
+            }
+
+            @Override
+            public void unregisterStyles(IConfigRegistry configRegistry) {
+                configRegistry.unregisterConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
+            }
+        };
+
+        // theme extension for the checkbox painter with inverted images
+        IThemeExtension darkPainterThemeExtension = new IThemeExtension() {
+            @Override
+            public void registerStyles(IConfigRegistry configRegistry) {
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        new CheckBoxPainter(true, true),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
+            }
+
+            @Override
+            public void unregisterStyles(IConfigRegistry configRegistry) {
+                configRegistry.unregisterConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
+            }
+        };
 
         // add sorting configuration
         natTable.addConfiguration(new SingleClickSortConfiguration());
@@ -419,12 +493,18 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         // set the modern theme to visualize the summary better
         final ThemeConfiguration defaultTheme = new DefaultNatTableThemeConfiguration();
         defaultTheme.addThemeExtension(new DefaultGroupByThemeExtension());
+        defaultTheme.addThemeExtension(alignmentThemeExtension);
+        defaultTheme.addThemeExtension(painterThemeExtension);
 
         final ThemeConfiguration modernTheme = new ModernNatTableThemeConfiguration();
         modernTheme.addThemeExtension(new ModernGroupByThemeExtension());
+        modernTheme.addThemeExtension(alignmentThemeExtension);
+        modernTheme.addThemeExtension(painterThemeExtension);
 
         final ThemeConfiguration darkTheme = new DarkNatTableThemeConfiguration();
         darkTheme.addThemeExtension(new DarkGroupByThemeExtension());
+        darkTheme.addThemeExtension(alignmentThemeExtension);
+        darkTheme.addThemeExtension(darkPainterThemeExtension);
 
         natTable.setTheme(modernTheme);
 

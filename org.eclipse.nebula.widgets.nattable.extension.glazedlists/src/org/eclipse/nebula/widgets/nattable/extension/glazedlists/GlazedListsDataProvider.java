@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2026 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -40,6 +40,7 @@ public class GlazedListsDataProvider<T> extends ListDataProvider<T> {
     private int lastRowIndex = -1;
     private T lastRowObject = null;
 
+    @Deprecated
     public GlazedListsDataProvider(EventList<T> list, IColumnAccessor<T> columnAccessor) {
         super(list, columnAccessor);
 
@@ -67,11 +68,13 @@ public class GlazedListsDataProvider<T> extends ListDataProvider<T> {
         });
     }
 
+    @Deprecated
     public void inputChanged() {
         this.lastRowIndex = -1;
         this.lastRowObject = null;
     }
 
+    @Deprecated
     @Override
     public T getRowObject(int rowIndex) {
         if (rowIndex != this.lastRowIndex || this.lastRowObject == null) {
@@ -86,6 +89,7 @@ public class GlazedListsDataProvider<T> extends ListDataProvider<T> {
         return this.lastRowObject;
     }
 
+    @Deprecated
     @Override
     public Object getDataValue(int colIndex, int rowIndex) {
         // new row to cache

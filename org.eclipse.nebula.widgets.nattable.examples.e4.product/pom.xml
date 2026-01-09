@@ -35,6 +35,7 @@
                   <goal>materialize-products</goal>
                </goals>
                <configuration>
+                 <installSources>true</installSources>
 		         <products>
                    <product>
                      <id>org.eclipse.nebula.widgets.nattable.examples.e4.product</id>

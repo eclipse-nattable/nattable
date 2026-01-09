@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2024 Original authors and others.
+ * Copyright (c) 2012, 2026 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,7 +16,6 @@ package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Observable;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
@@ -27,7 +26,7 @@ import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
  * The model that is used to internally store the groupby state. It is used to
  * define the tree structure.
  */
-public class GroupByModel extends Observable implements IPersistable {
+public class GroupByModel implements IPersistable {
 
     public static final String PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES = ".groupByColumnIndexes"; //$NON-NLS-1$
 
@@ -189,15 +188,8 @@ public class GroupByModel extends Observable implements IPersistable {
 
     /**
      * Notifies the observers about a change.
-     *
-     * @see #setChanged()
-     * @see #notifyObservers()
      */
     public void update() {
-        // TODO remove once Observable is dropped from class hierarchy
-        setChanged();
-        notifyObservers();
-
         fireGroupByModelChange();
     }
 

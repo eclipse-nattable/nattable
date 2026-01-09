@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2025 Original authors and others.
+ * Copyright (c) 2012, 2026 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -40,14 +40,14 @@ import org.eclipse.nebula.widgets.nattable.edit.CellEditorCreatedEvent;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeGridCommand;
-import org.eclipse.nebula.widgets.nattable.layer.DefaultHorizontalDpiConverter;
-import org.eclipse.nebula.widgets.nattable.layer.DefaultVerticalDpiConverter;
+import org.eclipse.nebula.widgets.nattable.layer.DefaultZoomDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
+import org.eclipse.nebula.widgets.nattable.layer.command.ResetScalingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnVisualUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
@@ -90,7 +90,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
@@ -343,8 +342,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
             // register the DPI scaling on the layers
             this.underlyingLayer.doCommand(
                     new ConfigureScalingCommand(
-                            new DefaultHorizontalDpiConverter(),
-                            new DefaultVerticalDpiConverter()));
+                            new DefaultZoomDpiConverter(this.nativeZoom)));
         }
     }
 
@@ -377,7 +375,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
         if (this.configRegistry == null) {
             this.configRegistry = new ConfigRegistry();
             this.themeManager = new ThemeManager(this.configRegistry);
-            configureScaling(new DefaultHorizontalDpiConverter(), new DefaultVerticalDpiConverter());
+            configureScaling(new DefaultZoomDpiConverter(this.nativeZoom));
         }
         return this.configRegistry;
     }
@@ -400,7 +398,20 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
         this.configRegistry = configRegistry;
         this.themeManager = new ThemeManager(configRegistry);
-        configureScaling(new DefaultHorizontalDpiConverter(), new DefaultVerticalDpiConverter());
+        configureScaling(new DefaultZoomDpiConverter(this.nativeZoom));
+    }
+
+    /**
+     * Add the given {@link IDpiConverter} to the {@link IConfigRegistry} so it
+     * can be used by painters and set the system properties to use the
+     * configured scaling for images.
+     *
+     * @param dpiConverter
+     *            The {@link IDpiConverter} for scaling.
+     * @since 2.7
+     */
+    protected void configureScaling(IDpiConverter dpiConverter) {
+        configureScaling(dpiConverter, dpiConverter);
     }
 
     /**
@@ -420,7 +431,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
         // match the updated view
         if (!commitAndCloseActiveCellEditor()) {
             // if committing didn't work out we need to perform a hard
-            // close otherwise the state of the table would be unstale
+            // close otherwise the state of the table would be unstable
             getActiveCellEditor().close();
         }
 
@@ -437,11 +448,13 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
         // register the font scaling factor
         float dpiFactor = GUIHelper.getDpiFactor(GUIHelper.getDpiX());
-        float displayDpiFactor = GUIHelper.getDpiFactor(Display.getDefault().getDPI().x);
-        float fontScalingFactor = (dpiFactor / displayDpiFactor);
+        String updateOnRuntime = System.getProperty("swt.autoScale.updateOnRuntime", "false"); //$NON-NLS-1$ //$NON-NLS-2$
+        if (!Boolean.parseBoolean(updateOnRuntime)) {
+            dpiFactor = dpiFactor / (this.nativeZoom / 100f);
+        }
         getConfigRegistry().registerConfigAttribute(
                 NatTableConfigAttributes.FONT_SCALING_FACTOR,
-                fontScalingFactor);
+                dpiFactor);
 
         this.themeManager.refreshCurrentTheme();
     }
@@ -499,6 +512,12 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
         addListener(SWT.Resize, e -> {
             doCommand(new ClientAreaResizeCommand(NatTable.this));
             redraw();
+        });
+
+        addListener(SWT.ZoomChanged, e -> {
+            // if the zoom level changes we need to reconfigure the scaling
+            // converters to ensure that the DPI values are correct
+            doCommand(new ConfigureScalingCommand(new DefaultZoomDpiConverter(this.nativeZoom)));
         });
     }
 
@@ -839,6 +858,8 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
             // scaling behavior
             ConfigureScalingCommand cmd = (ConfigureScalingCommand) command;
             configureScaling(cmd.getHorizontalDpiConverter(), cmd.getVerticalDpiConverter());
+        } else if (command instanceof ResetScalingCommand) {
+            configureScaling(new DefaultZoomDpiConverter(this.nativeZoom));
         }
 
         return this.underlyingLayer.doCommand(command);

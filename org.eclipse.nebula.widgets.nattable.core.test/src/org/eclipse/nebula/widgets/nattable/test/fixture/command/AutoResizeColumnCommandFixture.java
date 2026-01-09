@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2026 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -20,7 +20,6 @@ import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.util.GCFactory;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 public class AutoResizeColumnCommandFixture extends
@@ -28,7 +27,7 @@ public class AutoResizeColumnCommandFixture extends
 
     public AutoResizeColumnCommandFixture() {
         super(new DataLayerFixture(), 2, new ConfigRegistry(), new GCFactory(
-                new Image(Display.getDefault(), new Rectangle(0, 0, 100, 100))));
+                new Image(Display.getDefault(), 100, 100)));
 
         ConfigRegistry configRegistry = (ConfigRegistry) getConfigRegistry();
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,

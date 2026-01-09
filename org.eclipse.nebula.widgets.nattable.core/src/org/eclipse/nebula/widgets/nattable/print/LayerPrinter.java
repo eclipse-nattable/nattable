@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2026 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -309,11 +309,11 @@ public class LayerPrinter {
      *         printer the resolution.
      */
     private float[] computeScaleFactor(ILayer layer, Printer printer, boolean dpi) {
-        Point screenDPI = Display.getDefault().getDPI();
+        int monitorDpi = GUIHelper.getZoomBasedDpi(null);
         Point printerDPI = printer.getDPI();
 
-        float sfX = Float.valueOf(printerDPI.x) / Float.valueOf(screenDPI.x);
-        float sfY = Float.valueOf(printerDPI.y) / Float.valueOf(screenDPI.y);
+        float sfX = Float.valueOf(printerDPI.x) / Float.valueOf(monitorDpi);
+        float sfY = Float.valueOf(printerDPI.y) / Float.valueOf(monitorDpi);
 
         if (!dpi && (this.fittingMode != Direction.NONE)) {
             Rectangle total = getTotalArea(layer);

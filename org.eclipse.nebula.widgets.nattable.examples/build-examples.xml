@@ -90,7 +90,7 @@
             	src="lib/org.eclipse.equinox.registry_3.12.100.v20240524-2011.jar"/>
             <zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
-            	src="lib/org.eclipse.jface_3.34.0.v20240502-1134.jar"/>
+            	src="lib/org.eclipse.jface_3.38.100.v20251108-1551.jar"/>
         	<zipfileset
             	excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*"
             	src="lib/org.eclipse.nebula.cwt_1.1.0.202509131601.jar"/>

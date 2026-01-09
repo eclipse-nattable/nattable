@@ -19,9 +19,13 @@ import org.eclipse.swt.widgets.Display;
  * dots per inch from the default display via {@link Display#getDPI()}.
  *
  * @since 2.0
+ * @deprecated As of version 2.7, use {@link DefaultZoomDpiConverter}
+ *             instead.
  */
+@Deprecated(since = "2.7", forRemoval = true)
 public class DefaultVerticalDpiConverter extends AbstractDpiConverter {
 
+    @Deprecated
     @Override
     protected void readDpiFromDisplay() {
         Display.getDefault().syncExec(() -> DefaultVerticalDpiConverter.this.dpi = Display.getDefault().getDPI().y);

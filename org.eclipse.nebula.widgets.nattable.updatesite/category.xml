@@ -3,31 +3,16 @@
    <feature id="org.eclipse.nebula.widgets.nattable.core.feature">
       <category name="nattable-core"/>
    </feature>
-   <feature id="org.eclipse.nebula.widgets.nattable.core.feature.source">
-      <category name="nattable-core"/>
-   </feature>
    <feature id="org.eclipse.nebula.widgets.nattable.extension.e4.feature">
-      <category name="nattable-extensions"/>
-   </feature>
-   <feature id="org.eclipse.nebula.widgets.nattable.extension.e4.feature.source">
       <category name="nattable-extensions"/>
    </feature>
    <feature id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature">
       <category name="nattable-extensions"/>
    </feature>
-   <feature id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.source">
-      <category name="nattable-extensions"/>
-   </feature>
    <feature id="org.eclipse.nebula.widgets.nattable.extension.nebula.feature">
       <category name="nattable-extensions"/>
    </feature>
-   <feature id="org.eclipse.nebula.widgets.nattable.extension.nebula.feature.source">
-      <category name="nattable-extensions"/>
-   </feature>
    <feature id="org.eclipse.nebula.widgets.nattable.extension.poi.feature">
-      <category name="nattable-extensions"/>
-   </feature>
-   <feature id="org.eclipse.nebula.widgets.nattable.extension.poi.feature.source">
       <category name="nattable-extensions"/>
    </feature>
    <bundle id="org.eclipse.nebula.widgets.nattable.dataset">

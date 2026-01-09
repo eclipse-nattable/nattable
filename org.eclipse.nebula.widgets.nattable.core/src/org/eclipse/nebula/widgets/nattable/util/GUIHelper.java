@@ -143,6 +143,21 @@ public final class GUIHelper {
         return font;
     }
 
+    /**
+     * Return a scaled version of the configured font if font scaling is needed.
+     * If no font scaling is needed, the given font is returned.
+     *
+     * @param font
+     *            The font to scale.
+     * @return The font with the updated height if font scaling is needed,
+     *         otherwise the given font.
+     * @since 2.7
+     */
+    public static Font getScaledFont(Font font) {
+        float dpiFactor = GUIHelper.getDpiFactor(GUIHelper.getDpiX());
+        return getScaledFont(font, dpiFactor);
+    }
+
     // Image
 
     private static final String SVG_FILE_EXTENSION = ".svg"; //$NON-NLS-1$
@@ -733,7 +748,7 @@ public final class GUIHelper {
         if (!displayDPI && GUIHelper.dpi != null) {
             return GUIHelper.dpi.x;
         }
-        return Display.getDefault().getDPI().x;
+        return getZoomBasedDpi(null);
     }
 
     /**
@@ -756,7 +771,36 @@ public final class GUIHelper {
         if (!displayDPI && GUIHelper.dpi != null) {
             return GUIHelper.dpi.y;
         }
-        return Display.getDefault().getDPI().y;
+        return getZoomBasedDpi(null);
+    }
+
+    /**
+     *
+     * @param zoom
+     *            The zoom level to consider. If <code>null</code> the primary
+     *            monitor zoom is used.
+     * @return The DPI based on the given zoom level.
+     *
+     * @since 2.7
+     */
+    public static int getZoomBasedDpi(Object zoom) {
+        // https://github.com/eclipse-nattable/nattable/issues/139
+        return Display.getDefault().syncCall(() -> {
+            int zoomValue = -1;
+            if (zoom != null && zoom instanceof Integer) {
+                zoomValue = (Integer) zoom;
+            } else if (zoom != null && zoom instanceof String) {
+                try {
+                    zoomValue = Integer.parseInt((String) zoom);
+                } catch (NumberFormatException e) {
+                    // If parsing fails, fallback to the default zoom
+                    zoomValue = Display.getDefault().getPrimaryMonitor().getZoom();
+                }
+            } else {
+                zoomValue = Display.getDefault().getPrimaryMonitor().getZoom();
+            }
+            return (zoomValue * 96) / 100;
+        });
     }
 
     /**

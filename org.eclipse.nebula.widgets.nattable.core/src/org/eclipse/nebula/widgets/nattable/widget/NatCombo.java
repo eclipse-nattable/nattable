@@ -32,6 +32,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
+import org.eclipse.nebula.widgets.nattable.style.CellStyleProxy;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
@@ -567,7 +568,7 @@ public class NatCombo extends Composite {
         this.text = new Text(this, textStyle);
         this.text.setBackground(this.cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
         this.text.setForeground(this.cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
-        this.text.setFont(this.cellStyle.getAttributeValue(CellStyleAttributes.FONT));
+        this.text.setFont(((CellStyleProxy) this.cellStyle).getAttributeValue(CellStyleAttributes.FONT, false));
 
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
         this.text.setLayoutData(gridData);

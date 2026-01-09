@@ -5,18 +5,19 @@
     <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
       <unit id="org.eclipse.equinox.executable.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.osgi.services" version="0.0.0"/>
-      <unit id="org.eclipse.sdk.feature.group" version="0.0.0"/>
-      <repository location="https://download.eclipse.org/eclipse/updates/4.32/R-4.32-202406010610"/>
+      <unit id="org.eclipse.rcp.feature.group" version="0.0.0"/>
+      <!-- <repository location="https://download.eclipse.org/eclipse/updates/4.36/R-4.36-202505281830/"/>  -->
+      <repository location="https://download.eclipse.org/eclipse/updates/4.38/R-4.38-202512010920/"/>
+      <!-- Update to Eclipse 2025-06 (4.36) for SVG support and monitor specific scaling  -->
     </location>
     <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
       <unit id="org.eclipse.license.feature.group" version="0.0.0"/>
       <repository location="http://download.eclipse.org/cbi/updates/license"/>
     </location>
     <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-      <!-- CDateTime introduces a dependency update to SWT >= 3.126.0, which is at least Eclipse 2024-06 (4.32)  -->
       <unit id="org.eclipse.nebula.widgets.cdatetime" version="0.0.0"/>
       <unit id="org.eclipse.nebula.widgets.richtext" version="0.0.0"/>
-      <repository location="https://download.eclipse.org/nebula/releases/latest"/>
+      <repository location="https://download.eclipse.org/nebula/updates/release/3.2.0/"/>
     </location>
     <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
       <unit id="ca.odell.glazedlists" version="0.0.0"/>
@@ -30,7 +31,7 @@
       <unit id="org.apache.poi.ooxml.schemas" version="0.0.0"/>
       <unit id="org.apache.logging.log4j.to.slf4j" version="0.0.0"/>
       <unit id="slf4j.simple" version="0.0.0"/>
-      <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/milestone/latest"/>
+      <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.36.0/"/>
     </location>
       <location includeDependencyDepth="none" includeSource="true" label="Eclipse Collections" missingManifest="ignore" type="Maven">
           <dependencies>
@@ -43,13 +44,13 @@
               <dependency>
                   <groupId>org.eclipse.collections</groupId>
                   <artifactId>eclipse-collections-api</artifactId>
-                  <version>12.0.0</version>
+                  <version>13.0.0</version>
                   <type>jar</type>
               </dependency>
               <dependency>
                   <groupId>org.eclipse.collections</groupId>
                   <artifactId>eclipse-collections</artifactId>
-                  <version>12.0.0</version>
+                  <version>13.0.0</version>
                   <type>jar</type>
               </dependency>
           </dependencies>

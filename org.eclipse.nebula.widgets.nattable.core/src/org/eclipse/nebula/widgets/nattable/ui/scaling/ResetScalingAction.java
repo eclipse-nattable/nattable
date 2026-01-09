@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, 2023 Dirk Fauth and others.
+ * Copyright (c) 2020, 2026 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,9 +16,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.DefaultHorizontalDpiConverter;
-import org.eclipse.nebula.widgets.nattable.layer.DefaultVerticalDpiConverter;
-import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
+import org.eclipse.nebula.widgets.nattable.layer.command.ResetScalingCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.swt.events.KeyEvent;
 
@@ -61,9 +59,7 @@ public class ResetScalingAction implements IKeyAction {
 
     @Override
     public void run(NatTable natTable, KeyEvent event) {
-        natTable.doCommand(new ConfigureScalingCommand(
-                new DefaultHorizontalDpiConverter(),
-                new DefaultVerticalDpiConverter()));
+        natTable.doCommand(new ResetScalingCommand());
 
         if (this.updater != null) {
             this.updater.accept(natTable.getConfigRegistry());
