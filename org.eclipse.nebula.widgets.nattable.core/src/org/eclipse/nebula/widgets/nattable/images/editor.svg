@@ -1,16 +1,4 @@
-<!--
-Copyright (c) 2025 Janis Reinsch and others.
-
-This program and the accompanying materials are made
-available under the terms of the Eclipse Public License 2.0
-which is available at https://www.eclipse.org/legal/epl-2.0/
-
-SPDX-License-Identifier: EPL-2.0
-
-Contributors:
-	Janis Reinsch <janisreinsch+github@gmail.com> - initial API and implementation
--->
-<svg width="25" height="26" viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_i_2038_81)">
 <path d="M3.75 3.75H18.75V18.75H3.75V3.75Z" fill="white"/>
 </g>
@@ -22,15 +10,15 @@ Contributors:
 <path d="M1.25 11.25H3.75" stroke="#626262" stroke-width="0.5"/>
 <path d="M1.25 8.75H3.75" stroke="#626262" stroke-width="0.5"/>
 <path d="M1.25 6.25H3.75" stroke="#626262" stroke-width="0.5"/>
-<path d="M7.24265 22.3848L5.82843 20.9706L7.24265 16.7279L11.4853 20.9706L7.24265 22.3848Z" fill="#DFBF9F"/>
-<path d="M6.07 22.7756C5.67912 22.9059 5.30725 22.5341 5.43754 22.1432L6.18198 19.9099C6.18198 19.9099 6.64593 20.7274 7.06586 21.1473C7.48579 21.5673 8.3033 22.0312 8.3033 22.0312L6.07 22.7756Z" fill="#333333"/>
-<rect x="11.4853" y="20.9706" width="6" height="12" transform="rotate(-135 11.4853 20.9706)" fill="#DE9852"/>
-<path d="M22.0919 10.364L17.8492 6.12131L19.2635 4.7071C19.654 4.31657 20.2872 4.31657 20.6777 4.7071L23.5061 7.53553C23.8966 7.92605 23.8966 8.55921 23.5061 8.94974L22.0919 10.364Z" fill="#E01B1B"/>
-<rect x="19.9706" y="12.4853" width="6" height="3" transform="rotate(-135 19.9706 12.4853)" fill="#CFCFCF"/>
-<path d="M10.0711 20.2634C9.63446 19.8268 9.8006 19.2858 9.36398 18.8492C8.92736 18.4126 8.38638 18.5787 7.94976 18.1421C7.51314 17.7055 7.67927 17.1645 7.24266 16.7279L9.36398 18.8492L11.4853 20.9705C11.0487 20.5339 10.5077 20.7001 10.0711 20.2634Z" fill="#DE9852"/>
-<path d="M9.36405 21.6776L21.3849 9.65672L22.092 10.3638L11.4854 20.9704L9.36405 21.6776Z" fill="#333333" fill-opacity="0.15"/>
-<path d="M7.24273 22.3847L20.6778 8.94961L21.3849 9.65672L9.36405 21.6776L7.24273 22.3847Z" fill="#333333" fill-opacity="0.1"/>
-<path d="M6.53554 21.6777L19.9706 8.24263L20.6778 8.94961L7.24273 22.3847L6.53554 21.6777Z" fill="#333333" fill-opacity="0.05"/>
+<path d="M6.74265 20.8848L5.32843 19.4706L6.74265 15.2279L10.9853 19.4706L6.74265 20.8848Z" fill="#DFBF9F"/>
+<path d="M5.57 21.2756C5.17912 21.4059 4.80725 21.0341 4.93754 20.6432L5.68198 18.4099C5.68198 18.4099 6.14593 19.2274 6.56586 19.6473C6.98579 20.0673 7.8033 20.5312 7.8033 20.5312L5.57 21.2756Z" fill="#333333"/>
+<rect x="10.9853" y="19.4706" width="6" height="12" transform="rotate(-135 10.9853 19.4706)" fill="#DE9852"/>
+<path d="M21.5919 8.86395L17.3492 4.62131L18.7635 3.2071C19.154 2.81657 19.7872 2.81657 20.1777 3.2071L23.0061 6.03553C23.3966 6.42605 23.3966 7.05921 23.0061 7.44974L21.5919 8.86395Z" fill="#E01B1B"/>
+<rect x="19.4706" y="10.9853" width="6" height="3" transform="rotate(-135 19.4706 10.9853)" fill="#CFCFCF"/>
+<path d="M9.57108 18.7634C9.13446 18.3268 9.3006 17.7858 8.86398 17.3492C8.42736 16.9126 7.88638 17.0787 7.44976 16.6421C7.01314 16.2055 7.17927 15.6645 6.74266 15.2279L8.86398 17.3492L10.9853 19.4705C10.5487 19.0339 10.0077 19.2001 9.57108 18.7634Z" fill="#DE9852"/>
+<path d="M8.86405 20.1776L20.8849 8.15672L21.592 8.86383L10.9854 19.4704L8.86405 20.1776Z" fill="#333333" fill-opacity="0.15"/>
+<path d="M6.74273 20.8847L20.1778 7.44961L20.8849 8.15672L8.86405 20.1776L6.74273 20.8847Z" fill="#333333" fill-opacity="0.1"/>
+<path d="M6.03554 20.1777L19.4706 6.74263L20.1778 7.44961L6.74273 20.8847L6.03554 20.1777Z" fill="#333333" fill-opacity="0.05"/>
 <defs>
 <filter id="filter0_i_2038_81" x="3.75" y="3.75" width="15" height="19" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
