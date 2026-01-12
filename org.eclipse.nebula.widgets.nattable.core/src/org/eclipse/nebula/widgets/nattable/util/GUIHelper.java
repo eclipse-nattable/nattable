@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2026 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,9 +13,12 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -31,6 +34,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
@@ -142,8 +146,37 @@ public final class GUIHelper {
 
     // Image
 
+    private static final String SVG_FILE_EXTENSION = ".svg"; //$NON-NLS-1$
+    private static Boolean svgSupported = null;
+
     private static final String[] IMAGE_DIRS = new String[] { "org/eclipse/nebula/widgets/nattable/images/", "" }; //$NON-NLS-1$ //$NON-NLS-2$
-    private static final String[] IMAGE_EXTENSIONS = new String[] { ".png", ".gif" }; //$NON-NLS-1$ //$NON-NLS-2$
+    private static final String[] IMAGE_EXTENSIONS = new String[] { SVG_FILE_EXTENSION, ".png", ".gif" }; //$NON-NLS-1$ //$NON-NLS-2$
+
+    /**
+     * Checks if SVG image support is available in the current SWT environment.
+     *
+     * @return <code>true</code> if SVG image support is available,
+     *         <code>false</code> if not.
+     *
+     * @since 2.7
+     */
+    public static synchronized boolean isSvgSupported() {
+        if (svgSupported == null) {
+            String svg = """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <svg width="1" height="1" version="1.1" viewBox="0 0 0 0" xmlns="http://www.w3.org/2000/svg"></svg>
+                    """; //$NON-NLS-1$
+
+            try (InputStream is = new ByteArrayInputStream(svg.getBytes(StandardCharsets.UTF_8))) {
+                new ImageLoader().load(is);
+                svgSupported = true;
+            } catch (Exception | Error e) {
+                // SVGs unsupported
+                svgSupported = false;
+            }
+        }
+        return svgSupported;
+    }
 
     /**
      * This method extracts the base filename out of the given {@link URL} and
@@ -328,7 +361,15 @@ public final class GUIHelper {
         String internalKey = getImageKey(key, considerScaling, forDisplayDPI);
         Image image = JFaceResources.getImage(internalKey);
         if (image == null) {
-            if (considerScaling) {
+            if (considerScaling && url.toString().endsWith(SVG_FILE_EXTENSION)) {
+                // SVG images are resolution independent, we can simply
+                // scale
+                // no error handling needed here, as the developer who wants to
+                // load SVG by intention needs feedback about the incorrect
+                // setup
+                ImageData imageData = ImageDescriptor.createFromURL(url).getImageData(Math.round(100 * getDpiFactor(getDpiX(forDisplayDPI))));
+                JFaceResources.getImageRegistry().put(key, new Image(Display.getDefault(), imageData));
+            } else if (considerScaling) {
                 // modify url to contain scaling information in filename
                 // create the matching URL for the scaled image
                 String urlString = url.toString();
@@ -433,7 +474,12 @@ public final class GUIHelper {
             if (imageUrl != null) {
                 ImageDescriptor imageDescriptor = ImageDescriptor.createFromURL(imageUrl);
 
-                if (considerScaling && !imageUrl.getFile().contains(getScalingImageSuffix(forDisplayDPI))) {
+                if (considerScaling && imageUrl.toString().endsWith(SVG_FILE_EXTENSION)) {
+                    // SVG images are resolution independent, we can simply
+                    // scale
+                    ImageData imageData = imageDescriptor.getImageData(Math.round(100 * getDpiFactor(getDpiX(forDisplayDPI))));
+                    JFaceResources.getImageRegistry().put(key, new Image(Display.getDefault(), imageData));
+                } else if (considerScaling && !imageUrl.getFile().contains(getScalingImageSuffix(forDisplayDPI))) {
                     // we need to upscale the image but we have no scaled
                     // version, therefore we manually perform an upscale
                     // it won't look nice but at least it is upscaled
@@ -548,11 +594,17 @@ public final class GUIHelper {
     public static URL getInternalImageUrl(String imageName, boolean needScaling, boolean forDisplayDPI) {
         for (String dir : IMAGE_DIRS) {
             for (String ext : IMAGE_EXTENSIONS) {
+
+                if (SVG_FILE_EXTENSION.equals(ext) && !isSvgSupported()) {
+                    // skip SVG resolution
+                    continue;
+                }
+
                 // add search for scaled image
                 // e.g. imageName = checkbox -->
                 // org/eclipse/nebula/widgets/nattable/images/checkbox_128_128.png
                 URL url = null;
-                if (needScaling) {
+                if (!(SVG_FILE_EXTENSION.equals(ext)) && needScaling) {
                     url = GUIHelper.class.getClassLoader().getResource(
                             dir + imageName + getScalingImageSuffix(forDisplayDPI) + ext);
                 }
