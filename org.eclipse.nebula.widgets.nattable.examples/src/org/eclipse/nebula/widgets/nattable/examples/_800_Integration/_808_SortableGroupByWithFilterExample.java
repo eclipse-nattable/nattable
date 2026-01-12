@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2023 Dirk Fauth and others.
+ * Copyright (c) 2013, 2026 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -40,6 +40,7 @@ import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleR
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.DefaultGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigLabelModifier;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByDataLayer;
@@ -65,7 +66,9 @@ import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -74,11 +77,16 @@ import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfigurat
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.style.theme.DefaultNatTableThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
+import org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter;
+import org.eclipse.nebula.widgets.nattable.tree.painter.TreeImagePainter;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
+import org.eclipse.nebula.widgets.nattable.ui.scaling.ScalingUiBindingConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
@@ -297,6 +305,8 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
         // add group by header configuration
         natTable.addConfiguration(new GroupByHeaderMenuConfiguration(natTable, groupByHeaderLayer));
 
+        natTable.addConfiguration(new ScalingUiBindingConfiguration(natTable, true));
+
         natTable.addConfiguration(new AbstractHeaderMenuConfiguration(natTable) {
 
             @Override
@@ -315,6 +325,35 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
         });
 
         natTable.configure();
+
+        DefaultNatTableThemeConfiguration themeConfiguration = new DefaultNatTableThemeConfiguration() {
+            @Override
+            public void createPainterInstances() {
+                super.createPainterInstances();
+
+                TreeImagePainter treeImagePainter =
+                        new TreeImagePainter(
+                                false,
+                                GUIHelper.getImage("plus"), //$NON-NLS-1$
+                                GUIHelper.getImage("minus"), //$NON-NLS-1$
+                                null);
+                this.treeStructurePainter =
+                        new BackgroundPainter(
+                                new PaddingDecorator(
+                                        new IndentedTreeImagePainter(
+                                                10,
+                                                null,
+                                                CellEdgeEnum.LEFT,
+                                                treeImagePainter,
+                                                false,
+                                                2,
+                                                true),
+                                        0, 5, 0, 5, false));
+            }
+        };
+        themeConfiguration.addThemeExtension(new DefaultGroupByThemeExtension());
+
+        natTable.setTheme(themeConfiguration);
 
         natTable.registerCommandHandler(
                 new DisplayPersistenceDialogCommandHandler(natTable));
