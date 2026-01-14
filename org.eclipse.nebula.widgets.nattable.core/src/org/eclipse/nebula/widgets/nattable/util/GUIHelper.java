@@ -34,7 +34,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
@@ -160,7 +159,7 @@ public final class GUIHelper {
      *
      * @since 2.7
      */
-    public static synchronized boolean isSvgSupported() {
+    public static boolean isSvgSupported() {
         if (svgSupported == null) {
             String svg = """
                     <?xml version="1.0" encoding="UTF-8"?>
@@ -168,7 +167,9 @@ public final class GUIHelper {
                     """; //$NON-NLS-1$
 
             try (InputStream is = new ByteArrayInputStream(svg.getBytes(StandardCharsets.UTF_8))) {
-                new ImageLoader().load(is);
+                ImageDescriptor.createFromImageDataProvider(zoom -> {
+                    return new ImageData(is);
+                }).createImage();
                 svgSupported = true;
             } catch (Exception | Error e) {
                 // SVGs unsupported
