@@ -8,6 +8,8 @@ jobs:
 
     runs-on: ubuntu-latest
     name: Java 17 compile
+    permissions:
+      contents: read
     steps:
     - name: Git Checkout
       uses: actions/checkout@v4
