@@ -342,7 +342,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
             // register the DPI scaling on the layers
             this.underlyingLayer.doCommand(
                     new ConfigureScalingCommand(
-                            new DefaultZoomDpiConverter(this.nativeZoom)));
+                            new DefaultZoomDpiConverter(getParent())));
         }
     }
 
@@ -375,7 +375,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
         if (this.configRegistry == null) {
             this.configRegistry = new ConfigRegistry();
             this.themeManager = new ThemeManager(this.configRegistry);
-            configureScaling(new DefaultZoomDpiConverter(this.nativeZoom));
+            configureScaling(new DefaultZoomDpiConverter(getParent()));
         }
         return this.configRegistry;
     }
@@ -398,7 +398,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
         this.configRegistry = configRegistry;
         this.themeManager = new ThemeManager(configRegistry);
-        configureScaling(new DefaultZoomDpiConverter(this.nativeZoom));
+        configureScaling(new DefaultZoomDpiConverter(getParent()));
     }
 
     /**
@@ -448,10 +448,18 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
         // register the font scaling factor
         float dpiFactor = GUIHelper.getDpiFactor(GUIHelper.getDpiX());
-        String updateOnRuntime = System.getProperty("swt.autoScale.updateOnRuntime", "false"); //$NON-NLS-1$ //$NON-NLS-2$
-        if (!Boolean.parseBoolean(updateOnRuntime)) {
-            dpiFactor = dpiFactor / (this.nativeZoom / 100f);
+
+        String autoScaleProperty = GUIHelper.getAutoScaleProperty(getParent().getDisplay());
+        Object zoomObject = PlatformHelper.callGetter(getShell(), "getZoom"); //$NON-NLS-1$
+        int shellZoom = zoomObject != null ? (int) zoomObject : 100;
+        if ("false".equals(autoScaleProperty)) { //$NON-NLS-1$
+            dpiFactor = dpiFactor / (shellZoom / 100f);
+        } else if ("integer".equals(autoScaleProperty) //$NON-NLS-1$
+                || "half".equals(autoScaleProperty)) { //$NON-NLS-1$
+            int autoscaledZoom = GUIHelper.getAutoScaleZoom(getParent(), shellZoom);
+            dpiFactor = Float.valueOf(autoscaledZoom) / shellZoom * dpiFactor;
         }
+
         getConfigRegistry().registerConfigAttribute(
                 NatTableConfigAttributes.FONT_SCALING_FACTOR,
                 dpiFactor);
@@ -514,11 +522,13 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
             redraw();
         });
 
-        addListener(SWT.ZoomChanged, e -> {
-            // if the zoom level changes we need to reconfigure the scaling
-            // converters to ensure that the DPI values are correct
-            doCommand(new ConfigureScalingCommand(new DefaultZoomDpiConverter(this.nativeZoom)));
-        });
+        if (!PlatformHelper.isRAP()) {
+            addListener(SWT.ZoomChanged, e -> {
+                // if the zoom level changes we need to reconfigure the scaling
+                // converters to ensure that the DPI values are correct
+                doCommand(new ConfigureScalingCommand(new DefaultZoomDpiConverter(getParent())));
+            });
+        }
     }
 
     // Painting ///////////////////////////////////////////////////////////////
@@ -859,7 +869,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
             ConfigureScalingCommand cmd = (ConfigureScalingCommand) command;
             configureScaling(cmd.getHorizontalDpiConverter(), cmd.getVerticalDpiConverter());
         } else if (command instanceof ResetScalingCommand) {
-            configureScaling(new DefaultZoomDpiConverter(this.nativeZoom));
+            configureScaling(new DefaultZoomDpiConverter(getParent()));
         }
 
         return this.underlyingLayer.doCommand(command);

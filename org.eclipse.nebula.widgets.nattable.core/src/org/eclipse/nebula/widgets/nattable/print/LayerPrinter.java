@@ -309,7 +309,7 @@ public class LayerPrinter {
      *         printer the resolution.
      */
     private float[] computeScaleFactor(ILayer layer, Printer printer, boolean dpi) {
-        int monitorDpi = GUIHelper.getZoomBasedDpi(null);
+        int monitorDpi = GUIHelper.getPrimaryMonitorDpi();
         Point printerDPI = printer.getDPI();
 
         float sfX = Float.valueOf(printerDPI.x) / Float.valueOf(monitorDpi);

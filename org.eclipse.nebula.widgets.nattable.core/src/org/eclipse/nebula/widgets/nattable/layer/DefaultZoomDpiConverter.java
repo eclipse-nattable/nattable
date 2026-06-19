@@ -13,28 +13,57 @@
 package org.eclipse.nebula.widgets.nattable.layer;
 
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 
 /**
- * Default implementation of an {@link IDpiConverter} that provides the DPI
- * based on the given zoom level.
+ * Default implementation of an {@link IDpiConverter} that provides the DPI and
+ * scale factor based on the given zoom level and autoscale property.
  *
  * @since 2.7
  */
 public class DefaultZoomDpiConverter extends AbstractDpiConverter {
 
-    private Object zoom;
+    private Composite parent;
+    private int zoom;
 
-    public DefaultZoomDpiConverter(Object zoom) {
-        this.zoom = zoom;
+    public DefaultZoomDpiConverter(Composite parent) {
+        this.parent = parent;
+        Display.getDefault().syncExec(() -> {
+            Object zoomRetrievalObject = null;
+            if (parent != null) {
+                zoomRetrievalObject = parent.getShell();
+            } else {
+                zoomRetrievalObject = Display.getDefault().getPrimaryMonitor();
+            }
+            Object zoomObject = PlatformHelper.callGetter(zoomRetrievalObject, "getZoom"); //$NON-NLS-1$
+            DefaultZoomDpiConverter.this.zoom = zoomObject != null ? (int) zoomObject : 100;
+        });
+
     }
 
     @Override
     protected void readDpiFromDisplay() {
-        String updateOnRuntime = System.getProperty("swt.autoScale.updateOnRuntime", "false"); //$NON-NLS-1$ //$NON-NLS-2$
-        if (Boolean.parseBoolean(updateOnRuntime)) {
-            this.dpi = 96;
-        } else {
-            this.dpi = GUIHelper.getZoomBasedDpi(this.zoom);
-        }
+        int autoscaledZoom = GUIHelper.getAutoScaleZoom(this.parent, this.zoom);
+        this.scaleFactor = Float.valueOf(this.zoom) / Float.valueOf(autoscaledZoom);
+        this.dpi = (int) (this.scaleFactor * 96);
     }
+
+    @Override
+    public int getDpi() {
+        if (this.dpi < 0) {
+            readDpiFromDisplay();
+        }
+        return this.dpi;
+    }
+
+    @Override
+    public float getCurrentDpiFactor() {
+        if (this.scaleFactor < 0) {
+            readDpiFromDisplay();
+        }
+        return this.scaleFactor;
+    }
+
 }

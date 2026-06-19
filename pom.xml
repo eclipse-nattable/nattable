@@ -64,18 +64,18 @@
     </modules>
 
     <properties>
-        <tycho-version>5.0.1</tycho-version>
+        <tycho-version>5.0.3</tycho-version>
         <cbi-version>1.5.2</cbi-version>
         <nattable-version>${project.version}</nattable-version>
 
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <jacoco.version>0.8.5</jacoco.version>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../org.eclipse.nebula.widgets.nattable.updatesite/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.surefire.reportsPath>${project.basedir}/../${project.artifactId}.test/target/surefire-reports/</sonar.surefire.reportsPath>
-        <sonar.java.source>17</sonar.java.source>
+        <sonar.java.source>21</sonar.java.source>
         <!-- coverage exclusions -->
         <!--
         <sonar.coverage.exclusions>
@@ -148,8 +148,8 @@
                 <configuration>
                     <rules>
                         <requireJavaVersion>
-                            <version>17</version>
-                            <message>The NatTable build requires at least Java 17 for running Tycho.</message>
+                            <version>21</version>
+                            <message>The NatTable build requires at least Java 21 for running Tycho.</message>
                         </requireJavaVersion>
                         <requireMavenVersion>
                             <version>3.9.8</version>
@@ -170,7 +170,7 @@
                         </artifact>
                     </target>
                     <targetDefinitionIncludeSource>honor</targetDefinitionIncludeSource>
-                    <executionEnvironment>JavaSE-17</executionEnvironment>
+                    <executionEnvironment>JavaSE-21</executionEnvironment>
                     <environments>
                         <environment>
                             <os>win32</os>

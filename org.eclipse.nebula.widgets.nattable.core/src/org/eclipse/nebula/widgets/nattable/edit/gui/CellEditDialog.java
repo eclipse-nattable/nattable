@@ -28,6 +28,7 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
@@ -255,7 +256,7 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         if (this.editDialogSettings != null && (boolean) this.editDialogSettings.getOrDefault(DIALOG_COMMIT_EDITOR_ON_EDIT, Boolean.FALSE)) {
-            createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CLOSE_LABEL, true);
+            createButton(parent, IDialogConstants.CANCEL_ID, PlatformHelper.getIDialogConstantsLabel("CLOSE_LABEL"), true); //$NON-NLS-1$
         } else {
             super.createButtonsForButtonBar(parent);
         }

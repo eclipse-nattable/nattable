@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2024 Original authors and others.
+ * Copyright (c) 2012, 2026 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -32,9 +32,14 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -105,8 +110,13 @@ public class TabbedNatExampleRunner {
 
         });
 
+        NavTreeMouseListener navTreeMouseListener = new NavTreeMouseListener(navTreeViewer.getControl());
+        navTreeViewer.getControl().addMouseListener(navTreeMouseListener);
+        navTreeViewer.getControl().addMouseMoveListener(navTreeMouseListener);
+
         tabFolder = new CTabFolder(shell, SWT.BORDER);
         tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
+        tabFolder.addMouseListener(navTreeMouseListener);
 
         shell.open();
 
@@ -277,6 +287,60 @@ public class TabbedNatExampleRunner {
         text.setText("<pre>" + source + "</pre>");
 
         shell.open();
+    }
+
+    static class NavTreeMouseListener implements MouseListener, MouseMoveListener {
+
+        private final Control control;
+        private Cursor rowResizeCursor = new Cursor(Display.getDefault(), SWT.CURSOR_SIZEWE);
+        private boolean cursorOnEdge = false;
+
+        private int startX = -1;
+
+        public NavTreeMouseListener(Control control) {
+            this.control = control;
+        }
+
+        @Override
+        public void mouseMove(MouseEvent e) {
+            if (e.x > (this.control.getBounds().width - 5)
+                    && e.x < (this.control.getBounds().width + 5)) {
+
+                this.control.setCursor(this.rowResizeCursor);
+                this.cursorOnEdge = true;
+            } else {
+                if (this.cursorOnEdge) {
+                    this.control.setCursor(null);
+                    this.cursorOnEdge = false;
+                }
+            }
+        }
+
+        @Override
+        public void mouseDoubleClick(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseDown(MouseEvent e) {
+            if (this.cursorOnEdge) {
+                Point point = this.control.toDisplay(e.x, e.y);
+                this.startX = point.x;
+            }
+        }
+
+        @Override
+        public void mouseUp(MouseEvent e) {
+            if (this.startX != -1) {
+                Point point = ((Control) e.widget).toDisplay(e.x, e.y);
+                int diff = point.x - this.startX;
+                GridData gridData = (GridData) this.control.getLayoutData();
+                gridData.widthHint = this.control.getBounds().width + diff;
+                this.control.setLayoutData(gridData);
+                this.control.getParent().layout();
+                this.startX = -1;
+            }
+        }
+
     }
 
 }
