@@ -47,7 +47,6 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
-import org.eclipse.nebula.widgets.nattable.layer.command.ResetScalingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnVisualUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
@@ -522,7 +521,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
             redraw();
         });
 
-        if (!PlatformHelper.isRAP()) {
+        if (!PlatformHelper.isRAP() && GUIHelper.isRescalingAtRuntime(getParent().getDisplay())) {
             addListener(SWT.ZoomChanged, e -> {
                 // if the zoom level changes we need to reconfigure the scaling
                 // converters to ensure that the DPI values are correct
@@ -868,8 +867,6 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
             // scaling behavior
             ConfigureScalingCommand cmd = (ConfigureScalingCommand) command;
             configureScaling(cmd.getHorizontalDpiConverter(), cmd.getVerticalDpiConverter());
-        } else if (command instanceof ResetScalingCommand) {
-            configureScaling(new DefaultZoomDpiConverter(getParent()));
         }
 
         return this.underlyingLayer.doCommand(command);

@@ -1040,12 +1040,33 @@ public final class GUIHelper {
     }
 
     /**
+     * Checks if rescaling at runtime is activated. Uses the
+     * {@link PlatformHelper} to ensure compatibility with RAP which does not
+     * provide the necessary API. {@return whether rescaling of shells at
+     * runtime when the DPI scaling of a shell's monitor changes is activated
+     * for this device}
+     *
+     * @param display
+     *            The {@link Display} to check for rescaling at runtime.
+     * @since 2.7
+     *
+     * @see Display#isRescalingAtRuntime()
+     */
+    public static boolean isRescalingAtRuntime(Display display) {
+        Object isRescalingAtRuntime = PlatformHelper.callGetter(display, "isRescalingAtRuntime"); //$NON-NLS-1$
+        if (isRescalingAtRuntime == null) {
+            isRescalingAtRuntime = false;
+        }
+        return (boolean) isRescalingAtRuntime;
+    }
+
+    /**
      * Returns the value of the "swt.autoScale" property. If the property is not
      * set, it returns "quarter" if the display is rescaling at runtime,
      * otherwise it returns "integer".
      *
      * @param display
-     *            The Display to check for rescaling at runtime.
+     *            The {@link Display} to check for rescaling at runtime.
      * @return The value of the "swt.autoScale" property or the default value
      *         based on the display's rescaling behavior.
      * @since 2.7
@@ -1055,11 +1076,7 @@ public final class GUIHelper {
     public static String getAutoScaleProperty(Display display) {
         String autoScaleProperty = System.getProperty("swt.autoScale"); //$NON-NLS-1$
         if (autoScaleProperty == null) {
-            Object isRescalingAtRuntime = PlatformHelper.callGetter(display, "isRescalingAtRuntime"); //$NON-NLS-1$
-            if (isRescalingAtRuntime == null) {
-                isRescalingAtRuntime = false;
-            }
-            autoScaleProperty = ((boolean) isRescalingAtRuntime) ? "quarter" : "integer"; //$NON-NLS-1$ //$NON-NLS-2$
+            autoScaleProperty = isRescalingAtRuntime(display) ? "quarter" : "integer"; //$NON-NLS-1$ //$NON-NLS-2$
         }
         return autoScaleProperty;
     }

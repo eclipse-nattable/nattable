@@ -16,7 +16,8 @@ import java.util.function.Consumer;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.command.ResetScalingCommand;
+import org.eclipse.nebula.widgets.nattable.layer.DefaultZoomDpiConverter;
+import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.swt.events.KeyEvent;
 
@@ -59,7 +60,9 @@ public class ResetScalingAction implements IKeyAction {
 
     @Override
     public void run(NatTable natTable, KeyEvent event) {
-        natTable.doCommand(new ResetScalingCommand());
+        natTable.doCommand(
+                new ConfigureScalingCommand(
+                        new DefaultZoomDpiConverter(natTable.getParent())));
 
         if (this.updater != null) {
             this.updater.accept(natTable.getConfigRegistry());
