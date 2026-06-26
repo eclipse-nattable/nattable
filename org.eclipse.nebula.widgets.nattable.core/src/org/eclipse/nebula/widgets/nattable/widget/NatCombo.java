@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2025 Original authors and others.
+ * Copyright (c) 2012, 2026 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -38,6 +38,7 @@ import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.LetterOrDigitKeyEventMatcher;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.util.PlatformHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
@@ -704,7 +705,7 @@ public class NatCombo extends Composite {
         // horizontal scrollbar on mac
         // see: https://bugs.eclipse.org/bugs/show_bug.cgi?id=304128
         int scrollStyle = ((this.itemList != null && this.itemList.size() > this.maxVisibleItems)
-                && this.maxVisibleItems > 0) ? (SWT.V_SCROLL | SWT.NO_SCROLL) : SWT.NO_SCROLL;
+                && this.maxVisibleItems > 0) ? (PlatformHelper.isRAP() ? SWT.V_SCROLL : (SWT.V_SCROLL | SWT.NO_SCROLL)) : SWT.NO_SCROLL;
         int dropdownListStyle = style
                 | scrollStyle
                 | HorizontalAlignmentEnum.getSWTStyle(this.cellStyle)
