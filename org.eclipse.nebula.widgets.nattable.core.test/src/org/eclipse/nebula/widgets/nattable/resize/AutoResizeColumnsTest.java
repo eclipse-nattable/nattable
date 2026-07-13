@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2022 Original authors and others.
+ * Copyright (c) 2012, 2026 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -59,7 +59,7 @@ public class AutoResizeColumnsTest {
         new DefaultNatTableStyleConfiguration()
                 .configureRegistry(this.configRegistry);
 
-        this.img = new Image(Display.getDefault(), new Rectangle(0, 0, 200, 150));
+        this.img = new Image(Display.getDefault(), 200, 150);
         this.gcFactory = new GCFactory(this.img);
 
         // Use a common, foxed width font to avoid failing the test on a

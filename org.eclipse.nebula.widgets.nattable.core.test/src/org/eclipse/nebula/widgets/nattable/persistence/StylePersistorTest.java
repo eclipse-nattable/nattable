@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Original authors and others.
+ * Copyright (c) 2012, 2026 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -37,7 +37,6 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.CellStyleFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.PropertiesFixture;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.widgets.Display;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -120,12 +119,7 @@ public class StylePersistorTest {
         Style style = StylePersistor.loadStyle(TEST_PREFIX, this.propertiesFixture);
 
         Font font = style.getAttributeValue(CellStyleAttributes.FONT);
-        // workaround on Bug 559884
-        if (Display.getDefault().getDPI().x == 144) {
-            assertTrue(font.getFontData()[0].toString().contains("|Tahoma|8.5|"));
-        } else {
-            assertTrue(font.getFontData()[0].toString().contains("|Tahoma|8.25|"));
-        }
+        assertTrue(font.getFontData()[0].toString().contains("|Tahoma|8.25|"));
     }
 
     @Test

@@ -34,8 +34,10 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 public final class GUIHelper {
@@ -143,7 +145,24 @@ public final class GUIHelper {
         return font;
     }
 
+    /**
+     * Return a scaled version of the configured font if font scaling is needed.
+     * If no font scaling is needed, the given font is returned.
+     *
+     * @param font
+     *            The font to scale.
+     * @return The font with the updated height if font scaling is needed,
+     *         otherwise the given font.
+     * @since 2.7
+     */
+    public static Font getScaledFont(Font font) {
+        float dpiFactor = GUIHelper.getDpiFactor(GUIHelper.getDpiX());
+        return getScaledFont(font, dpiFactor);
+    }
+
     // Image
+
+    private static final String SVG_SUPPORT_PROPERTY = "org.eclipse.nebula.widgets.nattable.svgSupport"; //$NON-NLS-1$
 
     private static final String SVG_FILE_EXTENSION = ".svg"; //$NON-NLS-1$
     private static Boolean svgSupported = null;
@@ -153,6 +172,9 @@ public final class GUIHelper {
 
     /**
      * Checks if SVG image support is available in the current SWT environment.
+     * Also checks if the system property
+     * "org.eclipse.nebula.widgets.nattable.svgSupport" is set to
+     * <code>false</code> to allow disabling the SVG support.
      *
      * @return <code>true</code> if SVG image support is available,
      *         <code>false</code> if not.
@@ -160,6 +182,14 @@ public final class GUIHelper {
      * @since 2.7
      */
     public static boolean isSvgSupported() {
+
+        if (svgSupported == null) {
+            String svgSupportProperty = System.getProperty(SVG_SUPPORT_PROPERTY);
+            if (svgSupportProperty != null && !Boolean.parseBoolean(svgSupportProperty)) {
+                svgSupported = false;
+            }
+        }
+
         if (svgSupported == null) {
             String svg = """
                     <?xml version="1.0" encoding="UTF-8"?>
@@ -167,9 +197,7 @@ public final class GUIHelper {
                     """; //$NON-NLS-1$
 
             try (InputStream is = new ByteArrayInputStream(svg.getBytes(StandardCharsets.UTF_8))) {
-                ImageDescriptor.createFromImageDataProvider(zoom -> {
-                    return new ImageData(is);
-                }).createImage();
+                new ImageLoader().load(is);
                 svgSupported = true;
             } catch (Exception | Error e) {
                 // SVGs unsupported
@@ -733,7 +761,7 @@ public final class GUIHelper {
         if (!displayDPI && GUIHelper.dpi != null) {
             return GUIHelper.dpi.x;
         }
-        return Display.getDefault().getDPI().x;
+        return getPrimaryMonitorDpi();
     }
 
     /**
@@ -756,7 +784,20 @@ public final class GUIHelper {
         if (!displayDPI && GUIHelper.dpi != null) {
             return GUIHelper.dpi.y;
         }
-        return Display.getDefault().getDPI().y;
+        return getPrimaryMonitorDpi();
+    }
+
+    /**
+     *
+     * @return The DPI based on the given zoom level of the primary monitor.
+     *
+     * @since 2.7
+     */
+    public static int getPrimaryMonitorDpi() {
+        // https://github.com/eclipse-nattable/nattable/issues/139
+        Object zoomObject = PlatformHelper.callGetter(Display.getDefault().getPrimaryMonitor(), "getZoom"); //$NON-NLS-1$
+        int zoom = zoomObject != null ? (int) zoomObject : 100;
+        return (zoom * 96) / 100;
     }
 
     /**
@@ -998,4 +1039,102 @@ public final class GUIHelper {
         return GUIHelper.convertVerticalDpiToPixel(dpi);
     }
 
+    /**
+     * Checks if rescaling at runtime is activated. Uses the
+     * {@link PlatformHelper} to ensure compatibility with RAP which does not
+     * provide the necessary API. {@return whether rescaling of shells at
+     * runtime when the DPI scaling of a shell's monitor changes is activated
+     * for this device}
+     *
+     * @param display
+     *            The {@link Display} to check for rescaling at runtime.
+     * @since 2.7
+     *
+     * @see Display#isRescalingAtRuntime()
+     */
+    public static boolean isRescalingAtRuntime(Display display) {
+        Object isRescalingAtRuntime = PlatformHelper.callGetter(display, "isRescalingAtRuntime"); //$NON-NLS-1$
+        if (isRescalingAtRuntime == null) {
+            isRescalingAtRuntime = false;
+        }
+        return (boolean) isRescalingAtRuntime;
+    }
+
+    /**
+     * Returns the value of the "swt.autoScale" property. If the property is not
+     * set, it returns "quarter" if the display is rescaling at runtime,
+     * otherwise it returns "integer".
+     *
+     * @param display
+     *            The {@link Display} to check for rescaling at runtime.
+     * @return The value of the "swt.autoScale" property or the default value
+     *         based on the display's rescaling behavior.
+     * @since 2.7
+     *
+     * @see org.eclipse.swt.internal.AutoScaleCalculation#getDefaultAutoScale()
+     */
+    public static String getAutoScaleProperty(Display display) {
+        String autoScaleProperty = System.getProperty("swt.autoScale"); //$NON-NLS-1$
+        if (autoScaleProperty == null) {
+            autoScaleProperty = isRescalingAtRuntime(display) ? "quarter" : "integer"; //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        return autoScaleProperty;
+    }
+
+    /**
+     * Returns the zoom value of the parent shell dependent on the
+     * "swt.autoScale" property.
+     *
+     * @param parent
+     *            The parent shell to get the zoom value from. If
+     *            <code>null</code> the default {@link Display} and primary
+     *            monitor are used to determine the zoom value.
+     * @param zoom
+     *            The zoom value returned by the parent shell or the primary
+     *            monitor.
+     * @return The zoom value of the parent shell dependent on the
+     *         "swt.autoScale" property.
+     * @since 2.7
+     *
+     * @see org.eclipse.swt.internal.AutoScaleCalculation
+     */
+    public static int getAutoScaleZoom(Composite parent, int zoom) {
+        String autoScaleProperty = GUIHelper.getAutoScaleProperty(parent != null ? parent.getDisplay() : Display.getDefault());
+        switch (autoScaleProperty) {
+            case "false": //$NON-NLS-1$
+                // deviceZoom is set to 100%
+                return 100;
+            case "integer": //$NON-NLS-1$
+                // deviceZoom depends on the current display resolution,
+                // but only uses integer multiples of 100%. The detected native
+                // zoom is generally rounded down (e.g. at 150%, will use 100%),
+                // unless close to the next integer multiple (currently at 175%,
+                // will use 200%).
+                return Math.max((zoom + 25) / 100 * 100, 100);
+            case "half": //$NON-NLS-1$
+                // deviceZoom depends on the current display resolution,
+                // but only uses integer multiples of 50%. The detected native
+                // zoom is rounded to the closest permissible value, with
+                // tie-breaker towards even.
+                return (int) Math.rint(zoom / 50d) * 50;
+            case "quarter": //$NON-NLS-1$
+                // deviceZoom depends on the current display resolution,
+                // but only uses integer multiples of 25%. The detected native
+                // zoom is rounded to the closest permissible value.
+                return Math.round(zoom / 25f) * 25;
+            case "exact": //$NON-NLS-1$
+                // deviceZoom uses the native zoom (with 1% as minimal step).
+                return zoom;
+            default:
+                // value: deviceZoom uses the given integer value in percent as
+                // zoom level.
+                try {
+                    return Integer.parseInt(autoScaleProperty);
+                } catch (NumberFormatException e) {
+                    // If parsing fails, fallback to the default zoom
+                    Object zoomObject = PlatformHelper.callGetter(Display.getDefault().getPrimaryMonitor(), "getZoom"); //$NON-NLS-1$
+                    return zoomObject != null ? (int) zoomObject : 100;
+                }
+        }
+    }
 }

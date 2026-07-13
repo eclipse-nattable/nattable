@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023, 2024 Dirk Fauth and others.
+ * Copyright (c) 2023, 2026 Dirk Fauth and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -113,12 +113,14 @@ import org.eclipse.nebula.widgets.nattable.hover.config.RowHeaderResizeHoverBind
 import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.FixedScalingDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
@@ -774,6 +776,26 @@ public class _818_SortableAllFilterPerformanceColumnGroupExample extends Abstrac
                             bodyLayerStack.getGlazedListsEventLayer().activate();
                             columnHeaderLayerStack.getFilterRowComboBoxDataProvider().activate();
                         });
+            }
+        });
+
+        Button scaleButton = new Button(buttonPanel, SWT.PUSH);
+        scaleButton.setText("Scale 96");
+        scaleButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                natTable.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(96)));
+                natTable.refresh();
+            }
+        });
+
+        Button scaleButton1 = new Button(buttonPanel, SWT.PUSH);
+        scaleButton1.setText("Scale 144");
+        scaleButton1.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                natTable.doCommand(new ConfigureScalingCommand(new FixedScalingDpiConverter(144)));
+                natTable.refresh();
             }
         });
 

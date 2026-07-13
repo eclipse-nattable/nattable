@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.eclipse.nebula.widgets.nattable.extension.glazedlists" version="2">
+    <resource path="src/org/eclipse/nebula/widgets/nattable/extension/glazedlists/groupBy/GroupByDataLayer.java" type="org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByDataLayer">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByDataLayer"/>
+                <message_argument value="update(Observable, Object)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/nebula/widgets/nattable/extension/glazedlists/groupBy/GroupByModel.java" type="org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByModel">
+        <filter id="338849923">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByModel"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>

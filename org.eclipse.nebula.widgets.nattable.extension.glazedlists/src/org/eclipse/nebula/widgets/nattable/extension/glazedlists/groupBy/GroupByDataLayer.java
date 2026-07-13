@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2025 Original authors and others.
+ * Copyright (c) 2012, 2026 Original authors and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,8 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -91,7 +89,7 @@ import ca.odell.glazedlists.matchers.Matcher;
  * @see GroupByColumnAccessor
  * @see GroupByDataLayerConfiguration
  */
-public class GroupByDataLayer<T> extends DataLayer implements Observer, GroupByModelListener {
+public class GroupByDataLayer<T> extends DataLayer implements GroupByModelListener {
 
     /**
      * Label that indicates the shown tree item object as GroupByObject
@@ -633,12 +631,6 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer, GroupByM
                         }
                     });
         });
-    }
-
-    // TODO remove once Observer is removed from the class hierarchy
-    @Override
-    public void update(Observable o, Object arg) {
-        handleGroupByModelChange(this.groupByModel);
     }
 
     @Override
