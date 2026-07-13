@@ -9,7 +9,7 @@ pipeline {
     }
     tools {
         maven 'apache-maven-latest'
-        jdk 'openjdk-jdk17-latest'
+        jdk 'openjdk-jdk21-latest'
     }
     environment {
         BUILD_DIR = "${WORKSPACE}/org.eclipse.nebula.widgets.nattable.examples.e4.product/target/products/"
