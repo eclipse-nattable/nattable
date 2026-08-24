@@ -1,4 +1,4 @@
-# Contributing to Nebula NatTable
+# Contributing to Eclipse NatTable&trade;
 
 Thanks for your interest in this project. The following information will help you setting up your development environment in order to be able to contribute bugfixes or enhancements to NatTable.
 
@@ -45,7 +45,7 @@ The development tools with minimum versions that are used by the NatTable team a
 
 * JDK 21
 * Eclipse 4.32 (2024-06)
-* Maven 3.9.8 with Tycho 4.0.13
+* Maven 3.9.14 with Tycho 5.0.4
 * Git
 * JUnit5
 

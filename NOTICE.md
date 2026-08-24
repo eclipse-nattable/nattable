@@ -1,6 +1,6 @@
-# Notices for Nebula NatTable
+# Notices for Eclipse NatTable&trade;
 
-This content is produced and maintained by the Eclipse Nebula NatTable project.
+This content is produced and maintained by the Eclipse NatTable&trade; project.
 
 * Project home: https://projects.eclipse.org/projects/technology.nebula.nattable
 
@@ -29,7 +29,7 @@ The project maintains the following source code repository:
 The following list contains the third-party-content that is explicitly added additionally to the Eclipse Platform dependencies in the [Target Definition](target-platform/target-platform.target).  
 A detailed dependency list is available in [DEPENDENCIES](DEPENDENCIES).
 
-Eclipse Collections 12.0.0
+Eclipse Collections 13.0.0
 
  * License: EPL-1.0 OR BSD-3-Clause
  * Project: https://www.eclipse.org/collections/
@@ -41,7 +41,7 @@ GlazedLists 1.11
  * Project: http://www.glazedlists.com/
  * Source: https://github.com/glazedlists/glazedlists/
 
-Eclipse Nebula 3.2.0 (CWT 1.1.0, CDateTime 1.5.0, RichText 1.6.0)
+Eclipse Nebula 3.4.0 (CWT 1.2.0, CDateTime 1.6.0, RichText 1.7.0)
 
  * License: EPL-2.0
  * Project: https://www.eclipse.org/nebula/
@@ -53,7 +53,7 @@ Apache Commons Collections 4.5.0
  * Project: https://commons.apache.org/proper/commons-collections/
  * Source: https://github.com/apache/commons-collections
 
-Apache Commons Codec 1.19.0
+Apache Commons Codec 1.21.0
 
  * License: Apache-2.0
  * Project: https://commons.apache.org/proper/commons-codec/
@@ -64,7 +64,7 @@ Apache Commons Math 3.6.1
  * License: Apache-2.0 AND BSD-3-Clause AND BSD-2-Clause
  * Project: https://commons.apache.org/proper/commons-math/
 
-Apache POI 5.4.1
+Apache POI 5.5.1
 
  * License: Apache-2.0 AND MIT AND BSD-3-Clause AND EPL-1.0
  * Project: https://poi.apache.org/

@@ -1,4 +1,4 @@
-# Nebula NatTable - high performance SWT data grid
+# Eclipse NatTable&trade; - high performance SWT data grid
 
 NatTable is a powerful and flexible SWT table/grid widget that is built to handle very large data sets, real-time updates, dynamic styling, and more.
 

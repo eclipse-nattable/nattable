@@ -1,6 +1,6 @@
 # How To: Release NatTable
 
-This document describes the process on how to release Nebula NatTable.
+This document describes the process on how to release Eclipse NatTable&trade;.
 
 ## Preparation
 
