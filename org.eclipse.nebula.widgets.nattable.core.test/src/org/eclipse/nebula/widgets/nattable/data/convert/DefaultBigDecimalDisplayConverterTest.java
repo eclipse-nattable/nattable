@@ -35,7 +35,7 @@ public class DefaultBigDecimalDisplayConverterTest {
     @BeforeAll
     public static void setup() {
         defaultLocale = Locale.getDefault();
-        Locale.setDefault(new Locale("en"));
+        Locale.setDefault(Locale.ENGLISH);
     }
 
     @AfterAll
