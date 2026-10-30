@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2020 CEA LIST and others.
+ * Copyright (c) 2015, 2026 CEA LIST and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.e4.ui.css.core.css2.CSS2FontHelper;
 import org.eclipse.e4.ui.css.core.dom.properties.css2.CSS2FontProperties;
 import org.eclipse.e4.ui.css.core.engine.CSSElementContext;
 import org.eclipse.e4.ui.css.core.engine.CSSEngine;
+import org.eclipse.e4.ui.css.core.impl.dom.CssValues.CssPrimitive;
 import org.eclipse.e4.ui.css.swt.helpers.CSSSWTFontHelper;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -466,16 +467,17 @@ public final class NatTableCSSHelper {
         for (int i = 0; i < length; i++) {
             CSSValue value2 = valueList.item(i);
             if (value2.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE) {
-                String fontProperty = CSS2FontHelper.getCSSFontPropertyName((CSSPrimitiveValue) value2);
+                CssPrimitive cssPrimitiveValue = (CssPrimitive) value2;
+                String fontProperty = CSS2FontHelper.getCSSFontPropertyName(cssPrimitiveValue);
                 if (fontProperty != null) {
                     if (NatTableCSSConstants.FONT_FAMILY.equalsIgnoreCase(fontProperty)) {
-                        font.setFamily((CSSPrimitiveValue) value2);
+                        font.setFamily(cssPrimitiveValue);
                     } else if (NatTableCSSConstants.FONT_SIZE.equalsIgnoreCase(fontProperty)) {
-                        font.setSize((CSSPrimitiveValue) value2);
+                        font.setSize(cssPrimitiveValue);
                     } else if (NatTableCSSConstants.FONT_STYLE.equalsIgnoreCase(fontProperty)) {
-                        font.setStyle((CSSPrimitiveValue) value2);
+                        font.setStyle(cssPrimitiveValue);
                     } else if (NatTableCSSConstants.FONT_WEIGHT.equalsIgnoreCase(fontProperty)) {
-                        font.setWeight((CSSPrimitiveValue) value2);
+                        font.setWeight(cssPrimitiveValue);
                     }
                 }
             }
