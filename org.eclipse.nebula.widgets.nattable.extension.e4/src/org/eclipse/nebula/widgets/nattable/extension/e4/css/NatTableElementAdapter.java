@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2020 CEA LIST.
+ * Copyright (c) 2015, 2026 CEA LIST.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,28 +13,21 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.e4.css;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.e4.ui.css.core.engine.CSSEngine;
-import org.eclipse.e4.ui.css.core.impl.engine.AbstractCSSEngine;
 import org.eclipse.e4.ui.css.swt.dom.WidgetElement;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 @SuppressWarnings("restriction")
 public class NatTableElementAdapter extends WidgetElement {
-
-    private static final Logger LOG = LoggerFactory.getLogger(NatTableElementAdapter.class);
 
     /**
      * Static flag to ensure that the update listener is only applied once to
@@ -126,18 +119,7 @@ public class NatTableElementAdapter extends WidgetElement {
         for (Node node : this.virtualChildren) {
             if (node instanceof NatTableWrapperElementAdapter) {
                 ((NatTableWrapperElementAdapter) node).dispose();
-
-                if (this.engine instanceof AbstractCSSEngine) {
-                    try {
-                        Method method = AbstractCSSEngine.class.getDeclaredMethod("handleWidgetDisposed", Object.class);
-                        if (method != null) {
-                            method.setAccessible(true);
-                            method.invoke(this.engine, ((NatTableWrapperElementAdapter) node).natTableWrapper);
-                        }
-                    } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                        LOG.error("Error on disposal", e);
-                    }
-                }
+                this.engine.handleWidgetDisposed(((NatTableWrapperElementAdapter) node).natTableWrapper);
             }
         }
     }
