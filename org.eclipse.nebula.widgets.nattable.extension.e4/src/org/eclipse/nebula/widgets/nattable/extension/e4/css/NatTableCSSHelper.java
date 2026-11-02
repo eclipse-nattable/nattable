@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2015, 2020 CEA LIST and others.
+ * Copyright (c) 2015, 2026 CEA LIST and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,9 +22,11 @@ import java.util.Map;
 
 import org.eclipse.e4.ui.css.core.css2.CSS2ColorHelper;
 import org.eclipse.e4.ui.css.core.css2.CSS2FontHelper;
+import org.eclipse.e4.ui.css.core.css2.CSS2FontPropertiesHelpers;
 import org.eclipse.e4.ui.css.core.dom.properties.css2.CSS2FontProperties;
 import org.eclipse.e4.ui.css.core.engine.CSSElementContext;
 import org.eclipse.e4.ui.css.core.engine.CSSEngine;
+import org.eclipse.e4.ui.css.core.impl.dom.CssValues.CssPrimitive;
 import org.eclipse.e4.ui.css.swt.helpers.CSSSWTFontHelper;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -454,7 +456,7 @@ public final class NatTableCSSHelper {
 
     /**
      * Sets the values from the given {@link CSSValueList} to the given
-     * {@link CSS2FontProperties}CSS2FontProperties.
+     * {@link CSS2FontProperties}.
      *
      * @param valueList
      *            The value list containing the css property values
@@ -466,16 +468,17 @@ public final class NatTableCSSHelper {
         for (int i = 0; i < length; i++) {
             CSSValue value2 = valueList.item(i);
             if (value2.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE) {
-                String fontProperty = CSS2FontHelper.getCSSFontPropertyName((CSSPrimitiveValue) value2);
+                CssPrimitive cssPrimitiveValue = (CssPrimitive) value2;
+                String fontProperty = CSS2FontHelper.getCSSFontPropertyName(cssPrimitiveValue);
                 if (fontProperty != null) {
                     if (NatTableCSSConstants.FONT_FAMILY.equalsIgnoreCase(fontProperty)) {
-                        font.setFamily((CSSPrimitiveValue) value2);
+                        CSS2FontPropertiesHelpers.updateCSSPropertyFontFamily(font, cssPrimitiveValue);
                     } else if (NatTableCSSConstants.FONT_SIZE.equalsIgnoreCase(fontProperty)) {
-                        font.setSize((CSSPrimitiveValue) value2);
+                        CSS2FontPropertiesHelpers.updateCSSPropertyFontSize(font, cssPrimitiveValue);
                     } else if (NatTableCSSConstants.FONT_STYLE.equalsIgnoreCase(fontProperty)) {
-                        font.setStyle((CSSPrimitiveValue) value2);
+                        CSS2FontPropertiesHelpers.updateCSSPropertyFontStyle(font, cssPrimitiveValue);
                     } else if (NatTableCSSConstants.FONT_WEIGHT.equalsIgnoreCase(fontProperty)) {
-                        font.setWeight((CSSPrimitiveValue) value2);
+                        CSS2FontPropertiesHelpers.updateCSSPropertyFontWeight(font, cssPrimitiveValue);
                     }
                 }
             }

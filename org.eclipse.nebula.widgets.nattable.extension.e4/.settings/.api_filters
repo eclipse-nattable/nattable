@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.eclipse.nebula.widgets.nattable.extension.e4" version="2">
+    <resource path="src/org/eclipse/nebula/widgets/nattable/extension/e4/css/NatTableCSSHandler.java" type="org.eclipse.nebula.widgets.nattable.extension.e4.css.NatTableCSSHandler">
+        <filter comment="method name was changed in underlying class hierarchy" id="338792546">
+            <message_arguments>
+                <message_argument value="org.eclipse.nebula.widgets.nattable.extension.e4.css.NatTableCSSHandler"/>
+                <message_argument value="onAllCSSPropertiesApplyed(Object, CSSEngine, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>
