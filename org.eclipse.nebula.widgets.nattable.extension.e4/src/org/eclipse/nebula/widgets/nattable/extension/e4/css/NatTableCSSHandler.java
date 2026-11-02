@@ -238,29 +238,29 @@ public class NatTableCSSHandler implements ICSSPropertyHandler {
                         label);
             } else if (NatTableCSSConstants.FONT.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_VALUE_LIST)) {
-                NatTableCSSHelper.setFontProperties(
-                        (CSSValueList) value,
-                        NatTableCSSHelper.getFontProperties(context, CSS2FontPropertiesHelpers.CSS2FONT_KEY, natTable, displayMode, label));
+                CSS2FontProperties font =
+                        NatTableCSSHelper.getFontProperties(context, CSS2FontPropertiesHelpers.CSS2FONT_KEY, natTable, displayMode, label);
+                CSS2FontPropertiesHelpers.updateCSSPropertyFontComposite(font, value);
             } else if (NatTableCSSConstants.FONT_FAMILY.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 CSS2FontProperties font =
                         NatTableCSSHelper.getFontProperties(context, CSS2FontPropertiesHelpers.CSS2FONT_KEY, natTable, displayMode, label);
-                font.setFamily((CssPrimitive) value);
+                CSS2FontPropertiesHelpers.updateCSSPropertyFontFamily(font, value);
             } else if (NatTableCSSConstants.FONT_SIZE.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 CSS2FontProperties font =
                         NatTableCSSHelper.getFontProperties(context, CSS2FontPropertiesHelpers.CSS2FONT_KEY, natTable, displayMode, label);
-                font.setSize((CssPrimitive) value);
+                CSS2FontPropertiesHelpers.updateCSSPropertyFontSize(font, value);
             } else if (NatTableCSSConstants.FONT_STYLE.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 CSS2FontProperties font =
                         NatTableCSSHelper.getFontProperties(context, CSS2FontPropertiesHelpers.CSS2FONT_KEY, natTable, displayMode, label);
-                font.setStyle((CssPrimitive) value);
+                CSS2FontPropertiesHelpers.updateCSSPropertyFontStyle(font, value);
             } else if (NatTableCSSConstants.FONT_WEIGHT.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 CSS2FontProperties font =
                         NatTableCSSHelper.getFontProperties(context, CSS2FontPropertiesHelpers.CSS2FONT_KEY, natTable, displayMode, label);
-                font.setWeight((CssPrimitive) value);
+                CSS2FontPropertiesHelpers.updateCSSPropertyFontWeight(font, value);
             } else if (NatTableCSSConstants.IMAGE.equalsIgnoreCase(property)) {
                 Image image = (Image) engine.convert(value, Image.class, natTable.getDisplay());
                 NatTableCSSHelper.applyNatTableStyle(
@@ -425,14 +425,13 @@ public class NatTableCSSHandler implements ICSSPropertyHandler {
                         label);
             } else if (NatTableCSSConstants.CONVERSION_ERROR_FONT.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_VALUE_LIST)) {
-                NatTableCSSHelper.setFontProperties(
-                        (CSSValueList) value,
-                        NatTableCSSHelper.getFontProperties(
-                                context,
-                                NatTableCSSConstants.CV_CONVERSION_ERROR_FONT_PROPERTIES,
-                                natTable,
-                                displayMode,
-                                label));
+                CSS2FontProperties font = NatTableCSSHelper.getFontProperties(
+                        context,
+                        NatTableCSSConstants.CV_CONVERSION_ERROR_FONT_PROPERTIES,
+                        natTable,
+                        displayMode,
+                        label);
+                CSS2FontPropertiesHelpers.updateCSSPropertyFontComposite(font, value);
             } else if (NatTableCSSConstants.CONVERSION_ERROR_FONT_FAMILY.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 CSS2FontProperties font = NatTableCSSHelper.getFontProperties(
@@ -441,7 +440,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler {
                         natTable,
                         displayMode,
                         label);
-                font.setFamily((CssPrimitive) value);
+                CSS2FontPropertiesHelpers.updateCSSPropertyFontFamily(font, value);
             } else if (NatTableCSSConstants.CONVERSION_ERROR_FONT_SIZE.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 CSS2FontProperties font = NatTableCSSHelper.getFontProperties(
@@ -450,7 +449,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler {
                         natTable,
                         displayMode,
                         label);
-                font.setSize((CssPrimitive) value);
+                CSS2FontPropertiesHelpers.updateCSSPropertyFontSize(font, value);
             } else if (NatTableCSSConstants.CONVERSION_ERROR_FONT_STYLE.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 CSS2FontProperties font = NatTableCSSHelper.getFontProperties(
@@ -459,7 +458,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler {
                         natTable,
                         displayMode,
                         label);
-                font.setStyle((CssPrimitive) value);
+                CSS2FontPropertiesHelpers.updateCSSPropertyFontStyle(font, value);
             } else if (NatTableCSSConstants.CONVERSION_ERROR_FONT_WEIGHT.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 CSS2FontProperties font = NatTableCSSHelper.getFontProperties(
@@ -468,7 +467,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler {
                         natTable,
                         displayMode,
                         label);
-                font.setWeight((CssPrimitive) value);
+                CSS2FontPropertiesHelpers.updateCSSPropertyFontWeight(font, value);
             } else if (NatTableCSSConstants.CONVERSION_ERROR_BACKGROUND_COLOR.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 Color newColor = (Color) engine.convert(value, Color.class, natTable.getDisplay());
@@ -491,14 +490,13 @@ public class NatTableCSSHandler implements ICSSPropertyHandler {
                         label);
             } else if (NatTableCSSConstants.VALIDATION_ERROR_FONT.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_VALUE_LIST)) {
-                NatTableCSSHelper.setFontProperties(
-                        (CSSValueList) value,
-                        NatTableCSSHelper.getFontProperties(
-                                context,
-                                NatTableCSSConstants.CV_VALIDATION_ERROR_FONT_PROPERTIES,
-                                natTable,
-                                displayMode,
-                                label));
+                CSS2FontProperties font = NatTableCSSHelper.getFontProperties(
+                        context,
+                        NatTableCSSConstants.CV_VALIDATION_ERROR_FONT_PROPERTIES,
+                        natTable,
+                        displayMode,
+                        label);
+                CSS2FontPropertiesHelpers.updateCSSPropertyFontComposite(font, value);
             } else if (NatTableCSSConstants.VALIDATION_ERROR_FONT_FAMILY.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 CSS2FontProperties font = NatTableCSSHelper.getFontProperties(
@@ -507,7 +505,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler {
                         natTable,
                         displayMode,
                         label);
-                font.setFamily((CssPrimitive) value);
+                CSS2FontPropertiesHelpers.updateCSSPropertyFontFamily(font, value);
             } else if (NatTableCSSConstants.VALIDATION_ERROR_FONT_SIZE.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 CSS2FontProperties font = NatTableCSSHelper.getFontProperties(
@@ -516,7 +514,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler {
                         natTable,
                         displayMode,
                         label);
-                font.setSize((CssPrimitive) value);
+                CSS2FontPropertiesHelpers.updateCSSPropertyFontSize(font, value);
             } else if (NatTableCSSConstants.VALIDATION_ERROR_FONT_STYLE.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 CSS2FontProperties font = NatTableCSSHelper.getFontProperties(
@@ -525,7 +523,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler {
                         natTable,
                         displayMode,
                         label);
-                font.setStyle((CssPrimitive) value);
+                CSS2FontPropertiesHelpers.updateCSSPropertyFontStyle(font, value);
             } else if (NatTableCSSConstants.VALIDATION_ERROR_FONT_WEIGHT.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 CSS2FontProperties font = NatTableCSSHelper.getFontProperties(
@@ -534,7 +532,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler {
                         natTable,
                         displayMode,
                         label);
-                font.setWeight((CssPrimitive) value);
+                CSS2FontPropertiesHelpers.updateCSSPropertyFontWeight(font, value);
             } else if (NatTableCSSConstants.VALIDATION_ERROR_BACKGROUND_COLOR.equalsIgnoreCase(property)
                     && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)) {
                 Color newColor = (Color) engine.convert(value, Color.class, natTable.getDisplay());

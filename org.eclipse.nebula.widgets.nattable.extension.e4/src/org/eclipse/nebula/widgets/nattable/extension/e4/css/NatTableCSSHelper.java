@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.eclipse.e4.ui.css.core.css2.CSS2ColorHelper;
 import org.eclipse.e4.ui.css.core.css2.CSS2FontHelper;
+import org.eclipse.e4.ui.css.core.css2.CSS2FontPropertiesHelpers;
 import org.eclipse.e4.ui.css.core.dom.properties.css2.CSS2FontProperties;
 import org.eclipse.e4.ui.css.core.engine.CSSElementContext;
 import org.eclipse.e4.ui.css.core.engine.CSSEngine;
@@ -455,7 +456,7 @@ public final class NatTableCSSHelper {
 
     /**
      * Sets the values from the given {@link CSSValueList} to the given
-     * {@link CSS2FontProperties}CSS2FontProperties.
+     * {@link CSS2FontProperties}.
      *
      * @param valueList
      *            The value list containing the css property values
@@ -471,13 +472,13 @@ public final class NatTableCSSHelper {
                 String fontProperty = CSS2FontHelper.getCSSFontPropertyName(cssPrimitiveValue);
                 if (fontProperty != null) {
                     if (NatTableCSSConstants.FONT_FAMILY.equalsIgnoreCase(fontProperty)) {
-                        font.setFamily(cssPrimitiveValue);
+                        CSS2FontPropertiesHelpers.updateCSSPropertyFontFamily(font, cssPrimitiveValue);
                     } else if (NatTableCSSConstants.FONT_SIZE.equalsIgnoreCase(fontProperty)) {
-                        font.setSize(cssPrimitiveValue);
+                        CSS2FontPropertiesHelpers.updateCSSPropertyFontSize(font, cssPrimitiveValue);
                     } else if (NatTableCSSConstants.FONT_STYLE.equalsIgnoreCase(fontProperty)) {
-                        font.setStyle(cssPrimitiveValue);
+                        CSS2FontPropertiesHelpers.updateCSSPropertyFontStyle(font, cssPrimitiveValue);
                     } else if (NatTableCSSConstants.FONT_WEIGHT.equalsIgnoreCase(fontProperty)) {
-                        font.setWeight(cssPrimitiveValue);
+                        CSS2FontPropertiesHelpers.updateCSSPropertyFontWeight(font, cssPrimitiveValue);
                     }
                 }
             }
